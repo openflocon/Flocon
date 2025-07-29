@@ -25,6 +25,7 @@ import com.florent37.flocondesktop.features.network.ui.model.previewNetworkItemV
 import com.florent37.flocondesktop.features.network.ui.view.components.MethodView
 import com.florent37.flocondesktop.features.network.ui.view.components.StatusView
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import  androidx.compose.ui.text.style.TextOverflow
 
 /**
  * Data class to define the fixed widths for each column in NetworkItemView.
@@ -117,7 +118,9 @@ fun NetworkItemView(
             // Route - Takes remaining space (weight)
             Box(modifier = Modifier.weight(1f)) {
                 Text(
-                    state.route,
+                    text = state.route,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                     style = bodySmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )

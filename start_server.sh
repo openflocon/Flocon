@@ -1,1 +1,0 @@
-adb reverse tcp:9023 tcp:9023

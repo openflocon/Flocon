@@ -11,7 +11,7 @@ interface LocalGrpcDataSource {
     suspend fun saveRequest(deviceId: DeviceId, callId: GrpcCallId, request: GrpcRequestDomainModel)
     suspend fun saveResponse(deviceId: DeviceId, callId: GrpcCallId, response: GrpcResponseDomainModel)
     fun observeCalls(deviceId: DeviceId): Flow<List<GrpcCallDomainModel>>
-    fun observeCall(deviceId: DeviceId, callId: GrpcCallId) : Flow<GrpcCallDomainModel?>
+    fun observeCall(deviceId: DeviceId, callId: GrpcCallId): Flow<GrpcCallDomainModel?>
     suspend fun clearDeviceCalls(deviceId: DeviceId)
 
     suspend fun deleteCall(deviceId: DeviceId, callId: GrpcCallId)

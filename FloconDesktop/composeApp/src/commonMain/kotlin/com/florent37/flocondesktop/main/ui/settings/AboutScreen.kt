@@ -18,10 +18,10 @@ fun AboutScreen(modifier: Modifier = Modifier) {
     }
     LibrariesContainer(
         libraries = libraries?.distinct(),
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
 private fun Libs.distinct() = this.copy(
-    libraries = this.libraries.distinctBy { it.name + it.organization }.toImmutableList()
+    libraries = this.libraries.distinctBy { it.name + it.organization }.toImmutableList(),
 )

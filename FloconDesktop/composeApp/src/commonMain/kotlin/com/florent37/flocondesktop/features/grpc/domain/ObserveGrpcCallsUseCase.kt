@@ -12,7 +12,7 @@ class ObserveGrpcCallsUseCase(
     private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
 ) {
     operator fun invoke(): Flow<List<GrpcCallDomainModel>> = observeCurrentDeviceIdUseCase().flatMapLatest { currentDeviceId ->
-        if(currentDeviceId == null) {
+        if (currentDeviceId == null) {
             flowOf(emptyList())
         } else {
             grpcRepository.observeCalls(currentDeviceId)

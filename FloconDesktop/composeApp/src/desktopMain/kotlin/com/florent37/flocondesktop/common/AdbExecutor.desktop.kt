@@ -52,17 +52,28 @@ actual fun findAdbPath(): String? {
     return null
 }
 
-actual fun executeSystemCommand(command: String): Either<Throwable, String> = try {
-    listConnectedDevices().forEach {
-        executeAdbCommand(serial = it, command = command)
+actual fun executeAdbCommand(adbPath: String, command: String): Either<Throwable, String> = try {
+    val devices = listConnectedDevices()
+    if (devices.isEmpty() || devices.size == 1) {
+        singleDeviceExecuteSystemCommand(adbPath = adbPath, command = command)
+    } else {
+        devices.map { serial ->
+            singleDeviceExecuteSystemCommand(adbPath = "$adbPath -s $serial", command = command)
+        }.let {
+            it.forEach {
+                // return a failure if there's on in the list
+                if (it is Failure)
+                    return it
+            }
+            return it.firstOrNull() ?: Success("")
+        }
     }
-    Success("")
 } catch (t: Throwable) {
     Failure(t)
 }
 
-private fun legacyExecuteSystemCommand(command: String): Either<Throwable, String> = try {
-    val process = Runtime.getRuntime().exec(command)
+private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): Either<Throwable, String> = try {
+    val process = Runtime.getRuntime().exec("$adbPath $command")
     val output = process.inputStream.bufferedReader().use { it.readText() }
     val error = process.errorStream.bufferedReader().use { it.readText() }
     val exitCode = process.waitFor()
@@ -87,7 +98,6 @@ private fun legacyExecuteSystemCommand(command: String): Either<Throwable, Strin
     Failure(IOException(errorMessage, e))
 }
 
-
 private fun listConnectedDevices(): List<String> {
     val devices = mutableListOf<String>()
     try {
@@ -103,24 +113,4 @@ private fun listConnectedDevices(): List<String> {
         println("Error executing adb devices: ${e.message}")
     }
     return devices
-}
-
-private fun executeAdbCommand(serial: String, command: String): String {
-    val result = StringBuilder()
-    try {
-        val fullCommand = "adb -s $serial $command"
-        val process = Runtime.getRuntime().exec(fullCommand)
-        val reader = BufferedReader(InputStreamReader(process.inputStream))
-        reader.lines().forEach { line ->
-            result.append(line).append("\n")
-        }
-        val errorReader = BufferedReader(InputStreamReader(process.errorStream))
-        errorReader.lines().forEach { line ->
-            result.append("ERROR: ").append(line).append("\n")
-        }
-        process.waitFor()
-    } catch (e: Exception) {
-        result.append("Error executing command: ${e.message}")
-    }
-    return result.toString()
 }

@@ -4,16 +4,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
     id("com.google.protobuf")
 }
 
 android {
-    namespace = "com.github.openflocon.flocon.myapplication"
+    namespace = "io.github.openflocon.flocon.myapplication"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.github.openflocon.flocon.myapplication"
+        applicationId = "io.github.openflocon.flocon.myapplication"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -43,10 +43,19 @@ android {
     }
 }
 
+val useMaven = false
 dependencies {
-    implementation(project(":core"))
-    implementation(project(":okhttp-interceptor"))
-    implementation(project(":grpc-interceptor"))
+    if(useMaven) {
+        val floconVersion = "0.0.1"
+        implementation("io.github.openflocon:flocon:$floconVersion")
+        implementation("io.github.openflocon:flocon-grpc-interceptor:$floconVersion")
+        implementation("io.github.openflocon:flocon-okhttp-interceptor:$floconVersion")
+    } else {
+        implementation(project(":core"))
+        implementation(project(":okhttp-interceptor"))
+        implementation(project(":grpc-interceptor"))
+    }
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

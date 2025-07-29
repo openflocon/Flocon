@@ -28,5 +28,5 @@ fun previewAnalyticsRowUiModel() = AnalyticsRowUiModel(
     properties = List(5) {
         AnalyticsRowUiModel.PropertyUiModel("param$it", "value$it")
     },
-    hasMoreProperties = true
+    hasMoreProperties = true,
 )

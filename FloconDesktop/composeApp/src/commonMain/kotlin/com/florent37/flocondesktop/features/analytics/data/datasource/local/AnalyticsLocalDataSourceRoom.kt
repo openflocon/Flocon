@@ -19,7 +19,7 @@ class AnalyticsLocalDataSourceRoom(
 
     override suspend fun insert(
         deviceId: DeviceId,
-        items: List<AnalyticsItemDomainModel>
+        items: List<AnalyticsItemDomainModel>,
     ) {
         withContext(dispatcherProvider.data) {
             analyticsDao.insertAnalyticsItems(
@@ -27,14 +27,14 @@ class AnalyticsLocalDataSourceRoom(
                     item.toEntity(
                         deviceId = deviceId,
                     )
-                }
+                },
             )
         }
     }
 
     override fun observe(
         deviceId: DeviceId,
-        analyticsTableId: AnalyticsTableId
+        analyticsTableId: AnalyticsTableId,
     ): Flow<List<AnalyticsItemDomainModel>> = analyticsDao.observeAnalyticsItems(
         deviceId = deviceId,
         analyticsTableId = analyticsTableId,
@@ -44,15 +44,14 @@ class AnalyticsLocalDataSourceRoom(
         }
     }.flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceAnalytics(deviceId: DeviceId): Flow<List<AnalyticsIdentifierDomainModel>> =
-        analyticsDao.observeAnalyticsTableIdsForDevice(deviceId).map { list ->
-            list.map {
-                AnalyticsIdentifierDomainModel(
-                    id = it,
-                    name = it,
-                )
-            }
+    override fun observeDeviceAnalytics(deviceId: DeviceId): Flow<List<AnalyticsIdentifierDomainModel>> = analyticsDao.observeAnalyticsTableIdsForDevice(deviceId).map { list ->
+        list.map {
+            AnalyticsIdentifierDomainModel(
+                id = it,
+                name = it,
+            )
         }
+    }
 
     override suspend fun delete(deviceId: DeviceId, analyticsId: AnalyticsIdentifierDomainModel) {
         analyticsDao.deleteAnalyticsContent(
@@ -61,11 +60,10 @@ class AnalyticsLocalDataSourceRoom(
         )
     }
 
-    override suspend fun getDeviceAnalytics(deviceId: DeviceId): List<AnalyticsIdentifierDomainModel> =
-        analyticsDao.getAnalyticsForDevice(deviceId).map {
-            AnalyticsIdentifierDomainModel(
-                id = it,
-                name = it,
-            )
-        }
+    override suspend fun getDeviceAnalytics(deviceId: DeviceId): List<AnalyticsIdentifierDomainModel> = analyticsDao.getAnalyticsForDevice(deviceId).map {
+        AnalyticsIdentifierDomainModel(
+            id = it,
+            name = it,
+        )
+    }
 }

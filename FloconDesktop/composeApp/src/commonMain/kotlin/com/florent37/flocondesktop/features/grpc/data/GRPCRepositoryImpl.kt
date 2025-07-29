@@ -80,13 +80,11 @@ class GRPCRepositoryImpl(
 
     override fun observeCall(
         currentDeviceId: DeviceId,
-        callId: GrpcCallId
-    ): Flow<GrpcCallDomainModel?> {
-        return localGrpcDataSource.observeCall(
-            deviceId = currentDeviceId,
-            callId = callId,
-        ).flowOn(dispatcherProvider.data)
-    }
+        callId: GrpcCallId,
+    ): Flow<GrpcCallDomainModel?> = localGrpcDataSource.observeCall(
+        deviceId = currentDeviceId,
+        callId = callId,
+    ).flowOn(dispatcherProvider.data)
 
     override suspend fun deleteCall(deviceId: DeviceId, callId: GrpcCallId) = withContext(dispatcherProvider.data) {
         localGrpcDataSource.deleteCall(deviceId = deviceId, callId = callId)
@@ -95,7 +93,7 @@ class GRPCRepositoryImpl(
         localGrpcDataSource.deleteCallsBefore(deviceId = deviceId, callId = callId)
     }
 
-    override suspend fun deleteCallsForDevice(deviceId: DeviceId)  = withContext(dispatcherProvider.data) {
+    override suspend fun deleteCallsForDevice(deviceId: DeviceId) = withContext(dispatcherProvider.data) {
         localGrpcDataSource.clearDeviceCalls(deviceId = deviceId)
     }
 }

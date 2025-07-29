@@ -4,7 +4,7 @@ import com.florent37.flocondesktop.DeviceId
 import com.florent37.flocondesktop.FloconIncomingMessageDataModel
 import com.florent37.flocondesktop.Protocol
 import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.common.executeSystemCommand
+import com.florent37.flocondesktop.common.executeAdbCommand
 import com.florent37.flocondesktop.features.deeplinks.data.datasource.LocalDeeplinkDataSource
 import com.florent37.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
 import com.florent37.flocondesktop.features.deeplinks.domain.repository.DeeplinkRepository
@@ -45,9 +45,10 @@ class DeeplinkRepositoryImpl(
         deeplink: String,
         packageName: String,
     ) {
-        executeSystemCommand(
+        executeAdbCommand(
+            adbPath = adbPath,
             // TODO inject the device serial
-            "$adbPath shell am start -W -a android.intent.action.VIEW -d \"$deeplink\" $packageName",
+            command = "shell am start -W -a android.intent.action.VIEW -d \"$deeplink\" $packageName",
         )
     }
 }

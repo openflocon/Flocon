@@ -54,5 +54,5 @@ fun previewGrpcDetailViewState() = GrpcDetailViewState(
             previewNetworkDetailHeaderUi(),
         ),
         result = GrpcDetailViewState.DetailPayload.Success("response body"),
-    )
+    ),
 )

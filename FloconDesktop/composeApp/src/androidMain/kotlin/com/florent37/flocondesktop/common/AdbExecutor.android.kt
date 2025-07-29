@@ -1,6 +1,6 @@
 package com.florent37.flocondesktop.common
 
-actual fun executeSystemCommand(command: String): Either<Throwable, String> {
+actual fun executeAdbCommand(adbPath: String, command: String): Either<Throwable, String> {
     TODO("Not yet implemented")
 }
 
