@@ -9,7 +9,7 @@ class SettingsRepositoryImpl(
 ) : SettingsRepository {
     override fun getAdbPath(): String? = localSettingsDataSource.getAdbPath()
 
-    override fun setAdbPath(path: String) {
+    override suspend fun setAdbPath(path: String) {
         localSettingsDataSource.setAdbPath(path)
     }
 

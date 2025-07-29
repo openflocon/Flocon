@@ -53,15 +53,26 @@ actual fun findAdbPath(): String? {
 }
 
 actual fun executeSystemCommand(command: String): Either<Throwable, String> = try {
-    listConnectedDevices().forEach {
-        executeAdbCommand(serial = it, command = command)
+    val devices = listConnectedDevices()
+    if (devices.isEmpty()) {
+        singleDeviceExecuteSystemCommand(command)
+    } else {
+        devices.map {
+            executeAdbCommand(serial = it, command = command)
+        }.let {
+            it.forEach {
+                // return a failure if there's on in the list
+                if (it is Failure)
+                    return it
+            }
+            return it.firstOrNull() ?: Success("")
+        }
     }
-    Success("")
 } catch (t: Throwable) {
     Failure(t)
 }
 
-private fun legacyExecuteSystemCommand(command: String): Either<Throwable, String> = try {
+private fun singleDeviceExecuteSystemCommand(command: String): Either<Throwable, String> = try {
     val process = Runtime.getRuntime().exec(command)
     val output = process.inputStream.bufferedReader().use { it.readText() }
     val error = process.errorStream.bufferedReader().use { it.readText() }
@@ -105,9 +116,9 @@ private fun listConnectedDevices(): List<String> {
     return devices
 }
 
-private fun executeAdbCommand(serial: String, command: String): String {
+private fun executeAdbCommand(serial: String, command: String): Either<Throwable, String> {
     val result = StringBuilder()
-    try {
+    return try {
         val fullCommand = "adb -s $serial $command"
         val process = Runtime.getRuntime().exec(fullCommand)
         val reader = BufferedReader(InputStreamReader(process.inputStream))
@@ -119,8 +130,8 @@ private fun executeAdbCommand(serial: String, command: String): String {
             result.append("ERROR: ").append(line).append("\n")
         }
         process.waitFor()
+        Success(result.toString())
     } catch (e: Exception) {
-        result.append("Error executing command: ${e.message}")
+        Failure(e)
     }
-    return result.toString()
 }

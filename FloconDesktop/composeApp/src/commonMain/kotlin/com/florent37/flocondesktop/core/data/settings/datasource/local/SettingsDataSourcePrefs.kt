@@ -17,7 +17,7 @@ class SettingsDataSourcePrefs : SettingsDataSource {
 
     override fun getAdbPath(): String? = settings.getStringOrNull(ADB_PATH)
 
-    override fun setAdbPath(path: String) {
+    override suspend fun setAdbPath(path: String) {
         settings.putString(ADB_PATH, path)
     }
 

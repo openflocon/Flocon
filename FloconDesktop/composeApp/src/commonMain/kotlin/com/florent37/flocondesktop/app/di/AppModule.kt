@@ -1,5 +1,6 @@
 package com.florent37.flocondesktop.app.di
 
+import com.florent37.flocondesktop.app.InitialSetupStateHolder
 import com.florent37.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import com.florent37.flocondesktop.common.ui.feedback.FeedbackDisplayerHandler
 import com.florent37.flocondesktop.common.ui.feedback.FeedbackDisplayerImpl
@@ -15,4 +16,6 @@ val appModule =
             bind<FeedbackDisplayer>()
             bind<FeedbackDisplayerHandler>()
         }
+
+        singleOf(::InitialSetupStateHolder)
     }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.florent37.flocondesktop.app.AppViewModel
 import com.florent37.flocondesktop.common.ui.FloconColors
 import com.florent37.flocondesktop.common.ui.FloconTheme
@@ -25,8 +26,7 @@ fun App() {
                 .background(FloconColors.background),
         ) {
             MainScreen(
-                modifier =
-                Modifier
+                modifier = Modifier
                     .fillMaxSize(),
             )
             FeedbackDisplayerView()
