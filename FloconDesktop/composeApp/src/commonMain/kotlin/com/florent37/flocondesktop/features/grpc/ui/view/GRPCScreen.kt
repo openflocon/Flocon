@@ -82,10 +82,10 @@ private fun GRPCScreen(
                 )
                 GrpcFilterBar(
                     modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .background(FloconColors.pannel)
-                            .padding(horizontal = 12.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .background(FloconColors.pannel)
+                        .padding(horizontal = 12.dp),
                     grpcItems = grpcItems,
                     onResetClicked = onReset,
                     onItemsChange = {
@@ -98,15 +98,15 @@ private fun GRPCScreen(
                 )
                 LazyColumn(
                     modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .clickable(
-                                interactionSource = null,
-                                indication = null,
-                                enabled = detailState != null,
-                            ) {
-                                closeDetailPanel()
-                            },
+                    Modifier
+                        .fillMaxSize()
+                        .clickable(
+                            interactionSource = null,
+                            indication = null,
+                            enabled = detailState != null,
+                        ) {
+                            closeDetailPanel()
+                        },
                 ) {
                     items(filteredItems) {
                         GrpcItemView(
@@ -121,10 +121,10 @@ private fun GRPCScreen(
             detailState?.let {
                 GrpcDetailView(
                     modifier =
-                        Modifier
-                            .align(Alignment.TopEnd)
-                            .fillMaxHeight()
-                            .width(500.dp),
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .fillMaxHeight()
+                        .width(500.dp),
                     state = it,
                     onCopy = onCopyText,
                 )

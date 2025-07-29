@@ -61,20 +61,18 @@ class AnalyticsRepositoryImpl(
         }
     }
 
-    private fun decodeAddItems(message: FloconIncomingMessageDataModel): List<AnalyticsItemDataModel> =
-        try {
-            analyticsParser.decodeFromString<List<AnalyticsItemDataModel>>(message.body)
-        } catch (t: Throwable) {
-            t.printStackTrace()
-            emptyList()
-        }
+    private fun decodeAddItems(message: FloconIncomingMessageDataModel): List<AnalyticsItemDataModel> = try {
+        analyticsParser.decodeFromString<List<AnalyticsItemDataModel>>(message.body)
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        emptyList()
+    }
 
     override fun observeAnalytics(
         deviceId: DeviceId,
-        analyticsTableId: AnalyticsTableId
-    ): Flow<List<AnalyticsItemDomainModel>> =
-        analyticsLocalDataSource.observe(deviceId = deviceId, analyticsTableId = analyticsTableId)
-            .flowOn(dispatcherProvider.data)
+        analyticsTableId: AnalyticsTableId,
+    ): Flow<List<AnalyticsItemDomainModel>> = analyticsLocalDataSource.observe(deviceId = deviceId, analyticsTableId = analyticsTableId)
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun deleteAnalytics(
         deviceId: DeviceId,
@@ -96,11 +94,9 @@ class AnalyticsRepositoryImpl(
         )
     }
 
-    override fun observeSelectedDeviceAnalytics(deviceId: DeviceId): Flow<AnalyticsIdentifierDomainModel?> =
-        deviceAnalyticsDataSource.observeSelectedDeviceAnalytics(deviceId = deviceId)
-            .flowOn(dispatcherProvider.data)
+    override fun observeSelectedDeviceAnalytics(deviceId: DeviceId): Flow<AnalyticsIdentifierDomainModel?> = deviceAnalyticsDataSource.observeSelectedDeviceAnalytics(deviceId = deviceId)
+        .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceAnalytics(deviceId: DeviceId): Flow<List<AnalyticsIdentifierDomainModel>> =
-        analyticsLocalDataSource.observeDeviceAnalytics(deviceId = deviceId)
-            .flowOn(dispatcherProvider.data)
+    override fun observeDeviceAnalytics(deviceId: DeviceId): Flow<List<AnalyticsIdentifierDomainModel>> = analyticsLocalDataSource.observeDeviceAnalytics(deviceId = deviceId)
+        .flowOn(dispatcherProvider.data)
 }

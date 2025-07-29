@@ -25,8 +25,7 @@ fun App() {
                 .background(FloconColors.background),
         ) {
             MainScreen(
-                modifier =
-                Modifier
+                modifier = Modifier
                     .fillMaxSize(),
             )
             FeedbackDisplayerView()
