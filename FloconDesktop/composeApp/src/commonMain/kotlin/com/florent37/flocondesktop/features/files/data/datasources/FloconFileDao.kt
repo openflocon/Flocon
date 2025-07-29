@@ -1,0 +1,39 @@
+package com.florent37.flocondesktop.features.files.data.datasources
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.florent37.flocondesktop.features.files.data.datasources.model.FileEntity
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface FloconFileDao {
+    @Query(
+        """
+        SELECT * 
+        FROM FileEntity 
+        WHERE deviceId = :deviceId 
+        AND parentPath = :parentFilePath
+    """,
+    )
+    fun observeFolderContent(
+        deviceId: String,
+        parentFilePath: String,
+    ): Flow<List<FileEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFiles(files: List<FileEntity>)
+
+    @Query(
+        """
+        DELETE FROM FileEntity 
+        WHERE deviceId = :deviceId 
+        AND parentPath = :parentPath
+    """,
+    )
+    suspend fun clearFolderContent(
+        deviceId: String,
+        parentPath: String,
+    )
+}

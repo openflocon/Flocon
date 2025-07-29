@@ -1,0 +1,29 @@
+root = true
+
+[*.{kt,kts}]
+ktlint_code_style = intellij_idea
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+ktlint_custom-rule-set = enabled
+ktlint_standard_wrapping = enabled
+ktlint_standard_trailing-comma-on-call-site = enabled
+ktlint_standard_comment-wrapping = disabled
+ktlint_standard_trailing-comma-on-declaration-site = enabled
+ktlint_standard_argument-list-wrapping = disabled
+ktlint_standard_max-line-length = disabled
+ktlint_standard_multiline-if-else = disabled
+ktlint_standard_package-name = disabled
+ktlint_standard_enum-entry-name-case = disabled
+ktlint_standard_kdoc-wrapping = disabled
+ktlint_standard_class-naming = disabled
+ktlint_compose_modifier-missing-check = disabled
+ktlint_compose_param-order-check = disabled
+ktlint_compose_modifier-reused-check = disabled
+ktlint_compose_compositionlocal-allowlist = disabled
+ktlint_compose_modifier-not-used-at-root = disabled
+ktlint_compose_preview-public-check = enabled
+ktlint_compose_naming-check = disabled
+ktlint_compose_parameter-naming = disabled
+ktlint_function_naming_ignore_when_annotated_with = Composable
+

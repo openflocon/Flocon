@@ -1,0 +1,125 @@
+package com.github.openflocon.flocon.myapplication
+
+import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.github.openflocon.flocon.myapplication.dashboard.initializeDashboard
+import com.github.openflocon.flocon.myapplication.database.initializeDatabases
+import com.github.openflocon.flocon.myapplication.deeplinks.initializeDeeplinks
+import com.github.openflocon.flocon.myapplication.grpc.GrpcController
+import com.github.openflocon.flocon.myapplication.images.initializeImages
+import com.github.openflocon.flocon.myapplication.sharedpreferences.initializeSharedPreferences
+import com.github.openflocon.flocon.myapplication.table.initializeTable
+import com.github.openflocon.flocon.myapplication.ui.ImagesListView
+import com.github.openflocon.flocon.myapplication.ui.theme.MyApplicationTheme
+import com.github.openflocon.flocon.Flocon
+import com.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
+import com.github.openflocon.flocon.plugins.analytics.analytics
+import com.github.openflocon.flocon.plugins.analytics.model.AnalyticsEvent
+import com.github.openflocon.flocon.plugins.analytics.model.analyticsProperty
+import com.github.openflocon.flocon.plugins.tables.model.toParam
+import com.github.openflocon.flocon.plugins.tables.table
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import kotlin.random.Random
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+
+        intent.data?.let {
+            Toast.makeText(this, "opend with : ${it.toString()}", Toast.LENGTH_LONG).show()
+        }
+
+        val okHttpClient = OkHttpClient()
+            .newBuilder()
+            .addInterceptor(FloconOkhttpInterceptor())
+            .build()
+
+        initializeSharedPreferences(applicationContext)
+        initializeDatabases(context = applicationContext)
+
+        Flocon.initialize(this)
+        initializeDeeplinks()
+
+        val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)
+        initializeImages(context = this, okHttpClient = okHttpClient)
+        initializeDashboard(this)
+        initializeTable(this)
+
+        setContent {
+            MyApplicationTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Column(Modifier.fillMaxSize()) {
+                        Button(
+                            modifier = Modifier.padding(all = 20.dp),
+                            onClick = {
+                                dummyHttpCaller.call()
+                            }
+                        ) {
+                            Text("okhttp test")
+                        }
+                        Button(
+                            modifier = Modifier.padding(all = 20.dp),
+                            onClick = {
+                                GlobalScope.launch {
+                                    GrpcController.sayHello()
+                                }
+                            }
+                        ) {
+                            Text("grpc test")
+                        }
+                        Button(
+                            modifier = Modifier.padding(all = 20.dp),
+                            onClick = {
+                                val value = Random.nextInt(from = 0, until = 1000).toString()
+                                Flocon.table("analytics").log(
+                                    "name" toParam "new name $value",
+                                    "value1" toParam "value1 $value",
+                                    "value2" toParam "value2 $value",
+                                )
+                            }
+                        ) {
+                            Text("send table event")
+                        }
+                        Button(
+                            modifier = Modifier.padding(all = 20.dp),
+                            onClick = {
+                                Flocon.analytics("firebase").logEvents(
+                                    AnalyticsEvent(
+                                        eventName = "clicked user",
+                                        "userId" analyticsProperty "1024",
+                                        "username" analyticsProperty "florent",
+                                        "index" analyticsProperty "3",
+                                    ),
+                                    AnalyticsEvent(
+                                        eventName = "opened profile",
+                                        "userId" analyticsProperty "2048",
+                                        "username" analyticsProperty "kevin",
+                                        "age" analyticsProperty "34",
+                                    ),
+                                )
+                            }
+                        ) {
+                            Text("send analytics event")
+                        }
+
+                        ImagesListView(modifier = Modifier.fillMaxSize())
+                    }
+                }
+            }
+        }
+    }
+}

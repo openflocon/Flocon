@@ -1,0 +1,21 @@
+package com.github.openflocon.flocon.plugins.tables.builder
+
+import com.github.openflocon.flocon.plugins.tables.FloconTablePlugin
+import com.github.openflocon.flocon.plugins.tables.model.TableColumnConfig
+import com.github.openflocon.flocon.plugins.tables.model.TableItem
+import java.util.UUID
+
+class TableBuilder(
+    val tableName: String,
+    private val tablePlugin: FloconTablePlugin?,
+) {
+    fun log(vararg columns: TableColumnConfig) {
+        val dashboardConfig = TableItem(
+            id = UUID.randomUUID().toString(),
+            name = tableName,
+            columns = columns.toList(),
+            createdAt = System.currentTimeMillis(),
+        )
+        tablePlugin?.registerTable(dashboardConfig)
+    }
+}
