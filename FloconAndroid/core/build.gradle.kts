@@ -2,10 +2,11 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     id("maven-publish")
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 android {
-    namespace = "com.github.openflocon.flocon"
+    namespace = "io.github.openflocon.flocon"
     compileSdk = 36
 
     defaultConfig {
@@ -60,5 +61,43 @@ publishing {
     }
     repositories {
         mavenLocal()
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+
+    signAllPublications()
+
+    coordinates(
+        groupId = project.property("floconGroupId") as String,
+        artifactId = "flocon",
+        version = project.property("floconVersion") as String
+    )
+
+    pom {
+        name = "Flocon"
+        description = ""
+        inceptionYear = "2025"
+        url = "https://github.com/openflocon/Flocon"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "openflocon"
+                name = "Open Flocon"
+                url = "https://github.com/openflocon"
+            }
+        }
+        scm {
+            url = "https://github.com/openflocon/Flocon"
+            connection = "scm:git:git://github.com/openflocon/Flocon.git"
+            developerConnection = "scm:git:ssh://git@github.com/openflocon/Flocon.git"
+        }
     }
 }

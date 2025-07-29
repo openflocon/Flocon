@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.github.openflocon.flocon.myapplication"
+    namespace = "io.github.openflocon.flocon.myapplication"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.github.openflocon.flocon.myapplication"
+        applicationId = "io.github.openflocon.flocon.myapplication"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

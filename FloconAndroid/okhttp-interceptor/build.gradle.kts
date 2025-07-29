@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.github.openflocon.flocon.okhttp"
+    namespace = "io.github.openflocon.flocon.okhttp"
     compileSdk = 36
 
     defaultConfig {

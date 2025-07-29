@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.github.openflocon.flocon.grpc"
+    namespace = "io.github.openflocon.flocon.grpc"
     compileSdk = 36
 
     defaultConfig {
