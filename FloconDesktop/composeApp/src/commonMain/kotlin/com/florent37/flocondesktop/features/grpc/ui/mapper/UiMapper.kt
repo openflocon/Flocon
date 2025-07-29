@@ -28,9 +28,8 @@ fun toUi(domainModel: GrpcCallDomainModel): GrpcItemViewState = GrpcItemViewStat
     durationFormatted = domainModel.response?.let {
         val duration = it.timestamp - domainModel.request.timestamp
         formatDuration(duration.toDouble())
-    }
+    },
 )
-
 
 fun toDetailUi(domainModel: GrpcCallDomainModel): GrpcDetailViewState = GrpcDetailViewState(
     method = domainModel.request.method,
@@ -60,7 +59,7 @@ fun toDetailUi(domainModel: GrpcCallDomainModel): GrpcDetailViewState = GrpcDeta
             headers = it.headers.map {
                 toUi(it)
             },
-            result = when(it.result) {
+            result = when (it.result) {
                 is GrpcResponseDomainModel.CallResult.Error -> GrpcDetailViewState.DetailPayload.Failure(it.result.cause)
                 is GrpcResponseDomainModel.CallResult.Success -> GrpcDetailViewState.DetailPayload.Success(it.result.data)
             },

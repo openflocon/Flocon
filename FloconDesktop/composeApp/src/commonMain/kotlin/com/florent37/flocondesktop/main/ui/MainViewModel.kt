@@ -2,6 +2,7 @@ package com.florent37.flocondesktop.main.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.florent37.flocondesktop.app.InitialSetupStateHolder
 import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import com.florent37.flocondesktop.main.ui.delegates.DevicesDelegate
 import com.florent37.flocondesktop.main.ui.model.DeviceItemUiModel
@@ -9,8 +10,8 @@ import com.florent37.flocondesktop.main.ui.model.DevicesStateUiModel
 import com.florent37.flocondesktop.main.ui.model.SubScreen
 import com.florent37.flocondesktop.main.ui.model.id
 import com.florent37.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
-import com.florent37.flocondesktop.main.ui.model.leftpanel.LeftPannelSection
 import com.florent37.flocondesktop.main.ui.model.leftpanel.LeftPanelState
+import com.florent37.flocondesktop.main.ui.model.leftpanel.LeftPannelSection
 import com.florent37.flocondesktop.main.ui.view.displayName
 import com.florent37.flocondesktop.main.ui.view.icon
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,10 +25,21 @@ import kotlinx.coroutines.launch
 class MainViewModel(
     private val devicesDelegate: DevicesDelegate,
     private val dispatcherProvider: DispatcherProvider,
+    private val initialSetupStateHolder: InitialSetupStateHolder,
 ) : ViewModel(
     devicesDelegate,
 ) {
     val subScreen = MutableStateFlow<SubScreen>(SubScreen.Network)
+
+    init {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            initialSetupStateHolder.needsAdbSetup.collect {
+                if (it) {
+                    subScreen.update { SubScreen.Settings }
+                }
+            }
+        }
+    }
 
     val leftPanelState = subScreen.map { subScreen ->
         buildLeftPannelState(

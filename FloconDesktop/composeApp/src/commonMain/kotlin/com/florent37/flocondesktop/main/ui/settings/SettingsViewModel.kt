@@ -2,6 +2,8 @@ package com.florent37.flocondesktop.main.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.florent37.flocondesktop.app.InitialSetupStateHolder
+import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import com.florent37.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import com.florent37.flocondesktop.core.domain.settings.TestAdbUseCase
 import com.florent37.flocondesktop.core.domain.settings.repository.SettingsRepository
@@ -13,11 +15,15 @@ class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val testAdbUseCase: TestAdbUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
+    private val initialSetupStateHolder: InitialSetupStateHolder,
+    private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
+
     private val _adbPathInput = MutableStateFlow("")
     val adbPathInput = _adbPathInput.asStateFlow()
     private val _displayAboutScreen = MutableStateFlow(false)
     val displayAboutScreen = _displayAboutScreen.asStateFlow()
+    val needsAdbSetup = initialSetupStateHolder.needsAdbSetup
 
     init {
         viewModelScope.launch {
@@ -31,6 +37,7 @@ class SettingsViewModel(
     fun displayAboutScreen() {
         _displayAboutScreen.value = true
     }
+
     fun hideAboutScreen() {
         _displayAboutScreen.value = false
     }
@@ -40,17 +47,28 @@ class SettingsViewModel(
     }
 
     fun saveAdbPath() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            saveAdb()
+        }
+    }
+
+    private suspend fun saveAdb() {
         settingsRepository.setAdbPath(adbPathInput.value)
     }
 
     fun testAdbPath() {
-        testAdbUseCase().fold(
-            doOnFailure = {
-                feedbackDisplayer.displayMessage("failed : ${it.message}")
-            },
-            doOnSuccess = {
-                feedbackDisplayer.displayMessage("success")
-            },
-        )
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            saveAdb()
+            testAdbUseCase().fold(
+                doOnFailure = {
+                    feedbackDisplayer.displayMessage("failed")
+                    initialSetupStateHolder.setRequiresInitialSetup()
+                },
+                doOnSuccess = {
+                    feedbackDisplayer.displayMessage("success")
+                    initialSetupStateHolder.setAdbIsWorking()
+                },
+            )
+        }
     }
 }

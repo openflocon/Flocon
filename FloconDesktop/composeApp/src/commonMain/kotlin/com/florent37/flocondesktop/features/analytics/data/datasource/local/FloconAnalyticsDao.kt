@@ -7,7 +7,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.florent37.flocondesktop.DeviceId
 import com.florent37.flocondesktop.features.analytics.data.datasource.local.model.AnalyticsItemEntity
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsTableId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,7 +15,7 @@ interface FloconAnalyticsDao {
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAnalyticsItems(
-        analyticsItemEntities: List<AnalyticsItemEntity>
+        analyticsItemEntities: List<AnalyticsItemEntity>,
     )
 
     @Query(
