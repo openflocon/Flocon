@@ -141,8 +141,8 @@ private fun MainScreen(
                     SubScreen.Analytics -> {
                         AnalyticsScreen(
                             modifier =
-                                Modifier
-                                    .fillMaxSize(),
+                            Modifier
+                                .fillMaxSize(),
                         )
                     }
                 }

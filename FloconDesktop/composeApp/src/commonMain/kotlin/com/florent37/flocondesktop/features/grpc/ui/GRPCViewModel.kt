@@ -64,7 +64,6 @@ class GRPCViewModel(
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
-
     fun onGrpcItemUserAction(action: OnGrpcItemUserAction) {
         viewModelScope.launch {
             when (action) {
@@ -117,5 +116,4 @@ class GRPCViewModel(
             resetCurrentDeviceGrpcCallsUseCase()
         }
     }
-
 }

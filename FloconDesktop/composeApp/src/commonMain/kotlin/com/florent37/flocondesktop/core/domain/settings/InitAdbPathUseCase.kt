@@ -9,7 +9,7 @@ import com.florent37.flocondesktop.core.domain.settings.repository.SettingsRepos
 class InitAdbPathUseCase(
     private val settingsRepository: SettingsRepository,
 ) {
-    suspend operator fun invoke() : Either<Throwable, Unit> {
+    suspend operator fun invoke(): Either<Throwable, Unit> {
         val adbPathFromSettings = settingsRepository.getAdbPath()
         return if (adbPathFromSettings == null) {
             val foundAdbPath = findAdbPath()

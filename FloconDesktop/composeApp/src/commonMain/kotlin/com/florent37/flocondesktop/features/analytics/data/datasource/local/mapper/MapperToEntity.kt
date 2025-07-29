@@ -2,7 +2,6 @@ package com.florent37.flocondesktop.features.analytics.data.datasource.local.map
 
 import com.florent37.flocondesktop.DeviceId
 import com.florent37.flocondesktop.features.analytics.data.datasource.local.model.AnalyticsItemEntity
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsTableId
 import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsItemDomainModel
 
 internal fun AnalyticsItemDomainModel.toEntity(

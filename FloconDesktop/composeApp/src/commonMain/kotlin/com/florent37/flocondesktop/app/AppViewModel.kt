@@ -7,8 +7,6 @@ import com.florent37.flocondesktop.core.domain.settings.InitAdbPathUseCase
 import com.florent37.flocondesktop.core.domain.settings.StartAdbForwardUseCase
 import com.florent37.flocondesktop.messages.ui.MessagesServerDelegate
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 

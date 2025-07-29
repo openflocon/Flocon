@@ -98,7 +98,6 @@ private fun singleDeviceExecuteSystemCommand(command: String): Either<Throwable,
     Failure(IOException(errorMessage, e))
 }
 
-
 private fun listConnectedDevices(): List<String> {
     val devices = mutableListOf<String>()
     try {

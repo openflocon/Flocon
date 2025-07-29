@@ -58,7 +58,7 @@ fun SettingsScreen(
             Dialog(
                 onDismissRequest = {
                     viewModel.hideAboutScreen()
-                }
+                },
             ) {
                 AboutScreen(
                     modifier = Modifier.fillMaxSize()
@@ -67,8 +67,6 @@ fun SettingsScreen(
             }
         }
     }
-
-
 }
 
 // Main composable for the screen, incorporating the filter bar
@@ -107,7 +105,7 @@ private fun SettingsScreen(
                 Column(
                     modifier = Modifier.clip(RoundedCornerShape(12.dp))
                         .background(FloconColors.pannel)
-                        .padding(all = 12.dp)
+                        .padding(all = 12.dp),
                 ) {
                     if (needsAdbSetup) {
                         Text(
@@ -175,13 +173,11 @@ private fun SettingsScreen(
                             text = "Test ADB",
                         )
                     }
-
                 }
             }
         }
     }
 }
-
 
 @Composable
 private fun SettingsButton(
@@ -205,7 +201,6 @@ private fun SettingsButton(
         )
     }
 }
-
 
 @Preview
 @Composable

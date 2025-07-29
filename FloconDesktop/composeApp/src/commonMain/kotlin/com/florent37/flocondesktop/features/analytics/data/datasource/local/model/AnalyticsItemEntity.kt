@@ -1,7 +1,6 @@
 package com.florent37.flocondesktop.features.analytics.data.datasource.local.model
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
