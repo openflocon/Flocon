@@ -58,15 +58,13 @@ class LocalGrpcDataSourceImpl(
         grpcDao.insertGrpcResponse(responseEntity)
     }
 
-    override fun observeCalls(deviceId: String): Flow<List<GrpcCallDomainModel>> =
-        grpcDao.observeCallsWithDetails(deviceId).map { entities ->
-            entities.map { it.toDomainModel() }
-        }
+    override fun observeCalls(deviceId: String): Flow<List<GrpcCallDomainModel>> = grpcDao.observeCallsWithDetails(deviceId).map { entities ->
+        entities.map { it.toDomainModel() }
+    }
 
-    override fun observeCall(deviceId: DeviceId, callId: GrpcCallId) =
-        grpcDao.observeCallWithDetails(deviceId, callId = callId).map {
-            it?.toDomainModel()
-        }
+    override fun observeCall(deviceId: DeviceId, callId: GrpcCallId) = grpcDao.observeCallWithDetails(deviceId, callId = callId).map {
+        it?.toDomainModel()
+    }
 
     override suspend fun clearDeviceCalls(deviceId: String) {
         grpcDao.clearDeviceData(deviceId)

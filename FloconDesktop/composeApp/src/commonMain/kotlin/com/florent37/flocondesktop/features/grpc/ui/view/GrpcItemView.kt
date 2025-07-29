@@ -113,7 +113,6 @@ fun GrpcItemView(
                 )
             }
 
-
             // Status - Fixed width from data class
 
             // TODO add a badge here

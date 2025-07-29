@@ -36,15 +36,15 @@ fun GrpcStatusView(
 ) {
     Box(
         modifier =
-            modifier
-                .background(
-                    color = when (status) {
-                        is GrpcItemViewState.StatusViewState.Failure -> errorBackground
-                        is GrpcItemViewState.StatusViewState.Success -> successBackground
-                        is GrpcItemViewState.StatusViewState.Waiting -> waitingBackground
-                    },
-                    shape = RoundedCornerShape(20.dp), // Pill shape
-                ).padding(horizontal = 8.dp, vertical = 4.dp),
+        modifier
+            .background(
+                color = when (status) {
+                    is GrpcItemViewState.StatusViewState.Failure -> errorBackground
+                    is GrpcItemViewState.StatusViewState.Success -> successBackground
+                    is GrpcItemViewState.StatusViewState.Waiting -> waitingBackground
+                },
+                shape = RoundedCornerShape(20.dp), // Pill shape
+            ).padding(horizontal = 8.dp, vertical = 4.dp),
         // Padding inside the tag
         contentAlignment = Alignment.Center, // Center content if Box is larger than text
     ) {
@@ -69,7 +69,7 @@ private fun StatusView_Preview() {
     FloconTheme {
         GrpcStatusView(
             status =
-                GrpcItemViewState.StatusViewState.Success("OK"),
+            GrpcItemViewState.StatusViewState.Success("OK"),
         )
     }
 }
@@ -80,7 +80,7 @@ private fun StatusView_Failure_Preview() {
     FloconTheme {
         GrpcStatusView(
             status =
-                GrpcItemViewState.StatusViewState.Failure("Error"),
+            GrpcItemViewState.StatusViewState.Failure("Error"),
         )
     }
 }
@@ -91,7 +91,7 @@ private fun StatusView_Waiting_Preview() {
     FloconTheme {
         GrpcStatusView(
             status =
-                GrpcItemViewState.StatusViewState.Waiting("Waiting"),
+            GrpcItemViewState.StatusViewState.Waiting("Waiting"),
         )
     }
 }

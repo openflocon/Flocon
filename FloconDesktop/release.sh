@@ -1,0 +1,2 @@
+./gradlew createDistributable
+./gradlew packageDistributionForCurrentOS

@@ -20,10 +20,10 @@ fun GrpcItemHeaderView(
 ) {
     Row(
         modifier =
-            modifier
-                .background(FloconColors.pannel)
-                .padding(horizontal = 8.dp, vertical = 4.dp) // Padding for the entire item
-                .padding(horizontal = 8.dp, vertical = 6.dp),
+        modifier
+            .background(FloconColors.pannel)
+            .padding(horizontal = 8.dp, vertical = 4.dp) // Padding for the entire item
+            .padding(horizontal = 8.dp, vertical = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom,
     ) {

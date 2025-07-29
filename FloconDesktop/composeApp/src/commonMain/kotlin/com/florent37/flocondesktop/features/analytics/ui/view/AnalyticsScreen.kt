@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,10 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,16 +24,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.florent37.flocondesktop.common.ui.FloconColors
 import com.florent37.flocondesktop.common.ui.FloconTheme
 import com.florent37.flocondesktop.features.analytics.ui.AnalyticsViewModel
-import com.florent37.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
 import com.florent37.flocondesktop.features.analytics.ui.model.AnalyticsContentStateUiModel
 import com.florent37.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
 import com.florent37.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
+import com.florent37.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
 import com.florent37.flocondesktop.features.analytics.ui.model.items
 import com.florent37.flocondesktop.features.analytics.ui.model.previewAnalyticsContentStateUiModel
 import com.florent37.flocondesktop.features.analytics.ui.model.previewAnalyticsStateUiModel
@@ -158,7 +151,6 @@ fun AnalyticsScreen(
         }
     }
 }
-
 
 @Composable
 @Preview

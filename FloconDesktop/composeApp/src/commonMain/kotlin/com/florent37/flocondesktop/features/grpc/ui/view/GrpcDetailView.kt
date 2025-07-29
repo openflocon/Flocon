@@ -50,10 +50,10 @@ fun GrpcDetailView(
 
     Column(
         modifier =
-            modifier
-                .background(FloconColors.background)
-                .verticalScroll(scrollState) // Rendre le contenu défilable
-                .padding(all = 12.dp),
+        modifier
+            .background(FloconColors.background)
+            .verticalScroll(scrollState) // Rendre le contenu défilable
+            .padding(all = 12.dp),
     ) {
         DetailSectionTitleView(
             isExpanded = isRequestExpanded,
@@ -69,11 +69,11 @@ fun GrpcDetailView(
         ) {
             Column(
                 modifier =
-                    Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(12.dp),
-                        ).padding(horizontal = 8.dp, vertical = 4.dp),
+                Modifier
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(12.dp),
+                    ).padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
                 DetailLineTextView(
                     modifier = Modifier.fillMaxWidth(),
@@ -154,10 +154,10 @@ fun GrpcDetailView(
 
         HorizontalDivider(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp)
-                    .padding(vertical = 12.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp)
+                .padding(vertical = 12.dp),
         )
 
         state.response?.let { response ->
@@ -194,7 +194,7 @@ fun GrpcDetailView(
                     )
                 }
 
-                when(val r = response.result) {
+                when (val r = response.result) {
                     is GrpcDetailViewState.DetailPayload.Failure -> {
                         // body
                         DetailSectionTitleView(

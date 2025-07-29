@@ -1,11 +1,11 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    id("maven-publish")
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 android {
-    namespace = "com.github.openflocon.flocon.grpc"
+    namespace = "io.github.openflocon.flocon.grpc"
     compileSdk = 36
 
     defaultConfig {
@@ -25,11 +25,6 @@ android {
         }
     }
 
-    publishing {
-        // Tell Android to publish the release variant
-        singleVariant("release")
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -46,19 +41,41 @@ dependencies {
     implementation(libs.grpc.android)
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = project.property("floconGroupId") as String
-            artifactId = "flocon-grpc"
-            version = project.property("floconVersion") as String
-            // Wait for Android to finish configuration
-            afterEvaluate {
-                from(components["release"])
+
+mavenPublishing {
+    publishToMavenCentral()
+
+    signAllPublications()
+
+    coordinates(
+        groupId = project.property("floconGroupId") as String,
+        artifactId = "flocon-grpc-interceptor",
+        version = project.property("floconVersion") as String
+    )
+
+    pom {
+        name = "Flocon Grpc Interceptor"
+        description = project.property("floconDescription") as String
+        inceptionYear = "2025"
+        url = "https://github.com/openflocon/Flocon"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         }
-    }
-    repositories {
-        mavenLocal()
+        developers {
+            developer {
+                id = "openflocon"
+                name = "Open Flocon"
+                url = "https://github.com/openflocon"
+            }
+        }
+        scm {
+            url = "https://github.com/openflocon/Flocon"
+            connection = "scm:git:git://github.com/openflocon/Flocon.git"
+            developerConnection = "scm:git:ssh://git@github.com/openflocon/Flocon.git"
+        }
     }
 }

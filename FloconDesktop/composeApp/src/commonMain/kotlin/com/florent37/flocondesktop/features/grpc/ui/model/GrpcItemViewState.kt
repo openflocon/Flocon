@@ -2,7 +2,6 @@ package com.florent37.flocondesktop.features.grpc.ui.model
 
 import androidx.compose.runtime.Immutable
 
-
 @Immutable
 data class GrpcItemViewState(
     val callId: String,
@@ -15,20 +14,20 @@ data class GrpcItemViewState(
 ) {
     @Immutable
     sealed interface StatusViewState {
-        val text : String
+        val text: String
 
-         @Immutable
-         data class Success(override val text: String) : StatusViewState
-         @Immutable
-         data class Waiting(override val text: String) : StatusViewState
-         @Immutable
-         data class Failure(override val text: String) : StatusViewState
+        @Immutable
+        data class Success(override val text: String) : StatusViewState
+
+        @Immutable
+        data class Waiting(override val text: String) : StatusViewState
+
+        @Immutable
+        data class Failure(override val text: String) : StatusViewState
     }
 
-    fun contains(text: String) : Boolean {
-        return listOf(callId, requestTimeFormatted, url, method, status.text, durationFormatted).any {
-            it?.contains(text, ignoreCase = true) == true
-        }
+    fun contains(text: String): Boolean = listOf(callId, requestTimeFormatted, url, method, status.text, durationFormatted).any {
+        it?.contains(text, ignoreCase = true) == true
     }
 }
 
