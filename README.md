@@ -65,8 +65,8 @@ Flocon captures and displays **images downloaded by the Android app**, giving yo
 For each image, Flocon shows:
 
 - A live **thumbnail preview** of the image  
-- The **URL** from which it was downloaded  
--- The **download timestamp**  
+- The **URL** from which it was downloaded
+- The **download timestamp**  
 
 This feature is extremely useful for:
 
