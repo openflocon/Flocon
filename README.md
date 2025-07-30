@@ -19,7 +19,7 @@ Once your Android device is connected and your app includes the Flocon SDK, you 
 in your module .kts
 ```
 // use only on a debug buildType, do not distribute on the playstore build !
-debugImplementation("io.github.openflocon:flocon:$LAST_VERSION")
+debugImplementation("io.github.openflocon:flocon:0.0.1")
 ```
 
 in your `Application.kt`
@@ -47,7 +47,7 @@ For each request, you can inspect:
 This feature is invaluable for diagnosing backend issues, debugging unexpected API failures, and verifying request payloads and authentication headers.
 
 ```
-debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:$LAST_VERSION")
+debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:0.0.1")
 ```
 
 ```
@@ -263,7 +263,7 @@ Flocon.deeplinks(
 Similar to network inteceptions, Flocon works with grpc 
 
 ```
-debugImplementation("io.github.openflocon:flocon-grpc-interceptor:$LAST_VERSION")
+debugImplementation("io.github.openflocon:flocon-grpc-interceptor:0.0.1")
 ```
 
 ```
