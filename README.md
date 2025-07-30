@@ -16,6 +16,10 @@ Once your Android device is connected and your app includes the Flocon SDK, you 
 
 ### 📡 Network Request Inspector
 
+<img width="1200" height="780" alt="Network1" src="https://github.com/user-attachments/assets/cc7aeead-33e8-4ca4-8572-58607edc26c6" />
+<img width="1199" height="774" alt="Network2" src="https://github.com/user-attachments/assets/63725cda-4e21-4f0f-b5a9-53d2e3c46b26" />
+
+
 Flocon captures **all outgoing network requests** made by the Android app — whether they’re simple REST API calls or complex multipart uploads — and displays them in an organized UI.
 
 For each request, you can inspect:
@@ -29,9 +33,31 @@ For each request, you can inspect:
 
 This feature is invaluable for diagnosing backend issues, debugging unexpected API failures, and verifying request payloads and authentication headers.
 
+### 🖼️ Downloaded Image Viewer
+
+<img width="1204" height="769" alt="Capture d’écran 2025-07-30 à 08 09 56" src="https://github.com/user-attachments/assets/f85fdd00-4ddf-4978-9e83-ab6007ddc2c0" />
+
+Flocon captures and displays **images downloaded by the Android app**, giving you a clear, visual representation of media fetched over the network — such as avatars, product thumbnails, banners, or any other images requested at runtime.
+
+For each image, Flocon shows:
+
+- A live **thumbnail preview** of the image  
+- The **URL** from which it was downloaded  
+-- The **download timestamp**  
+
+This feature is extremely useful for:
+
+- Verifying that images are loading correctly and not broken  
+- Debugging CDN issues, placeholders, or misconfigured URLs  
+- Comparing image quality and compression at runtime  
+- Inspecting lazy loading or image caching behaviors  
+
+Whether you're working on UI/UX, performance optimization, or just debugging a missing image, this tool gives you **immediate visibility** into every image fetched by your app.
+
 ---
 
 ### 📊 Analytics Event Viewer
+<img width="1196" height="774" alt="Analytics" src="https://github.com/user-attachments/assets/6f485b4e-874b-4fdc-afab-752c4cd1ea3a" />
 
 Flocon shows a real-time stream of **analytics events** emitted by your application. Whether you’re using Firebase Analytics, Segment, or a custom solution, the Flocon SDK can be plugged and forward these events to the desktop UI.
 
@@ -46,6 +72,7 @@ This is especially useful for QA teams and product analysts to validate that the
 ---
 
 ### 🗝 SharedPreferences Explorer & Editor
+<img width="1197" height="768" alt="SharedPreferences" src="https://github.com/user-attachments/assets/c9fe264b-10d4-4f30-89e8-2d622b54899b" />
 
 Flocon provides complete access to your app’s **SharedPreferences**, which often store user tokens, feature flags, configuration options, and more.
 
@@ -62,6 +89,8 @@ This is an extremely powerful way to test different user scenarios or simulate a
 
 ### 🧩 Database Query Tool
 
+<img width="1203" height="774" alt="Database" src="https://github.com/user-attachments/assets/abf53cc3-0cec-42a4-941b-b9ec03ea9635" />
+
 Flocon gives you direct access to your app’s **local databases** (SQLite, Room, etc.), with a clean interface for exploring and querying data.
 
 Features include:
@@ -74,6 +103,8 @@ This makes it easy to debug persistent storage issues, verify migrations, or tes
 ---
 
 ### 📁 File Explorer
+
+<img width="1196" height="770" alt="Files" src="https://github.com/user-attachments/assets/d0317559-85f6-47ed-9cf3-11f07b020a09" />
 
 Flocon allows you to explore the **internal file storage** of your Android application — something that typically requires ADB and knowledge of Android's file system.
 
@@ -89,6 +120,8 @@ This feature is ideal for inspecting log files, cache data, downloaded assets, o
 ---
 
 ### 📈 Configurable Dashboards (from the mobile app)
+
+<img width="1203" height="770" alt="Dashboards" src="https://github.com/user-attachments/assets/d918c15c-72b2-412c-b97f-a409dcdf1737" />
 
 Your Android application can define and expose **custom dashboards**, which Flocon renders dynamically in the desktop interface.
 
@@ -106,6 +139,8 @@ Dashboards are defined programmatically on the mobile side via the SDK, and they
 
 ### 📋 Configurable Data Tables
 
+<img width="1196" height="768" alt="tables" src="https://github.com/user-attachments/assets/ff3090fa-8f37-4138-a492-20b9159314af" />
+
 In addition to dashboards, Flocon supports structured **data tables** that can be configured and updated by the mobile app.
 
 These tables can be used to visualize:
@@ -120,6 +155,7 @@ Tables are interactive, scrollable, and sortable, and they give developers and t
 ---
 
 ### 🔗 Deeplink Launcher
+<img width="1201" height="772" alt="Deeplink" src="https://github.com/user-attachments/assets/bb09dd62-439f-466b-baac-f9253b0c9246" />
 
 Flocon includes a **deeplink runner**, which lists all the deeplinks supported by your app (either auto-discovered or manually registered).
 
