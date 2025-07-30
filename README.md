@@ -53,7 +53,7 @@ For each request, you can inspect:
 This feature is invaluable for diagnosing backend issues, debugging unexpected API failures, and verifying request payloads and authentication headers.
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-okhttp-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-okhttp-interceptor)
-https://img.shields.io/maven-central/v/io.github.openflocon/flocon-okhttp-interceptor.svg
+
 ```
 debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
 ```
