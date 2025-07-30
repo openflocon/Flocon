@@ -54,7 +54,7 @@ actual fun findAdbPath(): String? {
 
 actual fun executeSystemCommand(command: String): Either<Throwable, String> = try {
     val devices = listConnectedDevices()
-    if (devices.isEmpty()) {
+    if (devices.isEmpty() || devices.size == 1) {
         singleDeviceExecuteSystemCommand(command)
     } else {
         devices.map {
