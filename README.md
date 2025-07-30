@@ -23,7 +23,7 @@ debugImplementation("io.github.openflocon:flocon:0.0.1")
 ```
 
 in your `Application.kt`
-```
+```kotlin
 Flocon.initialize(this)
 ```
 
@@ -54,7 +54,7 @@ This feature is invaluable for diagnosing backend issues, debugging unexpected A
 debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:0.0.1")
 ```
 
-```
+```kotlin
 val okHttpClient = OkHttpClient()
             .newBuilder()
             .addInterceptor(FloconOkhttpInterceptor())
@@ -83,7 +83,8 @@ This feature is extremely useful for:
 Whether you're working on UI/UX, performance optimization, or just debugging a missing image, this tool gives you **immediate visibility** into every image fetched by your app.
 
 Usage with coil
-```
+
+```kotlin
 // just add your okhttp client (with the flipper interceptor)
 SingletonImageLoader.setSafe {
         ImageLoader.Builder(context = context)
@@ -115,7 +116,7 @@ Each event includes:
 
 This is especially useful for QA teams and product analysts to validate that the right events are triggered at the right time, with the correct payloads.
 
-```
+```kotlin
 Flocon.analytics("firebase").logEvents(
      AnalyticsEvent(
          eventName = "clicked user",
@@ -197,6 +198,35 @@ Use cases include:
 
 Dashboards are defined programmatically on the mobile side via the SDK, and they update live as data changes — making them ideal for live demos, QA testing, or in-field diagnostics.
 
+```kotlin
+userFlow.collect { user ->
+     Flocon.dashboard(id = "main") {
+        user?.let {
+            section(name = "User") {
+                text(label = "username", value = user.userName)
+                text(label = "fullName", value = user.fullName, color = Color.Red.toArgb())
+                text(label = "user id", value = user.id)
+                button(
+                    text = "Change User Id",
+                    id = "changeUserId",
+                    onClick = {
+                        userFlow.update { it.copy(userName = "__flo__") }
+                    }
+                )
+                textField(
+                    label = "Update Name",
+                    placeHolder = "name",
+                    id = "changeUserName",
+                    value = user.fullName,
+                    onSubmitted = { value ->
+                        userFlow.update { it.copy(fullName = value) }
+                    })
+            }
+        }
+    }
+}
+```
+
 ---
 
 ### 📋 Configurable Data Tables
@@ -215,7 +245,7 @@ These tables can be used to visualize:
 Tables are interactive, scrollable, and they give developers and testers a straightforward way to inspect lists or collections in real time.
 
 To create a dynamic row :
-```
+```kotlin
 Flocon.table("analytics").log(
    "name" toParam "nameValue",
    "value1" toParam "value1Value",
@@ -240,7 +270,7 @@ From the desktop UI, you can:
 No more typing long `adb shell am start` commands — Flocon makes deeplink testing accessible and efficient.
 
 **You can configure deeplinks directly from your android code !**
-```
+```kotlin
 Flocon.deeplinks(
         listOf(
             Deeplink("flocon://home"),
@@ -270,7 +300,7 @@ Similar to network inteceptions, Flocon works with grpc
 debugImplementation("io.github.openflocon:flocon-grpc-interceptor:0.0.1")
 ```
 
-```
+```kotlin
 ManagedChannelBuilder
             ...
             .intercept(
@@ -286,5 +316,6 @@ ManagedChannelBuilder
 - ADB (Android Debug Bridge) accessible from your system path
 - Flocon Desktop app (JVM-based)
 - Flocon SDK integrated into your Android app
+- At least `kotlin 2.0.0`
 
 ---
