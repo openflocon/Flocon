@@ -46,6 +46,10 @@ For each request, you can inspect:
 This feature is invaluable for diagnosing backend issues, debugging unexpected API failures, and verifying request payloads and authentication headers.
 
 ```
+implementation("io.github.openflocon:flocon-okhttp-interceptor:$LAST_VERSION")
+```
+
+```
 val okHttpClient = OkHttpClient()
             .newBuilder()
             .addInterceptor(FloconOkhttpInterceptor())
@@ -250,6 +254,25 @@ Flocon.deeplinks(
 ```
 
 ---
+
+# Grpc
+
+<img width="1207" height="774" alt="GRPC" src="https://github.com/user-attachments/assets/992541b3-3f61-4151-b6f5-0ed1b06ee7e4" />
+
+Similar to network inteceptions, Flocon works with grpc 
+
+```
+implementation("io.github.openflocon:flocon-grpc-interceptor:$LAST_VERSION")
+```
+
+```
+ManagedChannelBuilder
+            ...
+            .intercept(
+                FloconGrpcInterceptor()
+            )
+            .build()
+```
 
 ## 🧰 Requirements
 
