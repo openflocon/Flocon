@@ -27,6 +27,10 @@ in your `Application.kt`
 Flocon.initialize(this)
 ```
 
+Download & install the last `Desktop client`
+
+https://github.com/openflocon/Flocon/releases
+
 ### 📡 Network Request Inspector
 
 <img width="1200" height="780" alt="Network1" src="https://github.com/user-attachments/assets/cc7aeead-33e8-4ca4-8572-58607edc26c6" />
