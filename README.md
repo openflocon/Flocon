@@ -14,6 +14,18 @@ Once your Android device is connected and your app includes the Flocon SDK, you 
 
 ---
 
+🛠️ Getting Started
+
+in your module .kts
+```
+implementation("io.github.openflocon:flocon:$LAST_VERSION")
+```
+
+in your `Application.kt`
+```
+Flocon.initialize(this)
+```
+
 ### 📡 Network Request Inspector
 
 <img width="1200" height="780" alt="Network1" src="https://github.com/user-attachments/assets/cc7aeead-33e8-4ca4-8572-58607edc26c6" />
@@ -32,6 +44,13 @@ For each request, you can inspect:
 - Timestamp
 
 This feature is invaluable for diagnosing backend issues, debugging unexpected API failures, and verifying request payloads and authentication headers.
+
+```
+val okHttpClient = OkHttpClient()
+            .newBuilder()
+            .addInterceptor(FloconOkhttpInterceptor())
+            .build()
+```
 
 ### 🖼️ Downloaded Image Viewer
 
@@ -54,6 +73,24 @@ This feature is extremely useful for:
 
 Whether you're working on UI/UX, performance optimization, or just debugging a missing image, this tool gives you **immediate visibility** into every image fetched by your app.
 
+Usage with coil
+```
+// just add your okhttp client (with the flipper interceptor)
+SingletonImageLoader.setSafe {
+        ImageLoader.Builder(context = context)
+            .components {
+                add(
+                    coil3.network.okhttp.OkHttpNetworkFetcherFactory(
+                        callFactory = {
+                            okHttpClient
+                        },
+                    ),
+                )
+            }
+            .build()
+}
+```
+
 ---
 
 ### 📊 Analytics Event Viewer
@@ -68,6 +105,22 @@ Each event includes:
 - Timestamps
 
 This is especially useful for QA teams and product analysts to validate that the right events are triggered at the right time, with the correct payloads.
+
+```
+Flocon.analytics("firebase").logEvents(
+     AnalyticsEvent(
+         eventName = "clicked user",
+         "userId" analyticsProperty "1024",
+         "username" analyticsProperty "florent",
+         "index" analyticsProperty "3",
+    ),
+    AnalyticsEvent(
+         eventName = "opened profile",
+         "userId" analyticsProperty "2048",
+         "username" analyticsProperty "kevin",
+         "age" analyticsProperty "34",
+    ),
+```
 
 ---
 
@@ -150,7 +203,16 @@ These tables can be used to visualize:
 - Custom logs or metrics
 - Backend response simulations
 
-Tables are interactive, scrollable, and sortable, and they give developers and testers a straightforward way to inspect lists or collections in real time.
+Tables are interactive, scrollable, and they give developers and testers a straightforward way to inspect lists or collections in real time.
+
+To create a dynamic row :
+```
+Flocon.table("analytics").log(
+   "name" toParam "nameValue",
+   "value1" toParam "value1Value",
+   "value2" toParam "value2Value",
+)
+```
 
 ---
 
@@ -168,6 +230,25 @@ From the desktop UI, you can:
 
 No more typing long `adb shell am start` commands — Flocon makes deeplink testing accessible and efficient.
 
+**You can configure deeplinks directly from your android code !**
+```
+Flocon.deeplinks(
+        listOf(
+            Deeplink("flocon://home"),
+            Deeplink("flocon://test"),
+            Deeplink(
+                "flocon://user/[userId]",
+                label = "User"
+            ),
+            Deeplink(
+                "flocon://post/[postId]?comment=[commentText]",
+                label = "Post",
+                description = "Open a post and send a comment"
+            ),
+        )
+    )
+```
+
 ---
 
 ## 🧰 Requirements
@@ -179,20 +260,3 @@ No more typing long `adb shell am start` commands — Flocon makes deeplink test
 - Flocon SDK integrated into your Android app
 
 ---
-
-## 🛠️ Getting Started
-
-1. **Add flocon to your android app**
-
-```
-implementation("io.github.openflocon:flocon:$LAST_VERSION")
-```
-
-2. **Initialize flocon**
-in your `Application.kt`
-```
-Flocon.initialize(this)
-```
-
-3. okhttp
-4. grpc
