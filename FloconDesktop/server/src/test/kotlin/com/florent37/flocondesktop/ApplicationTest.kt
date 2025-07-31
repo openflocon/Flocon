@@ -1,4 +1,4 @@
-package com.florent37.flocondesktop
+package io.github.openflocon.flocondesktop
 
 import io.ktor.client.request.*
 import io.ktor.client.statement.*

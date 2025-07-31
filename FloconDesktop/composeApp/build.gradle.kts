@@ -113,14 +113,14 @@ kotlin {
 }
 
 android {
-    namespace = "com.florent37.flocondesktop"
+    namespace = "io.github.openflocon.flocondesktop"
     compileSdk =
         libs.versions.android.compileSdk
             .get()
             .toInt()
 
     defaultConfig {
-        applicationId = "com.florent37.flocondesktop"
+        applicationId = "io.github.openflocon.flocondesktop"
         minSdk =
             libs.versions.android.minSdk
                 .get()
@@ -182,7 +182,7 @@ room {
 
 compose.desktop {
     application {
-        mainClass = "com.florent37.flocondesktop.MainKt"
+        mainClass = "io.github.openflocon.flocondesktop.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)

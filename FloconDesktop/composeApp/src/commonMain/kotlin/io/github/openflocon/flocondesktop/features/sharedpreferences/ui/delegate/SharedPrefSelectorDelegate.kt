@@ -1,0 +1,100 @@
+package io.github.openflocon.flocondesktop.features.sharedpreferences.ui.delegate
+
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.AskForDeviceSharedPreferencesUseCase
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.GetCurrentDeviceSharedPreferenceValuesUseCase
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.ObserveCurrentDeviceSelectedSharedPreferenceUseCase
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.ObserveDeviceSharedPreferencesUseCase
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.SelectCurrentDeviceSharedPreferenceUseCase
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPrefsStateUiModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+
+class SharedPrefSelectorDelegate(
+    private val observeCurrentDeviceUseCase: ObserveCurrentDeviceUseCase,
+    private val observeDeviceSharedPrefUseCase: ObserveDeviceSharedPreferencesUseCase,
+    private val observeCurrentDeviceSelectedSharedPrefUseCase: ObserveCurrentDeviceSelectedSharedPreferenceUseCase,
+    private val closeableDelegate: CloseableDelegate,
+    private val dispatcherProvider: DispatcherProvider,
+    private val askForDeviceSharedPrefsUseCase: AskForDeviceSharedPreferencesUseCase,
+    private val selectCurrentDeviceSharedPrefUseCase: SelectCurrentDeviceSharedPreferenceUseCase,
+    private val getCurrentDeviceSharedPrefValuesUseCase: GetCurrentDeviceSharedPreferenceValuesUseCase,
+) : CloseableScoped by closeableDelegate {
+    val deviceSharedPrefs: StateFlow<SharedPrefsStateUiModel> =
+        combine(
+            observeDeviceSharedPrefUseCase(),
+            observeCurrentDeviceSelectedSharedPrefUseCase(),
+        ) { sharedPrefs, selected ->
+            if (sharedPrefs.isEmpty()) {
+                SharedPrefsStateUiModel.Empty
+            } else {
+                SharedPrefsStateUiModel.WithContent(
+                    sharedPrefs = sharedPrefs.map { toUi(it) },
+                    selected =
+                    toUi(
+                        selected ?: run {
+                            sharedPrefs.first().also {
+                                selectCurrentDeviceSharedPrefUseCase(it.id)
+                            }
+                        },
+                    ),
+                )
+            }
+        }.flowOn(dispatcherProvider.viewModel)
+            .stateIn(
+                coroutineScope,
+                SharingStarted.Companion.WhileSubscribed(5_000),
+                SharedPrefsStateUiModel.Loading,
+            )
+
+    fun toUi(sharedPref: DeviceSharedPreferenceDomainModel) = DeviceSharedPrefUiModel(
+        id = sharedPref.id,
+        name = sharedPref.name,
+    )
+
+    fun onSharedPreferenceSelected(sharedPref: DeviceSharedPrefUiModel) {
+        coroutineScope.launch(dispatcherProvider.viewModel) {
+            selectCurrentDeviceSharedPrefUseCase(sharedPref.id)
+        }
+    }
+
+    private var askForSharedPrefsJob: Job? = null
+    private var listenSharedPreferenceValuesJob: Job? = null
+
+    fun start() {
+        askForSharedPrefsJob =
+            coroutineScope.launch(dispatcherProvider.viewModel) {
+                // if we change the device, we should ask again
+                observeCurrentDeviceUseCase()
+                    .distinctUntilChanged()
+                    .collect {
+                        askForDeviceSharedPrefsUseCase()
+                    }
+            }
+        listenSharedPreferenceValuesJob =
+            coroutineScope.launch(dispatcherProvider.viewModel) {
+                // if we change the device, we should ask again
+                observeCurrentDeviceSelectedSharedPrefUseCase()
+                    .distinctUntilChanged()
+                    .collect {
+                        getCurrentDeviceSharedPrefValuesUseCase()
+                    }
+            }
+    }
+
+    fun stop() {
+        askForSharedPrefsJob?.cancel()
+        listenSharedPreferenceValuesJob?.cancel()
+    }
+}

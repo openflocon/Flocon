@@ -1,0 +1,26 @@
+package io.github.openflocon.flocondesktop.features.database.data.di
+
+import io.github.openflocon.flocondesktop.features.database.data.DatabaseRepositoryImpl
+import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.DeviceDatabasesDataSource
+import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.QueryDatabaseDataSource
+import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSource
+import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSourceRoom
+import io.github.openflocon.flocondesktop.features.database.domain.repository.DatabaseRepository
+import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+
+val databaseDataModule =
+    module {
+        factoryOf(::DatabaseRepositoryImpl) {
+            bind<DatabaseRepository>()
+            bind<MessagesReceiverRepository>()
+        }
+        singleOf(::DeviceDatabasesDataSource)
+        singleOf(::QueryDatabaseDataSource)
+        singleOf(::LocalDatabaseDataSourceRoom) {
+            bind<LocalDatabaseDataSource>()
+        }
+    }

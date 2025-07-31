@@ -1,4 +1,4 @@
-package com.florent37.flocondesktop
+package io.github.openflocon.flocondesktop
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
