@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 17,
-    "identityHash": "f2ab24c856bd7abdb58d0a171905f648",
+    "identityHash": "450793ab50e712166d71e2599a386ca2",
     "entities": [
       {
         "tableName": "FloconHttpRequestEntity",
@@ -860,11 +860,124 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_AnalyticsItemEntity_deviceId_analyticsTableId` ON `${TABLE_NAME}` (`deviceId`, `analyticsTableId`)"
           }
         ]
+      },
+      {
+        "tableName": "GraphQlRequestEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uuid` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `url` TEXT NOT NULL, `durationMs` REAL NOT NULL, `request_startTime` INTEGER NOT NULL, `request_method` TEXT NOT NULL, `request_body` TEXT, `request_byteSize` INTEGER NOT NULL, `request_headers` TEXT NOT NULL, `response_httpCode` INTEGER NOT NULL, `response_contentType` TEXT, `response_body` TEXT, `response_byteSize` INTEGER NOT NULL, `response_headers` TEXT NOT NULL, PRIMARY KEY(`uuid`))",
+        "fields": [
+          {
+            "fieldPath": "uuid",
+            "columnName": "uuid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durationMs",
+            "columnName": "durationMs",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "request.startTime",
+            "columnName": "request_startTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "request.method",
+            "columnName": "request_method",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "request.body",
+            "columnName": "request_body",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "request.byteSize",
+            "columnName": "request_byteSize",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "request.headers",
+            "columnName": "request_headers",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "response.httpCode",
+            "columnName": "response_httpCode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "response.contentType",
+            "columnName": "response_contentType",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "response.body",
+            "columnName": "response_body",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "response.byteSize",
+            "columnName": "response_byteSize",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "response.headers",
+            "columnName": "response_headers",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "uuid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_GraphQlRequestEntity_deviceId",
+            "unique": false,
+            "columnNames": [
+              "deviceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_GraphQlRequestEntity_deviceId` ON `${TABLE_NAME}` (`deviceId`)"
+          },
+          {
+            "name": "index_GraphQlRequestEntity_uuid",
+            "unique": true,
+            "columnNames": [
+              "uuid"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_GraphQlRequestEntity_uuid` ON `${TABLE_NAME}` (`uuid`)"
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f2ab24c856bd7abdb58d0a171905f648')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '450793ab50e712166d71e2599a386ca2')"
     ]
   }
 }

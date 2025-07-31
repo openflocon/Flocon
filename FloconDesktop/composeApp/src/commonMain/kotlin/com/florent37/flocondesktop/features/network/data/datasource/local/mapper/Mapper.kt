@@ -3,18 +3,17 @@ package com.florent37.flocondesktop.features.network.data.datasource.local.mappe
 import com.florent37.flocondesktop.features.network.data.datasource.local.FloconHttpRequestEntity
 import com.florent37.flocondesktop.features.network.data.datasource.local.FloconHttpRequestInfosEntity
 import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
-import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestInfos
 
 fun FloconHttpRequestDomainModel.toEntity(deviceId: String): FloconHttpRequestEntity = FloconHttpRequestEntity(
     uuid = this.uuid,
-    infos = this.infos.toInfosEntity(),
+    infos = this.toInfosEntity(),
     deviceId = deviceId,
 )
 
-fun FloconHttpRequestInfos.toInfosEntity(): FloconHttpRequestInfosEntity = FloconHttpRequestInfosEntity(
+private fun FloconHttpRequestDomainModel.toInfosEntity(): FloconHttpRequestInfosEntity = FloconHttpRequestInfosEntity(
     url = this.url,
-    method = this.method,
-    startTime = this.startTime,
+    method = this.request.method,
+    startTime = this.request.startTime,
     durationMs = this.durationMs,
     requestHeaders = this.request.headers,
     requestBody = this.request.body,
@@ -28,24 +27,20 @@ fun FloconHttpRequestInfos.toInfosEntity(): FloconHttpRequestInfosEntity = Floco
 
 fun FloconHttpRequestEntity.toDomainModel(): FloconHttpRequestDomainModel = FloconHttpRequestDomainModel(
     uuid = this.uuid,
-    infos = this.infos.toInfosDomainModel(),
-)
-
-fun FloconHttpRequestInfosEntity.toInfosDomainModel(): FloconHttpRequestInfos = FloconHttpRequestInfos(
-    url = this.url,
-    method = this.method,
-    startTime = this.startTime,
-    durationMs = this.durationMs,
-    request = FloconHttpRequestInfos.Request(
-        headers = this.requestHeaders,
-        body = this.requestBody,
-        byteSize = this.requestByteSize,
+    url = this.infos.url,
+    durationMs = this.infos.durationMs,
+    request = FloconHttpRequestDomainModel.Request(
+        method = this.infos.method,
+        startTime = this.infos.startTime,
+        headers = this.infos.requestHeaders,
+        body = this.infos.requestBody,
+        byteSize = this.infos.requestByteSize,
     ),
-    response = FloconHttpRequestInfos.Response(
-        httpCode = this.responseHttpCode,
-        contentType = this.responseContentType,
-        body = this.responseBody,
-        headers = this.responseHeaders,
-        byteSize = this.responseByteSize,
+    response = FloconHttpRequestDomainModel.Response(
+        httpCode = this.infos.responseHttpCode,
+        contentType = this.infos.responseContentType,
+        body = this.infos.responseBody,
+        headers = this.infos.responseHeaders,
+        byteSize = this.infos.responseByteSize,
     ),
 )

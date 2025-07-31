@@ -1,20 +1,14 @@
-package com.florent37.flocondesktop.features.network.domain.model
+package com.florent37.flocondesktop.features.graphql.domain.model
 
-data class FloconHttpRequestDomainModel(
-    val uuid: String,
-    val infos: FloconHttpRequestInfos,
-)
-
-data class FloconHttpRequestInfos(
+data class FloconGraphQlRequestInfos(
     val url: String,
-    val method: String,
-    val startTime: Long,
     val durationMs: Double,
     val request: Request,
     val response: Response,
-
 ) {
     data class Request(
+        val method: String,
+        val startTime: Long,
         val headers: Map<String, String>,
         val body: String?,
         val byteSize: Long,

@@ -39,8 +39,8 @@ class ImagesRepositoryImpl(
         imagesLocalDataSource.addImage(
             deviceId = deviceId,
             image = DeviceImageDomainModel(
-                url = request.infos.url,
-                time = (request.infos.startTime + request.infos.durationMs).toLong(),
+                url = request.url,
+                time = (request.request.startTime + request.durationMs).toLong(),
             ),
         )
     }

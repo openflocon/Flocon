@@ -34,4 +34,7 @@ val roomModule =
         single {
             get<AppDatabase>().analyticsDao
         }
+        single {
+            get<AppDatabase>().graphQlDao
+        }
     }

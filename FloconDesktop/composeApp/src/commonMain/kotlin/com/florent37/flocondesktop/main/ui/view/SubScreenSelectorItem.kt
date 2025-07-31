@@ -7,6 +7,7 @@ import flocondesktop.composeapp.generated.resources.dashboard
 import flocondesktop.composeapp.generated.resources.database
 import flocondesktop.composeapp.generated.resources.deeplinks
 import flocondesktop.composeapp.generated.resources.files
+import flocondesktop.composeapp.generated.resources.graphql
 import flocondesktop.composeapp.generated.resources.grpc
 import flocondesktop.composeapp.generated.resources.images
 import flocondesktop.composeapp.generated.resources.network
@@ -28,6 +29,7 @@ fun SubScreen.displayName(): String = when (this) {
     SubScreen.Dashboard -> "Dashboard"
     SubScreen.Settings -> "Settings"
     SubScreen.Deeplinks -> "Deeplinks"
+    SubScreen.GraphQl -> "GraphQl"
 }
 
 // Extension function to get the icon for each SubScreen
@@ -43,4 +45,5 @@ fun SubScreen.icon(): DrawableResource = when (this) {
     SubScreen.Settings -> Res.drawable.settings
     SubScreen.Dashboard -> Res.drawable.dashboard
     SubScreen.Deeplinks -> Res.drawable.deeplinks
+    SubScreen.GraphQl -> Res.drawable.graphql
 }

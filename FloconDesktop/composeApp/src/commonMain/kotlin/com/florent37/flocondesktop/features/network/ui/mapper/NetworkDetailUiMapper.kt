@@ -7,19 +7,19 @@ import com.florent37.flocondesktop.features.network.ui.model.NetworkDetailHeader
 import com.florent37.flocondesktop.features.network.ui.model.NetworkDetailViewState
 
 fun toDetailUi(request: FloconHttpRequestDomainModel): NetworkDetailViewState = NetworkDetailViewState(
-    fullUrl = request.infos.url ?: "",
-    method = toMethodUi(request.infos.method),
-    status = toNetworkStatusUi(request.infos.response.httpCode ?: 0),
-    requestTimeFormatted = request.infos.startTime?.let { formatTimestamp(it) } ?: "",
-    durationFormatted = formatDuration(request.infos.durationMs),
+    fullUrl = request.url,
+    method = toMethodUi(request.request.method),
+    status = toNetworkStatusUi(request.response.httpCode),
+    requestTimeFormatted = request.request.startTime.let { formatTimestamp(it) },
+    durationFormatted = formatDuration(request.durationMs),
     // request
-    requestBody = httpBodyToUi(request.infos.request.body),
-    requestHeaders = toNetworkHeadersUi(request.infos.request.headers),
-    requestSize = ByteFormatter.formatBytes(request.infos.request.byteSize), // TODO
+    requestBody = httpBodyToUi(request.request.body),
+    requestHeaders = toNetworkHeadersUi(request.request.headers),
+    requestSize = ByteFormatter.formatBytes(request.request.byteSize),
     // response
-    responseBody = httpBodyToUi(request.infos.response.body),
-    responseHeaders = toNetworkHeadersUi(request.infos.response.headers),
-    responseSize = ByteFormatter.formatBytes(request.infos.response.byteSize), // TODO
+    responseBody = httpBodyToUi(request.response.body),
+    responseHeaders = toNetworkHeadersUi(request.response.headers),
+    responseSize = ByteFormatter.formatBytes(request.response.byteSize),
 )
 
 fun httpBodyToUi(body: String?): String = body?.let { JsonPrettyPrinter.prettyPrint(body) } ?: ""

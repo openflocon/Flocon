@@ -7,7 +7,6 @@ import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.Dispatch
 import com.florent37.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
 import com.florent37.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
 import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
-import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestInfos
 import com.florent37.flocondesktop.features.network.domain.repository.NetworkImageRepository
 import com.florent37.flocondesktop.features.network.domain.repository.NetworkRepository
 import com.florent37.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
@@ -50,8 +49,8 @@ class NetworkRepositoryImpl(
     ) {
         withContext(dispatcherProvider.data) {
             decode(message)?.let { toDomain(it) }?.let { request ->
-                val responseContentType = request.infos.response.contentType
-                if (request.infos.response.contentType != null && responseContentType.startsWith("image/")) {
+                val responseContentType = request.response.contentType
+                if (request.response.contentType != null && responseContentType.startsWith("image/")) {
                     networkImageRepository.onImageReceived(deviceId = deviceId, request = request)
                 }
                 networkLocalDataSource.save(deviceId = deviceId, request = request)
@@ -99,24 +98,21 @@ class NetworkRepositoryImpl(
     fun toDomain(decoded: FloconHttpRequestDataModel): FloconHttpRequestDomainModel? = try {
         FloconHttpRequestDomainModel(
             uuid = Uuid.random().toString(),
-            infos =
-            FloconHttpRequestInfos(
-                url = decoded.url!!,
+            url = decoded.url!!,
+            durationMs = decoded.durationMs!!,
+            request = FloconHttpRequestDomainModel.Request(
                 method = decoded.method!!,
                 startTime = decoded.startTime!!,
-                durationMs = decoded.durationMs!!,
-                request = FloconHttpRequestInfos.Request(
-                    headers = decoded.requestHeaders!!,
-                    body = decoded.requestBody,
-                    byteSize = decoded.requestSize ?: 0L,
-                ),
-                response = FloconHttpRequestInfos.Response(
-                    httpCode = decoded.responseHttpCode!!,
-                    contentType = decoded.responseContentType,
-                    body = decoded.responseBody,
-                    headers = decoded.responseHeaders!!,
-                    byteSize = decoded.responseSize ?: 0L,
-                ),
+                headers = decoded.requestHeaders!!,
+                body = decoded.requestBody,
+                byteSize = decoded.requestSize ?: 0L,
+            ),
+            response = FloconHttpRequestDomainModel.Response(
+                httpCode = decoded.responseHttpCode!!,
+                contentType = decoded.responseContentType,
+                body = decoded.responseBody,
+                headers = decoded.responseHeaders!!,
+                byteSize = decoded.responseSize ?: 0L,
             ),
         )
     } catch (t: Throwable) {

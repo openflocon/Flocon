@@ -15,19 +15,18 @@ fun listToUi(httpRequests: List<FloconHttpRequestDomainModel>): List<NetworkItem
 
 fun toUi(httpRequest: FloconHttpRequestDomainModel): NetworkItemViewState = NetworkItemViewState(
     uuid = httpRequest.uuid,
-    dateFormatted = formatTimestamp(httpRequest.infos.startTime),
-    method = toMethodUi(httpRequest.infos.method),
-    networkStatusUi = toNetworkStatusUi(code = 200),
-    route = httpRequest.infos.url,
-    timeFormatted = formatDuration(httpRequest.infos.durationMs),
-    requestSize = ByteFormatter.formatBytes(httpRequest.infos.request.byteSize),
-    responseSize = ByteFormatter.formatBytes(httpRequest.infos.response.byteSize),
+    dateFormatted = formatTimestamp(httpRequest.request.startTime),
+    method = toMethodUi(httpRequest.request.method),
+    networkStatusUi = toNetworkStatusUi(code = httpRequest.response.httpCode),
+    route = httpRequest.url,
+    timeFormatted = formatDuration(httpRequest.durationMs),
+    requestSize = ByteFormatter.formatBytes(httpRequest.request.byteSize),
+    responseSize = ByteFormatter.formatBytes(httpRequest.response.byteSize),
 )
 
-// TODO
 fun toNetworkStatusUi(code: Int): NetworkStatusUi = NetworkStatusUi(
     code = code,
-    isSuccess = true, // TODO
+    isSuccess = code >= 200 && code < 300,
 )
 
 fun toMethodUi(httpMethod: String): NetworkMethodUi = when (httpMethod.lowercase()) {

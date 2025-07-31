@@ -5,24 +5,28 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.myapplication.dashboard.initializeDashboard
 import io.github.openflocon.flocon.myapplication.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.deeplinks.initializeDeeplinks
+import io.github.openflocon.flocon.myapplication.graphql.GraphQlTester
 import io.github.openflocon.flocon.myapplication.grpc.GrpcController
 import io.github.openflocon.flocon.myapplication.images.initializeImages
 import io.github.openflocon.flocon.myapplication.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.table.initializeTable
 import io.github.openflocon.flocon.myapplication.ui.ImagesListView
 import io.github.openflocon.flocon.myapplication.ui.theme.MyApplicationTheme
-import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
 import io.github.openflocon.flocon.plugins.analytics.analytics
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsEvent
@@ -62,58 +66,71 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(Modifier.fillMaxSize()) {
-                        Button(
-                            modifier = Modifier.padding(all = 20.dp),
-                            onClick = {
-                                dummyHttpCaller.call()
-                            }
+                    Column(Modifier.fillMaxSize().padding(innerPadding)) {
+                        FlowRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
-                            Text("okhttp test")
-                        }
-                        Button(
-                            modifier = Modifier.padding(all = 20.dp),
-                            onClick = {
-                                GlobalScope.launch {
-                                    GrpcController.sayHello()
+                            Button(
+                                onClick = {
+                                    dummyHttpCaller.call()
                                 }
+                            ) {
+                                Text("okhttp test")
                             }
-                        ) {
-                            Text("grpc test")
-                        }
-                        Button(
-                            modifier = Modifier.padding(all = 20.dp),
-                            onClick = {
-                                val value = Random.nextInt(from = 0, until = 1000).toString()
-                                Flocon.table("analytics").log(
-                                    "name" toParam "new name $value",
-                                    "value1" toParam "value1 $value",
-                                    "value2" toParam "value2 $value",
-                                )
+                            Button(
+                                onClick = {
+                                    GlobalScope.launch {
+                                        GraphQlTester.fetchViewerInfo()
+                                    }
+                                }
+                            ) {
+                                Text("graphql test")
                             }
-                        ) {
-                            Text("send table event")
-                        }
-                        Button(
-                            modifier = Modifier.padding(all = 20.dp),
-                            onClick = {
-                                Flocon.analytics("firebase").logEvents(
-                                    AnalyticsEvent(
-                                        eventName = "clicked user",
-                                        "userId" analyticsProperty "1024",
-                                        "username" analyticsProperty "florent",
-                                        "index" analyticsProperty "3",
-                                    ),
-                                    AnalyticsEvent(
-                                        eventName = "opened profile",
-                                        "userId" analyticsProperty "2048",
-                                        "username" analyticsProperty "kevin",
-                                        "age" analyticsProperty "34",
-                                    ),
-                                )
+                            Button(
+                                onClick = {
+                                    GlobalScope.launch {
+                                        GrpcController.sayHello()
+                                    }
+                                }
+                            ) {
+                                Text("grpc test")
                             }
-                        ) {
-                            Text("send analytics event")
+                            Button(
+                                onClick = {
+                                    val value = Random.nextInt(from = 0, until = 1000).toString()
+                                    Flocon.table("analytics").log(
+                                        "name" toParam "new name $value",
+                                        "value1" toParam "value1 $value",
+                                        "value2" toParam "value2 $value",
+                                    )
+                                }
+                            ) {
+                                Text("send table event")
+                            }
+                            Button(
+                                onClick = {
+                                    Flocon.analytics("firebase").logEvents(
+                                        AnalyticsEvent(
+                                            eventName = "clicked user",
+                                            "userId" analyticsProperty "1024",
+                                            "username" analyticsProperty "florent",
+                                            "index" analyticsProperty "3",
+                                        ),
+                                        AnalyticsEvent(
+                                            eventName = "opened profile",
+                                            "userId" analyticsProperty "2048",
+                                            "username" analyticsProperty "kevin",
+                                            "age" analyticsProperty "34",
+                                        ),
+                                    )
+                                }
+                            ) {
+                                Text("send analytics event")
+                            }
                         }
 
                         ImagesListView(modifier = Modifier.fillMaxSize())

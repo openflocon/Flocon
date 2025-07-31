@@ -3,6 +3,7 @@ package com.florent37.flocondesktop.main.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
@@ -17,6 +18,7 @@ import com.florent37.flocondesktop.features.dashboard.ui.view.DashboardScreen
 import com.florent37.flocondesktop.features.database.ui.view.DatabaseScreen
 import com.florent37.flocondesktop.features.deeplinks.ui.view.DeeplinkScreen
 import com.florent37.flocondesktop.features.files.ui.view.FilesScreen
+import com.florent37.flocondesktop.features.graphql.ui.view.GraphQlScreen
 import com.florent37.flocondesktop.features.grpc.ui.view.GRPCScreen
 import com.florent37.flocondesktop.features.images.ui.view.ImagesScreen
 import com.florent37.flocondesktop.features.network.ui.view.NetworkScreen
@@ -63,9 +65,10 @@ private fun MainScreen(
 ) {
     Column(modifier) {
         // TODO navigation
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxSize()) {
             LeftPanelView(
-                modifier = Modifier.width(300.dp),
+                modifier = Modifier.width(300.dp)
+                    .fillMaxHeight(),
                 onClickItem = onClickLeftPanelItem,
                 state = leftPanelState,
                 devicesState = devicesState,
@@ -145,6 +148,12 @@ private fun MainScreen(
                                 .fillMaxSize(),
                         )
                     }
+
+                    SubScreen.GraphQl ->
+                        GraphQlScreen(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
                 }
             }
         }

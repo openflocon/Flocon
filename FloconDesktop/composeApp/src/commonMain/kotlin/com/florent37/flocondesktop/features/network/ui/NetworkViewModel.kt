@@ -79,7 +79,7 @@ class NetworkViewModel(
                 is OnNetworkItemUserAction.CopyUrl -> {
                     val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
                         ?: return@launch
-                    copyToClipboard(domainModel.infos.url)
+                    copyToClipboard(domainModel.url)
                 }
 
                 is OnNetworkItemUserAction.OnClicked -> {
