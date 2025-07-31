@@ -4,7 +4,16 @@
 
 It allows developers to connect an Android device to their computer and launch a desktop interface that can **observe, inspect, and interact with the running mobile app** in real time.
 
-With Flocon, you gain deep access to critical app internals — such as network requests, local storage, analytics events, and more — without needing root access or tedious ADB commands. It’s designed to accelerate development, QA, and debugging workflows.
+With Flocon, you gain deep access to critical app internals — such as
+- network requests (http, images, grpc)
+- local storage (sharedpref, databases)
+- analytics events (and custom events)
+- debug menu displayed on the desktop
+- **deeplinks**
+
+and more — without needing root access or tedious ADB commands. It’s designed to accelerate development, QA, and debugging workflows.
+
+<img width="600" height="387" alt="Capture d’écran 2025-07-30 à 08 09 46" src="https://github.com/user-attachments/assets/aab526ce-c000-488c-8631-8fa6152a417a" />
 
 ---
 
