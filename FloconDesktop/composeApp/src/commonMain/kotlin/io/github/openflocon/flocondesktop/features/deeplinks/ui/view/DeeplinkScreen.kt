@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -16,12 +17,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.deeplinks.ui.DeepLinkViewModel
-import com.florent37.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
-import com.florent37.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
-import com.florent37.flocondesktop.features.deeplinks.ui.model.previewDeeplinkViewState
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.deeplinks.ui.DeepLinkViewModel
+import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
+import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
+import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.previewDeeplinkViewState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 

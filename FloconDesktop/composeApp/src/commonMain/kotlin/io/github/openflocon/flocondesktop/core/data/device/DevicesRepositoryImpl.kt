@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.core.data.device
 
-import com.florent37.flocondesktop.common.Fakes
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.core.domain.device.repository.DevicesRepository
-import com.florent37.flocondesktop.messages.domain.model.DeviceDomainModel
+import io.github.openflocon.flocondesktop.common.Fakes
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.core.domain.device.repository.DevicesRepository
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceDomainModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

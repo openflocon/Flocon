@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.domain
 
-import com.florent37.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
-import com.florent37.flocondesktop.features.sharedpreferences.domain.repository.SharedPreferencesRepository
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.repository.SharedPreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf

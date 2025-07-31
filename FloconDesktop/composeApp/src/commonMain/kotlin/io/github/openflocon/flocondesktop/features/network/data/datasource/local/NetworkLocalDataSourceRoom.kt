@@ -1,12 +1,12 @@
 package io.github.openflocon.flocondesktop.features.network.data.datasource.local
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.common.Fakes
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.features.network.data.FloconHttpRequestGenerator
-import com.florent37.flocondesktop.features.network.data.datasource.local.mapper.toDomainModel
-import com.florent37.flocondesktop.features.network.data.datasource.local.mapper.toEntity
-import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.common.Fakes
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.features.network.data.FloconHttpRequestGenerator
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper.toDomainModel
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper.toEntity
+import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

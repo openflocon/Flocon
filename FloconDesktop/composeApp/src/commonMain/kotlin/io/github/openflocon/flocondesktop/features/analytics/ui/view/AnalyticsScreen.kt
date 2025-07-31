@@ -26,16 +26,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.analytics.ui.AnalyticsViewModel
-import com.florent37.flocondesktop.features.analytics.ui.model.AnalyticsContentStateUiModel
-import com.florent37.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
-import com.florent37.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
-import com.florent37.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
-import com.florent37.flocondesktop.features.analytics.ui.model.items
-import com.florent37.flocondesktop.features.analytics.ui.model.previewAnalyticsContentStateUiModel
-import com.florent37.flocondesktop.features.analytics.ui.model.previewAnalyticsStateUiModel
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.analytics.ui.AnalyticsViewModel
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsContentStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.items
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsContentStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsStateUiModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 

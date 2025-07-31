@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper
 
-import com.florent37.flocondesktop.features.network.data.datasource.local.FloconHttpRequestEntity
-import com.florent37.flocondesktop.features.network.data.datasource.local.FloconHttpRequestInfosEntity
-import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.FloconHttpRequestEntity
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.FloconHttpRequestInfosEntity
+import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 
 fun FloconHttpRequestDomainModel.toEntity(deviceId: String): FloconHttpRequestEntity = FloconHttpRequestEntity(
     uuid = this.uuid,

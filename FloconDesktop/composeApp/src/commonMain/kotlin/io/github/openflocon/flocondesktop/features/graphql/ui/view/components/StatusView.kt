@@ -8,8 +8,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.graphql.ui.model.GraphQlStatusUi
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.GraphQlStatusUi
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // Custom colors for graphQlStatusUi/method views to integrate better with the theme

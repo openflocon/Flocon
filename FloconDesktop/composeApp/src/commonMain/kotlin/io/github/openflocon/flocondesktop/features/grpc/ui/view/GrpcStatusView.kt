@@ -14,8 +14,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.grpc.ui.model.GrpcItemViewState
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.GrpcItemViewState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // Custom colors for networkStatusUi/method views to integrate better with the theme

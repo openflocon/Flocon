@@ -5,8 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.features.analytics.data.datasource.local.model.AnalyticsItemEntity
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.model.AnalyticsItemEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

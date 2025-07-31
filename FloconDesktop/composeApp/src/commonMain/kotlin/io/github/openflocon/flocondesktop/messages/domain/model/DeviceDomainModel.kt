@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.messages.domain.model
 
-import com.florent37.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.DeviceId
 
 data class DeviceDomainModel(
     val appName: String,

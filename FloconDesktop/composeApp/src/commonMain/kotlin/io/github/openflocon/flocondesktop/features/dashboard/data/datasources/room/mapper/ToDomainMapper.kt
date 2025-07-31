@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper
 
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.DashboardWithSectionsAndElements
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.SectionWithElements
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementEntity
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardElementDomainModel
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardSectionDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.DashboardWithSectionsAndElements
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.SectionWithElements
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementEntity
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardElementDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardSectionDomainModel
 
 internal fun DashboardWithSectionsAndElements.toDomain(): DashboardDomainModel = DashboardDomainModel(
     dashboardId = dashboard.dashboardId,

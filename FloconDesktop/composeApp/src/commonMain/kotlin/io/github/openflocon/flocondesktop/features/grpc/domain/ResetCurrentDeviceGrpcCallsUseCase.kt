@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.grpc.domain
 
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.grpc.domain.repository.GRPCRepository
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.grpc.domain.repository.GRPCRepository
 
 class ResetCurrentDeviceGrpcCallsUseCase(
     private val grpcRepository: GRPCRepository,

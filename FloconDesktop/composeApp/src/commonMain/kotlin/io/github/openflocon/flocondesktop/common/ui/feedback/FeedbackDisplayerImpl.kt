@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.common.ui.feedback
 
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel

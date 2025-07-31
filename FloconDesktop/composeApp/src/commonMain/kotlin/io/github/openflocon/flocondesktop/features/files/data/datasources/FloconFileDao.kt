@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.florent37.flocondesktop.features.files.data.datasources.model.FileEntity
+import io.github.openflocon.flocondesktop.features.files.data.datasources.model.FileEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

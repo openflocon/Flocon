@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,16 +23,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.grpc.ui.GRPCViewModel
-import com.florent37.flocondesktop.features.grpc.ui.model.GrpcDetailViewState
-import com.florent37.flocondesktop.features.grpc.ui.model.GrpcItemColumnWidths
-import com.florent37.flocondesktop.features.grpc.ui.model.GrpcItemViewState
-import com.florent37.flocondesktop.features.grpc.ui.model.OnGrpcItemUserAction
-import com.florent37.flocondesktop.features.grpc.ui.model.previewGrpcItemViewState
-import com.florent37.flocondesktop.features.grpc.ui.view.header.GrpcFilterBar
-import com.florent37.flocondesktop.features.grpc.ui.view.header.GrpcItemHeaderView
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.grpc.ui.GRPCViewModel
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.GrpcDetailViewState
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.GrpcItemColumnWidths
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.GrpcItemViewState
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.OnGrpcItemUserAction
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.previewGrpcItemViewState
+import io.github.openflocon.flocondesktop.features.grpc.ui.view.header.GrpcFilterBar
+import io.github.openflocon.flocondesktop.features.grpc.ui.view.header.GrpcItemHeaderView
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 

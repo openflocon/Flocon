@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.domain
 
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceUseCase
-import com.florent37.flocondesktop.core.domain.settings.repository.SettingsRepository
-import com.florent37.flocondesktop.features.deeplinks.domain.repository.DeeplinkRepository
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceUseCase
+import io.github.openflocon.flocondesktop.core.domain.settings.repository.SettingsRepository
+import io.github.openflocon.flocondesktop.features.deeplinks.domain.repository.DeeplinkRepository
 
 class ExecuteDeeplinkUseCase(
     private val deeplinkRepository: DeeplinkRepository,

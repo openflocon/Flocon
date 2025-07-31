@@ -1,12 +1,12 @@
 package io.github.openflocon.flocondesktop.features.graphql.ui.mapper
 
-import com.florent37.flocondesktop.common.ui.ByteFormatter
-import com.florent37.flocondesktop.common.ui.JsonPrettyPrinter
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
-import com.florent37.flocondesktop.features.graphql.ui.model.GraphQlDetailHeaderUi
-import com.florent37.flocondesktop.features.graphql.ui.model.GraphQlDetailViewState
-import com.florent37.flocondesktop.features.network.ui.mapper.formatDuration
-import com.florent37.flocondesktop.features.network.ui.mapper.formatTimestamp
+import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
+import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.GraphQlDetailHeaderUi
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.GraphQlDetailViewState
+import io.github.openflocon.flocondesktop.features.network.ui.mapper.formatDuration
+import io.github.openflocon.flocondesktop.features.network.ui.mapper.formatTimestamp
 
 fun toDetailUi(request: GraphQlRequestDomainModel): GraphQlDetailViewState = GraphQlDetailViewState(
     fullUrl = request.infos.url,

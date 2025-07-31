@@ -1,16 +1,16 @@
 package io.github.openflocon.flocondesktop.features.database.ui.delegate
 
-import com.florent37.flocondesktop.common.coroutines.closeable.CloseableDelegate
-import com.florent37.flocondesktop.common.coroutines.closeable.CloseableScoped
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
-import com.florent37.flocondesktop.features.database.domain.AskForDeviceDatabasesUseCase
-import com.florent37.flocondesktop.features.database.domain.ObserveCurrentDeviceSelectedDatabaseUseCase
-import com.florent37.flocondesktop.features.database.domain.ObserveDeviceDatabaseUseCase
-import com.florent37.flocondesktop.features.database.domain.SelectCurrentDeviceDatabaseUseCase
-import com.florent37.flocondesktop.features.database.domain.model.DeviceDataBaseDomainModel
-import com.florent37.flocondesktop.features.database.ui.model.DatabasesStateUiModel
-import com.florent37.flocondesktop.features.database.ui.model.DeviceDataBaseUiModel
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
+import io.github.openflocon.flocondesktop.features.database.domain.AskForDeviceDatabasesUseCase
+import io.github.openflocon.flocondesktop.features.database.domain.ObserveCurrentDeviceSelectedDatabaseUseCase
+import io.github.openflocon.flocondesktop.features.database.domain.ObserveDeviceDatabaseUseCase
+import io.github.openflocon.flocondesktop.features.database.domain.SelectCurrentDeviceDatabaseUseCase
+import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseDomainModel
+import io.github.openflocon.flocondesktop.features.database.ui.model.DatabasesStateUiModel
+import io.github.openflocon.flocondesktop.features.database.ui.model.DeviceDataBaseUiModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

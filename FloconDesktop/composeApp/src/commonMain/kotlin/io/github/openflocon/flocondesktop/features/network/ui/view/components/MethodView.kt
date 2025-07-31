@@ -12,8 +12,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.network.ui.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val getMethodBackground = Color(0xFF007BFF).copy(alpha = 0.3f) // Muted blue for GET

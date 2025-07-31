@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.analytics.domain.di
 
-import com.florent37.flocondesktop.features.analytics.domain.GetCurrentDeviceSelectedAnalyticsUseCase
-import com.florent37.flocondesktop.features.analytics.domain.ObserveCurrentDeviceAnalyticsContentUseCase
-import com.florent37.flocondesktop.features.analytics.domain.ObserveCurrentDeviceSelectedAnalyticsUseCase
-import com.florent37.flocondesktop.features.analytics.domain.ObserveDeviceAnalyticsUseCase
-import com.florent37.flocondesktop.features.analytics.domain.ResetCurrentDeviceSelectedAnalyticsUseCase
-import com.florent37.flocondesktop.features.analytics.domain.SelectCurrentDeviceAnalyticsUseCase
+import io.github.openflocon.flocondesktop.features.analytics.domain.GetCurrentDeviceSelectedAnalyticsUseCase
+import io.github.openflocon.flocondesktop.features.analytics.domain.ObserveCurrentDeviceAnalyticsContentUseCase
+import io.github.openflocon.flocondesktop.features.analytics.domain.ObserveCurrentDeviceSelectedAnalyticsUseCase
+import io.github.openflocon.flocondesktop.features.analytics.domain.ObserveDeviceAnalyticsUseCase
+import io.github.openflocon.flocondesktop.features.analytics.domain.ResetCurrentDeviceSelectedAnalyticsUseCase
+import io.github.openflocon.flocondesktop.features.analytics.domain.SelectCurrentDeviceAnalyticsUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

@@ -4,9 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import com.florent37.flocondesktop.features.grpc.data.datasource.room.model.GrpcCallEntity
-import com.florent37.flocondesktop.features.grpc.data.datasource.room.model.GrpcCallWithDetails
-import com.florent37.flocondesktop.features.grpc.data.datasource.room.model.GrpcResponseEntity
+import io.github.openflocon.flocondesktop.features.grpc.data.datasource.room.model.GrpcCallEntity
+import io.github.openflocon.flocondesktop.features.grpc.data.datasource.room.model.GrpcCallWithDetails
+import io.github.openflocon.flocondesktop.features.grpc.data.datasource.room.model.GrpcResponseEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.features.grpc.domain.di
 
-import com.florent37.flocondesktop.features.grpc.domain.DeleteGrpcCallBeforeUseCase
-import com.florent37.flocondesktop.features.grpc.domain.DeleteGrpcCallUseCase
-import com.florent37.flocondesktop.features.grpc.domain.ObserveGrpcCallByIdUseCase
-import com.florent37.flocondesktop.features.grpc.domain.ObserveGrpcCallsUseCase
-import com.florent37.flocondesktop.features.grpc.domain.ResetCurrentDeviceGrpcCallsUseCase
+import io.github.openflocon.flocondesktop.features.grpc.domain.DeleteGrpcCallBeforeUseCase
+import io.github.openflocon.flocondesktop.features.grpc.domain.DeleteGrpcCallUseCase
+import io.github.openflocon.flocondesktop.features.grpc.domain.ObserveGrpcCallByIdUseCase
+import io.github.openflocon.flocondesktop.features.grpc.domain.ObserveGrpcCallsUseCase
+import io.github.openflocon.flocondesktop.features.grpc.domain.ResetCurrentDeviceGrpcCallsUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.florent37.flocondesktop.app.AppViewModel
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.common.ui.feedback.FeedbackDisplayerView
-import com.florent37.flocondesktop.main.ui.MainScreen
+import io.github.openflocon.flocondesktop.app.AppViewModel
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
+import io.github.openflocon.flocondesktop.main.ui.MainScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

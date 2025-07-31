@@ -1,18 +1,18 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementButton
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementCheckBox
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementEntity
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementPlainText
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementText
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementTextField
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.model.DashboardEntity
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.model.DashboardSectionEntity
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardElementDomainModel
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardId
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardSectionDomainModel
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementButton
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementCheckBox
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementEntity
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementPlainText
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementText
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementTextField
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardEntity
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardSectionEntity
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardElementDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardSectionDomainModel
 
 internal fun DashboardDomainModel.toEntity(deviceId: DeviceId): DashboardEntity = DashboardEntity(
     deviceId = deviceId,

@@ -17,15 +17,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
-import com.florent37.flocondesktop.features.dashboard.ui.model.previewDashboardItemViewState
-import com.florent37.flocondesktop.features.dashboard.ui.view.items.DashboardButtonView
-import com.florent37.flocondesktop.features.dashboard.ui.view.items.DashboardCheckBoxView
-import com.florent37.flocondesktop.features.dashboard.ui.view.items.DashboardPlainTextView
-import com.florent37.flocondesktop.features.dashboard.ui.view.items.DashboardTextFieldView
-import com.florent37.flocondesktop.features.dashboard.ui.view.items.DashboardTextView
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.ui.model.previewDashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardButtonView
+import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardCheckBoxView
+import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardPlainTextView
+import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardTextFieldView
+import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardTextView
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

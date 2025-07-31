@@ -1,15 +1,15 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.mapper
 
-import com.florent37.flocondesktop.features.dashboard.data.model.ButtonConfigDataModel
-import com.florent37.flocondesktop.features.dashboard.data.model.CheckBoxConfigDataModel
-import com.florent37.flocondesktop.features.dashboard.data.model.DashboardConfigDataModel
-import com.florent37.flocondesktop.features.dashboard.data.model.DashboardElementDataModel
-import com.florent37.flocondesktop.features.dashboard.data.model.SectionConfigDataModel
-import com.florent37.flocondesktop.features.dashboard.data.model.TextConfigDataModel
-import com.florent37.flocondesktop.features.dashboard.data.model.TextFieldConfigDataModel
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardElementDomainModel
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardSectionDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.data.model.ButtonConfigDataModel
+import io.github.openflocon.flocondesktop.features.dashboard.data.model.CheckBoxConfigDataModel
+import io.github.openflocon.flocondesktop.features.dashboard.data.model.DashboardConfigDataModel
+import io.github.openflocon.flocondesktop.features.dashboard.data.model.DashboardElementDataModel
+import io.github.openflocon.flocondesktop.features.dashboard.data.model.SectionConfigDataModel
+import io.github.openflocon.flocondesktop.features.dashboard.data.model.TextConfigDataModel
+import io.github.openflocon.flocondesktop.features.dashboard.data.model.TextFieldConfigDataModel
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardElementDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardSectionDomainModel
 
 fun toDomain(model: DashboardConfigDataModel): DashboardDomainModel = DashboardDomainModel(
     dashboardId = model.dashboardId,

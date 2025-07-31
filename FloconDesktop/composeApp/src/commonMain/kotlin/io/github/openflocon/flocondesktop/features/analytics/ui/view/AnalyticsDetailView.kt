@@ -18,8 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
 
 @Composable
 fun AnalyticsDetailView(modifier: Modifier = Modifier, state: AnalyticsRowUiModel) {

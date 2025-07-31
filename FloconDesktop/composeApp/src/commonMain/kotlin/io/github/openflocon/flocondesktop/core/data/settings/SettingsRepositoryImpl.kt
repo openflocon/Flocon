@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.core.data.settings
 
-import com.florent37.flocondesktop.core.data.settings.datasource.local.SettingsDataSource
-import com.florent37.flocondesktop.core.domain.settings.repository.SettingsRepository
+import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSource
+import io.github.openflocon.flocondesktop.core.domain.settings.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 
 class SettingsRepositoryImpl(

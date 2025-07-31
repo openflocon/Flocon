@@ -2,13 +2,13 @@ package io.github.openflocon.flocondesktop.features.deeplinks.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.common.ui.feedback.FeedbackDisplayer
-import com.florent37.flocondesktop.features.deeplinks.domain.ExecuteDeeplinkUseCase
-import com.florent37.flocondesktop.features.deeplinks.domain.ObserveCurrentDeviceDeeplinkUseCase
-import com.florent37.flocondesktop.features.deeplinks.ui.mapper.mapToUi
-import com.florent37.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
-import com.florent37.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.features.deeplinks.domain.ExecuteDeeplinkUseCase
+import io.github.openflocon.flocondesktop.features.deeplinks.domain.ObserveCurrentDeviceDeeplinkUseCase
+import io.github.openflocon.flocondesktop.features.deeplinks.ui.mapper.mapToUi
+import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
+import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn

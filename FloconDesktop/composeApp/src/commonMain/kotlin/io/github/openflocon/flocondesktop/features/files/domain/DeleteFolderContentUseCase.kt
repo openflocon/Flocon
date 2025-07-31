@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.files.domain
 
-import com.florent37.flocondesktop.common.Either
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.common.failure
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.files.domain.model.FilePathDomainModel
-import com.florent37.flocondesktop.features.files.domain.repository.FilesRepository
+import io.github.openflocon.flocondesktop.common.Either
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.common.failure
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
+import io.github.openflocon.flocondesktop.features.files.domain.repository.FilesRepository
 
 class DeleteFolderContentUseCase(
     private val filesRepository: FilesRepository,

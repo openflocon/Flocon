@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.FloconColorScheme
+import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
 
 @Composable
 fun PannelLabel(

@@ -1,14 +1,14 @@
 package io.github.openflocon.flocondesktop.features.table.ui.delegate
 
-import com.florent37.flocondesktop.common.coroutines.closeable.CloseableDelegate
-import com.florent37.flocondesktop.common.coroutines.closeable.CloseableScoped
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.features.table.domain.ObserveCurrentDeviceSelectedTableUseCase
-import com.florent37.flocondesktop.features.table.domain.ObserveDeviceTablesUseCase
-import com.florent37.flocondesktop.features.table.domain.SelectCurrentDeviceTableUseCase
-import com.florent37.flocondesktop.features.table.domain.model.TableIdentifierDomainModel
-import com.florent37.flocondesktop.features.table.ui.model.DeviceTableUiModel
-import com.florent37.flocondesktop.features.table.ui.model.TablesStateUiModel
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.features.table.domain.ObserveCurrentDeviceSelectedTableUseCase
+import io.github.openflocon.flocondesktop.features.table.domain.ObserveDeviceTablesUseCase
+import io.github.openflocon.flocondesktop.features.table.domain.SelectCurrentDeviceTableUseCase
+import io.github.openflocon.flocondesktop.features.table.domain.model.TableIdentifierDomainModel
+import io.github.openflocon.flocondesktop.features.table.ui.model.DeviceTableUiModel
+import io.github.openflocon.flocondesktop.features.table.ui.model.TablesStateUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

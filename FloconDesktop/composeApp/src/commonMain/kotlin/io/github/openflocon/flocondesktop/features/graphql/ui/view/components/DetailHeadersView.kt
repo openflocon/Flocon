@@ -15,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.graphql.ui.model.GraphQlDetailHeaderUi
-import com.florent37.flocondesktop.features.graphql.ui.model.previewGraphQlDetailHeaderUi
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.GraphQlDetailHeaderUi
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.previewGraphQlDetailHeaderUi
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

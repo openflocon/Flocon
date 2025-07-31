@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.features.analytics.data.di
 
-import com.florent37.flocondesktop.features.analytics.data.AnalyticsRepositoryImpl
-import com.florent37.flocondesktop.features.analytics.data.datasource.RemoteAnalyticsDataSource
-import com.florent37.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSource
-import com.florent37.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSourceInMemory
-import com.florent37.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSource
-import com.florent37.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSourceRoom
-import com.florent37.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
-import com.florent37.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.flocondesktop.features.analytics.data.AnalyticsRepositoryImpl
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.RemoteAnalyticsDataSource
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSource
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSourceInMemory
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSource
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSourceRoom
+import io.github.openflocon.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
+import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module

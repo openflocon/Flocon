@@ -1,16 +1,16 @@
 package io.github.openflocon.flocondesktop.features.graphql.data
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.FloconIncomingMessageDataModel
-import com.florent37.flocondesktop.Protocol
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.features.graphql.data.datasource.LocalGraphQlDataSource
-import com.florent37.flocondesktop.features.graphql.data.model.FloconGraphQlRequestDataModel
-import com.florent37.flocondesktop.features.graphql.domain.model.FloconGraphQlRequestInfos
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestId
-import com.florent37.flocondesktop.features.graphql.domain.repository.GraphQlRepository
-import com.florent37.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
+import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.features.graphql.data.datasource.LocalGraphQlDataSource
+import io.github.openflocon.flocondesktop.features.graphql.data.model.FloconGraphQlRequestDataModel
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.FloconGraphQlRequestInfos
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestId
+import io.github.openflocon.flocondesktop.features.graphql.domain.repository.GraphQlRepository
+import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext

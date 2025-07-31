@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.grpc.ui.model
 
 import androidx.compose.runtime.Immutable
-import com.florent37.flocondesktop.features.network.ui.model.NetworkDetailHeaderUi
-import com.florent37.flocondesktop.features.network.ui.model.previewNetworkDetailHeaderUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailHeaderUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkDetailHeaderUi
 
 @Immutable
 data class GrpcDetailViewState(

@@ -16,16 +16,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.ContextualItem
-import com.florent37.flocondesktop.common.ui.ContextualView
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.files.ui.model.FilePathUiModel
-import com.florent37.flocondesktop.features.files.ui.model.FileTypeUiModel
-import com.florent37.flocondesktop.features.files.ui.model.FileUiModel
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.chevron_right
 import flocondesktop.composeapp.generated.resources.file
 import flocondesktop.composeapp.generated.resources.folder
+import io.github.openflocon.flocondesktop.common.ui.ContextualItem
+import io.github.openflocon.flocondesktop.common.ui.ContextualView
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
+import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
+import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

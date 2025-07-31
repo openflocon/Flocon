@@ -1,4 +1,4 @@
-package com.florent37.flocondesktop.features.database.data.model
+package io.github.openflocon.flocondesktop.features.database.data.model
 
 import kotlinx.serialization.Serializable
 

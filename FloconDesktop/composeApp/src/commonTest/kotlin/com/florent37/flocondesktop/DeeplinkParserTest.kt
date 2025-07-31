@@ -1,7 +1,7 @@
-package com.florent37.flocondesktop
+package io.github.openflocon.flocondesktop
 
-import com.florent37.flocondesktop.features.deeplinks.ui.mapper.parseDeeplinkString
-import com.florent37.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
+import io.github.openflocon.flocondesktop.features.deeplinks.ui.mapper.parseDeeplinkString
+import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

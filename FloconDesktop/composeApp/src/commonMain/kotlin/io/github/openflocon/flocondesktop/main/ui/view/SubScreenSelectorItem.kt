@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.main.ui.view
 
-import com.florent37.flocondesktop.main.ui.model.SubScreen
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.analytics
 import flocondesktop.composeapp.generated.resources.dashboard
@@ -14,6 +13,7 @@ import flocondesktop.composeapp.generated.resources.network
 import flocondesktop.composeapp.generated.resources.settings
 import flocondesktop.composeapp.generated.resources.sharedpreference
 import flocondesktop.composeapp.generated.resources.tables
+import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
 import org.jetbrains.compose.resources.DrawableResource
 
 // Extension function to get the display name for each SubScreen

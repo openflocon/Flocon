@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.domain.repository
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
-import com.florent37.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
-import com.florent37.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface SharedPreferencesRepository {
@@ -29,7 +29,7 @@ interface SharedPreferencesRepository {
     )
 
     fun observe(
-        deviceId: com.florent37.flocondesktop.DeviceId,
+        deviceId: io.github.openflocon.flocondesktop.DeviceId,
         sharedPreferenceId: DeviceSharedPreferenceId,
     ): Flow<List<SharedPreferenceRowDomainModel>>
 

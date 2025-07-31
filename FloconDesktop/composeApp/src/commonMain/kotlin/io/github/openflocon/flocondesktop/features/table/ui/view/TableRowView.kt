@@ -13,9 +13,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.table.ui.model.TableRowUiModel
-import com.florent37.flocondesktop.features.table.ui.model.previewTableRowUiModel
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.table.ui.model.TableRowUiModel
+import io.github.openflocon.flocondesktop.features.table.ui.model.previewTableRowUiModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

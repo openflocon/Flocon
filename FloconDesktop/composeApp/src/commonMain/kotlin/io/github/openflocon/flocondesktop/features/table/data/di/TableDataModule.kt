@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.features.table.data.di
 
-import com.florent37.flocondesktop.features.table.data.TableRepositoryImpl
-import com.florent37.flocondesktop.features.table.data.datasource.RemoteTableDataSource
-import com.florent37.flocondesktop.features.table.data.datasource.device.DeviceTablesDataSource
-import com.florent37.flocondesktop.features.table.data.datasource.device.DeviceTablesDataSourceInMemory
-import com.florent37.flocondesktop.features.table.data.datasource.local.TableLocalDataSource
-import com.florent37.flocondesktop.features.table.data.datasource.local.TableLocalDataSourceRoom
-import com.florent37.flocondesktop.features.table.domain.repository.TableRepository
-import com.florent37.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.flocondesktop.features.table.data.TableRepositoryImpl
+import io.github.openflocon.flocondesktop.features.table.data.datasource.RemoteTableDataSource
+import io.github.openflocon.flocondesktop.features.table.data.datasource.device.DeviceTablesDataSource
+import io.github.openflocon.flocondesktop.features.table.data.datasource.device.DeviceTablesDataSourceInMemory
+import io.github.openflocon.flocondesktop.features.table.data.datasource.local.TableLocalDataSource
+import io.github.openflocon.flocondesktop.features.table.data.datasource.local.TableLocalDataSourceRoom
+import io.github.openflocon.flocondesktop.features.table.domain.repository.TableRepository
+import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module

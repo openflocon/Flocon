@@ -23,14 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.FloconColorScheme
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.main.ui.model.DeviceItemUiModel
-import com.florent37.flocondesktop.main.ui.model.DevicesStateUiModel
-import com.florent37.flocondesktop.main.ui.model.previewDeviceItemUiModelPreview
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.smartphone
+import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
+import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
+import io.github.openflocon.flocondesktop.main.ui.model.previewDeviceItemUiModelPreview
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

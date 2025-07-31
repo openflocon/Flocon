@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.graphql.data.datasource.room.mapper
 
-import com.florent37.flocondesktop.features.graphql.data.datasource.room.model.GraphQlRequestEntity
-import com.florent37.flocondesktop.features.graphql.domain.model.FloconGraphQlRequestInfos
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
+import io.github.openflocon.flocondesktop.features.graphql.data.datasource.room.model.GraphQlRequestEntity
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.FloconGraphQlRequestInfos
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
 
 fun GraphQlRequestDomainModel.toEntity(deviceId: String): GraphQlRequestEntity = GraphQlRequestEntity(
     uuid = this.uuid,

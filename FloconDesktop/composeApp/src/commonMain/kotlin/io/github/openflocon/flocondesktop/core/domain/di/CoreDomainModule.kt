@@ -1,15 +1,15 @@
 package io.github.openflocon.flocondesktop.core.domain.di
 
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceUseCase
-import com.florent37.flocondesktop.core.domain.device.HandleDeviceUseCase
-import com.florent37.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
-import com.florent37.flocondesktop.core.domain.device.ObserveDevicesUseCase
-import com.florent37.flocondesktop.core.domain.device.SelectDeviceUseCase
-import com.florent37.flocondesktop.core.domain.settings.InitAdbPathUseCase
-import com.florent37.flocondesktop.core.domain.settings.StartAdbForwardUseCase
-import com.florent37.flocondesktop.core.domain.settings.TestAdbUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.HandleDeviceUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveDevicesUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.SelectDeviceUseCase
+import io.github.openflocon.flocondesktop.core.domain.settings.InitAdbPathUseCase
+import io.github.openflocon.flocondesktop.core.domain.settings.StartAdbForwardUseCase
+import io.github.openflocon.flocondesktop.core.domain.settings.TestAdbUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.database.data
 
-import com.florent37.flocondesktop.features.database.data.model.incoming.DatabaseExecuteSqlResponse
-import com.florent37.flocondesktop.features.database.data.model.incoming.DeviceDataBaseDataModel
-import com.florent37.flocondesktop.features.database.data.model.incoming.QueryResultReceivedDataModel
-import com.florent37.flocondesktop.features.database.data.model.incoming.ResponseAndRequestId
+import io.github.openflocon.flocondesktop.features.database.data.model.incoming.DatabaseExecuteSqlResponse
+import io.github.openflocon.flocondesktop.features.database.data.model.incoming.DeviceDataBaseDataModel
+import io.github.openflocon.flocondesktop.features.database.data.model.incoming.QueryResultReceivedDataModel
+import io.github.openflocon.flocondesktop.features.database.data.model.incoming.ResponseAndRequestId
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 

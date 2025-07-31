@@ -4,10 +4,10 @@ plugins {
     application
 }
 
-group = "com.florent37.flocondesktop"
+group = "io.github.openflocon.flocondesktop"
 version = "1.0.0"
 application {
-    mainClass.set("com.florent37.flocondesktop.ApplicationKt")
+    mainClass.set("io.github.openflocon.flocondesktop.ApplicationKt")
     
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")

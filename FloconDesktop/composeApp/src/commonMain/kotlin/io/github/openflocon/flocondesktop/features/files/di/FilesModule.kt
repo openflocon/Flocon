@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.files.di
 
-import com.florent37.flocondesktop.features.files.data.di.filesDataModule
-import com.florent37.flocondesktop.features.files.domain.di.filesDomainModule
-import com.florent37.flocondesktop.features.files.ui.di.filesUiModule
+import io.github.openflocon.flocondesktop.features.files.data.di.filesDataModule
+import io.github.openflocon.flocondesktop.features.files.domain.di.filesDomainModule
+import io.github.openflocon.flocondesktop.features.files.ui.di.filesUiModule
 import org.koin.dsl.module
 
 val filesModule =

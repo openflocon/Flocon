@@ -113,14 +113,14 @@ kotlin {
 }
 
 android {
-    namespace = "com.florent37.flocondesktop"
+    namespace = "io.github.openflocon.flocondesktop"
     compileSdk =
         libs.versions.android.compileSdk
             .get()
             .toInt()
 
     defaultConfig {
-        applicationId = "com.florent37.flocondesktop"
+        applicationId = "io.github.openflocon.flocondesktop"
         minSdk =
             libs.versions.android.minSdk
                 .get()

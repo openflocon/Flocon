@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.graphql.domain
 
-import com.florent37.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestId
-import com.florent37.flocondesktop.features.graphql.domain.repository.GraphQlRepository
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestId
+import io.github.openflocon.flocondesktop.features.graphql.domain.repository.GraphQlRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf

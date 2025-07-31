@@ -18,13 +18,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.ContextualItem
-import com.florent37.flocondesktop.common.ui.ContextualView
-import com.florent37.flocondesktop.features.network.ui.model.NetworkItemViewState
-import com.florent37.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
-import com.florent37.flocondesktop.features.network.ui.model.previewNetworkItemViewState
-import com.florent37.flocondesktop.features.network.ui.view.components.MethodView
-import com.florent37.flocondesktop.features.network.ui.view.components.StatusView
+import io.github.openflocon.flocondesktop.common.ui.ContextualItem
+import io.github.openflocon.flocondesktop.common.ui.ContextualView
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
+import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.MethodView
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.StatusView
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**

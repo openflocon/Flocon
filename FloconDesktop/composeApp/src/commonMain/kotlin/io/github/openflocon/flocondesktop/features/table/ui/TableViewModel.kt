@@ -2,16 +2,16 @@ package io.github.openflocon.flocondesktop.features.table.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.common.ui.feedback.FeedbackDisplayer
-import com.florent37.flocondesktop.features.network.ui.mapper.formatTimestamp
-import com.florent37.flocondesktop.features.table.domain.ObserveCurrentDeviceTableContentUseCase
-import com.florent37.flocondesktop.features.table.domain.ResetCurrentDeviceSelectedTableUseCase
-import com.florent37.flocondesktop.features.table.ui.delegate.TableSelectorDelegate
-import com.florent37.flocondesktop.features.table.ui.model.DeviceTableUiModel
-import com.florent37.flocondesktop.features.table.ui.model.TableContentStateUiModel
-import com.florent37.flocondesktop.features.table.ui.model.TableRowUiModel
-import com.florent37.flocondesktop.features.table.ui.model.TablesStateUiModel
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.features.network.ui.mapper.formatTimestamp
+import io.github.openflocon.flocondesktop.features.table.domain.ObserveCurrentDeviceTableContentUseCase
+import io.github.openflocon.flocondesktop.features.table.domain.ResetCurrentDeviceSelectedTableUseCase
+import io.github.openflocon.flocondesktop.features.table.ui.delegate.TableSelectorDelegate
+import io.github.openflocon.flocondesktop.features.table.ui.model.DeviceTableUiModel
+import io.github.openflocon.flocondesktop.features.table.ui.model.TableContentStateUiModel
+import io.github.openflocon.flocondesktop.features.table.ui.model.TableRowUiModel
+import io.github.openflocon.flocondesktop.features.table.ui.model.TablesStateUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.grpc.domain.repository
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcCallDomainModel
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcCallId
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcCallDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcCallId
 import kotlinx.coroutines.flow.Flow
 
 interface GRPCRepository {

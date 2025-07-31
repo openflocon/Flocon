@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.domain.repository
 
-import com.florent37.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
+import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DeeplinkRepository {

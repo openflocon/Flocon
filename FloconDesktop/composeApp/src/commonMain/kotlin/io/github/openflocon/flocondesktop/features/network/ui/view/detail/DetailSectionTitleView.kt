@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

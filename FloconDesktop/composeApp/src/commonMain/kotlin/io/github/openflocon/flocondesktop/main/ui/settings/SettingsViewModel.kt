@@ -2,11 +2,11 @@ package io.github.openflocon.flocondesktop.main.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.florent37.flocondesktop.app.InitialSetupStateHolder
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.common.ui.feedback.FeedbackDisplayer
-import com.florent37.flocondesktop.core.domain.settings.TestAdbUseCase
-import com.florent37.flocondesktop.core.domain.settings.repository.SettingsRepository
+import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.core.domain.settings.TestAdbUseCase
+import io.github.openflocon.flocondesktop.core.domain.settings.repository.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

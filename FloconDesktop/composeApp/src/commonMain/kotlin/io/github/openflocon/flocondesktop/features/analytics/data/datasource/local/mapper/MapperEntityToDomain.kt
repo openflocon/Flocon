@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.mapper
 
-import com.florent37.flocondesktop.features.analytics.data.datasource.local.model.AnalyticsItemEntity
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsItemDomainModel
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsPropertyDomainModel
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.model.AnalyticsItemEntity
+import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsItemDomainModel
+import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsPropertyDomainModel
 
 fun toAnalyticsDomain(entity: AnalyticsItemEntity): AnalyticsItemDomainModel = AnalyticsItemDomainModel(
     analyticsTableId = entity.analyticsTableId,

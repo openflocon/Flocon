@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.features.network.ui.mapper
 
-import com.florent37.flocondesktop.common.ui.ByteFormatter
-import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
-import com.florent37.flocondesktop.features.network.ui.model.NetworkItemViewState
-import com.florent37.flocondesktop.features.network.ui.model.NetworkMethodUi
-import com.florent37.flocondesktop.features.network.ui.model.NetworkStatusUi
+import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
+import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatusUi
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.milliseconds

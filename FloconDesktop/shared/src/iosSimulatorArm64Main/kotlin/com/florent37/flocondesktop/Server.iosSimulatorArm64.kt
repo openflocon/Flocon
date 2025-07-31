@@ -1,5 +1,5 @@
-package com.florent37.flocondesktop
+package io.github.openflocon.flocondesktop
 
-actual fun getServer(): com.florent37.flocondesktop.Server {
+actual fun getServer(): io.github.openflocon.flocondesktop.Server {
     return ServerNoOp()
 }

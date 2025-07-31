@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.core.domain.settings
 
-import com.florent37.flocondesktop.common.Either
-import com.florent37.flocondesktop.common.Failure
-import com.florent37.flocondesktop.common.Success
-import com.florent37.flocondesktop.common.findAdbPath
-import com.florent37.flocondesktop.core.domain.settings.repository.SettingsRepository
+import io.github.openflocon.flocondesktop.common.Either
+import io.github.openflocon.flocondesktop.common.Failure
+import io.github.openflocon.flocondesktop.common.Success
+import io.github.openflocon.flocondesktop.common.findAdbPath
+import io.github.openflocon.flocondesktop.core.domain.settings.repository.SettingsRepository
 
 class InitAdbPathUseCase(
     private val settingsRepository: SettingsRepository,

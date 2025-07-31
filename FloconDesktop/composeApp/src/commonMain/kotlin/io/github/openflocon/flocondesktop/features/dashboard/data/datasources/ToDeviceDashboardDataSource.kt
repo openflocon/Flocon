@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.FloconOutgoingMessageDataModel
-import com.florent37.flocondesktop.Protocol
-import com.florent37.flocondesktop.Server
-import com.florent37.flocondesktop.features.dashboard.data.datasources.remote.model.ToDeviceCheckBoxValueChangedMessage
-import com.florent37.flocondesktop.features.dashboard.data.datasources.remote.model.ToDeviceSubmittedTextFieldMessage
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
+import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocondesktop.Server
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.remote.model.ToDeviceCheckBoxValueChangedMessage
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.remote.model.ToDeviceSubmittedTextFieldMessage
 import kotlinx.serialization.json.Json
 import kotlin.uuid.ExperimentalUuidApi
 

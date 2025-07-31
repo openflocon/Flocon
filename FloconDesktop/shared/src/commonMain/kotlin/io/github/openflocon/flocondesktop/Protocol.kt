@@ -1,5 +1,5 @@
 @file:Suppress("ktlint")
-package com.florent37.flocondesktop
+package io.github.openflocon.flocondesktop
 
 object Protocol {
     object FromDevice {

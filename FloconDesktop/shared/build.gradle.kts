@@ -68,7 +68,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.florent37.flocondesktop.shared"
+    namespace = "io.github.openflocon.flocondesktop.shared"
     compileSdk =
         libs.versions.android.compileSdk
             .get()

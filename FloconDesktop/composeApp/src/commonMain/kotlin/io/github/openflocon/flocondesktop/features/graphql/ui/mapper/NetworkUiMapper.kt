@@ -1,12 +1,12 @@
 package io.github.openflocon.flocondesktop.features.graphql.ui.mapper
 
-import com.florent37.flocondesktop.common.ui.ByteFormatter
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
-import com.florent37.flocondesktop.features.graphql.ui.model.GraphQlItemViewState
-import com.florent37.flocondesktop.features.graphql.ui.model.GraphQlMethodUi
-import com.florent37.flocondesktop.features.graphql.ui.model.GraphQlStatusUi
-import com.florent37.flocondesktop.features.network.ui.mapper.formatDuration
-import com.florent37.flocondesktop.features.network.ui.mapper.formatTimestamp
+import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.GraphQlItemViewState
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.GraphQlMethodUi
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.GraphQlStatusUi
+import io.github.openflocon.flocondesktop.features.network.ui.mapper.formatDuration
+import io.github.openflocon.flocondesktop.features.network.ui.mapper.formatTimestamp
 
 fun listToUi(httpRequests: List<GraphQlRequestDomainModel>): List<GraphQlItemViewState> = httpRequests.map { toUi(it) }
 

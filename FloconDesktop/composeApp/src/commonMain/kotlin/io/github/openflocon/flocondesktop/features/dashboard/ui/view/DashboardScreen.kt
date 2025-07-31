@@ -14,11 +14,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.features.dashboard.ui.DashboardViewModel
-import com.florent37.flocondesktop.features.dashboard.ui.model.DashboardViewState
-import com.florent37.flocondesktop.features.dashboard.ui.model.DashboardsStateUiModel
-import com.florent37.flocondesktop.features.dashboard.ui.model.DeviceDashboardUiModel
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.features.dashboard.ui.DashboardViewModel
+import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardViewState
+import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardsStateUiModel
+import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DeviceDashboardUiModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

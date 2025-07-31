@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.domain
 
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.database.domain.repository.DatabaseRepository
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.database.domain.repository.DatabaseRepository
 
 class AskForDeviceDatabasesUseCase(
     private val databaseRepository: DatabaseRepository,

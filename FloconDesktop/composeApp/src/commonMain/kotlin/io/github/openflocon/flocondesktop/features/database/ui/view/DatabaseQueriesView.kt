@@ -17,10 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.FloconColorScheme
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.database.ui.model.previewDatabaseScreenStateQueries
+import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabaseScreenStateQueries
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

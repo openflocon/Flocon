@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.data
 
-import com.florent37.flocondesktop.features.sharedpreferences.data.model.incoming.DeviceSharedPreferenceDataModel
-import com.florent37.flocondesktop.features.sharedpreferences.data.model.incoming.SharedPreferenceValuesResponse
+import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming.DeviceSharedPreferenceDataModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming.SharedPreferenceValuesResponse
 import kotlinx.serialization.json.Json
 
 // maybe inject

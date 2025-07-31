@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.graphql.domain
 
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestId
-import com.florent37.flocondesktop.features.graphql.domain.repository.GraphQlRepository
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestId
+import io.github.openflocon.flocondesktop.features.graphql.domain.repository.GraphQlRepository
 
 class DeleteGraphQlRequestUseCase(
     private val graphQlRepository: GraphQlRepository,

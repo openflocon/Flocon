@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardId
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
 import kotlinx.coroutines.flow.Flow
 
 interface DashboardLocalDataSource {

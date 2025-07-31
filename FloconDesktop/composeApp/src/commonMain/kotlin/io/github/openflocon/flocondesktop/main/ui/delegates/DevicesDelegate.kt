@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.main.ui.delegates
 
-import com.florent37.flocondesktop.common.coroutines.closeable.CloseableDelegate
-import com.florent37.flocondesktop.common.coroutines.closeable.CloseableScoped
-import com.florent37.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
-import com.florent37.flocondesktop.core.domain.device.ObserveDevicesUseCase
-import com.florent37.flocondesktop.core.domain.device.SelectDeviceUseCase
-import com.florent37.flocondesktop.main.ui.model.DeviceItemUiModel
-import com.florent37.flocondesktop.main.ui.model.DevicesStateUiModel
-import com.florent37.flocondesktop.messages.domain.model.DeviceDomainModel
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveDevicesUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.SelectDeviceUseCase
+import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
+import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceDomainModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

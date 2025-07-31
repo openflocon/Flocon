@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.data.datasource
 
-import com.florent37.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
+import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface LocalDeeplinkDataSource {

@@ -2,13 +2,13 @@ package io.github.openflocon.flocondesktop.features.images.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.common.ui.feedback.FeedbackDisplayer
-import com.florent37.flocondesktop.features.images.domain.ObserveImagesUseCase
-import com.florent37.flocondesktop.features.images.domain.ResetCurrentDeviceImagesUseCase
-import com.florent37.flocondesktop.features.images.ui.model.ImagesStateUiModel
-import com.florent37.flocondesktop.features.images.ui.model.ImagesUiModel
-import com.florent37.flocondesktop.features.network.ui.mapper.formatTimestamp
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.features.images.domain.ObserveImagesUseCase
+import io.github.openflocon.flocondesktop.features.images.domain.ResetCurrentDeviceImagesUseCase
+import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesStateUiModel
+import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesUiModel
+import io.github.openflocon.flocondesktop.features.network.ui.mapper.formatTimestamp
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn

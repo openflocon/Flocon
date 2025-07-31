@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,15 +23,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.network.ui.NetworkViewModel
-import com.florent37.flocondesktop.features.network.ui.model.NetworkDetailViewState
-import com.florent37.flocondesktop.features.network.ui.model.NetworkItemViewState
-import com.florent37.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
-import com.florent37.flocondesktop.features.network.ui.model.previewNetworkItemViewState
-import com.florent37.flocondesktop.features.network.ui.view.components.NetworkFilterBar
-import com.florent37.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
+import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkFilterBar
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 

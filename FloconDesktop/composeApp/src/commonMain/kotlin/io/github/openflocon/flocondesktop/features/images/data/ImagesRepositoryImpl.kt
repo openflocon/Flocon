@@ -1,15 +1,15 @@
 package io.github.openflocon.flocondesktop.features.images.data
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.FloconIncomingMessageDataModel
-import com.florent37.flocondesktop.Protocol
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.features.images.data.datasources.ImagesLocalDataSource
-import com.florent37.flocondesktop.features.images.domain.model.DeviceImageDomainModel
-import com.florent37.flocondesktop.features.images.domain.repository.ImagesRepository
-import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
-import com.florent37.flocondesktop.features.network.domain.repository.NetworkImageRepository
-import com.florent37.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
+import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.features.images.data.datasources.ImagesLocalDataSource
+import io.github.openflocon.flocondesktop.features.images.domain.model.DeviceImageDomainModel
+import io.github.openflocon.flocondesktop.features.images.domain.repository.ImagesRepository
+import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
+import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn

@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.features.dashboard.domain.di
 
-import com.florent37.flocondesktop.features.dashboard.domain.GetCurrentDeviceSelectedDashboardUseCase
-import com.florent37.flocondesktop.features.dashboard.domain.ObserveCurrentDeviceDashboardUseCase
-import com.florent37.flocondesktop.features.dashboard.domain.ObserveCurrentDeviceSelectedDashboardUseCase
-import com.florent37.flocondesktop.features.dashboard.domain.ObserveDeviceDashboardsUseCase
-import com.florent37.flocondesktop.features.dashboard.domain.SelectCurrentDeviceDashboardUseCase
-import com.florent37.flocondesktop.features.dashboard.domain.SendCheckBoxUpdateDeviceDeviceUseCase
-import com.florent37.flocondesktop.features.dashboard.domain.SendClickEventToDeviceDeviceUseCase
-import com.florent37.flocondesktop.features.dashboard.domain.SubmitTextFieldToDeviceDeviceUseCase
+import io.github.openflocon.flocondesktop.features.dashboard.domain.GetCurrentDeviceSelectedDashboardUseCase
+import io.github.openflocon.flocondesktop.features.dashboard.domain.ObserveCurrentDeviceDashboardUseCase
+import io.github.openflocon.flocondesktop.features.dashboard.domain.ObserveCurrentDeviceSelectedDashboardUseCase
+import io.github.openflocon.flocondesktop.features.dashboard.domain.ObserveDeviceDashboardsUseCase
+import io.github.openflocon.flocondesktop.features.dashboard.domain.SelectCurrentDeviceDashboardUseCase
+import io.github.openflocon.flocondesktop.features.dashboard.domain.SendCheckBoxUpdateDeviceDeviceUseCase
+import io.github.openflocon.flocondesktop.features.dashboard.domain.SendClickEventToDeviceDeviceUseCase
+import io.github.openflocon.flocondesktop.features.dashboard.domain.SubmitTextFieldToDeviceDeviceUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

@@ -17,20 +17,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.network.ui.model.NetworkDetailViewState
-import com.florent37.flocondesktop.features.network.ui.model.NetworkMethodUi
-import com.florent37.flocondesktop.features.network.ui.model.NetworkStatusUi
-import com.florent37.flocondesktop.features.network.ui.model.previewNetworkDetailHeaderUi
-import com.florent37.flocondesktop.features.network.ui.view.components.MethodView
-import com.florent37.flocondesktop.features.network.ui.view.components.StatusView
-import com.florent37.flocondesktop.features.network.ui.view.detail.CodeBlockView
-import com.florent37.flocondesktop.features.network.ui.view.detail.DetailHeadersView
-import com.florent37.flocondesktop.features.network.ui.view.detail.DetailLineTextView
-import com.florent37.flocondesktop.features.network.ui.view.detail.DetailLineView
-import com.florent37.flocondesktop.features.network.ui.view.detail.DetailSectionTitleView
-import com.florent37.flocondesktop.features.network.ui.view.detail.ExpandedSectionView
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatusUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkDetailHeaderUi
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.MethodView
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.StatusView
+import io.github.openflocon.flocondesktop.features.network.ui.view.detail.CodeBlockView
+import io.github.openflocon.flocondesktop.features.network.ui.view.detail.DetailHeadersView
+import io.github.openflocon.flocondesktop.features.network.ui.view.detail.DetailLineTextView
+import io.github.openflocon.flocondesktop.features.network.ui.view.detail.DetailLineView
+import io.github.openflocon.flocondesktop.features.network.ui.view.detail.DetailSectionTitleView
+import io.github.openflocon.flocondesktop.features.network.ui.view.detail.ExpandedSectionView
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.features.files.domain
 
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.files.domain.model.FileDomainModel
-import com.florent37.flocondesktop.features.files.domain.model.FilePathDomainModel
-import com.florent37.flocondesktop.features.files.domain.repository.FilesRepository
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
+import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
+import io.github.openflocon.flocondesktop.features.files.domain.repository.FilesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

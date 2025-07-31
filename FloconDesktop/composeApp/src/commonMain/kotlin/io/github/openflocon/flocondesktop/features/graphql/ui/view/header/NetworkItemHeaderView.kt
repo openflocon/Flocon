@@ -9,9 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.features.graphql.ui.view.GraphQlItemColumnWidths
-import com.florent37.flocondesktop.features.network.ui.view.components.HeaderLabelItem
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.features.graphql.ui.view.GraphQlItemColumnWidths
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.HeaderLabelItem
 
 @Composable
 fun GraphQlItemHeaderView(

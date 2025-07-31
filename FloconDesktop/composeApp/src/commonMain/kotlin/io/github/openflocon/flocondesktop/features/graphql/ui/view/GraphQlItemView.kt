@@ -18,13 +18,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.ContextualItem
-import com.florent37.flocondesktop.common.ui.ContextualView
-import com.florent37.flocondesktop.features.graphql.ui.model.GraphQlItemViewState
-import com.florent37.flocondesktop.features.graphql.ui.model.OnGraphQlItemUserAction
-import com.florent37.flocondesktop.features.graphql.ui.model.previewGraphQlItemViewState
-import com.florent37.flocondesktop.features.graphql.ui.view.components.MethodView
-import com.florent37.flocondesktop.features.graphql.ui.view.components.StatusView
+import io.github.openflocon.flocondesktop.common.ui.ContextualItem
+import io.github.openflocon.flocondesktop.common.ui.ContextualView
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.GraphQlItemViewState
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.OnGraphQlItemUserAction
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.previewGraphQlItemViewState
+import io.github.openflocon.flocondesktop.features.graphql.ui.view.components.MethodView
+import io.github.openflocon.flocondesktop.features.graphql.ui.view.components.StatusView
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**

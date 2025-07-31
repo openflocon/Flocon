@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.features.database.domain
 
-import com.florent37.flocondesktop.common.Either
-import com.florent37.flocondesktop.common.Failure
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.database.domain.model.DatabaseExecuteSqlResponseDomainModel
-import com.florent37.flocondesktop.features.database.domain.repository.DatabaseRepository
+import io.github.openflocon.flocondesktop.common.Either
+import io.github.openflocon.flocondesktop.common.Failure
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.database.domain.model.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.flocondesktop.features.database.domain.repository.DatabaseRepository
 
 class ExecuteDatabaseQueryUseCase(
     private val databaseRepository: DatabaseRepository,

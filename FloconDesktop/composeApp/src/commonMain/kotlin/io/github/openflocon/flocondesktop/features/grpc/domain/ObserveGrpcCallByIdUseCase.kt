@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.grpc.domain
 
-import com.florent37.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcCallDomainModel
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcCallId
-import com.florent37.flocondesktop.features.grpc.domain.repository.GRPCRepository
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcCallDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcCallId
+import io.github.openflocon.flocondesktop.features.grpc.domain.repository.GRPCRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf

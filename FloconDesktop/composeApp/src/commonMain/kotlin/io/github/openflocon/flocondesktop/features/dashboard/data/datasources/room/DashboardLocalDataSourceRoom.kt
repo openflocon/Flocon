@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.features.dashboard.data.datasources.DashboardLocalDataSource
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.mapper.toDomain
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardId
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.DashboardLocalDataSource
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper.toDomain
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn

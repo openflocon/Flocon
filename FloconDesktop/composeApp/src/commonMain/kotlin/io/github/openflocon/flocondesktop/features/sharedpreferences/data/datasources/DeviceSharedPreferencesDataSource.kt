@@ -1,15 +1,15 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.data.datasources
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.FloconOutgoingMessageDataModel
-import com.florent37.flocondesktop.Protocol
-import com.florent37.flocondesktop.Server
-import com.florent37.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceEditSharedPreferenceValueMessage
-import com.florent37.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceGetSharedPreferenceValueMessage
-import com.florent37.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
-import com.florent37.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
-import com.florent37.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
-import com.florent37.flocondesktop.newRequestId
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
+import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocondesktop.Server
+import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceEditSharedPreferenceValueMessage
+import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceGetSharedPreferenceValueMessage
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
+import io.github.openflocon.flocondesktop.newRequestId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged

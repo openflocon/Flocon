@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.table.domain
 
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.table.domain.repository.TableRepository
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.table.domain.repository.TableRepository
 
 class ResetCurrentDeviceSelectedTableUseCase(
     private val tableRepository: TableRepository,

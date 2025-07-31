@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.messages.di
 
-import com.florent37.flocondesktop.Server
-import com.florent37.flocondesktop.getServer
-import com.florent37.flocondesktop.messages.data.di.messagesDataModule
-import com.florent37.flocondesktop.messages.domain.di.messagesDomainModule
-import com.florent37.flocondesktop.messages.ui.di.messagesUiModule
+import io.github.openflocon.flocondesktop.Server
+import io.github.openflocon.flocondesktop.getServer
+import io.github.openflocon.flocondesktop.messages.data.di.messagesDataModule
+import io.github.openflocon.flocondesktop.messages.domain.di.messagesDomainModule
+import io.github.openflocon.flocondesktop.messages.ui.di.messagesUiModule
 import org.koin.dsl.module
 
 val messagesModule =

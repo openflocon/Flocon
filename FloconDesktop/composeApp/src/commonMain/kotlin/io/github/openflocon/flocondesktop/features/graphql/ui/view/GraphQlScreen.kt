@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,15 +23,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.graphql.ui.GraphQlViewModel
-import com.florent37.flocondesktop.features.graphql.ui.model.GraphQlDetailViewState
-import com.florent37.flocondesktop.features.graphql.ui.model.GraphQlItemViewState
-import com.florent37.flocondesktop.features.graphql.ui.model.OnGraphQlItemUserAction
-import com.florent37.flocondesktop.features.graphql.ui.model.previewGraphQlItemViewState
-import com.florent37.flocondesktop.features.graphql.ui.view.header.GraphQlFilterBar
-import com.florent37.flocondesktop.features.graphql.ui.view.header.GraphQlItemHeaderView
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.graphql.ui.GraphQlViewModel
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.GraphQlDetailViewState
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.GraphQlItemViewState
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.OnGraphQlItemUserAction
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.previewGraphQlItemViewState
+import io.github.openflocon.flocondesktop.features.graphql.ui.view.header.GraphQlFilterBar
+import io.github.openflocon.flocondesktop.features.graphql.ui.view.header.GraphQlItemHeaderView
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 

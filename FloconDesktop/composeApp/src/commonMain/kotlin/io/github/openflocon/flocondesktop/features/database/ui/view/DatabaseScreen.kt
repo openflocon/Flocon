@@ -18,14 +18,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.database.ui.DatabaseViewModel
-import com.florent37.flocondesktop.features.database.ui.model.DatabaseScreenState
-import com.florent37.flocondesktop.features.database.ui.model.DatabasesStateUiModel
-import com.florent37.flocondesktop.features.database.ui.model.DeviceDataBaseUiModel
-import com.florent37.flocondesktop.features.database.ui.model.previewDatabaseScreenStateQueries
-import com.florent37.flocondesktop.features.database.ui.model.previewDatabasesStateUiModel
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.database.ui.DatabaseViewModel
+import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseScreenState
+import io.github.openflocon.flocondesktop.features.database.ui.model.DatabasesStateUiModel
+import io.github.openflocon.flocondesktop.features.database.ui.model.DeviceDataBaseUiModel
+import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabaseScreenStateQueries
+import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabasesStateUiModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -127,7 +127,7 @@ private fun DatabaseScreenPreview_Result() {
             executeQuery = {},
             clearQuery = {},
             state = DatabaseScreenState.Result(
-                result = com.florent37.flocondesktop.features.database.ui.model.QueryResultUiModel.Text(
+                result = io.github.openflocon.flocondesktop.features.database.ui.model.QueryResultUiModel.Text(
                     "query result",
                 ),
             ),

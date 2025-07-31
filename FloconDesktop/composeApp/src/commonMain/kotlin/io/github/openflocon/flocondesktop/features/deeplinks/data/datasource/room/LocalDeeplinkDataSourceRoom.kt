@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room
 
-import com.florent37.flocondesktop.features.deeplinks.data.datasource.LocalDeeplinkDataSource
-import com.florent37.flocondesktop.features.deeplinks.data.datasource.room.mapper.toDomainModels
-import com.florent37.flocondesktop.features.deeplinks.data.datasource.room.mapper.toEntities
-import com.florent37.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
+import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.LocalDeeplinkDataSource
+import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.mapper.toDomainModels
+import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.mapper.toEntities
+import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map

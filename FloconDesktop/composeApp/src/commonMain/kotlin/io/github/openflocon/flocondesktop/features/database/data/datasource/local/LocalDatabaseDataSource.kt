@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.data.datasource.local
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.features.database.domain.model.DeviceDataBaseId
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
 import kotlinx.coroutines.flow.Flow
 
 interface LocalDatabaseDataSource {

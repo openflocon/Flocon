@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.core.domain.device
 
-import com.florent37.flocondesktop.core.domain.device.repository.DevicesRepository
+import io.github.openflocon.flocondesktop.core.domain.device.repository.DevicesRepository
 
 class ObserveDevicesUseCase(
     private val devicesRepository: DevicesRepository,

@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.dashboard.domain
 
-import com.florent37.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardId
-import com.florent37.flocondesktop.features.dashboard.domain.repository.DashboardRepository
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
+import io.github.openflocon.flocondesktop.features.dashboard.domain.repository.DashboardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf

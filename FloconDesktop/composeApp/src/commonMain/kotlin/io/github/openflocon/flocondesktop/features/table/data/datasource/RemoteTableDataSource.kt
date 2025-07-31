@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.table.data.datasource
 
-import com.florent37.flocondesktop.FloconOutgoingMessageDataModel
-import com.florent37.flocondesktop.Protocol
-import com.florent37.flocondesktop.Server
+import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
+import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocondesktop.Server
 import kotlinx.serialization.json.Json
 
 class RemoteTableDataSource(

@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.app_icon_small
 import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
@@ -38,8 +40,6 @@ import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.previewLeftPannelState
 import io.github.openflocon.flocondesktop.main.ui.model.previewDevicesStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.view.DeviceSelectorView
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.app_icon_small
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -85,7 +85,7 @@ fun LeftPanelView(
         Column(
             modifier = Modifier.fillMaxWidth()
                 .weight(1f)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
         ) {
             state.sections.fastForEachIndexed { index, section ->
                 PannelLabel(

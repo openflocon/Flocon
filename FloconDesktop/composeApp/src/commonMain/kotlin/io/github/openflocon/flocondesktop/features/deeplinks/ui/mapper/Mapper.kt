@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.ui.mapper
 
-import com.florent37.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
-import com.florent37.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
-import com.florent37.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
+import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
+import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
+import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
 
 internal fun mapToUi(deepLinks: List<DeeplinkDomainModel>): List<DeeplinkViewState> = buildList {
     addAll(

@@ -14,11 +14,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.files.ui.FilesViewModel
-import com.florent37.flocondesktop.features.files.ui.model.FileUiModel
-import com.florent37.flocondesktop.features.files.ui.model.FilesStateUiModel
-import com.florent37.flocondesktop.features.files.ui.model.previewFilesStateUiModel
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.files.ui.FilesViewModel
+import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.files.ui.model.FilesStateUiModel
+import io.github.openflocon.flocondesktop.features.files.ui.model.previewFilesStateUiModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 

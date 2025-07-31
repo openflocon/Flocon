@@ -1,14 +1,14 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.data
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.FloconIncomingMessageDataModel
-import com.florent37.flocondesktop.Protocol
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.common.executeAdbCommand
-import com.florent37.flocondesktop.features.deeplinks.data.datasource.LocalDeeplinkDataSource
-import com.florent37.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
-import com.florent37.flocondesktop.features.deeplinks.domain.repository.DeeplinkRepository
-import com.florent37.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
+import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.common.executeAdbCommand
+import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.LocalDeeplinkDataSource
+import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
+import io.github.openflocon.flocondesktop.features.deeplinks.domain.repository.DeeplinkRepository
+import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 

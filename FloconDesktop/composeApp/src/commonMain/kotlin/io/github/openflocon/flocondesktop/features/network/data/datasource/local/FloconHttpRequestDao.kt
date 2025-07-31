@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.florent37.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.DeviceId
 import kotlinx.coroutines.flow.Flow
 
 @Dao

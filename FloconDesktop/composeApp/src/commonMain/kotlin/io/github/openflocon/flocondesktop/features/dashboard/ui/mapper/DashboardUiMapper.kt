@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.dashboard.ui.mapper
 
 import androidx.compose.ui.graphics.Color
-import com.florent37.flocondesktop.common.ui.JsonPrettyPrinter
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardElementDomainModel
-import com.florent37.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
-import com.florent37.flocondesktop.features.dashboard.ui.model.DashboardViewState
+import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardElementDomainModel
+import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardViewState
 import kotlinx.serialization.json.Json
 
 internal fun DashboardDomainModel.toUi(): DashboardViewState = DashboardViewState(

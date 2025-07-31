@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.core.domain.settings
 
-import com.florent37.flocondesktop.SERVER_PORT
-import com.florent37.flocondesktop.common.Either
-import com.florent37.flocondesktop.common.Failure
-import com.florent37.flocondesktop.common.executeAdbCommand
-import com.florent37.flocondesktop.core.domain.settings.repository.SettingsRepository
+import io.github.openflocon.flocondesktop.SERVER_PORT
+import io.github.openflocon.flocondesktop.common.Either
+import io.github.openflocon.flocondesktop.common.Failure
+import io.github.openflocon.flocondesktop.common.executeAdbCommand
+import io.github.openflocon.flocondesktop.core.domain.settings.repository.SettingsRepository
 
 class StartAdbForwardUseCase(
     private val settingsRepository: SettingsRepository,

@@ -1,4 +1,4 @@
-package com.florent37.flocondesktop
+package io.github.openflocon.flocondesktop
 
 import io.ktor.server.application.install
 import io.ktor.server.engine.EmbeddedServer

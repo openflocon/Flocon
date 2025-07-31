@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.table.data.datasource.local.mapper
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.features.table.data.datasource.local.model.TableEntity
-import com.florent37.flocondesktop.features.table.data.datasource.local.model.TableItemEntity
-import com.florent37.flocondesktop.features.table.domain.model.TableDomainModel
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
+import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableItemEntity
+import io.github.openflocon.flocondesktop.features.table.domain.model.TableDomainModel
 
 internal fun TableDomainModel.toEntity(
     deviceId: DeviceId,

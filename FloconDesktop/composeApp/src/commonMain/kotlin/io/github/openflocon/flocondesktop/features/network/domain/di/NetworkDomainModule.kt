@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.network.domain.di
 
-import com.florent37.flocondesktop.features.network.domain.GenerateCurlCommandUseCase
-import com.florent37.flocondesktop.features.network.domain.ObserveHttpRequestsByIdUseCase
-import com.florent37.flocondesktop.features.network.domain.ObserveHttpRequestsUseCase
-import com.florent37.flocondesktop.features.network.domain.RemoveHttpRequestUseCase
-import com.florent37.flocondesktop.features.network.domain.RemoveHttpRequestsBeforeUseCase
-import com.florent37.flocondesktop.features.network.domain.ResetCurrentDeviceHttpRequestsUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.GenerateCurlCommandUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.ObserveHttpRequestsByIdUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.ObserveHttpRequestsUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestsBeforeUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.ResetCurrentDeviceHttpRequestsUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

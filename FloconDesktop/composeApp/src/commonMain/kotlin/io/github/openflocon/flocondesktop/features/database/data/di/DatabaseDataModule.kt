@@ -1,12 +1,12 @@
 package io.github.openflocon.flocondesktop.features.database.data.di
 
-import com.florent37.flocondesktop.features.database.data.DatabaseRepositoryImpl
-import com.florent37.flocondesktop.features.database.data.datasource.devicedatabases.DeviceDatabasesDataSource
-import com.florent37.flocondesktop.features.database.data.datasource.devicedatabases.QueryDatabaseDataSource
-import com.florent37.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSource
-import com.florent37.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSourceRoom
-import com.florent37.flocondesktop.features.database.domain.repository.DatabaseRepository
-import com.florent37.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.flocondesktop.features.database.data.DatabaseRepositoryImpl
+import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.DeviceDatabasesDataSource
+import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.QueryDatabaseDataSource
+import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSource
+import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSourceRoom
+import io.github.openflocon.flocondesktop.features.database.domain.repository.DatabaseRepository
+import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf

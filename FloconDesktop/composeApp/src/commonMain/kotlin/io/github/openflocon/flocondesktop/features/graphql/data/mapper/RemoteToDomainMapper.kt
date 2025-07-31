@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.features.graphql.data.mapper
 
-import com.florent37.flocondesktop.features.grpc.data.model.GrpcRequestDomainModelWrapper
-import com.florent37.flocondesktop.features.grpc.data.model.GrpcResponseDomainModelWrapper
-import com.florent37.flocondesktop.features.grpc.data.model.fromdevice.GrpcHeaderDataModel
-import com.florent37.flocondesktop.features.grpc.data.model.fromdevice.GrpcRequestDataModel
-import com.florent37.flocondesktop.features.grpc.data.model.fromdevice.GrpcResponseDataModel
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcHeaderDomainModel
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcRequestDomainModel
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcResponseDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.data.model.GrpcRequestDomainModelWrapper
+import io.github.openflocon.flocondesktop.features.grpc.data.model.GrpcResponseDomainModelWrapper
+import io.github.openflocon.flocondesktop.features.grpc.data.model.fromdevice.GrpcHeaderDataModel
+import io.github.openflocon.flocondesktop.features.grpc.data.model.fromdevice.GrpcRequestDataModel
+import io.github.openflocon.flocondesktop.features.grpc.data.model.fromdevice.GrpcResponseDataModel
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcHeaderDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcRequestDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcResponseDomainModel
 
 fun toDomain(dataModel: GrpcRequestDataModel): GrpcRequestDomainModelWrapper? = GrpcRequestDomainModelWrapper(
     callId = dataModel.id,

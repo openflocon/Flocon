@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.features.network.ui.mapper
 
-import com.florent37.flocondesktop.common.ui.ByteFormatter
-import com.florent37.flocondesktop.common.ui.JsonPrettyPrinter
-import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
-import com.florent37.flocondesktop.features.network.ui.model.NetworkDetailHeaderUi
-import com.florent37.flocondesktop.features.network.ui.model.NetworkDetailViewState
+import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
+import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
+import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailHeaderUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 
 fun toDetailUi(request: FloconHttpRequestDomainModel): NetworkDetailViewState = NetworkDetailViewState(
     fullUrl = request.url,

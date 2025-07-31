@@ -2,16 +2,16 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.common.ui.feedback.FeedbackDisplayer
-import com.florent37.flocondesktop.features.sharedpreferences.domain.EditSharedPrefFieldUseCase
-import com.florent37.flocondesktop.features.sharedpreferences.domain.ObserveCurrentDeviceSharedPreferenceValuesUseCase
-import com.florent37.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
-import com.florent37.flocondesktop.features.sharedpreferences.ui.delegate.SharedPrefSelectorDelegate
-import com.florent37.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
-import com.florent37.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowUiModel
-import com.florent37.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowsStateUiModel
-import com.florent37.flocondesktop.features.sharedpreferences.ui.model.SharedPrefsStateUiModel
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.EditSharedPrefFieldUseCase
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.ObserveCurrentDeviceSharedPreferenceValuesUseCase
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.delegate.SharedPrefSelectorDelegate
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowsStateUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPrefsStateUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn

@@ -1,18 +1,18 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.data
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.FloconIncomingMessageDataModel
-import com.florent37.flocondesktop.Protocol
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.features.sharedpreferences.data.datasources.DeviceSharedPreferencesDataSource
-import com.florent37.flocondesktop.features.sharedpreferences.data.datasources.DeviceSharedPreferencesValuesDataSource
-import com.florent37.flocondesktop.features.sharedpreferences.data.model.incoming.toDeviceSharedPreferenceDomain
-import com.florent37.flocondesktop.features.sharedpreferences.data.model.incoming.toSharedPreferenceValuesResponseDomain
-import com.florent37.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
-import com.florent37.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
-import com.florent37.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
-import com.florent37.flocondesktop.features.sharedpreferences.domain.repository.SharedPreferencesRepository
-import com.florent37.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
+import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.features.sharedpreferences.data.datasources.DeviceSharedPreferencesDataSource
+import io.github.openflocon.flocondesktop.features.sharedpreferences.data.datasources.DeviceSharedPreferencesValuesDataSource
+import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming.toDeviceSharedPreferenceDomain
+import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming.toSharedPreferenceValuesResponseDomain
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.repository.SharedPreferencesRepository
+import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -100,7 +100,7 @@ class SharedPreferencesRepositoryImpl(
     }
 
     override fun observe(
-        deviceId: com.florent37.flocondesktop.DeviceId,
+        deviceId: io.github.openflocon.flocondesktop.DeviceId,
         sharedPreferenceId: DeviceSharedPreferenceId,
     ): Flow<List<SharedPreferenceRowDomainModel>> = deviceSharedPreferencesValuesDataSource
         .observe(

@@ -2,7 +2,7 @@ package io.github.openflocon.flocondesktop.features.database.ui.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.florent37.flocondesktop.features.database.ui.model.DatabaseScreenState
+import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseScreenState
 
 @Composable
 fun DatabaseContentView(

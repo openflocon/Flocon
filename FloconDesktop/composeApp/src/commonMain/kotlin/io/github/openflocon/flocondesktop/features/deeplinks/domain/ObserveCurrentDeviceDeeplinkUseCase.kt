@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.domain
 
-import com.florent37.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
-import com.florent37.flocondesktop.features.deeplinks.domain.repository.DeeplinkRepository
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
+import io.github.openflocon.flocondesktop.features.deeplinks.domain.repository.DeeplinkRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf

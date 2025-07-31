@@ -16,12 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.ContextualItem
-import com.florent37.flocondesktop.common.ui.ContextualView
-import com.florent37.flocondesktop.features.grpc.ui.model.GrpcItemColumnWidths
-import com.florent37.flocondesktop.features.grpc.ui.model.GrpcItemViewState
-import com.florent37.flocondesktop.features.grpc.ui.model.OnGrpcItemUserAction
-import com.florent37.flocondesktop.features.grpc.ui.model.previewGrpcItemViewState
+import io.github.openflocon.flocondesktop.common.ui.ContextualItem
+import io.github.openflocon.flocondesktop.common.ui.ContextualView
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.GrpcItemColumnWidths
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.GrpcItemViewState
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.OnGrpcItemUserAction
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.previewGrpcItemViewState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

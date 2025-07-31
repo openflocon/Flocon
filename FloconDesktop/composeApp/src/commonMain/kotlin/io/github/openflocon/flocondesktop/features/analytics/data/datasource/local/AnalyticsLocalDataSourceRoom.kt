@@ -1,12 +1,12 @@
 package io.github.openflocon.flocondesktop.features.analytics.data.datasource.local
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.features.analytics.data.datasource.local.mapper.toAnalyticsDomain
-import com.florent37.flocondesktop.features.analytics.data.datasource.local.mapper.toEntity
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsIdentifierDomainModel
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsItemDomainModel
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsTableId
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.mapper.toAnalyticsDomain
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.mapper.toEntity
+import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsIdentifierDomainModel
+import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsItemDomainModel
+import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsTableId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map

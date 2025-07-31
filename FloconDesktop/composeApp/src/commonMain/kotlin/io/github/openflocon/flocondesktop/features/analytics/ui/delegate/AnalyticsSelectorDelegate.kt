@@ -1,14 +1,14 @@
 package io.github.openflocon.flocondesktop.features.analytics.ui.delegate
 
-import com.florent37.flocondesktop.common.coroutines.closeable.CloseableDelegate
-import com.florent37.flocondesktop.common.coroutines.closeable.CloseableScoped
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.features.analytics.domain.ObserveCurrentDeviceSelectedAnalyticsUseCase
-import com.florent37.flocondesktop.features.analytics.domain.ObserveDeviceAnalyticsUseCase
-import com.florent37.flocondesktop.features.analytics.domain.SelectCurrentDeviceAnalyticsUseCase
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsIdentifierDomainModel
-import com.florent37.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
-import com.florent37.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.features.analytics.domain.ObserveCurrentDeviceSelectedAnalyticsUseCase
+import io.github.openflocon.flocondesktop.features.analytics.domain.ObserveDeviceAnalyticsUseCase
+import io.github.openflocon.flocondesktop.features.analytics.domain.SelectCurrentDeviceAnalyticsUseCase
+import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsIdentifierDomainModel
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

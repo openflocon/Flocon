@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.dashboard.domain
 
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.dashboard.domain.model.DashboardId
-import com.florent37.flocondesktop.features.dashboard.domain.repository.DashboardRepository
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
+import io.github.openflocon.flocondesktop.features.dashboard.domain.repository.DashboardRepository
 
 class SelectCurrentDeviceDashboardUseCase(
     private val dashboardRepository: DashboardRepository,

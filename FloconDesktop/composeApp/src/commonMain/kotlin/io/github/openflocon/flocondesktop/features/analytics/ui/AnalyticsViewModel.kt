@@ -2,16 +2,16 @@ package io.github.openflocon.flocondesktop.features.analytics.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.common.ui.feedback.FeedbackDisplayer
-import com.florent37.flocondesktop.features.analytics.domain.ObserveCurrentDeviceAnalyticsContentUseCase
-import com.florent37.flocondesktop.features.analytics.domain.ResetCurrentDeviceSelectedAnalyticsUseCase
-import com.florent37.flocondesktop.features.analytics.ui.delegate.AnalyticsSelectorDelegate
-import com.florent37.flocondesktop.features.analytics.ui.model.AnalyticsContentStateUiModel
-import com.florent37.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
-import com.florent37.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
-import com.florent37.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
-import com.florent37.flocondesktop.features.network.ui.mapper.formatTimestamp
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.features.analytics.domain.ObserveCurrentDeviceAnalyticsContentUseCase
+import io.github.openflocon.flocondesktop.features.analytics.domain.ResetCurrentDeviceSelectedAnalyticsUseCase
+import io.github.openflocon.flocondesktop.features.analytics.ui.delegate.AnalyticsSelectorDelegate
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsContentStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
+import io.github.openflocon.flocondesktop.features.network.ui.mapper.formatTimestamp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.core.domain.device.repository
 
-import com.florent37.flocondesktop.messages.domain.model.DeviceDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DevicesRepository {

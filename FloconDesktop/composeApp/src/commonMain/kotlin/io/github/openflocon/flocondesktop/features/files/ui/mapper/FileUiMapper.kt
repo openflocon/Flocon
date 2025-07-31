@@ -1,14 +1,14 @@
 package io.github.openflocon.flocondesktop.features.files.ui.mapper
 
-import com.florent37.flocondesktop.features.files.domain.model.FileDomainModel
-import com.florent37.flocondesktop.features.files.domain.model.FilePathDomainModel
-import com.florent37.flocondesktop.features.files.ui.model.FilePathUiModel
-import com.florent37.flocondesktop.features.files.ui.model.FileTypeUiModel
-import com.florent37.flocondesktop.features.files.ui.model.FileUiModel
-import com.florent37.flocondesktop.features.files.ui.model.FileUiModel.ContextualAction
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.file
 import flocondesktop.composeapp.generated.resources.folder
+import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
+import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
+import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
+import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
+import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel.ContextualAction
 import org.jetbrains.compose.resources.DrawableResource
 import kotlin.time.Instant
 

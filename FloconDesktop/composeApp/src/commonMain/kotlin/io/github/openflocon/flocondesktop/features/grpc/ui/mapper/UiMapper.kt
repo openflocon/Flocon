@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.features.grpc.ui.mapper
 
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcCallDomainModel
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcHeaderDomainModel
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcResponseDomainModel
-import com.florent37.flocondesktop.features.grpc.ui.model.GrpcDetailViewState
-import com.florent37.flocondesktop.features.grpc.ui.model.GrpcItemViewState
-import com.florent37.flocondesktop.features.network.ui.mapper.formatDuration
-import com.florent37.flocondesktop.features.network.ui.mapper.formatTimestamp
-import com.florent37.flocondesktop.features.network.ui.model.NetworkDetailHeaderUi
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcCallDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcHeaderDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcResponseDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.GrpcDetailViewState
+import io.github.openflocon.flocondesktop.features.grpc.ui.model.GrpcItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.mapper.formatDuration
+import io.github.openflocon.flocondesktop.features.network.ui.mapper.formatTimestamp
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailHeaderUi
 
 fun toUi(domainModel: GrpcCallDomainModel): GrpcItemViewState = GrpcItemViewState(
     callId = domainModel.id,

@@ -2,8 +2,8 @@ package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.r
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.model.DashboardEntity
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.model.DashboardSectionEntity
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardEntity
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardSectionEntity
 
 data class DashboardWithSectionsAndElements(
     @Embedded

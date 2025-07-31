@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.messages.ui
 
-import com.florent37.flocondesktop.common.coroutines.closeable.CloseableDelegate
-import com.florent37.flocondesktop.common.coroutines.closeable.CloseableScoped
-import com.florent37.flocondesktop.messages.domain.HandleIncomingMessagesUseCase
-import com.florent37.flocondesktop.messages.domain.StartServerUseCase
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.flocondesktop.messages.domain.HandleIncomingMessagesUseCase
+import io.github.openflocon.flocondesktop.messages.domain.StartServerUseCase
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 

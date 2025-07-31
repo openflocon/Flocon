@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.table.ui.model
 
 import androidx.compose.runtime.Immutable
-import com.florent37.flocondesktop.features.table.domain.model.TableId
+import io.github.openflocon.flocondesktop.features.table.domain.model.TableId
 
 @Immutable
 data class DeviceTableUiModel(

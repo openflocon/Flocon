@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.domain
 
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.network.domain.repository.NetworkRepository
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
 
 class ResetCurrentDeviceHttpRequestsUseCase(
     private val networkRepository: NetworkRepository,

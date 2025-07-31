@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.FloconOutgoingMessageDataModel
-import com.florent37.flocondesktop.Protocol
-import com.florent37.flocondesktop.Server
-import com.florent37.flocondesktop.features.database.domain.model.DeviceDataBaseDomainModel
-import com.florent37.flocondesktop.features.database.domain.model.DeviceDataBaseId
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
+import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocondesktop.Server
+import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseDomainModel
+import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged

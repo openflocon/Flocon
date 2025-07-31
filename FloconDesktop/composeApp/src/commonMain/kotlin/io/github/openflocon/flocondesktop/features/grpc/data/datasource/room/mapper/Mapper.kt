@@ -1,10 +1,10 @@
-package com.florent37.flocondesktop.features.grpc.data.datasource.room
+package io.github.openflocon.flocondesktop.features.grpc.data.datasource.room
 
-import com.florent37.flocondesktop.features.grpc.data.datasource.room.model.GrpcCallWithDetails
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcCallDomainModel
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcHeaderDomainModel
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcRequestDomainModel
-import com.florent37.flocondesktop.features.grpc.domain.model.GrpcResponseDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.data.datasource.room.model.GrpcCallWithDetails
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcCallDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcHeaderDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcRequestDomainModel
+import io.github.openflocon.flocondesktop.features.grpc.domain.model.GrpcResponseDomainModel
 
 fun GrpcCallWithDetails.toDomainModel(): GrpcCallDomainModel {
     val requestDomain = with(call.request) {

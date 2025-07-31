@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.graphql.data.datasource.room
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.features.graphql.data.datasource.LocalGraphQlDataSource
-import com.florent37.flocondesktop.features.graphql.data.datasource.room.mapper.toDomainModel
-import com.florent37.flocondesktop.features.graphql.data.datasource.room.mapper.toEntity
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestId
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.features.graphql.data.datasource.LocalGraphQlDataSource
+import io.github.openflocon.flocondesktop.features.graphql.data.datasource.room.mapper.toDomainModel
+import io.github.openflocon.flocondesktop.features.graphql.data.datasource.room.mapper.toEntity
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

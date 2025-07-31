@@ -19,10 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.features.graphql.ui.model.GraphQlItemViewState
-import com.florent37.flocondesktop.features.network.ui.view.components.FilterBar
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.bin
+import io.github.openflocon.flocondesktop.features.graphql.ui.model.GraphQlItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.FilterBar
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

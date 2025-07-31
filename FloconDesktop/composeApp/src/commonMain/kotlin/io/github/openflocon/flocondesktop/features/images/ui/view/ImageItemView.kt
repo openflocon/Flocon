@@ -19,11 +19,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.common.ui.isInPreview
-import com.florent37.flocondesktop.features.images.ui.model.ImagesUiModel
-import com.florent37.flocondesktop.features.images.ui.model.previewImagesUiModel
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.common.ui.isInPreview
+import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesUiModel
+import io.github.openflocon.flocondesktop.features.images.ui.model.previewImagesUiModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

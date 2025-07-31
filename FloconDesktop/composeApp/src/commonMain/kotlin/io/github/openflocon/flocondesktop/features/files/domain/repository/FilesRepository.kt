@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.files.domain.repository
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.common.Either
-import com.florent37.flocondesktop.features.files.domain.model.FileDomainModel
-import com.florent37.flocondesktop.features.files.domain.model.FilePathDomainModel
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.common.Either
+import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
+import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface FilesRepository {

@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.graphql.domain.repository
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
-import com.florent37.flocondesktop.features.graphql.domain.model.GraphQlRequestId
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestDomainModel
+import io.github.openflocon.flocondesktop.features.graphql.domain.model.GraphQlRequestId
 import kotlinx.coroutines.flow.Flow
 
 interface GraphQlRepository {

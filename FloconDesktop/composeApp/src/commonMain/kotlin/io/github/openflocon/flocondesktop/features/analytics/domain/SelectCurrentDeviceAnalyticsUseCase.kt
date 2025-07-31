@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.analytics.domain
 
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsTableId
-import com.florent37.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsTableId
+import io.github.openflocon.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
 
 class SelectCurrentDeviceAnalyticsUseCase(
     private val analyticsRepository: AnalyticsRepository,

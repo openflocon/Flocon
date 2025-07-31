@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.files.domain
 
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import com.florent37.flocondesktop.features.files.domain.model.FilePathDomainModel
-import com.florent37.flocondesktop.features.files.domain.repository.FilesRepository
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
+import io.github.openflocon.flocondesktop.features.files.domain.repository.FilesRepository
 
 class RefreshFolderContentUseCase(
     private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,

@@ -21,9 +21,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import com.florent37.flocondesktop.common.ui.FloconColorScheme
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.database.ui.model.QueryResultUiModel
+import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.database.ui.model.QueryResultUiModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -125,9 +125,9 @@ private fun DatabaseResultViewPreviewValues() {
     val result = QueryResultUiModel.Values(
         columns = listOf("ID", "Name", "Email"),
         rows = listOf(
-            com.florent37.flocondesktop.features.database.ui.model.DatabaseRowUiModel(items = listOf("1", "John Doe", "john.doe@example.com")),
-            com.florent37.flocondesktop.features.database.ui.model.DatabaseRowUiModel(items = listOf("2", "Jane Smith", "jane.smith@example.com")),
-            com.florent37.flocondesktop.features.database.ui.model.DatabaseRowUiModel(items = listOf("3", "Peter Jones", null)),
+            io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseRowUiModel(items = listOf("1", "John Doe", "john.doe@example.com")),
+            io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseRowUiModel(items = listOf("2", "Jane Smith", "jane.smith@example.com")),
+            io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseRowUiModel(items = listOf("3", "Peter Jones", null)),
         ),
     )
     FloconTheme {

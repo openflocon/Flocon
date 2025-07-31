@@ -1,15 +1,15 @@
 package io.github.openflocon.flocondesktop.features.network.data
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.FloconIncomingMessageDataModel
-import com.florent37.flocondesktop.Protocol
-import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import com.florent37.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
-import com.florent37.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
-import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
-import com.florent37.flocondesktop.features.network.domain.repository.NetworkImageRepository
-import com.florent37.flocondesktop.features.network.domain.repository.NetworkRepository
-import com.florent37.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
+import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
+import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
+import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
+import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
+import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json

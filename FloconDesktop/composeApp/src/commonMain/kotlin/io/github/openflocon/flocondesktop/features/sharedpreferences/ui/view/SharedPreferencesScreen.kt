@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,15 +19,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.florent37.flocondesktop.common.ui.FloconColors
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.sharedpreferences.ui.SharedPreferencesViewModel
-import com.florent37.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
-import com.florent37.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowUiModel
-import com.florent37.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowsStateUiModel
-import com.florent37.flocondesktop.features.sharedpreferences.ui.model.SharedPrefsStateUiModel
-import com.florent37.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesRowsStateUiModel
-import com.florent37.flocondesktop.features.sharedpreferences.ui.model.previewSharedPrefsStateUiModel
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.SharedPreferencesViewModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowsStateUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPrefsStateUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesRowsStateUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPrefsStateUiModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 

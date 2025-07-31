@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.analytics.data.datasource.local
 
-import com.florent37.flocondesktop.DeviceId
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsIdentifierDomainModel
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsItemDomainModel
-import com.florent37.flocondesktop.features.analytics.domain.model.AnalyticsTableId
+import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsIdentifierDomainModel
+import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsItemDomainModel
+import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsTableId
 import kotlinx.coroutines.flow.Flow
 
 interface AnalyticsLocalDataSource {

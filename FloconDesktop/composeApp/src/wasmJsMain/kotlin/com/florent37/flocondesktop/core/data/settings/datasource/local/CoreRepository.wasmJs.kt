@@ -1,4 +1,4 @@
-package com.florent37.flocondesktop.core.data.settings.datasource.local
+package io.github.openflocon.flocondesktop.core.data.settings.datasource.local
 
 import com.russhwolf.settings.ObservableSettings
 

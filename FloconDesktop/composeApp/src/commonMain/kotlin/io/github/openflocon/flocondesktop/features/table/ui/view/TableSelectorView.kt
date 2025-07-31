@@ -24,10 +24,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.florent37.flocondesktop.common.ui.FloconTheme
-import com.florent37.flocondesktop.features.table.ui.model.DeviceTableUiModel
-import com.florent37.flocondesktop.features.table.ui.model.TablesStateUiModel
-import com.florent37.flocondesktop.features.table.ui.model.previewDeviceTableUiModel
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.table.ui.model.DeviceTableUiModel
+import io.github.openflocon.flocondesktop.features.table.ui.model.TablesStateUiModel
+import io.github.openflocon.flocondesktop.features.table.ui.model.previewDeviceTableUiModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

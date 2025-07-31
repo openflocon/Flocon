@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.di
 
-import com.florent37.flocondesktop.features.dashboard.data.DashboardRepositoryImpl
-import com.florent37.flocondesktop.features.dashboard.data.datasources.DashboardLocalDataSource
-import com.florent37.flocondesktop.features.dashboard.data.datasources.ToDeviceDashboardDataSource
-import com.florent37.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSource
-import com.florent37.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSourceInMemory
-import com.florent37.flocondesktop.features.dashboard.data.datasources.room.DashboardLocalDataSourceRoom
-import com.florent37.flocondesktop.features.dashboard.domain.repository.DashboardRepository
-import com.florent37.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.flocondesktop.features.dashboard.data.DashboardRepositoryImpl
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.DashboardLocalDataSource
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.ToDeviceDashboardDataSource
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSource
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSourceInMemory
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.DashboardLocalDataSourceRoom
+import io.github.openflocon.flocondesktop.features.dashboard.domain.repository.DashboardRepository
+import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
