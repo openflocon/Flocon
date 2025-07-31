@@ -190,6 +190,8 @@ compose.desktop {
             packageVersion = "1.0.0"
             macOS {
                 iconFile.set(project.file("src/desktopMain/resources/files/flocon_big.icns"))
+                bundleID = "io.github.openflocon.flocon"
+                dockName = "Flocon"
             }
         }
     }
