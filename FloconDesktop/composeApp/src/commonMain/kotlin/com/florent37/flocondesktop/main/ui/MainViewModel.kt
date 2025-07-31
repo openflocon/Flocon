@@ -42,14 +42,14 @@ class MainViewModel(
     }
 
     val leftPanelState = subScreen.map { subScreen ->
-        buildLeftPannelState(
+        buildLeftPanelState(
             selectedId = subScreen.id,
         )
     }.flowOn(dispatcherProvider.ui)
         .stateIn(
             scope = viewModelScope,
             started = kotlinx.coroutines.flow.SharingStarted.Eagerly,
-            initialValue = buildLeftPannelState(subScreen.value.id),
+            initialValue = buildLeftPanelState(subScreen.value.id),
         )
 
     val devicesState: StateFlow<DevicesStateUiModel> = devicesDelegate.devicesState
@@ -65,7 +65,7 @@ class MainViewModel(
     }
 }
 
-fun buildLeftPannelState(selectedId: String?) = LeftPanelState(
+fun buildLeftPanelState(selectedId: String?) = LeftPanelState(
     bottomItems = listOf(
         item(subScreen = SubScreen.Settings, selectedId = selectedId),
     ),
@@ -75,6 +75,7 @@ fun buildLeftPannelState(selectedId: String?) = LeftPanelState(
             items = listOf(
                 item(subScreen = SubScreen.Network, selectedId = selectedId),
                 item(subScreen = SubScreen.Images, selectedId = selectedId),
+                item(subScreen = SubScreen.GraphQl, selectedId = selectedId),
                 item(subScreen = SubScreen.GRPC, selectedId = selectedId),
             ),
         ),

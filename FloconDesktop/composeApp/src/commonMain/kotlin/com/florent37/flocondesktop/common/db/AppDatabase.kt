@@ -18,6 +18,8 @@ import com.florent37.flocondesktop.features.deeplinks.data.datasource.room.Floco
 import com.florent37.flocondesktop.features.deeplinks.data.datasource.room.model.DeeplinkEntity
 import com.florent37.flocondesktop.features.files.data.datasources.FloconFileDao
 import com.florent37.flocondesktop.features.files.data.datasources.model.FileEntity
+import com.florent37.flocondesktop.features.graphql.data.datasource.room.GraphQlDao
+import com.florent37.flocondesktop.features.graphql.data.datasource.room.model.GraphQlRequestEntity
 import com.florent37.flocondesktop.features.grpc.data.datasource.room.GrpcDao
 import com.florent37.flocondesktop.features.grpc.data.datasource.room.model.GrpcCallEntity
 import com.florent37.flocondesktop.features.grpc.data.datasource.room.model.GrpcResponseEntity
@@ -31,7 +33,7 @@ import com.florent37.flocondesktop.features.table.data.datasource.local.model.Ta
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 17,
+    version = 18,
     entities = [
         FloconHttpRequestEntity::class,
         FileEntity::class,
@@ -46,6 +48,7 @@ import kotlinx.coroutines.Dispatchers
         GrpcCallEntity::class,
         GrpcResponseEntity::class,
         AnalyticsItemEntity::class,
+        GraphQlRequestEntity::class,
     ],
 )
 @TypeConverters(
@@ -62,6 +65,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val deeplinkDao: FloconDeeplinkDao
     abstract val grpcDao: GrpcDao
     abstract val analyticsDao: FloconAnalyticsDao
+    abstract val graphQlDao: GraphQlDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()

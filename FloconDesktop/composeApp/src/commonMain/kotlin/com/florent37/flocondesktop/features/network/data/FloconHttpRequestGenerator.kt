@@ -1,7 +1,6 @@
 package com.florent37.flocondesktop.features.network.data
 
 import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
-import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestInfos
 import kotlin.time.Clock
 
 object FloconHttpRequestGenerator {
@@ -66,13 +65,14 @@ object FloconHttpRequestGenerator {
                     null
                 }
 
-            FloconHttpRequestInfos(
+            FloconHttpRequestDomainModel(
+                uuid = index.toString(),
                 url = "$urlScheme://$domain$path/${index + 1}",
-                method = method,
-                startTime = Clock.System.now()
-                    .toEpochMilliseconds() - (index * 500L), // Temps de démarrage décroissant
                 durationMs = (100.0 + (index * 25.0)), // Durée croissante
-                request = FloconHttpRequestInfos.Request(
+                request = FloconHttpRequestDomainModel.Request(
+                    method = method,
+                    startTime = Clock.System.now()
+                        .toEpochMilliseconds() - (index * 500L), // Temps de démarrage décroissant
                     headers =
                     mapOf(
                         "Content-Type" to contentType,
@@ -82,7 +82,7 @@ object FloconHttpRequestGenerator {
                     body = requestBodyContent,
                     byteSize = 300,
                 ),
-                response = FloconHttpRequestInfos.Response(
+                response = FloconHttpRequestDomainModel.Response(
                     body = responseBodyContent,
                     httpCode = 200,
                     byteSize = 1500,
@@ -93,9 +93,7 @@ object FloconHttpRequestGenerator {
                         "X-Response-ID" to "res-$index",
                     ),
                 ),
-            ).let {
-                FloconHttpRequestDomainModel(uuid = index.toString(), infos = it)
-            }
+            )
         }
     }
 }

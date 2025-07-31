@@ -4,6 +4,7 @@ import com.florent37.flocondesktop.DeviceId
 import com.florent37.flocondesktop.FloconIncomingMessageDataModel
 import com.florent37.flocondesktop.Protocol
 import com.florent37.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import com.florent37.flocondesktop.features.graphql.data.mapper.toDomain
 import com.florent37.flocondesktop.features.grpc.data.datasource.LocalGrpcDataSource
 import com.florent37.flocondesktop.features.grpc.data.model.fromdevice.GrpcRequestDataModel
 import com.florent37.flocondesktop.features.grpc.data.model.fromdevice.GrpcResponseDataModel

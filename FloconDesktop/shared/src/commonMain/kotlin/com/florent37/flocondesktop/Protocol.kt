@@ -46,6 +46,14 @@ object Protocol {
             }
         }
 
+        object Graphql {
+            const val Plugin = "graphql"
+
+            object Method {
+                const val LogNetworkCall = "logNetworkCall"
+            }
+        }
+
         object GRPC {
             const val Plugin = "gRPC"
 

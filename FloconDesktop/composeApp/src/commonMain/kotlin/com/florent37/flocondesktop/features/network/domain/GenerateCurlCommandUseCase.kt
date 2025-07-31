@@ -3,13 +3,11 @@ package com.florent37.flocondesktop.features.network.domain
 import com.florent37.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 
 class GenerateCurlCommandUseCase {
-    operator fun invoke(request: FloconHttpRequestDomainModel): String {
-        val infos = request.infos
-
+    operator fun invoke(infos: FloconHttpRequestDomainModel): String {
         val commandBuilder = StringBuilder("curl")
 
         // 1. Add HTTP Method
-        commandBuilder.append(" -X ${infos.method}")
+        commandBuilder.append(" -X ${infos.request.method}")
 
         // 2. Add Request Headers
         infos.request.headers.forEach { (key, value) ->

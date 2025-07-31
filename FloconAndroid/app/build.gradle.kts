@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.apollo)
     id("com.google.protobuf")
 }
 
@@ -22,13 +23,11 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    val githubToken = System.getenv("GITHUB_TOKEN_GRPC") ?: ""
+
     buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+        debug {
+            buildConfigField("String", "GITHUB_TOKEN", "\"$githubToken\"")
         }
     }
     compileOptions {
@@ -40,6 +39,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -50,10 +50,12 @@ dependencies {
         implementation("io.github.openflocon:flocon:$floconVersion")
         implementation("io.github.openflocon:flocon-grpc-interceptor:$floconVersion")
         implementation("io.github.openflocon:flocon-okhttp-interceptor:$floconVersion")
+        implementation("io.github.openflocon:flocon-graphql-interceptor:$floconVersion")
     } else {
         implementation(project(":core"))
         implementation(project(":okhttp-interceptor"))
         implementation(project(":grpc-interceptor"))
+        implementation(project(":graphql-interceptor"))
     }
 
 
@@ -96,6 +98,17 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     // endregion
+
+    // region graphql
+    implementation(libs.apollo.runtime)
+    //implementation(libs.apollo.http.okhttprealization)
+    // endregion
+}
+
+apollo {
+    service("github") {
+        packageName.set("com.github")
+    }
 }
 
 protobuf {

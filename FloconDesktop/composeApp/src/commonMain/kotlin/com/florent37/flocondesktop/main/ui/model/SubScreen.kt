@@ -7,7 +7,7 @@ enum class SubScreen {
     Network,
     Images, // network images
 
-    // GraphQl ?
+    GraphQl,
     GRPC,
 
     // storage
