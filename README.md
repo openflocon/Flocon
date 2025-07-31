@@ -1,10 +1,19 @@
-# 🐕 Flocon
+<img width="100" height="100" alt="flocon_small" src="https://github.com/user-attachments/assets/27143843-fce2-4c74-96d8-a0b35a8fccde" />     
 
 **Flocon** is an advanced debugging and inspection tool for Android applications, inspired by [Flipper](https://github.com/facebook/flipper) by Meta.
 
 It allows developers to connect an Android device to their computer and launch a desktop interface that can **observe, inspect, and interact with the running mobile app** in real time.
 
-With Flocon, you gain deep access to critical app internals — such as network requests, local storage, analytics events, and more — without needing root access or tedious ADB commands. It’s designed to accelerate development, QA, and debugging workflows.
+With Flocon, you gain deep access to critical app internals — such as
+- network requests (http, images, grpc)
+- local storage (sharedpref, databases, app files)
+- analytics events (and custom events)
+- debug menu displayed on the desktop
+- **deeplinks**
+
+and more — without needing root access or tedious ADB commands. It’s designed to accelerate development, QA, and debugging workflows.
+
+<img width="600" height="387" alt="Capture d’écran 2025-07-30 à 08 09 46" src="https://github.com/user-attachments/assets/aab526ce-c000-488c-8631-8fa6152a417a" />
 
 ---
 
@@ -16,14 +25,18 @@ Once your Android device is connected and your app includes the Flocon SDK, you 
 
 🛠️ Getting Started
 
+`This Android library is lightweight, contributing just 140KB to the overall app size`
+
 in your module .kts
+
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon)
 ```
 // use only on a debug buildType, do not distribute on the playstore build !
-debugImplementation("io.github.openflocon:flocon:0.0.1")
+debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
 ```
 
 in your `Application.kt`
-```
+```kotlin
 Flocon.initialize(this)
 ```
 
@@ -50,11 +63,13 @@ For each request, you can inspect:
 
 This feature is invaluable for diagnosing backend issues, debugging unexpected API failures, and verifying request payloads and authentication headers.
 
-```
-debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:0.0.1")
-```
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-okhttp-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-okhttp-interceptor)
 
 ```
+debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
+```
+
+```kotlin
 val okHttpClient = OkHttpClient()
             .newBuilder()
             .addInterceptor(FloconOkhttpInterceptor())
@@ -83,7 +98,8 @@ This feature is extremely useful for:
 Whether you're working on UI/UX, performance optimization, or just debugging a missing image, this tool gives you **immediate visibility** into every image fetched by your app.
 
 Usage with coil
-```
+
+```kotlin
 // just add your okhttp client (with the flipper interceptor)
 SingletonImageLoader.setSafe {
         ImageLoader.Builder(context = context)
@@ -115,7 +131,7 @@ Each event includes:
 
 This is especially useful for QA teams and product analysts to validate that the right events are triggered at the right time, with the correct payloads.
 
-```
+```kotlin
 Flocon.analytics("firebase").logEvents(
      AnalyticsEvent(
          eventName = "clicked user",
@@ -197,6 +213,35 @@ Use cases include:
 
 Dashboards are defined programmatically on the mobile side via the SDK, and they update live as data changes — making them ideal for live demos, QA testing, or in-field diagnostics.
 
+```kotlin
+userFlow.collect { user ->
+     Flocon.dashboard(id = "main") {
+        user?.let {
+            section(name = "User") {
+                text(label = "username", value = user.userName)
+                text(label = "fullName", value = user.fullName, color = Color.Red.toArgb())
+                text(label = "user id", value = user.id)
+                button(
+                    text = "Change User Id",
+                    id = "changeUserId",
+                    onClick = {
+                        userFlow.update { it.copy(userName = "__flo__") }
+                    }
+                )
+                textField(
+                    label = "Update Name",
+                    placeHolder = "name",
+                    id = "changeUserName",
+                    value = user.fullName,
+                    onSubmitted = { value ->
+                        userFlow.update { it.copy(fullName = value) }
+                    })
+            }
+        }
+    }
+}
+```
+
 ---
 
 ### 📋 Configurable Data Tables
@@ -215,7 +260,7 @@ These tables can be used to visualize:
 Tables are interactive, scrollable, and they give developers and testers a straightforward way to inspect lists or collections in real time.
 
 To create a dynamic row :
-```
+```kotlin
 Flocon.table("analytics").log(
    "name" toParam "nameValue",
    "value1" toParam "value1Value",
@@ -240,7 +285,7 @@ From the desktop UI, you can:
 No more typing long `adb shell am start` commands — Flocon makes deeplink testing accessible and efficient.
 
 **You can configure deeplinks directly from your android code !**
-```
+```kotlin
 Flocon.deeplinks(
         listOf(
             Deeplink("flocon://home"),
@@ -266,11 +311,12 @@ Flocon.deeplinks(
 
 Similar to network inteceptions, Flocon works with grpc 
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-grpc-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-grpc-interceptor)
 ```
-debugImplementation("io.github.openflocon:flocon-grpc-interceptor:0.0.1")
+debugImplementation("io.github.openflocon:flocon-grpc-interceptor:LAST_VERSION")
 ```
 
-```
+```kotlin
 ManagedChannelBuilder
             ...
             .intercept(
@@ -286,5 +332,55 @@ ManagedChannelBuilder
 - ADB (Android Debug Bridge) accessible from your system path
 - Flocon Desktop app (JVM-based)
 - Flocon SDK integrated into your Android app
+- At least `kotlin 2.0.0`
 
 ---
+
+## 🚨 Why Flocon Can’t See Your Device Calls (And How to Fix It) 🚨
+
+To enable Flocon to intercept and inspect network traffic from your Android app, 
+the app must be allowed to connect to `localhost` (typically `127.0.0.1`), which is where the desktop companion listens for traffic.
+
+**If you're already using a custom `networkSecurityConfig`, make sure it includes a rule to allow cleartext traffic to `localhost`**
+
+AndroidManifest.xml
+```xml
+<application
+        android:networkSecurityConfig="@xml/network_security_config"/>
+```
+
+network_security_config.xml
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+</network-security-config>
+```
+
+## 🤝 Contributors
+
+Thanks to these amazing people for making Flocon better every day!
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/florent37">
+        <img src="https://avatars.githubusercontent.com/u/5754972?v=4" width="100px;" alt="Florent Champigny"/><br />
+        <sub><b>florent37</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
+
+## 🐶 Why the name "Flocon" ✨ ?
+
+I was looking for a short, cute animal-inspired name — something in the spirit of "Flipper".  
+I turned my head and saw my golden retriever, Flocon, smiling to me... and that was it. 
+That was all the inspiration I needed.  
+
+No brainstorming, no hesitation — just the perfect name at the perfect time.
+
+<img width="540" height="501" alt="Flocon - Golden Retriever" src="https://github.com/user-attachments/assets/6ea7acd9-abea-4062-b375-17cb8337ce11" />
