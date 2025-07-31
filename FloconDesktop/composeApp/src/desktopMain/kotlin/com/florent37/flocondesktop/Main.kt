@@ -20,7 +20,7 @@ fun main() = application {
     }
     Window(
         onCloseRequest = ::exitApplication,
-        title = "FloconDesktop",
+        title = "Flocon",
         state = rememberWindowState(size = DpSize(width = 1200.dp, height = 800.dp)), // Définir la taille de la fenêtre ici
     ) {
         App()
