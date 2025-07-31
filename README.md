@@ -5,7 +5,7 @@
 It allows developers to connect an Android device to their computer and launch a desktop interface that can **observe, inspect, and interact with the running mobile app** in real time.
 
 With Flocon, you gain deep access to critical app internals — such as
-- network requests (http, images, grpc)
+- network requests (http, images, grpc, graphql)
 - local storage (sharedpref, databases, app files)
 - analytics events (and custom events)
 - debug menu displayed on the desktop
@@ -46,8 +46,8 @@ https://github.com/openflocon/Flocon/releases
 
 ### 📡 Network Request Inspector
 
-<img width="1200" height="780" alt="Network1" src="https://github.com/user-attachments/assets/cc7aeead-33e8-4ca4-8572-58607edc26c6" />
-<img width="1199" height="774" alt="Network2" src="https://github.com/user-attachments/assets/63725cda-4e21-4f0f-b5a9-53d2e3c46b26" />
+<img width="1199" height="771" alt="Capture d’écran 2025-07-31 à 23 29 44" src="https://github.com/user-attachments/assets/c082c9d8-d41c-415d-8762-706c5fc24a2b" />
+<img width="1195" height="771" alt="Capture d’écran 2025-07-31 à 23 29 37" src="https://github.com/user-attachments/assets/59631b28-37f0-472e-8164-5ebe631fd60a" />
 
 
 Flocon captures **all outgoing network requests** made by the Android app — whether they’re simple REST API calls or complex multipart uploads — and displays them in an organized UI.
@@ -76,9 +76,41 @@ val okHttpClient = OkHttpClient()
             .build()
 ```
 
+### 🛰️ GraphQL Request Inspector
+
+<img width="1199" height="766" alt="Capture d’écran 2025-07-31 à 23 30 10" src="https://github.com/user-attachments/assets/53250047-3f3d-473e-af5f-8e243491c679" />
+<img width="1203" height="772" alt="Capture d’écran 2025-07-31 à 23 30 06" src="https://github.com/user-attachments/assets/19da2d6d-d04e-4092-b430-7d3f547d0168" />
+
+
+Flocon also supports **GraphQL** requests via a dedicated Apollo interceptor.
+
+Just like with REST, all outgoing GraphQL requests made through [Apollo Client](https://www.apollographql.com/docs/android/) are captured and displayed in Flocon’s interface — allowing you to debug your queries and mutations in real time.
+
+For each GraphQL call, you can inspect:
+
+- Response data or error payload
+- Headers, status code, and response time
+- TO DEVELOP: The operation type (query / mutation)
+
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-graphql-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-graphql-interceptor)
+
+`works only with with apollo 4+`
+```
+debugImplementation("io.github.openflocon:flocon-graphql-interceptor:LAST_VERSION")
+```
+
+```kotlin
+ ApolloClient.Builder()
+            .serverUrl(...)
+            ...
+            .addHttpInterceptor(FloconApolloInterceptor()) 
+            .build()
+```
+
 ### 🖼️ Downloaded Image Viewer
 
-<img width="1204" height="769" alt="Capture d’écran 2025-07-30 à 08 09 56" src="https://github.com/user-attachments/assets/f85fdd00-4ddf-4978-9e83-ab6007ddc2c0" />
+<img width="1195" height="771" alt="Capture d’écran 2025-07-31 à 23 30 01" src="https://github.com/user-attachments/assets/d22940bb-f007-41a4-9878-ee1820f20816" />
+<img width="1202" height="773" alt="Capture d’écran 2025-07-31 à 23 29 50" src="https://github.com/user-attachments/assets/15506d35-1039-4934-8034-1174c3740f7a" />
 
 Flocon captures and displays **images downloaded by the Android app**, giving you a clear, visual representation of media fetched over the network — such as avatars, product thumbnails, banners, or any other images requested at runtime.
 
