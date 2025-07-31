@@ -25,6 +25,8 @@ Once your Android device is connected and your app includes the Flocon SDK, you 
 
 🛠️ Getting Started
 
+**This Android library is lightweight, contributing just 140KB to the overall app size**
+
 in your module .kts
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon)
