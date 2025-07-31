@@ -348,3 +348,18 @@ network_security_config.xml
     </domain-config>
 </network-security-config>
 ```
+
+## 🤝 Contributors
+
+Thanks to these amazing people for making Flocon better every day!
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/florent37">
+        <img src="https://avatars.githubusercontent.com/u/5754972?v=4" width="100px;" alt="Florent Champigny"/><br />
+        <sub><b>florent37</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
