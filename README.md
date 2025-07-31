@@ -13,7 +13,7 @@ With Flocon, you gain deep access to critical app internals — such as
 
 and more — without needing root access or tedious ADB commands. It’s designed to accelerate development, QA, and debugging workflows.
 
-<img width="600" height="387" alt="Capture d’écran 2025-07-30 à 08 09 46" src="https://github.com/user-attachments/assets/aab526ce-c000-488c-8631-8fa6152a417a" />
+<img width="600" height="389" alt="Capture d’écran 2025-07-31 à 23 29 44" src="https://github.com/user-attachments/assets/1feba7ff-5328-4c9f-ad71-e35e96e677cb" />
 
 ---
 
