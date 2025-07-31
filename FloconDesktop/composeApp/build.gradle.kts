@@ -182,7 +182,7 @@ room {
 
 compose.desktop {
     application {
-        mainClass = "com.florent37.flocondesktop.MainKt"
+        mainClass = "io.github.openflocon.flocondesktop.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)

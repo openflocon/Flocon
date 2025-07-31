@@ -1,0 +1,161 @@
+package io.github.openflocon.flocondesktop.features.dashboard.ui.view.items
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.florent37.flocondesktop.common.ui.FloconColors
+import com.florent37.flocondesktop.common.ui.FloconTheme
+import com.florent37.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.send
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+@Composable
+fun DashboardTextFieldView(
+    rowItem: DashboardItemViewState.RowItem.TextField,
+    submitTextField: (id: String, value: String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var value by remember(rowItem.value) {
+        mutableStateOf(rowItem.value)
+    }
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(
+            rowItem.label,
+            modifier = Modifier.padding(start = 4.dp),
+            color = FloconColors.onSurface,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Thin,
+            ),
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(
+                        color = Color.White.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(8.dp),
+                    ).padding(horizontal = 12.dp, vertical = 8.dp),
+            ) {
+                rowItem.placeHolder?.takeIf { value.isEmpty() }?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = FloconColors.onSurface.copy(alpha = 0.45f),
+                    )
+                }
+                BasicTextField(
+                    textStyle = MaterialTheme.typography.bodySmall.copy(
+                        color = FloconColors.onSurface,
+                    ),
+                    value = value,
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+                    onValueChange = {
+                        value = it
+                    },
+                )
+            }
+            DashboardSendButton(
+                icon = Res.drawable.send,
+                onClick = {
+                    submitTextField(rowItem.id, value)
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun DashboardSendButton(
+    onClick: () -> Unit,
+    icon: DrawableResource,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(6.dp))
+            .size(32.dp)
+            .background(Color.White)
+            .clickable(onClick = onClick)
+            .padding(all = 8.dp),
+    ) {
+        Image(
+            painter = painterResource(icon),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(Color.Black),
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+}
+
+@Preview
+@Composable
+internal fun DashboardTextFieldViewPreview_placeholder() {
+    val rowItem = DashboardItemViewState.RowItem.TextField(
+        id = "1",
+        label = "label",
+        placeHolder = "placeholder",
+        value = "",
+    )
+    FloconTheme {
+        DashboardTextFieldView(
+            modifier = Modifier.background(
+                FloconColors.pannel,
+            ),
+            rowItem = rowItem,
+            submitTextField = { _, _ -> },
+        )
+    }
+}
+
+@Preview
+@Composable
+internal fun DashboardTextFieldViewPreview_withValue() {
+    val rowItem = DashboardItemViewState.RowItem.TextField(
+        id = "1",
+        label = "label",
+        placeHolder = "placeholder",
+        value = "value",
+    )
+    FloconTheme {
+        DashboardTextFieldView(
+            modifier = Modifier.background(
+                FloconColors.pannel,
+            ),
+            rowItem = rowItem,
+            submitTextField = { _, _ -> },
+        )
+    }
+}
