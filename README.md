@@ -6,7 +6,7 @@ It allows developers to connect an Android device to their computer and launch a
 
 With Flocon, you gain deep access to critical app internals — such as
 - network requests (http, images, grpc)
-- local storage (sharedpref, databases)
+- local storage (sharedpref, databases, app files)
 - analytics events (and custom events)
 - debug menu displayed on the desktop
 - **deeplinks**
