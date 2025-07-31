@@ -325,6 +325,13 @@ ManagedChannelBuilder
             .build()
 ```
 
+## ✨ Upcoming features 
+
+Flocon is still evolving, next features : 
+
+- GraphQl Network interceptor
+- Preview & Dowload files 
+
 ## 🧰 Requirements
 
 - An Android device with USB debugging enabled
