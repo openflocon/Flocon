@@ -29,17 +29,32 @@ import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
+import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkFilterBar
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NetworkScreen(modifier: Modifier = Modifier) {
     val viewModel: NetworkViewModel = koinViewModel()
-    val items by viewModel.state.collectAsStateWithLifecycle()
+    //val items by viewModel.state.collectAsStateWithLifecycle()
     val detailState by viewModel.detailState.collectAsStateWithLifecycle()
+
+    val items =
+        remember {
+            listOf(
+                previewNetworkItemViewState(),
+                previewNetworkItemViewState(),
+                previewGraphQlItemViewState(),
+                previewNetworkItemViewState(),
+                previewGraphQlItemViewState(),
+                previewNetworkItemViewState(),
+            )
+        }
+
     NetworkScreen(
         networkItems = items,
         modifier = modifier,
@@ -92,7 +107,7 @@ fun NetworkScreen(
                 )
                 NetworkItemHeaderView(
                     columnWidths = columnWidths,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(start = 20.dp),
                 )
                 LazyColumn(
                     modifier =
@@ -139,6 +154,10 @@ private fun NetworkScreenPreview() {
             remember {
                 listOf(
                     previewNetworkItemViewState(),
+                    previewNetworkItemViewState(),
+                    previewGraphQlItemViewState(),
+                    previewNetworkItemViewState(),
+                    previewGraphQlItemViewState(),
                     previewNetworkItemViewState(),
                 )
             }

@@ -18,7 +18,7 @@ fun toUi(httpRequest: FloconHttpRequestDomainModel): NetworkItemViewState = Netw
     dateFormatted = formatTimestamp(httpRequest.request.startTime),
     method = toMethodUi(httpRequest.request.method),
     networkStatusUi = toNetworkStatusUi(code = httpRequest.response.httpCode),
-    route = httpRequest.url,
+    route = NetworkItemViewState.Route.Url(httpRequest.url),
     timeFormatted = formatDuration(httpRequest.durationMs),
     requestSize = ByteFormatter.formatBytes(httpRequest.request.byteSize),
     responseSize = ByteFormatter.formatBytes(httpRequest.response.byteSize),
