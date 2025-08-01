@@ -375,6 +375,16 @@ Flocon is still evolving, next features :
 
 ---
 
+## How to install the macOs app ?
+
+MacOS may block the first launch of the application because it was not downloaded from the App Store. You'll need to manually authorize it through your system settings.
+
+1. First, try to launch the app from the Applications folder. macOS will display a message stating that it cannot be opened.
+2. Open System Settings (or System Preferences for older macOS versions).
+3. In the left-hand menu, click on Privacy & Security.
+4. Scroll down to the Security section. You should see a message mentioning the blocked application with an Open Anyway button.
+5. Click Open Anyway and confirm your choice.
+
 ## 🚨 Why Flocon Can’t See Your Device Calls (And How to Fix It) 🚨
 
 To enable Flocon to intercept and inspect network traffic from your Android app, 
