@@ -7,7 +7,8 @@ data class NetworkDetailViewState(
     val fullUrl: String,
     val requestTimeFormatted: String,
     val durationFormatted: String,
-    val method: NetworkMethodUi,
+
+    val method: Method,
     val status: NetworkStatusUi,
 
     val graphQlSection: GraphQlSection?,
@@ -21,9 +22,19 @@ data class NetworkDetailViewState(
     val responseSize: String,
     val responseHeaders: List<NetworkDetailHeaderUi>,
 ) {
+    @Immutable
     data class GraphQlSection(
         val queryName: String,
         val method: NetworkMethodUi,
         val status: NetworkStatusUi,
     )
+
+    @Immutable
+    sealed interface Method {
+        @Immutable
+        data class Http(val method: NetworkMethodUi) : Method
+
+        @Immutable
+        data class MethodName(val name: String) : Method
+    }
 }

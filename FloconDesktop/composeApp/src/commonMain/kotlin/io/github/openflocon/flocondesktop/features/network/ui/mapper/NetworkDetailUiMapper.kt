@@ -9,7 +9,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatu
 
 fun toDetailUi(request: FloconHttpRequestDomainModel): NetworkDetailViewState = NetworkDetailViewState(
     fullUrl = request.url,
-    method = toMethodUi(request.request.method),
+    method = toDetailMethodUi(request),
     status = toDetailNetworkStatusUi(request.type),
     requestTimeFormatted = request.request.startTime.let { formatTimestamp(it) },
     durationFormatted = formatDuration(request.durationMs),
@@ -51,3 +51,12 @@ fun toNetworkHeadersUi(headers: Map<String, String>?): List<NetworkDetailHeaderU
             )
         }.sortedBy { it.name }
 } ?: emptyList()
+
+fun toDetailMethodUi(request: FloconHttpRequestDomainModel): NetworkDetailViewState.Method = when (request.type) {
+    is FloconHttpRequestDomainModel.Type.Grpc -> NetworkDetailViewState.Method.MethodName(
+        name = request.request.method,
+    )
+    is FloconHttpRequestDomainModel.Type.GraphQl,
+    is FloconHttpRequestDomainModel.Type.Http,
+    -> NetworkDetailViewState.Method.Http(getMethodUi(request))
+}

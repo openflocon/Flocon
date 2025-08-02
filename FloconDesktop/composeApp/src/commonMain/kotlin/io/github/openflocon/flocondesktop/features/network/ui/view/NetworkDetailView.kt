@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -93,7 +94,19 @@ fun NetworkDetailView(
                     label = "Method",
                     labelWidth = linesLabelWidth,
                 ) {
-                    MethodView(method = state.method)
+                    when (val m = state.method) {
+                        is NetworkDetailViewState.Method.Http -> MethodView(method = m.method)
+                        is NetworkDetailViewState.Method.MethodName -> {
+                            Text(
+                                text = m.name,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.weight(2f)
+                                    .background(color = FloconColors.pannel.copy(alpha = 0.8f), shape = RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                            )
+                        }
+                    }
                 }
                 DetailLineView(
                     modifier = Modifier.fillMaxWidth(),
@@ -269,7 +282,7 @@ private fun NetworkDetailViewPreview() {
             state =
             NetworkDetailViewState(
                 fullUrl = "http://www.google.com",
-                method = NetworkMethodUi.Http.GET,
+                method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
                 status =
                 NetworkStatusUi(
                     text = "200",
