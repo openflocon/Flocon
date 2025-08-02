@@ -3,7 +3,9 @@ package io.github.openflocon.flocondesktop.features.network.ui.mapper
 import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState.NetworkTypeUi.*
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi.*
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatusUi
 import io.ktor.http.Url
 import kotlinx.datetime.TimeZone
@@ -60,10 +62,16 @@ fun toTypeUi(httpRequest: FloconHttpRequestDomainModel): NetworkItemViewState.Ne
         queryName = t.query,
     )
 
-    FloconHttpRequestDomainModel.Type.Http -> {
+    is FloconHttpRequestDomainModel.Type.Http -> {
         val query = extractPath(httpRequest.url)
         NetworkItemViewState.NetworkTypeUi.Url(
             query = query,
+        )
+    }
+
+    is FloconHttpRequestDomainModel.Type.Grpc -> {
+        NetworkItemViewState.NetworkTypeUi.Grpc(
+            method = "grpc_method"
         )
     }
 }
@@ -72,19 +80,22 @@ fun getMethodUi(httpRequest: FloconHttpRequestDomainModel): NetworkMethodUi = wh
     is FloconHttpRequestDomainModel.Type.GraphQl -> when (t.operationType.lowercase()) {
         "query" -> NetworkMethodUi.GraphQl.QUERY
         "mutation" -> NetworkMethodUi.GraphQl.MUTATION
-        else -> NetworkMethodUi.OTHER(t.operationType, icon = null)
+        else -> OTHER(t.operationType, icon = null)
     }
     is FloconHttpRequestDomainModel.Type.Http -> toMethodUi(httpRequest.request.method)
+    is FloconHttpRequestDomainModel.Type.Grpc ->  NetworkMethodUi.Grpc
 }
 
 fun getStatusUi(httpRequest: FloconHttpRequestDomainModel): NetworkStatusUi = when (val t = httpRequest.type) {
     is FloconHttpRequestDomainModel.Type.GraphQl -> toGraphQlNetworkStatusUi(isSuccess = t.isSuccess)
-    is FloconHttpRequestDomainModel.Type.Http -> toNetworkStatusUi(httpRequest.response.httpCode)
+    is FloconHttpRequestDomainModel.Type.Http -> toNetworkStatusUi(t.httpCode)
+    is FloconHttpRequestDomainModel.Type.Grpc -> toGraphQlNetworkStatusUi(isSuccess = t.status == "OK")
 }
 
 fun getDomainUi(httpRequest: FloconHttpRequestDomainModel): String = when (val t = httpRequest.type) {
     is FloconHttpRequestDomainModel.Type.GraphQl -> extractDomainAndPath(httpRequest.url)
     is FloconHttpRequestDomainModel.Type.Http -> extractDomain(httpRequest.url)
+    is FloconHttpRequestDomainModel.Type.Grpc -> extractDomain(httpRequest.url)
 }
 
 fun toNetworkStatusUi(code: Int): NetworkStatusUi = NetworkStatusUi(

@@ -112,22 +112,30 @@ class NetworkRepositoryImpl(
                 byteSize = decoded.requestSize ?: 0L,
             ),
             response = FloconHttpRequestDomainModel.Response(
-                httpCode = decoded.responseHttpCode!!,
                 contentType = decoded.responseContentType,
                 body = decoded.responseBody,
                 headers = decoded.responseHeaders!!,
                 byteSize = decoded.responseSize ?: 0L,
             ),
             type = when {
-                graphQl != null -> FloconHttpRequestDomainModel.Type.GraphQl(
-                    query = graphQl.request.queryName ?: "anonymous",
-                    operationType = graphQl.request.operationType,
-                    isSuccess = computeIsGraphQlSuccess(
-                        responseHttpCode = decoded.responseHttpCode,
-                        response = graphQl.response,
-                    )
+                decoded.floconNetworkType == "grpc" -> FloconHttpRequestDomainModel.Type.Grpc(
+                    status = decoded.responseGrpcStatus!!,
                 )
-                else -> FloconHttpRequestDomainModel.Type.Http
+                graphQl != null -> {
+                    val httpCode = decoded.responseHttpCode!! // mandatory for graphQl
+                    FloconHttpRequestDomainModel.Type.GraphQl(
+                        query = graphQl.request.queryName ?: "anonymous",
+                        operationType = graphQl.request.operationType,
+                        isSuccess = computeIsGraphQlSuccess(
+                            responseHttpCode = httpCode,
+                            response = graphQl.response,
+                        ),
+                        httpCode = httpCode,
+                    )
+                }
+                else -> FloconHttpRequestDomainModel.Type.Http(
+                    httpCode = decoded.responseHttpCode!!, // mandatory for http
+                )
             },
         )
     } catch (t: Throwable) {

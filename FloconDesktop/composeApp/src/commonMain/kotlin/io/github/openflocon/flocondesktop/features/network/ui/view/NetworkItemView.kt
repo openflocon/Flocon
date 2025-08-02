@@ -151,6 +151,19 @@ fun NetworkItemView(
                                 .padding(horizontal = 8.dp, vertical = 6.dp),
                         )
                     }
+
+                    is NetworkItemViewState.NetworkTypeUi.Grpc -> {
+                        Text(
+                            text = type.method,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            style = bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(2f)
+                                .background(color = FloconColors.pannel.copy(alpha = 0.8f), shape = RoundedCornerShape(4.dp))
+                                .padding(horizontal = 8.dp, vertical = 6.dp),
+                        )
+                    }
                 }
             }
 

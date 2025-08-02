@@ -84,7 +84,6 @@ object FloconHttpRequestGenerator {
                 ),
                 response = FloconHttpRequestDomainModel.Response(
                     body = responseBodyContent,
-                    httpCode = 200,
                     byteSize = 1500,
                     headers =
                     mapOf(
@@ -93,7 +92,9 @@ object FloconHttpRequestGenerator {
                         "X-Response-ID" to "res-$index",
                     ),
                 ),
-                type = FloconHttpRequestDomainModel.Type.Http,
+                type = FloconHttpRequestDomainModel.Type.Http(
+                    httpCode = 200,
+                ),
             )
         }
     }

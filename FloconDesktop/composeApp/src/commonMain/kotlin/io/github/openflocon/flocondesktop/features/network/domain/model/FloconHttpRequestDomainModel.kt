@@ -17,7 +17,6 @@ data class FloconHttpRequestDomainModel(
     )
 
     data class Response(
-        val httpCode: Int, // ex: 200
         val contentType: String? = null,
         val body: String? = null,
         val headers: Map<String, String>,
@@ -26,10 +25,16 @@ data class FloconHttpRequestDomainModel(
 
     sealed interface Type {
         data class GraphQl(
+            val httpCode: Int, // ex: 200
             val query: String,
             val operationType: String,
             val isSuccess: Boolean,
         ) : Type
-        data object Http : Type
+        data class Http(
+            val httpCode: Int, // ex: 200
+        ) : Type
+        data class Grpc(
+            val status: String,
+        ) : Type
     }
 }

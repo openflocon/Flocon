@@ -33,7 +33,7 @@ class NetworkLocalDataSourceRoom(
     override fun observeRequests(deviceId: DeviceId): Flow<List<FloconHttpRequestDomainModel>> = floconHttpRequestDao
         .observeRequests(deviceId)
         .map { entities ->
-            entities.map { it.toDomainModel() }
+            entities.mapNotNull { it.toDomainModel() }
         }.flowOn(dispatcherProvider.data)
 
     override suspend fun save(

@@ -38,6 +38,13 @@ data class NetworkItemViewState(
         ) : NetworkTypeUi {
             override fun contains(text: String): Boolean = queryName.contains(text, ignoreCase = true)
         }
+
+        @Immutable
+        data class Grpc(
+            val method: String,
+        ) : NetworkTypeUi {
+            override fun contains(text: String): Boolean = method.contains(text, ignoreCase = true)
+        }
     }
 }
 

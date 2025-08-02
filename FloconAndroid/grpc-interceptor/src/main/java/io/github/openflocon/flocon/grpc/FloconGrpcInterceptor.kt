@@ -1,12 +1,11 @@
 package io.github.openflocon.flocon.grpc
 
-import io.github.openflocon.flocon.grpc.model.GrpcRequest
-import io.github.openflocon.flocon.grpc.model.GrpcResponse
 import io.github.openflocon.flocon.grpc.model.toHeaders
 import com.google.gson.ExclusionStrategy
 import com.google.gson.FieldAttributes
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.ClientCall
@@ -93,14 +92,15 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
     override fun sendMessage(message: ReqT) {
         super.sendMessage(message)
         floconGrpcPlugin.reportRequest(
-            GrpcRequest(
-                id = requestId,
-                authority = next.authority(),
+            callId = requestId,
+            request = FloconNetworkRequest.Request(
+                url = next.authority(),
                 method = method.fullMethodName,
-                data = message?.toJson(gson = gson) ?: "",
-                unixTimestampMs = System.currentTimeMillis(),
+                body = message?.toJson(gson = gson) ?: "",
+                startTime = System.currentTimeMillis(),
                 headers = headers?.toHeaders().orEmpty(),
-            ),
+                size = 0, // TODO
+            )
         )
     }
 }
@@ -120,13 +120,14 @@ private class LoggingClientCallListener<RespT>(
     override fun onClose(status: Status, trailers: Metadata) {
         super.onClose(status, trailers)
         floconGrpcPlugin.reportResponse(
-            GrpcResponse(
-                id = requestId,
-                unixTimestampMs = System.currentTimeMillis(),
-                status = status.code.toString(),
-                cause = status.description,
+            callId = requestId,
+            response = FloconNetworkRequest.Response(
+                body = message?.toJson(gson),
                 headers = (this.headers ?: trailers).toHeaders(),
-                data = message?.toJson(gson),
+                httpCode = null,
+                contentType = "grpc",
+                size = 0L,
+                grpcStatus = status.description,
             ),
         )
     }
