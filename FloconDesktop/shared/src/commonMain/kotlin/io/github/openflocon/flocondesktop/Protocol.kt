@@ -46,15 +46,6 @@ object Protocol {
             }
         }
 
-        object GRPC {
-            const val Plugin = "gRPC"
-
-            object Method {
-                const val LogNetworkRequest = "logNetworkRequest"
-                const val LogNetworkResponse = "logNetworkResponse"
-            }
-        }
-
         object Images {
             const val Plugin = "images"
 
