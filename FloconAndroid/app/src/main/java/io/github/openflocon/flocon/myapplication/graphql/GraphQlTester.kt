@@ -8,7 +8,6 @@ import com.apollographql.apollo.network.http.HttpInterceptorChain
 import com.apollographql.apollo.network.okHttpClient
 import com.github.GetUserInfoQuery
 import io.github.openflocon.flocon.myapplication.BuildConfig
-import io.github.openflocon.flocon.okhttp.FloconApolloInterceptor
 import okhttp3.OkHttpClient
 
 class GraphQlTester(val client: OkHttpClient) {

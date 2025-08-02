@@ -50,12 +50,10 @@ dependencies {
         implementation("io.github.openflocon:flocon:$floconVersion")
         implementation("io.github.openflocon:flocon-grpc-interceptor:$floconVersion")
         implementation("io.github.openflocon:flocon-okhttp-interceptor:$floconVersion")
-        implementation("io.github.openflocon:flocon-graphql-interceptor:$floconVersion")
     } else {
         implementation(project(":core"))
         implementation(project(":okhttp-interceptor"))
         implementation(project(":grpc-interceptor"))
-        implementation(project(":graphql-interceptor"))
     }
 
 
