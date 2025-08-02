@@ -1,20 +1,51 @@
 package io.github.openflocon.flocondesktop.features.network.ui.model
 
 import androidx.compose.runtime.Immutable
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.graphql
+import org.jetbrains.compose.resources.DrawableResource
 
 @Immutable
-sealed class NetworkMethodUi(
-    open val text: String,
-) {
-    data object GET : NetworkMethodUi(text = "GET")
+sealed interface NetworkMethodUi {
+    val text: String
+    val icon: DrawableResource?
 
-    data object POST : NetworkMethodUi(text = "POST")
+    sealed interface Http : NetworkMethodUi {
 
-    data object PUT : NetworkMethodUi(text = "PUT")
+        data object GET : Http {
+            override val text: String = "GET"
+            override val icon = null
+        }
 
-    data object DELETE : NetworkMethodUi(text = "DELETE")
+        data object POST : Http {
+            override val text: String = "POST"
+            override val icon = null
+        }
+
+        data object PUT : Http {
+            override val text: String = "PUT"
+            override val icon = null
+        }
+
+        data object DELETE : Http {
+            override val text: String = "DELETE"
+            override val icon = null
+        }
+    }
+
+    sealed interface GraphQl : NetworkMethodUi {
+        data object QUERY : GraphQl {
+            override val text: String = "QUERY"
+            override val icon = Res.drawable.graphql
+        }
+        data object MUTATION : GraphQl {
+            override val text: String = "MUTATION"
+            override val icon = Res.drawable.graphql
+        }
+    }
 
     data class OTHER(
         override val text: String,
-    ) : NetworkMethodUi(text = text)
+        override val icon: DrawableResource?,
+    ) : NetworkMethodUi
 }

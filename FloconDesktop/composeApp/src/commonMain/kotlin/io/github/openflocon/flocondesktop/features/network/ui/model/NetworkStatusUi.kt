@@ -4,6 +4,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class NetworkStatusUi(
-    val code: Int,
+    val text: String,
     val isSuccess: Boolean,
 )

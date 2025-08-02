@@ -5,17 +5,20 @@ import com.apollographql.apollo.api.http.HttpRequest
 import com.apollographql.apollo.api.http.HttpResponse
 import com.apollographql.apollo.network.http.HttpInterceptor
 import com.apollographql.apollo.network.http.HttpInterceptorChain
+import com.apollographql.apollo.network.okHttpClient
 import com.github.GetUserInfoQuery
 import io.github.openflocon.flocon.myapplication.BuildConfig
 import io.github.openflocon.flocon.okhttp.FloconApolloInterceptor
+import okhttp3.OkHttpClient
 
-object GraphQlTester {
+class GraphQlTester(val client: OkHttpClient) {
 
-    private const val GITHUB_TOKEN = BuildConfig.GITHUB_TOKEN
+    private val GITHUB_TOKEN = BuildConfig.GITHUB_TOKEN
 
     val githubApolloClient by lazy {
         ApolloClient.Builder()
             .serverUrl("https://api.github.com/graphql")
+            .okHttpClient(client)
             .addHttpInterceptor(object : HttpInterceptor {
                 override suspend fun intercept(
                     request: HttpRequest,
@@ -28,7 +31,6 @@ object GraphQlTester {
                     )
                 }
             })
-            .addHttpInterceptor(FloconApolloInterceptor()) // Ajoute votre intercepteur ici
             .build()
     }
 

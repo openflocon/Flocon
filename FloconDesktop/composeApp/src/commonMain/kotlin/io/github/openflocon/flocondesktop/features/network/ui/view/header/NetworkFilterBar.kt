@@ -41,7 +41,7 @@ fun NetworkFilterBar(
                 networkItems
             } else {
                 networkItems.filter {
-                    it.route.contains(filterText, ignoreCase = true)
+                    it.contains(filterText)
                 }
             }
         }

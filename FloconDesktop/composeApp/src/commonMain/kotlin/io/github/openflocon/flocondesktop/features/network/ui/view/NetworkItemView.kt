@@ -18,8 +18,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
+import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
@@ -33,8 +35,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 data class NetworkItemColumnWidths(
     val dateWidth: Dp = 90.dp,
-    val methodWidth: Dp = 65.dp,
-    val statusCodeWidth: Dp = 50.dp,
+    val methodWidth: Dp = 70.dp,
+    val statusCodeWidth: Dp = 60.dp,
     val requestSizeWidth: Dp = 65.dp,
     val responseSizeWidth: Dp = 65.dp,
     val timeWidth: Dp = 60.dp,
@@ -49,7 +51,7 @@ fun NetworkItemView(
     modifier: Modifier = Modifier,
 ) {
     // Use MaterialTheme.typography for consistent text sizes
-    val bodySmall = MaterialTheme.typography.bodySmall // Typically 12.sp or similar
+    val bodySmall = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp)
     val labelSmall = MaterialTheme.typography.labelSmall // Even smaller, good for labels/tags
 
     ContextualView(
@@ -82,14 +84,11 @@ fun NetworkItemView(
     ) {
         Row(
             modifier = modifier
-                .padding(horizontal = 8.dp, vertical = 4.dp) // Padding for the entire item
+                .padding(vertical = 4.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
                 .clickable(onClick = {
                     onUserAction(OnNetworkItemUserAction.OnClicked(state))
                 })
-                .background(
-                    color = MaterialTheme.colorScheme.surface, // Use surface color for the item background
-                )
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             // Inner padding for content
             verticalAlignment = Alignment.CenterVertically,
@@ -116,45 +115,50 @@ fun NetworkItemView(
             )
 
             // Route - Takes remaining space (weight)
-            Box(modifier = Modifier.weight(1f)) {
+            Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = state.route,
+                    text = state.domain,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = bodySmall,
                     color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                        .padding(horizontal = 4.dp),
                 )
+                when (val type = state.type) {
+                    is NetworkItemViewState.NetworkTypeUi.GraphQl -> {
+                        Text(
+                            text = type.queryName,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            style = bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(2f)
+                                .background(color = FloconColors.pannel.copy(alpha = 0.8f), shape = RoundedCornerShape(4.dp))
+                                .padding(horizontal = 8.dp, vertical = 6.dp),
+                        )
+                    }
+
+                    is NetworkItemViewState.NetworkTypeUi.Url -> {
+                        Text(
+                            text = type.query,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            style = bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(2f)
+                                .background(color = FloconColors.pannel.copy(alpha = 0.8f), shape = RoundedCornerShape(4.dp))
+                                .padding(horizontal = 8.dp, vertical = 6.dp),
+                        )
+                    }
+                }
             }
 
             // NetworkStatusUi - Fixed width for the tag from data class
             StatusView(
-                state.networkStatusUi,
+                state.status,
                 modifier = Modifier.width(columnWidths.statusCodeWidth), // Apply fixed width to the StatusView composable
             )
-
-            // Request Size - Fixed width from data class
-            Box(
-                modifier = Modifier.width(columnWidths.requestSizeWidth),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    state.requestSize,
-                    style = bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                )
-            }
-
-            // Response Size - Fixed width from data class
-            Box(
-                modifier = Modifier.width(columnWidths.responseSizeWidth),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    state.responseSize,
-                    style = bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                )
-            }
 
             // Time - Fixed width from data class
             Box(

@@ -6,7 +6,7 @@ data class FloconHttpRequestDomainModel(
     val durationMs: Double,
     val request: Request,
     val response: Response,
-
+    val type: Type,
 ) {
     data class Request(
         val startTime: Long,
@@ -23,4 +23,13 @@ data class FloconHttpRequestDomainModel(
         val headers: Map<String, String>,
         val byteSize: Long,
     )
+
+    sealed interface Type {
+        data class GraphQl(
+            val query: String,
+            val operationType: String,
+            val isSuccess: Boolean,
+        ) : Type
+        data object Http : Type
+    }
 }

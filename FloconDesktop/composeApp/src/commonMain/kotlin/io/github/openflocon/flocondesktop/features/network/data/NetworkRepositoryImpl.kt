@@ -6,6 +6,9 @@ import io.github.openflocon.flocondesktop.Protocol
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
+import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.computeIsGraphQlSuccess
+import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.extractGraphQl
+import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.model.GraphQlResponseBody
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
@@ -96,6 +99,7 @@ class NetworkRepositoryImpl(
 
     @OptIn(ExperimentalUuidApi::class)
     fun toDomain(decoded: FloconHttpRequestDataModel): FloconHttpRequestDomainModel? = try {
+        val graphQl = extractGraphQl(decoded)
         FloconHttpRequestDomainModel(
             uuid = Uuid.random().toString(),
             url = decoded.url!!,
@@ -114,6 +118,17 @@ class NetworkRepositoryImpl(
                 headers = decoded.responseHeaders!!,
                 byteSize = decoded.responseSize ?: 0L,
             ),
+            type = when {
+                graphQl != null -> FloconHttpRequestDomainModel.Type.GraphQl(
+                    query = graphQl.request.queryName ?: "anonymous",
+                    operationType = graphQl.request.operationType,
+                    isSuccess = computeIsGraphQlSuccess(
+                        responseHttpCode = decoded.responseHttpCode,
+                        response = graphQl.response,
+                    )
+                )
+                else -> FloconHttpRequestDomainModel.Type.Http
+            },
         )
     } catch (t: Throwable) {
         t.printStackTrace()

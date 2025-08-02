@@ -18,22 +18,24 @@ fun DetailSectionTitleView(
     isExpanded: Boolean,
     title: String,
     onCopy: (() -> Unit)?,
-    onToggle: (isExpanded: Boolean) -> Unit,
+    onToggle: ((isExpanded: Boolean) -> Unit)?,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Toggle Button for Request Body
-        IconButton(
-            onClick = { onToggle(!isExpanded) },
-            modifier = Modifier.padding(end = 4.dp), // Spacing before label
-        ) {
-            Text(
-                text = if (isExpanded) "▼" else "▶", // Toggle icon
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                style = MaterialTheme.typography.titleMedium,
-            )
+        if (onToggle != null) {
+            // Toggle Button for Request Body
+            IconButton(
+                onClick = { onToggle(!isExpanded) },
+                modifier = Modifier.padding(end = 4.dp), // Spacing before label
+            ) {
+                Text(
+                    text = if (isExpanded) "▼" else "▶", // Toggle icon
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
         }
         Text(
             text = title,

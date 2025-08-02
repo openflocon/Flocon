@@ -27,7 +27,7 @@ fun StatusView(
 ) {
     Text(
         modifier = modifier,
-        text = status.code.toString(),
+        text = status.text.toString(),
         textAlign = TextAlign.Center,
         fontSize = textSize,
         color =
@@ -46,7 +46,7 @@ private fun StatusView_Preview() {
         StatusView(
             status =
             NetworkStatusUi(
-                code = 200,
+                text = "200",
                 isSuccess = true,
             ),
         )

@@ -29,6 +29,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
+import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkFilterBar
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
@@ -94,25 +95,30 @@ fun NetworkScreen(
                     columnWidths = columnWidths,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                LazyColumn(
-                    modifier =
+                Box(
                     Modifier
-                        .fillMaxSize()
-                        .clickable(
-                            interactionSource = null,
-                            indication = null,
-                            enabled = detailState != null,
-                        ) {
-                            closeDetailPanel()
-                        },
+                        .fillMaxSize(),
                 ) {
-                    items(filteredItems) {
-                        NetworkItemView(
-                            state = it,
-                            columnWidths = columnWidths,
-                            modifier = Modifier.fillMaxWidth(),
-                            onUserAction = onNetworkItemUserAction,
-                        )
+                    LazyColumn(
+                        modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .clickable(
+                                interactionSource = null,
+                                indication = null,
+                                enabled = detailState != null,
+                            ) {
+                                closeDetailPanel()
+                            },
+                    ) {
+                        items(filteredItems) {
+                            NetworkItemView(
+                                state = it,
+                                columnWidths = columnWidths,
+                                modifier = Modifier.fillMaxWidth(),
+                                onUserAction = onNetworkItemUserAction,
+                            )
+                        }
                     }
                 }
             }
@@ -139,6 +145,10 @@ private fun NetworkScreenPreview() {
             remember {
                 listOf(
                     previewNetworkItemViewState(),
+                    previewNetworkItemViewState(),
+                    previewGraphQlItemViewState(),
+                    previewNetworkItemViewState(),
+                    previewGraphQlItemViewState(),
                     previewNetworkItemViewState(),
                 )
             }

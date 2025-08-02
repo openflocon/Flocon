@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

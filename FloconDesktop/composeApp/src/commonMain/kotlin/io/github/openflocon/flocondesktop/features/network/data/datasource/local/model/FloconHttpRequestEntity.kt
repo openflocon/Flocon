@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.network.data.datasource.local
+package io.github.openflocon.flocondesktop.features.network.data.datasource.local.model
 
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -11,7 +11,16 @@ data class FloconHttpRequestEntity(
     val deviceId: String, // To associate with a device
     @Embedded
     val infos: FloconHttpRequestInfosEntity,
-)
+    // if it's a graphql method, this item is not null
+    @Embedded(prefix = "graphql_")
+    val graphql: FloconHttpRequestGraphQlEntity?,
+) {
+    data class FloconHttpRequestGraphQlEntity(
+        val query: String,
+        val operationType: String,
+        val isSuccess: Boolean,
+    )
+}
 
 data class FloconHttpRequestInfosEntity(
     val url: String,
