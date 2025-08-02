@@ -33,7 +33,6 @@ sealed interface NetworkMethodUi {
         }
     }
 
-
     sealed interface GraphQl : NetworkMethodUi {
         data object QUERY : GraphQl {
             override val text: String = "QUERY"

@@ -21,10 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
@@ -84,10 +81,10 @@ fun NetworkScreen(
                 )
                 NetworkFilterBar(
                     modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .background(FloconColors.pannel)
-                            .padding(horizontal = 12.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .background(FloconColors.pannel)
+                        .padding(horizontal = 12.dp),
                     networkItems = networkItems,
                     onResetClicked = onReset,
                     onItemsChange = {
@@ -100,19 +97,19 @@ fun NetworkScreen(
                 )
                 Box(
                     Modifier
-                        .fillMaxSize()
+                        .fillMaxSize(),
                 ) {
                     LazyColumn(
                         modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .clickable(
-                                    interactionSource = null,
-                                    indication = null,
-                                    enabled = detailState != null,
-                                ) {
-                                    closeDetailPanel()
-                                },
+                        Modifier
+                            .fillMaxSize()
+                            .clickable(
+                                interactionSource = null,
+                                indication = null,
+                                enabled = detailState != null,
+                            ) {
+                                closeDetailPanel()
+                            },
                     ) {
                         items(filteredItems) {
                             NetworkItemView(
@@ -128,10 +125,10 @@ fun NetworkScreen(
             detailState?.let {
                 NetworkDetailView(
                     modifier =
-                        Modifier
-                            .align(Alignment.TopEnd)
-                            .fillMaxHeight()
-                            .width(500.dp),
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .fillMaxHeight()
+                        .width(500.dp),
                     state = it,
                     onCopy = onCopyText,
                 )

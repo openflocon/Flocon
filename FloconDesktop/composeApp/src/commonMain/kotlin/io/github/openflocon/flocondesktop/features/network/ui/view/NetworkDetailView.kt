@@ -132,11 +132,11 @@ fun NetworkDetailView(
                 ) {
                     Column(
                         modifier =
-                            Modifier
-                                .background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(12.dp),
-                                ).padding(horizontal = 8.dp, vertical = 4.dp),
+                        Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(12.dp),
+                            ).padding(horizontal = 8.dp, vertical = 4.dp),
                     ) {
                         DetailLineTextView(
                             modifier = Modifier.fillMaxWidth(),

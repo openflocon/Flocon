@@ -14,7 +14,7 @@ fun FloconHttpRequestDomainModel.toEntity(deviceId: String): FloconHttpRequestEn
             operationType = t.operationType,
         )
         else -> null
-    }
+    },
 )
 
 private fun FloconHttpRequestDomainModel.toInfosEntity(): FloconHttpRequestInfosEntity = FloconHttpRequestInfosEntity(

@@ -122,12 +122,10 @@ class NetworkRepositoryImpl(
                     operationType = graphQl.request.operationType,
                 )
                 else -> FloconHttpRequestDomainModel.Type.Http
-            }
+            },
         )
     } catch (t: Throwable) {
         t.printStackTrace()
         null
     }
-
-
 }

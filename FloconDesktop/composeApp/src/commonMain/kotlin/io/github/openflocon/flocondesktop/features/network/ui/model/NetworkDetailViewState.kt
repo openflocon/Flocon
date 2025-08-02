@@ -10,7 +10,7 @@ data class NetworkDetailViewState(
     val method: NetworkMethodUi,
     val status: NetworkStatusUi,
 
-    val graphQlSection : GraphQlSection?,
+    val graphQlSection: GraphQlSection?,
 
     // request
     val requestBody: String,

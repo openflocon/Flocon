@@ -6,7 +6,6 @@ import flocondesktop.composeapp.generated.resources.dashboard
 import flocondesktop.composeapp.generated.resources.database
 import flocondesktop.composeapp.generated.resources.deeplinks
 import flocondesktop.composeapp.generated.resources.files
-import flocondesktop.composeapp.generated.resources.graphql
 import flocondesktop.composeapp.generated.resources.grpc
 import flocondesktop.composeapp.generated.resources.images
 import flocondesktop.composeapp.generated.resources.network

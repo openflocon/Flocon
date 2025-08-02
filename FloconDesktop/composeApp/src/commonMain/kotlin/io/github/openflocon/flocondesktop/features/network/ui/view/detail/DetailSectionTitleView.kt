@@ -24,7 +24,7 @@ fun DetailSectionTitleView(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if(onToggle != null) {
+        if (onToggle != null) {
             // Toggle Button for Request Body
             IconButton(
                 onClick = { onToggle(!isExpanded) },

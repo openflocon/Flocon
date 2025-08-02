@@ -8,5 +8,3 @@ data class GraphQlRequestBody(
     val query: String,
     val variables: JsonElement? = null,
 )
-
-

@@ -3,7 +3,6 @@ package io.github.openflocon.flocondesktop.features.network.ui.view.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -20,7 +19,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import org.jetbrains.compose.resources.DrawableResource
@@ -83,11 +81,11 @@ fun NetworkTag(
 ) {
     Row(
         modifier =
-            modifier
-                .background(
-                    color = backgroundColor,
-                    shape = RoundedCornerShape(20.dp), // Pill shape
-                ).padding(horizontal = 4.dp, vertical = 2.dp),
+        modifier
+            .background(
+                color = backgroundColor,
+                shape = RoundedCornerShape(20.dp), // Pill shape
+            ).padding(horizontal = 4.dp, vertical = 2.dp),
         // Padding inside the tag
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,

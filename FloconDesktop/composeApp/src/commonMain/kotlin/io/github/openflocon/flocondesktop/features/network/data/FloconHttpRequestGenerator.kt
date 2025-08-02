@@ -93,7 +93,7 @@ object FloconHttpRequestGenerator {
                         "X-Response-ID" to "res-$index",
                     ),
                 ),
-                type = FloconHttpRequestDomainModel.Type.Http
+                type = FloconHttpRequestDomainModel.Type.Http,
             )
         }
     }

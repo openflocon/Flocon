@@ -23,7 +23,6 @@ import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatusUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.MethodView
@@ -111,8 +110,8 @@ fun NetworkItemView(
             MethodView(
                 method = state.method,
                 modifier =
-                    Modifier
-                        .width(columnWidths.methodWidth),
+                Modifier
+                    .width(columnWidths.methodWidth),
             )
 
             // Route - Takes remaining space (weight)

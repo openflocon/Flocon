@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.network.data.parser.graphql
 
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
+import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.model.GraphQlExtracted
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.model.GraphQlRequestBody
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.model.GraphQlResponseBody
-import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.model.GraphQlExtracted
 import kotlinx.serialization.json.Json
 
 private val graphQlParser =
@@ -12,7 +12,7 @@ private val graphQlParser =
     }
 
 // maybe use graphql-java
-fun extractGraphQl(decoded: FloconHttpRequestDataModel) : GraphQlExtracted? {
+fun extractGraphQl(decoded: FloconHttpRequestDataModel): GraphQlExtracted? {
     val request = decoded.requestBody?.let {
         try {
             val requestBody = graphQlParser.decodeFromString<GraphQlRequestBody>(it)
@@ -37,7 +37,7 @@ fun extractGraphQl(decoded: FloconHttpRequestDataModel) : GraphQlExtracted? {
         }
     }
 
-    return if(request != null && response != null) {
+    return if (request != null && response != null) {
         GraphQlExtracted(
             request = request,
             response = response,
