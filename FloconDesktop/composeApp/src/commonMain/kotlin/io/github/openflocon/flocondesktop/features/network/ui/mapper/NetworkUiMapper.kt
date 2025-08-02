@@ -5,39 +5,119 @@ import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHt
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatusUi
+import io.ktor.http.Url
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 import kotlin.time.Instant
 
-fun listToUi(httpRequests: List<FloconHttpRequestDomainModel>): List<NetworkItemViewState> = httpRequests.map { toUi(it) }
+fun listToUi(httpRequests: List<FloconHttpRequestDomainModel>): List<NetworkItemViewState> =
+    httpRequests.map { toUi(it) }
+
+fun extractDomain(url: String): String {
+    // Parse l'URL en un objet Url
+    val parsedUrl = Url(url)
+
+    // Utilise host pour le domaine et encodedPathAndQuery pour le chemin
+    val domainAndPath = parsedUrl.host
+
+    // Le code ci-dessous pourrait aussi fonctionner, mais host est plus précis pour le domaine
+    // return parsedUrl.hostWithPort + parsedUrl.fullPath
+    return domainAndPath.removePrefix("www.")
+}
+
+fun extractDomainAndPath(url: String): String {
+    // Parse l'URL en un objet Url
+    val parsedUrl = Url(url)
+
+    // Utilise host pour le domaine et encodedPathAndQuery pour le chemin
+    val domainAndPath = parsedUrl.host + parsedUrl.encodedPathAndQuery
+
+    // Le code ci-dessous pourrait aussi fonctionner, mais host est plus précis pour le domaine
+    // return parsedUrl.hostWithPort + parsedUrl.fullPath
+    return domainAndPath.removePrefix("www.")
+}
+
+fun extractPath(url: String): String {
+    val parsedUrl = Url(url)
+    return parsedUrl.encodedPathAndQuery
+}
 
 fun toUi(httpRequest: FloconHttpRequestDomainModel): NetworkItemViewState = NetworkItemViewState(
     uuid = httpRequest.uuid,
     dateFormatted = formatTimestamp(httpRequest.request.startTime),
-    method = toMethodUi(httpRequest.request.method),
-    networkStatusUi = toNetworkStatusUi(code = httpRequest.response.httpCode),
-    route = httpRequest.url,
     timeFormatted = formatDuration(httpRequest.durationMs),
     requestSize = ByteFormatter.formatBytes(httpRequest.request.byteSize),
     responseSize = ByteFormatter.formatBytes(httpRequest.response.byteSize),
+    domain = getDomainUi(httpRequest),
+    type = toTypeUi(httpRequest),
+    method = getMethodUi(httpRequest),
+    status = getStatusUi(httpRequest),
 )
 
+fun toTypeUi(httpRequest: FloconHttpRequestDomainModel): NetworkItemViewState.NetworkTypeUi {
+    return when (val t = httpRequest.type) {
+        is FloconHttpRequestDomainModel.Type.GraphQl -> NetworkItemViewState.NetworkTypeUi.GraphQl(
+            queryName = t.query,
+        )
+
+        FloconHttpRequestDomainModel.Type.Http -> {
+            val query = extractPath(httpRequest.url)
+            NetworkItemViewState.NetworkTypeUi.Url(
+                query = query,
+            )
+        }
+    }
+}
+
+fun getMethodUi(httpRequest: FloconHttpRequestDomainModel): NetworkMethodUi {
+    return when (val t = httpRequest.type) {
+        is FloconHttpRequestDomainModel.Type.GraphQl -> NetworkMethodUi.GraphQl.QUERY // TODO
+        is FloconHttpRequestDomainModel.Type.Http -> toMethodUi(httpRequest.request.method)
+    }
+}
+
+fun getStatusUi(httpRequest: FloconHttpRequestDomainModel): NetworkStatusUi {
+    return when (val t = httpRequest.type) {
+        is FloconHttpRequestDomainModel.Type.GraphQl -> toGraphQlNetworkStatusUi(httpRequest.response.httpCode, isSuccess = true) // TODO
+        is FloconHttpRequestDomainModel.Type.Http -> toNetworkStatusUi(httpRequest.response.httpCode)
+    }
+}
+
+
+fun getDomainUi(httpRequest: FloconHttpRequestDomainModel): String {
+    return when (val t = httpRequest.type) {
+        is FloconHttpRequestDomainModel.Type.GraphQl -> extractDomainAndPath(httpRequest.url)
+        is FloconHttpRequestDomainModel.Type.Http -> extractDomain(httpRequest.url)
+    }
+}
+
 fun toNetworkStatusUi(code: Int): NetworkStatusUi = NetworkStatusUi(
-    code = code,
+    text = code.toString(),
     isSuccess = code >= 200 && code < 300,
 )
 
-fun toMethodUi(httpMethod: String): NetworkMethodUi = when (httpMethod.lowercase()) {
-    "get" -> NetworkMethodUi.GET
-    "put" -> NetworkMethodUi.PUT
-    "post" -> NetworkMethodUi.POST
-    "delete" -> NetworkMethodUi.DELETE
-    else -> NetworkMethodUi.OTHER(httpMethod)
+fun toGraphQlNetworkStatusUi(code: Int, isSuccess: Boolean): NetworkStatusUi {
+    val isSuccess = if (code >= 200 && code < 300) {
+        isSuccess
+    } else false
+    return NetworkStatusUi(
+        text = if (isSuccess) "Success" else "Error",
+        isSuccess = isSuccess
+    )
 }
 
-fun formatDuration(duration: Double): String = duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)
+fun toMethodUi(httpMethod: String): NetworkMethodUi = when (httpMethod.lowercase()) {
+    "get" -> NetworkMethodUi.Http.GET
+    "put" -> NetworkMethodUi.Http.PUT
+    "post" -> NetworkMethodUi.Http.POST
+    "delete" -> NetworkMethodUi.Http.DELETE
+    else -> NetworkMethodUi.OTHER(httpMethod, icon = null)
+}
+
+fun formatDuration(duration: Double): String =
+    duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)
 
 fun formatTimestamp(timestamp: Long): String {
     val instant = Instant.fromEpochMilliseconds(timestamp)

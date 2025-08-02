@@ -6,6 +6,8 @@ import io.github.openflocon.flocondesktop.Protocol
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
+import io.github.openflocon.flocondesktop.features.network.data.model.GraphQlRequestBody
+import io.github.openflocon.flocondesktop.features.network.data.model.GraphQlResponseBody
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
@@ -96,6 +98,7 @@ class NetworkRepositoryImpl(
 
     @OptIn(ExperimentalUuidApi::class)
     fun toDomain(decoded: FloconHttpRequestDataModel): FloconHttpRequestDomainModel? = try {
+        val graphQl = extractGraphQl(decoded)
         FloconHttpRequestDomainModel(
             uuid = Uuid.random().toString(),
             url = decoded.url!!,
@@ -114,9 +117,34 @@ class NetworkRepositoryImpl(
                 headers = decoded.responseHeaders!!,
                 byteSize = decoded.responseSize ?: 0L,
             ),
+            type = when {
+                graphQl != null -> FloconHttpRequestDomainModel.Type.GraphQl(graphQl.first.query)
+                else -> FloconHttpRequestDomainModel.Type.Http
+            }
         )
     } catch (t: Throwable) {
         t.printStackTrace()
         null
+    }
+
+    private fun extractGraphQl(decoded: FloconHttpRequestDataModel) : Pair<GraphQlRequestBody, GraphQlResponseBody>? {
+        val graphQlQuery = decoded.requestBody?.let {
+            try {
+                httpParser.decodeFromString<GraphQlRequestBody>(it)
+            } catch (t: Throwable) {
+                null
+            }
+        }
+        val graphQlResponse = decoded.responseBody?.let {
+            try {
+                httpParser.decodeFromString<GraphQlResponseBody>(it)
+            } catch (t: Throwable) {
+                null
+            }
+        }
+
+        return if(graphQlQuery != null && graphQlResponse != null) {
+            graphQlQuery to graphQlResponse
+        } else null
     }
 }

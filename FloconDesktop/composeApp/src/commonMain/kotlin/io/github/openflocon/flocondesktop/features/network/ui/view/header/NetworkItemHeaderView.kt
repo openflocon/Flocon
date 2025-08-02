@@ -2,6 +2,8 @@ package io.github.openflocon.flocondesktop.features.network.ui.view.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -16,13 +18,15 @@ import io.github.openflocon.flocondesktop.features.network.ui.view.NetworkItemCo
 fun NetworkItemHeaderView(
     columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     Row(
         modifier =
         modifier
             .background(FloconColors.pannel)
             .padding(horizontal = 8.dp, vertical = 4.dp) // Padding for the entire item
-            .padding(horizontal = 8.dp, vertical = 6.dp),
+            .padding(horizontal = 8.dp, vertical = 6.dp)
+            .padding(contentPadding),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
@@ -31,19 +35,15 @@ fun NetworkItemHeaderView(
             modifier = Modifier.width(columnWidths.dateWidth),
             text = "Request Time",
         )
-        HeaderLabelItem(
-            modifier = Modifier.width(columnWidths.methodWidth),
-            text = "Method",
-        )
-        HeaderLabelItem(
-            modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.TopStart,
-            text = "Route",
-        )
+
+        // route & method, don't display the label
+        Box(Modifier.weight(1f))
+
         HeaderLabelItem(
             modifier = Modifier.width(columnWidths.statusCodeWidth),
             text = "Status",
         )
+        /*
         HeaderLabelItem(
             modifier = Modifier.width(columnWidths.requestSizeWidth),
             text = "Request Size",
@@ -51,7 +51,8 @@ fun NetworkItemHeaderView(
         HeaderLabelItem(
             modifier = Modifier.width(columnWidths.responseSizeWidth),
             text = "Response Size",
-        )
+       }
+         */
         HeaderLabelItem(
             modifier = Modifier.width(columnWidths.timeWidth),
             text = "Time",

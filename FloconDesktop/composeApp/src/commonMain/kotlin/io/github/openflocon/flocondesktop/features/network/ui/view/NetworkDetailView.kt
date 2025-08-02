@@ -227,10 +227,10 @@ private fun NetworkDetailViewPreview() {
             state =
             NetworkDetailViewState(
                 fullUrl = "http://www.google.com",
-                method = NetworkMethodUi.GET,
+                method = NetworkMethodUi.Http.GET,
                 status =
                 NetworkStatusUi(
-                    code = 200,
+                    text = "200",
                     isSuccess = true,
                 ),
                 requestHeaders =

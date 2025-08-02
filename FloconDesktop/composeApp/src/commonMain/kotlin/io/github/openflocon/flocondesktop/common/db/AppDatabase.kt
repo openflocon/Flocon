@@ -26,14 +26,14 @@ import io.github.openflocon.flocondesktop.features.grpc.data.datasource.room.mod
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.FloconImageDao
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.model.DeviceImageEntity
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.FloconHttpRequestDao
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.FloconHttpRequestEntity
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntity
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.FloconTableDao
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableItemEntity
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 18,
+    version = 21,
     entities = [
         FloconHttpRequestEntity::class,
         FileEntity::class,

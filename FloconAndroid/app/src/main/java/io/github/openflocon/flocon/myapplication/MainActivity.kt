@@ -59,6 +59,7 @@ class MainActivity : ComponentActivity() {
         initializeDeeplinks()
 
         val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)
+        val graphQlTester = GraphQlTester(client = okHttpClient)
         initializeImages(context = this, okHttpClient = okHttpClient)
         initializeDashboard(this)
         initializeTable(this)
@@ -84,7 +85,7 @@ class MainActivity : ComponentActivity() {
                             Button(
                                 onClick = {
                                     GlobalScope.launch {
-                                        GraphQlTester.fetchViewerInfo()
+                                        graphQlTester.fetchViewerInfo()
                                     }
                                 }
                             ) {
