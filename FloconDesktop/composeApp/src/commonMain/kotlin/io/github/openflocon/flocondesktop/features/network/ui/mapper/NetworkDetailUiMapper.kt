@@ -20,7 +20,19 @@ fun toDetailUi(request: FloconHttpRequestDomainModel): NetworkDetailViewState = 
     responseBody = httpBodyToUi(request.response.body),
     responseHeaders = toNetworkHeadersUi(request.response.headers),
     responseSize = ByteFormatter.formatBytes(request.response.byteSize),
+
+    graphQlSection = graphQlSection(request),
 )
+
+fun graphQlSection(request: FloconHttpRequestDomainModel): NetworkDetailViewState.GraphQlSection? {
+    return (request.type as? FloconHttpRequestDomainModel.Type.GraphQl)?.let {
+        NetworkDetailViewState.GraphQlSection(
+            queryName = request.type.query,
+            method = getMethodUi(request),
+            status = toGraphQlNetworkStatusUi(code = request.response.httpCode, isSuccess = true),
+        )
+    }
+}
 
 fun httpBodyToUi(body: String?): String = body?.let { JsonPrettyPrinter.prettyPrint(body) } ?: ""
 

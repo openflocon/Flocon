@@ -9,6 +9,9 @@ data class NetworkDetailViewState(
     val durationFormatted: String,
     val method: NetworkMethodUi,
     val status: NetworkStatusUi,
+
+    val graphQlSection : GraphQlSection?,
+
     // request
     val requestBody: String,
     val requestSize: String,
@@ -17,4 +20,10 @@ data class NetworkDetailViewState(
     val responseBody: String,
     val responseSize: String,
     val responseHeaders: List<NetworkDetailHeaderUi>,
-)
+) {
+    data class GraphQlSection(
+        val queryName: String,
+        val method: NetworkMethodUi,
+        val status: NetworkStatusUi,
+    )
+}

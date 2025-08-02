@@ -2,7 +2,9 @@ package io.github.openflocon.flocondesktop.features.network.ui.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,6 +46,7 @@ fun NetworkDetailView(
     var isRequestExpanded by remember { mutableStateOf(true) }
     var isRequestBodyExpanded by remember { mutableStateOf(true) }
     var isRequestHeadersExpanded by remember { mutableStateOf(true) }
+    var isGraphQlRequestExpanded by remember { mutableStateOf(true) }
 
     var isResponseExpanded by remember { mutableStateOf(true) }
     var isResponseHeadersExpanded by remember { mutableStateOf(true) }
@@ -111,6 +114,45 @@ fun NetworkDetailView(
                     value = state.durationFormatted,
                     labelWidth = linesLabelWidth,
                 )
+            }
+
+            state.graphQlSection?.let {
+                Spacer(modifier = Modifier.height(12.dp))
+                DetailSectionTitleView(
+                    isExpanded = isRequestExpanded,
+                    title = "GraphQl",
+                    onCopy = null,
+                    onToggle = {
+                        isGraphQlRequestExpanded = !isGraphQlRequestExpanded
+                    },
+                )
+                ExpandedSectionView(
+                    modifier = Modifier.fillMaxWidth(),
+                    isExpanded = isGraphQlRequestExpanded,
+                ) {
+                    Column(
+                        modifier =
+                            Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(12.dp),
+                                ).padding(horizontal = 8.dp, vertical = 4.dp),
+                    ) {
+                        DetailLineTextView(
+                            modifier = Modifier.fillMaxWidth(),
+                            label = "Query name",
+                            value = it.queryName,
+                            labelWidth = linesLabelWidth,
+                        )
+                        DetailLineView(
+                            modifier = Modifier.fillMaxWidth(),
+                            label = "Type",
+                            labelWidth = linesLabelWidth,
+                        ) {
+                            MethodView(method = it.method)
+                        }
+                    }
+                }
             }
 
             // headers
@@ -276,6 +318,7 @@ private fun NetworkDetailViewPreview() {
                 """.trimIndent(),
                 requestSize = "0kb",
                 responseSize = "0kb",
+                graphQlSection = null,
             ),
             modifier = Modifier.padding(16.dp), // Padding pour la preview
             onCopy = { },
