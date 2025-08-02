@@ -78,7 +78,7 @@ fun getMethodUi(httpRequest: FloconHttpRequestDomainModel): NetworkMethodUi = wh
 }
 
 fun getStatusUi(httpRequest: FloconHttpRequestDomainModel): NetworkStatusUi = when (val t = httpRequest.type) {
-    is FloconHttpRequestDomainModel.Type.GraphQl -> toGraphQlNetworkStatusUi(httpRequest.response.httpCode, isSuccess = true) // TODO
+    is FloconHttpRequestDomainModel.Type.GraphQl -> toGraphQlNetworkStatusUi(isSuccess = t.isSuccess)
     is FloconHttpRequestDomainModel.Type.Http -> toNetworkStatusUi(httpRequest.response.httpCode)
 }
 
@@ -92,10 +92,7 @@ fun toNetworkStatusUi(code: Int): NetworkStatusUi = NetworkStatusUi(
     isSuccess = code >= 200 && code < 300,
 )
 
-fun toGraphQlNetworkStatusUi(code: Int, isSuccess: Boolean): NetworkStatusUi {
-    val isSuccess = if (code >= 200 && code < 300) {
-        isSuccess
-    } else false
+fun toGraphQlNetworkStatusUi(isSuccess: Boolean): NetworkStatusUi {
     return NetworkStatusUi(
         text = if (isSuccess) "Success" else "Error",
         isSuccess = isSuccess,

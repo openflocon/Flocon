@@ -56,3 +56,11 @@ private fun extractOperationName(query: String): String? {
     val matchResult = regex.find(query.trim())
     return matchResult?.groups?.get(2)?.value
 }
+
+fun computeIsGraphQlSuccess(
+    responseHttpCode: Int,
+    response: GraphQlResponseBody?
+): Boolean {
+    if(responseHttpCode !in 200..299) return false
+    return response?.errors?.takeUnless { it.isEmpty() } == null
+}

@@ -18,6 +18,7 @@ data class FloconHttpRequestEntity(
     data class FloconHttpRequestGraphQlEntity(
         val query: String,
         val operationType: String,
+        val isSuccess: Boolean,
     )
 }
 

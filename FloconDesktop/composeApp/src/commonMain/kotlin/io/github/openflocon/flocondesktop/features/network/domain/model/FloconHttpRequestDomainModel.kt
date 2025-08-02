@@ -28,6 +28,7 @@ data class FloconHttpRequestDomainModel(
         data class GraphQl(
             val query: String,
             val operationType: String,
+            val isSuccess: Boolean,
         ) : Type
         data object Http : Type
     }

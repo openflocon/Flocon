@@ -12,6 +12,7 @@ fun FloconHttpRequestDomainModel.toEntity(deviceId: String): FloconHttpRequestEn
         is FloconHttpRequestDomainModel.Type.GraphQl -> FloconHttpRequestEntity.FloconHttpRequestGraphQlEntity(
             query = t.query,
             operationType = t.operationType,
+            isSuccess = t.isSuccess,
         )
         else -> null
     },
@@ -54,6 +55,7 @@ fun FloconHttpRequestEntity.toDomainModel(): FloconHttpRequestDomainModel = Floc
         this.graphql != null -> FloconHttpRequestDomainModel.Type.GraphQl(
             query = this.graphql.query,
             operationType = this.graphql.operationType,
+            isSuccess = this.graphql.isSuccess,
         )
         else -> FloconHttpRequestDomainModel.Type.Http
     },

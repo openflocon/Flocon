@@ -28,7 +28,7 @@ fun graphQlSection(request: FloconHttpRequestDomainModel): NetworkDetailViewStat
     NetworkDetailViewState.GraphQlSection(
         queryName = request.type.query,
         method = getMethodUi(request),
-        status = toGraphQlNetworkStatusUi(code = request.response.httpCode, isSuccess = true),
+        status = toGraphQlNetworkStatusUi(isSuccess = request.type.isSuccess),
     )
 }
 
