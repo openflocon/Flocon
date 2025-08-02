@@ -4,7 +4,6 @@ import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.Protocol
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.graphql.data.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.grpc.data.datasource.LocalGrpcDataSource
 import io.github.openflocon.flocondesktop.features.grpc.data.model.fromdevice.GrpcRequestDataModel
 import io.github.openflocon.flocondesktop.features.grpc.data.model.fromdevice.GrpcResponseDataModel

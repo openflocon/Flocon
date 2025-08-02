@@ -75,7 +75,6 @@ fun buildLeftPanelState(selectedId: String?) = LeftPanelState(
             items = listOf(
                 item(subScreen = SubScreen.Network, selectedId = selectedId),
                 item(subScreen = SubScreen.Images, selectedId = selectedId),
-                item(subScreen = SubScreen.GraphQl, selectedId = selectedId),
                 item(subScreen = SubScreen.GRPC, selectedId = selectedId),
             ),
         ),

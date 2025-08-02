@@ -161,32 +161,6 @@ fun NetworkItemView(
                 modifier = Modifier.width(columnWidths.statusCodeWidth), // Apply fixed width to the StatusView composable
             )
 
-            /*
-            // Request Size - Fixed width from data class
-            Box(
-                modifier = Modifier.width(columnWidths.requestSizeWidth),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    state.requestSize,
-                    style = bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                )
-            }
-
-            // Response Size - Fixed width from data class
-            Box(
-                modifier = Modifier.width(columnWidths.responseSizeWidth),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    state.responseSize,
-                    style = bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                )
-            }
-             */
-
             // Time - Fixed width from data class
             Box(
                 modifier = Modifier.width(columnWidths.timeWidth),
