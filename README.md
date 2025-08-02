@@ -13,7 +13,7 @@ With Flocon, you gain deep access to critical app internals — such as
 
 and more — without needing root access or tedious ADB commands. It’s designed to accelerate development, QA, and debugging workflows.
 
-<img width="600" height="389" alt="Capture d’écran 2025-07-31 à 23 29 44" src="https://github.com/user-attachments/assets/1feba7ff-5328-4c9f-ad71-e35e96e677cb" />
+<img width="1200" height="773" alt="Screenshot 2025-08-02 at 13 01 58" src="https://github.com/user-attachments/assets/e18519ce-dc43-4081-a111-65660938568f" />
 
 ---
 
@@ -78,32 +78,25 @@ val okHttpClient = OkHttpClient()
 
 ### 🛰️ GraphQL Request Inspector
 
-<img width="1199" height="766" alt="Capture d’écran 2025-07-31 à 23 30 10" src="https://github.com/user-attachments/assets/53250047-3f3d-473e-af5f-8e243491c679" />
-<img width="1203" height="772" alt="Capture d’écran 2025-07-31 à 23 30 06" src="https://github.com/user-attachments/assets/19da2d6d-d04e-4092-b430-7d3f547d0168" />
-
+<img width="1200" height="773" alt="Screenshot 2025-08-02 at 13 01 58" src="https://github.com/user-attachments/assets/d0c863b1-9c34-4cb9-b2f4-fac8dc250bee" />
+<img width="1199" height="944" alt="Screenshot 2025-08-02 at 13 04 28" src="https://github.com/user-attachments/assets/1621581a-e641-43cb-9087-dfa534e89c6d" />
 
 Flocon also supports **GraphQL** requests via a dedicated Apollo interceptor.
 
 Just like with REST, all outgoing GraphQL requests made through [Apollo Client](https://www.apollographql.com/docs/android/) are captured and displayed in Flocon’s interface — allowing you to debug your queries and mutations in real time.
 
+
 For each GraphQL call, you can inspect:
 
 - Response data or error payload
 - Headers, status code, and response time
-- TO DEVELOP: The operation type (query / mutation)
-
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-graphql-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-graphql-interceptor)
-
-`works only with with apollo 4+`
-```
-debugImplementation("io.github.openflocon:flocon-graphql-interceptor:LAST_VERSION")
-```
+- The operation type (query / mutation)
 
 ```kotlin
- ApolloClient.Builder()
-            .serverUrl(...)
-            ...
-            .addHttpInterceptor(FloconApolloInterceptor()) 
+ApolloClient.Builder()
+            // just set your already configured with flocon okhttp interceptor client
+            .okHttpClient(client)
+            // regular builder methods
             .build()
 ```
 
