@@ -73,7 +73,11 @@ fun toTypeUi(httpRequest: FloconHttpRequestDomainModel): NetworkItemViewState.Ne
 
 fun getMethodUi(httpRequest: FloconHttpRequestDomainModel): NetworkMethodUi {
     return when (val t = httpRequest.type) {
-        is FloconHttpRequestDomainModel.Type.GraphQl -> NetworkMethodUi.GraphQl.QUERY // TODO
+        is FloconHttpRequestDomainModel.Type.GraphQl -> when(t.operationType.lowercase()) {
+            "query" -> NetworkMethodUi.GraphQl.QUERY
+            "mutation" -> NetworkMethodUi.GraphQl.MUTATION
+            else -> NetworkMethodUi.OTHER(t.operationType, icon = null)
+        }
         is FloconHttpRequestDomainModel.Type.Http -> toMethodUi(httpRequest.request.method)
     }
 }

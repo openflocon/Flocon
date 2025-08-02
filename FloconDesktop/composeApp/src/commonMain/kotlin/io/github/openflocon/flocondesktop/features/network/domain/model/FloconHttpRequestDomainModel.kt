@@ -27,6 +27,7 @@ data class FloconHttpRequestDomainModel(
     sealed interface Type {
         data class GraphQl(
             val query: String,
+            val operationType: String,
         ) : Type
         data object Http : Type
     }

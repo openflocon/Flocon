@@ -7,5 +7,6 @@ data class GraphQlExtracted(
     data class Request(
         val requestBody: GraphQlRequestBody,
         val queryName: String?,
+        val operationType: String,
     )
 }

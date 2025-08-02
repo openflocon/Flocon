@@ -11,16 +11,19 @@ private val graphQlParser =
         ignoreUnknownKeys = true
     }
 
+// maybe use graphql-java
 fun extractGraphQl(decoded: FloconHttpRequestDataModel) : GraphQlExtracted? {
     val request = decoded.requestBody?.let {
         try {
             val requestBody = graphQlParser.decodeFromString<GraphQlRequestBody>(it)
 
             val queryName = extractOperationName(requestBody.query)
+            val operationType = extractOperationType(requestBody.query)
 
             GraphQlExtracted.Request(
                 requestBody = requestBody,
                 queryName = queryName,
+                operationType = operationType ?: return null,
             )
         } catch (t: Throwable) {
             null
@@ -40,6 +43,12 @@ fun extractGraphQl(decoded: FloconHttpRequestDataModel) : GraphQlExtracted? {
             response = response,
         )
     } else null
+}
+
+fun extractOperationType(query: String): String? {
+    val regex = Regex("""\b(query|mutation|subscription)\b""")
+    val matchResult = regex.find(query.trim())
+    return matchResult?.value
 }
 
 private fun extractOperationName(query: String): String? {

@@ -117,7 +117,10 @@ class NetworkRepositoryImpl(
                 byteSize = decoded.responseSize ?: 0L,
             ),
             type = when {
-                graphQl != null -> FloconHttpRequestDomainModel.Type.GraphQl(graphQl.request.queryName ?: "anonymous")
+                graphQl != null -> FloconHttpRequestDomainModel.Type.GraphQl(
+                    query = graphQl.request.queryName ?: "anonymous",
+                    operationType = graphQl.request.operationType,
+                )
                 else -> FloconHttpRequestDomainModel.Type.Http
             }
         )

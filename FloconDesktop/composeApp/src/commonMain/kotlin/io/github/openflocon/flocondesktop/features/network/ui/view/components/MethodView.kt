@@ -59,6 +59,7 @@ fun MethodView(
             is NetworkMethodUi.Http.POST -> postMethodBackground to postMethodText
             is NetworkMethodUi.Http.PUT -> putMethodBackground to putMethodText
             is NetworkMethodUi.GraphQl.QUERY -> grpcQueryMethodBackground to grpcQueryMethodText
+            is NetworkMethodUi.GraphQl.MUTATION -> grpcQueryMethodBackground to grpcQueryMethodText
         }
 
     NetworkTag(

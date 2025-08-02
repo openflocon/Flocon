@@ -39,6 +39,10 @@ sealed interface NetworkMethodUi {
             override val text: String = "QUERY"
             override val icon = Res.drawable.graphql
         }
+        data object MUTATION : GraphQl {
+            override val text: String = "MUTATION"
+            override val icon = Res.drawable.graphql
+        }
     }
 
     data class OTHER(

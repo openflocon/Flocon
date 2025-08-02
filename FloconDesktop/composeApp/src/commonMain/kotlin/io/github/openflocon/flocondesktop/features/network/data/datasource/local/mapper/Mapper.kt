@@ -11,6 +11,7 @@ fun FloconHttpRequestDomainModel.toEntity(deviceId: String): FloconHttpRequestEn
     graphql = when (val t = this.type) {
         is FloconHttpRequestDomainModel.Type.GraphQl -> FloconHttpRequestEntity.FloconHttpRequestGraphQlEntity(
             query = t.query,
+            operationType = t.operationType,
         )
         else -> null
     }
@@ -52,6 +53,7 @@ fun FloconHttpRequestEntity.toDomainModel(): FloconHttpRequestDomainModel = Floc
     type = when {
         this.graphql != null -> FloconHttpRequestDomainModel.Type.GraphQl(
             query = this.graphql.query,
+            operationType = this.graphql.operationType,
         )
         else -> FloconHttpRequestDomainModel.Type.Http
     },
