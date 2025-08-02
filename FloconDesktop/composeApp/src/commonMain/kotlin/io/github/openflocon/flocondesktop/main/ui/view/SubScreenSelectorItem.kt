@@ -6,7 +6,6 @@ import flocondesktop.composeapp.generated.resources.dashboard
 import flocondesktop.composeapp.generated.resources.database
 import flocondesktop.composeapp.generated.resources.deeplinks
 import flocondesktop.composeapp.generated.resources.files
-import flocondesktop.composeapp.generated.resources.grpc
 import flocondesktop.composeapp.generated.resources.images
 import flocondesktop.composeapp.generated.resources.network
 import flocondesktop.composeapp.generated.resources.settings
@@ -23,7 +22,6 @@ fun SubScreen.displayName(): String = when (this) {
     SubScreen.Files -> "Files"
     SubScreen.Tables -> "Tables"
     SubScreen.Images -> "Images"
-    SubScreen.GRPC -> "gRPC"
     SubScreen.SharedPreferences -> "SharedPreferences"
     SubScreen.Dashboard -> "Dashboard"
     SubScreen.Settings -> "Settings"
@@ -37,7 +35,6 @@ fun SubScreen.icon(): DrawableResource = when (this) {
     SubScreen.Database -> Res.drawable.database
     SubScreen.Files -> Res.drawable.files
     SubScreen.Tables -> Res.drawable.tables
-    SubScreen.GRPC -> Res.drawable.grpc
     SubScreen.Images -> Res.drawable.images
     SubScreen.SharedPreferences -> Res.drawable.sharedpreference
     SubScreen.Settings -> Res.drawable.settings

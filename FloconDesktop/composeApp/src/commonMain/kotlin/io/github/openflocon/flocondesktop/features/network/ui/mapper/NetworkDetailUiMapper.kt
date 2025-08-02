@@ -52,11 +52,11 @@ fun toNetworkHeadersUi(headers: Map<String, String>?): List<NetworkDetailHeaderU
         }.sortedBy { it.name }
 } ?: emptyList()
 
-fun toDetailMethodUi(request: FloconHttpRequestDomainModel): NetworkDetailViewState.Method = when (request.type) {
+fun toDetailMethodUi(request: FloconHttpRequestDomainModel): NetworkDetailViewState.Method = when (val t = request.type) {
     is FloconHttpRequestDomainModel.Type.Grpc -> NetworkDetailViewState.Method.MethodName(
         name = request.request.method,
     )
     is FloconHttpRequestDomainModel.Type.GraphQl,
     is FloconHttpRequestDomainModel.Type.Http,
-    -> NetworkDetailViewState.Method.Http(getMethodUi(request))
+    -> NetworkDetailViewState.Method.Http(toHttpMethodUi(request.request.method))
 }

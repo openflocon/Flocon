@@ -18,9 +18,6 @@ import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.roo
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.model.DeeplinkEntity
 import io.github.openflocon.flocondesktop.features.files.data.datasources.FloconFileDao
 import io.github.openflocon.flocondesktop.features.files.data.datasources.model.FileEntity
-import io.github.openflocon.flocondesktop.features.grpc.data.datasource.room.GrpcDao
-import io.github.openflocon.flocondesktop.features.grpc.data.datasource.room.model.GrpcCallEntity
-import io.github.openflocon.flocondesktop.features.grpc.data.datasource.room.model.GrpcResponseEntity
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.FloconImageDao
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.model.DeviceImageEntity
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.FloconHttpRequestDao
@@ -31,7 +28,7 @@ import io.github.openflocon.flocondesktop.features.table.data.datasource.local.m
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 26,
+    version = 27,
     entities = [
         FloconHttpRequestEntity::class,
         FileEntity::class,
@@ -43,8 +40,6 @@ import kotlinx.coroutines.Dispatchers
         DeviceImageEntity::class,
         SuccessQueryEntity::class,
         DeeplinkEntity::class,
-        GrpcCallEntity::class,
-        GrpcResponseEntity::class,
         AnalyticsItemEntity::class,
     ],
 )
@@ -60,7 +55,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val imageDao: FloconImageDao
     abstract val queryDao: QueryDao
     abstract val deeplinkDao: FloconDeeplinkDao
-    abstract val grpcDao: GrpcDao
     abstract val analyticsDao: FloconAnalyticsDao
 }
 

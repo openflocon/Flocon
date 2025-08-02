@@ -10,11 +10,11 @@ fun getMethodUi(httpRequest: FloconHttpRequestDomainModel): NetworkMethodUi = wh
         "mutation" -> NetworkMethodUi.GraphQl.MUTATION
         else -> OTHER(t.operationType, icon = null)
     }
-    is FloconHttpRequestDomainModel.Type.Http -> toMethodUi(httpRequest.request.method)
+    is FloconHttpRequestDomainModel.Type.Http -> toHttpMethodUi(httpRequest.request.method)
     is FloconHttpRequestDomainModel.Type.Grpc -> NetworkMethodUi.Grpc
 }
 
-fun toMethodUi(httpMethod: String): NetworkMethodUi = when (httpMethod.lowercase()) {
+fun toHttpMethodUi(httpMethod: String): NetworkMethodUi = when (httpMethod.lowercase()) {
     "get" -> NetworkMethodUi.Http.GET
     "put" -> NetworkMethodUi.Http.PUT
     "post" -> NetworkMethodUi.Http.POST
