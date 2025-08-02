@@ -135,7 +135,7 @@ fun NetworkItemView(
                             color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.weight(2f)
                                 .background(color = FloconColors.pannel.copy(alpha = 0.8f), shape = RoundedCornerShape(4.dp))
-                                .padding(horizontal = 8.dp, vertical = 2.dp),
+                                .padding(horizontal = 8.dp, vertical = 6.dp),
                         )
                     }
 
@@ -148,7 +148,7 @@ fun NetworkItemView(
                             color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.weight(2f)
                                 .background(color = FloconColors.pannel.copy(alpha = 0.8f), shape = RoundedCornerShape(4.dp))
-                                .padding(horizontal = 8.dp, vertical = 2.dp),
+                                .padding(horizontal = 8.dp, vertical = 6.dp),
                         )
                     }
                 }
