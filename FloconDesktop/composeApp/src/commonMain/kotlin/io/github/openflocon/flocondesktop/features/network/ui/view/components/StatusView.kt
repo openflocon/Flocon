@@ -1,11 +1,13 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view.components
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
@@ -25,18 +27,22 @@ fun StatusView(
     textSize: TextUnit = 12.sp,
     modifier: Modifier = Modifier,
 ) {
-    Text(
-        modifier = modifier,
-        text = status.text.toString(),
-        textAlign = TextAlign.Center,
-        fontSize = textSize,
-        color =
-        when (status.isSuccess) {
-            true -> successTagText
-            false -> errorTagText
-        },
-        style = MaterialTheme.typography.labelSmall, // Use typography for consistency
-    )
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        BasicText(
+            text = status.text.toString(),
+            autoSize = TextAutoSize.StepBased(
+                maxFontSize = textSize,
+                minFontSize = 8.sp,
+            ),
+            maxLines = 1,
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = when (status.isSuccess) {
+                    true -> successTagText
+                    false -> errorTagText
+                },
+            ),
+        )
+    }
 }
 
 @Composable

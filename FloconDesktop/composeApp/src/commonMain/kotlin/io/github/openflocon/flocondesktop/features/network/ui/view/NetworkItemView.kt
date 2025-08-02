@@ -36,7 +36,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 data class NetworkItemColumnWidths(
     val dateWidth: Dp = 90.dp,
     val methodWidth: Dp = 70.dp,
-    val statusCodeWidth: Dp = 60.dp,
+    val statusCodeWidth: Dp = 65.dp,
     val requestSizeWidth: Dp = 65.dp,
     val responseSizeWidth: Dp = 65.dp,
     val timeWidth: Dp = 60.dp,

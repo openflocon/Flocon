@@ -10,7 +10,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatu
 fun toDetailUi(request: FloconHttpRequestDomainModel): NetworkDetailViewState = NetworkDetailViewState(
     fullUrl = request.url,
     method = toMethodUi(request.request.method),
-    status = toNetworkStatusUi(request.type),
+    status = toDetailNetworkStatusUi(request.type),
     requestTimeFormatted = request.request.startTime.let { formatTimestamp(it) },
     durationFormatted = formatDuration(request.durationMs),
     // request
@@ -25,12 +25,11 @@ fun toDetailUi(request: FloconHttpRequestDomainModel): NetworkDetailViewState = 
     graphQlSection = graphQlSection(request),
 )
 
-fun toNetworkStatusUi(type: FloconHttpRequestDomainModel.Type): NetworkStatusUi {
-    return when(type) {
-        is FloconHttpRequestDomainModel.Type.GraphQl -> toNetworkStatusUi(code = type.httpCode)
-        is FloconHttpRequestDomainModel.Type.Grpc -> toGraphQlNetworkStatusUi(isSuccess = type.status == "OK")
-        is FloconHttpRequestDomainModel.Type.Http -> toNetworkStatusUi(code = type.httpCode)
-    }
+private fun toDetailNetworkStatusUi(type: FloconHttpRequestDomainModel.Type): NetworkStatusUi = when (type) {
+    is FloconHttpRequestDomainModel.Type.Grpc -> toGrpcNetworkStatusUi(type)
+    // here for grphql we want the http code, the graphql status will be displayed on the specific graphql section
+    is FloconHttpRequestDomainModel.Type.GraphQl -> toNetworkStatusUi(code = type.httpCode)
+    is FloconHttpRequestDomainModel.Type.Http -> toNetworkStatusUi(code = type.httpCode)
 }
 
 fun graphQlSection(request: FloconHttpRequestDomainModel): NetworkDetailViewState.GraphQlSection? = (request.type as? FloconHttpRequestDomainModel.Type.GraphQl)?.let {

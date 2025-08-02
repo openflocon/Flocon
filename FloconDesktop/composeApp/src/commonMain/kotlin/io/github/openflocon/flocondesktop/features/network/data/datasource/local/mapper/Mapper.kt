@@ -8,12 +8,13 @@ fun FloconHttpRequestDomainModel.toEntity(deviceId: String): FloconHttpRequestEn
     uuid = this.uuid,
     infos = this.toInfosEntity(),
     deviceId = deviceId,
-    http = when(val t = this.type) {
+    http = when (val t = this.type) {
         is FloconHttpRequestDomainModel.Type.Http -> FloconHttpRequestEntity.HttpEmbedded(
             responseHttpCode = t.httpCode,
         )
         is FloconHttpRequestDomainModel.Type.GraphQl,
-        is FloconHttpRequestDomainModel.Type.Grpc -> null
+        is FloconHttpRequestDomainModel.Type.Grpc,
+        -> null
     },
     graphql = when (val t = this.type) {
         is FloconHttpRequestDomainModel.Type.GraphQl -> FloconHttpRequestEntity.GraphQlEmbedded(
@@ -23,7 +24,16 @@ fun FloconHttpRequestDomainModel.toEntity(deviceId: String): FloconHttpRequestEn
             responseHttpCode = t.httpCode,
         )
         is FloconHttpRequestDomainModel.Type.Http,
-        is FloconHttpRequestDomainModel.Type.Grpc -> null
+        is FloconHttpRequestDomainModel.Type.Grpc,
+        -> null
+    },
+    grpc = when (val t = this.type) {
+        is FloconHttpRequestDomainModel.Type.Grpc -> FloconHttpRequestEntity.GrpcEmbedded(
+            responseStatus = t.responseStatus,
+        )
+        is FloconHttpRequestDomainModel.Type.Http,
+        is FloconHttpRequestDomainModel.Type.GraphQl,
+        -> null
     },
 )
 
@@ -69,6 +79,10 @@ fun FloconHttpRequestEntity.toDomainModel(): FloconHttpRequestDomainModel? {
 
             this.http != null -> FloconHttpRequestDomainModel.Type.Http(
                 httpCode = this.http.responseHttpCode,
+            )
+
+            this.grpc != null -> FloconHttpRequestDomainModel.Type.Grpc(
+                responseStatus = this.grpc.responseStatus,
             )
 
             else -> return null

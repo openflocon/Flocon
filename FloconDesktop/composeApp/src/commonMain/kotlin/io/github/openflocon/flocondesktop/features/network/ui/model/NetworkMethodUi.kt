@@ -45,7 +45,7 @@ sealed interface NetworkMethodUi {
     }
 
     data object Grpc : NetworkMethodUi {
-        override val text = "GRPC"
+        override val text = "gRPC"
         override val icon = null
     }
 

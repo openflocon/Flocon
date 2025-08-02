@@ -17,6 +17,9 @@ data class FloconHttpRequestEntity(
 
     @Embedded(prefix = "http_")
     val http: HttpEmbedded?,
+
+    @Embedded(prefix = "grpc_")
+    val grpc: GrpcEmbedded?,
 ) {
     data class GraphQlEmbedded(
         val query: String,
@@ -27,6 +30,10 @@ data class FloconHttpRequestEntity(
 
     data class HttpEmbedded(
         val responseHttpCode: Int,
+    )
+
+    data class GrpcEmbedded(
+        val responseStatus: String,
     )
 }
 

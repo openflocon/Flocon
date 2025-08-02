@@ -29,6 +29,8 @@ data class FloconNetworkRequest(
     fun toJson(): JSONObject {
         val json = JSONObject()
 
+        json.put("floconNetworkType", floconNetworkType)
+
         json.put("url", request.url)
         json.put("method", request.method)
         json.put("startTime", request.startTime)

@@ -34,7 +34,7 @@ data class FloconHttpRequestDomainModel(
             val httpCode: Int, // ex: 200
         ) : Type
         data class Grpc(
-            val status: String,
+            val responseStatus: String,
         ) : Type
     }
 }

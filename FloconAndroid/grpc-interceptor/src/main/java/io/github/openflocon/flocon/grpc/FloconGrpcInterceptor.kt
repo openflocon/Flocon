@@ -127,7 +127,7 @@ private class LoggingClientCallListener<RespT>(
                 httpCode = null,
                 contentType = "grpc",
                 size = 0L,
-                grpcStatus = status.description,
+                grpcStatus = status.code.toString(),
             ),
         )
     }

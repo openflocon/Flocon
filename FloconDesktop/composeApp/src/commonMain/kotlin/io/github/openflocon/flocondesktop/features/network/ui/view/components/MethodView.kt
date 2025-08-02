@@ -40,8 +40,11 @@ private val deleteMethodText = Color(0xFFDC3545)
 private val otherMethodBackground = Color(0xFF6C757D).copy(alpha = 0.3f) // Muted gray for OTHER
 private val otherMethodText = Color(0xFF6C757D)
 
-private val grpcQueryMethodBackground = Color(0XAAE235A9).copy(alpha = 0.8f) // Muted gray for OTHER
-private val grpcQueryMethodText = Color(0XAAFFFFFF)
+private val graphQlQueryMethodBackground = Color(0XAAE235A9).copy(alpha = 0.8f) // Muted gray for OTHER
+private val graphQlQueryMethodText = Color(0XAAFFFFFF)
+
+private val grpcMethodBackground = Color(0xff71CCCB)
+private val grpcMethodText = Color(0xff244B5A)
 
 @Composable
 fun MethodView(
@@ -56,9 +59,9 @@ fun MethodView(
             is NetworkMethodUi.OTHER -> otherMethodBackground to otherMethodText
             is NetworkMethodUi.Http.POST -> postMethodBackground to postMethodText
             is NetworkMethodUi.Http.PUT -> putMethodBackground to putMethodText
-            is NetworkMethodUi.GraphQl.QUERY -> grpcQueryMethodBackground to grpcQueryMethodText
-            is NetworkMethodUi.GraphQl.MUTATION -> grpcQueryMethodBackground to grpcQueryMethodText
-            is NetworkMethodUi.Grpc -> postMethodBackground to postMethodText // TODO
+            is NetworkMethodUi.GraphQl.QUERY -> graphQlQueryMethodBackground to graphQlQueryMethodText
+            is NetworkMethodUi.GraphQl.MUTATION -> graphQlQueryMethodBackground to graphQlQueryMethodText
+            is NetworkMethodUi.Grpc -> grpcMethodBackground to grpcMethodText
         }
 
     NetworkTag(
@@ -122,5 +125,13 @@ private fun MethodView_Preview() {
 private fun MethodView_GraphQlQuery_Preview() {
     FloconTheme {
         MethodView(method = NetworkMethodUi.GraphQl.QUERY)
+    }
+}
+
+@Composable
+@Preview
+private fun MethodView_Ggrpc_Preview() {
+    FloconTheme {
+        MethodView(method = NetworkMethodUi.Grpc)
     }
 }

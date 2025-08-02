@@ -8,7 +8,6 @@ import io.github.openflocon.flocondesktop.features.network.data.datasource.local
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.computeIsGraphQlSuccess
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.extractGraphQl
-import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.model.GraphQlResponseBody
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
@@ -119,7 +118,7 @@ class NetworkRepositoryImpl(
             ),
             type = when {
                 decoded.floconNetworkType == "grpc" -> FloconHttpRequestDomainModel.Type.Grpc(
-                    status = decoded.responseGrpcStatus!!,
+                    responseStatus = decoded.responseGrpcStatus!!,
                 )
                 graphQl != null -> {
                     val httpCode = decoded.responseHttpCode!! // mandatory for graphQl
