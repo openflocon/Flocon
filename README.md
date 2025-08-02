@@ -332,7 +332,9 @@ Flocon.deeplinks(
 
 # Grpc
 
-<img width="1207" height="774" alt="GRPC" src="https://github.com/user-attachments/assets/992541b3-3f61-4151-b6f5-0ed1b06ee7e4" />
+
+<img width="1202" height="776" alt="Screenshot 2025-08-02 at 16 28 49" src="https://github.com/user-attachments/assets/4efc9cec-1299-4a30-9c39-1d1626f55c05" />
+<img width="1201" height="775" alt="Screenshot 2025-08-02 at 16 34 04" src="https://github.com/user-attachments/assets/eeafb486-26f1-43c3-bc6f-0387f7d15229" />
 
 Similar to network inteceptions, Flocon works with grpc 
 
