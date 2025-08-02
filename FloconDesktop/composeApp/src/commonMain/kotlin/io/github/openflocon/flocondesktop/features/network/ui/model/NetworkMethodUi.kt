@@ -44,6 +44,11 @@ sealed interface NetworkMethodUi {
         }
     }
 
+    data object Grpc : NetworkMethodUi {
+        override val text = "gRPC"
+        override val icon = null
+    }
+
     data class OTHER(
         override val text: String,
         override val icon: DrawableResource?,

@@ -5,7 +5,6 @@ import io.github.openflocon.flocondesktop.features.dashboard.di.dashboardModule
 import io.github.openflocon.flocondesktop.features.database.di.databaseModule
 import io.github.openflocon.flocondesktop.features.deeplinks.di.deeplinkModule
 import io.github.openflocon.flocondesktop.features.files.di.filesModule
-import io.github.openflocon.flocondesktop.features.grpc.di.grpcModule
 import io.github.openflocon.flocondesktop.features.images.di.imagesModule
 import io.github.openflocon.flocondesktop.features.network.di.networkModule
 import io.github.openflocon.flocondesktop.features.sharedpreferences.di.sharedPreferencesModule
@@ -19,7 +18,6 @@ val featuresModule =
             analyticsModule,
             databaseModule,
             filesModule,
-            grpcModule,
             imagesModule,
             messagesModule,
             networkModule,

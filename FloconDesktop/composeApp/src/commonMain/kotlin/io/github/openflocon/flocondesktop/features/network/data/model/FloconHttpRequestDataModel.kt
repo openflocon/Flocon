@@ -4,6 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FloconHttpRequestDataModel(
+    val floconNetworkType: String? = null,
+
     val url: String? = null,
     val method: String? = null,
     val startTime: Long? = null,
@@ -18,4 +20,5 @@ data class FloconHttpRequestDataModel(
     val responseBody: String? = null,
     val responseHeaders: Map<String, String>? = null,
     val responseSize: Long? = null,
+    val responseGrpcStatus: String? = null,
 )

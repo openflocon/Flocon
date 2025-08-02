@@ -2,7 +2,7 @@ package io.github.openflocon.flocon.okhttp
 
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.Protocol
-import io.github.openflocon.flocon.okhttp.model.FloconHttpRequest
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Response
@@ -41,7 +41,7 @@ class FloconOkhttpInterceptor(
         val response = chain.proceed(request)
         val endTime = System.nanoTime()
 
-        val durationMs = (endTime - startTime) / 1e6
+        val durationMs: Double = (endTime - startTime) / 1e6
 
         // To get the response body, be careful
         // because the body can only be read once.
@@ -64,21 +64,25 @@ class FloconOkhttpInterceptor(
 
         val isImage = responseContentType?.toString()?.startsWith("image/") == true
 
-        val floconRequest = FloconHttpRequest(
-            url = request.url.toString(),
-            method = request.method,
-            startTime = requestedAt,
+        val floconRequest = FloconNetworkRequest(
             durationMs = durationMs,
-
-            requestHeaders = requestHeadersMap,
-            requestBody = requestBodyString,
-            requestSize = requestSize,
-
-            responseHttpCode = response.code,
-            responseContentType = responseContentType?.toString(),
-            responseBody = responseBodyString.takeUnless { isImage }, // dont send images responses bytes
-            responseHeaders = responseHeadersMap,
-            responseSize = responseSize,
+            floconNetworkType = "http",
+            request = FloconNetworkRequest.Request(
+                url = request.url.toString(),
+                method = request.method,
+                startTime = requestedAt,
+                headers = requestHeadersMap,
+                body = requestBodyString,
+                size = requestSize,
+            ),
+            response = FloconNetworkRequest.Response(
+                httpCode = response.code,
+                contentType = responseContentType?.toString(),
+                body = responseBodyString.takeUnless { isImage }, // dont send images responses bytes
+                headers = responseHeadersMap,
+                size = responseSize,
+                grpcStatus = null,
+            )
         )
 
         val json = floconRequest.toJson()

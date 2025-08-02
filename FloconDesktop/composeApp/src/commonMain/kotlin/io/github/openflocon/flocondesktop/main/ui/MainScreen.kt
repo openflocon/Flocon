@@ -17,7 +17,6 @@ import io.github.openflocon.flocondesktop.features.dashboard.ui.view.DashboardSc
 import io.github.openflocon.flocondesktop.features.database.ui.view.DatabaseScreen
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.view.DeeplinkScreen
 import io.github.openflocon.flocondesktop.features.files.ui.view.FilesScreen
-import io.github.openflocon.flocondesktop.features.grpc.ui.view.GRPCScreen
 import io.github.openflocon.flocondesktop.features.images.ui.view.ImagesScreen
 import io.github.openflocon.flocondesktop.features.network.ui.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.view.SharedPreferencesScreen
@@ -89,12 +88,6 @@ private fun MainScreen(
 
                     SubScreen.Images ->
                         ImagesScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
-
-                    SubScreen.GRPC ->
-                        GRPCScreen(
                             modifier = Modifier
                                 .fillMaxSize(),
                         )

@@ -59,8 +59,8 @@ private fun extractOperationName(query: String): String? {
 
 fun computeIsGraphQlSuccess(
     responseHttpCode: Int,
-    response: GraphQlResponseBody?
+    response: GraphQlResponseBody?,
 ): Boolean {
-    if(responseHttpCode !in 200..299) return false
+    if (responseHttpCode !in 200..299) return false
     return response?.errors?.takeUnless { it.isEmpty() } == null
 }

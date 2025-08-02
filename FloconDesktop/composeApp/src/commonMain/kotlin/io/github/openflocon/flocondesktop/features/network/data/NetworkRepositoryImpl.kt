@@ -8,7 +8,6 @@ import io.github.openflocon.flocondesktop.features.network.data.datasource.local
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.computeIsGraphQlSuccess
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.extractGraphQl
-import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.model.GraphQlResponseBody
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
@@ -112,22 +111,30 @@ class NetworkRepositoryImpl(
                 byteSize = decoded.requestSize ?: 0L,
             ),
             response = FloconHttpRequestDomainModel.Response(
-                httpCode = decoded.responseHttpCode!!,
                 contentType = decoded.responseContentType,
                 body = decoded.responseBody,
                 headers = decoded.responseHeaders!!,
                 byteSize = decoded.responseSize ?: 0L,
             ),
             type = when {
-                graphQl != null -> FloconHttpRequestDomainModel.Type.GraphQl(
-                    query = graphQl.request.queryName ?: "anonymous",
-                    operationType = graphQl.request.operationType,
-                    isSuccess = computeIsGraphQlSuccess(
-                        responseHttpCode = decoded.responseHttpCode,
-                        response = graphQl.response,
-                    )
+                decoded.floconNetworkType == "grpc" -> FloconHttpRequestDomainModel.Type.Grpc(
+                    responseStatus = decoded.responseGrpcStatus!!,
                 )
-                else -> FloconHttpRequestDomainModel.Type.Http
+                graphQl != null -> {
+                    val httpCode = decoded.responseHttpCode!! // mandatory for graphQl
+                    FloconHttpRequestDomainModel.Type.GraphQl(
+                        query = graphQl.request.queryName ?: "anonymous",
+                        operationType = graphQl.request.operationType,
+                        isSuccess = computeIsGraphQlSuccess(
+                            responseHttpCode = httpCode,
+                            response = graphQl.response,
+                        ),
+                        httpCode = httpCode,
+                    )
+                }
+                else -> FloconHttpRequestDomainModel.Type.Http(
+                    httpCode = decoded.responseHttpCode!!, // mandatory for http
+                )
             },
         )
     } catch (t: Throwable) {

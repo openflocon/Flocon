@@ -7,8 +7,6 @@ enum class SubScreen {
     Network,
     Images, // network images
 
-    GRPC,
-
     // storage
     Database,
     Files, // device files (context.cache, context.files)

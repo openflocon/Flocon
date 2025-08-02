@@ -36,7 +36,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 data class NetworkItemColumnWidths(
     val dateWidth: Dp = 90.dp,
     val methodWidth: Dp = 70.dp,
-    val statusCodeWidth: Dp = 60.dp,
+    val statusCodeWidth: Dp = 65.dp,
     val requestSizeWidth: Dp = 65.dp,
     val responseSizeWidth: Dp = 65.dp,
     val timeWidth: Dp = 60.dp,
@@ -142,6 +142,19 @@ fun NetworkItemView(
                     is NetworkItemViewState.NetworkTypeUi.Url -> {
                         Text(
                             text = type.query,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            style = bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(2f)
+                                .background(color = FloconColors.pannel.copy(alpha = 0.8f), shape = RoundedCornerShape(4.dp))
+                                .padding(horizontal = 8.dp, vertical = 6.dp),
+                        )
+                    }
+
+                    is NetworkItemViewState.NetworkTypeUi.Grpc -> {
+                        Text(
+                            text = type.method,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             style = bodySmall,
