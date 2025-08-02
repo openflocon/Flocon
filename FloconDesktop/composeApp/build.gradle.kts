@@ -1,3 +1,4 @@
+import com.android.build.gradle.ProguardFiles.getDefaultProguardFile
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
@@ -183,6 +184,15 @@ room {
 compose.desktop {
     application {
         mainClass = "io.github.openflocon.flocondesktop.MainKt"
+
+        buildTypes.release {
+            proguard {
+                // Active ProGuard
+                isEnabled.set(true)
+
+                configurationFiles.from(file("proguard-rules.pro"))
+            }
+        }
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
