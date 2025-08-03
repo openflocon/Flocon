@@ -8,11 +8,6 @@ import kotlinx.coroutines.flow.Flow
 @Stable
 interface Filters {
 
-    /**
-     * To trigger filter
-     */
-    val filter: Flow<Boolean>
-
     val content: @Composable () -> Unit
 
     fun filter(list: List<FloconHttpRequestDomainModel>): Flow<List<FloconHttpRequestDomainModel>>

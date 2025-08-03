@@ -145,19 +145,4 @@ class NetworkViewModel(
         }
     }
 
-    private fun provideFilters() = combine(
-        filters.map { filter ->
-            filter.filter
-                .stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5_000),
-                    initialValue = false
-                )
-                .map { filter to it }
-        }
-    ) { list ->
-        list.filter(Pair<MethodFilter, Boolean>::second)
-            .map(Pair<MethodFilter, Boolean>::first)
-    }
-
 }

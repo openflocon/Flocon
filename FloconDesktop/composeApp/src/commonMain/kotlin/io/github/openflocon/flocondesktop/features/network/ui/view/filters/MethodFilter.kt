@@ -23,15 +23,13 @@ import org.jetbrains.compose.resources.painterResource
 class MethodFilter : Filters {
 
     private val selectedMethods = MutableStateFlow(emptyList<Method>())
-
-    override val filter: Flow<Boolean> = selectedMethods.map { it.isNotEmpty() }
-
+    
     override val content: @Composable (() -> Unit) = {
         val methods by selectedMethods.collectAsStateWithLifecycle()
 
         FilterDropdown(
             text = "Method",
-            icon = painterResource(Res.drawable.network)
+            icon = painterResource(Res.drawable.network) // TODO Change
         ) {
             Method.entries
                 .forEach { method ->
