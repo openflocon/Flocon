@@ -61,7 +61,7 @@ fun FilterMethods(
 ) {
     FilterDropdown(
         text = "Method",
-        icon = Icons.Outlined.NetworkCheck
+        icon = null // TODO Find better icon
     ) {
         MethodFilter.Methods.all()
             .forEach { method ->

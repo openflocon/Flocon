@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop
 
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -13,6 +14,7 @@ import coil3.network.ktor3.KtorNetworkFetcherFactory
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
 import org.jetbrains.compose.resources.painterResource
+import java.awt.Dimension
 
 fun main() = application {
     startKoinApp()
@@ -32,6 +34,8 @@ fun main() = application {
             position = WindowPosition(Alignment.Center),
         ),
     ) {
+        window.minimumSize = Dimension(1200, 800)
+
         App()
     }
 }
