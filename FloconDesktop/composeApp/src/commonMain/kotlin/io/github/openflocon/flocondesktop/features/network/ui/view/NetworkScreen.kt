@@ -124,17 +124,18 @@ fun NetworkScreen(
                 contentAlignment = Alignment.TopEnd,
                 modifier = Modifier
                     .fillMaxHeight()
+                    .requiredWidth(500.dp)
                     .align(Alignment.TopEnd)
             ) {
-                it?.let {
+                if (it != null) {
                     NetworkDetailView(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .requiredWidth(500.dp),
+                        modifier = Modifier.fillMaxSize(),
                         state = it,
                         onCopy = { onAction(NetworkAction.CopyText(it)) },
                     )
-                } ?: Box(Modifier.matchParentSize())
+                } else {
+                    Box(Modifier.fillMaxSize())
+                }
             }
         }
     }
