@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package io.github.openflocon.flocondesktop.main.ui.view
 
 import androidx.compose.foundation.Image
@@ -11,6 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -72,34 +79,43 @@ internal fun DeviceSelectorView(
                 }
 
                 is DevicesStateUiModel.WithDevices -> {
-                    DeviceView(
-                        device = devicesState.selected,
-                    )
-
-                    DropdownMenu(
+                    ExposedDropdownMenuBox(
                         expanded = expanded,
-                        onDismissRequest = { expanded = false },
+                        onExpandedChange = { expanded = it }
                     ) {
-                        devicesState.devices.forEach { device ->
-                            DeviceView(
-                                device = device,
-                                modifier = Modifier.fillMaxWidth().clickable {
-                                    onDeviceSelected(device)
-                                    expanded = false // Close the dropdown after selection
-                                },
-                            )
-                            // DropdownMenuItem(
-                            //    text = {
-                            //        DeviceView(
-                            //            device = device,
-                            //        )
-                            //    },
-                            //    onClick = {
-                            //        onDeviceSelected(device)
-                            //        expanded = false // Close the dropdown after selection
-                            //    },
-                            //    modifier = Modifier.fillMaxWidth(),
-                            // )
+                        DeviceView(
+                            device = devicesState.selected,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                        )
+                        DropdownMenu( // TODO Change to ExposedDropdownMenu when width is fixed https://issuetracker.google.com/issues/205589613
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier
+                                .exposedDropdownSize(matchTextFieldWidth = true)
+                        ) {
+                            devicesState.devices.forEach { device ->
+                                DeviceView(
+                                    device = device,
+                                    modifier = Modifier.fillMaxWidth().clickable {
+                                        onDeviceSelected(device)
+                                        expanded = false // Close the dropdown after selection
+                                    },
+                                )
+                                // DropdownMenuItem(
+                                //    text = {
+                                //        DeviceView(
+                                //            device = device,
+                                //        )
+                                //    },
+                                //    onClick = {
+                                //        onDeviceSelected(device)
+                                //        expanded = false // Close the dropdown after selection
+                                //    },
+                                //    modifier = Modifier.fillMaxWidth(),
+                                // )
+                            }
                         }
                     }
                 }
