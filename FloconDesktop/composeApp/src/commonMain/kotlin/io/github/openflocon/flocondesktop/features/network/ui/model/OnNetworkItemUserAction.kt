@@ -1,9 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.ui.model
 
 sealed interface OnNetworkItemUserAction {
-    data class OnClicked(
-        val item: NetworkItemViewState,
-    ) : OnNetworkItemUserAction
 
     data class CopyUrl(
         val item: NetworkItemViewState,

@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -8,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -25,8 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
@@ -41,13 +45,17 @@ import org.koin.compose.viewmodel.koinViewModel
 fun NetworkScreen(modifier: Modifier = Modifier) {
     val viewModel: NetworkViewModel = koinViewModel()
     val items by viewModel.state.collectAsStateWithLifecycle()
-    val detailState by viewModel.detailState.collectAsStateWithLifecycle()
+    val filters by viewModel.filters.collectAsStateWithLifecycle()
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     NetworkScreen(
+        uiState = uiState,
+        onAction = viewModel::onAction,
+
         networkItems = items,
-        filters = viewModel.filters,
+        filters = filters,
         modifier = modifier,
-        detailState = detailState,
         onNetworkItemUserAction = viewModel::onNetworkItemUserAction,
         onCopyText = viewModel::onCopyText,
         onReset = viewModel::onReset,
@@ -57,9 +65,11 @@ fun NetworkScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun NetworkScreen(
+    uiState: NetworkUiState,
+    onAction: (NetworkAction) -> Unit,
+
     networkItems: List<NetworkItemViewState>,
     filters: List<Filters>,
-    detailState: NetworkDetailViewState?,
     onNetworkItemUserAction: (OnNetworkItemUserAction) -> Unit,
     onCopyText: (String) -> Unit,
     closeDetailPanel: () -> Unit,
@@ -110,7 +120,7 @@ fun NetworkScreen(
                                 .clickable(
                                     interactionSource = null,
                                     indication = null,
-                                    enabled = detailState != null,
+                                    enabled = uiState.detailState != null,
                                 ) {
                                     closeDetailPanel()
                                 },
@@ -121,21 +131,33 @@ fun NetworkScreen(
                                 columnWidths = columnWidths,
                                 modifier = Modifier.fillMaxWidth(),
                                 onUserAction = onNetworkItemUserAction,
+                                onAction = onAction
                             )
                         }
                     }
                 }
             }
-            detailState?.let {
-                NetworkDetailView(
-                    modifier =
-                        Modifier
-                            .align(Alignment.TopEnd)
+            AnimatedContent(
+                targetState = uiState.detailState,
+                transitionSpec = {
+                    slideIntoContainer(SlideDirection.Start)
+                        .togetherWith(slideOutOfContainer(SlideDirection.End))
+                },
+                contentKey = { it != null },
+                contentAlignment = Alignment.TopEnd,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .align(Alignment.TopEnd)
+            ) {
+                it?.let {
+                    NetworkDetailView(
+                        modifier = Modifier
                             .fillMaxHeight()
-                            .width(500.dp),
-                    state = it,
-                    onCopy = onCopyText,
-                )
+                            .requiredWidth(500.dp),
+                        state = it,
+                        onCopy = onCopyText,
+                    )
+                } ?: Box(Modifier.matchParentSize())
             }
         }
     }
@@ -157,9 +179,10 @@ private fun NetworkScreenPreview() {
                 )
             }
         NetworkScreen(
+            uiState = NetworkUiState(),
+            onAction = {},
             networkItems = networkItems,
             filters = emptyList(),
-            detailState = null,
             closeDetailPanel = {},
             onNetworkItemUserAction = {},
             onCopyText = {},

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Stable
 interface Filters {
-
+    val sort: Int
     val content: @Composable () -> Unit
 
     fun filter(list: List<FloconHttpRequestDomainModel>): Flow<List<FloconHttpRequestDomainModel>>

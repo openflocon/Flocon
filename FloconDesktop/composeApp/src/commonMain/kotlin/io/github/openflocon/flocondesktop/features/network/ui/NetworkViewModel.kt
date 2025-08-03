@@ -16,12 +16,16 @@ import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
+import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Filters
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -42,37 +46,11 @@ class NetworkViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel() {
 
-    /**
-     * TODO Merge it with List<NetworkItemViewState> to a UiState?
-     */
-    val filters = listOf(
-        MethodFilter()
-    )
+    private val contentUiState = MutableStateFlow(ContentUiState())
+    private val filterUiState = MutableStateFlow(FilterUiState())
 
-    val test = observeHttpRequestsUseCase().flatMapLatest { list ->
-        combine(filters.map { it.filter(list) }) { array ->
-            val duplicateRequests = array.toList().flatten()
-
-            list.filter { request -> duplicateRequests.count { it == request } == filters.size }
-        }
-    }
-
-    val state: StateFlow<List<NetworkItemViewState>> =
-        observeHttpRequestsUseCase().flatMapLatest { list ->
-            combine(filters.map { it.filter(list) }) { array ->
-                val duplicateRequests = array.toList().flatten()
-
-                list.filter { request -> duplicateRequests.count { it == request } == filters.size }
-            }
-        }
-            .map { list -> list.map { toUi(it) } }
-            .flowOn(dispatcherProvider.viewModel)
-            .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), emptyList())
-
-    private val clickedRequestId = MutableStateFlow<String?>(null)
-
-    val detailState: StateFlow<NetworkDetailViewState?> =
-        clickedRequestId
+    private val detailState: StateFlow<NetworkDetailViewState?> =
+        contentUiState.map { it.selectedRequestId }
             .flatMapLatest { id ->
                 if (id == null) {
                     flowOf(null)
@@ -89,6 +67,66 @@ class NetworkViewModel(
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
+    val uiState = combine(
+        filterUiState.asStateFlow(),
+        detailState
+    ) { filterState, detailState ->
+        NetworkUiState(
+            detailState = detailState,
+            filterState = filterState
+        )
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = NetworkUiState()
+        )
+
+    /**
+     * TODO Merge it with List<NetworkItemViewState> to a UiState?
+     */
+    private val _filters = MutableStateFlow<List<Filters>>(listOf(MethodFilter()))
+    val filters = _filters.asStateFlow()
+
+    /**
+     * TODO Change to Paging
+     */
+    val state: StateFlow<List<NetworkItemViewState>> = combineTransform(
+        observeHttpRequestsUseCase(),
+        filters
+    ) { requests, filters ->
+        emit(requests)
+        // TODO Rework
+//        emitAll(
+//            combine(filters.map { it.filter(requests) }) { array ->
+//                val duplicateRequests = array.toList().flatten()
+//
+//                requests.filter { request -> duplicateRequests.count { it == request } == filters.size }  // TODO Not sure about this, doesn't seems efficient
+//            }
+//        )
+    }
+        .map { list -> list.map { toUi(it) } }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun onAction(action: NetworkAction) {
+        when (action) {
+            is NetworkAction.SelectRequest -> onSelectRequest(action)
+        }
+    }
+
+    private fun onSelectRequest(action: NetworkAction.SelectRequest) {
+        contentUiState.update { state ->
+            state.copy(
+                selectedRequestId = if (state.selectedRequestId == action.id) {
+                    null
+                } else {
+                    action.id
+                }
+            )
+        }
+    }
+
     fun onNetworkItemUserAction(action: OnNetworkItemUserAction) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
@@ -103,16 +141,6 @@ class NetworkViewModel(
                     val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
                         ?: return@launch
                     copyToClipboard(domainModel.url)
-                }
-
-                is OnNetworkItemUserAction.OnClicked -> {
-                    clickedRequestId.update {
-                        if (it == action.item.uuid) {
-                            null
-                        } else {
-                            action.item.uuid
-                        }
-                    }
                 }
 
                 is OnNetworkItemUserAction.Remove -> {
@@ -135,7 +163,7 @@ class NetworkViewModel(
 
     fun closeDetailPanel() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            clickedRequestId.update { null }
+            contentUiState.update { it.copy(selectedRequestId = null) }
         }
     }
 

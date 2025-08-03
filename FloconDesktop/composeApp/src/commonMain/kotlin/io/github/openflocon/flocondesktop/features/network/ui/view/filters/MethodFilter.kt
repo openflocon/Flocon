@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.update
 import org.jetbrains.compose.resources.painterResource
 
 class MethodFilter : Filters {
+    override val sort: Int
+        get() = 0
 
     private val selectedMethods = MutableStateFlow(Methods.all())
 

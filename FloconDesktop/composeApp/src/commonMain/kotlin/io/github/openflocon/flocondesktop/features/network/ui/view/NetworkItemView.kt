@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
@@ -46,9 +47,10 @@ data class NetworkItemColumnWidths(
 @Composable
 fun NetworkItemView(
     state: NetworkItemViewState,
-    columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
     onUserAction: (OnNetworkItemUserAction) -> Unit,
+    onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
+    columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
 ) {
     // Use MaterialTheme.typography for consistent text sizes
     val bodySmall = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp)
@@ -86,9 +88,7 @@ fun NetworkItemView(
             modifier = modifier
                 .padding(vertical = 4.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
-                .clickable(onClick = {
-                    onUserAction(OnNetworkItemUserAction.OnClicked(state))
-                })
+                .clickable(onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) })
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             // Inner padding for content
             verticalAlignment = Alignment.CenterVertically,
@@ -196,6 +196,7 @@ private fun ItemViewPreview() {
             modifier = Modifier.fillMaxWidth(),
             state = previewNetworkItemViewState(),
             onUserAction = {},
+            onAction = {}
         )
     }
 }
