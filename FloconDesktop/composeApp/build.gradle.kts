@@ -75,15 +75,11 @@ kotlin {
             implementation(libs.koin.android)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
+            // TODO Remove
             implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(projects.shared)
             implementation(libs.kotlinx.coroutinesCore)
 
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -100,6 +96,9 @@ kotlin {
             implementation(libs.sqlite.bundled)
             implementation(libs.aboutlibraries.core)
             implementation(libs.aboutlibraries.compose.m3) // Material 3
+
+            implementation(projects.shared)
+            implementation(projects.library.designsystem)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

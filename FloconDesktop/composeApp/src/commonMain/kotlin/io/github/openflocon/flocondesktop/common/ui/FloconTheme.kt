@@ -5,6 +5,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
+@Deprecated("Use FloconTheme.colorScheme")
 object FloconColors {
     val primary = Color(0xff0A84FF) // Your main accent color (Apple Blue)
     val onPrimary = Color(0xffF2F2F7) // Text/icons on primary
@@ -54,6 +55,7 @@ val FloconColorScheme =
         outline = FloconColors.secondary.copy(alpha = 0.5f),
     )
 
+@Deprecated("Use FloconTheme from DS module")
 @Composable
 fun FloconTheme(content: @Composable () -> Unit) {
     MaterialTheme(
