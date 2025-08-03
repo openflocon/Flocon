@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.main.ui.model.leftpanel
 
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.settings
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Settings
 
 data class LeftPanelState(
     val sections: List<LeftPannelSection>,
@@ -12,7 +12,7 @@ fun previewLeftPannelState(selectedId: String?) = LeftPanelState(
     bottomItems = listOf(
         LeftPanelItem(
             id = "Settings",
-            icon = Res.drawable.settings,
+            icon = Icons.Outlined.Settings,
             text = "Settings",
             isSelected = selectedId == "Settings",
         ),
@@ -23,19 +23,19 @@ fun previewLeftPannelState(selectedId: String?) = LeftPanelState(
             items = listOf(
                 LeftPanelItem(
                     id = "Http",
-                    icon = Res.drawable.settings,
+                    icon = Icons.Outlined.Settings,
                     text = "Http",
                     isSelected = selectedId == "Http",
                 ),
                 LeftPanelItem(
                     id = "Images",
-                    icon = Res.drawable.settings,
+                    icon = Icons.Outlined.Settings,
                     text = "Images",
                     isSelected = selectedId == "Images",
                 ),
                 LeftPanelItem(
                     id = "Grpc",
-                    icon = Res.drawable.settings,
+                    icon = Icons.Outlined.Settings,
                     text = "Grpc",
                     isSelected = selectedId == "Grpc",
                 ),
@@ -46,19 +46,19 @@ fun previewLeftPannelState(selectedId: String?) = LeftPanelState(
             items = listOf(
                 LeftPanelItem(
                     id = "Database",
-                    icon = Res.drawable.settings,
+                    icon = Icons.Outlined.Settings,
                     text = "Database",
                     isSelected = selectedId == "Database",
                 ),
                 LeftPanelItem(
                     id = "SharedPreferences",
-                    icon = Res.drawable.settings,
+                    icon = Icons.Outlined.Settings,
                     text = "SharedPreferences",
                     isSelected = selectedId == "SharedPreferences",
                 ),
                 LeftPanelItem(
                     id = "Files",
-                    icon = Res.drawable.settings,
+                    icon = Icons.Outlined.Settings,
                     text = "Files",
                     isSelected = selectedId == "Files",
                 ),
@@ -69,13 +69,13 @@ fun previewLeftPannelState(selectedId: String?) = LeftPanelState(
             items = listOf(
                 LeftPanelItem(
                     id = "Dashboard",
-                    icon = Res.drawable.settings,
+                    icon = Icons.Outlined.Settings,
                     text = "Dashboard",
                     isSelected = selectedId == "Dashboard",
                 ),
                 LeftPanelItem(
                     id = "Tables",
-                    icon = Res.drawable.settings,
+                    icon = Icons.Outlined.Settings,
                     text = "Tables",
                     isSelected = selectedId == "Tables",
                 ),

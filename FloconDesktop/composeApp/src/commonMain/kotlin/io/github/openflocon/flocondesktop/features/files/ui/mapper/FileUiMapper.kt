@@ -1,18 +1,19 @@
 package io.github.openflocon.flocondesktop.features.files.ui.mapper
 
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.file
-import flocondesktop.composeapp.generated.resources.folder
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Drafts
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel.ContextualAction
-import org.jetbrains.compose.resources.DrawableResource
 import kotlin.time.Instant
 
-fun FileUiModel.icon(): DrawableResource = if (this.isDirectory) Res.drawable.folder else Res.drawable.file
+fun FileUiModel.icon(): ImageVector =
+    if (this.isDirectory) Icons.Outlined.Folder else Icons.Outlined.Drafts
 
 fun FileDomainModel.toUi(): FileUiModel = FileUiModel(
     name = name,
@@ -24,9 +25,9 @@ fun FileDomainModel.toUi(): FileUiModel = FileUiModel(
     path = path.toUi(),
     size = size,
     icon = if (this.isDirectory) {
-        Res.drawable.folder
+        Icons.Outlined.Folder
     } else {
-        Res.drawable.file
+        Icons.Outlined.Drafts
     },
     contextualActions = buildContextualActions(
         isConstant = this.path is FilePathDomainModel.Constants,

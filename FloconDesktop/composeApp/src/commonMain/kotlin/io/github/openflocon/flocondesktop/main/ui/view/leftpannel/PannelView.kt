@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.main.ui.view.leftpannel
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -9,25 +8,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.settings
 import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.painterResource
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PannelView(
-    icon: DrawableResource,
+    icon: ImageVector,
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit,
@@ -47,13 +46,11 @@ fun PannelView(
             .padding(horizontal = 12.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
+        Icon(
             modifier = Modifier.size(16.dp),
-            painter = painterResource(icon),
+            imageVector = icon,
             contentDescription = "Description de mon image",
-            colorFilter = ColorFilter.tint(
-                color = FloconColorScheme.onSurface,
-            ),
+            tint = FloconColorScheme.onSurface
         )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
@@ -69,7 +66,7 @@ fun PannelView(
 private fun PannelViewPreview() {
     FloconTheme {
         PannelView(
-            icon = Res.drawable.settings,
+            icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = false,
             onClick = {},
@@ -82,7 +79,7 @@ private fun PannelViewPreview() {
 private fun PannelViewPreview_Selected() {
     FloconTheme {
         PannelView(
-            icon = Res.drawable.settings,
+            icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = true,
             onClick = {},

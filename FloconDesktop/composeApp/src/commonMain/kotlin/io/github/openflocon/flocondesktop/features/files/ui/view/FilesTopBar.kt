@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.files.ui.view
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,28 +11,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.back
-import flocondesktop.composeapp.generated.resources.bin
-import flocondesktop.composeapp.generated.resources.folder
-import flocondesktop.composeapp.generated.resources.refresh
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
-import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -67,7 +64,7 @@ fun FilesTopBar(
             TopBarButton(
                 onClick = onBack,
                 enabled = hasParentFile,
-                icon = Res.drawable.back,
+                icon = Icons.AutoMirrored.Filled.ArrowBack,
             )
             Box(
                 modifier = Modifier.weight(1f)
@@ -87,14 +84,14 @@ fun FilesTopBar(
                     onDeleteContent()
                 },
                 enabled = isDirectory,
-                icon = Res.drawable.bin,
+                icon = Icons.Outlined.Delete
             )
             TopBarButton(
                 onClick = {
                     onRefresh()
                 },
                 enabled = isDirectory,
-                icon = Res.drawable.refresh,
+                icon = Icons.Filled.Refresh
             )
         }
     }
@@ -104,7 +101,7 @@ fun FilesTopBar(
 private fun TopBarButton(
     onClick: () -> Unit,
     enabled: Boolean,
-    icon: DrawableResource,
+    icon: ImageVector,
 ) {
     Box(
         modifier = Modifier.size(32.dp)
@@ -120,10 +117,10 @@ private fun TopBarButton(
                 }
             },
     ) {
-        Image(
-            painter = painterResource(icon),
+        Icon(
+            imageVector = icon,
             modifier = Modifier.fillMaxSize(),
-            colorFilter = ColorFilter.tint(FloconTheme.colorScheme.onSurface),
+            tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = null,
         )
     }
@@ -150,7 +147,7 @@ private fun FilesTopBarPreview() {
         name = "File Name",
         type = FileTypeUiModel.Folder,
         path = FilePathUiModel.Constants.CachesDir,
-        icon = Res.drawable.folder,
+        icon = Icons.Outlined.Folder,
         size = 1024L,
         contextualActions = emptyList(),
     )

@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.images.ui.view
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +16,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,15 +37,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.bin
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.images.ui.ImagesViewModel
 import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.ui.model.previewImagesStateUiModel
-import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -107,8 +105,8 @@ private fun ImagesScreen(
                             .clickable(onClick = onReset)
                             .padding(all = 8.dp),
                     ) {
-                        Image(
-                            painter = painterResource(Res.drawable.bin),
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
                             contentDescription = null,
                             modifier = Modifier.size(20.dp),
                         )
@@ -118,7 +116,7 @@ private fun ImagesScreen(
             when (state) {
                 ImagesStateUiModel.Empty,
                 ImagesStateUiModel.Idle,
-                -> Box(Modifier)
+                    -> Box(Modifier)
 
                 is ImagesStateUiModel.WithImages -> {
                     val gridPadding = 12.dp
