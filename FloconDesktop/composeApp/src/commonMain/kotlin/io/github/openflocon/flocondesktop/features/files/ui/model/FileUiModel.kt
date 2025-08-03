@@ -1,14 +1,14 @@
 package io.github.openflocon.flocondesktop.features.files.ui.model
 
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.folder
-import org.jetbrains.compose.resources.DrawableResource
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.ui.graphics.vector.ImageVector
 
 data class FileUiModel(
     val name: String,
     val type: FileTypeUiModel,
     val path: FilePathUiModel,
-    val icon: DrawableResource,
+    val icon: ImageVector,
     val size: Long,
     val contextualActions: List<ContextualAction>,
 ) {
@@ -36,6 +36,6 @@ fun previewFileUiModel(
     type = type,
     path = FilePathUiModel.Constants.CachesDir,
     size = 100L,
-    icon = Res.drawable.folder,
+    icon = Icons.Outlined.Folder,
     contextualActions = listOf(),
 )

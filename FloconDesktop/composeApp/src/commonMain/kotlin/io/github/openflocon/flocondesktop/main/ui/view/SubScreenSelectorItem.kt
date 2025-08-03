@@ -1,18 +1,18 @@
 package io.github.openflocon.flocondesktop.main.ui.view
 
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.analytics
-import flocondesktop.composeapp.generated.resources.dashboard
-import flocondesktop.composeapp.generated.resources.database
-import flocondesktop.composeapp.generated.resources.deeplinks
-import flocondesktop.composeapp.generated.resources.files
-import flocondesktop.composeapp.generated.resources.images
-import flocondesktop.composeapp.generated.resources.network
-import flocondesktop.composeapp.generated.resources.settings
-import flocondesktop.composeapp.generated.resources.sharedpreference
-import flocondesktop.composeapp.generated.resources.tables
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.NetworkWifi
+import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.DatasetLinked
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.StackedBarChart
+import androidx.compose.material.icons.outlined.Storage
+import androidx.compose.material.icons.outlined.TableView
+import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
-import org.jetbrains.compose.resources.DrawableResource
 
 // Extension function to get the display name for each SubScreen
 fun SubScreen.displayName(): String = when (this) {
@@ -29,15 +29,15 @@ fun SubScreen.displayName(): String = when (this) {
 }
 
 // Extension function to get the icon for each SubScreen
-fun SubScreen.icon(): DrawableResource = when (this) {
-    SubScreen.Analytics -> Res.drawable.analytics
-    SubScreen.Network -> Res.drawable.network
-    SubScreen.Database -> Res.drawable.database
-    SubScreen.Files -> Res.drawable.files
-    SubScreen.Tables -> Res.drawable.tables
-    SubScreen.Images -> Res.drawable.images
-    SubScreen.SharedPreferences -> Res.drawable.sharedpreference
-    SubScreen.Settings -> Res.drawable.settings
-    SubScreen.Dashboard -> Res.drawable.dashboard
-    SubScreen.Deeplinks -> Res.drawable.deeplinks
+fun SubScreen.icon(): ImageVector = when (this) {
+    SubScreen.Analytics -> Icons.Outlined.StackedBarChart
+    SubScreen.Network -> Icons.Filled.NetworkWifi
+    SubScreen.Database -> Icons.Outlined.DatasetLinked // Can't find database
+    SubScreen.Files -> Icons.Outlined.Folder
+    SubScreen.Tables -> Icons.Outlined.TableView
+    SubScreen.Images -> Icons.Outlined.Image
+    SubScreen.SharedPreferences -> Icons.Outlined.Storage
+    SubScreen.Settings -> Icons.Outlined.Settings
+    SubScreen.Dashboard -> Icons.Outlined.Dashboard
+    SubScreen.Deeplinks -> Icons.Filled.Link
 }

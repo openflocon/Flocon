@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.files.ui.view
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,25 +7,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Drafts
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.chevron_right
-import flocondesktop.composeapp.generated.resources.file
-import flocondesktop.composeapp.generated.resources.folder
 import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -52,16 +50,16 @@ fun FileItemRow(
     ) {
         Row(
             modifier =
-            modifier
-                .clickable {
-                    onClick(file)
-                }.padding(vertical = 8.dp, horizontal = 16.dp),
+                modifier
+                    .clickable {
+                        onClick(file)
+                    }.padding(vertical = 8.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Image(
-                painter = painterResource(file.icon),
+            Icon(
+                imageVector = file.icon,
                 modifier = Modifier.size(24.dp),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                tint = MaterialTheme.colorScheme.onSurface,
                 contentDescription = null,
             )
 
@@ -93,10 +91,10 @@ fun FileItemRow(
 
             // Flèche si c'est un dossier (pour indiquer qu'on peut y naviguer)
             if (file.isDirectory) {
-                Image(
-                    painter = painterResource(Res.drawable.chevron_right),
+                Icon(
+                    imageVector = Icons.Outlined.ChevronRight,
                     modifier = Modifier.size(24.dp),
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                    tint = MaterialTheme.colorScheme.onSurface,
                     contentDescription = null,
                 )
             }
@@ -111,7 +109,7 @@ private fun FileItemRowPreview_folder() {
         name = "MyFile",
         type = FileTypeUiModel.Folder,
         path = FilePathUiModel.Constants.CachesDir,
-        icon = Res.drawable.folder,
+        icon = Icons.Outlined.Folder,
         size = 1024L,
         contextualActions = emptyList(),
     )
@@ -131,7 +129,7 @@ private fun FileItemRowPreview_file() {
         name = "MyFile",
         type = FileTypeUiModel.Other,
         path = FilePathUiModel.Real("absolutePath"),
-        icon = Res.drawable.file,
+        icon = Icons.Outlined.Drafts,
         size = 1024L,
         contextualActions = emptyList(),
     )

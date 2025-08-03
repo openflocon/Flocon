@@ -78,6 +78,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -201,6 +202,12 @@ compose.desktop {
                 iconFile.set(project.file("src/desktopMain/resources/files/flocon_big.icns"))
                 bundleID = "io.github.openflocon.flocon"
                 dockName = "Flocon"
+            }
+            linux {
+                iconFile.set(project.file("src/desktopMain/resources/drawable/app_icon_small.png"))
+            }
+            windows {
+                iconFile.set(project.file("src/desktopMain/resources/drawable/app_icon_small.png"))
             }
         }
     }
