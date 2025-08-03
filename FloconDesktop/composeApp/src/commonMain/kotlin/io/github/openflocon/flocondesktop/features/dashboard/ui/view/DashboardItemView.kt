@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,6 +25,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.Dashb
 import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardPlainTextView
 import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardTextFieldView
 import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardTextView
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -37,7 +37,8 @@ fun DashboardItemView(
     modifier: Modifier = Modifier,
 ) {
     val backColor = FloconColors.pannel
-    val textColor = FloconColors.onSurface
+    val textColor = FloconTheme.colorScheme.onSurface
+
     Box(
         modifier = modifier.shadow(
             elevation = 4.dp,
@@ -53,7 +54,7 @@ fun DashboardItemView(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
                 textAlign = TextAlign.Center,
                 text = viewState.sectionName,
-                style = MaterialTheme.typography.headlineSmall.copy(
+                style = FloconTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                 ),
                 color = textColor,
