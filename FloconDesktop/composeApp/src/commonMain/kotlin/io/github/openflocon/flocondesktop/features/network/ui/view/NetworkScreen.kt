@@ -44,7 +44,6 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun NetworkScreen(modifier: Modifier = Modifier) {
     val viewModel: NetworkViewModel = koinViewModel()
-    val items by viewModel.state.collectAsStateWithLifecycle()
     val filters by viewModel.filters.collectAsStateWithLifecycle()
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -53,7 +52,6 @@ fun NetworkScreen(modifier: Modifier = Modifier) {
         uiState = uiState,
         onAction = viewModel::onAction,
 
-        networkItems = items,
         filters = filters,
         modifier = modifier,
         onNetworkItemUserAction = viewModel::onNetworkItemUserAction,
@@ -68,7 +66,6 @@ fun NetworkScreen(
     uiState: NetworkUiState,
     onAction: (NetworkAction) -> Unit,
 
-    networkItems: List<NetworkItemViewState>,
     filters: List<Filters>,
     onNetworkItemUserAction: (OnNetworkItemUserAction) -> Unit,
     onCopyText: (String) -> Unit,
@@ -98,7 +95,7 @@ fun NetworkScreen(
                         .fillMaxWidth()
                         .background(FloconColors.pannel)
                         .padding(horizontal = 12.dp),
-                    networkItems = networkItems,
+                    networkItems = uiState.items,
                     filters = filters,
                     onResetClicked = onReset,
                     onItemsChange = {
@@ -167,8 +164,8 @@ fun NetworkScreen(
 @Preview
 private fun NetworkScreenPreview() {
     FloconTheme {
-        val networkItems =
-            remember {
+        val uiState = NetworkUiState(
+            items = remember {
                 listOf(
                     previewNetworkItemViewState(),
                     previewNetworkItemViewState(),
@@ -178,10 +175,11 @@ private fun NetworkScreenPreview() {
                     previewNetworkItemViewState(),
                 )
             }
+        )
+
         NetworkScreen(
-            uiState = NetworkUiState(),
+            uiState = uiState,
             onAction = {},
-            networkItems = networkItems,
             filters = emptyList(),
             closeDetailPanel = {},
             onNetworkItemUserAction = {},

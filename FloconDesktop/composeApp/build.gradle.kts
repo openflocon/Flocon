@@ -100,6 +100,8 @@ kotlin {
             implementation(libs.sqlite.bundled)
             implementation(libs.aboutlibraries.core)
             implementation(libs.aboutlibraries.compose.m3) // Material 3
+
+            implementation(libs.other.molecule)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

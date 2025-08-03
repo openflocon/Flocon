@@ -27,6 +27,7 @@ data class NetworkItemViewState(
 
         @Immutable
         data class Url(
+            val method: String,
             val query: String,
         ) : NetworkTypeUi {
             override fun contains(text: String): Boolean = query.contains(text, ignoreCase = true)
@@ -59,6 +60,7 @@ fun previewNetworkItemViewState(): NetworkItemViewState = NetworkItemViewState(
     status = NetworkStatusUi("200", true),
     type = NetworkItemViewState.NetworkTypeUi.Url(
         query = "/search?q=test",
+        method = "get"
     ),
 )
 

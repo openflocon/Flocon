@@ -27,6 +27,7 @@ room = "2.7.1"
 ksp = "2.2.0-2.0.2"
 ktlintGradle = "13.0.0"
 aboutLibraries = "12.2.4"
+other-molecule = "2.1.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -71,6 +72,8 @@ aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref
 # Compose UI modules (choose one or both)
 aboutlibraries-compose-core = { module = "com.mikepenz:aboutlibraries-compose-core", version.ref = "aboutLibraries" } # Common compose core
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }      # Material 3 UI
+
+other-molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "other-molecule" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

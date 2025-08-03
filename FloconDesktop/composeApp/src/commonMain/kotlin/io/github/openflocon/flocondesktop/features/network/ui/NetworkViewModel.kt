@@ -1,7 +1,17 @@
 package io.github.openflocon.flocondesktop.features.network.ui
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.copyToClipboard
@@ -11,6 +21,7 @@ import io.github.openflocon.flocondesktop.features.network.domain.ObserveHttpReq
 import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.ResetCurrentDeviceHttpRequestsUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
@@ -18,14 +29,13 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemV
 import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Filters
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
+import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter.Methods
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -34,6 +44,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.collections.map
 
 class NetworkViewModel(
     observeHttpRequestsUseCase: ObserveHttpRequestsUseCase,
@@ -57,57 +68,35 @@ class NetworkViewModel(
                 } else {
                     observeHttpRequestsByIdUseCase(id)
                         .distinctUntilChanged()
-                        .map {
-                            it?.let {
-                                toDetailUi(it)
-                            }
-                        }
+                        .map { it?.let { toDetailUi(it) } }
                 }
             }
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
-    val uiState = combine(
-        filterUiState.asStateFlow(),
-        detailState
-    ) { filterState, detailState ->
+    val uiState = viewModelScope.launchMolecule(RecompositionMode.Immediate) {
+        val items by observeHttpRequestsUseCase().collectAsState(emptyList())
+        val filterState by filterUiState.collectAsState()
+        val detailState by detailState.collectAsState()
+
+        var filteredItems by remember { mutableStateOf(emptyList<NetworkItemViewState>()) }
+
+        LaunchedEffect(items, filterState) {
+            filteredItems = filterItems(items, filterState).map { toUi(it) }
+        }
+
         NetworkUiState(
+            items = filteredItems,
             detailState = detailState,
             filterState = filterState
         )
     }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = NetworkUiState()
-        )
 
     /**
      * TODO Merge it with List<NetworkItemViewState> to a UiState?
      */
     private val _filters = MutableStateFlow<List<Filters>>(listOf(MethodFilter()))
     val filters = _filters.asStateFlow()
-
-    /**
-     * TODO Change to Paging
-     */
-    val state: StateFlow<List<NetworkItemViewState>> = combineTransform(
-        observeHttpRequestsUseCase(),
-        filters
-    ) { requests, filters ->
-        emit(requests)
-        // TODO Rework
-//        emitAll(
-//            combine(filters.map { it.filter(requests) }) { array ->
-//                val duplicateRequests = array.toList().flatten()
-//
-//                requests.filter { request -> duplicateRequests.count { it == request } == filters.size }  // TODO Not sure about this, doesn't seems efficient
-//            }
-//        )
-    }
-        .map { list -> list.map { toUi(it) } }
-        .flowOn(dispatcherProvider.viewModel)
-        .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), emptyList())
 
     fun onAction(action: NetworkAction) {
         when (action) {
@@ -127,6 +116,27 @@ class NetworkViewModel(
         }
     }
 
+    private fun filterItems(
+        items: List<FloconHttpRequestDomainModel>,
+        filterState: FilterUiState
+    ): List<FloconHttpRequestDomainModel> {
+        var filteredItems = items
+
+        if (filterState.methods.isNotEmpty())
+            filteredItems = filteredItems.filter { item ->
+                when (item.type) {
+                    is FloconHttpRequestDomainModel.Type.GraphQl -> filterState.methods.contains(Methods.GraphQL)
+                    is FloconHttpRequestDomainModel.Type.Grpc -> filterState.methods.contains(Methods.Grpc)
+                    is FloconHttpRequestDomainModel.Type.Http -> filterState.methods.filterIsInstance<Methods.Http>()
+                        .map(Methods.Http::methodName)
+                        .contains(item.request.method)
+                }
+            }
+
+        return filteredItems
+    }
+
+    // TODO Migrate
     fun onNetworkItemUserAction(action: OnNetworkItemUserAction) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {

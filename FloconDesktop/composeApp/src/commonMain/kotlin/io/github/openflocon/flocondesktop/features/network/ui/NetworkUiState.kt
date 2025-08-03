@@ -2,10 +2,12 @@ package io.github.openflocon.flocondesktop.features.network.ui
 
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 
 @Immutable
 data class NetworkUiState(
+    val items: List<NetworkItemViewState> = emptyList(),
     val contentUiState: ContentUiState = ContentUiState(),
     val detailState: NetworkDetailViewState? = null,
     val filterState: FilterUiState = FilterUiState()

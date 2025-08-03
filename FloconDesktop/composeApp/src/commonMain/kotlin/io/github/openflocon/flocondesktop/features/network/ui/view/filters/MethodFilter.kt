@@ -68,7 +68,7 @@ class MethodFilter : Filters {
                     is FloconHttpRequestDomainModel.Type.GraphQl -> methods.contains(Methods.GraphQL)
                     is FloconHttpRequestDomainModel.Type.Grpc -> methods.contains(Methods.Grpc)
                     is FloconHttpRequestDomainModel.Type.Http -> methods.filterIsInstance<Methods.Http>()
-                        .map(Methods.Http::query)
+                        .map(Methods.Http::methodName)
                         .contains(item.request.method)
                 }
             }
@@ -86,7 +86,7 @@ class MethodFilter : Filters {
     sealed interface Methods {
 
         enum class Http(
-            val query: String
+            val methodName: String
         ) : Methods {
             GET("GET"),
             POST("POST"),
