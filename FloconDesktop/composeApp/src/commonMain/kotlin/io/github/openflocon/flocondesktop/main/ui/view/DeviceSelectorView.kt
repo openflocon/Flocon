@@ -93,7 +93,7 @@ internal fun DeviceSelectorView(
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
                             modifier = Modifier
-                                .exposedDropdownSize(matchTextFieldWidth = true)
+                                .exposedDropdownSize()
                         ) {
                             devicesState.devices.forEach { device ->
                                 DeviceView(

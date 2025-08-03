@@ -1,13 +1,22 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package io.github.openflocon.flocondesktop.main.ui
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DriveEta
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.WideNavigationRail
+import androidx.compose.material3.WideNavigationRailItem
+import androidx.compose.material3.WideNavigationRailValue
+import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
@@ -28,6 +37,7 @@ import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.main.ui.settings.SettingsScreen
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.LeftPanelView
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -60,87 +70,193 @@ private fun MainScreen(
     onClickLeftPanelItem: (LeftPanelItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier) {
-        // TODO navigation
-        Row(modifier = Modifier.fillMaxSize()) {
+    val scope = rememberCoroutineScope()
+    val state = rememberWideNavigationRailState(WideNavigationRailValue.Expanded)
+
+    Row(
+        modifier = modifier
+    ) {
+        WideNavigationRail(
+            state = state
+        ) {
+            WideNavigationRailItem(
+                railExpanded = state.targetValue == WideNavigationRailValue.Expanded,
+                selected = false,
+                icon = { Icon(Icons.Outlined.DriveEta, null) },
+                label = { Text("zesfzefze") },
+                onClick = {
+                    scope.launch {
+                        if (state.currentValue == WideNavigationRailValue.Expanded)
+                            state.collapse()
+                        else
+                            state.expand()
+                    }
+                }
+            )
             LeftPanelView(
-                modifier = Modifier.width(300.dp)
-                    .fillMaxHeight(),
+                modifier = Modifier.fillMaxSize(),
                 onClickItem = onClickLeftPanelItem,
                 state = leftPanelState,
                 devicesState = devicesState,
                 onDeviceSelected = onDeviceSelected,
             )
+        }
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .shadow(6.dp)
+        ) {
+            when (subScreen) {
+                SubScreen.Network ->
+                    NetworkScreen(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                    )
 
-            Box(modifier = Modifier.fillMaxSize().shadow(6.dp)) {
-                when (subScreen) {
-                    SubScreen.Network ->
-                        NetworkScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                SubScreen.Database ->
+                    DatabaseScreen(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                    )
 
-                    SubScreen.Database ->
-                        DatabaseScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                SubScreen.Images ->
+                    ImagesScreen(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                    )
 
-                    SubScreen.Images ->
-                        ImagesScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                SubScreen.Files ->
+                    FilesScreen(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                    )
 
-                    SubScreen.Files ->
-                        FilesScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                SubScreen.Tables ->
+                    TableScreen(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                    )
 
-                    SubScreen.Tables ->
-                        TableScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                SubScreen.SharedPreferences ->
+                    SharedPreferencesScreen(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                    )
 
-                    SubScreen.SharedPreferences ->
-                        SharedPreferencesScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                SubScreen.Dashboard ->
+                    DashboardScreen(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                    )
 
-                    SubScreen.Dashboard ->
-                        DashboardScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
-
-                    SubScreen.Settings -> {
-                        SettingsScreen(
-                            modifier =
+                SubScreen.Settings -> {
+                    SettingsScreen(
+                        modifier =
                             Modifier
                                 .fillMaxSize(),
-                        )
-                    }
+                    )
+                }
 
-                    SubScreen.Deeplinks -> {
-                        DeeplinkScreen(
-                            modifier =
+                SubScreen.Deeplinks -> {
+                    DeeplinkScreen(
+                        modifier =
                             Modifier
                                 .fillMaxSize(),
-                        )
-                    }
+                    )
+                }
 
-                    SubScreen.Analytics -> {
-                        AnalyticsScreen(
-                            modifier =
+                SubScreen.Analytics -> {
+                    AnalyticsScreen(
+                        modifier =
                             Modifier
                                 .fillMaxSize(),
-                        )
-                    }
+                    )
                 }
             }
         }
     }
+//    Column(modifier) {
+//        // TODO navigation
+//        Row(modifier = Modifier.fillMaxSize()) {
+//            LeftPanelView(
+//                modifier = Modifier.width(300.dp)
+//                    .fillMaxHeight(),
+//                onClickItem = onClickLeftPanelItem,
+//                state = leftPanelState,
+//                devicesState = devicesState,
+//                onDeviceSelected = onDeviceSelected,
+//            )
+//
+//            Box(modifier = Modifier.fillMaxSize().shadow(6.dp)) {
+//                when (subScreen) {
+//                    SubScreen.Network ->
+//                        NetworkScreen(
+//                            modifier = Modifier
+//                                .fillMaxSize(),
+//                        )
+//
+//                    SubScreen.Database ->
+//                        DatabaseScreen(
+//                            modifier = Modifier
+//                                .fillMaxSize(),
+//                        )
+//
+//                    SubScreen.Images ->
+//                        ImagesScreen(
+//                            modifier = Modifier
+//                                .fillMaxSize(),
+//                        )
+//
+//                    SubScreen.Files ->
+//                        FilesScreen(
+//                            modifier = Modifier
+//                                .fillMaxSize(),
+//                        )
+//
+//                    SubScreen.Tables ->
+//                        TableScreen(
+//                            modifier = Modifier
+//                                .fillMaxSize(),
+//                        )
+//
+//                    SubScreen.SharedPreferences ->
+//                        SharedPreferencesScreen(
+//                            modifier = Modifier
+//                                .fillMaxSize(),
+//                        )
+//
+//                    SubScreen.Dashboard ->
+//                        DashboardScreen(
+//                            modifier = Modifier
+//                                .fillMaxSize(),
+//                        )
+//
+//                    SubScreen.Settings -> {
+//                        SettingsScreen(
+//                            modifier =
+//                                Modifier
+//                                    .fillMaxSize(),
+//                        )
+//                    }
+//
+//                    SubScreen.Deeplinks -> {
+//                        DeeplinkScreen(
+//                            modifier =
+//                                Modifier
+//                                    .fillMaxSize(),
+//                        )
+//                    }
+//
+//                    SubScreen.Analytics -> {
+//                        AnalyticsScreen(
+//                            modifier =
+//                                Modifier
+//                                    .fillMaxSize(),
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
 }
