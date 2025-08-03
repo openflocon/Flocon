@@ -80,7 +80,7 @@ fun NetworkDetailView(
                 modifier =
                     Modifier
                         .background(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            color = FloconTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(12.dp),
                         ).padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
@@ -100,8 +100,8 @@ fun NetworkDetailView(
                         is NetworkDetailViewState.Method.MethodName -> {
                             Text(
                                 text = m.name,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                style = FloconTheme.typography.bodySmall,
+                                color = FloconTheme.colorScheme.onSurface,
                                 modifier = Modifier.weight(2f)
                                     .background(
                                         color = FloconColors.pannel.copy(alpha = 0.8f),
@@ -151,7 +151,7 @@ fun NetworkDetailView(
                         modifier =
                             Modifier
                                 .background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    color = FloconTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(12.dp),
                                 ).padding(horizontal = 8.dp, vertical = 4.dp),
                     ) {

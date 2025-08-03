@@ -123,7 +123,7 @@ private fun TopBarButton(
         Image(
             painter = painterResource(icon),
             modifier = Modifier.fillMaxSize(),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+            colorFilter = ColorFilter.tint(FloconTheme.colorScheme.onSurface),
             contentDescription = null,
         )
     }

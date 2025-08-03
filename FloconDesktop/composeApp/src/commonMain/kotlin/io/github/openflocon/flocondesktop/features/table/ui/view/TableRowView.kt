@@ -13,9 +13,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.table.ui.model.TableRowUiModel
 import io.github.openflocon.flocondesktop.features.table.ui.model.previewTableRowUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -39,8 +39,8 @@ fun TableRowView(
                     Modifier
                         .width(columnsWidth)
                         .padding(horizontal = 4.dp),
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    color = FloconTheme.colorScheme.onPrimaryContainer,
                 )
             }
         }
@@ -52,8 +52,8 @@ fun TableRowView(
                     Modifier
                         .width(columnsWidth)
                         .padding(horizontal = 4.dp),
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Thin),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Thin),
+                    color = FloconTheme.colorScheme.onPrimaryContainer,
                 )
             }
         }

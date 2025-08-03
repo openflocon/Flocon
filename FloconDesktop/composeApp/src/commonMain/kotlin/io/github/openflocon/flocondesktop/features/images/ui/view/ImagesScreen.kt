@@ -38,11 +38,11 @@ import coil3.compose.AsyncImage
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.bin
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.images.ui.ImagesViewModel
 import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.ui.model.previewImagesStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -96,8 +96,8 @@ private fun ImagesScreen(
                     Text(
                         text = "Images",
                         modifier = Modifier.padding(bottom = 12.dp),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = FloconTheme.typography.titleLarge,
+                        color = FloconTheme.colorScheme.onSurface,
                     )
                     Box(modifier = Modifier.weight(1f))
 

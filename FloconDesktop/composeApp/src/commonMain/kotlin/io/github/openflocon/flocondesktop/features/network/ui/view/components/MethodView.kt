@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,8 +18,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -40,7 +39,8 @@ private val deleteMethodText = Color(0xFFDC3545)
 private val otherMethodBackground = Color(0xFF6C757D).copy(alpha = 0.3f) // Muted gray for OTHER
 private val otherMethodText = Color(0xFF6C757D)
 
-private val graphQlQueryMethodBackground = Color(0XAAE235A9).copy(alpha = 0.8f) // Muted gray for OTHER
+private val graphQlQueryMethodBackground =
+    Color(0XAAE235A9).copy(alpha = 0.8f) // Muted gray for OTHER
 private val graphQlQueryMethodText = Color(0XAAFFFFFF)
 
 private val grpcMethodBackground = Color(0xff71CCCB)
@@ -85,11 +85,11 @@ fun NetworkTag(
 ) {
     Row(
         modifier =
-        modifier
-            .background(
-                color = backgroundColor,
-                shape = RoundedCornerShape(20.dp), // Pill shape
-            ).padding(horizontal = 4.dp, vertical = 2.dp),
+            modifier
+                .background(
+                    color = backgroundColor,
+                    shape = RoundedCornerShape(20.dp), // Pill shape
+                ).padding(horizontal = 4.dp, vertical = 2.dp),
         // Padding inside the tag
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -107,7 +107,7 @@ fun NetworkTag(
             text = text,
             color = textColor,
             fontSize = textSize,
-            style = MaterialTheme.typography.bodySmall,
+            style = FloconTheme.typography.bodySmall,
         )
     }
 }

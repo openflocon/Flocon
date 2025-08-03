@@ -26,7 +26,7 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.bin
 import flocondesktop.composeapp.generated.resources.send
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -42,7 +42,7 @@ fun DatabaseQueryView(
     Column(
         modifier = modifier
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = FloconTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(12.dp),
             )
             .padding(16.dp),

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,7 +20,7 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.settings
 import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -60,7 +59,7 @@ fun PannelView(
         Text(
             text = text,
             color = FloconColorScheme.onSurface,
-            style = MaterialTheme.typography.bodyMedium,
+            style = FloconTheme.typography.bodyMedium,
         )
     }
 }

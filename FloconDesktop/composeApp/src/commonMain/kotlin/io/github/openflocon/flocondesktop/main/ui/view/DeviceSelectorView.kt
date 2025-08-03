@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,10 +26,10 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.smartphone
 import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.previewDeviceItemUiModelPreview
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -67,8 +66,8 @@ internal fun DeviceSelectorView(
                     Text(
                         text = "No Devices Found",
                         modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = FloconTheme.typography.bodyMedium,
+                        color = FloconTheme.colorScheme.onSurface,
                     )
                 }
 
@@ -127,17 +126,17 @@ private fun DeviceView(
             Text(
                 text = device.deviceName, // Device Name
                 color = FloconColorScheme.onSurface,
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
             )
             Text(
                 text = device.appName,
                 color = FloconColorScheme.onSurface.copy(alpha = 0.5f),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
+                style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
             )
             Text(
                 text = device.appPackageName,
                 color = FloconColorScheme.onSurface.copy(alpha = 0.5f),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
+                style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
             )
         }
     }

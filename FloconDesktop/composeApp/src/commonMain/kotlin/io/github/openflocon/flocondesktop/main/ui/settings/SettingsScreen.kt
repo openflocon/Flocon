@@ -115,7 +115,7 @@ private fun SettingsScreen(
                                 .padding(horizontal = 8.dp),
                             text = "Please setup ADB first, this field is mandatory",
                             color = Color.Red,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = FloconTheme.typography.bodySmall,
                         )
                     } else {
                         Text(
@@ -124,7 +124,7 @@ private fun SettingsScreen(
                                 .padding(horizontal = 8.dp),
                             text = "ADB configuraton is valid",
                             color = Color.Green,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = FloconTheme.typography.bodySmall,
                         )
                     }
                     Row(

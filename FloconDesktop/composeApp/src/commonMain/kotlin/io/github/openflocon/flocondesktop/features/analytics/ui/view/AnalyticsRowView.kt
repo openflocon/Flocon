@@ -70,7 +70,7 @@ fun AnalyticsRowView(
                 ) {
                     Text(
                         text = it.name + " :",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
+                        style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                     Text(

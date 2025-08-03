@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +39,7 @@ import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.previewLeftPannelState
 import io.github.openflocon.flocondesktop.main.ui.model.previewDevicesStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.view.DeviceSelectorView
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -70,7 +70,7 @@ fun LeftPanelView(
             Text(
                 "Flocon",
                 fontSize = 32.sp,
-                style = MaterialTheme.typography.titleLarge.copy(
+                style = FloconTheme.typography.titleLarge.copy(
                     color = FloconColorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                 ),

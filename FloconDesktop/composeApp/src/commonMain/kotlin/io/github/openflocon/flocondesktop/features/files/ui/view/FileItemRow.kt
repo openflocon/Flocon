@@ -22,10 +22,10 @@ import flocondesktop.composeapp.generated.resources.file
 import flocondesktop.composeapp.generated.resources.folder
 import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -61,7 +61,7 @@ fun FileItemRow(
             Image(
                 painter = painterResource(file.icon),
                 modifier = Modifier.size(24.dp),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                colorFilter = ColorFilter.tint(FloconTheme.colorScheme.onSurface),
                 contentDescription = null,
             )
 
@@ -71,23 +71,23 @@ fun FileItemRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = file.name,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = FloconTheme.typography.bodyLarge,
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = FloconTheme.colorScheme.onSurface,
                     overflow = TextOverflow.Ellipsis,
                 )
                 // Informations additionnelles (taille, date de modification)
                 // if (!file.isDirectory) {
                 //    Text(
                 //        text = "${viewModel.formatFileSize(file.size)}",
-                //        style = MaterialTheme.typography.bodySmall,
-                //        color = MaterialTheme.colorScheme.onSurfaceVariant
+                //        style = FloconTheme.typography.bodySmall,
+                //        color = FloconTheme.colorScheme.onSurfaceVariant
                 //    )
                 // }
                 // Text(
                 //    text = viewModel.formatLastModifiedDate(file.lastModified),
-                //    style = MaterialTheme.typography.bodySmall,
-                //    color = MaterialTheme.colorScheme.onSurfaceVariant
+                //    style = FloconTheme.typography.bodySmall,
+                //    color = FloconTheme.colorScheme.onSurfaceVariant
                 // )
             }
 
@@ -96,7 +96,7 @@ fun FileItemRow(
                 Image(
                     painter = painterResource(Res.drawable.chevron_right),
                     modifier = Modifier.size(24.dp),
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                    colorFilter = ColorFilter.tint(FloconTheme.colorScheme.onSurface),
                     contentDescription = null,
                 )
             }

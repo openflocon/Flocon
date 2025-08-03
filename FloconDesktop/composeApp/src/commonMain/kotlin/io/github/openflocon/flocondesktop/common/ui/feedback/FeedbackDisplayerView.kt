@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.koin.compose.koinInject
 
 @Composable
@@ -41,8 +42,8 @@ fun BoxScope.FeedbackDisplayerView(modifier: Modifier = Modifier) {
     ) { data ->
         Snackbar(
             snackbarData = data,
-            containerColor = MaterialTheme.colorScheme.inverseSurface, // Invert surface for contrast
-            contentColor = MaterialTheme.colorScheme.inverseOnSurface, // Invert onSurface for contrast
+            containerColor = FloconTheme.colorScheme.inverseSurface, // Invert surface for contrast
+            contentColor = FloconTheme.colorScheme.inverseOnSurface, // Invert onSurface for contrast
             shape = RoundedCornerShape(8.dp),
         )
     }
