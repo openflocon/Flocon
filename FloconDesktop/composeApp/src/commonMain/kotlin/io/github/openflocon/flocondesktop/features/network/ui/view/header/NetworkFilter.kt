@@ -4,10 +4,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,11 +26,13 @@ import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.bin
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Filters
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun NetworkFilterBar(
+fun NetworkFilter(
     networkItems: List<NetworkItemViewState>,
+    filters: List<Filters>,
     onItemsChange: (List<NetworkItemViewState>) -> Unit,
     onResetClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -50,29 +56,41 @@ fun NetworkFilterBar(
         onItemsChangeCallback(filteredNetworkItems)
     }
 
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        FilterBar(
-            placeholderText = "Filter Route",
-            modifier = Modifier.weight(1f),
-            onTextChange = {
-                filterText = it
-            },
-        )
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .clickable(onClick = onResetClicked)
-                .padding(all = 8.dp),
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Image(
-                painter = painterResource(Res.drawable.bin),
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
+            FilterBar(
+                placeholderText = "Filter Route",
+                modifier = Modifier.weight(1f),
+                onTextChange = {
+                    filterText = it
+                },
             )
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .clickable(onClick = onResetClicked)
+                    .padding(all = 8.dp),
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.bin),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            filters.forEach { filter ->
+                filter.content()
+            }
         }
     }
 }

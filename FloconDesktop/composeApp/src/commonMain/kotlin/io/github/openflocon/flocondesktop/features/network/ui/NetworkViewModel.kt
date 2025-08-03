@@ -16,9 +16,11 @@ import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
+import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -40,8 +42,29 @@ class NetworkViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel() {
 
+    /**
+     * TODO Merge it with List<NetworkItemViewState> to a UiState?
+     */
+    val filters = listOf(
+        MethodFilter()
+    )
+
+    val test = observeHttpRequestsUseCase().flatMapLatest { list ->
+        combine(filters.map { it.filterNew(list) }) { array ->
+            val duplicateRequests = array.toList().flatten()
+
+            list.filter { request -> duplicateRequests.count { it == request } == filters.size }
+        }
+    }
+
     val state: StateFlow<List<NetworkItemViewState>> =
-        observeHttpRequestsUseCase()
+        observeHttpRequestsUseCase().flatMapLatest { list ->
+            combine(filters.map { it.filterNew(list) }) { array ->
+                val duplicateRequests = array.toList().flatten()
+
+                list.filter { request -> duplicateRequests.count { it == request } == filters.size }
+            }
+        }
             .map { list -> list.map { toUi(it) } }
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -121,4 +144,20 @@ class NetworkViewModel(
             resetCurrentDeviceHttpRequestsUseCase()
         }
     }
+
+    private fun provideFilters() = combine(
+        filters.map { filter ->
+            filter.filter
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5_000),
+                    initialValue = false
+                )
+                .map { filter to it }
+        }
+    ) { list ->
+        list.filter(Pair<MethodFilter, Boolean>::second)
+            .map(Pair<MethodFilter, Boolean>::first)
+    }
+
 }

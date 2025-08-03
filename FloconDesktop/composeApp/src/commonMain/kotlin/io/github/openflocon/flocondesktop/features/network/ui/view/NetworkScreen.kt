@@ -31,8 +31,9 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemV
 import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkFilterBar
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkFilter
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
+import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Filters
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -41,8 +42,10 @@ fun NetworkScreen(modifier: Modifier = Modifier) {
     val viewModel: NetworkViewModel = koinViewModel()
     val items by viewModel.state.collectAsStateWithLifecycle()
     val detailState by viewModel.detailState.collectAsStateWithLifecycle()
+
     NetworkScreen(
         networkItems = items,
+        filters = viewModel.filters,
         modifier = modifier,
         detailState = detailState,
         onNetworkItemUserAction = viewModel::onNetworkItemUserAction,
@@ -55,6 +58,7 @@ fun NetworkScreen(modifier: Modifier = Modifier) {
 @Composable
 fun NetworkScreen(
     networkItems: List<NetworkItemViewState>,
+    filters: List<Filters>,
     detailState: NetworkDetailViewState?,
     onNetworkItemUserAction: (OnNetworkItemUserAction) -> Unit,
     onCopyText: (String) -> Unit,
@@ -79,13 +83,13 @@ fun NetworkScreen(
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                NetworkFilterBar(
-                    modifier =
-                    Modifier
+                NetworkFilter(
+                    modifier = Modifier
                         .fillMaxWidth()
                         .background(FloconColors.pannel)
                         .padding(horizontal = 12.dp),
                     networkItems = networkItems,
+                    filters = filters,
                     onResetClicked = onReset,
                     onItemsChange = {
                         filteredItems = it
@@ -101,15 +105,15 @@ fun NetworkScreen(
                 ) {
                     LazyColumn(
                         modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .clickable(
-                                interactionSource = null,
-                                indication = null,
-                                enabled = detailState != null,
-                            ) {
-                                closeDetailPanel()
-                            },
+                            Modifier
+                                .fillMaxSize()
+                                .clickable(
+                                    interactionSource = null,
+                                    indication = null,
+                                    enabled = detailState != null,
+                                ) {
+                                    closeDetailPanel()
+                                },
                     ) {
                         items(filteredItems) {
                             NetworkItemView(
@@ -125,10 +129,10 @@ fun NetworkScreen(
             detailState?.let {
                 NetworkDetailView(
                     modifier =
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxHeight()
-                        .width(500.dp),
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .fillMaxHeight()
+                            .width(500.dp),
                     state = it,
                     onCopy = onCopyText,
                 )
@@ -154,6 +158,7 @@ private fun NetworkScreenPreview() {
             }
         NetworkScreen(
             networkItems = networkItems,
+            filters = emptyList(),
             detailState = null,
             closeDetailPanel = {},
             onNetworkItemUserAction = {},
