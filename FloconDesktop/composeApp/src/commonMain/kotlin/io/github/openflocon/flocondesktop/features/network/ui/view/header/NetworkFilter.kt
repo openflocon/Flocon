@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Icon
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Filters
 
 @Composable
 fun NetworkFilter(
@@ -59,10 +61,10 @@ fun NetworkFilter(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Icon(
-                imageVector = Icons.Outlined.Delete,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
+            FilterBar(
+                placeholderText = "Filter route",
+                onTextChange = { filterText = it },
+                modifier = Modifier.weight(1f)
             )
             Box(
                 modifier = Modifier
@@ -70,8 +72,8 @@ fun NetworkFilter(
                     .clickable(onClick = onResetClicked)
                     .padding(all = 8.dp),
             ) {
-                Image(
-                    painter = painterResource(Res.drawable.bin),
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                 )
