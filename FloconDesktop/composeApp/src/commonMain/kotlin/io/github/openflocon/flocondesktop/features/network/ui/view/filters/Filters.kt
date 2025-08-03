@@ -15,8 +15,6 @@ interface Filters {
 
     val content: @Composable () -> Unit
 
-    fun filter(list: List<FloconHttpRequestDomainModel>): List<FloconHttpRequestDomainModel>
-
-    fun filterNew(list: List<FloconHttpRequestDomainModel>): Flow<List<FloconHttpRequestDomainModel>>
+    fun filter(list: List<FloconHttpRequestDomainModel>): Flow<List<FloconHttpRequestDomainModel>>
 
 }

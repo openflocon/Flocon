@@ -59,18 +59,7 @@ class MethodFilter : Filters {
         }
     }
 
-    override fun filter(list: List<FloconHttpRequestDomainModel>): List<FloconHttpRequestDomainModel> {
-        if (selectedMethods.value.isEmpty())
-            return list
-
-        return list.filter { request ->
-            selectedMethods.value
-                .map(Method::text)
-                .contains(request.request.method)
-        }
-    }
-
-    override fun filterNew(list: List<FloconHttpRequestDomainModel>): Flow<List<FloconHttpRequestDomainModel>> {
+    override fun filter(list: List<FloconHttpRequestDomainModel>): Flow<List<FloconHttpRequestDomainModel>> {
         return selectedMethods.map { methods ->
             if (methods.isEmpty())
                 return@map list

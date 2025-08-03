@@ -50,7 +50,7 @@ class NetworkViewModel(
     )
 
     val test = observeHttpRequestsUseCase().flatMapLatest { list ->
-        combine(filters.map { it.filterNew(list) }) { array ->
+        combine(filters.map { it.filter(list) }) { array ->
             val duplicateRequests = array.toList().flatten()
 
             list.filter { request -> duplicateRequests.count { it == request } == filters.size }
@@ -59,7 +59,7 @@ class NetworkViewModel(
 
     val state: StateFlow<List<NetworkItemViewState>> =
         observeHttpRequestsUseCase().flatMapLatest { list ->
-            combine(filters.map { it.filterNew(list) }) { array ->
+            combine(filters.map { it.filter(list) }) { array ->
                 val duplicateRequests = array.toList().flatten()
 
                 list.filter { request -> duplicateRequests.count { it == request } == filters.size }
