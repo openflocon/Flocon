@@ -202,6 +202,12 @@ compose.desktop {
                 bundleID = "io.github.openflocon.flocon"
                 dockName = "Flocon"
             }
+            linux {
+                iconFile.set(project.file("src/desktopMain/resources/drawable/app_icon_small.png"))
+            }
+            windows {
+                iconFile.set(project.file("src/desktopMain/resources/drawable/app_icon_small.png"))
+            }
         }
     }
 }
