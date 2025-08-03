@@ -434,6 +434,12 @@ Thanks to these amazing people for making Flocon better every day!
         <sub><b>florent37</b></sub>
       </a>
     </td>
+        <td align="center">
+      <a href="https://github.com/doTTTTT">
+        <img src="https://avatars.githubusercontent.com/u/13266870?v=4" width="100px;" alt="FRaphael Teyssandier"/><br />
+        <sub><b>doTTTTT</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
