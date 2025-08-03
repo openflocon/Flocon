@@ -24,7 +24,6 @@ import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.StatusView
@@ -47,7 +46,6 @@ data class NetworkItemColumnWidths(
 @Composable
 fun NetworkItemView(
     state: NetworkItemViewState,
-    onUserAction: (OnNetworkItemUserAction) -> Unit,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
     columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
@@ -77,10 +75,10 @@ fun NetworkItemView(
         ),
         onSelect = {
             when (it.id) {
-                "copy_url" -> onUserAction(OnNetworkItemUserAction.CopyUrl(state))
-                "copy_curl" -> onUserAction(OnNetworkItemUserAction.CopyCUrl(state))
-                "remove" -> onUserAction(OnNetworkItemUserAction.Remove(state))
-                "remove_lines_above" -> onUserAction(OnNetworkItemUserAction.RemoveLinesAbove(state))
+                "copy_url" -> onAction(NetworkAction.CopyUrl(state))
+                "copy_curl" -> onAction(NetworkAction.CopyCUrl(state))
+                "remove" -> onAction(NetworkAction.Remove(state))
+                "remove_lines_above" -> onAction(NetworkAction.RemoveLinesAbove(state))
             }
         },
     ) {
@@ -195,7 +193,6 @@ private fun ItemViewPreview() {
         NetworkItemView(
             modifier = Modifier.fillMaxWidth(),
             state = previewNetworkItemViewState(),
-            onUserAction = {},
             onAction = {}
         )
     }

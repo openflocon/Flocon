@@ -3,9 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.ui
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -26,7 +24,6 @@ import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Filters
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter.Methods
@@ -34,7 +31,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -44,7 +40,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.collections.map
 
 class NetworkViewModel(
     observeHttpRequestsUseCase: ObserveHttpRequestsUseCase,
@@ -101,6 +96,13 @@ class NetworkViewModel(
     fun onAction(action: NetworkAction) {
         when (action) {
             is NetworkAction.SelectRequest -> onSelectRequest(action)
+            NetworkAction.ClosePanel -> onClosePanel()
+            is NetworkAction.CopyText -> onCopyText(action)
+            NetworkAction.Reset -> onReset()
+            is NetworkAction.CopyCUrl -> onCopyCUrl(action)
+            is NetworkAction.CopyUrl -> onCopyUrl(action)
+            is NetworkAction.Remove -> onRemove(action)
+            is NetworkAction.RemoveLinesAbove -> onRemoveLinesAbove(action)
         }
     }
 
@@ -116,6 +118,50 @@ class NetworkViewModel(
         }
     }
 
+    private fun onClosePanel() {
+        contentUiState.update { it.copy(selectedRequestId = null) }
+    }
+
+    private fun onCopyText(action: NetworkAction.CopyText) {
+        copyToClipboard(action.text)
+        feedbackDisplayer.displayMessage("copied")
+    }
+
+    private fun onReset() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            resetCurrentDeviceHttpRequestsUseCase()
+        }
+    }
+
+    private fun onCopyCUrl(action: NetworkAction.CopyCUrl) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
+                ?: return@launch
+            val curl = generateCurlCommandUseCase(domainModel)
+            copyToClipboard(curl)
+        }
+    }
+
+    private fun onCopyUrl(action: NetworkAction.CopyUrl) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
+                ?: return@launch
+            copyToClipboard(domainModel.url)
+        }
+    }
+
+    private fun onRemove(action: NetworkAction.Remove) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            removeHttpRequestUseCase(requestId = action.item.uuid)
+        }
+    }
+
+    private fun onRemoveLinesAbove(action: NetworkAction.RemoveLinesAbove) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            removeHttpRequestsBeforeUseCase(requestId = action.item.uuid)
+        }
+    }
+
     private fun filterItems(
         items: List<FloconHttpRequestDomainModel>,
         filterState: FilterUiState
@@ -125,8 +171,14 @@ class NetworkViewModel(
         if (filterState.methods.isNotEmpty())
             filteredItems = filteredItems.filter { item ->
                 when (item.type) {
-                    is FloconHttpRequestDomainModel.Type.GraphQl -> filterState.methods.contains(Methods.GraphQL)
-                    is FloconHttpRequestDomainModel.Type.Grpc -> filterState.methods.contains(Methods.Grpc)
+                    is FloconHttpRequestDomainModel.Type.GraphQl -> filterState.methods.contains(
+                        Methods.GraphQL
+                    )
+
+                    is FloconHttpRequestDomainModel.Type.Grpc -> filterState.methods.contains(
+                        Methods.Grpc
+                    )
+
                     is FloconHttpRequestDomainModel.Type.Http -> filterState.methods.filterIsInstance<Methods.Http>()
                         .map(Methods.Http::methodName)
                         .contains(item.request.method)
@@ -134,53 +186,6 @@ class NetworkViewModel(
             }
 
         return filteredItems
-    }
-
-    // TODO Migrate
-    fun onNetworkItemUserAction(action: OnNetworkItemUserAction) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            when (action) {
-                is OnNetworkItemUserAction.CopyCUrl -> {
-                    val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
-                        ?: return@launch
-                    val curl = generateCurlCommandUseCase(domainModel)
-                    copyToClipboard(curl)
-                }
-
-                is OnNetworkItemUserAction.CopyUrl -> {
-                    val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
-                        ?: return@launch
-                    copyToClipboard(domainModel.url)
-                }
-
-                is OnNetworkItemUserAction.Remove -> {
-                    removeHttpRequestUseCase(requestId = action.item.uuid)
-                }
-
-                is OnNetworkItemUserAction.RemoveLinesAbove -> {
-                    removeHttpRequestsBeforeUseCase(requestId = action.item.uuid)
-                }
-            }
-        }
-    }
-
-    fun onCopyText(text: String) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            copyToClipboard(text)
-            feedbackDisplayer.displayMessage("copied")
-        }
-    }
-
-    fun closeDetailPanel() {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            contentUiState.update { it.copy(selectedRequestId = null) }
-        }
-    }
-
-    fun onReset() {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            resetCurrentDeviceHttpRequestsUseCase()
-        }
     }
 
 }

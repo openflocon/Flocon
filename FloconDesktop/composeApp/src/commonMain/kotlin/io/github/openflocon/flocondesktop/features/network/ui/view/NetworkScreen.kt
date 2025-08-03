@@ -32,7 +32,6 @@ import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkFilter
@@ -54,10 +53,6 @@ fun NetworkScreen(modifier: Modifier = Modifier) {
 
         filters = filters,
         modifier = modifier,
-        onNetworkItemUserAction = viewModel::onNetworkItemUserAction,
-        onCopyText = viewModel::onCopyText,
-        onReset = viewModel::onReset,
-        closeDetailPanel = viewModel::closeDetailPanel,
     )
 }
 
@@ -67,10 +62,6 @@ fun NetworkScreen(
     onAction: (NetworkAction) -> Unit,
 
     filters: List<Filters>,
-    onNetworkItemUserAction: (OnNetworkItemUserAction) -> Unit,
-    onCopyText: (String) -> Unit,
-    closeDetailPanel: () -> Unit,
-    onReset: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val columnWidths: NetworkItemColumnWidths =
@@ -97,7 +88,7 @@ fun NetworkScreen(
                         .padding(horizontal = 12.dp),
                     networkItems = uiState.items,
                     filters = filters,
-                    onResetClicked = onReset,
+                    onResetClicked = { onAction(NetworkAction.Reset) },
                     onItemsChange = {
                         filteredItems = it
                     },
@@ -118,16 +109,14 @@ fun NetworkScreen(
                                     interactionSource = null,
                                     indication = null,
                                     enabled = uiState.detailState != null,
-                                ) {
-                                    closeDetailPanel()
-                                },
+                                    onClick = { onAction(NetworkAction.ClosePanel) }
+                                ),
                     ) {
                         items(filteredItems) {
                             NetworkItemView(
                                 state = it,
                                 columnWidths = columnWidths,
                                 modifier = Modifier.fillMaxWidth(),
-                                onUserAction = onNetworkItemUserAction,
                                 onAction = onAction
                             )
                         }
@@ -152,7 +141,7 @@ fun NetworkScreen(
                             .fillMaxHeight()
                             .requiredWidth(500.dp),
                         state = it,
-                        onCopy = onCopyText,
+                        onCopy = { onAction(NetworkAction.CopyText(it)) },
                     )
                 } ?: Box(Modifier.matchParentSize())
             }
@@ -180,11 +169,7 @@ private fun NetworkScreenPreview() {
         NetworkScreen(
             uiState = uiState,
             onAction = {},
-            filters = emptyList(),
-            closeDetailPanel = {},
-            onNetworkItemUserAction = {},
-            onCopyText = {},
-            onReset = {},
+            filters = emptyList()
         )
     }
 }
