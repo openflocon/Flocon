@@ -12,20 +12,14 @@ sealed interface NetworkAction {
 
     data object Reset : NetworkAction
 
-    data class CopyUrl(
-        val item: NetworkItemViewState,
-    ) : NetworkAction
+    data class CopyUrl(val item: NetworkItemViewState) : NetworkAction
 
-    data class CopyCUrl(
-        val item: NetworkItemViewState,
-    ) : NetworkAction
+    data class CopyCUrl(val item: NetworkItemViewState) : NetworkAction
 
-    data class Remove(
-        val item: NetworkItemViewState,
-    ) : NetworkAction
+    data class Remove(val item: NetworkItemViewState) : NetworkAction
 
-    data class RemoveLinesAbove(
-        val item: NetworkItemViewState,
-    ) : NetworkAction
+    data class RemoveLinesAbove(val item: NetworkItemViewState) : NetworkAction
+
+    data class FilterQuery(val query: String) : NetworkAction
 
 }

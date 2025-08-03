@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view.filters
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.NetworkCheck
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
@@ -8,14 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import flocondesktop.composeapp.generated.resources.Res
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import io.github.openflocon.flocondesktop.features.network.ui.FilterUiState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.FilterDropdown
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import org.jetbrains.compose.resources.painterResource
 
 class MethodFilter : Filters {
     override val sort: Int
@@ -26,35 +27,7 @@ class MethodFilter : Filters {
     override val content: @Composable (() -> Unit) = {
         val methods by selectedMethods.collectAsStateWithLifecycle()
 
-//        FilterDropdown(
-//            text = "Method",
-//            icon = painterResource(Res.drawable.network) // TODO Change
-//        ) {
-//            Methods.all()
-//                .forEach { method ->
-//                    val selected = methods.contains(method)
-//                    val interactionSource = remember { MutableInteractionSource() }
-//                    val onClick = {
-//                        if (selected)
-//                            remove(method)
-//                        else
-//                            add(method)
-//                    }
-//
-//                    DropdownMenuItem(
-//                        text = { Text(text = method.label) },
-//                        interactionSource = interactionSource,
-//                        trailingIcon = {
-//                            Checkbox(
-//                                checked = selected,
-//                                onCheckedChange = { onClick() },
-//                                interactionSource = interactionSource
-//                            )
-//                        },
-//                        onClick = onClick
-//                    )
-//                }
-//        }
+
     }
 
     override fun filter(list: List<FloconHttpRequestDomainModel>): Flow<List<FloconHttpRequestDomainModel>> {
@@ -103,6 +76,41 @@ class MethodFilter : Filters {
         }
     }
 
+}
+
+@Composable
+fun FilterMethods(
+    filterState: FilterUiState
+) {
+    FilterDropdown(
+        text = "Method",
+        icon = Icons.Outlined.NetworkCheck
+    ) {
+        MethodFilter.Methods.all()
+            .forEach { method ->
+                val selected = filterState.methods.contains(method)
+                val interactionSource = remember { MutableInteractionSource() }
+                val onClick = {
+//                        if (selected)
+//                            remove(method)
+//                        else
+//                            add(method)
+                }
+
+                DropdownMenuItem(
+                    text = { Text(text = method.label) },
+                    interactionSource = interactionSource,
+                    trailingIcon = {
+                        Checkbox(
+                            checked = selected,
+                            onCheckedChange = { onClick() },
+                            interactionSource = interactionSource
+                        )
+                    },
+                    onClick = onClick
+                )
+            }
+    }
 }
 
 private val MethodFilter.Methods.label

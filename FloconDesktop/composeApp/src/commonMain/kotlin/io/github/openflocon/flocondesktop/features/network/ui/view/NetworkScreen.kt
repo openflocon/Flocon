@@ -19,9 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -43,16 +41,12 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun NetworkScreen(modifier: Modifier = Modifier) {
     val viewModel: NetworkViewModel = koinViewModel()
-    val filters by viewModel.filters.collectAsStateWithLifecycle()
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     NetworkScreen(
         uiState = uiState,
         onAction = viewModel::onAction,
-
-        filters = filters,
-        modifier = modifier,
+        modifier = modifier
     )
 }
 
@@ -60,14 +54,10 @@ fun NetworkScreen(modifier: Modifier = Modifier) {
 fun NetworkScreen(
     uiState: NetworkUiState,
     onAction: (NetworkAction) -> Unit,
-
-    filters: List<Filters>,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val columnWidths: NetworkItemColumnWidths =
         remember { NetworkItemColumnWidths() } // Default widths provided
-
-    var filteredItems by remember { mutableStateOf<List<NetworkItemViewState>>(emptyList()) }
 
     Surface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -82,16 +72,12 @@ fun NetworkScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 NetworkFilter(
+                    uiState = uiState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(FloconColors.pannel)
                         .padding(horizontal = 12.dp),
-                    networkItems = uiState.items,
-                    filters = filters,
-                    onResetClicked = { onAction(NetworkAction.Reset) },
-                    onItemsChange = {
-                        filteredItems = it
-                    },
+                    onAction = onAction
                 )
                 NetworkItemHeaderView(
                     columnWidths = columnWidths,
@@ -112,12 +98,17 @@ fun NetworkScreen(
                                     onClick = { onAction(NetworkAction.ClosePanel) }
                                 ),
                     ) {
-                        items(filteredItems) {
+                        items(
+                            items = uiState.items,
+                            key = NetworkItemViewState::uuid
+                        ) {
                             NetworkItemView(
                                 state = it,
                                 columnWidths = columnWidths,
-                                modifier = Modifier.fillMaxWidth(),
-                                onAction = onAction
+                                onAction = onAction,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
                             )
                         }
                     }
@@ -168,8 +159,7 @@ private fun NetworkScreenPreview() {
 
         NetworkScreen(
             uiState = uiState,
-            onAction = {},
-            filters = emptyList()
+            onAction = {}
         )
     }
 }

@@ -24,13 +24,10 @@ import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Filters
-import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter.Methods
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -87,12 +84,6 @@ class NetworkViewModel(
         )
     }
 
-    /**
-     * TODO Merge it with List<NetworkItemViewState> to a UiState?
-     */
-    private val _filters = MutableStateFlow<List<Filters>>(listOf(MethodFilter()))
-    val filters = _filters.asStateFlow()
-
     fun onAction(action: NetworkAction) {
         when (action) {
             is NetworkAction.SelectRequest -> onSelectRequest(action)
@@ -103,6 +94,7 @@ class NetworkViewModel(
             is NetworkAction.CopyUrl -> onCopyUrl(action)
             is NetworkAction.Remove -> onRemove(action)
             is NetworkAction.RemoveLinesAbove -> onRemoveLinesAbove(action)
+            is NetworkAction.FilterQuery -> onFilterQuery(action)
         }
     }
 
@@ -162,12 +154,22 @@ class NetworkViewModel(
         }
     }
 
+    private fun onFilterQuery(action: NetworkAction.FilterQuery) {
+        filterUiState.update { state ->
+            state.copy(query = action.query)
+        }
+    }
+
     private fun filterItems(
         items: List<FloconHttpRequestDomainModel>,
         filterState: FilterUiState
     ): List<FloconHttpRequestDomainModel> {
         var filteredItems = items
 
+        if (filterState.query.isNotEmpty())
+            filteredItems = filteredItems.filter {
+                toUi(it).contains(filterState.query) // TODO Change
+            }
         if (filterState.methods.isNotEmpty())
             filteredItems = filteredItems.filter { item ->
                 when (item.type) {

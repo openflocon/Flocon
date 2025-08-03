@@ -25,36 +25,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.view.filters.FilterMethods
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Filters
 
 @Composable
 fun NetworkFilter(
-    networkItems: List<NetworkItemViewState>,
-    filters: List<Filters>,
-    onItemsChange: (List<NetworkItemViewState>) -> Unit,
-    onResetClicked: () -> Unit,
+    uiState: NetworkUiState,
+    onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var filterText by remember {
-        mutableStateOf("")
-    }
-    val onItemsChangeCallback by rememberUpdatedState(onItemsChange)
-    val filteredNetworkItems: List<NetworkItemViewState> =
-        remember(networkItems, filterText) {
-            if (filterText.isBlank()) {
-                networkItems
-            } else {
-                networkItems.filter {
-                    it.contains(filterText)
-                }
-            }
-        }
-
-    LaunchedEffect(filteredNetworkItems) {
-        onItemsChangeCallback(filteredNetworkItems)
-    }
-
     Column(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -63,13 +45,13 @@ fun NetworkFilter(
         ) {
             FilterBar(
                 placeholderText = "Filter route",
-                onTextChange = { filterText = it },
+                onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
                 modifier = Modifier.weight(1f)
             )
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(4.dp))
-                    .clickable(onClick = onResetClicked)
+                    .clickable(onClick = { onAction(NetworkAction.Reset) })
                     .padding(all = 8.dp),
             ) {
                 Icon(
@@ -85,9 +67,9 @@ fun NetworkFilter(
                 .verticalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            filters.forEach { filter ->
-                filter.content()
-            }
+
+            FilterMethods(uiState.filterState)
         }
     }
 }
+
