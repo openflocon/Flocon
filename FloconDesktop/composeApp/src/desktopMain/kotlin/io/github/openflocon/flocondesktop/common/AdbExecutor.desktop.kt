@@ -53,7 +53,7 @@ actual fun findAdbPath(): String? {
 }
 
 actual fun executeAdbCommand(adbPath: String, command: String): Either<Throwable, String> = try {
-    val devices = listConnectedDevices()
+    val devices = listConnectedDevices(adbPath)
     if (devices.isEmpty() || devices.size == 1) {
         singleDeviceExecuteSystemCommand(adbPath = adbPath, command = command)
     } else {
@@ -98,10 +98,10 @@ private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): 
     Failure(IOException(errorMessage, e))
 }
 
-private fun listConnectedDevices(): List<String> {
+private fun listConnectedDevices(adbPath: String): List<String> {
     val devices = mutableListOf<String>()
     try {
-        val process = Runtime.getRuntime().exec("adb devices")
+        val process = Runtime.getRuntime().exec("$adbPath devices")
         val reader = BufferedReader(InputStreamReader(process.inputStream))
         reader.lines().forEach { line ->
             if (line.endsWith("device") && !line.startsWith("List of devices attached")) {
