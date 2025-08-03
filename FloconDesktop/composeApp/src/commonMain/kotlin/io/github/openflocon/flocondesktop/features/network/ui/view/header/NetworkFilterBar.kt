@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +7,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,10 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.bin
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun NetworkFilterBar(
@@ -68,8 +67,8 @@ fun NetworkFilterBar(
                 .clickable(onClick = onResetClicked)
                 .padding(all = 8.dp),
         ) {
-            Image(
-                painter = painterResource(Res.drawable.bin),
+            Icon(
+                imageVector = Icons.Outlined.Delete,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
             )
