@@ -67,8 +67,10 @@ fun NetworkFilter(
                 .verticalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
-            FilterMethods(uiState.filterState)
+            FilterMethods(
+                filterState = uiState.filterState,
+                onAction = onAction
+            )
         }
     }
 }

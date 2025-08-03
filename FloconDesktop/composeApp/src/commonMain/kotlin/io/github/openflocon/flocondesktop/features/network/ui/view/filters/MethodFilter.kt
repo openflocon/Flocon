@@ -1,58 +1,34 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view.filters
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.NetworkCheck
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.FilterUiState
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.FilterDropdown
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 
 class MethodFilter : Filters {
-    override val sort: Int
-        get() = 0
 
-    private val selectedMethods = MutableStateFlow(Methods.all())
+    override fun filter(state: FilterUiState, list: List<FloconHttpRequestDomainModel>): List<FloconHttpRequestDomainModel> {
+        if (state.methods.isEmpty())
+            return list
 
-    override val content: @Composable (() -> Unit) = {
-        val methods by selectedMethods.collectAsStateWithLifecycle()
+        return list.filter { item ->
+            when (item.type) {
+                is FloconHttpRequestDomainModel.Type.GraphQl -> state.methods.contains(
+                    Methods.GraphQL
+                )
 
-
-    }
-
-    override fun filter(list: List<FloconHttpRequestDomainModel>): Flow<List<FloconHttpRequestDomainModel>> {
-        return selectedMethods.map { methods ->
-            if (methods.isEmpty())
-                return@map list
-
-            list.filter { item ->
-                when (item.type) {
-                    is FloconHttpRequestDomainModel.Type.GraphQl -> methods.contains(Methods.GraphQL)
-                    is FloconHttpRequestDomainModel.Type.Grpc -> methods.contains(Methods.Grpc)
-                    is FloconHttpRequestDomainModel.Type.Http -> methods.filterIsInstance<Methods.Http>()
-                        .map(Methods.Http::methodName)
-                        .contains(item.request.method)
-                }
+                is FloconHttpRequestDomainModel.Type.Grpc -> state.methods.contains(Methods.Grpc)
+                is FloconHttpRequestDomainModel.Type.Http -> state.methods.filterIsInstance<Methods.Http>()
+                    .map(Methods.Http::methodName)
+                    .contains(item.request.method)
             }
         }
-    }
-
-    private fun add(method: Methods) {
-        selectedMethods.update { it + method }
-    }
-
-    private fun remove(method: Methods) {
-        selectedMethods.update { it - method }
     }
 
     sealed interface Methods {
@@ -80,7 +56,8 @@ class MethodFilter : Filters {
 
 @Composable
 fun FilterMethods(
-    filterState: FilterUiState
+    filterState: FilterUiState,
+    onAction: (NetworkAction) -> Unit
 ) {
     FilterDropdown(
         text = "Method",
@@ -89,22 +66,15 @@ fun FilterMethods(
         MethodFilter.Methods.all()
             .forEach { method ->
                 val selected = filterState.methods.contains(method)
-                val interactionSource = remember { MutableInteractionSource() }
-                val onClick = {
-//                        if (selected)
-//                            remove(method)
-//                        else
-//                            add(method)
-                }
+                val onClick = { onAction(NetworkAction.FilterMethod(method, !selected)) }
 
                 DropdownMenuItem(
                     text = { Text(text = method.label) },
-                    interactionSource = interactionSource,
                     trailingIcon = {
                         Checkbox(
                             checked = selected,
                             onCheckedChange = { onClick() },
-                            interactionSource = interactionSource
+                            interactionSource = null
                         )
                     },
                     onClick = onClick

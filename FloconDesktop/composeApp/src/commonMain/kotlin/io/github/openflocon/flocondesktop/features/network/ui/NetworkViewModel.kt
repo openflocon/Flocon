@@ -24,7 +24,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter.Methods
+import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -48,6 +48,8 @@ class NetworkViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel() {
+
+    private val filterMethod = MethodFilter()
 
     private val contentUiState = MutableStateFlow(ContentUiState())
     private val filterUiState = MutableStateFlow(FilterUiState())
@@ -95,6 +97,7 @@ class NetworkViewModel(
             is NetworkAction.Remove -> onRemove(action)
             is NetworkAction.RemoveLinesAbove -> onRemoveLinesAbove(action)
             is NetworkAction.FilterQuery -> onFilterQuery(action)
+            is NetworkAction.FilterMethod -> onFilterMethod(action)
         }
     }
 
@@ -160,6 +163,18 @@ class NetworkViewModel(
         }
     }
 
+    private fun onFilterMethod(action: NetworkAction.FilterMethod) {
+        filterUiState.update { state ->
+            state.copy(
+                methods = if (action.add) {
+                    state.methods + action.method
+                } else {
+                    state.methods - action.method
+                }
+            )
+        }
+    }
+
     private fun filterItems(
         items: List<FloconHttpRequestDomainModel>,
         filterState: FilterUiState
@@ -171,21 +186,7 @@ class NetworkViewModel(
                 toUi(it).contains(filterState.query) // TODO Change
             }
         if (filterState.methods.isNotEmpty())
-            filteredItems = filteredItems.filter { item ->
-                when (item.type) {
-                    is FloconHttpRequestDomainModel.Type.GraphQl -> filterState.methods.contains(
-                        Methods.GraphQL
-                    )
-
-                    is FloconHttpRequestDomainModel.Type.Grpc -> filterState.methods.contains(
-                        Methods.Grpc
-                    )
-
-                    is FloconHttpRequestDomainModel.Type.Http -> filterState.methods.filterIsInstance<Methods.Http>()
-                        .map(Methods.Http::methodName)
-                        .contains(item.request.method)
-                }
-            }
+            filteredItems = filterMethod.filter(filterState, filteredItems)
 
         return filteredItems
     }
