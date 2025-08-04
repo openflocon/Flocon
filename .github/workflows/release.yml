@@ -33,6 +33,7 @@ jobs:
 
       # 4. Build the application
       - name: Build with Gradle
+        working-directory: FloconDesktop
         run: ./gradlew packageDistributionForCurrentOS
 
       # 5. Upload OS-specific artifacts
@@ -41,21 +42,21 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linux-deb
-          path: composeApp/build/compose/binaries/main/deb/*.deb
+          path: FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb
 
       - name: Upload macOS artifact
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
           name: macos-pkg
-          path: composeApp/build/compose/binaries/main/pkg/*.pkg
+          path: FloconDesktop/composeApp/build/compose/binaries/main/pkg/*.pkg
 
       - name: Upload Windows artifact
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: windows-msi
-          path: composeApp/build/compose/binaries/main/msi/*.msi
+          path: FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi
 
   release:
     needs: build
