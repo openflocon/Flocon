@@ -1,0 +1,102 @@
+name: Build Desktop App then create a new release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      # 1. Check out the source code
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # 2. Set up temurin JDK with proper authentication
+      - name: Set up temurin JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+
+      # 3. Configure Gradle
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: '8.12'
+
+      # 4. Build the application
+      - name: Build with Gradle
+        run: ./gradlew packageDistributionForCurrentOS
+
+      # 5. Upload OS-specific artifacts
+      - name: Upload Linux artifact
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-deb
+          path: composeApp/build/compose/binaries/main/deb/*.deb
+
+      - name: Upload macOS artifact
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-pkg
+          path: composeApp/build/compose/binaries/main/pkg/*.pkg
+
+      - name: Upload Windows artifact
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-msi
+          path: composeApp/build/compose/binaries/main/msi/*.msi
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # 1. Check out the source code
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # 2. Download artifacts from all platforms
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-deb
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-pkg
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-msi
+
+      # 3. List downloaded artifacts
+      - name: Check downloaded artifacts
+        run: ls -R
+
+      # 4. Create GitHub Release
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          files: |
+            *.deb
+            *.pkg
+            *.msi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
