@@ -38,6 +38,7 @@ sealed interface NetworkMethodUi {
             override val text: String = "QUERY"
             override val icon = Res.drawable.graphql
         }
+
         data object MUTATION : GraphQl {
             override val text: String = "MUTATION"
             override val icon = Res.drawable.graphql
@@ -52,5 +53,22 @@ sealed interface NetworkMethodUi {
     data class OTHER(
         override val text: String,
         override val icon: DrawableResource?,
-    ) : NetworkMethodUi
+    ) : NetworkMethodUi {
+        companion object {
+            val EMPTY = OTHER(text = "", icon = null)
+        }
+    }
+
+    companion object {
+        fun all() = listOf(
+            Http.GET,
+            Http.POST,
+            Http.PUT,
+            Http.DELETE,
+            GraphQl.QUERY,
+            GraphQl.MUTATION,
+            Grpc,
+            OTHER.EMPTY
+        )
+    }
 }

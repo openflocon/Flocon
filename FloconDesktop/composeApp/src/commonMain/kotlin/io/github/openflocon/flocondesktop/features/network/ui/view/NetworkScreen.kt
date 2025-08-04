@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,9 +32,8 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemV
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiState
-import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkFilter
+import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkFilter
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
-import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Filters
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel

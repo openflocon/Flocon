@@ -11,10 +11,11 @@ import io.github.openflocon.flocondesktop.features.network.domain.ObserveHttpReq
 import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.ResetCurrentDeviceHttpRequestsUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,7 +45,7 @@ class NetworkViewModel(
     private val filterMethod = MethodFilter()
 
     private val contentState = MutableStateFlow(ContentUiState(selectedRequestId = null))
-    private val filterUiState = MutableStateFlow(FilterUiState(query = "", methods = MethodFilter.Methods.all()))
+    private val filterUiState = MutableStateFlow(FilterUiState(query = "", methods = NetworkMethodUi.all()))
 
     private val detailState: StateFlow<NetworkDetailViewState?> =
         contentState.map { it.selectedRequestId }
@@ -61,10 +62,10 @@ class NetworkViewModel(
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
     private val filteredItems = combine(
-        observeHttpRequestsUseCase(),
+        observeHttpRequestsUseCase().map { list -> list.map { toUi(it) } },
         filterUiState
     ) { items, filterState ->
-        filterItems(items, filterState).map { toUi(it) }
+        filterItems(items, filterState)
     }
         .distinctUntilChanged()
 
@@ -182,15 +183,13 @@ class NetworkViewModel(
     }
 
     private fun filterItems(
-        items: List<FloconHttpRequestDomainModel>,
+        items: List<NetworkItemViewState>,
         filterState: FilterUiState
-    ): List<FloconHttpRequestDomainModel> {
+    ): List<NetworkItemViewState> {
         var filteredItems = items
 
         if (filterState.query.isNotEmpty())
-            filteredItems = filteredItems.filter {
-                toUi(it).contains(filterState.query) // TODO Change when reworking query filter
-            }
+            filteredItems = filteredItems.filter { it.contains(filterState.query) }
         if (filterState.methods.isNotEmpty())
             filteredItems = filterMethod.filter(filterState, filteredItems)
 

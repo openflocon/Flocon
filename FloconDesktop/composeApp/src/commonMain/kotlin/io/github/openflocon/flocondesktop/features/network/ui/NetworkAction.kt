@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.ui
 
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 
 sealed interface NetworkAction {
@@ -23,6 +24,6 @@ sealed interface NetworkAction {
 
     data class FilterQuery(val query: String) : NetworkAction
 
-    data class FilterMethod(val method: MethodFilter.Methods, val add: Boolean) : NetworkAction
+    data class FilterMethod(val method: NetworkMethodUi, val add: Boolean) : NetworkAction
 
 }
