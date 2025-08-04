@@ -32,8 +32,8 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemV
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiState
-import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkFilter
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
+import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkFilter
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -61,7 +61,16 @@ fun NetworkScreen(
 
     Surface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable(
+                        interactionSource = null,
+                        indication = null,
+                        enabled = uiState.detailState != null,
+                        onClick = { onAction(NetworkAction.ClosePanel) }
+                    )
+            ) {
                 Text(
                     text = "Network",
                     modifier = Modifier
@@ -88,15 +97,7 @@ fun NetworkScreen(
                         .fillMaxSize(),
                 ) {
                     LazyColumn(
-                        modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .clickable(
-                                    interactionSource = null,
-                                    indication = null,
-                                    enabled = uiState.detailState != null,
-                                    onClick = { onAction(NetworkAction.ClosePanel) }
-                                ),
+                        modifier = Modifier.matchParentSize(),
                     ) {
                         items(
                             items = uiState.items,
@@ -131,7 +132,7 @@ fun NetworkScreen(
                     NetworkDetailView(
                         modifier = Modifier.fillMaxSize(),
                         state = it,
-                        onCopy = { onAction(NetworkAction.CopyText(it)) },
+                        onAction = onAction
                     )
                 } else {
                     Box(Modifier.fillMaxSize())

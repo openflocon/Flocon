@@ -1,7 +1,9 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -9,8 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,6 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatusUi
@@ -35,12 +39,13 @@ import io.github.openflocon.flocondesktop.features.network.ui.view.detail.Detail
 import io.github.openflocon.flocondesktop.features.network.ui.view.detail.DetailSectionTitleView
 import io.github.openflocon.flocondesktop.features.network.ui.view.detail.ExpandedSectionView
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun NetworkDetailView(
     state: NetworkDetailViewState,
-    onCopy: (String) -> Unit, // Le lambda onCopy remplace ClipboardManager
+    onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -58,20 +63,29 @@ fun NetworkDetailView(
     val headersLabelWidth: Dp = 150.dp
 
     Column(
-        modifier =
-            modifier
-                .background(FloconTheme.colorScheme.background)
-                .verticalScroll(scrollState) // Rendre le contenu défilable
-                .padding(all = 12.dp),
+        modifier = modifier
+            .background(FloconTheme.colorScheme.background)
+            .verticalScroll(scrollState) // Rendre le contenu défilable
+            .padding(all = 12.dp),
     ) {
-        DetailSectionTitleView(
-            isExpanded = isRequestExpanded,
-            title = "Request",
-            onCopy = null,
-            onToggle = {
-                isRequestExpanded = it
-            },
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            DetailSectionTitleView(
+                isExpanded = isRequestExpanded,
+                title = "Request",
+                onCopy = null,
+                onToggle = {
+                    isRequestExpanded = it
+                },
+                modifier = Modifier.weight(1f)
+            )
+            FloconIconButton(
+                imageVector = Icons.Outlined.Close,
+                onClick = { onAction(NetworkAction.ClosePanel) }
+            )
+        }
         ExpandedSectionView(
             modifier = Modifier.fillMaxWidth(),
             isExpanded = isRequestExpanded,
@@ -142,6 +156,7 @@ fun NetworkDetailView(
                     onToggle = {
                         isGraphQlRequestExpanded = !isGraphQlRequestExpanded
                     },
+                    modifier = Modifier.fillMaxWidth()
                 )
                 ExpandedSectionView(
                     modifier = Modifier.fillMaxWidth(),
@@ -180,6 +195,7 @@ fun NetworkDetailView(
                 onToggle = {
                     isRequestHeadersExpanded = it
                 },
+                modifier = Modifier.fillMaxWidth()
             )
             ExpandedSectionView(
                 modifier = Modifier.fillMaxWidth(),
@@ -196,12 +212,11 @@ fun NetworkDetailView(
             DetailSectionTitleView(
                 isExpanded = isRequestBodyExpanded,
                 title = "Request Body",
-                onCopy = {
-                    onCopy(state.requestBody)
-                },
+                onCopy = { onAction(NetworkAction.CopyText(state.requestBody)) },
                 onToggle = {
                     isRequestBodyExpanded = it
                 },
+                modifier = Modifier.fillMaxWidth()
             )
             ExpandedSectionView(
                 modifier = Modifier.fillMaxWidth(),
@@ -229,6 +244,7 @@ fun NetworkDetailView(
             onToggle = {
                 isResponseExpanded = it
             },
+            modifier = Modifier.fillMaxWidth()
         )
         ExpandedSectionView(
             modifier = Modifier.fillMaxWidth(),
@@ -242,6 +258,7 @@ fun NetworkDetailView(
                 onToggle = {
                     isResponseHeadersExpanded = it
                 },
+                modifier = Modifier.fillMaxWidth()
             )
             ExpandedSectionView(
                 modifier = Modifier.fillMaxWidth(),
@@ -258,12 +275,11 @@ fun NetworkDetailView(
             DetailSectionTitleView(
                 isExpanded = isResponseBodyExpanded,
                 title = "Response Body",
-                onCopy = {
-                    onCopy(state.responseBody)
-                },
+                onCopy = { onAction(NetworkAction.CopyText(state.responseBody)) },
                 onToggle = {
                     isResponseBodyExpanded = it
                 },
+                modifier = Modifier.fillMaxWidth()
             )
             ExpandedSectionView(
                 modifier = Modifier.fillMaxWidth(),
@@ -338,7 +354,7 @@ private fun NetworkDetailViewPreview() {
                     graphQlSection = null,
                 ),
             modifier = Modifier.padding(16.dp), // Padding pour la preview
-            onCopy = { },
+            onAction = {}
         )
     }
 }

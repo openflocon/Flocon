@@ -1,15 +1,21 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view.detail
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CopyAll
+import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -18,21 +24,28 @@ fun DetailSectionTitleView(
     title: String,
     onCopy: (() -> Unit)?,
     onToggle: ((isExpanded: Boolean) -> Unit)?,
+    modifier: Modifier = Modifier
 ) {
+    val rotate by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        label = "rotate"
+    )
+
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (onToggle != null) {
             // Toggle Button for Request Body
-            IconButton(
-                onClick = { onToggle(!isExpanded) },
-                modifier = Modifier.padding(end = 4.dp), // Spacing before label
+            FloconIconButton(
+                onClick = { onToggle(!isExpanded) }
             ) {
-                Text(
-                    text = if (isExpanded) "▼" else "▶", // Toggle icon
-                    color = FloconTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    style = FloconTheme.typography.titleMedium,
+                FloconIcon(
+                    imageVector = Icons.Outlined.ExpandMore,
+                    modifier = Modifier.graphicsLayer {
+                        rotationZ = rotate
+                    }
                 )
             }
         }
@@ -43,16 +56,10 @@ fun DetailSectionTitleView(
             modifier = Modifier.weight(1f), // Takes remaining space
         )
         if (onCopy != null) {
-            IconButton(
-                onClick = onCopy, // Utilisation du lambda onCopy
-                modifier = Modifier.padding(start = 8.dp), // Espacement avec le texte
-            ) {
-                Text(
-                    text = "📄", // Copy icon
-                    color = FloconTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    style = FloconTheme.typography.titleMedium,
-                )
-            }
+            FloconIconButton(
+                imageVector = Icons.Outlined.CopyAll,
+                onClick = onCopy
+            )
         }
     }
 }
