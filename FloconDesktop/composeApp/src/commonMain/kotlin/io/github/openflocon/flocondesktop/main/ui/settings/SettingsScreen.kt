@@ -31,6 +31,7 @@ import androidx.compose.ui.window.Dialog
 import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -89,14 +90,14 @@ private fun SettingsScreen(
             ) {
                 Text(
                     text = "Settings",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = FloconTheme.typography.titleLarge,
+                    color = FloconTheme.colorScheme.onSurface,
                 )
 
                 SettingsButton(
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.align(Alignment.CenterEnd),
-                    onClick = { onClickLicenses() },
+                    onClick = onClickLicenses,
                     text = "Licenses",
                 )
             }
@@ -114,7 +115,7 @@ private fun SettingsScreen(
                                 .padding(horizontal = 8.dp),
                             text = "Please setup ADB first, this field is mandatory",
                             color = Color.Red,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = FloconTheme.typography.bodySmall,
                         )
                     } else {
                         Text(
@@ -123,12 +124,12 @@ private fun SettingsScreen(
                                 .padding(horizontal = 8.dp),
                             text = "ADB configuraton is valid",
                             color = Color.Green,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = FloconTheme.typography.bodySmall,
                         )
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Box(
@@ -142,17 +143,17 @@ private fun SettingsScreen(
                             if (adbPathText.isEmpty())
                                 Text(
                                     text = "Ex: /Users/youruser/Library/Android/sdk/platform-tools/adb",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = FloconColors.onSurface.copy(alpha = 0.45f),
+                                    style = FloconTheme.typography.bodySmall,
+                                    color = FloconTheme.colorScheme.onSurface.copy(alpha = 0.45f),
                                 )
                             BasicTextField(
                                 modifier = Modifier.fillMaxWidth(),
-                                textStyle = MaterialTheme.typography.bodySmall.copy(
-                                    color = FloconColors.onSurface,
+                                textStyle = FloconTheme.typography.bodySmall.copy(
+                                    color = FloconTheme.colorScheme.onSurface,
                                 ),
                                 value = adbPathText,
                                 onValueChange = { onAdbPathChanged(it) },
-                                cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+                                cursorBrush = SolidColor(FloconTheme.colorScheme.onSurface),
                             )
                         }
                         SettingsButton(
@@ -195,7 +196,7 @@ private fun SettingsButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.bodySmall.copy(
+            style = FloconTheme.typography.bodySmall.copy(
                 color = Color.Black,
             ),
         )

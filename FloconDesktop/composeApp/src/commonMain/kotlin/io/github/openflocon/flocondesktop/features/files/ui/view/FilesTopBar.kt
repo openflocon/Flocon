@@ -27,10 +27,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -52,8 +52,8 @@ fun FilesTopBar(
         Text(
             text = "Files",
             modifier = Modifier.padding(bottom = 12.dp),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
+            style = FloconTheme.typography.titleLarge,
+            color = FloconTheme.colorScheme.onSurface,
         )
 
         Row(
@@ -69,20 +69,18 @@ fun FilesTopBar(
             Box(
                 modifier = Modifier.weight(1f)
                     .clip(RoundedCornerShape(6.dp))
-                    .background(FloconColors.onSurface.copy(alpha = 0.1f))
+                    .background(FloconTheme.colorScheme.onSurface.copy(alpha = 0.1f))
                     .padding(vertical = 4.dp, horizontal = 12.dp),
             ) {
                 Text(
                     current?.name ?: "",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = FloconTheme.typography.bodyLarge,
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = FloconTheme.colorScheme.onSurface,
                 )
             }
             TopBarButton(
-                onClick = {
-                    onDeleteContent()
-                },
+                onClick = onDeleteContent,
                 enabled = isDirectory,
                 icon = Icons.Outlined.Delete
             )

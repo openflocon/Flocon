@@ -34,6 +34,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.view.detail.Detail
 import io.github.openflocon.flocondesktop.features.network.ui.view.detail.DetailLineView
 import io.github.openflocon.flocondesktop.features.network.ui.view.detail.DetailSectionTitleView
 import io.github.openflocon.flocondesktop.features.network.ui.view.detail.ExpandedSectionView
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -58,10 +59,10 @@ fun NetworkDetailView(
 
     Column(
         modifier =
-        modifier
-            .background(FloconColors.background)
-            .verticalScroll(scrollState) // Rendre le contenu défilable
-            .padding(all = 12.dp),
+            modifier
+                .background(FloconTheme.colorScheme.background)
+                .verticalScroll(scrollState) // Rendre le contenu défilable
+                .padding(all = 12.dp),
     ) {
         DetailSectionTitleView(
             isExpanded = isRequestExpanded,
@@ -77,11 +78,11 @@ fun NetworkDetailView(
         ) {
             Column(
                 modifier =
-                Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(12.dp),
-                    ).padding(horizontal = 8.dp, vertical = 4.dp),
+                    Modifier
+                        .background(
+                            color = FloconTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(12.dp),
+                        ).padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
                 DetailLineTextView(
                     modifier = Modifier.fillMaxWidth(),
@@ -99,10 +100,13 @@ fun NetworkDetailView(
                         is NetworkDetailViewState.Method.MethodName -> {
                             Text(
                                 text = m.name,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                style = FloconTheme.typography.bodySmall,
+                                color = FloconTheme.colorScheme.onSurface,
                                 modifier = Modifier.weight(2f)
-                                    .background(color = FloconColors.pannel.copy(alpha = 0.8f), shape = RoundedCornerShape(4.dp))
+                                    .background(
+                                        color = FloconColors.pannel.copy(alpha = 0.8f),
+                                        shape = RoundedCornerShape(4.dp)
+                                    )
                                     .padding(horizontal = 8.dp, vertical = 6.dp),
                             )
                         }
@@ -145,11 +149,11 @@ fun NetworkDetailView(
                 ) {
                     Column(
                         modifier =
-                        Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(12.dp),
-                            ).padding(horizontal = 8.dp, vertical = 4.dp),
+                            Modifier
+                                .background(
+                                    color = FloconTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(12.dp),
+                                ).padding(horizontal = 8.dp, vertical = 4.dp),
                     ) {
                         DetailLineTextView(
                             modifier = Modifier.fillMaxWidth(),
@@ -212,10 +216,10 @@ fun NetworkDetailView(
 
         HorizontalDivider(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(start = 12.dp)
-                .padding(vertical = 12.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp)
+                    .padding(vertical = 12.dp),
         )
 
         DetailSectionTitleView(
@@ -280,22 +284,22 @@ private fun NetworkDetailViewPreview() {
     FloconTheme {
         NetworkDetailView(
             state =
-            NetworkDetailViewState(
-                fullUrl = "http://www.google.com",
-                method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
-                status =
-                NetworkStatusUi(
-                    text = "200",
-                    isSuccess = true,
-                ),
-                requestHeaders =
-                listOf(
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                ),
-                requestBody =
-                """
+                NetworkDetailViewState(
+                    fullUrl = "http://www.google.com",
+                    method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
+                    status =
+                        NetworkStatusUi(
+                            text = "200",
+                            isSuccess = true,
+                        ),
+                    requestHeaders =
+                        listOf(
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                        ),
+                    requestBody =
+                        """
                         {
                             "id": "123",
                             "name": "Flocon App",
@@ -308,18 +312,18 @@ private fun NetworkDetailViewPreview() {
                             }
                         }
                 """.trimIndent(),
-                responseHeaders =
-                listOf(
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                ),
-                requestTimeFormatted = "00:00:00.000",
-                durationFormatted = "300ms",
-                responseBody =
-                """
+                    responseHeaders =
+                        listOf(
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                        ),
+                    requestTimeFormatted = "00:00:00.000",
+                    durationFormatted = "300ms",
+                    responseBody =
+                        """
                         {
                             "networkStatusUi": "success",
                             "message": "Data received and processed.",
@@ -329,10 +333,10 @@ private fun NetworkDetailViewPreview() {
                             }
                         }
                 """.trimIndent(),
-                requestSize = "0kb",
-                responseSize = "0kb",
-                graphQlSection = null,
-            ),
+                    requestSize = "0kb",
+                    responseSize = "0kb",
+                    graphQlSection = null,
+                ),
             modifier = Modifier.padding(16.dp), // Padding pour la preview
             onCopy = { },
         )

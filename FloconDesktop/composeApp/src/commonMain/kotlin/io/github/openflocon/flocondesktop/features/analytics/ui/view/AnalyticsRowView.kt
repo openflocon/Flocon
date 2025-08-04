@@ -22,6 +22,7 @@ import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsRowUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -43,14 +44,14 @@ fun AnalyticsRowView(
     ) {
         Text(
             text = model.eventName,
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            style = FloconTheme.typography.titleSmall,
+            color = FloconTheme.colorScheme.onPrimaryContainer,
         )
 
         Text(
             text = model.dateFormatted,
-            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
-            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.4f),
+            style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
+            color = FloconTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.4f),
         )
 
         FlowRow(
@@ -61,12 +62,15 @@ fun AnalyticsRowView(
             model.properties.fastForEach {
                 Row(
                     Modifier
-                        .background(shape = RoundedCornerShape(20.dp), color = Color.White.copy(alpha = 0.1f))
+                        .background(
+                            shape = RoundedCornerShape(20.dp),
+                            color = Color.White.copy(alpha = 0.1f)
+                        )
                         .padding(horizontal = 12.dp, vertical = 1.dp),
                 ) {
                     Text(
                         text = it.name + " :",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
+                        style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                     Text(
@@ -80,8 +84,8 @@ fun AnalyticsRowView(
                 Text(
                     text = "...",
                     modifier =
-                    Modifier
-                        .padding(horizontal = 4.dp),
+                        Modifier
+                            .padding(horizontal = 4.dp),
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )

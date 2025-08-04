@@ -36,6 +36,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiSt
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkFilter
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Filters
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -69,8 +70,8 @@ fun NetworkScreen(
                         .fillMaxWidth()
                         .background(FloconColors.pannel)
                         .padding(all = 12.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = FloconTheme.typography.titleLarge,
+                    color = FloconTheme.colorScheme.onSurface,
                 )
                 NetworkFilter(
                     uiState = uiState,
