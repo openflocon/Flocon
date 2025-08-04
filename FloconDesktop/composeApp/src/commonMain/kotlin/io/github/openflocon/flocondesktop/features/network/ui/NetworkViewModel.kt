@@ -1,15 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.ui
 
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.cash.molecule.RecompositionMode
-import app.cash.molecule.launchMolecule
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.copyToClipboard
@@ -23,11 +15,11 @@ import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHt
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -68,23 +60,30 @@ class NetworkViewModel(
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
-    val uiState = viewModelScope.launchMolecule(RecompositionMode.Immediate) {
-        val items by observeHttpRequestsUseCase().collectAsState(emptyList())
-        val filterState by filterUiState.collectAsState()
-        val detailState by detailState.collectAsState()
+    private val filteredItems = combine(
+        observeHttpRequestsUseCase(),
+        filterUiState
+    ) { items, filterState ->
+        filterItems(items, filterState).map { toUi(it) }
+    }
+        .distinctUntilChanged()
 
-        var filteredItems by remember { mutableStateOf(emptyList<NetworkItemViewState>()) }
-
-        LaunchedEffect(items, filterState) {
-            filteredItems = filterItems(items, filterState).map { toUi(it) }
-        }
-
+    val uiState = combine(
+        filteredItems,
+        detailState,
+        filterUiState
+    ) { items, detail, filter ->
         NetworkUiState(
-            items = filteredItems,
-            detailState = detailState,
-            filterState = filterState
+            items = items,
+            detailState = detail,
+            filterState = filter
         )
     }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = NetworkUiState()
+        )
 
     fun onAction(action: NetworkAction) {
         when (action) {
