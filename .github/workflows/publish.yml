@@ -1,6 +1,4 @@
-# .github/workflows/publish.yml
-
-name: Publish
+name: Publish Android libs to maven MavenCentral
 on:
   release:
     types: [released, prereleased]
@@ -22,7 +20,7 @@ jobs:
         run: ./gradlew :core:publishToMavenCentral :okhttp-interceptor:publishToMavenCentral :grpc-interceptor:publishToMavenCentral --no-configuration-cache
         working-directory: FloconAndroid
         env:
-          PROJECT_VERSION_NAME=${{ github.ref_name }}
+          PROJECT_VERSION_NAME: ${{ github.ref_name }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALUSERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALPASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID }}
