@@ -43,7 +43,7 @@ fun FilesTopBar(
     modifier: Modifier = Modifier,
 ) {
     val hasParentFile = current != null
-    current?.isDirectory == true
+    val isDirectory = current?.isDirectory == true
 
     Column(
         modifier = modifier
@@ -82,10 +82,12 @@ fun FilesTopBar(
             }
             FloconIconButton(
                 imageVector = Icons.Outlined.Delete,
+                enabled = isDirectory,
                 onClick = onDeleteContent
             )
             FloconIconButton(
                 imageVector = Icons.Outlined.Refresh,
+                enabled = isDirectory,
                 onClick = onRefresh
             )
         }

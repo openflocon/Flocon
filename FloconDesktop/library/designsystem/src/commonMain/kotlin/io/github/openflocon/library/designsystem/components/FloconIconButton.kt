@@ -19,13 +19,14 @@ import androidx.compose.ui.unit.dp
 fun FloconIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
         modifier = modifier
             .minimumInteractiveComponentSize()
             .clip(RoundedCornerShape(4.dp))
-            .clickable(onClick = onClick)
+            .clickable(enabled = enabled, onClick = onClick)
             .padding(all = 8.dp),
         content = content
     )
@@ -35,10 +36,12 @@ fun FloconIconButton(
 fun FloconIconButton(
     imageVector: ImageVector,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     FloconIconButton(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier
     ) {
         FloconIcon(imageVector = imageVector)
