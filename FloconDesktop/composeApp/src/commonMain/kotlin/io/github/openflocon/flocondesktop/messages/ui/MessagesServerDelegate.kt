@@ -19,7 +19,14 @@ class MessagesServerDelegate(
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : CloseableScoped by closeableDelegate {
 
-    fun initialize(): Either<Throwable, Unit> {
+    fun initialize() {
+        coroutineScope.launch {
+            handleIncomingMessagesUseCase()
+                .collect()
+        }
+    }
+
+    fun startServer(): Either<Throwable, Unit> {
         return try {
             startServerUseCase()
             Success(Unit)
@@ -32,11 +39,6 @@ class MessagesServerDelegate(
                 }
             }, type = FeedbackDisplayer.MessageType.Error)
             Failure(t)
-        }
-
-        coroutineScope.launch {
-            handleIncomingMessagesUseCase()
-                .collect()
         }
     }
 }
