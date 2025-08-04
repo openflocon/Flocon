@@ -22,9 +22,9 @@ class MethodFilter : Filters {
                 NetworkMethodUi.GraphQl.QUERY -> state.methods.contains(NetworkMethodUi.GraphQl.QUERY)
                 NetworkMethodUi.Grpc -> state.methods.contains(NetworkMethodUi.Grpc)
                 NetworkMethodUi.Http.DELETE -> state.methods.contains(NetworkMethodUi.Http.DELETE)
-                NetworkMethodUi.Http.GET -> state.methods.contains(NetworkMethodUi.Http.DELETE)
-                NetworkMethodUi.Http.POST -> state.methods.contains(NetworkMethodUi.Http.DELETE)
-                NetworkMethodUi.Http.PUT -> state.methods.contains(NetworkMethodUi.Http.DELETE)
+                NetworkMethodUi.Http.GET -> state.methods.contains(NetworkMethodUi.Http.GET)
+                NetworkMethodUi.Http.POST -> state.methods.contains(NetworkMethodUi.Http.POST)
+                NetworkMethodUi.Http.PUT -> state.methods.contains(NetworkMethodUi.Http.PUT)
                 is NetworkMethodUi.OTHER -> state.methods.contains(NetworkMethodUi.OTHER.EMPTY)
             }
         }
