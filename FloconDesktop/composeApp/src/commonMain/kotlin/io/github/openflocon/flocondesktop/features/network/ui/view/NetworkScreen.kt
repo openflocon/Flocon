@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -8,30 +11,29 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkFilterBar
+import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
+import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkFilter
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -39,37 +41,36 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun NetworkScreen(modifier: Modifier = Modifier) {
     val viewModel: NetworkViewModel = koinViewModel()
-    val items by viewModel.state.collectAsStateWithLifecycle()
-    val detailState by viewModel.detailState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     NetworkScreen(
-        networkItems = items,
-        modifier = modifier,
-        detailState = detailState,
-        onNetworkItemUserAction = viewModel::onNetworkItemUserAction,
-        onCopyText = viewModel::onCopyText,
-        onReset = viewModel::onReset,
-        closeDetailPanel = viewModel::closeDetailPanel,
+        uiState = uiState,
+        onAction = viewModel::onAction,
+        modifier = modifier
     )
 }
 
 @Composable
 fun NetworkScreen(
-    networkItems: List<NetworkItemViewState>,
-    detailState: NetworkDetailViewState?,
-    onNetworkItemUserAction: (OnNetworkItemUserAction) -> Unit,
-    onCopyText: (String) -> Unit,
-    closeDetailPanel: () -> Unit,
-    onReset: () -> Unit,
-    modifier: Modifier = Modifier,
+    uiState: NetworkUiState,
+    onAction: (NetworkAction) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val columnWidths: NetworkItemColumnWidths =
         remember { NetworkItemColumnWidths() } // Default widths provided
 
-    var filteredItems by remember { mutableStateOf<List<NetworkItemViewState>>(emptyList()) }
-
     Surface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable(
+                        interactionSource = null,
+                        indication = null,
+                        enabled = uiState.detailState != null,
+                        onClick = { onAction(NetworkAction.ClosePanel) }
+                    )
+            ) {
                 Text(
                     text = "Network",
                     modifier = Modifier
@@ -79,17 +80,13 @@ fun NetworkScreen(
                     style = FloconTheme.typography.titleLarge,
                     color = FloconTheme.colorScheme.onSurface,
                 )
-                NetworkFilterBar(
-                    modifier =
-                    Modifier
+                NetworkFilter(
+                    uiState = uiState,
+                    modifier = Modifier
                         .fillMaxWidth()
                         .background(FloconColors.pannel)
                         .padding(horizontal = 12.dp),
-                    networkItems = networkItems,
-                    onResetClicked = onReset,
-                    onItemsChange = {
-                        filteredItems = it
-                    },
+                    onAction = onAction
                 )
                 NetworkItemHeaderView(
                     columnWidths = columnWidths,
@@ -100,38 +97,46 @@ fun NetworkScreen(
                         .fillMaxSize(),
                 ) {
                     LazyColumn(
-                        modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .clickable(
-                                interactionSource = null,
-                                indication = null,
-                                enabled = detailState != null,
-                            ) {
-                                closeDetailPanel()
-                            },
+                        modifier = Modifier.matchParentSize(),
                     ) {
-                        items(filteredItems) {
+                        items(
+                            items = uiState.items,
+                            key = NetworkItemViewState::uuid
+                        ) {
                             NetworkItemView(
                                 state = it,
                                 columnWidths = columnWidths,
-                                modifier = Modifier.fillMaxWidth(),
-                                onUserAction = onNetworkItemUserAction,
+                                onAction = onAction,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
                             )
                         }
                     }
                 }
             }
-            detailState?.let {
-                NetworkDetailView(
-                    modifier =
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxHeight()
-                        .width(500.dp),
-                    state = it,
-                    onCopy = onCopyText,
-                )
+            AnimatedContent(
+                targetState = uiState.detailState,
+                transitionSpec = {
+                    slideIntoContainer(SlideDirection.Start)
+                        .togetherWith(slideOutOfContainer(SlideDirection.End))
+                },
+                contentKey = { it != null },
+                contentAlignment = Alignment.TopEnd,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .requiredWidth(500.dp)
+                    .align(Alignment.TopEnd)
+            ) {
+                if (it != null) {
+                    NetworkDetailView(
+                        modifier = Modifier.fillMaxSize(),
+                        state = it,
+                        onAction = onAction
+                    )
+                } else {
+                    Box(Modifier.fillMaxSize())
+                }
             }
         }
     }
@@ -141,8 +146,8 @@ fun NetworkScreen(
 @Preview
 private fun NetworkScreenPreview() {
     FloconTheme {
-        val networkItems =
-            remember {
+        val uiState = previewNetworkUiState().copy(
+            items = remember {
                 listOf(
                     previewNetworkItemViewState(),
                     previewNetworkItemViewState(),
@@ -152,13 +157,11 @@ private fun NetworkScreenPreview() {
                     previewNetworkItemViewState(),
                 )
             }
+        )
+
         NetworkScreen(
-            networkItems = networkItems,
-            detailState = null,
-            closeDetailPanel = {},
-            onNetworkItemUserAction = {},
-            onCopyText = {},
-            onReset = {},
+            uiState = uiState,
+            onAction = {}
         )
     }
 }

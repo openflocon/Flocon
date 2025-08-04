@@ -40,9 +40,6 @@ kotlin {
                 api(compose.ui)
                 api(compose.components.resources)
                 api(compose.components.uiToolingPreview)
-
-                // Maybe have to change since Google push back some component to 1.5.0
-                api("org.jetbrains.compose.material3:material3:1.9.0-alpha04")
             }
         }
 
@@ -84,3 +81,5 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
+
+                api("org.jetbrains.compose.material3:material3:1.9.0-alpha04")

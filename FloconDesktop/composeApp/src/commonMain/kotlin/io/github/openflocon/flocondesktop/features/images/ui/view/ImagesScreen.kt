@@ -42,6 +42,7 @@ import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesStateUi
 import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.ui.model.previewImagesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -98,19 +99,10 @@ private fun ImagesScreen(
                         color = FloconTheme.colorScheme.onSurface,
                     )
                     Box(modifier = Modifier.weight(1f))
-
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .clickable(onClick = onReset)
-                            .padding(all = 8.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Delete,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                        )
-                    }
+                    FloconIconButton(
+                        imageVector = Icons.Outlined.Delete,
+                        onClick = onReset
+                    )
                 }
             }
             when (state) {

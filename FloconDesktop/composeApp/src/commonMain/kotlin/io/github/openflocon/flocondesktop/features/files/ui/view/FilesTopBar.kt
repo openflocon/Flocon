@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +31,7 @@ import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiMode
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -79,17 +80,15 @@ fun FilesTopBar(
                     color = FloconTheme.colorScheme.onSurface,
                 )
             }
-            TopBarButton(
-                onClick = onDeleteContent,
+            FloconIconButton(
+                imageVector = Icons.Outlined.Delete,
                 enabled = isDirectory,
-                icon = Icons.Outlined.Delete
+                onClick = onDeleteContent
             )
-            TopBarButton(
-                onClick = {
-                    onRefresh()
-                },
+            FloconIconButton(
+                imageVector = Icons.Outlined.Refresh,
                 enabled = isDirectory,
-                icon = Icons.Filled.Refresh
+                onClick = onRefresh
             )
         }
     }
