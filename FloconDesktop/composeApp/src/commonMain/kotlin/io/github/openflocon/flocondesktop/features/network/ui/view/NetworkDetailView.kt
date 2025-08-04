@@ -40,6 +40,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.view.detail.Detail
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSectionExpandable
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -71,6 +72,24 @@ fun NetworkDetailView(
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
+        ) {
+            DetailSectionTitleView(
+                isExpanded = isRequestExpanded,
+                title = "Request",
+                onCopy = null,
+                onToggle = {
+                    isRequestExpanded = it
+                },
+                modifier = Modifier.weight(1f)
+            )
+            FloconIconButton(
+                imageVector = Icons.Outlined.Close,
+                onClick = { onAction(NetworkAction.ClosePanel) }
+            )
+        }
+        ExpandedSectionView(
+            modifier = Modifier.fillMaxWidth(),
+            isExpanded = isRequestExpanded,
         ) {
             DetailSectionTitleView(
                 isExpanded = isRequestExpanded,
@@ -211,17 +230,43 @@ fun NetworkDetailView(
                     )
                 }
 
-                // body
-                DetailSectionTitleView(
-                    isExpanded = isRequestBodyExpanded,
-                    title = "Request Body",
-                    onCopy = { onAction(NetworkAction.CopyText(state.requestBody)) },
-                    onToggle = {
-                        isRequestBodyExpanded = it
-                    },
-                    modifier = Modifier.fillMaxWidth()
+            // headers
+            DetailSectionTitleView(
+                isExpanded = isRequestHeadersExpanded,
+                title = "Request Headers",
+                onCopy = null,
+                onToggle = {
+                    isRequestHeadersExpanded = it
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            ExpandedSectionView(
+                modifier = Modifier.fillMaxWidth(),
+                isExpanded = isRequestHeadersExpanded,
+            ) {
+                DetailHeadersView(
+                    headers = state.requestHeaders,
+                    modifier = Modifier.fillMaxWidth(),
+                    labelWidth = headersLabelWidth,
                 )
-                FloconSectionExpandable(
+            }
+
+            // body
+            DetailSectionTitleView(
+                isExpanded = isRequestBodyExpanded,
+                title = "Request Body",
+                onCopy = { onAction(NetworkAction.CopyText(state.requestBody)) },
+                onToggle = {
+                    isRequestBodyExpanded = it
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            ExpandedSectionView(
+                modifier = Modifier.fillMaxWidth(),
+                isExpanded = isRequestBodyExpanded,
+            ) {
+                CodeBlockView(
+                    code = state.requestBody,
                     modifier = Modifier.fillMaxWidth(),
                     expanded = isRequestBodyExpanded,
                 ) {
@@ -256,18 +301,22 @@ fun NetworkDetailView(
                 .padding(12.dp),
             expanded = isResponseExpanded,
         ) {
-            Column {
-                // headers
-                DetailSectionTitleView(
-                    isExpanded = isResponseHeadersExpanded,
-                    title = "Response Headers",
-                    onCopy = null,
-                    onToggle = {
-                        isResponseHeadersExpanded = it
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                FloconSectionExpandable(
+            // headers
+            DetailSectionTitleView(
+                isExpanded = isResponseHeadersExpanded,
+                title = "Response Headers",
+                onCopy = null,
+                onToggle = {
+                    isResponseHeadersExpanded = it
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            ExpandedSectionView(
+                modifier = Modifier.fillMaxWidth(),
+                isExpanded = isResponseHeadersExpanded,
+            ) {
+                DetailHeadersView(
+                    headers = state.responseHeaders,
                     modifier = Modifier.fillMaxWidth(),
                     expanded = isResponseHeadersExpanded,
                 ) {
@@ -288,7 +337,24 @@ fun NetworkDetailView(
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
-                FloconSectionExpandable(
+            }
+
+            // body
+            DetailSectionTitleView(
+                isExpanded = isResponseBodyExpanded,
+                title = "Response Body",
+                onCopy = { onAction(NetworkAction.CopyText(state.responseBody)) },
+                onToggle = {
+                    isResponseBodyExpanded = it
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            ExpandedSectionView(
+                modifier = Modifier.fillMaxWidth(),
+                isExpanded = isResponseBodyExpanded,
+            ) {
+                CodeBlockView(
+                    code = state.responseBody,
                     modifier = Modifier.fillMaxWidth(),
                     expanded = isResponseBodyExpanded,
                 ) {
