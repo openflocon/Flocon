@@ -33,22 +33,6 @@ class AppViewModel(
         // if success, just re-check again in 20s if it's still alive
         viewModelScope.launch(dispatcherProvider.viewModel) {
             while (isActive) {
-                messagesServerDelegate.initialize().fold(
-                    doOnSuccess = {
-                        delay(20.seconds)
-                    },
-                    doOnFailure = {
-                        delay(3.seconds)
-                    }
-                )
-            }
-        }
-
-        // try to start the server
-        // if fails -> try again in 3s
-        // if success, just re-check again in 20s if it's still alive
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            while (isActive) {
                 messagesServerDelegate.startServer().fold(
                     doOnSuccess = {
                         delay(20.seconds)
