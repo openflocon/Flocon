@@ -19,7 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +42,7 @@ import io.github.openflocon.flocondesktop.features.table.ui.model.TablesStateUiM
 import io.github.openflocon.flocondesktop.features.table.ui.model.items
 import io.github.openflocon.flocondesktop.features.table.ui.model.previewTableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.ui.model.previewTablesStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -94,8 +94,8 @@ fun TableScreen(
                 ) {
                     Text(
                         text = "Tables",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = FloconTheme.typography.titleLarge,
+                        color = FloconTheme.colorScheme.onSurface,
                     )
 
                     TableSelectorView(
@@ -143,8 +143,8 @@ fun TableScreen(
                                     if (index < tableItems.lastIndex) {
                                         HorizontalDivider(
                                             modifier =
-                                            Modifier.fillMaxWidth()
-                                                .padding(top = 4.dp),
+                                                Modifier.fillMaxWidth()
+                                                    .padding(top = 4.dp),
                                         )
                                     }
                                 }
@@ -157,10 +157,10 @@ fun TableScreen(
             selectedItem?.let {
                 TableDetailView(
                     modifier =
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxHeight()
-                        .width(500.dp),
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .fillMaxHeight()
+                            .width(500.dp),
                     state = it,
                 )
             }
@@ -174,7 +174,7 @@ fun TableDetailView(modifier: Modifier = Modifier, state: TableRowUiModel) {
     val linesLabelWidth: Dp = 130.dp
     SelectionContainer(
         modifier
-            .background(FloconColors.background)
+            .background(FloconTheme.colorScheme.background)
             .verticalScroll(scrollState) // Rendre le contenu défilable
             .padding(all = 18.dp),
     ) {
@@ -207,8 +207,8 @@ fun TableDetailLineTextView(
     ) {
         Text(
             text = value,
-            style = MaterialTheme.typography.bodyMedium, // Body text for the URL
-            color = MaterialTheme.colorScheme.onBackground, // Primary text color
+            style = FloconTheme.typography.bodyMedium, // Body text for the URL
+            color = FloconTheme.colorScheme.onBackground, // Primary text color
             modifier = Modifier.weight(1f), // Takes remaining space
         )
     }
@@ -227,8 +227,8 @@ fun TableDetailLineView(
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.titleSmall, // Slightly smaller title for details
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f), // Muted label color
+            style = FloconTheme.typography.titleSmall, // Slightly smaller title for details
+            color = FloconTheme.colorScheme.onBackground.copy(alpha = 0.7f), // Muted label color
             modifier = Modifier.width(labelWidth).padding(end = 8.dp),
         )
         content()

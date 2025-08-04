@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -30,8 +30,8 @@ fun DetailLineTextView(
     ) {
         Text(
             text = value,
-            style = MaterialTheme.typography.bodyMedium, // Body text for the URL
-            color = MaterialTheme.colorScheme.onBackground, // Primary text color
+            style = FloconTheme.typography.bodyMedium, // Body text for the URL
+            color = FloconTheme.colorScheme.onBackground, // Primary text color
             modifier = Modifier.weight(1f), // Takes remaining space
         )
     }
@@ -50,8 +50,8 @@ fun DetailLineView(
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.titleSmall, // Slightly smaller title for details
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f), // Muted label color
+            style = FloconTheme.typography.titleSmall, // Slightly smaller title for details
+            color = FloconTheme.colorScheme.onBackground.copy(alpha = 0.7f), // Muted label color
             modifier = Modifier.width(labelWidth).padding(end = 8.dp),
         )
         SelectionContainer {

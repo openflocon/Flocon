@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
@@ -33,6 +32,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraph
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkFilterBar
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -76,8 +76,8 @@ fun NetworkScreen(
                         .fillMaxWidth()
                         .background(FloconColors.pannel)
                         .padding(all = 12.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = FloconTheme.typography.titleLarge,
+                    color = FloconTheme.colorScheme.onSurface,
                 )
                 NetworkFilterBar(
                     modifier =

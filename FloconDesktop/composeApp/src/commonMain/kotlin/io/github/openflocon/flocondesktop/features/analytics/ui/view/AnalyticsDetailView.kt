@@ -11,15 +11,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 fun AnalyticsDetailView(modifier: Modifier = Modifier, state: AnalyticsRowUiModel) {
@@ -27,7 +26,7 @@ fun AnalyticsDetailView(modifier: Modifier = Modifier, state: AnalyticsRowUiMode
     val linesLabelWidth: Dp = 130.dp
     SelectionContainer(
         modifier
-            .background(FloconColors.background)
+            .background(FloconTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(all = 18.dp),
     ) {
@@ -72,8 +71,8 @@ fun AnalyticsDetailLineTextView(
     ) {
         Text(
             text = value,
-            style = MaterialTheme.typography.bodyMedium, // Body text for the URL
-            color = MaterialTheme.colorScheme.onBackground, // Primary text color
+            style = FloconTheme.typography.bodyMedium, // Body text for the URL
+            color = FloconTheme.colorScheme.onBackground, // Primary text color
             modifier = Modifier.weight(1f), // Takes remaining space
         )
     }
@@ -92,8 +91,8 @@ fun AnalyticsDetailLineView(
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.titleSmall, // Slightly smaller title for details
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f), // Muted label color
+            style = FloconTheme.typography.titleSmall, // Slightly smaller title for details
+            color = FloconTheme.colorScheme.onBackground.copy(alpha = 0.7f), // Muted label color
             modifier = Modifier.width(labelWidth).padding(end = 8.dp),
         )
         content()

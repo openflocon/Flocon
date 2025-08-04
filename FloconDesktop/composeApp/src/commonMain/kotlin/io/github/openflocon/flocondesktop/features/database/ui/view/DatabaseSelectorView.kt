@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,10 +23,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.previewDeviceDataBaseUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -49,8 +48,8 @@ internal fun DatabaseSelectorView(
     ) {
         Text(
             text = "Database : ",
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            color = FloconTheme.colorScheme.onBackground,
+            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
         )
 
         Spacer(modifier = Modifier.width(4.dp))
@@ -63,12 +62,12 @@ internal fun DatabaseSelectorView(
             DatabasesStateUiModel.Empty -> {
                 Text(
                     modifier =
-                    Modifier
-                        .background(MaterialTheme.colorScheme.onBackground, shape = shape)
-                        .padding(contentPadding),
+                        Modifier
+                            .background(FloconTheme.colorScheme.onBackground, shape = shape)
+                            .padding(contentPadding),
                     text = "No Databases Found",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.background,
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorScheme.background,
                 )
             }
 
@@ -77,13 +76,13 @@ internal fun DatabaseSelectorView(
 
                 DatabaseView(
                     database = databasesState.selected,
-                    textColor = MaterialTheme.colorScheme.background,
+                    textColor = FloconTheme.colorScheme.background,
                     modifier =
-                    Modifier
-                        .clip(shape)
-                        .background(MaterialTheme.colorScheme.onBackground)
-                        .clickable { expanded = true }
-                        .padding(contentPadding),
+                        Modifier
+                            .clip(shape)
+                            .background(FloconTheme.colorScheme.onBackground)
+                            .clickable { expanded = true }
+                            .padding(contentPadding),
                 )
 
                 DropdownMenu(
@@ -95,7 +94,7 @@ internal fun DatabaseSelectorView(
                             text = {
                                 DatabaseView(
                                     database = database,
-                                    textColor = MaterialTheme.colorScheme.onBackground,
+                                    textColor = FloconTheme.colorScheme.onBackground,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },
@@ -122,7 +121,7 @@ private fun DatabaseView(
         modifier = modifier,
         text = database.name, // Device Name
         color = textColor,
-        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
     )
 }
 
@@ -132,7 +131,7 @@ private fun DatabaseViewPreview() {
     FloconTheme {
         DatabaseView(
             database = previewDeviceDataBaseUiModel(),
-            textColor = MaterialTheme.colorScheme.background,
+            textColor = FloconTheme.colorScheme.background,
         )
     }
 }

@@ -4,13 +4,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -32,15 +31,15 @@ fun DetailSectionTitleView(
             ) {
                 Text(
                     text = if (isExpanded) "▼" else "▶", // Toggle icon
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    style = MaterialTheme.typography.titleMedium,
+                    color = FloconTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    style = FloconTheme.typography.titleMedium,
                 )
             }
         }
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground,
+            style = FloconTheme.typography.titleMedium,
+            color = FloconTheme.colorScheme.onBackground,
             modifier = Modifier.weight(1f), // Takes remaining space
         )
         if (onCopy != null) {
@@ -50,8 +49,8 @@ fun DetailSectionTitleView(
             ) {
                 Text(
                     text = "📄", // Copy icon
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    style = MaterialTheme.typography.titleMedium,
+                    color = FloconTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    style = FloconTheme.typography.titleMedium,
                 )
             }
         }

@@ -6,13 +6,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -24,7 +23,7 @@ fun CodeBlockView(
         modifier =
         modifier
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = FloconTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(8.dp),
             ).padding(8.dp),
     ) {
@@ -32,8 +31,8 @@ fun CodeBlockView(
         SelectionContainer {
             Text(
                 text = code,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                color = FloconTheme.colorScheme.onSurface,
+                style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
             )
         }
     }

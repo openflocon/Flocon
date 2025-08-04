@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -29,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 fun FilterBar(
@@ -49,24 +49,24 @@ fun FilterBar(
         // Custom styled BasicTextField
         Box(
             modifier =
-            Modifier
-                .weight(1f)
-                .height(48.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                Modifier
+                    .weight(1f)
+                    .height(48.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(FloconTheme.colorScheme.surfaceVariant)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
             contentAlignment = Alignment.CenterStart,
         ) {
             if (displayPlaceholder) {
                 Text(
                     text = placeholderText,
                     style =
-                    MaterialTheme.typography.bodySmall.copy(
-                        color =
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                            alpha = 0.4f,
+                        FloconTheme.typography.bodySmall.copy(
+                            color =
+                                FloconTheme.colorScheme.onSurfaceVariant.copy(
+                                    alpha = 0.4f,
+                                ),
                         ),
-                    ),
                 )
             }
             BasicTextField(
@@ -76,9 +76,9 @@ fun FilterBar(
                     onTextChangedCallback(filterText)
                 },
                 singleLine = true,
-                textStyle = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface),
+                textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorScheme.onSurface),
                 modifier = Modifier.fillMaxWidth(),
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                cursorBrush = SolidColor(FloconTheme.colorScheme.primary),
             )
         }
 
@@ -91,14 +91,14 @@ fun FilterBar(
             Text(
                 text = "Clear",
                 modifier =
-                Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable {
-                        filterText = ""
-                        onTextChangedCallback("")
-                    }.padding(horizontal = 12.dp),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                style = MaterialTheme.typography.titleMedium,
+                    Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable {
+                            filterText = ""
+                            onTextChangedCallback("")
+                        }.padding(horizontal = 12.dp),
+                color = FloconTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                style = FloconTheme.typography.titleMedium,
             )
         }
     }

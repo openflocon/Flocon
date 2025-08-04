@@ -3,15 +3,14 @@ package io.github.openflocon.flocondesktop.features.network.ui.view.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatusUi
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // Custom colors for networkStatusUi/method views to integrate better with the theme
@@ -29,13 +28,13 @@ fun StatusView(
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         BasicText(
-            text = status.text.toString(),
+            text = status.text,
             autoSize = TextAutoSize.StepBased(
                 maxFontSize = textSize,
                 minFontSize = 8.sp,
             ),
             maxLines = 1,
-            style = MaterialTheme.typography.labelSmall.copy(
+            style = FloconTheme.typography.labelSmall.copy(
                 color = when (status.isSuccess) {
                     true -> successTagText
                     false -> errorTagText
@@ -51,10 +50,10 @@ private fun StatusView_Preview() {
     FloconTheme {
         StatusView(
             status =
-            NetworkStatusUi(
-                text = "200",
-                isSuccess = true,
-            ),
+                NetworkStatusUi(
+                    text = "200",
+                    isSuccess = true,
+                ),
         )
     }
 }
