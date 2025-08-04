@@ -48,8 +48,8 @@ jobs:
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: macos-pkg
-          path: FloconDesktop/composeApp/build/compose/binaries/main/pkg/*.pkg
+          name: macos-dmg
+          path: FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg
 
       - name: Upload Windows artifact
         if: matrix.os == 'windows-latest'
@@ -78,7 +78,7 @@ jobs:
       - name: Download macOS artifact
         uses: actions/download-artifact@v4
         with:
-          name: macos-pkg
+          name: macos-dmg
 
       - name: Download Windows artifact
         uses: actions/download-artifact@v4
@@ -96,7 +96,7 @@ jobs:
           generate_release_notes: true
           files: |
             *.deb
-            *.pkg
+            *.dmg
             *.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
