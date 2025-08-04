@@ -62,7 +62,7 @@ mavenPublishing {
     coordinates(
         groupId = project.property("floconGroupId") as String,
         artifactId = "flocon-okhttp-interceptor",
-        version = project.property("floconVersion") as String
+        version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
     pom {
