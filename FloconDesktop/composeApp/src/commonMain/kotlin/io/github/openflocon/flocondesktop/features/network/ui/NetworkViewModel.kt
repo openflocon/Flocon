@@ -15,10 +15,12 @@ import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -40,85 +42,158 @@ class NetworkViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel() {
 
-    val state: StateFlow<List<NetworkItemViewState>> =
-        observeHttpRequestsUseCase()
-            .map { list -> list.map { toUi(it) } }
-            .flowOn(dispatcherProvider.viewModel)
-            .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), emptyList())
+    private val filterMethod = MethodFilter()
 
-    private val clickedRequestId = MutableStateFlow<String?>(null)
+    private val contentState = MutableStateFlow(ContentUiState(selectedRequestId = null))
+    private val filterUiState = MutableStateFlow(FilterUiState(query = "", methods = NetworkMethodUi.all()))
 
-    val detailState: StateFlow<NetworkDetailViewState?> =
-        clickedRequestId
+    private val detailState: StateFlow<NetworkDetailViewState?> =
+        contentState.map { it.selectedRequestId }
             .flatMapLatest { id ->
                 if (id == null) {
                     flowOf(null)
                 } else {
                     observeHttpRequestsByIdUseCase(id)
                         .distinctUntilChanged()
-                        .map {
-                            it?.let {
-                                toDetailUi(it)
-                            }
-                        }
+                        .map { it?.let { toDetailUi(it) } }
                 }
             }
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
-    fun onNetworkItemUserAction(action: OnNetworkItemUserAction) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            when (action) {
-                is OnNetworkItemUserAction.CopyCUrl -> {
-                    val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
-                        ?: return@launch
-                    val curl = generateCurlCommandUseCase(domainModel)
-                    copyToClipboard(curl)
-                }
+    private val filteredItems = combine(
+        observeHttpRequestsUseCase().map { list -> list.map { toUi(it) } },
+        filterUiState
+    ) { items, filterState ->
+        filterItems(items, filterState)
+    }
+        .distinctUntilChanged()
 
-                is OnNetworkItemUserAction.CopyUrl -> {
-                    val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
-                        ?: return@launch
-                    copyToClipboard(domainModel.url)
-                }
+    val uiState = combine(
+        filteredItems,
+        contentState,
+        detailState,
+        filterUiState
+    ) { items, content, detail, filter ->
+        NetworkUiState(
+            items = items,
+            contentState = content,
+            detailState = detail,
+            filterState = filter
+        )
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = NetworkUiState(
+                items = emptyList(),
+                detailState = detailState.value,
+                contentState = contentState.value,
+                filterState = filterUiState.value
+            )
+        )
 
-                is OnNetworkItemUserAction.OnClicked -> {
-                    clickedRequestId.update {
-                        if (it == action.item.uuid) {
-                            null
-                        } else {
-                            action.item.uuid
-                        }
-                    }
-                }
-
-                is OnNetworkItemUserAction.Remove -> {
-                    removeHttpRequestUseCase(requestId = action.item.uuid)
-                }
-
-                is OnNetworkItemUserAction.RemoveLinesAbove -> {
-                    removeHttpRequestsBeforeUseCase(requestId = action.item.uuid)
-                }
-            }
+    fun onAction(action: NetworkAction) {
+        when (action) {
+            is NetworkAction.SelectRequest -> onSelectRequest(action)
+            NetworkAction.ClosePanel -> onClosePanel()
+            is NetworkAction.CopyText -> onCopyText(action)
+            NetworkAction.Reset -> onReset()
+            is NetworkAction.CopyCUrl -> onCopyCUrl(action)
+            is NetworkAction.CopyUrl -> onCopyUrl(action)
+            is NetworkAction.Remove -> onRemove(action)
+            is NetworkAction.RemoveLinesAbove -> onRemoveLinesAbove(action)
+            is NetworkAction.FilterQuery -> onFilterQuery(action)
+            is NetworkAction.FilterMethod -> onFilterMethod(action)
         }
     }
 
-    fun onCopyText(text: String) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            copyToClipboard(text)
-            feedbackDisplayer.displayMessage("copied")
+    private fun onSelectRequest(action: NetworkAction.SelectRequest) {
+        contentState.update { state ->
+            state.copy(
+                selectedRequestId = if (state.selectedRequestId == action.id) {
+                    null
+                } else {
+                    action.id
+                }
+            )
         }
     }
 
-    fun closeDetailPanel() {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            clickedRequestId.update { null }
-        }
+    private fun onClosePanel() {
+        contentState.update { it.copy(selectedRequestId = null) }
     }
 
-    fun onReset() {
+    private fun onCopyText(action: NetworkAction.CopyText) {
+        copyToClipboard(action.text)
+        feedbackDisplayer.displayMessage("copied")
+    }
+
+    private fun onReset() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             resetCurrentDeviceHttpRequestsUseCase()
         }
     }
+
+    private fun onCopyCUrl(action: NetworkAction.CopyCUrl) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
+                ?: return@launch
+            val curl = generateCurlCommandUseCase(domainModel)
+            copyToClipboard(curl)
+        }
+    }
+
+    private fun onCopyUrl(action: NetworkAction.CopyUrl) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
+                ?: return@launch
+            copyToClipboard(domainModel.url)
+        }
+    }
+
+    private fun onRemove(action: NetworkAction.Remove) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            removeHttpRequestUseCase(requestId = action.item.uuid)
+        }
+    }
+
+    private fun onRemoveLinesAbove(action: NetworkAction.RemoveLinesAbove) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            removeHttpRequestsBeforeUseCase(requestId = action.item.uuid)
+        }
+    }
+
+    private fun onFilterQuery(action: NetworkAction.FilterQuery) {
+        filterUiState.update { state ->
+            state.copy(query = action.query)
+        }
+    }
+
+    private fun onFilterMethod(action: NetworkAction.FilterMethod) {
+        filterUiState.update { state ->
+            state.copy(
+                methods = if (action.add) {
+                    state.methods + action.method
+                } else {
+                    state.methods - action.method
+                }
+            )
+        }
+    }
+
+    private fun filterItems(
+        items: List<NetworkItemViewState>,
+        filterState: FilterUiState
+    ): List<NetworkItemViewState> {
+        var filteredItems = items
+
+        if (filterState.query.isNotEmpty())
+            filteredItems = filteredItems.filter { it.contains(filterState.query) }
+        if (filterState.methods.isNotEmpty())
+            filteredItems = filterMethod.filter(filterState, filteredItems)
+
+        return filteredItems
+    }
+
 }
