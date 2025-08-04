@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 
 @Composable
 fun NetworkFilterBar(
@@ -61,17 +62,9 @@ fun NetworkFilterBar(
                 filterText = it
             },
         )
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .clickable(onClick = onResetClicked)
-                .padding(all = 8.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Delete,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-            )
-        }
+        FloconIconButton(
+            imageVector = Icons.Outlined.Delete,
+            onClick = onResetClicked
+        )
     }
 }

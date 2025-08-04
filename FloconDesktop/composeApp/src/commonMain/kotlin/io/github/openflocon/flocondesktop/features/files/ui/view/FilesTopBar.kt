@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +31,7 @@ import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiMode
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -42,7 +43,7 @@ fun FilesTopBar(
     modifier: Modifier = Modifier,
 ) {
     val hasParentFile = current != null
-    val isDirectory = current?.isDirectory == true
+    current?.isDirectory == true
 
     Column(
         modifier = modifier
@@ -79,17 +80,13 @@ fun FilesTopBar(
                     color = FloconTheme.colorScheme.onSurface,
                 )
             }
-            TopBarButton(
-                onClick = onDeleteContent,
-                enabled = isDirectory,
-                icon = Icons.Outlined.Delete
+            FloconIconButton(
+                imageVector = Icons.Outlined.Delete,
+                onClick = onDeleteContent
             )
-            TopBarButton(
-                onClick = {
-                    onRefresh()
-                },
-                enabled = isDirectory,
-                icon = Icons.Filled.Refresh
+            FloconIconButton(
+                imageVector = Icons.Outlined.Refresh,
+                onClick = onRefresh
             )
         }
     }
