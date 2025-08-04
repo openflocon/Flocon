@@ -32,6 +32,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkFilter
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Filters
@@ -145,7 +146,7 @@ fun NetworkScreen(
 @Preview
 private fun NetworkScreenPreview() {
     FloconTheme {
-        val uiState = NetworkUiState(
+        val uiState = previewNetworkUiState().copy(
             items = remember {
                 listOf(
                     previewNetworkItemViewState(),

@@ -43,11 +43,11 @@ class NetworkViewModel(
 
     private val filterMethod = MethodFilter()
 
-    private val contentUiState = MutableStateFlow(ContentUiState())
-    private val filterUiState = MutableStateFlow(FilterUiState())
+    private val contentState = MutableStateFlow(ContentUiState(selectedRequestId = null))
+    private val filterUiState = MutableStateFlow(FilterUiState(query = "", methods = MethodFilter.Methods.all()))
 
     private val detailState: StateFlow<NetworkDetailViewState?> =
-        contentUiState.map { it.selectedRequestId }
+        contentState.map { it.selectedRequestId }
             .flatMapLatest { id ->
                 if (id == null) {
                     flowOf(null)
@@ -70,11 +70,13 @@ class NetworkViewModel(
 
     val uiState = combine(
         filteredItems,
+        contentState,
         detailState,
         filterUiState
-    ) { items, detail, filter ->
+    ) { items, content, detail, filter ->
         NetworkUiState(
             items = items,
+            contentState = content,
             detailState = detail,
             filterState = filter
         )
@@ -82,7 +84,12 @@ class NetworkViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = NetworkUiState()
+            initialValue = NetworkUiState(
+                items = emptyList(),
+                detailState = detailState.value,
+                contentState = contentState.value,
+                filterState = filterUiState.value
+            )
         )
 
     fun onAction(action: NetworkAction) {
@@ -101,7 +108,7 @@ class NetworkViewModel(
     }
 
     private fun onSelectRequest(action: NetworkAction.SelectRequest) {
-        contentUiState.update { state ->
+        contentState.update { state ->
             state.copy(
                 selectedRequestId = if (state.selectedRequestId == action.id) {
                     null
@@ -113,7 +120,7 @@ class NetworkViewModel(
     }
 
     private fun onClosePanel() {
-        contentUiState.update { it.copy(selectedRequestId = null) }
+        contentState.update { it.copy(selectedRequestId = null) }
     }
 
     private fun onCopyText(action: NetworkAction.CopyText) {
@@ -182,7 +189,7 @@ class NetworkViewModel(
 
         if (filterState.query.isNotEmpty())
             filteredItems = filteredItems.filter {
-                toUi(it).contains(filterState.query) // TODO Change
+                toUi(it).contains(filterState.query) // TODO Change when reworking query filter
             }
         if (filterState.methods.isNotEmpty())
             filteredItems = filterMethod.filter(filterState, filteredItems)
