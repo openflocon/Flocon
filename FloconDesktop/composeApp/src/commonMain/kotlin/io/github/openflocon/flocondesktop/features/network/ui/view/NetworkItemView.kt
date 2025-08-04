@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.OnNetworkItemUserAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.StatusView
@@ -47,9 +47,9 @@ data class NetworkItemColumnWidths(
 @Composable
 fun NetworkItemView(
     state: NetworkItemViewState,
-    columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
-    onUserAction: (OnNetworkItemUserAction) -> Unit,
+    onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
+    columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
 ) {
     // Use FloconTheme.typography for consistent text sizes
     val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
@@ -76,10 +76,10 @@ fun NetworkItemView(
         ),
         onSelect = {
             when (it.id) {
-                "copy_url" -> onUserAction(OnNetworkItemUserAction.CopyUrl(state))
-                "copy_curl" -> onUserAction(OnNetworkItemUserAction.CopyCUrl(state))
-                "remove" -> onUserAction(OnNetworkItemUserAction.Remove(state))
-                "remove_lines_above" -> onUserAction(OnNetworkItemUserAction.RemoveLinesAbove(state))
+                "copy_url" -> onAction(NetworkAction.CopyUrl(state))
+                "copy_curl" -> onAction(NetworkAction.CopyCUrl(state))
+                "remove" -> onAction(NetworkAction.Remove(state))
+                "remove_lines_above" -> onAction(NetworkAction.RemoveLinesAbove(state))
             }
         },
     ) {
@@ -87,9 +87,7 @@ fun NetworkItemView(
             modifier = modifier
                 .padding(vertical = 4.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
-                .clickable(onClick = {
-                    onUserAction(OnNetworkItemUserAction.OnClicked(state))
-                })
+                .clickable(onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) })
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             // Inner padding for content
             verticalAlignment = Alignment.CenterVertically,
@@ -205,7 +203,7 @@ private fun ItemViewPreview() {
         NetworkItemView(
             modifier = Modifier.fillMaxWidth(),
             state = previewNetworkItemViewState(),
-            onUserAction = {},
+            onAction = {}
         )
     }
 }
