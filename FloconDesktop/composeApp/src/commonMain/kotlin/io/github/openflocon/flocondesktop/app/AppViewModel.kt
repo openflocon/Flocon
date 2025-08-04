@@ -9,6 +9,7 @@ import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class AppViewModel(
     messagesServerDelegate: MessagesServerDelegate,
@@ -27,7 +28,21 @@ class AppViewModel(
             }
         }
 
-        messagesServerDelegate.initialize()
+        // try to start the server
+        // if fails -> try again in 3s
+        // if success, just re-check again in 20s if it's still alive
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            while (isActive) {
+                messagesServerDelegate.initialize().fold(
+                    doOnSuccess = {
+                        delay(20.seconds)
+                    },
+                    doOnFailure = {
+                        delay(3.seconds)
+                    }
+                )
+            }
+        }
 
         viewModelScope.launch {
             while (isActive) {

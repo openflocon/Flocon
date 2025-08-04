@@ -19,16 +19,18 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.serialization.json.Json
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.seconds
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ServerJvm : Server {
     private val _receivedMessages = MutableSharedFlow<FloconIncomingMessageDataModel>()
     override val receivedMessages = _receivedMessages.asSharedFlow()
 
     private var server: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? = null
+    private val isStarted = AtomicBoolean(false)
     private val activeSessions = ConcurrentHashMap<DeviceId, WebSocketSession>()
 
     override fun start(port: Int) {
-        if (server != null) return
+        if (server != null && isStarted.get()) return
 
         val server: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration> =
             embeddedServer(Netty, port = port) {
@@ -81,7 +83,14 @@ class ServerJvm : Server {
                 }
             }.also { this.server = it }
         println("server started on $port")
-        server.start(wait = false)
+
+        try {
+            server.start(wait = false)
+            isStarted.set(true)
+        } catch (t: Throwable) {
+            isStarted.set(false)
+            throw t
+        }
     }
 
     /**
