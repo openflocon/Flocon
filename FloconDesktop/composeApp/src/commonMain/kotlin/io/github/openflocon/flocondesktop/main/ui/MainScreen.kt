@@ -32,7 +32,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.analytics.ui.view.AnalyticsScreen
 import io.github.openflocon.flocondesktop.features.dashboard.ui.view.DashboardScreen
 import io.github.openflocon.flocondesktop.features.database.ui.view.DatabaseScreen
@@ -194,7 +193,7 @@ private fun MainScreen(
                 translationY = (windowSize.height / 2) - (size.height / 2)
             }
             .clip(RoundedCornerShape(4.dp))
-            .background(FloconColors.pannel) // TODO Change
+            .background(FloconTheme.colorPalette.panel)
             .clickable(onClick = { expanded = !expanded })
     ) {
         FloconIcon(
