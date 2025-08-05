@@ -2,6 +2,7 @@
 
 # Generated files
 .gradle
+.kotlin
 /build/
 
 # IDE files
@@ -57,4 +58,18 @@ local.properties
 *.jar
 *.war
 *.zip
-*.log
+
+**/build/
+xcuserdata
+!src/**/build/
+.idea
+.DS_Store
+captures
+.externalNativeBuild
+.cxx
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
