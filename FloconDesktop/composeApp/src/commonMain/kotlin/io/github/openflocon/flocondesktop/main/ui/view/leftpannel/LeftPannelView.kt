@@ -46,7 +46,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-val PanelMaxWidth = 300.dp
+val PanelMaxWidth = 250.dp
 val PanelMinWidth = 64.dp
 val PanelContentMinSize = 40.dp
 
@@ -91,7 +91,7 @@ fun LeftPanelView(
 }
 
 @Composable
-private fun Title(
+fun Title(
     expanded: Boolean
 ) {
     Row(

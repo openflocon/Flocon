@@ -110,6 +110,7 @@ internal fun DeviceSelectorView(
             shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
             modifier = Modifier
                 .exposedDropdownSize()
+                .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             if (devicesState is DevicesStateUiModel.WithDevices) {
                 devicesState.devices.forEach { device ->
