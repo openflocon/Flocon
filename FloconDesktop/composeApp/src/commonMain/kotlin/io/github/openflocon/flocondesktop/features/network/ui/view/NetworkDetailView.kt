@@ -35,9 +35,9 @@ import io.github.openflocon.flocondesktop.features.network.ui.view.detail.Detail
 import io.github.openflocon.flocondesktop.features.network.ui.view.detail.DetailLineTextView
 import io.github.openflocon.flocondesktop.features.network.ui.view.detail.DetailLineView
 import io.github.openflocon.flocondesktop.features.network.ui.view.detail.DetailSectionTitleView
-import io.github.openflocon.flocondesktop.features.network.ui.view.detail.ExpandedSectionView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconSectionExpandable
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -48,46 +48,72 @@ fun NetworkDetailView(
 ) {
     val scrollState = rememberScrollState()
 
-    var isRequestExpanded by remember { mutableStateOf(true) }
-    var isRequestBodyExpanded by remember { mutableStateOf(true) }
-    var isRequestHeadersExpanded by remember { mutableStateOf(true) }
-    var isGraphQlRequestExpanded by remember { mutableStateOf(true) }
-
-    var isResponseExpanded by remember { mutableStateOf(true) }
-    var isResponseHeadersExpanded by remember { mutableStateOf(true) }
-    var isResponseBodyExpanded by remember { mutableStateOf(true) }
-
     val linesLabelWidth: Dp = 130.dp
     val headersLabelWidth: Dp = 150.dp
 
     Column(
         modifier = modifier
             .background(FloconTheme.colorPalette.background)
-            .verticalScroll(scrollState) // Rendre le contenu défilable
+            .verticalScroll(scrollState)
             .padding(all = 12.dp),
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            DetailSectionTitleView(
-                isExpanded = isRequestExpanded,
-                title = "Request",
-                onCopy = null,
-                onToggle = {
-                    isRequestExpanded = it
-                },
-                modifier = Modifier.weight(1f)
-            )
-            FloconIconButton(
-                imageVector = Icons.Outlined.Close,
-                onClick = { onAction(NetworkAction.ClosePanel) }
-            )
-        }
-        ExpandedSectionView(
-            modifier = Modifier.fillMaxWidth(),
+        Request(
+            state = state,
+            onAction = onAction,
+            linesLabelWidth = linesLabelWidth,
+            headersLabelWidth = headersLabelWidth
+        )
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp)
+                .padding(vertical = 12.dp),
+        )
+        Response(
+            state = state,
+            onAction = onAction,
+            headersLabelWidth = headersLabelWidth
+        )
+    }
+}
+
+@Composable
+private fun Request(
+    state: NetworkDetailViewState,
+    onAction: (NetworkAction) -> Unit,
+    linesLabelWidth: Dp,
+    headersLabelWidth: Dp
+) {
+    var isRequestExpanded by remember { mutableStateOf(true) }
+    var isRequestBodyExpanded by remember { mutableStateOf(true) }
+    var isRequestHeadersExpanded by remember { mutableStateOf(true) }
+    var isGraphQlRequestExpanded by remember { mutableStateOf(true) }
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        DetailSectionTitleView(
             isExpanded = isRequestExpanded,
-        ) {
+            title = "Request",
+            onCopy = null,
+            onToggle = {
+                isRequestExpanded = it
+            },
+            modifier = Modifier.weight(1f)
+        )
+        FloconIconButton(
+            imageVector = Icons.Outlined.Close,
+            onClick = { onAction(NetworkAction.ClosePanel) }
+        )
+    }
+    FloconSectionExpandable(
+        expanded = isRequestExpanded,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    ) {
+        Column {
             Column(
                 modifier =
                     Modifier
@@ -156,9 +182,9 @@ fun NetworkDetailView(
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
-                ExpandedSectionView(
-                    modifier = Modifier.fillMaxWidth(),
-                    isExpanded = isGraphQlRequestExpanded,
+                FloconSectionExpandable(
+                    expanded = isGraphQlRequestExpanded,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         modifier =
@@ -195,9 +221,9 @@ fun NetworkDetailView(
                 },
                 modifier = Modifier.fillMaxWidth()
             )
-            ExpandedSectionView(
+            FloconSectionExpandable(
                 modifier = Modifier.fillMaxWidth(),
-                isExpanded = isRequestHeadersExpanded,
+                expanded = isRequestHeadersExpanded,
             ) {
                 DetailHeadersView(
                     headers = state.requestHeaders,
@@ -216,9 +242,9 @@ fun NetworkDetailView(
                 },
                 modifier = Modifier.fillMaxWidth()
             )
-            ExpandedSectionView(
+            FloconSectionExpandable(
                 modifier = Modifier.fillMaxWidth(),
-                isExpanded = isRequestBodyExpanded,
+                expanded = isRequestBodyExpanded,
             ) {
                 CodeBlockView(
                     code = state.requestBody,
@@ -226,29 +252,36 @@ fun NetworkDetailView(
                 )
             }
         }
+    }
+}
 
-        HorizontalDivider(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp)
-                    .padding(vertical = 12.dp),
-        )
+@Composable
+private fun Response(
+    state: NetworkDetailViewState,
+    onAction: (NetworkAction) -> Unit,
+    headersLabelWidth: Dp
+) {
+    var isResponseExpanded by remember { mutableStateOf(true) }
+    var isResponseHeadersExpanded by remember { mutableStateOf(true) }
+    var isResponseBodyExpanded by remember { mutableStateOf(true) }
 
-        DetailSectionTitleView(
-            isExpanded = isResponseExpanded,
-            title = "Response",
-            onCopy = null,
-            onToggle = {
-                isResponseExpanded = it
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        ExpandedSectionView(
-            modifier = Modifier.fillMaxWidth(),
-            isExpanded = isResponseExpanded,
-        ) {
-            // headers
+    DetailSectionTitleView(
+        isExpanded = isResponseExpanded,
+        title = "Response",
+        onCopy = null,
+        onToggle = {
+            isResponseExpanded = it
+        },
+        modifier = Modifier.fillMaxWidth()
+    )
+    FloconSectionExpandable(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        expanded = isResponseExpanded,
+    ) {
+        // headers
+        Column {
             DetailSectionTitleView(
                 isExpanded = isResponseHeadersExpanded,
                 title = "Response Headers",
@@ -258,14 +291,14 @@ fun NetworkDetailView(
                 },
                 modifier = Modifier.fillMaxWidth()
             )
-            ExpandedSectionView(
+            FloconSectionExpandable(
                 modifier = Modifier.fillMaxWidth(),
-                isExpanded = isResponseHeadersExpanded,
+                expanded = isResponseHeadersExpanded,
             ) {
                 DetailHeadersView(
                     headers = state.responseHeaders,
                     modifier = Modifier.fillMaxWidth(),
-                    labelWidth = headersLabelWidth,
+                    labelWidth = headersLabelWidth
                 )
             }
 
@@ -279,9 +312,9 @@ fun NetworkDetailView(
                 },
                 modifier = Modifier.fillMaxWidth()
             )
-            ExpandedSectionView(
+            FloconSectionExpandable(
                 modifier = Modifier.fillMaxWidth(),
-                isExpanded = isResponseBodyExpanded,
+                expanded = isResponseBodyExpanded,
             ) {
                 CodeBlockView(
                     code = state.responseBody,
