@@ -35,8 +35,6 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
-import io.github.openflocon.flocondesktop.common.ui.FloconcolorPalette
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
@@ -48,7 +46,6 @@ import io.github.openflocon.flocondesktop.main.ui.view.DeviceSelectorView
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import java.awt.Menu
 
 val PanelMaxWidth = 250.dp
 val PanelMinWidth = 64.dp
@@ -119,7 +116,7 @@ fun Title(
                 text = "Flocon",
                 fontSize = 32.sp,
                 style = FloconTheme.typography.titleLarge.copy(
-                    color = FloconcolorPalette.onSurface,
+                    color = FloconTheme.colorPalette.onSurface,
                     fontWeight = FontWeight.Bold,
                 ),
                 modifier = Modifier.padding(start = 12.dp)

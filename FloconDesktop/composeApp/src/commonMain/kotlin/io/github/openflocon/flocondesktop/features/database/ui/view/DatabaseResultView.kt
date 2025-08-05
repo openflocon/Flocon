@@ -20,7 +20,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.common.ui.FloconcolorPalette
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseRowUiModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.QueryResultUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -43,7 +42,7 @@ fun DatabaseResultView(
                 is QueryResultUiModel.Text -> {
                     Text(
                         text = result.text,
-                        color = FloconcolorPalette.onBackground,
+                        color = FloconTheme.colorPalette.onBackground,
                         modifier = Modifier.padding(8.dp),
                     )
                 }

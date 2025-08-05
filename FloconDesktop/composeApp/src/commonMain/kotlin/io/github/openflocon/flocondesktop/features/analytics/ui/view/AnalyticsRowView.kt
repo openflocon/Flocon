@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
