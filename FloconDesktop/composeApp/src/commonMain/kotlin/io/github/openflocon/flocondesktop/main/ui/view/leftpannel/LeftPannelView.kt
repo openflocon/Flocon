@@ -1,3 +1,5 @@
+@file:Suppress("UnusedReceiverParameter")
+
 package io.github.openflocon.flocondesktop.main.ui.view.leftpannel
 
 import androidx.compose.animation.AnimatedVisibility
@@ -9,6 +11,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,6 +48,7 @@ import io.github.openflocon.flocondesktop.main.ui.view.DeviceSelectorView
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import java.awt.Menu
 
 val PanelMaxWidth = 250.dp
 val PanelMinWidth = 64.dp
@@ -125,7 +129,7 @@ fun Title(
 }
 
 @Composable
-private fun MenuSection(
+private fun ColumnScope.MenuSection(
     items: List<LeftPannelSection>,
     expanded: Boolean,
     onClickItem: (LeftPanelItem) -> Unit
@@ -144,7 +148,7 @@ private fun MenuSection(
 }
 
 @Composable
-private fun MenuItems(
+private fun ColumnScope.MenuItems(
     items: List<LeftPanelItem>,
     expanded: Boolean,
     onClickItem: (LeftPanelItem) -> Unit

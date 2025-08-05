@@ -23,10 +23,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PhoneDisabled
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuBoxScope
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -172,7 +172,7 @@ private fun ExposedDropdownMenuBoxScope.Device(
         pannelExpanded = pannelExpanded,
         modifier = Modifier
             .fillMaxWidth()
-            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
     )
 }
 

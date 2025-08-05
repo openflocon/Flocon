@@ -40,8 +40,6 @@ kotlin {
                 api(compose.ui)
                 api(compose.components.resources)
                 api(compose.components.uiToolingPreview)
-
-                api("org.jetbrains.compose.material3:material3:1.9.0-alpha04")
             }
         }
 
