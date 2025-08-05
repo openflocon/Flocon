@@ -32,7 +32,7 @@ internal val FloconDarkColorScheme = darkColorScheme(
     onPrimaryContainer = FloconColors.onPrimary,
     secondary = FloconColors.secondary,
     onSecondary = FloconColors.onSecondary,
-    secondaryContainer = FloconColors.secondary.copy(alpha = 0.2f),
+    secondaryContainer = FloconColors.secondary,//.copy(alpha = 0.2f),
     onSecondaryContainer = FloconColors.onSecondary,
     tertiary = FloconColors.tertiary,
     onTertiary = FloconColors.onTertiary,
