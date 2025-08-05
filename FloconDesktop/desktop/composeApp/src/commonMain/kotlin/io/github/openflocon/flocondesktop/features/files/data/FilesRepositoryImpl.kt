@@ -2,7 +2,7 @@ package io.github.openflocon.flocondesktop.features.files.data
 
 import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
-import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.files.data.datasources.LocalFilesDataSource

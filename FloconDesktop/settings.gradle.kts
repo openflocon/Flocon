@@ -35,6 +35,7 @@ plugins {
 include(":desktop:composeApp")
 include(":desktop:shared")
 include(":desktop:library:designsystem")
+include(":protocol")
 include(":client:sample")
 include(":client:core")
 include(":client:okhttp-interceptor")

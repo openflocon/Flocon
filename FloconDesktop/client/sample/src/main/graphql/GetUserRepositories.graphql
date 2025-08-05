@@ -1,0 +1,21 @@
+query GetUserRepositories($user: String!, $first: Int!, $endCursor: String) {
+    user(login: $user) {
+        repositories(first: $first, after: $endCursor) {
+            edges {
+                cursor
+                node {
+                    id
+                    name
+                    stargazerCount
+                    description
+                }
+            }
+            totalCount
+            pageInfo {
+                endCursor
+                hasNextPage
+                startCursor
+            }
+        }
+    }
+}

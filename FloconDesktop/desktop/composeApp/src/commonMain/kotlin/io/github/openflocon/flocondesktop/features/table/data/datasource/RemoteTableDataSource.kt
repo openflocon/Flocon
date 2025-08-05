@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.table.data.datasource
 
 import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
-import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocondesktop.Server
 import kotlinx.serialization.json.Json
 

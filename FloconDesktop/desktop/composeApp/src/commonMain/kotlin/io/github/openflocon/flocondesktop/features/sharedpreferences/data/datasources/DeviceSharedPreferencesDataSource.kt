@@ -2,7 +2,7 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences.data.datas
 
 import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
-import io.github.openflocon.flocondesktop.Protocol
+import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocondesktop.Server
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceEditSharedPreferenceValueMessage
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceGetSharedPreferenceValueMessage
