@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,10 +23,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DeviceDashboardUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.previewDeviceDashboardUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -49,8 +48,8 @@ internal fun DashboardSelectorView(
     ) {
         Text(
             text = "Dashboard : ",
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            color = FloconTheme.colorPalette.onBackground,
+            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
         )
 
         Spacer(modifier = Modifier.width(4.dp))
@@ -62,13 +61,12 @@ internal fun DashboardSelectorView(
 
             DashboardsStateUiModel.Empty -> {
                 Text(
-                    modifier =
-                    Modifier
-                        .background(MaterialTheme.colorScheme.onBackground, shape = shape)
+                    modifier = Modifier
+                        .background(FloconTheme.colorPalette.onBackground, shape = shape)
                         .padding(contentPadding),
                     text = "No Dashboard Found",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.background,
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.background,
                 )
             }
 
@@ -77,11 +75,10 @@ internal fun DashboardSelectorView(
 
                 DashboardView(
                     dashboard = dashboardsState.selected,
-                    textColor = MaterialTheme.colorScheme.background,
-                    modifier =
-                    Modifier
+                    textColor = FloconTheme.colorPalette.background,
+                    modifier = Modifier
                         .clip(shape)
-                        .background(MaterialTheme.colorScheme.onBackground)
+                        .background(FloconTheme.colorPalette.onBackground)
                         .clickable { expanded = true }
                         .padding(contentPadding),
                 )
@@ -95,7 +92,7 @@ internal fun DashboardSelectorView(
                             text = {
                                 DashboardView(
                                     dashboard = Dashboard,
-                                    textColor = MaterialTheme.colorScheme.onBackground,
+                                    textColor = FloconTheme.colorPalette.onBackground,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },
@@ -122,7 +119,7 @@ private fun DashboardView(
         modifier = modifier,
         text = dashboard.id,
         color = textColor,
-        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
     )
 }
 
@@ -132,7 +129,7 @@ private fun DashboardViewPreview() {
     FloconTheme {
         DashboardView(
             dashboard = previewDeviceDashboardUiModel(),
-            textColor = MaterialTheme.colorScheme.background,
+            textColor = FloconTheme.colorPalette.background,
         )
     }
 }

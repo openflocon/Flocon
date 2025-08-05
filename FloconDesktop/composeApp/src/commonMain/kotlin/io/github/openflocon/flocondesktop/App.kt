@@ -21,7 +21,7 @@ fun App() {
             Modifier
                 .safeContentPadding()
                 .fillMaxSize()
-                .background(FloconTheme.colorScheme.background),
+                .background(FloconTheme.colorPalette.background),
         ) {
             MainScreen(
                 modifier = Modifier

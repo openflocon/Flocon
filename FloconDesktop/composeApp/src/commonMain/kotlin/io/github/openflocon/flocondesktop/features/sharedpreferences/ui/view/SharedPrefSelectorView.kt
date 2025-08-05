@@ -24,10 +24,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPrefsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewDeviceSharedPrefUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -49,8 +49,8 @@ internal fun SharedPrefSelectorView(
     ) {
         Text(
             text = "SharedPref : ",
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            color = FloconTheme.colorPalette.onBackground,
+            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
         )
 
         Spacer(modifier = Modifier.width(4.dp))
@@ -62,13 +62,12 @@ internal fun SharedPrefSelectorView(
 
             SharedPrefsStateUiModel.Empty -> {
                 Text(
-                    modifier =
-                    Modifier
-                        .background(MaterialTheme.colorScheme.onBackground, shape = shape)
+                    modifier = Modifier
+                        .background(FloconTheme.colorPalette.onBackground, shape = shape)
                         .padding(contentPadding),
                     text = "No SharedPreferences Found",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.background,
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.background,
                 )
             }
 
@@ -77,11 +76,10 @@ internal fun SharedPrefSelectorView(
 
                 SharedPrefView(
                     sharedPref = sharedPrefsState.selected,
-                    textColor = MaterialTheme.colorScheme.background,
-                    modifier =
-                    Modifier
+                    textColor = FloconTheme.colorPalette.background,
+                    modifier = Modifier
                         .clip(shape)
-                        .background(MaterialTheme.colorScheme.onBackground)
+                        .background(FloconTheme.colorPalette.onBackground)
                         .clickable { expanded = true }
                         .padding(contentPadding),
                 )
@@ -95,7 +93,7 @@ internal fun SharedPrefSelectorView(
                             text = {
                                 SharedPrefView(
                                     sharedPref = SharedPref,
-                                    textColor = MaterialTheme.colorScheme.onBackground,
+                                    textColor = FloconTheme.colorPalette.onBackground,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },
@@ -132,7 +130,7 @@ private fun SharedPrefViewPreview() {
     FloconTheme {
         SharedPrefView(
             sharedPref = previewDeviceSharedPrefUiModel(),
-            textColor = MaterialTheme.colorScheme.background,
+            textColor = FloconTheme.colorPalette.background,
         )
     }
 }

@@ -16,8 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.previewDashboardItemViewState
 import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardButtonView
@@ -36,8 +34,8 @@ fun DashboardItemView(
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val backColor = FloconColors.pannel
-    val textColor = FloconTheme.colorScheme.onSurface
+    val backColor = FloconTheme.colorPalette.panel
+    val textColor = FloconTheme.colorPalette.onSurface
 
     Box(
         modifier = modifier.shadow(

@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,11 +36,10 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.previewDeeplinkViewState
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -59,8 +57,8 @@ fun DeeplinkItemView(
         item.label?.let {
             Text(
                 text = item.label,
-                style = MaterialTheme.typography.bodySmall,
-                color = FloconColors.onSurface,
+                style = FloconTheme.typography.bodySmall,
+                color = FloconTheme.colorPalette.onSurface,
                 modifier = Modifier.padding(start = 4.dp),
             )
         }
@@ -97,11 +95,11 @@ fun DeeplinkItemView(
         item.description?.let {
             Text(
                 text = it,
-                style = MaterialTheme.typography.bodySmall.copy(
+                style = FloconTheme.typography.bodySmall.copy(
                     fontWeight = FontWeight.Light,
                     fontStyle = FontStyle.Italic,
                 ),
-                color = FloconColors.onSurface,
+                color = FloconTheme.colorPalette.onSurface,
                 modifier = Modifier.padding(start = 4.dp),
             )
         }
@@ -126,7 +124,7 @@ private fun TextFieldPart(
             val isValueEmpty = value.isEmpty()
             Box(
                 modifier = Modifier.background(
-                    color = FloconColors.pannel.copy(alpha = 0.5f),
+                    color = FloconTheme.colorPalette.panel.copy(alpha = 0.5f),
                     shape = RoundedCornerShape(2.dp),
                 ).padding(horizontal = 2.dp, vertical = 2.dp)
                     .width(IntrinsicSize.Min), // Cela fera que la Box enveloppe la largeur minimale de son contenu
@@ -134,21 +132,21 @@ private fun TextFieldPart(
             ) {
                 Text(
                     text = part.label,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = FloconColors.onSurface.copy(alpha = 0.45f),
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
                     modifier = Modifier.graphicsLayer {
                         alpha = if (isValueEmpty) 1f else 0f
                     },
                 )
 
                 BasicTextField(
-                    textStyle = MaterialTheme.typography.bodySmall.copy(
-                        color = FloconColors.onSurface,
+                    textStyle = FloconTheme.typography.bodySmall.copy(
+                        color = FloconTheme.colorPalette.onSurface,
                         fontWeight = FontWeight.Bold,
                     ),
                     maxLines = 1,
                     value = value,
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+                    cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
                     onValueChange = {
                         value = it
                     },
@@ -159,8 +157,8 @@ private fun TextFieldPart(
         is DeeplinkPart.Text -> {
             Text(
                 part.value,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = FloconColors.onSurface,
+                style = FloconTheme.typography.bodySmall.copy(
+                    color = FloconTheme.colorPalette.onSurface,
                 ),
             )
         }
@@ -196,7 +194,7 @@ private fun DeeplinkItemViewPreview() {
     FloconTheme {
         DeeplinkItemView(
             modifier = Modifier.background(
-                FloconColors.pannel,
+                FloconTheme.colorPalette.panel,
             ),
             submit = { _, _ -> },
             item = previewDeeplinkViewState(),

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,8 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.analytics.ui.AnalyticsViewModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
@@ -36,6 +33,7 @@ import io.github.openflocon.flocondesktop.features.analytics.ui.model.DeviceAnal
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.items
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -80,14 +78,14 @@ fun AnalyticsScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier.fillMaxWidth()
-                        .background(FloconColors.pannel)
+                        .background(FloconTheme.colorPalette.panel)
                         .padding(all = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     Text(
                         text = "Analytics",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = FloconTheme.typography.titleLarge,
+                        color = FloconTheme.colorPalette.onSurface,
                     )
 
                     AnalyticsSelectorView(
@@ -141,10 +139,10 @@ fun AnalyticsScreen(
             selectedItem?.let {
                 AnalyticsDetailView(
                     modifier =
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxHeight()
-                        .width(500.dp),
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .fillMaxHeight()
+                            .width(500.dp),
                     state = it,
                 )
             }

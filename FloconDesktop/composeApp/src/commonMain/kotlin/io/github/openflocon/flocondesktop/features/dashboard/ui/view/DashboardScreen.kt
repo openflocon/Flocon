@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,11 +13,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.dashboard.ui.DashboardViewModel
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardViewState
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DeviceDashboardUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -60,14 +59,14 @@ fun DashboardScreen(
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth()
-                    .background(FloconColors.pannel)
+                    .background(FloconTheme.colorPalette.panel)
                     .padding(all = 12.dp),
             ) {
                 Text(
                     text = "Dashboard",
                     modifier = Modifier.padding(bottom = 12.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = FloconTheme.typography.titleLarge,
+                    color = FloconTheme.colorPalette.onSurface,
                 )
 
                 DashboardSelectorView(

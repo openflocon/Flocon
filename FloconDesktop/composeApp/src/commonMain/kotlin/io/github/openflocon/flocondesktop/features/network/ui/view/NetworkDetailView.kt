@@ -23,8 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
@@ -55,7 +53,7 @@ fun NetworkDetailView(
 
     Column(
         modifier = modifier
-            .background(FloconTheme.colorScheme.background)
+            .background(FloconTheme.colorPalette.background)
             .verticalScroll(scrollState)
             .padding(all = 12.dp),
     ) {
@@ -120,7 +118,7 @@ private fun Request(
                 modifier =
                     Modifier
                         .background(
-                            color = FloconTheme.colorScheme.surfaceVariant,
+                            color = FloconTheme.colorPalette.surfaceVariant,
                             shape = RoundedCornerShape(12.dp),
                         ).padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
@@ -141,10 +139,10 @@ private fun Request(
                             Text(
                                 text = m.name,
                                 style = FloconTheme.typography.bodySmall,
-                                color = FloconTheme.colorScheme.onSurface,
+                                color = FloconTheme.colorPalette.onSurface,
                                 modifier = Modifier.weight(2f)
                                     .background(
-                                        color = FloconColors.pannel.copy(alpha = 0.8f),
+                                        color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
                                         shape = RoundedCornerShape(4.dp)
                                     )
                                     .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -192,7 +190,7 @@ private fun Request(
                         modifier =
                             Modifier
                                 .background(
-                                    color = FloconTheme.colorScheme.surfaceVariant,
+                                    color = FloconTheme.colorPalette.surfaceVariant,
                                     shape = RoundedCornerShape(12.dp),
                                 ).padding(horizontal = 8.dp, vertical = 4.dp),
                     ) {

@@ -13,9 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -53,7 +52,7 @@ internal fun DashboardButtonViewPreview() {
     FloconTheme {
         DashboardButtonView(
             modifier = Modifier.background(
-                FloconColors.pannel,
+                FloconTheme.colorPalette.panel,
             ),
             onClickButton = {},
             rowItem = rowItem,

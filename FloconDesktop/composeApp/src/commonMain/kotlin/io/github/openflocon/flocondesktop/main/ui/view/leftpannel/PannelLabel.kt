@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
@@ -40,7 +39,7 @@ fun PannelLabel(
                     text = text,
                     style = FloconTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.Thin,
-                        color = FloconColorScheme.onSurface.copy(alpha = 0.5f),
+                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
                     )
                 )
             } else {

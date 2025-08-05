@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,8 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -34,7 +31,7 @@ fun AnalyticsRowView(
     Column(
         modifier = modifier
             .clip(shape = RoundedCornerShape(8.dp))
-            .background(color = FloconColors.pannel)
+            .background(color = FloconTheme.colorPalette.panel)
             .clickable(onClick = {
                 onClick(model)
             })
@@ -45,13 +42,13 @@ fun AnalyticsRowView(
         Text(
             text = model.eventName,
             style = FloconTheme.typography.titleSmall,
-            color = FloconTheme.colorScheme.onPrimaryContainer,
+            color = FloconTheme.colorPalette.onPrimaryContainer,
         )
 
         Text(
             text = model.dateFormatted,
             style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
-            color = FloconTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.4f),
+            color = FloconTheme.colorPalette.onPrimaryContainer.copy(alpha = 0.4f),
         )
 
         FlowRow(
@@ -71,12 +68,12 @@ fun AnalyticsRowView(
                     Text(
                         text = it.name + " :",
                         style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = FloconTheme.colorPalette.onPrimaryContainer,
                     )
                     Text(
                         text = it.value,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        style = FloconTheme.typography.titleSmall,
+                        color = FloconTheme.colorPalette.onPrimaryContainer,
                     )
                 }
             }
@@ -86,8 +83,8 @@ fun AnalyticsRowView(
                     modifier =
                         Modifier
                             .padding(horizontal = 4.dp),
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    color = FloconTheme.colorPalette.onPrimaryContainer,
                 )
             }
         }

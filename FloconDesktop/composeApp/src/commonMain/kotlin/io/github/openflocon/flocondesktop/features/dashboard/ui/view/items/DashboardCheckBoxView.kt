@@ -17,8 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -48,7 +46,7 @@ internal fun DashboardCheckBoxView(
             ) {
                 Text(
                     style = MaterialTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorScheme.onSurface,
+                        color = FloconTheme.colorPalette.onSurface,
                     ),
                     text = rowItem.label,
                 )
@@ -75,7 +73,7 @@ internal fun DashboardCheckBoxViewPreview() {
     FloconTheme {
         DashboardCheckBoxView(
             modifier = Modifier.background(
-                FloconColors.pannel,
+                FloconTheme.colorPalette.panel,
             ),
             rowItem = rowItem,
             onUpdateCheckBox = { _, _ -> },

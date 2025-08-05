@@ -2,7 +2,6 @@ package io.github.openflocon.library.designsystem
 
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
@@ -10,13 +9,17 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
-import io.github.openflocon.library.designsystem.theme.FloconDarkColorScheme
-import io.github.openflocon.library.designsystem.theme.FloconLightColorScheme
+import io.github.openflocon.library.designsystem.theme.FloconColorPalette
+import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
+import io.github.openflocon.library.designsystem.theme.darkPalette
+import io.github.openflocon.library.designsystem.theme.lightPalette
+import io.github.openflocon.library.designsystem.theme.materialDarkScheme
+import io.github.openflocon.library.designsystem.theme.materialLightScheme
 
 object FloconTheme {
 
-    val colorScheme: ColorScheme
-        @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme
+    val colorPalette: FloconColorPalette
+        @Composable @ReadOnlyComposable get() = LocalFloconColorPalette.current
 
     val typography: Typography
         @Composable @ReadOnlyComposable get() = MaterialTheme.typography
@@ -31,18 +34,23 @@ fun FloconTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(), // TODO Add setting and override
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (isDarkTheme)
-        FloconDarkColorScheme
-    else
-        FloconLightColorScheme
+    val colorPalette = when {
+        isDarkTheme -> darkPalette
+        else -> lightPalette
+    }
     val ripple = ripple()
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = MaterialTheme.typography // Or define your custom typography,
+        typography = MaterialTheme.typography,
+        colorScheme = if (isDarkTheme) {
+            materialDarkScheme(colorPalette)
+        } else {
+            materialLightScheme(colorPalette)
+        }
     ) {
         CompositionLocalProvider(
             LocalIndication provides ripple,
+            LocalFloconColorPalette provides colorPalette,
             content = content
         )
     }

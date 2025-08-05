@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.network.ui.view.NetworkItemColumnWidths
+import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 fun NetworkItemHeaderView(
@@ -22,11 +22,11 @@ fun NetworkItemHeaderView(
 ) {
     Row(
         modifier =
-        modifier
-            .background(FloconColors.pannel)
-            .padding(horizontal = 8.dp, vertical = 4.dp) // Padding for the entire item
-            .padding(horizontal = 8.dp, vertical = 6.dp)
-            .padding(contentPadding),
+            modifier
+                .background(FloconTheme.colorPalette.panel)
+                .padding(horizontal = 8.dp, vertical = 4.dp) // Padding for the entire item
+                .padding(horizontal = 8.dp, vertical = 6.dp)
+                .padding(contentPadding),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom,
     ) {

@@ -53,13 +53,13 @@ fun DetailHeadersItemView(
             Text(
                 text = state.name,
                 style = FloconTheme.typography.bodySmall, // Slightly smaller title for details
-                color = FloconTheme.colorScheme.onBackground.copy(alpha = 0.7f), // Muted label color
+                color = FloconTheme.colorPalette.onBackground.copy(alpha = 0.7f), // Muted label color
                 modifier = Modifier.width(labelWidth).padding(end = 8.dp),
             )
             Text(
                 text = state.value,
                 style = FloconTheme.typography.bodySmall, // Body text for the URL
-                color = FloconTheme.colorScheme.onBackground, // Primary text color
+                color = FloconTheme.colorPalette.onBackground, // Primary text color
                 modifier = Modifier.weight(1f), // Takes remaining space
             )
         }

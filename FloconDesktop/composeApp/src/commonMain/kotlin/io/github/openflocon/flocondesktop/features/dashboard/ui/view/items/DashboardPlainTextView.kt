@@ -15,9 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -35,27 +34,27 @@ internal fun DashboardPlainTextView(
             Text(
                 rowItem.label,
                 modifier = Modifier.padding(start = 4.dp),
-                color = FloconColors.onSurface,
+                color = FloconTheme.colorPalette.onSurface,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Thin,
                 ),
             )
             Box(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 8.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(8.dp),
-                    ).padding(8.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                        .padding(bottom = 8.dp)
+                        .background(
+                            color = FloconTheme.colorPalette.surfaceVariant,
+                            shape = RoundedCornerShape(8.dp),
+                        ).padding(8.dp),
             ) {
                 SelectionContainer {
                     Text(
                         text = rowItem.value,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                        color = FloconTheme.colorPalette.onSurface,
+                        style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                     )
                 }
             }
@@ -73,7 +72,7 @@ internal fun DashboardPlainTextViewPreview() {
     FloconTheme {
         DashboardPlainTextView(
             modifier = Modifier.background(
-                FloconColors.pannel,
+                FloconTheme.colorPalette.panel,
             ),
             rowItem = rowItem,
         )
@@ -115,7 +114,7 @@ internal fun DashboardPlainTextViewPreview_json() {
     FloconTheme {
         DashboardPlainTextView(
             modifier = Modifier.background(
-                FloconColors.pannel,
+                FloconTheme.colorPalette.panel,
             ),
             rowItem = rowItem,
         )

@@ -15,7 +15,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,9 +28,8 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -50,8 +48,8 @@ fun DashboardTextFieldView(
         Text(
             rowItem.label,
             modifier = Modifier.padding(start = 4.dp),
-            color = FloconColors.onSurface,
-            style = MaterialTheme.typography.bodyMedium.copy(
+            color = FloconTheme.colorPalette.onSurface,
+            style = FloconTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Thin,
             ),
         )
@@ -71,16 +69,16 @@ fun DashboardTextFieldView(
                 rowItem.placeHolder?.takeIf { value.isEmpty() }?.let {
                     Text(
                         text = it,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = FloconColors.onSurface.copy(alpha = 0.45f),
+                        style = FloconTheme.typography.bodySmall,
+                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
                     )
                 }
                 BasicTextField(
-                    textStyle = MaterialTheme.typography.bodySmall.copy(
-                        color = FloconColors.onSurface,
+                    textStyle = FloconTheme.typography.bodySmall.copy(
+                        color = FloconTheme.colorPalette.onSurface,
                     ),
                     value = value,
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+                    cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
                     onValueChange = {
                         value = it
                     },
@@ -131,7 +129,7 @@ internal fun DashboardTextFieldViewPreview_placeholder() {
     FloconTheme {
         DashboardTextFieldView(
             modifier = Modifier.background(
-                FloconColors.pannel,
+                FloconTheme.colorPalette.panel,
             ),
             rowItem = rowItem,
             submitTextField = { _, _ -> },
@@ -151,7 +149,7 @@ internal fun DashboardTextFieldViewPreview_withValue() {
     FloconTheme {
         DashboardTextFieldView(
             modifier = Modifier.background(
-                FloconColors.pannel,
+                FloconTheme.colorPalette.panel,
             ),
             rowItem = rowItem,
             submitTextField = { _, _ -> },

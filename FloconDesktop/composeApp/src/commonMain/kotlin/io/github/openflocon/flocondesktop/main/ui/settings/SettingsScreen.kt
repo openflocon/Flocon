@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,9 +27,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -62,8 +58,9 @@ fun SettingsScreen(
                 },
             ) {
                 AboutScreen(
-                    modifier = Modifier.fillMaxSize()
-                        .background(FloconColorScheme.background),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(FloconTheme.colorPalette.background),
                 )
             }
         }
@@ -85,13 +82,13 @@ private fun SettingsScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier.fillMaxWidth()
-                    .background(FloconColors.pannel)
+                    .background(FloconTheme.colorPalette.panel)
                     .padding(all = 12.dp),
             ) {
                 Text(
                     text = "Settings",
                     style = FloconTheme.typography.titleLarge,
-                    color = FloconTheme.colorScheme.onSurface,
+                    color = FloconTheme.colorPalette.onSurface,
                 )
 
                 SettingsButton(
@@ -104,8 +101,9 @@ private fun SettingsScreen(
 
             Column(modifier = Modifier.fillMaxSize().padding(all = 16.dp)) {
                 Column(
-                    modifier = Modifier.clip(RoundedCornerShape(12.dp))
-                        .background(FloconColors.pannel)
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(FloconTheme.colorPalette.panel)
                         .padding(all = 12.dp),
                 ) {
                     if (needsAdbSetup) {
@@ -144,16 +142,16 @@ private fun SettingsScreen(
                                 Text(
                                     text = "Ex: /Users/youruser/Library/Android/sdk/platform-tools/adb",
                                     style = FloconTheme.typography.bodySmall,
-                                    color = FloconTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
                                 )
                             BasicTextField(
                                 modifier = Modifier.fillMaxWidth(),
                                 textStyle = FloconTheme.typography.bodySmall.copy(
-                                    color = FloconTheme.colorScheme.onSurface,
+                                    color = FloconTheme.colorPalette.onSurface,
                                 ),
                                 value = adbPathText,
                                 onValueChange = { onAdbPathChanged(it) },
-                                cursorBrush = SolidColor(FloconTheme.colorScheme.onSurface),
+                                cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
                             )
                         }
                         SettingsButton(

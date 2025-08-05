@@ -52,7 +52,7 @@ fun DetailSectionTitleView(
         Text(
             text = title,
             style = FloconTheme.typography.titleMedium,
-            color = FloconTheme.colorScheme.onBackground,
+            color = FloconTheme.colorPalette.onBackground,
             modifier = Modifier.weight(1f), // Takes remaining space
         )
         if (onCopy != null) {

@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
@@ -53,7 +52,7 @@ fun NetworkItemView(
 ) {
     // Use FloconTheme.typography for consistent text sizes
     val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
-    val labelSmall = FloconTheme.typography.labelSmall // Even smaller, good for labels/tags
+    FloconTheme.typography.labelSmall // Even smaller, good for labels/tags
 
     ContextualView(
         listOf(
@@ -101,7 +100,7 @@ fun NetworkItemView(
                 Text(
                     state.dateFormatted,
                     style = bodySmall,
-                    color = FloconTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
                 )
             }
 
@@ -120,7 +119,7 @@ fun NetworkItemView(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = bodySmall,
-                    color = FloconTheme.colorScheme.onSurface,
+                    color = FloconTheme.colorPalette.onSurface,
                     modifier = Modifier.weight(1f)
                         .padding(horizontal = 4.dp),
                 )
@@ -131,10 +130,10 @@ fun NetworkItemView(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             style = bodySmall,
-                            color = FloconTheme.colorScheme.onSurface,
+                            color = FloconTheme.colorPalette.onSurface,
                             modifier = Modifier.weight(2f)
                                 .background(
-                                    color = FloconColors.pannel.copy(alpha = 0.8f),
+                                    color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp)
                                 )
                                 .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -147,10 +146,10 @@ fun NetworkItemView(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             style = bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = FloconTheme.colorPalette.onSurface,
                             modifier = Modifier.weight(2f)
                                 .background(
-                                    color = FloconColors.pannel.copy(alpha = 0.8f),
+                                    color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp)
                                 )
                                 .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -163,10 +162,10 @@ fun NetworkItemView(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             style = bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = FloconTheme.colorPalette.onSurface,
                             modifier = Modifier.weight(2f)
                                 .background(
-                                    color = FloconColors.pannel.copy(alpha = 0.8f),
+                                    color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp)
                                 )
                                 .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -189,7 +188,7 @@ fun NetworkItemView(
                 Text(
                     state.timeFormatted,
                     style = bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
                 )
             }
         }

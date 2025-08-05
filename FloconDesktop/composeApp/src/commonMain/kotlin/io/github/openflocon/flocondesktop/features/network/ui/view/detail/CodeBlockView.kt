@@ -23,7 +23,7 @@ fun CodeBlockView(
         modifier =
         modifier
             .background(
-                color = FloconTheme.colorScheme.surfaceVariant,
+                color = FloconTheme.colorPalette.surfaceVariant,
                 shape = RoundedCornerShape(8.dp),
             ).padding(8.dp),
     ) {
@@ -31,7 +31,7 @@ fun CodeBlockView(
         SelectionContainer {
             Text(
                 text = code,
-                color = FloconTheme.colorScheme.onSurface,
+                color = FloconTheme.colorPalette.onSurface,
                 style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
             )
         }
