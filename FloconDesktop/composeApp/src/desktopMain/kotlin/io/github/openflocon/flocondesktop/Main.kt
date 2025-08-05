@@ -15,6 +15,7 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
 import org.jetbrains.compose.resources.painterResource
 import java.awt.Dimension
+import java.awt.Toolkit
 
 fun main() = application {
     startKoinApp()
@@ -25,16 +26,23 @@ fun main() = application {
                 add(KtorNetworkFetcherFactory())
             }.build()
     }
+
+    val screenSize = Toolkit.getDefaultToolkit().screenSize
+    val screenWidth = screenSize.width
+    val screenHeight = screenSize.height
+
+    val windowWidth = (screenWidth * 0.8).toInt()
+    val windowHeight = (screenHeight * 0.8).toInt()
+
     Window(
         onCloseRequest = ::exitApplication,
         title = "Flocon",
         icon = painterResource(Res.drawable.app_icon_small), // Remove black behind icon
         state = rememberWindowState(
-            size = DpSize(width = 1200.dp, height = 800.dp), // Définir la taille de la fenêtre ici
-            position = WindowPosition(Alignment.Center),
+            size = DpSize(width = windowWidth.dp, height = windowHeight.dp),
         ),
     ) {
-        window.minimumSize = Dimension(1200, 800)
+        window.minimumSize = Dimension(windowWidth, windowHeight)
 
         App()
     }
