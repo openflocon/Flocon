@@ -23,6 +23,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.ui.DeepLinkViewMode
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.previewDeeplinkViewState
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -54,8 +55,8 @@ private fun DeeplinkScreen(
             ) {
                 Text(
                     text = "Deeplinks",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = FloconTheme.typography.titleLarge,
+                    color = FloconTheme.colorPalette.onSurface,
                 )
                 DeeplinkFreeformItemView(
                     submit = submit,

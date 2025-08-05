@@ -16,7 +16,7 @@ fun HeaderLabelItem(
     contentAlignment: Alignment = Alignment.Center,
 ) {
     val typo = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
-    val textColor = FloconTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+    val textColor = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f)
 
     Box(
         modifier = modifier,

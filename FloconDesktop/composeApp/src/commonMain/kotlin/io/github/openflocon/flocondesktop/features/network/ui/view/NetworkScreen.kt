@@ -78,7 +78,7 @@ fun NetworkScreen(
                         .background(FloconColors.pannel)
                         .padding(all = 12.dp),
                     style = FloconTheme.typography.titleLarge,
-                    color = FloconTheme.colorScheme.onSurface,
+                    color = FloconTheme.colorPalette.onSurface,
                 )
                 NetworkFilter(
                     uiState = uiState,

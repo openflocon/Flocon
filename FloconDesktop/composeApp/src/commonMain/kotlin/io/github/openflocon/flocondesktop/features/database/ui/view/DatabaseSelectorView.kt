@@ -48,7 +48,7 @@ internal fun DatabaseSelectorView(
     ) {
         Text(
             text = "Database : ",
-            color = FloconTheme.colorScheme.onBackground,
+            color = FloconTheme.colorPalette.onBackground,
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
         )
 
@@ -63,11 +63,11 @@ internal fun DatabaseSelectorView(
                 Text(
                     modifier =
                         Modifier
-                            .background(FloconTheme.colorScheme.onBackground, shape = shape)
+                            .background(FloconTheme.colorPalette.onBackground, shape = shape)
                             .padding(contentPadding),
                     text = "No Databases Found",
                     style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorScheme.background,
+                    color = FloconTheme.colorPalette.background,
                 )
             }
 
@@ -76,11 +76,11 @@ internal fun DatabaseSelectorView(
 
                 DatabaseView(
                     database = databasesState.selected,
-                    textColor = FloconTheme.colorScheme.background,
+                    textColor = FloconTheme.colorPalette.background,
                     modifier =
                         Modifier
                             .clip(shape)
-                            .background(FloconTheme.colorScheme.onBackground)
+                            .background(FloconTheme.colorPalette.onBackground)
                             .clickable { expanded = true }
                             .padding(contentPadding),
                 )
@@ -94,7 +94,7 @@ internal fun DatabaseSelectorView(
                             text = {
                                 DatabaseView(
                                     database = database,
-                                    textColor = FloconTheme.colorScheme.onBackground,
+                                    textColor = FloconTheme.colorPalette.onBackground,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },
@@ -131,7 +131,7 @@ private fun DatabaseViewPreview() {
     FloconTheme {
         DatabaseView(
             database = previewDeviceDataBaseUiModel(),
-            textColor = FloconTheme.colorScheme.background,
+            textColor = FloconTheme.colorPalette.background,
         )
     }
 }

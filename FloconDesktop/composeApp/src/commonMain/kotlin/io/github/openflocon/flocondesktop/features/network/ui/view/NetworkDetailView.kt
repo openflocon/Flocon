@@ -64,7 +64,7 @@ fun NetworkDetailView(
 
     Column(
         modifier = modifier
-            .background(FloconTheme.colorScheme.background)
+            .background(FloconTheme.colorPalette.background)
             .verticalScroll(scrollState) // Rendre le contenu défilable
             .padding(all = 12.dp),
     ) {
@@ -94,7 +94,7 @@ fun NetworkDetailView(
                 modifier =
                     Modifier
                         .background(
-                            color = FloconTheme.colorScheme.surfaceVariant,
+                            color = FloconTheme.colorPalette.surfaceVariant,
                             shape = RoundedCornerShape(12.dp),
                         ).padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
@@ -115,7 +115,7 @@ fun NetworkDetailView(
                             Text(
                                 text = m.name,
                                 style = FloconTheme.typography.bodySmall,
-                                color = FloconTheme.colorScheme.onSurface,
+                                color = FloconTheme.colorPalette.onSurface,
                                 modifier = Modifier.weight(2f)
                                     .background(
                                         color = FloconColors.pannel.copy(alpha = 0.8f),
@@ -166,7 +166,7 @@ fun NetworkDetailView(
                         modifier =
                             Modifier
                                 .background(
-                                    color = FloconTheme.colorScheme.surfaceVariant,
+                                    color = FloconTheme.colorPalette.surfaceVariant,
                                     shape = RoundedCornerShape(12.dp),
                                 ).padding(horizontal = 8.dp, vertical = 4.dp),
                     ) {

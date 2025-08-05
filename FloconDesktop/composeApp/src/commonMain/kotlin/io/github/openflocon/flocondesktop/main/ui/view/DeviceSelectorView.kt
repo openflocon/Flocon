@@ -42,7 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.smartphone
-import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
+import io.github.openflocon.flocondesktop.common.ui.FloconcolorPalette
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
@@ -142,7 +142,7 @@ private fun Empty(
                 text = "No Devices Found",
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
                 style = FloconTheme.typography.bodyMedium,
-                color = FloconTheme.colorScheme.onSurface,
+                color = FloconTheme.colorPalette.onSurface,
             )
         } else {
             FloconIcon(
@@ -198,17 +198,17 @@ private fun DeviceView(
             Column(modifier = Modifier.padding(start = 4.dp)) {
                 Text(
                     text = device.deviceName, // Device Name
-                    color = FloconColorScheme.onSurface,
+                    color = FloconcolorPalette.onSurface,
                     style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 )
                 Text(
                     text = device.appName,
-                    color = FloconColorScheme.onSurface.copy(alpha = 0.5f),
+                    color = FloconcolorPalette.onSurface.copy(alpha = 0.5f),
                     style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
                 )
                 Text(
                     text = device.appPackageName,
-                    color = FloconColorScheme.onSurface.copy(alpha = 0.5f),
+                    color = FloconcolorPalette.onSurface.copy(alpha = 0.5f),
                     style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
                 )
             }

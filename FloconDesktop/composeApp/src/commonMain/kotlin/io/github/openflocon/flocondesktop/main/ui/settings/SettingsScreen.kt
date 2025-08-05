@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
+import io.github.openflocon.flocondesktop.common.ui.FloconcolorPalette
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -63,7 +63,7 @@ fun SettingsScreen(
             ) {
                 AboutScreen(
                     modifier = Modifier.fillMaxSize()
-                        .background(FloconColorScheme.background),
+                        .background(FloconcolorPalette.background),
                 )
             }
         }
@@ -91,7 +91,7 @@ private fun SettingsScreen(
                 Text(
                     text = "Settings",
                     style = FloconTheme.typography.titleLarge,
-                    color = FloconTheme.colorScheme.onSurface,
+                    color = FloconTheme.colorPalette.onSurface,
                 )
 
                 SettingsButton(
@@ -144,16 +144,16 @@ private fun SettingsScreen(
                                 Text(
                                     text = "Ex: /Users/youruser/Library/Android/sdk/platform-tools/adb",
                                     style = FloconTheme.typography.bodySmall,
-                                    color = FloconTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
                                 )
                             BasicTextField(
                                 modifier = Modifier.fillMaxWidth(),
                                 textStyle = FloconTheme.typography.bodySmall.copy(
-                                    color = FloconTheme.colorScheme.onSurface,
+                                    color = FloconTheme.colorPalette.onSurface,
                                 ),
                                 value = adbPathText,
                                 onValueChange = { onAdbPathChanged(it) },
-                                cursorBrush = SolidColor(FloconTheme.colorScheme.onSurface),
+                                cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
                             )
                         }
                         SettingsButton(

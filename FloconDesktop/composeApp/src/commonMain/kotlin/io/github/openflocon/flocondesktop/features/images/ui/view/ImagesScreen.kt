@@ -96,7 +96,7 @@ private fun ImagesScreen(
                         text = "Images",
                         modifier = Modifier.padding(bottom = 12.dp),
                         style = FloconTheme.typography.titleLarge,
-                        color = FloconTheme.colorScheme.onSurface,
+                        color = FloconTheme.colorPalette.onSurface,
                     )
                     Box(modifier = Modifier.weight(1f))
                     FloconIconButton(

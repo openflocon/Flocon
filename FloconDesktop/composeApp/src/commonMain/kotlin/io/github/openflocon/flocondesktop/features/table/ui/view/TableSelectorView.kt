@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,7 +48,7 @@ internal fun TableSelectorView(
     ) {
         Text(
             text = "Table : ",
-            color = FloconTheme.colorScheme.onBackground,
+            color = FloconTheme.colorPalette.onBackground,
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
         )
 
@@ -62,13 +61,12 @@ internal fun TableSelectorView(
 
             TablesStateUiModel.Empty -> {
                 Text(
-                    modifier =
-                        Modifier
-                            .background(FloconTheme.colorScheme.onBackground, shape = shape)
-                            .padding(contentPadding),
+                    modifier = Modifier
+                        .background(FloconTheme.colorPalette.onBackground, shape = shape)
+                        .padding(contentPadding),
                     text = "No Table Found",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.background,
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.background,
                 )
             }
 
@@ -77,11 +75,11 @@ internal fun TableSelectorView(
 
                 TableView(
                     table = tablesState.selected,
-                    textColor = FloconTheme.colorScheme.background,
+                    textColor = FloconTheme.colorPalette.background,
                     modifier =
                         Modifier
                             .clip(shape)
-                            .background(FloconTheme.colorScheme.onBackground)
+                            .background(FloconTheme.colorPalette.onBackground)
                             .clickable { expanded = true }
                             .padding(contentPadding),
                 )
@@ -95,7 +93,7 @@ internal fun TableSelectorView(
                             text = {
                                 TableView(
                                     table = table,
-                                    textColor = FloconTheme.colorScheme.onBackground,
+                                    textColor = FloconTheme.colorPalette.onBackground,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },
@@ -122,7 +120,7 @@ private fun TableView(
         modifier = modifier,
         text = table.name,
         color = textColor,
-        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
     )
 }
 
@@ -132,7 +130,7 @@ private fun TableViewPreview() {
     FloconTheme {
         TableView(
             table = previewDeviceTableUiModel(),
-            textColor = MaterialTheme.colorScheme.background,
+            textColor = FloconTheme.colorPalette.background,
         )
     }
 }

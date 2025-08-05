@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
+import io.github.openflocon.flocondesktop.common.ui.FloconcolorPalette
 import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabaseScreenStateQueries
@@ -35,7 +35,7 @@ fun DatabaseQueriesView(
         Text(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             text = "Recent queries",
-            color = FloconColorScheme.onSurface,
+            color = FloconcolorPalette.onSurface,
             style = MaterialTheme.typography.titleSmall,
         )
         LazyColumn(
@@ -70,7 +70,7 @@ fun DatabaseQueriesItemView(
     ) {
         Text(
             text = query,
-            color = FloconColorScheme.onSurface,
+            color = FloconcolorPalette.onSurface,
             style = MaterialTheme.typography.bodySmall,
         )
     }

@@ -95,7 +95,7 @@ fun TableScreen(
                     Text(
                         text = "Tables",
                         style = FloconTheme.typography.titleLarge,
-                        color = FloconTheme.colorScheme.onSurface,
+                        color = FloconTheme.colorPalette.onSurface,
                     )
 
                     TableSelectorView(
@@ -174,7 +174,7 @@ fun TableDetailView(modifier: Modifier = Modifier, state: TableRowUiModel) {
     val linesLabelWidth: Dp = 130.dp
     SelectionContainer(
         modifier
-            .background(FloconTheme.colorScheme.background)
+            .background(FloconTheme.colorPalette.background)
             .verticalScroll(scrollState) // Rendre le contenu défilable
             .padding(all = 18.dp),
     ) {
@@ -208,7 +208,7 @@ fun TableDetailLineTextView(
         Text(
             text = value,
             style = FloconTheme.typography.bodyMedium, // Body text for the URL
-            color = FloconTheme.colorScheme.onBackground, // Primary text color
+            color = FloconTheme.colorPalette.onBackground, // Primary text color
             modifier = Modifier.weight(1f), // Takes remaining space
         )
     }
@@ -228,7 +228,7 @@ fun TableDetailLineView(
         Text(
             text = label,
             style = FloconTheme.typography.titleSmall, // Slightly smaller title for details
-            color = FloconTheme.colorScheme.onBackground.copy(alpha = 0.7f), // Muted label color
+            color = FloconTheme.colorPalette.onBackground.copy(alpha = 0.7f), // Muted label color
             modifier = Modifier.width(labelWidth).padding(end = 8.dp),
         )
         content()

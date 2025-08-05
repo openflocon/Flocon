@@ -53,7 +53,7 @@ fun NetworkItemView(
 ) {
     // Use FloconTheme.typography for consistent text sizes
     val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
-    val labelSmall = FloconTheme.typography.labelSmall // Even smaller, good for labels/tags
+    FloconTheme.typography.labelSmall // Even smaller, good for labels/tags
 
     ContextualView(
         listOf(
@@ -101,7 +101,7 @@ fun NetworkItemView(
                 Text(
                     state.dateFormatted,
                     style = bodySmall,
-                    color = FloconTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
                 )
             }
 
@@ -120,7 +120,7 @@ fun NetworkItemView(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = bodySmall,
-                    color = FloconTheme.colorScheme.onSurface,
+                    color = FloconTheme.colorPalette.onSurface,
                     modifier = Modifier.weight(1f)
                         .padding(horizontal = 4.dp),
                 )
@@ -131,7 +131,7 @@ fun NetworkItemView(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             style = bodySmall,
-                            color = FloconTheme.colorScheme.onSurface,
+                            color = FloconTheme.colorPalette.onSurface,
                             modifier = Modifier.weight(2f)
                                 .background(
                                     color = FloconColors.pannel.copy(alpha = 0.8f),
@@ -147,7 +147,7 @@ fun NetworkItemView(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             style = bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = FloconTheme.colorPalette.onSurface,
                             modifier = Modifier.weight(2f)
                                 .background(
                                     color = FloconColors.pannel.copy(alpha = 0.8f),
@@ -163,7 +163,7 @@ fun NetworkItemView(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             style = bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = FloconTheme.colorPalette.onSurface,
                             modifier = Modifier.weight(2f)
                                 .background(
                                     color = FloconColors.pannel.copy(alpha = 0.8f),
@@ -189,7 +189,7 @@ fun NetworkItemView(
                 Text(
                     state.timeFormatted,
                     style = bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
                 )
             }
         }

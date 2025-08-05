@@ -42,6 +42,7 @@ import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.previewDeeplinkViewState
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -142,13 +143,13 @@ private fun TextFieldPart(
                 )
 
                 BasicTextField(
-                    textStyle = MaterialTheme.typography.bodySmall.copy(
-                        color = FloconColors.onSurface,
+                    textStyle = FloconTheme.typography.bodySmall.copy(
+                        color = FloconTheme.colorPalette.onSurface,
                         fontWeight = FontWeight.Bold,
                     ),
                     maxLines = 1,
                     value = value,
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+                    cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
                     onValueChange = {
                         value = it
                     },
@@ -159,8 +160,8 @@ private fun TextFieldPart(
         is DeeplinkPart.Text -> {
             Text(
                 part.value,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = FloconColors.onSurface,
+                style = FloconTheme.typography.bodySmall.copy(
+                    color = FloconTheme.colorPalette.onSurface,
                 ),
             )
         }

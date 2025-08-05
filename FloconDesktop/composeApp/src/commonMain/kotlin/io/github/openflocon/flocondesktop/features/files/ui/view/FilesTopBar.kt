@@ -54,7 +54,7 @@ fun FilesTopBar(
             text = "Files",
             modifier = Modifier.padding(bottom = 12.dp),
             style = FloconTheme.typography.titleLarge,
-            color = FloconTheme.colorScheme.onSurface,
+            color = FloconTheme.colorPalette.onSurface,
         )
 
         Row(
@@ -70,14 +70,14 @@ fun FilesTopBar(
             Box(
                 modifier = Modifier.weight(1f)
                     .clip(RoundedCornerShape(6.dp))
-                    .background(FloconTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+                    .background(FloconTheme.colorPalette.onSurface.copy(alpha = 0.1f))
                     .padding(vertical = 4.dp, horizontal = 12.dp),
             ) {
                 Text(
                     current?.name ?: "",
                     style = FloconTheme.typography.bodyLarge,
                     maxLines = 1,
-                    color = FloconTheme.colorScheme.onSurface,
+                    color = FloconTheme.colorPalette.onSurface,
                 )
             }
             FloconIconButton(
@@ -117,7 +117,7 @@ private fun TopBarButton(
         Icon(
             imageVector = icon,
             modifier = Modifier.fillMaxSize(),
-            tint = MaterialTheme.colorScheme.onSurface,
+            tint = FloconTheme.colorPalette.onSurface,
             contentDescription = null,
         )
     }

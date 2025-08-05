@@ -42,8 +42,8 @@ fun BoxScope.FeedbackDisplayerView(modifier: Modifier = Modifier) {
     ) { data ->
         Snackbar(
             snackbarData = data,
-            containerColor = FloconTheme.colorScheme.inverseSurface, // Invert surface for contrast
-            contentColor = FloconTheme.colorScheme.inverseOnSurface, // Invert onSurface for contrast
+            containerColor = FloconTheme.colorPalette.inverseSurface, // Invert surface for contrast
+            contentColor = FloconTheme.colorPalette.inverseOnSurface, // Invert onSurface for contrast
             shape = RoundedCornerShape(8.dp),
         )
     }

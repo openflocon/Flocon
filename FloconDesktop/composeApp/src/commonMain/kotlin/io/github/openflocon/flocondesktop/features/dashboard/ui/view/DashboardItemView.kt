@@ -37,7 +37,7 @@ fun DashboardItemView(
     modifier: Modifier = Modifier,
 ) {
     val backColor = FloconColors.pannel
-    val textColor = FloconTheme.colorScheme.onSurface
+    val textColor = FloconTheme.colorPalette.onSurface
 
     Box(
         modifier = modifier.shadow(

@@ -35,6 +35,7 @@ import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val freeformItem = DeeplinkViewState(
@@ -94,7 +95,7 @@ fun DeeplinkFreeformItemView(
                         ),
                         maxLines = 1,
                         value = value,
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+                        cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
                         onValueChange = {
                             value = it
                         },

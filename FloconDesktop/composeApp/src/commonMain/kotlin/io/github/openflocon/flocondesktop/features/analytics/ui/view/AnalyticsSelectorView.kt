@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +27,7 @@ import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewDeviceAnalyticsUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -49,8 +49,8 @@ internal fun AnalyticsSelectorView(
     ) {
         Text(
             text = "Analytics : ",
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            color = FloconTheme.colorPalette.onBackground,
+            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
         )
 
         Spacer(modifier = Modifier.width(4.dp))
@@ -63,12 +63,12 @@ internal fun AnalyticsSelectorView(
             AnalyticsStateUiModel.Empty -> {
                 Text(
                     modifier =
-                    Modifier
-                        .background(MaterialTheme.colorScheme.onBackground, shape = shape)
-                        .padding(contentPadding),
+                        Modifier
+                            .background(FloconTheme.colorPalette.onBackground, shape = shape)
+                            .padding(contentPadding),
                     text = "No Analytics Found",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.background,
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.background,
                 )
             }
 
@@ -77,13 +77,13 @@ internal fun AnalyticsSelectorView(
 
                 AnalyticsView(
                     analytics = analyticsState.selected,
-                    textColor = MaterialTheme.colorScheme.background,
+                    textColor = FloconTheme.colorPalette.background,
                     modifier =
-                    Modifier
-                        .clip(shape)
-                        .background(MaterialTheme.colorScheme.onBackground)
-                        .clickable { expanded = true }
-                        .padding(contentPadding),
+                        Modifier
+                            .clip(shape)
+                            .background(FloconTheme.colorPalette.onBackground)
+                            .clickable { expanded = true }
+                            .padding(contentPadding),
                 )
 
                 DropdownMenu(
@@ -95,7 +95,7 @@ internal fun AnalyticsSelectorView(
                             text = {
                                 AnalyticsView(
                                     analytics = analytics,
-                                    textColor = MaterialTheme.colorScheme.onBackground,
+                                    textColor = FloconTheme.colorPalette.onBackground,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },
@@ -122,7 +122,7 @@ private fun AnalyticsView(
         modifier = modifier,
         text = analytics.name,
         color = textColor,
-        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
     )
 }
 
@@ -132,7 +132,7 @@ private fun AnalyticsViewPreview() {
     FloconTheme {
         AnalyticsView(
             analytics = previewDeviceAnalyticsUiModel(),
-            textColor = MaterialTheme.colorScheme.background,
+            textColor = FloconTheme.colorPalette.background,
         )
     }
 }

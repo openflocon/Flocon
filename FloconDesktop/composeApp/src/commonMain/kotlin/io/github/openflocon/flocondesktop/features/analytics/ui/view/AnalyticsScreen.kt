@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +35,7 @@ import io.github.openflocon.flocondesktop.features.analytics.ui.model.DeviceAnal
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.items
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -86,8 +86,8 @@ fun AnalyticsScreen(
                 ) {
                     Text(
                         text = "Analytics",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = FloconTheme.typography.titleLarge,
+                        color = FloconTheme.colorPalette.onSurface,
                     )
 
                     AnalyticsSelectorView(
@@ -141,10 +141,10 @@ fun AnalyticsScreen(
             selectedItem?.let {
                 AnalyticsDetailView(
                     modifier =
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxHeight()
-                        .width(500.dp),
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .fillMaxHeight()
+                            .width(500.dp),
                     state = it,
                 )
             }

@@ -40,7 +40,7 @@ fun DatabaseQueryView(
     Column(
         modifier = modifier
             .background(
-                color = FloconTheme.colorScheme.surfaceVariant,
+                color = FloconTheme.colorPalette.surfaceVariant,
                 shape = RoundedCornerShape(12.dp),
             )
             .padding(16.dp),
@@ -53,8 +53,8 @@ fun DatabaseQueryView(
             singleLine = false,
             maxLines = 10,
             minLines = 5,
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
-            textStyle = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface),
+            cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
+            textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         )
 

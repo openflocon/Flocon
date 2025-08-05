@@ -53,7 +53,7 @@ fun FilterBar(
                     .weight(1f)
                     .height(48.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(FloconTheme.colorScheme.surfaceVariant)
+                    .background(FloconTheme.colorPalette.surfaceVariant)
                     .padding(horizontal = 12.dp, vertical = 8.dp),
             contentAlignment = Alignment.CenterStart,
         ) {
@@ -63,7 +63,7 @@ fun FilterBar(
                     style =
                         FloconTheme.typography.bodySmall.copy(
                             color =
-                                FloconTheme.colorScheme.onSurfaceVariant.copy(
+                                FloconTheme.colorPalette.onSurfaceVariant.copy(
                                     alpha = 0.4f,
                                 ),
                         ),
@@ -76,9 +76,9 @@ fun FilterBar(
                     onTextChangedCallback(filterText)
                 },
                 singleLine = true,
-                textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorScheme.onSurface),
+                textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
                 modifier = Modifier.fillMaxWidth(),
-                cursorBrush = SolidColor(FloconTheme.colorScheme.primary),
+                cursorBrush = SolidColor(FloconTheme.colorPalette.primary),
             )
         }
 
@@ -97,7 +97,7 @@ fun FilterBar(
                             filterText = ""
                             onTextChangedCallback("")
                         }.padding(horizontal = 12.dp),
-                color = FloconTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
                 style = FloconTheme.typography.titleMedium,
             )
         }

@@ -59,7 +59,7 @@ fun FileItemRow(
             Icon(
                 imageVector = file.icon,
                 modifier = Modifier.size(24.dp),
-                tint = MaterialTheme.colorScheme.onSurface,
+                tint = FloconTheme.colorPalette.onSurface,
                 contentDescription = null,
             )
 
@@ -71,7 +71,7 @@ fun FileItemRow(
                     text = file.name,
                     style = FloconTheme.typography.bodyLarge,
                     maxLines = 1,
-                    color = FloconTheme.colorScheme.onSurface,
+                    color = FloconTheme.colorPalette.onSurface,
                     overflow = TextOverflow.Ellipsis,
                 )
                 // Informations additionnelles (taille, date de modification)
@@ -79,13 +79,13 @@ fun FileItemRow(
                 //    Text(
                 //        text = "${viewModel.formatFileSize(file.size)}",
                 //        style = FloconTheme.typography.bodySmall,
-                //        color = FloconTheme.colorScheme.onSurfaceVariant
+                //        color = FloconTheme.colorPalette.onSurfaceVariant
                 //    )
                 // }
                 // Text(
                 //    text = viewModel.formatLastModifiedDate(file.lastModified),
                 //    style = FloconTheme.typography.bodySmall,
-                //    color = FloconTheme.colorScheme.onSurfaceVariant
+                //    color = FloconTheme.colorPalette.onSurfaceVariant
                 // )
             }
 
@@ -94,7 +94,7 @@ fun FileItemRow(
                 Icon(
                     imageVector = Icons.Outlined.ChevronRight,
                     modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.onSurface,
+                    tint = FloconTheme.colorPalette.onSurface,
                     contentDescription = null,
                 )
             }

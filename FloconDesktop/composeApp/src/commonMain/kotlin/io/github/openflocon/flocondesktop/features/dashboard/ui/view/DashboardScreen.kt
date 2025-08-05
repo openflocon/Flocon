@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +18,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.ui.DashboardViewMod
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardViewState
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DeviceDashboardUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -66,8 +66,8 @@ fun DashboardScreen(
                 Text(
                     text = "Dashboard",
                     modifier = Modifier.padding(bottom = 12.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = FloconTheme.typography.titleLarge,
+                    color = FloconTheme.colorPalette.onSurface,
                 )
 
                 DashboardSelectorView(

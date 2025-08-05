@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,6 +39,7 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.pr
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesIntRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesLongRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesStringRowUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -62,8 +62,8 @@ fun SharedPreferenceRowView(
     ) {
         Text(
             model.key,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            style = FloconTheme.typography.bodySmall,
+            color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 4.dp),
@@ -103,10 +103,10 @@ fun SharedPreferenceRowView(
                         onValueChange = {
                             value = it
                         },
-                        textStyle = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurface,
+                        textStyle = FloconTheme.typography.bodySmall.copy(
+                            color = FloconTheme.colorPalette.onSurface,
                         ),
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+                        cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
                         modifier = Modifier
                             .weight(1f)
                             .background(
@@ -141,10 +141,10 @@ fun SharedPreferenceRowView(
                                 t.printStackTrace()
                             }
                         },
-                        textStyle = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurface,
+                        textStyle = FloconTheme.typography.bodySmall.copy(
+                            color = FloconTheme.colorPalette.onSurface,
                         ),
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+                        cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
                         modifier = Modifier
                             .weight(1f)
                             .background(
@@ -179,9 +179,9 @@ fun SharedPreferenceRowView(
                                 t.printStackTrace()
                             }
                         },
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
-                        textStyle = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurface,
+                        cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
+                        textStyle = FloconTheme.typography.bodySmall.copy(
+                            color = FloconTheme.colorPalette.onSurface,
                         ),
                         modifier = Modifier
                             .weight(1f)
@@ -204,8 +204,8 @@ fun SharedPreferenceRowView(
                 // no editable
                 Text(
                     model.value.value.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.onSurface,
                     modifier = Modifier
                         .padding(horizontal = 4.dp),
                 )
@@ -224,9 +224,9 @@ fun SharedPreferenceRowView(
                         onValueChange = {
                             value = it
                         },
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
-                        textStyle = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurface,
+                        cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
+                        textStyle = FloconTheme.typography.bodySmall.copy(
+                            color = FloconTheme.colorPalette.onSurface,
                         ),
                         modifier = Modifier
                             .weight(1f)

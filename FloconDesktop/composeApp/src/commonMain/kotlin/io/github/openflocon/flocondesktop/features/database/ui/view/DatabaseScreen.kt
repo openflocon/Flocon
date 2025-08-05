@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +25,7 @@ import io.github.openflocon.flocondesktop.features.database.ui.model.DatabasesSt
 import io.github.openflocon.flocondesktop.features.database.ui.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabaseScreenStateQueries
 import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabasesStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -71,8 +71,8 @@ fun DatabaseScreen(
             ) {
                 Text(
                     text = "Database",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = FloconTheme.typography.titleLarge,
+                    color = FloconTheme.colorPalette.onSurface,
                 )
 
                 DatabaseSelectorView(

@@ -35,7 +35,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
-import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
+import io.github.openflocon.flocondesktop.common.ui.FloconcolorPalette
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
@@ -65,7 +65,7 @@ fun LeftPanelView(
 ) {
     Column(
         modifier = modifier
-            .background(FloconTheme.colorScheme.surface)
+            .background(FloconTheme.colorPalette.surface)
             .padding(horizontal = 12.dp, vertical = 16.dp),
     ) {
         Title(expanded = expanded)
@@ -119,7 +119,7 @@ fun Title(
                 text = "Flocon",
                 fontSize = 32.sp,
                 style = FloconTheme.typography.titleLarge.copy(
-                    color = FloconColorScheme.onSurface,
+                    color = FloconcolorPalette.onSurface,
                     fontWeight = FontWeight.Bold,
                 ),
                 modifier = Modifier.padding(start = 12.dp)

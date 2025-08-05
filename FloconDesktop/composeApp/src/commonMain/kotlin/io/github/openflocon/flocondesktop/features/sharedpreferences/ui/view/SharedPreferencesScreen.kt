@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +27,7 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.Sh
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPrefsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPrefsStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -69,8 +69,8 @@ fun SharedPrefScreen(
                 Text(
                     text = "SharedPreference",
                     modifier = Modifier.padding(bottom = 12.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = FloconTheme.typography.titleLarge,
+                    color = FloconTheme.colorPalette.onSurface,
                 )
 
                 SharedPrefSelectorView(

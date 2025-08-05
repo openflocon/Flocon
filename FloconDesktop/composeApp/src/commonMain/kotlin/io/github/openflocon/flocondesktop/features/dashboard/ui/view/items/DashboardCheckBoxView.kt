@@ -48,7 +48,7 @@ internal fun DashboardCheckBoxView(
             ) {
                 Text(
                     style = MaterialTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorScheme.onSurface,
+                        color = FloconTheme.colorPalette.onSurface,
                     ),
                     text = rowItem.label,
                 )

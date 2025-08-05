@@ -20,7 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.common.ui.FloconColorScheme
+import io.github.openflocon.flocondesktop.common.ui.FloconcolorPalette
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseRowUiModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.QueryResultUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -43,7 +43,7 @@ fun DatabaseResultView(
                 is QueryResultUiModel.Text -> {
                     Text(
                         text = result.text,
-                        color = FloconColorScheme.onBackground,
+                        color = FloconcolorPalette.onBackground,
                         modifier = Modifier.padding(8.dp),
                     )
                 }
@@ -67,7 +67,7 @@ fun DatabaseResultView(
                             Text(
                                 item,
                                 style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                color = FloconTheme.colorScheme.onSurface,
+                                color = FloconTheme.colorPalette.onSurface,
                                 modifier = Modifier.width(columnsWidth)
                                     .padding(all = 4.dp),
                             )
@@ -96,7 +96,7 @@ fun DatabaseResultView(
                                     Text(
                                         item ?: "null",
                                         style = FloconTheme.typography.bodySmall,
-                                        color = FloconTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
                                         modifier = Modifier.width(columnsWidth)
                                             .padding(horizontal = 4.dp),
                                     )
