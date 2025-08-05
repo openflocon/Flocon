@@ -1,16 +1,7 @@
-package io.github.openflocon.flocondesktop
+package io.github.openflocon.flocondesktop.window
 
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.createSettings
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-
-@Serializable
-data class WindowStateData(
-    val width: Int,
-    val height: Int,
-    val x: Int,
-    val y: Int,
-)
 
 object WindowStateSaver {
 
