@@ -32,8 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.table.ui.TableViewModel
 import io.github.openflocon.flocondesktop.features.table.ui.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.ui.model.TableContentStateUiModel
@@ -88,7 +86,7 @@ fun TableScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier.fillMaxWidth()
-                        .background(FloconColors.pannel)
+                        .background(FloconTheme.colorPalette.panel)
                         .padding(all = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {

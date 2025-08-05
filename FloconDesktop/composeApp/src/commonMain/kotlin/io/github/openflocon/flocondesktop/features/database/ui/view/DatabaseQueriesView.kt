@@ -11,16 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconcolorPalette
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabaseScreenStateQueries
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -35,8 +32,8 @@ fun DatabaseQueriesView(
         Text(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             text = "Recent queries",
-            color = FloconcolorPalette.onSurface,
-            style = MaterialTheme.typography.titleSmall,
+            color = FloconTheme.colorPalette.onSurface,
+            style = FloconTheme.typography.titleSmall,
         )
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(all = 4.dp),
@@ -65,13 +62,13 @@ fun DatabaseQueriesItemView(
             .clickable(onClick = {
                 onClick(query)
             })
-            .background(FloconColors.pannel)
+            .background(FloconTheme.colorPalette.panel)
             .padding(horizontal = 8.dp, vertical = 6.dp),
     ) {
         Text(
             text = query,
-            color = FloconcolorPalette.onSurface,
-            style = MaterialTheme.typography.bodySmall,
+            color = FloconTheme.colorPalette.onSurface,
+            style = FloconTheme.typography.bodySmall,
         )
     }
 }
@@ -83,7 +80,7 @@ private fun DatabaseQueriesViewPreview() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(FloconColors.surface),
+                .background(FloconTheme.colorPalette.surface),
         ) {
             DatabaseQueriesView(
                 onClickQuery = {},

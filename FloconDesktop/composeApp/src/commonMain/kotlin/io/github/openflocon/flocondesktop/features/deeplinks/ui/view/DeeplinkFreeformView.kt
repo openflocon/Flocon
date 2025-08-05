@@ -15,7 +15,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,8 +30,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -81,16 +78,16 @@ fun DeeplinkFreeformItemView(
                     ) {
                     Text(
                         text = "freeform link",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = FloconColors.onSurface.copy(alpha = 0.45f),
+                        style = FloconTheme.typography.bodySmall,
+                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
                         modifier = Modifier.graphicsLayer {
                             alpha = if (isValueEmpty) 1f else 0f
                         },
                     )
                     BasicTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        textStyle = MaterialTheme.typography.bodySmall.copy(
-                            color = FloconColors.onSurface,
+                        textStyle = FloconTheme.typography.bodySmall.copy(
+                            color = FloconTheme.colorPalette.onSurface,
                             fontWeight = FontWeight.Bold,
                         ),
                         maxLines = 1,
@@ -146,7 +143,7 @@ private fun DeeplinkFreeformItemViewPreview() {
     FloconTheme {
         DeeplinkFreeformItemView(
             modifier = Modifier.background(
-                FloconColors.pannel,
+                FloconTheme.colorPalette.panel,
             ),
             submit = { _, _ -> },
         )

@@ -23,8 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
@@ -118,7 +116,7 @@ fun NetworkDetailView(
                                 color = FloconTheme.colorPalette.onSurface,
                                 modifier = Modifier.weight(2f)
                                     .background(
-                                        color = FloconColors.pannel.copy(alpha = 0.8f),
+                                        color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
                                         shape = RoundedCornerShape(4.dp)
                                     )
                                     .padding(horizontal = 8.dp, vertical = 6.dp),

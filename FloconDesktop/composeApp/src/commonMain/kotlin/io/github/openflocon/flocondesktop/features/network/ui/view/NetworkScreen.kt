@@ -23,8 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
@@ -75,7 +73,7 @@ fun NetworkScreen(
                     text = "Network",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(FloconColors.pannel)
+                        .background(FloconTheme.colorPalette.panel)
                         .padding(all = 12.dp),
                     style = FloconTheme.typography.titleLarge,
                     color = FloconTheme.colorPalette.onSurface,
@@ -84,7 +82,7 @@ fun NetworkScreen(
                     uiState = uiState,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(FloconColors.pannel)
+                        .background(FloconTheme.colorPalette.panel)
                         .padding(horizontal = 12.dp),
                     onAction = onAction
                 )

@@ -31,8 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesBooleanRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesFloatRowUiModel
@@ -76,7 +74,7 @@ fun SharedPreferenceRowView(
                 Box(
                     Modifier
                         .weight(1f)
-                        .background(color = FloconColors.pannel, shape = RoundedCornerShape(4.dp)),
+                        .background(color = FloconTheme.colorPalette.panel, shape = RoundedCornerShape(4.dp)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Checkbox(
@@ -110,7 +108,7 @@ fun SharedPreferenceRowView(
                         modifier = Modifier
                             .weight(1f)
                             .background(
-                                color = FloconColors.pannel,
+                                color = FloconTheme.colorPalette.panel,
                                 shape = RoundedCornerShape(4.dp),
                             )
                             .padding(all = 10.dp),
@@ -148,7 +146,7 @@ fun SharedPreferenceRowView(
                         modifier = Modifier
                             .weight(1f)
                             .background(
-                                color = FloconColors.pannel,
+                                color = FloconTheme.colorPalette.panel,
                                 shape = RoundedCornerShape(4.dp),
                             )
                             .padding(all = 10.dp),
@@ -186,7 +184,7 @@ fun SharedPreferenceRowView(
                         modifier = Modifier
                             .weight(1f)
                             .background(
-                                color = FloconColors.pannel,
+                                color = FloconTheme.colorPalette.panel,
                                 shape = RoundedCornerShape(4.dp),
                             )
                             .padding(all = 10.dp),
@@ -231,7 +229,7 @@ fun SharedPreferenceRowView(
                         modifier = Modifier
                             .weight(1f)
                             .background(
-                                color = FloconColors.pannel,
+                                color = FloconTheme.colorPalette.panel,
                                 shape = RoundedCornerShape(4.dp),
                             )
                             .padding(all = 10.dp),

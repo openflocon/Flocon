@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
@@ -134,7 +133,7 @@ fun NetworkItemView(
                             color = FloconTheme.colorPalette.onSurface,
                             modifier = Modifier.weight(2f)
                                 .background(
-                                    color = FloconColors.pannel.copy(alpha = 0.8f),
+                                    color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp)
                                 )
                                 .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -150,7 +149,7 @@ fun NetworkItemView(
                             color = FloconTheme.colorPalette.onSurface,
                             modifier = Modifier.weight(2f)
                                 .background(
-                                    color = FloconColors.pannel.copy(alpha = 0.8f),
+                                    color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp)
                                 )
                                 .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -166,7 +165,7 @@ fun NetworkItemView(
                             color = FloconTheme.colorPalette.onSurface,
                             modifier = Modifier.weight(2f)
                                 .background(
-                                    color = FloconColors.pannel.copy(alpha = 0.8f),
+                                    color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp)
                                 )
                                 .padding(horizontal = 8.dp, vertical = 6.dp),

@@ -1,5 +1,7 @@
 package io.github.openflocon.library.designsystem.theme
 
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
@@ -92,6 +94,61 @@ internal val darkPalette = FloconColorPalette(
 
     error = Color(0xFFCF6679),
     onError = Color(0xFF000000)
+)
+
+/**
+ * TODO Remove when all component are overriden
+ */
+internal fun materialDarkScheme(palette: FloconColorPalette) = darkColorScheme(
+    primary = palette.primary,
+    onPrimary = palette.onPrimary,
+    primaryContainer = palette.primary.copy(alpha = 0.2f),
+    onPrimaryContainer = palette.onPrimary,
+    secondary = palette.secondary,
+    onSecondary = palette.onSecondary,
+    secondaryContainer = palette.secondary.copy(alpha = 0.2f),
+    onSecondaryContainer = palette.onSecondary,
+    tertiary = palette.tertiary,
+    onTertiary = palette.onTertiary,
+    tertiaryContainer = palette.tertiary.copy(alpha = 0.2f),
+    onTertiaryContainer = palette.onTertiary,
+    background = palette.background,
+    onBackground = palette.onBackground,
+    surface = palette.surface,
+    onSurface = palette.onSurface,
+    surfaceVariant = palette.surface.copy(alpha = 0.8f),
+    onSurfaceVariant = palette.onSurface,
+    error = palette.error,
+    onError = palette.onError,
+    errorContainer = Color(0xFFF2B8B5), // These specific error container colors are hardcoded Material 3 defaults
+    onErrorContainer = Color(0xFF601410),
+    outline = palette.secondary.copy(alpha = 0.5f),
+)
+
+internal fun materialLightScheme(palette: FloconColorPalette) = lightColorScheme(
+    primary = palette.primary,
+    onPrimary = palette.onPrimary,
+    primaryContainer = palette.primary.copy(alpha = 0.2f),
+    onPrimaryContainer = palette.onPrimary,
+    secondary = palette.secondary,
+    onSecondary = palette.onSecondary,
+    secondaryContainer = palette.secondary.copy(alpha = 0.2f),
+    onSecondaryContainer = palette.onSecondary,
+    tertiary = palette.tertiary,
+    onTertiary = palette.onTertiary,
+    tertiaryContainer = palette.tertiary.copy(alpha = 0.2f),
+    onTertiaryContainer = palette.onTertiary,
+    background = palette.background,
+    onBackground = palette.onBackground,
+    surface = palette.surface,
+    onSurface = palette.onSurface,
+    surfaceVariant = palette.surface.copy(alpha = 0.8f),
+    onSurfaceVariant = palette.onSurface,
+    error = palette.error,
+    onError = palette.onError,
+    errorContainer = Color(0xFFF2B8B5), // These specific error container colors are hardcoded Material 3 defaults
+    onErrorContainer = Color(0xFF601410),
+    outline = palette.secondary.copy(alpha = 0.5f),
 )
 
 internal val LocalFloconColorPalette = staticCompositionLocalOf { lightPalette }

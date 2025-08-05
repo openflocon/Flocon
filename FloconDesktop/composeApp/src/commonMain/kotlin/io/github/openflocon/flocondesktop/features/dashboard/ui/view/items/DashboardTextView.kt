@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,9 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -37,8 +35,8 @@ internal fun DashboardTextView(
             Text(
                 rowItem.label,
                 modifier = Modifier.padding(start = 4.dp),
-                color = FloconColors.onSurface,
-                style = MaterialTheme.typography.bodyMedium.copy(
+                color = FloconTheme.colorPalette.onSurface,
+                style = FloconTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Thin,
                 ),
             )
@@ -56,8 +54,8 @@ internal fun DashboardTextView(
                         ).padding(horizontal = 12.dp, vertical = 8.dp),
                 ) {
                     Text(
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = rowItem.color ?: FloconColors.onSurface,
+                        style = FloconTheme.typography.bodySmall.copy(
+                            color = rowItem.color ?: FloconTheme.colorPalette.onSurface,
                         ),
                         text = rowItem.value,
                     )
@@ -78,7 +76,7 @@ internal fun DashboardTextViewPreview() {
     FloconTheme {
         DashboardTextView(
             modifier = Modifier.background(
-                FloconColors.pannel,
+                FloconTheme.colorPalette.panel,
             ),
             rowItem = rowItem,
         )
@@ -96,7 +94,7 @@ internal fun DashboardTextViewPreview_Red() {
     FloconTheme {
         DashboardTextView(
             modifier = Modifier.background(
-                FloconColors.pannel,
+                FloconTheme.colorPalette.panel,
             ),
             rowItem = rowItem,
         )

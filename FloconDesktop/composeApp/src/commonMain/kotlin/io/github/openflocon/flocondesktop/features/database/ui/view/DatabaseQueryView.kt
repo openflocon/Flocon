@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +24,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -92,7 +90,7 @@ private fun DatabaseButton(
         modifier = modifier
             .clip(RoundedCornerShape(6.dp))
             .size(32.dp)
-            .background(if (dark) FloconColors.pannel else Color.White)
+            .background(if (dark) FloconTheme.colorPalette.panel else Color.White)
             .clickable(onClick = onClick)
             .padding(all = 8.dp),
     ) {

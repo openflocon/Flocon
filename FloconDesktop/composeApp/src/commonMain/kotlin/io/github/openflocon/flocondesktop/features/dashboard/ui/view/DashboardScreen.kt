@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.dashboard.ui.DashboardViewModel
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardViewState
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardsStateUiModel
@@ -60,7 +59,7 @@ fun DashboardScreen(
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth()
-                    .background(FloconColors.pannel)
+                    .background(FloconTheme.colorPalette.panel)
                     .padding(all = 12.dp),
             ) {
                 Text(

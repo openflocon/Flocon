@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import io.github.openflocon.library.designsystem.theme.FloconColorPalette
 
 @Deprecated("Use FloconTheme.colorPalette")
 object FloconColors {
@@ -30,30 +29,30 @@ object FloconColors {
 }
 
 val FloconcolorPalette = darkColorScheme(
-        primary = FloconColors.primary,
-        onPrimary = FloconColors.onPrimary,
-        primaryContainer = FloconColors.primary.copy(alpha = 0.2f),
-        onPrimaryContainer = FloconColors.onPrimary,
-        secondary = FloconColors.secondary,
-        onSecondary = FloconColors.onSecondary,
-        secondaryContainer = FloconColors.secondary.copy(alpha = 0.2f),
-        onSecondaryContainer = FloconColors.onSecondary,
-        tertiary = FloconColors.tertiary,
-        onTertiary = FloconColors.onTertiary,
-        tertiaryContainer = FloconColors.tertiary.copy(alpha = 0.2f),
-        onTertiaryContainer = FloconColors.onTertiary,
-        background = FloconColors.background,
-        onBackground = FloconColors.onBackground,
-        surface = FloconColors.surface,
-        onSurface = FloconColors.onSurface,
-        surfaceVariant = FloconColors.surface.copy(alpha = 0.8f),
-        onSurfaceVariant = FloconColors.onSurface,
-        error = FloconColors.error,
-        onError = FloconColors.onError,
-        errorContainer = Color(0xFFF2B8B5), // These specific error container colors are hardcoded Material 3 defaults
-        onErrorContainer = Color(0xFF601410),
-        outline = FloconColors.secondary.copy(alpha = 0.5f),
-    )
+    primary = FloconColors.primary,
+    onPrimary = FloconColors.onPrimary,
+    primaryContainer = FloconColors.primary.copy(alpha = 0.2f),
+    onPrimaryContainer = FloconColors.onPrimary,
+    secondary = FloconColors.secondary,
+    onSecondary = FloconColors.onSecondary,
+    secondaryContainer = FloconColors.secondary.copy(alpha = 0.2f),
+    onSecondaryContainer = FloconColors.onSecondary,
+    tertiary = FloconColors.tertiary,
+    onTertiary = FloconColors.onTertiary,
+    tertiaryContainer = FloconColors.tertiary.copy(alpha = 0.2f),
+    onTertiaryContainer = FloconColors.onTertiary,
+    background = FloconColors.background,
+    onBackground = FloconColors.onBackground,
+    surface = FloconColors.surface,
+    onSurface = FloconColors.onSurface,
+    surfaceVariant = FloconColors.surface.copy(alpha = 0.8f),
+    onSurfaceVariant = FloconColors.onSurface,
+    error = FloconColors.error,
+    onError = FloconColors.onError,
+    errorContainer = Color(0xFFF2B8B5), // These specific error container colors are hardcoded Material 3 defaults
+    onErrorContainer = Color(0xFF601410),
+    outline = FloconColors.secondary.copy(alpha = 0.5f),
+)
 
 @Deprecated("Use FloconTheme from DS module")
 @Composable

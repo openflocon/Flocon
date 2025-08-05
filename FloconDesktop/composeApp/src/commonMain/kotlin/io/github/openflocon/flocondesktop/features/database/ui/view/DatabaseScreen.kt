@@ -17,8 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
-import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.database.ui.DatabaseViewModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabasesStateUiModel
@@ -65,7 +63,7 @@ fun DatabaseScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier.fillMaxWidth()
-                    .background(FloconColors.pannel)
+                    .background(FloconTheme.colorPalette.panel)
                     .padding(all = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {

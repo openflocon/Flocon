@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.common.ui.FloconTheme
 import io.github.openflocon.flocondesktop.features.analytics.ui.AnalyticsViewModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsContentStateUiModel
@@ -80,7 +79,7 @@ fun AnalyticsScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier.fillMaxWidth()
-                        .background(FloconColors.pannel)
+                        .background(FloconTheme.colorPalette.panel)
                         .padding(all = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {

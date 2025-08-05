@@ -11,7 +11,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,8 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconcolorPalette
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -48,7 +45,7 @@ fun PannelView(
         label = "shadow"
     )
     val color by animateColorAsState(
-        targetValue = if (isSelected) FloconColors.pannel else FloconTheme.colorPalette.surface,
+        targetValue = if (isSelected) FloconTheme.colorPalette.panel else FloconTheme.colorPalette.surface,
         label = "color"
     )
 
@@ -66,7 +63,7 @@ fun PannelView(
                 .size(16.dp),
             imageVector = icon,
             contentDescription = "Description de mon image",
-            tint = FloconcolorPalette.onSurface
+            tint = FloconTheme.colorPalette.onSurface
         )
         AnimatedVisibility(
             expanded,
@@ -75,7 +72,7 @@ fun PannelView(
         ) {
             Text(
                 text = text,
-                color = FloconcolorPalette.onSurface,
+                color = FloconTheme.colorPalette.onSurface,
                 style = FloconTheme.typography.bodyMedium,
                 maxLines = 1,
                 modifier = Modifier.padding(start = 12.dp)

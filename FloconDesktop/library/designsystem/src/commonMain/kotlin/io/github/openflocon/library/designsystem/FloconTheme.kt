@@ -13,6 +13,8 @@ import io.github.openflocon.library.designsystem.theme.FloconColorPalette
 import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
 import io.github.openflocon.library.designsystem.theme.darkPalette
 import io.github.openflocon.library.designsystem.theme.lightPalette
+import io.github.openflocon.library.designsystem.theme.materialDarkScheme
+import io.github.openflocon.library.designsystem.theme.materialLightScheme
 
 object FloconTheme {
 
@@ -38,7 +40,14 @@ fun FloconTheme(
     }
     val ripple = ripple()
 
-    MaterialTheme(typography = MaterialTheme.typography) {
+    MaterialTheme(
+        typography = MaterialTheme.typography,
+        colorScheme = if (isDarkTheme) {
+            materialDarkScheme(colorPalette)
+        } else {
+            materialLightScheme(colorPalette)
+        }
+    ) {
         CompositionLocalProvider(
             LocalIndication provides ripple,
             LocalFloconColorPalette provides colorPalette,

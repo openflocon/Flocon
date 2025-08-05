@@ -17,7 +17,6 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,7 +25,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.FloconColors
 import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
@@ -47,7 +45,7 @@ fun FilesTopBar(
 
     Column(
         modifier = modifier
-            .background(FloconColors.pannel)
+            .background(FloconTheme.colorPalette.panel)
             .padding(vertical = 16.dp, horizontal = 16.dp),
     ) {
         Text(
@@ -103,7 +101,7 @@ private fun TopBarButton(
     Box(
         modifier = Modifier.size(32.dp)
             .clip(RoundedCornerShape(6.dp))
-            .background(FloconColors.onSurface.copy(alpha = 0.1f))
+            .background(FloconTheme.colorPalette.onSurface.copy(alpha = 0.1f))
             .clickable(onClick = onClick, enabled = enabled)
             .padding(6.dp)
             .graphicsLayer {
