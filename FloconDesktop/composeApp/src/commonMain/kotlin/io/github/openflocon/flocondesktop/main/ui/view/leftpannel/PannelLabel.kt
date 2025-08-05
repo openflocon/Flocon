@@ -39,7 +39,7 @@ fun PannelLabel(
                     text = text,
                     style = FloconTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.Thin,
-                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                        color = FloconColorScheme.onSurface.copy(alpha = 0.5f),
                     )
                 )
             } else {

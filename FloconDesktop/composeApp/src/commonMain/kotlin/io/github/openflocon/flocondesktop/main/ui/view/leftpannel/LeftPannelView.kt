@@ -46,8 +46,9 @@ import io.github.openflocon.flocondesktop.main.ui.view.DeviceSelectorView
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import java.awt.Menu
 
-val PanelMaxWidth = 250.dp
+val PanelMaxWidth = 275.dp
 val PanelMinWidth = 64.dp
 val PanelContentMinSize = 40.dp
 
@@ -62,7 +63,7 @@ fun LeftPanelView(
 ) {
     Column(
         modifier = modifier
-            .background(FloconTheme.colorPalette.surface)
+            .background(FloconTheme.colorScheme.surface)
             .padding(horizontal = 12.dp, vertical = 16.dp),
     ) {
         Title(expanded = expanded)

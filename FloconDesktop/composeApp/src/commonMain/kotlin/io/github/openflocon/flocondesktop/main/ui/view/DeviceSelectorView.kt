@@ -88,7 +88,7 @@ internal fun DeviceSelectorView(
                     ),
                     clip = true
                 )
-                .background(color = FloconTheme.colorPalette.panel)
+                .background(color = FloconColors.pannel)
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) { targetState ->
             when (targetState) {
@@ -103,7 +103,7 @@ internal fun DeviceSelectorView(
         ExposedDropdownMenu(
             expanded = dropDownExpanded,
             onDismissRequest = { dropDownExpanded = false },
-            containerColor = FloconTheme.colorPalette.panel,
+            containerColor = FloconColors.pannel, // TODO Change
             shadowElevation = 0.dp,
             shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
             modifier = Modifier
@@ -140,7 +140,7 @@ private fun Empty(
                 text = "No Devices Found",
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
                 style = FloconTheme.typography.bodyMedium,
-                color = FloconTheme.colorPalette.onSurface,
+                color = FloconTheme.colorScheme.onSurface,
             )
         } else {
             FloconIcon(
@@ -196,17 +196,17 @@ private fun DeviceView(
             Column(modifier = Modifier.padding(start = 4.dp)) {
                 Text(
                     text = device.deviceName, // Device Name
-                    color = FloconTheme.colorPalette.onSurface,
+                    color = FloconColorScheme.onSurface,
                     style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 )
                 Text(
                     text = device.appName,
-                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                    color = FloconColorScheme.onSurface.copy(alpha = 0.5f),
                     style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
                 )
                 Text(
                     text = device.appPackageName,
-                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                    color = FloconColorScheme.onSurface.copy(alpha = 0.5f),
                     style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
                 )
             }
