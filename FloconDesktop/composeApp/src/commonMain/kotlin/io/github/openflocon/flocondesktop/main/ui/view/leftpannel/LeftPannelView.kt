@@ -50,7 +50,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import java.awt.Menu
 
-val PanelMaxWidth = 250.dp
+val PanelMaxWidth = 275.dp
 val PanelMinWidth = 64.dp
 val PanelContentMinSize = 40.dp
 
