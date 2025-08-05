@@ -1,4 +1,4 @@
-./gradlew createDistributable
-./gradlew packageDistributionForCurrentOS
+./gradlew desktop:composeApp:createDistributable
+./gradlew desktop:composeApp:packageDistributionForCurrentOS
 
-open composeApp/build/compose/binaries/main
+open desktop/composeApp/build/compose/binaries/main
