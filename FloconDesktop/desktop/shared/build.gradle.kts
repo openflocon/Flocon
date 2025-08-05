@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.android.library)
     kotlin("plugin.serialization") version "2.0.0" // adapte selon ta version de Kotlin
     alias(libs.plugins.ktlint) // Ajout de Ktlint ici
 }
@@ -46,7 +46,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // put your Multiplatform dependencies here
-            implementation(libs.kotlinx.coroutinesCore)
+            implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
+            implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serializationJson)
         }
         commonTest.dependencies {
@@ -60,7 +61,6 @@ kotlin {
                 implementation(libs.ktor.serializationKotlinJson)
                 implementation(libs.ktor.serverContentNegociation)
                 implementation(libs.ktor.serverWebsocket)
-                implementation(libs.kotlinx.coroutinesCore)
                 implementation(libs.kotlinx.serializationJson)
             }
         }

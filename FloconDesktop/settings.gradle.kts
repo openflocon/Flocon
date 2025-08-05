@@ -35,3 +35,7 @@ plugins {
 include(":desktop:composeApp")
 include(":desktop:shared")
 include(":desktop:library:designsystem")
+include(":client:sample")
+include(":client:core")
+include(":client:okhttp-interceptor")
+include(":client:grpc-interceptor")
