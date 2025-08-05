@@ -12,32 +12,32 @@ import androidx.compose.material.icons.outlined.StackedBarChart
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.TableView
 import androidx.compose.ui.graphics.vector.ImageVector
-import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.main.ui.nav.model.MainNavigation
 
 // Extension function to get the display name for each SubScreen
-fun SubScreen.displayName(): String = when (this) {
-    SubScreen.Analytics -> "Analytics"
-    SubScreen.Network -> "Network"
-    SubScreen.Database -> "Database"
-    SubScreen.Files -> "Files"
-    SubScreen.Tables -> "Tables"
-    SubScreen.Images -> "Images"
-    SubScreen.SharedPreferences -> "SharedPreferences"
-    SubScreen.Dashboard -> "Dashboard"
-    SubScreen.Settings -> "Settings"
-    SubScreen.Deeplinks -> "Deeplinks"
+fun MainNavigation.displayName(): String = when (this) {
+    MainNavigation.Analytics -> "Analytics"
+    MainNavigation.Network -> "Network"
+    MainNavigation.Database -> "Database"
+    MainNavigation.Files -> "Files"
+    MainNavigation.Tables -> "Tables"
+    MainNavigation.Images -> "Images"
+    MainNavigation.SharedPreferences -> "SharedPreferences"
+    MainNavigation.Dashboard -> "Dashboard"
+    MainNavigation.Settings -> "Settings"
+    MainNavigation.Deeplinks -> "Deeplinks"
 }
 
 // Extension function to get the icon for each SubScreen
-fun SubScreen.icon(): ImageVector = when (this) {
-    SubScreen.Analytics -> Icons.Outlined.StackedBarChart
-    SubScreen.Network -> Icons.Filled.NetworkWifi
-    SubScreen.Database -> Icons.Outlined.DatasetLinked // Can't find database
-    SubScreen.Files -> Icons.Outlined.Folder
-    SubScreen.Tables -> Icons.Outlined.TableView
-    SubScreen.Images -> Icons.Outlined.Image
-    SubScreen.SharedPreferences -> Icons.Outlined.Storage
-    SubScreen.Settings -> Icons.Outlined.Settings
-    SubScreen.Dashboard -> Icons.Outlined.Dashboard
-    SubScreen.Deeplinks -> Icons.Filled.Link
+fun MainNavigation.icon(): ImageVector = when (this) {
+    MainNavigation.Analytics -> Icons.Outlined.StackedBarChart
+    MainNavigation.Network -> Icons.Filled.NetworkWifi
+    MainNavigation.Database -> Icons.Outlined.DatasetLinked // Can't find database
+    MainNavigation.Files -> Icons.Outlined.Folder
+    MainNavigation.Tables -> Icons.Outlined.TableView
+    MainNavigation.Images -> Icons.Outlined.Image
+    MainNavigation.SharedPreferences -> Icons.Outlined.Storage
+    MainNavigation.Settings -> Icons.Outlined.Settings
+    MainNavigation.Dashboard -> Icons.Outlined.Dashboard
+    MainNavigation.Deeplinks -> Icons.Filled.Link
 }

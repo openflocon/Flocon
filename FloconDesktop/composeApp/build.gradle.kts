@@ -69,6 +69,10 @@ kotlin {
 
             implementation(projects.shared)
             implementation(projects.library.designsystem)
+
+            implementation(libs.androidx.navigation3.ui)
+            implementation(libs.androidx.navigation3.runtime)
+            //implementation(libs.androidx.lifecycle.viewmodel.navigation3)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -165,7 +169,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Flocon"
-            packageVersion = System.getenv("PROJECT_VERSION_NAME") ?: "1.0.0"
+            packageVersion = "1.0.2"
             macOS {
                 iconFile.set(project.file("src/desktopMain/resources/files/flocon_big.icns"))
                 bundleID = "io.github.openflocon.flocon"

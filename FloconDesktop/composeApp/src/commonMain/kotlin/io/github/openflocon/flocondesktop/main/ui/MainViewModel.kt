@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.main.ui
 
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
@@ -7,11 +8,11 @@ import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.D
 import io.github.openflocon.flocondesktop.main.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
-import io.github.openflocon.flocondesktop.main.ui.model.id
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPannelSection
+import io.github.openflocon.flocondesktop.main.ui.nav.MainNavigator
+import io.github.openflocon.flocondesktop.main.ui.nav.model.MainNavigation
 import io.github.openflocon.flocondesktop.main.ui.view.displayName
 import io.github.openflocon.flocondesktop.main.ui.view.icon
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,30 +27,29 @@ class MainViewModel(
     private val devicesDelegate: DevicesDelegate,
     private val dispatcherProvider: DispatcherProvider,
     private val initialSetupStateHolder: InitialSetupStateHolder,
+    private val mainNavigator: MainNavigator,
 ) : ViewModel(
     devicesDelegate,
 ) {
-    val subScreen = MutableStateFlow<SubScreen>(SubScreen.Network)
-
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             initialSetupStateHolder.needsAdbSetup.collect {
                 if (it) {
-                    subScreen.update { SubScreen.Settings }
+                    mainNavigator.setCurrentPage(MainNavigation.Settings)
                 }
             }
         }
     }
 
-    val leftPanelState = subScreen.map { subScreen ->
+    val leftPanelState = snapshotFlow { mainNavigator.backStack.firstOrNull() }.map { mainNavigation ->
         buildLeftPanelState(
-            selectedId = subScreen.id,
+            selectedId = mainNavigation?.id ?: MainNavigation.Network.id,
         )
     }.flowOn(dispatcherProvider.ui)
         .stateIn(
             scope = viewModelScope,
             started = kotlinx.coroutines.flow.SharingStarted.Eagerly,
-            initialValue = buildLeftPanelState(subScreen.value.id),
+            initialValue = buildLeftPanelState(mainNavigator.backStack.firstOrNull()?.id ?: MainNavigation.Network.id),
         )
 
     val devicesState: StateFlow<DevicesStateUiModel> = devicesDelegate.devicesState
@@ -61,56 +61,88 @@ class MainViewModel(
     }
 
     fun onClickLeftPanelItem(leftPanelItem: LeftPanelItem) {
-        this.subScreen.update { SubScreen.fromId(leftPanelItem.id) }
+        mainNavigationFromId(leftPanelItem.id)?.let {
+            mainNavigator.setCurrentPage(it)
+        }
     }
 }
 
 fun buildLeftPanelState(selectedId: String?) = LeftPanelState(
     bottomItems = listOf(
-        item(subScreen = SubScreen.Settings, selectedId = selectedId),
+        item(MainNavigation = MainNavigation.Settings, selectedId = selectedId),
     ),
     sections = listOf(
         LeftPannelSection(
             title = "Network",
             items = listOf(
-                item(subScreen = SubScreen.Network, selectedId = selectedId),
-                item(subScreen = SubScreen.Images, selectedId = selectedId),
+                item(MainNavigation = MainNavigation.Network, selectedId = selectedId),
+                item(MainNavigation = MainNavigation.Images, selectedId = selectedId),
             ),
         ),
         LeftPannelSection(
             title = "Storage",
             items = listOf(
-                item(SubScreen.Database, selectedId = selectedId),
-                item(SubScreen.SharedPreferences, selectedId = selectedId),
-                item(SubScreen.Files, selectedId = selectedId),
+                item(MainNavigation.Database, selectedId = selectedId),
+                item(MainNavigation.SharedPreferences, selectedId = selectedId),
+                item(MainNavigation.Files, selectedId = selectedId),
             ),
         ),
         LeftPannelSection(
             title = "Data",
             items = listOf(
-                item(SubScreen.Dashboard, selectedId = selectedId),
-                item(SubScreen.Analytics, selectedId = selectedId),
-                item(SubScreen.Tables, selectedId = selectedId),
+                item(MainNavigation.Dashboard, selectedId = selectedId),
+                item(MainNavigation.Analytics, selectedId = selectedId),
+                item(MainNavigation.Tables, selectedId = selectedId),
             ),
         ),
         LeftPannelSection(
             title = "Actions",
             items = listOf(
-                item(SubScreen.Deeplinks, selectedId = selectedId),
+                item(MainNavigation.Deeplinks, selectedId = selectedId),
             ),
         ),
     ),
 )
 
 private fun item(
-    subScreen: SubScreen,
+    MainNavigation: MainNavigation,
     selectedId: String?,
 ): LeftPanelItem {
-    val id = subScreen.id
+    val id = MainNavigation.id
     return LeftPanelItem(
         id = id,
-        icon = subScreen.icon(),
-        text = subScreen.displayName(),
+        icon = MainNavigation.icon(),
+        text = MainNavigation.displayName(),
         isSelected = selectedId == id,
     )
+}
+
+val MainNavigation.id : String
+    get() = when(this) {
+        MainNavigation.Analytics -> "Analytics"
+        MainNavigation.Dashboard -> "Dashboard"
+        MainNavigation.Database -> "Database"
+        MainNavigation.Deeplinks -> "Deeplinks"
+        MainNavigation.Files -> "Files"
+        MainNavigation.Images -> "Images"
+        MainNavigation.Network -> "Network"
+        MainNavigation.Settings -> "Settings"
+        MainNavigation.SharedPreferences -> "SharedPreferences"
+        MainNavigation.Tables -> "Tables"
+    }
+
+fun mainNavigationFromId(id: String) : MainNavigation? {
+    return when(id) {
+        "Analytics" -> MainNavigation.Analytics
+        "Dashboard" -> MainNavigation.Dashboard
+        "Database" -> MainNavigation.Database
+        "Deeplinks" -> MainNavigation.Deeplinks
+        "Files" -> MainNavigation.Files
+        "Images" -> MainNavigation.Images
+        "Network" -> MainNavigation.Network
+        "Settings" -> MainNavigation.Settings
+        "SharedPreferences" -> MainNavigation.SharedPreferences
+        "Tables" -> MainNavigation.Tables
+        else -> null
+    }
 }

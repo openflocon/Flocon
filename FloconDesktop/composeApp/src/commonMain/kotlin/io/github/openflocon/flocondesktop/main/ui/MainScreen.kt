@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
 import io.github.openflocon.flocondesktop.features.analytics.ui.view.AnalyticsScreen
 import io.github.openflocon.flocondesktop.features.dashboard.ui.view.DashboardScreen
 import io.github.openflocon.flocondesktop.features.database.ui.view.DatabaseScreen
@@ -23,11 +25,13 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.view.Sha
 import io.github.openflocon.flocondesktop.features.table.ui.view.TableScreen
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
+import io.github.openflocon.flocondesktop.main.ui.nav.MainNavigator
+import io.github.openflocon.flocondesktop.main.ui.nav.model.MainNavigation
 import io.github.openflocon.flocondesktop.main.ui.settings.SettingsScreen
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.LeftPanelView
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -35,13 +39,15 @@ fun MainScreen(
     modifier: Modifier = Modifier,
 ) {
     val viewModel: MainViewModel = koinViewModel()
+    val navigator: MainNavigator = koinInject()
+    val backStack = navigator.backStack
+
     val leftPanelState by viewModel.leftPanelState.collectAsStateWithLifecycle()
-    val subScreen by viewModel.subScreen.collectAsStateWithLifecycle()
     val devicesState by viewModel.devicesState.collectAsStateWithLifecycle()
 
     Box(modifier = modifier) {
         MainScreen(
-            subScreen = subScreen,
+            backStack = backStack,
             modifier = Modifier.fillMaxSize(),
             devicesState = devicesState,
             onDeviceSelected = viewModel::onDeviceSelected,
@@ -53,7 +59,7 @@ fun MainScreen(
 
 @Composable
 private fun MainScreen(
-    subScreen: SubScreen,
+    backStack: List<MainNavigation>,
     devicesState: DevicesStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     leftPanelState: LeftPanelState,
@@ -73,73 +79,87 @@ private fun MainScreen(
             )
 
             Box(modifier = Modifier.fillMaxSize().shadow(6.dp)) {
-                when (subScreen) {
-                    SubScreen.Network ->
-                        NetworkScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                NavDisplay(
+                    backStack = backStack,
+                    onBack = {
+                        // TODO
+                    },
+                    entryProvider = { key ->
+                        when (key) {
+                            MainNavigation.Analytics -> NavEntry(key) {
+                                AnalyticsScreen(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize(),
+                                )
+                            }
 
-                    SubScreen.Database ->
-                        DatabaseScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                            MainNavigation.Dashboard -> NavEntry(key) {
+                                DashboardScreen(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                )
+                            }
 
-                    SubScreen.Images ->
-                        ImagesScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                            MainNavigation.Database -> NavEntry(key) {
+                                DatabaseScreen(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                )
+                            }
 
-                    SubScreen.Files ->
-                        FilesScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                            MainNavigation.Deeplinks -> NavEntry(key) {
+                                DeeplinkScreen(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize(),
+                                )
+                            }
 
-                    SubScreen.Tables ->
-                        TableScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                            MainNavigation.Files -> NavEntry(key) {
+                                FilesScreen(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                )
+                            }
 
-                    SubScreen.SharedPreferences ->
-                        SharedPreferencesScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                            MainNavigation.Images -> NavEntry(key) {
+                                ImagesScreen(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                )
+                            }
 
-                    SubScreen.Dashboard ->
-                        DashboardScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                            MainNavigation.Network -> NavEntry(key) {
+                                NetworkScreen(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                )
+                            }
 
-                    SubScreen.Settings -> {
-                        SettingsScreen(
-                            modifier =
-                            Modifier
-                                .fillMaxSize(),
-                        )
+                            MainNavigation.Settings -> NavEntry(key) {
+                                SettingsScreen(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                )
+                            }
+
+                            MainNavigation.SharedPreferences -> NavEntry(key) {
+                                SharedPreferencesScreen(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                )
+                            }
+
+                            MainNavigation.Tables -> NavEntry(key) {
+                                TableScreen(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                )
+                            }
+                        }
                     }
-
-                    SubScreen.Deeplinks -> {
-                        DeeplinkScreen(
-                            modifier =
-                            Modifier
-                                .fillMaxSize(),
-                        )
-                    }
-
-                    SubScreen.Analytics -> {
-                        AnalyticsScreen(
-                            modifier =
-                            Modifier
-                                .fillMaxSize(),
-                        )
-                    }
-                }
+                )
             }
         }
     }
