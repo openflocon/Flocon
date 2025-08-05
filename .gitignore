@@ -1,33 +1,60 @@
-.gradle
-local.properties
-build/
-**/build
-**/*.db
+### Gradle
 
-### IntelliJ IDEA ###
-.idea
+# Generated files
+.gradle
+/build/
+
+# IDE files
+.idea/
 *.iws
 *.iml
 *.ipr
-*.hprof
-out/
-.fleet/
+/out/
 
-### iOS Xcode generated ###
-iOSDemoApp/iOSDemoApp.xcodeproj/*
-!iOSDemoApp/iOSDemoApp.xcodeproj/project.pbxproj
-/.build
-/Packages
-xcuserdata/
-DerivedData/
-.swiftpm/configuration/registries.json
-.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
-.netrc
-Package.resolved
+# Local configuration files (don't commit)
+local.properties
+.gradle-local.properties
 
-### Mac OS ###
-.DS_Store
+# Log files
+*.log
+!gradle.log
 
-### Firebase ###
-/androidApp/google-services.json
-iOSDemoApp/iOSDemoApp/GoogleService-Info.plist
+### Android
+
+# Android Studio-specific files
+/local.properties
+/proguard-rules.pro
+
+# Android-specific build files
+/build/
+/app/build/
+/app/.cxx/
+
+# Android Studio local debug configurations
+.idea/caches/build-files.json
+.idea/caches/gradle_resolve_paths.json
+.idea/libraries/
+.idea/workspace.xml
+
+### iOS
+
+# Xcode-specific files
+.xcodeproj/
+.xcworkspace/
+
+# Swift Package Manager files
+/.build/
+
+# Generated files
+/iosApp/build/
+/iosApp/.cxx/
+/iosApp/Pods/
+/iosApp/DerivedData/
+
+### Common
+# Any other files you want to ignore across all platforms
+*.class
+*.jar
+*.war
+*.zip
+*.log
