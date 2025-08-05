@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.rememberLibraries
-import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.desktop.composeapp.generated.resources.Res
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable

@@ -67,8 +67,8 @@ kotlin {
             implementation(libs.aboutlibraries.core)
             implementation(libs.aboutlibraries.compose.m3) // Material 3
 
-            implementation(projects.shared)
-            implementation(projects.library.designsystem)
+            implementation(projects.desktop.shared)
+            implementation(projects.desktop.library.designsystem)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

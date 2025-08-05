@@ -32,6 +32,6 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-include(":composeApp")
-include(":shared")
-include(":library:designsystem")
+include(":desktop:composeApp")
+include(":desktop:shared")
+include(":desktop:library:designsystem")

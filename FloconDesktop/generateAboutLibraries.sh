@@ -1,1 +1,1 @@
-./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.outputFile=src/commonMain/composeResources/files/aboutlibraries.json
+./gradlew desktop:composeApp:exportLibraryDefinitions -PaboutLibraries.outputFile=src/commonMain/composeResources/files/aboutlibraries.json

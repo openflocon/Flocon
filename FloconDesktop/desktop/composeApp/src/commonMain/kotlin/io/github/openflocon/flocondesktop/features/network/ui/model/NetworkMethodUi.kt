@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.ui.model
 
 import androidx.compose.runtime.Immutable
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.graphql
+import flocondesktop.desktop.composeapp.generated.resources.Res
+import flocondesktop.desktop.composeapp.generated.resources.graphql
 import org.jetbrains.compose.resources.DrawableResource
 
 @Immutable
