@@ -179,7 +179,7 @@ compose.desktop {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon_small.png"))
             }
             windows {
-                iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon_small.png"))
+                iconFile.set(project.file("src/desktopMain/resources/files/flocon_big.ico"))
             }
         }
     }
