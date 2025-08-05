@@ -17,8 +17,7 @@ jobs:
           distribution: 'zulu'
           java-version: 21
       - name: Publish to MavenCentral
-        run: ./gradlew :core:publishToMavenCentral :okhttp-interceptor:publishToMavenCentral :grpc-interceptor:publishToMavenCentral --no-configuration-cache
-        working-directory: FloconAndroid
+        run: ./gradlew :client:core:publishToMavenCentral :client:okhttp-interceptor:publishToMavenCentral :client:grpc-interceptor:publishToMavenCentral --no-configuration-cache
         env:
           PROJECT_VERSION_NAME: ${{ github.ref_name }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALUSERNAME }}
