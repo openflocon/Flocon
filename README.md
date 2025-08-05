@@ -4,6 +4,8 @@
 
 It allows developers to connect an Android device to their computer and launch a desktop interface that can **observe, inspect, and interact with the running mobile app** in real time.
 
+`Flocon Desktop is a Kotlin Multiplatform project structured similarly to an Android app, using ViewModels, Room, Ktor, and Coroutines. The project is open to contributions — feel free to submit a pull request!`
+
 With Flocon, you gain deep access to critical app internals — such as
 - network requests (http, images, grpc, graphql)
 - local storage (sharedpref, databases, app files)

@@ -12,6 +12,6 @@ fun LeftPannelDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
         modifier = modifier.padding(horizontal = 4.dp),
         thickness = 1.dp,
-        color = Color.Gray,
+        color = Color.Gray, // TODO Change
     )
 }
