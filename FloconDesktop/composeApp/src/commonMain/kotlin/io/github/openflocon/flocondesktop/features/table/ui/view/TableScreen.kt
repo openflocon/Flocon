@@ -19,7 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -41,6 +40,7 @@ import io.github.openflocon.flocondesktop.features.table.ui.model.items
 import io.github.openflocon.flocondesktop.features.table.ui.model.previewTableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.ui.model.previewTablesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -81,7 +81,7 @@ fun TableScreen(
     val columnsWidth = 150.dp
     var tableItems by remember { mutableStateOf<List<TableRowUiModel>>(emptyList()) }
 
-    Surface(modifier = modifier) {
+    FloconSurface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Column(
@@ -111,7 +111,7 @@ fun TableScreen(
                     )
                 }
 
-                Surface(
+                FloconSurface(
                     modifier = Modifier.fillMaxSize()
                         .clickable(
                             interactionSource = null,

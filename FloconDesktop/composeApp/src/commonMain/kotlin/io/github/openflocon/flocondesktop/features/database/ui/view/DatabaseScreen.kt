@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -24,6 +23,7 @@ import io.github.openflocon.flocondesktop.features.database.ui.model.DeviceDataB
 import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabaseScreenStateQueries
 import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabasesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -59,7 +59,7 @@ fun DatabaseScreen(
 ) {
     var query by remember { mutableStateOf("") }
 
-    Surface(modifier = modifier) {
+    FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier.fillMaxWidth()
