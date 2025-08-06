@@ -2,16 +2,15 @@ package io.github.openflocon.flocondesktop.features.network.ui.model.header.colu
 
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
-import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.MethodFilterState
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterState
 
 @Immutable
-data class NetworkMethodColumnUiModel(
+data class NetworkTextColumnUiModel(
     override val sortedBy: SortedByUiModel,
-    override val filter: MethodFilterState,
+    override val filter: TextFilterState,
 ) : NetworkColumnUiModel
 
-fun previewNetworkMethodColumnUiModel() = NetworkMethodColumnUiModel(
+fun previewNetworkTextColumnUiModel() = NetworkTextColumnUiModel(
     sortedBy = SortedByUiModel.None,
-    filter = MethodFilterState(isEnabled = false),
+    filter = TextFilterState(emptyList(), isEnabled = false)
 )

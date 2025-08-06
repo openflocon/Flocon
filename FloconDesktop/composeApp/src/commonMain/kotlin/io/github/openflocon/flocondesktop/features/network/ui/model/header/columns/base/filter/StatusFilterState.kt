@@ -1,9 +1,9 @@
-package io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base
+package io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter
 
 import androidx.compose.runtime.Immutable
 
 @Immutable
-data class MethodFilterState(
+data class StatusFilterState(
     val isEnabled: Boolean,
 ) : FilterState {
 
