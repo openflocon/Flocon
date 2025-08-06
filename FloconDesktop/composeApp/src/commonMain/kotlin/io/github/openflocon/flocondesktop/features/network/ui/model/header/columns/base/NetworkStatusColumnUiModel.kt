@@ -8,7 +8,14 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.header.colum
 data class NetworkStatusColumnUiModel(
     override val sortedBy: SortedByUiModel,
     override val filter: StatusFilterState,
-) : NetworkColumnUiModel
+) : NetworkColumnUiModel {
+    companion object {
+        val EMPTY = NetworkStatusColumnUiModel(
+            sortedBy = SortedByUiModel.None,
+            filter = StatusFilterState(isEnabled = false)
+        )
+    }
+}
 
 fun previewNetworkStatusColumnUiModel() = NetworkStatusColumnUiModel(
     sortedBy = SortedByUiModel.None,

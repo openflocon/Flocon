@@ -3,13 +3,19 @@ package io.github.openflocon.flocondesktop.features.network.ui.model.header.colu
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.MethodFilterState
-import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterState
 
 @Immutable
 data class NetworkMethodColumnUiModel(
     override val sortedBy: SortedByUiModel,
     override val filter: MethodFilterState,
-) : NetworkColumnUiModel
+) : NetworkColumnUiModel {
+    companion object {
+        val EMPTY = NetworkMethodColumnUiModel(
+            sortedBy = SortedByUiModel.None,
+            filter = MethodFilterState(isEnabled = false)
+        )
+    }
+}
 
 fun previewNetworkMethodColumnUiModel() = NetworkMethodColumnUiModel(
     sortedBy = SortedByUiModel.None,

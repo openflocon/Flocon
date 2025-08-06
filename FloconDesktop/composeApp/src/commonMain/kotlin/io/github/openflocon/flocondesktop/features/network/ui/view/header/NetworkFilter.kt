@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.Composable
@@ -13,14 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
-import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.FilterBar
-import io.github.openflocon.flocondesktop.features.network.ui.view.filters.FilterMethods
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 
 @Composable
 fun NetworkFilter(
-    uiState: NetworkUiState,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -38,17 +33,6 @@ fun NetworkFilter(
             FloconIconButton(
                 imageVector = Icons.Outlined.Delete,
                 onClick = { onAction(NetworkAction.Reset) }
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            FilterMethods(
-                filterState = uiState.filterState,
-                onAction = onAction
             )
         }
     }

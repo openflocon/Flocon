@@ -50,7 +50,6 @@ fun NetworkItemHeaderView(
                 clickOnSort(NetworkColumnsTypeUiModel.Time, it)
             },
             clickOnFilter = {
-                clickOnFilter(NetworkColumnsTypeUiModel.Time)
             },
         )
 
@@ -63,7 +62,6 @@ fun NetworkItemHeaderView(
                 clickOnSort(NetworkColumnsTypeUiModel.Method, it)
             },
             clickOnFilter = {
-                clickOnFilter(NetworkColumnsTypeUiModel.Method)
             },
         )
 
@@ -79,7 +77,6 @@ fun NetworkItemHeaderView(
                     clickOnSort(NetworkColumnsTypeUiModel.Domain, it)
                 },
                 clickOnFilter = {
-                    clickOnFilter(NetworkColumnsTypeUiModel.Domain)
                 },
             )
             HeaderLabelItem(
@@ -92,7 +89,6 @@ fun NetworkItemHeaderView(
                     clickOnSort(NetworkColumnsTypeUiModel.Query, it)
                 },
                 clickOnFilter = {
-                    clickOnFilter(NetworkColumnsTypeUiModel.Query)
                 },
             )
         }
@@ -106,7 +102,6 @@ fun NetworkItemHeaderView(
                 clickOnSort(NetworkColumnsTypeUiModel.Status, it)
             },
             clickOnFilter = {
-                clickOnFilter(NetworkColumnsTypeUiModel.Status)
             },
         )
         HeaderLabelItem(
@@ -118,7 +113,6 @@ fun NetworkItemHeaderView(
                 clickOnSort(NetworkColumnsTypeUiModel.Time, it)
             },
             clickOnFilter = {
-                clickOnFilter(NetworkColumnsTypeUiModel.Time)
             }
         )
     }
@@ -130,7 +124,6 @@ private fun NetworkItemHeaderViewPreview() {
     FloconTheme {
         NetworkItemHeaderView(
             state = previewNetworkHeaderUiState(),
-            clickOnFilter = {},
             clickOnSort = { _, _ -> },
         )
     }

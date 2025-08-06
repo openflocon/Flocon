@@ -14,4 +14,11 @@ data class TextFilterState(
     )
 
     override val isActive: Boolean = activeFilters.isNotEmpty()
+
+    companion object {
+        val EMPTY = TextFilterState(
+            activeFilters = emptyList(),
+            isEnabled = false,
+        )
+    }
 }

@@ -86,7 +86,6 @@ fun NetworkScreen(
                     color = FloconTheme.colorPalette.onSurface,
                 )
                 NetworkFilter(
-                    uiState = uiState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(FloconTheme.colorPalette.panel)

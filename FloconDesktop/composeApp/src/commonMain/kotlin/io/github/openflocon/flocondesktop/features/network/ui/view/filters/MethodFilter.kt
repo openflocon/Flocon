@@ -13,6 +13,8 @@ import io.github.openflocon.flocondesktop.features.network.ui.view.components.Fi
 class MethodFilter : Filters {
 
     override fun filter(state: FilterUiState, list: List<NetworkItemViewState>): List<NetworkItemViewState> {
+        return list
+        /*
         if (state.methods.isEmpty())
             return list
 
@@ -28,10 +30,13 @@ class MethodFilter : Filters {
                 is NetworkMethodUi.OTHER -> state.methods.contains(NetworkMethodUi.OTHER.EMPTY)
             }
         }
+
+         */
     }
 
 }
 
+/*
 @Composable
 fun FilterMethods(
     filterState: FilterUiState,
@@ -73,3 +78,4 @@ private val NetworkMethodUi.label
         NetworkMethodUi.Http.PUT -> "Http - PUT"
         is NetworkMethodUi.OTHER -> "Other"
     }
+*/
