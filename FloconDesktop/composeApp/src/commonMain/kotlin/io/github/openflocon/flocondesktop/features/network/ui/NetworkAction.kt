@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.ui
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.NetworkColumnsTypeUiModel
 
 sealed interface NetworkAction {
@@ -29,7 +30,7 @@ sealed interface NetworkAction {
 
     data class FilterQuery(val query: String) : NetworkAction
 
-    @Deprecated("use HeaderAction" )
+    @Deprecated("use HeaderAction")
     data class FilterMethod(val method: NetworkMethodUi, val add: Boolean) : NetworkAction
 
     sealed interface HeaderAction : NetworkAction {
@@ -38,8 +39,8 @@ sealed interface NetworkAction {
             val sort: SortedByUiModel.Enabled
         ) : HeaderAction
 
-        //data class ClickOnFilter(
-        //    val type: NetworkColumnsTypeUiModel
-        //) : HeaderAction
+        data class FilterAction(
+            val action: OnFilterAction,
+        ) : HeaderAction
     }
 }

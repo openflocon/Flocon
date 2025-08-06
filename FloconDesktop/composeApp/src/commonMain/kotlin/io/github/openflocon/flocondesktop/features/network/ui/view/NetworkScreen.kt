@@ -98,6 +98,9 @@ fun NetworkScreen(
                     clickOnSort = { type, sort ->
                         onAction(NetworkAction.HeaderAction.ClickOnSort(type, sort))
                     },
+                    onFilterAction = {
+                        onAction(NetworkAction.HeaderAction.FilterAction(it))
+                    },
                     state = uiState.headerState,
                 )
                 Box(

@@ -12,12 +12,12 @@ data class NetworkMethodColumnUiModel(
     companion object {
         val EMPTY = NetworkMethodColumnUiModel(
             sortedBy = SortedByUiModel.None,
-            filter = MethodFilterState(isEnabled = false)
+            filter = MethodFilterState(isEnabled = false, items = emptyList())
         )
     }
 }
 
 fun previewNetworkMethodColumnUiModel() = NetworkMethodColumnUiModel(
     sortedBy = SortedByUiModel.None,
-    filter = MethodFilterState(isEnabled = false),
+    filter = MethodFilterState(isEnabled = false, items = emptyList()),
 )
