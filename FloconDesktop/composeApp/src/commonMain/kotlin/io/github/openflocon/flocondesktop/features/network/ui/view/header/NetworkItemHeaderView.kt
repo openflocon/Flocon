@@ -1,8 +1,7 @@
-package io.github.openflocon.flocondesktop.features.network.ui.view.components
+package io.github.openflocon.flocondesktop.features.network.ui.view.header
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -12,7 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.ui.view.NetworkItemColumnWidths
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.HeaderLabelItem
 import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun NetworkItemHeaderView(
@@ -24,9 +25,9 @@ fun NetworkItemHeaderView(
         modifier =
             modifier
                 .background(FloconTheme.colorPalette.panel)
-                .padding(horizontal = 8.dp, vertical = 4.dp) // Padding for the entire item
                 .padding(horizontal = 8.dp, vertical = 6.dp)
                 .padding(contentPadding),
+
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
@@ -36,26 +37,40 @@ fun NetworkItemHeaderView(
             text = "Request Time",
         )
 
+        HeaderLabelItem(
+            modifier = Modifier.width(columnWidths.methodWidth),
+            text = "Method",
+        )
+
         // route & method, don't display the label
-        Box(Modifier.weight(1f))
+        Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            HeaderLabelItem(
+                modifier = Modifier.weight(columnWidths.domainWeight),
+                text = "Domain",
+                labelAlignment = Alignment.CenterStart,
+            )
+            HeaderLabelItem(
+                modifier = Modifier.weight(columnWidths.queryWeight),
+                text = "Query",
+                labelAlignment = Alignment.CenterStart,
+            )
+        }
 
         HeaderLabelItem(
             modifier = Modifier.width(columnWidths.statusCodeWidth),
             text = "Status",
         )
-        /*
-        HeaderLabelItem(
-            modifier = Modifier.width(columnWidths.requestSizeWidth),
-            text = "Request Size",
-        )
-        HeaderLabelItem(
-            modifier = Modifier.width(columnWidths.responseSizeWidth),
-            text = "Response Size",
-       }
-         */
         HeaderLabelItem(
             modifier = Modifier.width(columnWidths.timeWidth),
             text = "Time",
         )
+    }
+}
+
+@Composable
+@Preview
+private fun NetworkItemHeaderViewPreview() {
+    FloconTheme {
+        NetworkItemHeaderView()
     }
 }
