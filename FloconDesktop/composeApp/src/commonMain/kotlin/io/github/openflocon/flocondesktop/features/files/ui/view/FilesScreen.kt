@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -19,6 +18,7 @@ import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FilesStateUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.previewFilesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -54,7 +54,7 @@ private fun FilesScreen(
     onContextualAction: (FileUiModel, FileUiModel.ContextualAction.Action) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier = modifier) {
+    FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
             FilesTopBar(
                 modifier = Modifier.fillMaxWidth(),

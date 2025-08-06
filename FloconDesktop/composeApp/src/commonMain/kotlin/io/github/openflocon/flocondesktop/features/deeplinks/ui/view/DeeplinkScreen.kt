@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,6 +20,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPa
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.previewDeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -43,7 +42,7 @@ private fun DeeplinkScreen(
     submit: (DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier = modifier) {
+    FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier.fillMaxWidth()

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -18,6 +17,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardV
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DeviceDashboardUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -53,7 +53,7 @@ fun DashboardScreen(
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier = modifier) {
+    FloconSurface(modifier = modifier) {
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {

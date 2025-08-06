@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -26,6 +25,7 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.Sh
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPrefsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -57,7 +57,7 @@ fun SharedPrefScreen(
     rows: SharedPreferencesRowsStateUiModel,
     changeValue: (SharedPreferencesRowUiModel, String) -> Unit,
 ) {
-    Surface(modifier = modifier) {
+    FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier.fillMaxWidth()
