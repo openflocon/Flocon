@@ -5,7 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CopyAll
+import androidx.compose.material.icons.outlined.Details
 import androidx.compose.material.icons.outlined.ExpandMore
+import androidx.compose.material.icons.outlined.OpenInFull
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,9 +26,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun DetailSectionTitleView(
     isExpanded: Boolean,
     title: String,
-    onCopy: (() -> Unit)?,
-    onToggle: ((isExpanded: Boolean) -> Unit)?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDetail: (() -> Unit)? = null,
+    onCopy: (() -> Unit)? = null,
+    onToggle: ((isExpanded: Boolean) -> Unit)? = null,
 ) {
     val rotate by animateFloatAsState(
         targetValue = if (isExpanded) 180f else 0f,
@@ -55,6 +60,13 @@ fun DetailSectionTitleView(
             color = FloconTheme.colorPalette.onBackground,
             modifier = Modifier.weight(1f), // Takes remaining space
         )
+
+        if (onDetail != null) {
+            FloconIconButton(
+                onClick = onDetail,
+                imageVector = Icons.Outlined.OpenInFull
+            )
+        }
         if (onCopy != null) {
             FloconIconButton(
                 imageVector = Icons.Outlined.CopyAll,

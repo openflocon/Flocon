@@ -14,6 +14,10 @@ sealed interface NetworkAction {
 
     data object Reset : NetworkAction
 
+    data class JsonDetail(val id: String, val json: String) : NetworkAction
+
+    data class CloseJsonDetail(val id: String) : NetworkAction
+
     data class CopyUrl(val item: NetworkItemViewState) : NetworkAction
 
     data class CopyCUrl(val item: NetworkItemViewState) : NetworkAction

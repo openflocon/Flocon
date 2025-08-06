@@ -310,6 +310,7 @@ private fun Response(
                 onToggle = {
                     isResponseBodyExpanded = it
                 },
+                onDetail = { onAction(NetworkAction.JsonDetail(state.requestTimeFormatted, state.responseBody)) },
                 modifier = Modifier.fillMaxWidth()
             )
             FloconSectionExpandable(
@@ -330,23 +331,23 @@ private fun Response(
 private fun NetworkDetailViewPreview() {
     FloconTheme {
         NetworkDetailView(
-            state =
-                NetworkDetailViewState(
-                    fullUrl = "http://www.google.com",
-                    method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
-                    status =
-                        NetworkStatusUi(
-                            text = "200",
-                            isSuccess = true,
-                        ),
-                    requestHeaders =
-                        listOf(
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                        ),
-                    requestBody =
-                        """
+            state = NetworkDetailViewState(
+                uuid = "",
+                fullUrl = "http://www.google.com",
+                method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
+                status =
+                    NetworkStatusUi(
+                        text = "200",
+                        isSuccess = true,
+                    ),
+                requestHeaders =
+                    listOf(
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                    ),
+                requestBody =
+                    """
                         {
                             "id": "123",
                             "name": "Flocon App",
@@ -359,18 +360,18 @@ private fun NetworkDetailViewPreview() {
                             }
                         }
                 """.trimIndent(),
-                    responseHeaders =
-                        listOf(
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                        ),
-                    requestTimeFormatted = "00:00:00.000",
-                    durationFormatted = "300ms",
-                    responseBody =
-                        """
+                responseHeaders =
+                    listOf(
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                    ),
+                requestTimeFormatted = "00:00:00.000",
+                durationFormatted = "300ms",
+                responseBody =
+                    """
                         {
                             "networkStatusUi": "success",
                             "message": "Data received and processed.",
@@ -380,10 +381,10 @@ private fun NetworkDetailViewPreview() {
                             }
                         }
                 """.trimIndent(),
-                    requestSize = "0kb",
-                    responseSize = "0kb",
-                    graphQlSection = null,
-                ),
+                requestSize = "0kb",
+                responseSize = "0kb",
+                graphQlSection = null,
+            ),
             modifier = Modifier.padding(16.dp), // Padding pour la preview
             onAction = {}
         )

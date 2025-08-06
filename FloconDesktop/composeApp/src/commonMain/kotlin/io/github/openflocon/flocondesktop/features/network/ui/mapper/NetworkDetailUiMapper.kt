@@ -8,6 +8,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetai
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatusUi
 
 fun toDetailUi(request: FloconHttpRequestDomainModel): NetworkDetailViewState = NetworkDetailViewState(
+    uuid = request.uuid,
     fullUrl = request.url,
     method = toDetailMethodUi(request),
     status = toDetailNetworkStatusUi(request.type),

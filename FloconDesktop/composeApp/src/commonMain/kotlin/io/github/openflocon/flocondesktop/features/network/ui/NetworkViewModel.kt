@@ -15,6 +15,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkJsonUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +45,7 @@ class NetworkViewModel(
 
     private val filterMethod = MethodFilter()
 
-    private val contentState = MutableStateFlow(ContentUiState(selectedRequestId = null))
+    private val contentState = MutableStateFlow(ContentUiState(selectedRequestId = null, detailJsons = emptySet()))
     private val filterUiState = MutableStateFlow(FilterUiState(query = "", methods = NetworkMethodUi.all()))
 
     private val detailState: StateFlow<NetworkDetailViewState?> =
@@ -105,6 +106,8 @@ class NetworkViewModel(
             is NetworkAction.RemoveLinesAbove -> onRemoveLinesAbove(action)
             is NetworkAction.FilterQuery -> onFilterQuery(action)
             is NetworkAction.FilterMethod -> onFilterMethod(action)
+            is NetworkAction.CloseJsonDetail -> onCloseJsonDetail(action)
+            is NetworkAction.JsonDetail -> onJsonDetail(action)
         }
     }
 
@@ -127,6 +130,24 @@ class NetworkViewModel(
     private fun onCopyText(action: NetworkAction.CopyText) {
         copyToClipboard(action.text)
         feedbackDisplayer.displayMessage("copied")
+    }
+
+    private fun onJsonDetail(action: NetworkAction.JsonDetail) {
+        contentState.update { state ->
+            if (state.detailJsons.any { it.id == action.id })
+                return
+
+            state.copy(
+                detailJsons = state.detailJsons + NetworkJsonUi(
+                    id = action.id,
+                    json = action.json
+                )
+            )
+        }
+    }
+
+    private fun onCloseJsonDetail(action: NetworkAction.CloseJsonDetail) {
+        contentState.update { state -> state.copy(detailJsons = state.detailJsons.filterNot { it.id == action.id }.toSet()) }
     }
 
     private fun onReset() {

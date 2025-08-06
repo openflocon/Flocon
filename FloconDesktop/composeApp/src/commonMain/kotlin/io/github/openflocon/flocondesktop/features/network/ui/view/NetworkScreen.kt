@@ -16,22 +16,33 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.WindowState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.app_icon
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkJsonUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkFilter
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconJsonTree
+import org.jetbrains.compose.resources.painterResource
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -138,6 +149,44 @@ fun NetworkScreen(
             }
         }
     }
+
+    val states = remember { mutableStateMapOf<NetworkJsonUi, WindowState>() }
+
+
+    LaunchedEffect(uiState.contentState.detailJsons) {
+        val deletedJson = states.keys.filter { key -> uiState.contentState.detailJsons.none { key.id == it.id } }
+        val addedJson = uiState.contentState.detailJsons.filter { key -> states.keys.none { key.id == it.id } }
+
+        deletedJson.forEach { states.remove(it) }
+        addedJson.forEach {
+            states.put(
+                it, WindowState(
+                    placement = WindowPlacement.Floating,
+                    position = WindowPosition(Alignment.Center)
+                )
+            )
+        }
+    }
+
+    uiState.contentState
+        .detailJsons
+        .forEach { item ->
+            val state = states[item]
+
+            if (state != null) {
+                Window(
+                    title = "Json",
+                    icon = painterResource(Res.drawable.app_icon),
+                    state = state,
+                    onCloseRequest = { onAction(NetworkAction.CloseJsonDetail(item.id)) }
+                ) {
+                    FloconJsonTree(
+                        json = item.json,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+        }
 }
 
 @Composable
