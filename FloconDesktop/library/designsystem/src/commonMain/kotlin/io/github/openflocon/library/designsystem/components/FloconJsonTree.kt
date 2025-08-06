@@ -13,6 +13,7 @@ import com.sebastianneubauer.jsontree.search.rememberSearchState
 fun FloconJsonTree(
     json: String,
     modifier: Modifier = Modifier,
+    onError: (Throwable) -> Unit = {},
     searchState: SearchState = rememberSearchState()
 ) {
     JsonTree(
@@ -23,6 +24,7 @@ fun FloconJsonTree(
         icon = Icons.Outlined.ChevronLeft,
         searchState = searchState,
         colors = defaultDarkColors,
+        onError = onError,
         modifier = modifier
     )
 }
