@@ -54,8 +54,8 @@ class ServerJvm : Server {
                                             Json.decodeFromString<FloconIncomingMessageDataModel>(
                                                 receivedText,
                                             )
-                                        activeSessions.put(floconIncomingMessageDataModel.id, this)
-                                        println("+ new client : ${floconIncomingMessageDataModel.id}")
+                                        activeSessions.put(floconIncomingMessageDataModel.deviceId, this)
+                                        //println("+ new client : ${floconIncomingMessageDataModel.deviceId}")
                                         _receivedMessages.emit(floconIncomingMessageDataModel)
                                         // Access other fields of floconMessage as needed
                                     } catch (e: Exception) {

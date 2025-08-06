@@ -30,6 +30,6 @@ class HandleIncomingMessagesUseCase(
         appName = message.appName,
         deviceName = message.deviceName,
         appPackageName = message.appPackageName,
-        deviceId = message.id,
+        deviceId = message.deviceId,
     )
 }
