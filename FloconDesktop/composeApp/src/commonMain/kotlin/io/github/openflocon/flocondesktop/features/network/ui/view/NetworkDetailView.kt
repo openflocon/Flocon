@@ -236,6 +236,7 @@ private fun Request(
             DetailSectionTitleView(
                 isExpanded = isRequestBodyExpanded,
                 title = "Request Body",
+                onDetail = { onAction(NetworkAction.JsonDetail(state.uuid + "request", state.requestBody)) },
                 onCopy = { onAction(NetworkAction.CopyText(state.requestBody)) },
                 onToggle = {
                     isRequestBodyExpanded = it
@@ -310,7 +311,7 @@ private fun Response(
                 onToggle = {
                     isResponseBodyExpanded = it
                 },
-                onDetail = { onAction(NetworkAction.JsonDetail(state.requestTimeFormatted, state.responseBody)) },
+                onDetail = { onAction(NetworkAction.JsonDetail(state.uuid + "response", state.responseBody)) },
                 modifier = Modifier.fillMaxWidth()
             )
             FloconSectionExpandable(
