@@ -38,9 +38,6 @@ dependencies {
 
     implementation(project(":core"))
 
-    // not sure
-    implementation(libs.androidx.core.ktx)
-
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.jetbrains.kotlinx.coroutines.core)
     implementation(libs.jetbrains.kotlinx.coroutines.android)
