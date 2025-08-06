@@ -7,19 +7,43 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
+import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.NetworkHeaderUiState
 import io.github.openflocon.flocondesktop.features.network.ui.view.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.HeaderLabelItem
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+enum class NetworkColumnsTypeUiModel {
+    RequestTime,
+    Method,
+    Domain,
+    Query,
+    Status,
+    Time,
+}
+
+interface FilterState {
+    val isActive: Boolean
+}
+
+
+
+
+
 @Composable
 fun NetworkItemHeaderView(
-    columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
     modifier: Modifier = Modifier,
+    state: NetworkHeaderUiState,
+    columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
     contentPadding: PaddingValues = PaddingValues(),
+    clickOnSort: (NetworkColumnsTypeUiModel, SortedByUiModel.Enabled) -> Unit,
+    clickOnFilter: (NetworkColumnsTypeUiModel) -> Unit,
 ) {
     Row(
         modifier =
@@ -35,6 +59,10 @@ fun NetworkItemHeaderView(
         HeaderLabelItem(
             modifier = Modifier.width(columnWidths.dateWidth),
             text = "Request Time",
+            isFiltered = state.time.filter,
+            clickOnSort = {
+                clickOnSort(NetworkColumnsTypeUiModel.Time)
+            }
         )
 
         HeaderLabelItem(

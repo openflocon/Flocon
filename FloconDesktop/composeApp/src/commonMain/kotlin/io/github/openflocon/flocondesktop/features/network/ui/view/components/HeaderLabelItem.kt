@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,32 +9,34 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.Filter
-import androidx.compose.material.icons.filled.FilterAlt
-import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.rounded.FilterAlt
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.arrow_up_cropped
+import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+
+private val iconsSize = 8.dp
+
+private const val notEnabledOpacity = 0.3f
 
 @Composable
 fun HeaderLabelItem(
     text: String,
     modifier: Modifier = Modifier,
+    sortedBy: SortedByUiModel = SortedByUiModel.None, // TODO remove
+    isFiltered: Boolean = false, // TODO remove
+    clickOnSort: (SortedByUiModel.Enabled) -> Unit,
+    clickOnFilter: () -> Unit,
     labelAlignment: Alignment = Alignment.Center,
 ) {
     val typo = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
@@ -46,10 +48,11 @@ fun HeaderLabelItem(
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Image(
-            imageVector = Icons.Default.FilterAlt,
+            imageVector = Icons.Rounded.FilterAlt,
             contentDescription = "Filter",
-            colorFilter = ColorFilter.tint(textColor),
-            modifier = Modifier.size(14.dp),
+            colorFilter = ColorFilter.tint(if (isFiltered) textColor else textColor.copy(alpha = notEnabledOpacity)),
+            modifier = Modifier.size(14.dp)
+                .clickable(onClick = clickOnFilter),
         )
         Box(
             modifier = Modifier.weight(1f),
@@ -68,36 +71,42 @@ fun HeaderLabelItem(
             verticalArrangement = Arrangement.Center,
         ) {
 
-            val iconsSize = 8.dp
-
             // image to not have paddings
-            Box(modifier = Modifier.size(14.dp), contentAlignment = Alignment.BottomCenter) {
+            Box(modifier = Modifier.size(14.dp).clickable(onClick = {
+                clickOnSort(SortedByUiModel.Enabled.Ascending)
+            }), contentAlignment = Alignment.BottomCenter) {
                 Image(
                     painter = painterResource(Res.drawable.arrow_up_cropped),
                     contentDescription = "Sort ascending",
-                    colorFilter = ColorFilter.tint(textColor),
+                    colorFilter = ColorFilter.tint(
+                        when (sortedBy) {
+                            SortedByUiModel.Enabled.Ascending -> textColor
+                            SortedByUiModel.Enabled.Descending,
+                            SortedByUiModel.None -> textColor.copy(alpha = notEnabledOpacity)
+                        }
+                    ),
                     modifier = Modifier.size(iconsSize)
                 )
             }
-            Box(modifier = Modifier.size(14.dp), contentAlignment = Alignment.TopCenter) {
+            Box(modifier = Modifier.size(14.dp).clickable(
+                onClick = {
+                    clickOnSort(SortedByUiModel.Enabled.Descending)
+                }
+            ), contentAlignment = Alignment.TopCenter) {
                 Image(
                     painter = painterResource(Res.drawable.arrow_up_cropped),
                     contentDescription = "Sort descending",
-                    colorFilter = ColorFilter.tint(textColor),
+                    colorFilter = ColorFilter.tint(
+                        when (sortedBy) {
+                            SortedByUiModel.Enabled.Ascending -> textColor.copy(alpha = notEnabledOpacity)
+                            SortedByUiModel.Enabled.Descending -> textColor
+                            SortedByUiModel.None -> textColor.copy(alpha = notEnabledOpacity)
+                        }
+                    ),
                     modifier = Modifier.size(iconsSize)
                         .rotate(180f)
                 )
             }
         }
-    }
-}
-
-@Composable
-@Preview
-private fun HeaderLabelItemPreview() {
-    FloconTheme {
-        HeaderLabelItem(
-            text = "test",
-        )
     }
 }
