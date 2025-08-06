@@ -42,9 +42,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.smartphone
+import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.main.ui.model.previewDeviceItemUiModelPreview
+import io.github.openflocon.flocondesktop.main.ui.model.previewDeviceItemUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconIcon
@@ -63,11 +64,47 @@ internal fun DeviceSelectorView(
         targetValue = if (dropDownExpanded) 0.dp else 12.dp
     )
 
+    // TODO Clean
+    var dropDownAppsExpanded by remember { mutableStateOf(false) }
+
     LaunchedEffect(pannelExpanded) {
         if (!pannelExpanded)
             dropDownExpanded = false
     }
 
+    if (devicesState is DevicesStateUiModel.WithDevices) {
+        ExposedDropdownMenuBox(
+            expanded = dropDownAppsExpanded,
+            onExpandedChange = { dropDownAppsExpanded = false }
+        ) {
+            devicesState.appSelected?.let {
+                DeviceAppName(
+                    deviceApp = it,
+                    modifier = Modifier
+                        .exposedDropdownSize(matchTextFieldWidth = true)
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                )
+            } ?: Text(
+                text = "Select",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .exposedDropdownSize(matchTextFieldWidth = true)
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    .clickable(onClick = { dropDownAppsExpanded = true })
+                    .padding(8.dp)
+            )
+            ExposedDropdownMenu(
+                expanded = dropDownAppsExpanded,
+                onDismissRequest = { dropDownAppsExpanded = false }
+            ) {
+                devicesState.deviceSelected
+                    .apps
+                    .forEach { app ->
+                        DeviceAppName(app)
+                    }
+            }
+        }
+    }
     ExposedDropdownMenuBox(
         expanded = dropDownExpanded,
         onExpandedChange = {
@@ -166,7 +203,7 @@ private fun ExposedDropdownMenuBoxScope.Device(
     state: DevicesStateUiModel.WithDevices
 ) {
     DeviceView(
-        device = state.selected,
+        device = state.deviceSelected,
         pannelExpanded = pannelExpanded,
         modifier = Modifier
             .fillMaxWidth()
@@ -199,18 +236,37 @@ private fun DeviceView(
                     color = FloconTheme.colorPalette.onSurface,
                     style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 )
-                Text(
-                    text = device.appName,
-                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
-                    style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
-                )
-                Text(
-                    text = device.appPackageName,
-                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
-                    style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
-                )
+//                Text(
+//                    text = device.appName,
+//                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+//                    style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
+//                )
+//                Text(
+//                    text = device.appPackageName,
+//                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+//                    style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
+//                )
             }
         }
+    }
+}
+
+@Composable
+private fun DeviceAppName(
+    deviceApp: DeviceAppUiModel,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .background(FloconTheme.colorPalette.panel)
+            .padding(8.dp)
+    ) {
+        Text(
+            deviceApp.name
+        )
+        Text(
+            deviceApp.packageName
+        )
     }
 }
 
@@ -219,7 +275,7 @@ private fun DeviceView(
 private fun DeviceViewPreview() {
     FloconTheme {
         DeviceView(
-            device = previewDeviceItemUiModelPreview(),
+            device = previewDeviceItemUiModel(),
             pannelExpanded = false
         )
     }

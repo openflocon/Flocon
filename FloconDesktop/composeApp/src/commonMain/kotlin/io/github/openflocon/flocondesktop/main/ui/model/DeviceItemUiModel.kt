@@ -1,15 +1,16 @@
 package io.github.openflocon.flocondesktop.main.ui.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class DeviceItemUiModel(
-    val appName: String,
-    val deviceName: String,
-    val appPackageName: String,
     val id: String,
+    val deviceName: String,
+    val apps: List<DeviceAppUiModel>
 )
 
-fun previewDeviceItemUiModelPreview() = DeviceItemUiModel(
-    appName = "appName",
+fun previewDeviceItemUiModel() = DeviceItemUiModel(
     deviceName = "deviceName",
-    appPackageName = "appPackageName",
     id = "id",
+    apps = listOf(previewDeviceAppUiModel())
 )

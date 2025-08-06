@@ -29,7 +29,7 @@ class MainViewModel(
 ) : ViewModel(
     devicesDelegate,
 ) {
-    val subScreen = MutableStateFlow<SubScreen>(SubScreen.Network)
+    val subScreen = MutableStateFlow(SubScreen.Network)
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {

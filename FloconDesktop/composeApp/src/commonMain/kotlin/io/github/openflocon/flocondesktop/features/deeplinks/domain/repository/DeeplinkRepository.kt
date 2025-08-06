@@ -4,11 +4,14 @@ import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.Deepli
 import kotlinx.coroutines.flow.Flow
 
 interface DeeplinkRepository {
+
     fun executeDeeplink(
         adbPath: String,
         deviceId: String,
         deeplink: String,
         packageName: String,
     )
+
     fun observe(deviceId: String): Flow<List<DeeplinkDomainModel>>
+
 }
