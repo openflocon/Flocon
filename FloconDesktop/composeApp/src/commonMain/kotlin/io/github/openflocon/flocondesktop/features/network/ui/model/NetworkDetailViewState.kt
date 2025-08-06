@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class NetworkDetailViewState(
+    val uuid: String,
     val fullUrl: String,
     val requestTimeFormatted: String,
     val durationFormatted: String,
