@@ -6,9 +6,13 @@ object FloconLogger {
     private const val enabled = false
     private const val TAG = "Flocon"
     fun logError(text: String, throwable: Throwable?) {
-        Log.e(TAG, text, throwable)
+        if(enabled) {
+            Log.e(TAG, text, throwable)
+        }
     }
     fun log(text: String) {
-        Log.d(TAG, text)
+        if(enabled) {
+            Log.d(TAG, text)
+        }
     }
 }

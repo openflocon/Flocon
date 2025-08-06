@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.client
 
 import android.content.Context
 import android.os.Build
+import android.provider.Settings
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconPlugin
@@ -126,6 +127,13 @@ internal class FloconClientImpl(
         }
     }
 
+    private val deviceId by lazy {
+        Settings.Secure.getString(
+            appContext.contentResolver,
+            Settings.Secure.ANDROID_ID,
+        )
+    }
+
     override fun send(
         plugin: String,
         method: String,
@@ -133,6 +141,7 @@ internal class FloconClientImpl(
     ) {
         coroutineScope.launch(Dispatchers.IO) {
             val floconMessage = toFloconMessageToServer(
+                deviceId = deviceId,
                 plugin = plugin,
                 body = body,
                 appName = appName,
