@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,6 +27,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -78,7 +78,7 @@ private fun SettingsScreen(
     needsAdbSetup: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier = modifier) {
+    FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier.fillMaxWidth()

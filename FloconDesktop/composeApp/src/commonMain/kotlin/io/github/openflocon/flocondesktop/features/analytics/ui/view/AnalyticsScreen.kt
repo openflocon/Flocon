@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -34,6 +33,7 @@ import io.github.openflocon.flocondesktop.features.analytics.ui.model.items
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -73,7 +73,7 @@ fun AnalyticsScreen(
 ) {
     var analyticsItems by remember { mutableStateOf<List<AnalyticsRowUiModel>>(emptyList()) }
 
-    Surface(modifier = modifier) {
+    FloconSurface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Column(
@@ -103,7 +103,7 @@ fun AnalyticsScreen(
                     )
                 }
 
-                Surface(
+                FloconSurface(
                     modifier = Modifier.fillMaxSize()
                         .clickable(
                             interactionSource = null,
