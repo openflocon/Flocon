@@ -17,7 +17,9 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.header.colum
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
@@ -32,7 +34,7 @@ class HeaderDelegate(
     )
 
     val sorted = MutableStateFlow<Sorted?>(null)
-    val methodFilterState = MutableStateFlow<MethodFilterState>(
+    private val methodFilterState = MutableStateFlow<MethodFilterState>(
         MethodFilterState(
             items = NetworkMethodUi.all().map {
                 MethodFilterState.Item(
@@ -43,6 +45,12 @@ class HeaderDelegate(
             isEnabled = true,
         )
     )
+
+    fun allowedMethods() = methodFilterState.map {
+        it.items
+            .filter { item -> item.isSelected }
+            .map { item -> item.method }
+    }.distinctUntilChanged()
 
     val headerUiState = combine(sorted, methodFilterState) { sorted, methodFilterState ->
         buildHeaderValue(sorted = sorted, methodFilterState = methodFilterState)

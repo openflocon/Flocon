@@ -3,18 +3,24 @@ package io.github.openflocon.flocondesktop.features.network.ui
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.NetworkColumnsTypeUiModel
 
-class SortNetworkItemsProcessor {
+class SortAndFilterNetworkItemsProcessor {
     operator fun invoke(
         items: List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>,
         filterState: FilterUiState,
         sorted: HeaderDelegate.Sorted?,
+        allowedMethods: List<NetworkMethodUi>,
     ): List<NetworkItemViewState> {
-        val filteredItems = if (filterState.query.isNotEmpty())
+        var filteredItems = if (filterState.query.isNotEmpty())
             items.filter { it.second.contains(filterState.query) }
         else items
+
+        filteredItems = filteredItems.filter {
+            it.second.method in allowedMethods
+        }
 
         val sortedItems = if (sorted != null) {
             when (sorted.column) {

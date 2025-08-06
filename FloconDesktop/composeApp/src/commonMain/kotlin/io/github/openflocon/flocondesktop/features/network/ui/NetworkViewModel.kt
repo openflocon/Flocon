@@ -40,7 +40,7 @@ class NetworkViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val headerDelegate: HeaderDelegate,
-    private val sortNetworkItemsProcessor: SortNetworkItemsProcessor,
+    private val sortAndFilterNetworkItemsProcessor: SortAndFilterNetworkItemsProcessor,
 ) : ViewModel(headerDelegate) {
 
     private val contentState =
@@ -73,11 +73,13 @@ class NetworkViewModel(
         }, // keep the domain for the filter
         filterUiState,
         headerDelegate.sorted,
-    ) { items, filterState, sorted ->
-        sortNetworkItemsProcessor(
+        headerDelegate.allowedMethods(),
+    ) { items, filterState, sorted, allowedMethods ->
+        sortAndFilterNetworkItemsProcessor(
             items = items,
             filterState = filterState,
-            sorted = sorted
+            sorted = sorted,
+            allowedMethods = allowedMethods,
         )
     }
         .distinctUntilChanged()

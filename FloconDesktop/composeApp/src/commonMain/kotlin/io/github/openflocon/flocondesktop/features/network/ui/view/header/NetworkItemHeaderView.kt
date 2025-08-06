@@ -1,16 +1,12 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view.header
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,9 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.NetworkHeaderUiState
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.OnFilterAction
@@ -29,7 +23,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.header.colum
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.previewNetworkHeaderUiState
 import io.github.openflocon.flocondesktop.features.network.ui.view.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.HeaderLabelItem
-import io.github.openflocon.flocondesktop.features.network.ui.view.components.MethodView
+import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilterDropdown
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -79,24 +73,16 @@ fun NetworkItemHeaderView(
                     filterMethodExpanded = true
                 },
             )
-            DropdownMenu(
-                expanded = filterMethodExpanded,
-                onDismissRequest = { filterMethodExpanded = false }
-            ) {
-                state.method.filter.items.fastForEach { item ->
-                    val alpha by animateFloatAsState(if(item.isSelected) 1f else 0.3f)
-                    Box(modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)) {
-                        MethodView(
-                            method = item.method,
-                            modifier = Modifier.alpha(alpha),
-                            onClick = {
-                                onFilterAction(OnFilterAction.ClickOnMethod(item.method))
-                                filterMethodExpanded = true
-                            }
-                        )
-                    }
+            MethodFilterDropdown(
+                filterMethodExpanded = filterMethodExpanded,
+                onDismissRequest = {
+                    filterMethodExpanded = false
+                },
+                filterState = state.method.filter,
+                onItemClicked = {
+                    onFilterAction(OnFilterAction.ClickOnMethod(it))
                 }
-            }
+            )
         }
 
 
