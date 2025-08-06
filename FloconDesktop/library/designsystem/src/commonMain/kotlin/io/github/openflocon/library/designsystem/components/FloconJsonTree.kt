@@ -1,6 +1,5 @@
 package io.github.openflocon.library.designsystem.components
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.runtime.Composable
@@ -16,18 +15,14 @@ fun FloconJsonTree(
     modifier: Modifier = Modifier,
     searchState: SearchState = rememberSearchState()
 ) {
-    FloconSurface(
+    JsonTree(
+        json = json,
+        onLoading = {
+            FloconCircularProgressIndicator() // TODO Better?
+        },
+        icon = Icons.Outlined.ChevronLeft,
+        searchState = searchState,
+        colors = defaultDarkColors,
         modifier = modifier
-    ) {
-        JsonTree(
-            json = json,
-            onLoading = {
-                FloconCircularProgressIndicator() // TODO Better?
-            },
-            icon = Icons.Outlined.ChevronLeft,
-            searchState = searchState,
-            colors = defaultDarkColors,
-            modifier = Modifier.fillMaxSize()
-        )
-    }
+    )
 }
