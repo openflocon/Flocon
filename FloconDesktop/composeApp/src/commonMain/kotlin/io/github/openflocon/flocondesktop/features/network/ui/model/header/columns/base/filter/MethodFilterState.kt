@@ -15,5 +15,6 @@ data class MethodFilterState(
         val isSelected: Boolean,
     )
 
-    override val isActive: Boolean = isEnabled
+    // here the logo should be active only if we removed one item from the list
+    override val isActive: Boolean = items.any { !it.isSelected }
 }

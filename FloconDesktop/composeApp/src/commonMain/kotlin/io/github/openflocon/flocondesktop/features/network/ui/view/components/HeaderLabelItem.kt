@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package io.github.openflocon.flocondesktop.features.network.ui.view.components
 
 import androidx.compose.foundation.Image
@@ -12,10 +14,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FilterAlt
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,19 +49,28 @@ fun HeaderLabelItem(
     clickOnFilter: () -> Unit,
     labelAlignment: Alignment = Alignment.Center,
 ) {
+    var isHover by remember { mutableStateOf(false) }
     val typo = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
     val textColor = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f)
 
     Row(
-        modifier = modifier.padding(horizontal = 4.dp),
+        modifier = modifier
+            .onPointerEvent(PointerEventType.Enter) { isHover = true }
+            .onPointerEvent(PointerEventType.Exit) { isHover = false }
+            .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Image(
             imageVector = Icons.Rounded.FilterAlt,
             contentDescription = "Filter",
-            colorFilter = ColorFilter.tint(if (isFiltered) textColor else textColor.copy(alpha = notEnabledOpacity)),
+            colorFilter = ColorFilter.tint(
+                if (isFiltered) textColor else textColor.copy(alpha = notEnabledOpacity)
+            ),
             modifier = Modifier.size(14.dp)
+                .graphicsLayer {
+                    alpha = if (isFiltered || isHover) 1f else 0f
+                }
                 .clickable(onClick = clickOnFilter),
         )
         Box(
@@ -72,9 +91,17 @@ fun HeaderLabelItem(
         ) {
 
             // image to not have paddings
-            Box(modifier = Modifier.size(14.dp).clickable(onClick = {
-                clickOnSort(SortedByUiModel.Enabled.Ascending)
-            }), contentAlignment = Alignment.BottomCenter) {
+            Box(
+                modifier = Modifier
+                    .size(14.dp)
+                    .graphicsLayer {
+                        alpha =
+                            if (isHover || sortedBy is SortedByUiModel.Enabled.Ascending) 1f else 0f
+                    }
+                    .clickable(onClick = {
+                        clickOnSort(SortedByUiModel.Enabled.Ascending)
+                    }), contentAlignment = Alignment.BottomCenter
+            ) {
                 Image(
                     painter = painterResource(Res.drawable.arrow_up_cropped),
                     contentDescription = "Sort ascending",
@@ -88,11 +115,17 @@ fun HeaderLabelItem(
                     modifier = Modifier.size(iconsSize)
                 )
             }
-            Box(modifier = Modifier.size(14.dp).clickable(
-                onClick = {
-                    clickOnSort(SortedByUiModel.Enabled.Descending)
-                }
-            ), contentAlignment = Alignment.TopCenter) {
+            Box(
+                modifier = Modifier
+                    .size(14.dp)
+                    .graphicsLayer {
+                        alpha = if(isHover || sortedBy is SortedByUiModel.Enabled.Descending) 1f else 0f
+                    }
+                    .clickable(
+                        onClick = {
+                            clickOnSort(SortedByUiModel.Enabled.Descending)
+                        }
+                    ), contentAlignment = Alignment.TopCenter) {
                 Image(
                     painter = painterResource(Res.drawable.arrow_up_cropped),
                     contentDescription = "Sort descending",

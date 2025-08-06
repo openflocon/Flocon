@@ -7,13 +7,14 @@ data class TextFilterState(
     val activeFilters: List<ActiveFilter>,
     val isEnabled: Boolean,
 ) : FilterState {
+
     @Immutable
     data class ActiveFilter(
         val text: String,
         val isExcluded: Boolean,
     )
 
-    override val isActive: Boolean = activeFilters.isNotEmpty()
+    override val isActive: Boolean = activeFilters.isNotEmpty() && isEnabled
 
     companion object {
         val EMPTY = TextFilterState(
