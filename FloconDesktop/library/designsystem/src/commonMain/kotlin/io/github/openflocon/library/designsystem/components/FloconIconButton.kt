@@ -44,6 +44,8 @@ fun FloconIconButton(
         enabled = enabled,
         modifier = modifier
     ) {
-        FloconIcon(imageVector = imageVector)
+        FloconIcon(
+            imageVector = imageVector
+        )
     }
 }

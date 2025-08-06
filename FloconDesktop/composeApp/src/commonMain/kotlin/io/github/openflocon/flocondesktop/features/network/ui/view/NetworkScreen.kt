@@ -23,13 +23,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.app_icon
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
@@ -41,8 +38,6 @@ import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiSt
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkFilter
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconJsonTree
-import org.jetbrains.compose.resources.painterResource
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -174,17 +169,11 @@ fun NetworkScreen(
             val state = states[item]
 
             if (state != null) {
-                Window(
-                    title = "Json",
-                    icon = painterResource(Res.drawable.app_icon),
+                NetworkJsonScreen(
+                    json = item,
                     state = state,
                     onCloseRequest = { onAction(NetworkAction.CloseJsonDetail(item.id)) }
-                ) {
-                    FloconJsonTree(
-                        json = item.json,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                )
             }
         }
 }
