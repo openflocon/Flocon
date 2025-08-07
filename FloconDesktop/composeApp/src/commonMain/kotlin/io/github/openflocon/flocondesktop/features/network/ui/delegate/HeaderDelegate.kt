@@ -3,6 +3,12 @@ package io.github.openflocon.flocondesktop.features.network.ui.delegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.flocondesktop.features.network.domain.filter.GetNetworkFilterUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.filter.ObserveNetworkFilterUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.filter.UpdateNetworkFilterUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkTextFilterColumns
+import io.github.openflocon.flocondesktop.features.network.ui.mapper.toTextFilterDomain
+import io.github.openflocon.flocondesktop.features.network.ui.mapper.toTextFilterUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.NetworkHeaderUiState
@@ -13,20 +19,25 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.header.colum
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.NetworkStatusColumnUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.NetworkTextColumnUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.MethodFilterState
-import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterColumns
-import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterState
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterStateUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
 
 class HeaderDelegate(
     private val closeableDelegate: CloseableDelegate,
     dispatcherProvider: DispatcherProvider,
+    private val observeNetworkFilterUseCase: ObserveNetworkFilterUseCase,
+    private val updateNetworkFilterUseCase: UpdateNetworkFilterUseCase,
+    private val getNetworkFilterUseCase: GetNetworkFilterUseCase,
 ) : CloseableScoped by closeableDelegate {
 
     data class Sorted(
@@ -34,7 +45,9 @@ class HeaderDelegate(
         val sort: SortedByUiModel.Enabled,
     )
 
-    val textFiltersState = MutableStateFlow<Map<TextFilterColumns, TextFilterState>>(emptyMap())
+    val textFiltersState: StateFlow<Map<NetworkTextFilterColumns, TextFilterStateUiModel>> = observeNetworkFilterUseCase()
+        .map { it.mapValues { (key, value) -> toTextFilterUi(value) } }
+        .stateIn(coroutineScope, started = SharingStarted.WhileSubscribed(5_000), emptyMap())
 
     val sorted = MutableStateFlow<Sorted?>(null)
     private val methodFilterState = MutableStateFlow<MethodFilterState>(
@@ -76,13 +89,14 @@ class HeaderDelegate(
     fun buildHeaderValue(
         sorted: Sorted?,
         methodFilterState: MethodFilterState,
-        textFiltersState: Map<TextFilterColumns, TextFilterState>,
+        textFiltersState: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
     ): NetworkHeaderUiState {
         return NetworkHeaderUiState(
             requestTime = NetworkTextColumnUiModel(
                 sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.RequestTime }?.sort
                     ?: SortedByUiModel.None,
-                filter = textFiltersState[TextFilterColumns.RequestTime] ?: TextFilterState.EMPTY,
+                filter = textFiltersState[NetworkTextFilterColumns.RequestTime]
+                    ?: TextFilterStateUiModel.EMPTY,
             ),
             method = NetworkMethodColumnUiModel(
                 sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Method }?.sort
@@ -92,22 +106,22 @@ class HeaderDelegate(
             domain = NetworkTextColumnUiModel(
                 sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Domain }?.sort
                     ?: SortedByUiModel.None,
-                filter = textFiltersState[TextFilterColumns.Domain] ?: TextFilterState.EMPTY,
+                filter = textFiltersState[NetworkTextFilterColumns.Domain] ?: TextFilterStateUiModel.EMPTY,
             ),
             query = NetworkTextColumnUiModel(
                 sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Query }?.sort
                     ?: SortedByUiModel.None,
-                filter = textFiltersState[TextFilterColumns.Query] ?: TextFilterState.EMPTY,
+                filter = textFiltersState[NetworkTextFilterColumns.Query] ?: TextFilterStateUiModel.EMPTY,
             ),
             status = NetworkStatusColumnUiModel(
                 sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Status }?.sort
                     ?: SortedByUiModel.None,
-                filter = textFiltersState[TextFilterColumns.Status] ?: TextFilterState.EMPTY,
+                filter = textFiltersState[NetworkTextFilterColumns.Status] ?: TextFilterStateUiModel.EMPTY,
             ),
             time = NetworkTextColumnUiModel(
                 sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Time }?.sort
                     ?: SortedByUiModel.None,
-                filter = textFiltersState[TextFilterColumns.Time] ?: TextFilterState.EMPTY,
+                filter = textFiltersState[NetworkTextFilterColumns.Time] ?: TextFilterStateUiModel.EMPTY,
             ),
         )
     }
@@ -139,42 +153,44 @@ class HeaderDelegate(
     }
 
     fun onFilterAction(action: OnFilterAction) {
-        when (action) {
-            is OnFilterAction.ClickOnMethod -> {
-                val clicked = action.methodUi
-                methodFilterState.update {
-                    it.copy(items = it.items.map { item ->
-                        if (item.method == clicked) {
-                            item.copy(isSelected = !item.isSelected)
-                        } else item
-                    })
+        coroutineScope.launch {
+            when (action) {
+                is OnFilterAction.ClickOnMethod -> {
+                    val clicked = action.methodUi
+                    methodFilterState.update {
+                        it.copy(items = it.items.map { item ->
+                            if (item.method == clicked) {
+                                item.copy(isSelected = !item.isSelected)
+                            } else item
+                        })
+                    }
                 }
-            }
 
-            is OnFilterAction.TextFilter -> {
-                textFilterAction(column = action.column, action = action.action)
+                is OnFilterAction.TextFilter -> {
+                    textFilterAction(column = action.column, action = action.action)
+                }
             }
         }
     }
 
-    private fun textFilterAction(column: TextFilterColumns, action: TextFilterAction) {
-        val filter = textFiltersState.value[column] ?: TextFilterState(
-            includedFilters = listOf(),
-            excludedFilters = listOf(),
-            isEnabled = true,
-        )
+    private suspend fun textFilterAction(
+        column: NetworkTextFilterColumns,
+        action: TextFilterAction
+    ) {
+        val filter: TextFilterStateUiModel = getNetworkFilterUseCase(column).let { toTextFilterUi(it) }
         val updated = parformAction(filter, action)
 
-        textFiltersState.update {
-            it + Pair(column, updated)
-        }
+        updateNetworkFilterUseCase(
+            column = column,
+            newValue = toTextFilterDomain(updated)
+        )
     }
 }
 
 private fun parformAction(
-    filter: TextFilterState,
+    filter: TextFilterStateUiModel,
     action: TextFilterAction
-): TextFilterState {
+): TextFilterStateUiModel {
     return when (action) {
         is TextFilterAction.Delete -> {
             filter.copy(
@@ -185,7 +201,7 @@ private fun parformAction(
 
         is TextFilterAction.Exclude -> {
             filter.copy(
-                excludedFilters = (filter.excludedFilters + TextFilterState.FilterItem(
+                excludedFilters = (filter.excludedFilters + TextFilterStateUiModel.FilterItem(
                     text = action.text,
                     isActive = true,
                     isExcluded = true
@@ -195,7 +211,7 @@ private fun parformAction(
 
         is TextFilterAction.Include -> {
             filter.copy(
-                includedFilters = (filter.includedFilters + TextFilterState.FilterItem(
+                includedFilters = (filter.includedFilters + TextFilterStateUiModel.FilterItem(
                     text = action.text,
                     isActive = true,
                     isExcluded = false

@@ -1,19 +1,11 @@
 package io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter
 
 import androidx.compose.runtime.Immutable
-import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterState.FilterItem
-
-enum class TextFilterColumns {
-    RequestTime,
-    Domain,
-    Query,
-    Status,
-    Time,
-}
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterStateUiModel.FilterItem
 
 
 @Immutable
-data class TextFilterState(
+data class TextFilterStateUiModel(
     val includedFilters: List<FilterItem>,
     val excludedFilters: List<FilterItem>,
     val isEnabled: Boolean,
@@ -30,8 +22,8 @@ data class TextFilterState(
 
     override val isActive: Boolean = allFilters.isNotEmpty() && isEnabled && allFilters.any { it.isActive }
 
-    companion object {
-        val EMPTY = TextFilterState(
+    companion object Companion {
+        val EMPTY = TextFilterStateUiModel(
             includedFilters = emptyList(),
             excludedFilters = emptyList(),
             isEnabled = false,
@@ -39,7 +31,7 @@ data class TextFilterState(
     }
 }
 
-fun previewTextFilterState() = TextFilterState(
+fun previewTextFilterState() = TextFilterStateUiModel(
     isEnabled = true,
     includedFilters = listOf(
         FilterItem(text = "toInclude", isExcluded = false, isActive = true),

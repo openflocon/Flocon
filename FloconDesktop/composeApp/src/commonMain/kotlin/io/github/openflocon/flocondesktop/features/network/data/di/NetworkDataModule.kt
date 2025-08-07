@@ -1,8 +1,12 @@
 package io.github.openflocon.flocondesktop.features.network.data.di
 
+import io.github.openflocon.flocondesktop.features.network.data.NetworkFilterRepositoryImpl
 import io.github.openflocon.flocondesktop.features.network.data.NetworkRepositoryImpl
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkFilterLocalDataSource
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkFilterLocalDataSourceRoom
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSourceRoom
+import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkFilterRepository
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
@@ -17,5 +21,11 @@ val networkDataModule =
         }
         singleOf(::NetworkLocalDataSourceRoom) {
             bind<NetworkLocalDataSource>()
+        }
+        singleOf(::NetworkFilterRepositoryImpl) {
+            bind<NetworkFilterRepository>()
+        }
+        singleOf(::NetworkFilterLocalDataSourceRoom) {
+            bind<NetworkFilterLocalDataSource>()
         }
     }
