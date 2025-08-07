@@ -22,6 +22,8 @@ import androidx.compose.material.icons.outlined.RemoveCircle
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -32,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -85,68 +88,70 @@ private fun TextFilterDropdownContent(
             }
         )
 
-        Column(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
-            if (filterState.includedFilters.isNotEmpty()) {
-                Text(
-                    text = "Includes :",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp, horizontal = 12.dp),
-                    style = FloconTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Thin,
-                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+        if(filterState.allFilters.isNotEmpty()) {
+            Column(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+                if (filterState.includedFilters.isNotEmpty()) {
+                    Text(
+                        text = "Includes :",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp, horizontal = 12.dp),
+                        style = FloconTheme.typography.bodySmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                        )
                     )
-                )
 
-                filterState.includedFilters.fastForEach {
-                    FilterItemView(
-                        item = it,
-                        modifier = Modifier.fillMaxWidth(),
-                        clickDelete = {
-                            textFilterAction(TextFilterAction.Delete(it))
-                        },
-                        changeIsActive = { item, newValue ->
-                            textFilterAction(
-                                TextFilterAction.SetIsActive(
-                                    item = item,
-                                    isActive = newValue
+                    filterState.includedFilters.fastForEach {
+                        FilterItemView(
+                            item = it,
+                            modifier = Modifier.fillMaxWidth(),
+                            clickDelete = {
+                                textFilterAction(TextFilterAction.Delete(it))
+                            },
+                            changeIsActive = { item, newValue ->
+                                textFilterAction(
+                                    TextFilterAction.SetIsActive(
+                                        item = item,
+                                        isActive = newValue
+                                    )
                                 )
-                            )
-                        }
-                    )
+                            }
+                        )
+                    }
                 }
-            }
 
-            if (filterState.excludedFilters.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(6.dp))
+                if (filterState.excludedFilters.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(6.dp))
 
-                Text(
-                    text = "Excludes :",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp, horizontal = 12.dp),
-                    style = FloconTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Thin,
-                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                    Text(
+                        text = "Excludes :",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp, horizontal = 12.dp),
+                        style = FloconTheme.typography.bodySmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                        )
                     )
-                )
 
-                filterState.excludedFilters.fastForEach {
-                    FilterItemView(
-                        item = it,
-                        modifier = Modifier.fillMaxWidth(),
-                        clickDelete = {
-                            textFilterAction(TextFilterAction.Delete(it))
-                        },
-                        changeIsActive = { item, newValue ->
-                            textFilterAction(
-                                TextFilterAction.SetIsActive(
-                                    item = item,
-                                    isActive = newValue
+                    filterState.excludedFilters.fastForEach {
+                        FilterItemView(
+                            item = it,
+                            modifier = Modifier.fillMaxWidth(),
+                            clickDelete = {
+                                textFilterAction(TextFilterAction.Delete(it))
+                            },
+                            changeIsActive = { item, newValue ->
+                                textFilterAction(
+                                    TextFilterAction.SetIsActive(
+                                        item = item,
+                                        isActive = newValue
+                                    )
                                 )
-                            )
-                        }
-                    )
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -161,21 +166,25 @@ private fun FilterItemView(
     clickDelete: (item: TextFilterState.FilterItem) -> Unit,
 ) {
     Row(
-        modifier = modifier.padding(horizontal = 8.dp),
+        modifier = modifier.padding(horizontal = 6.dp, vertical = 1.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Checkbox(
-            checked = item.isActive,
-            onCheckedChange = {
-                changeIsActive(item, it)
-            }
-        )
+        Box(modifier = Modifier.height(12.dp)) {
+            Switch(
+                modifier = Modifier.scale(0.7f),
+                checked = item.isActive,
+                onCheckedChange = {
+                    changeIsActive(item, it)
+                }
+            )
+        }
 
         Text(
             text = item.text,
             style = FloconTheme.typography.bodySmall,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            color = FloconTheme.colorPalette.onSurface,
         )
 
         Icon(
