@@ -5,7 +5,8 @@ import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHt
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkRepository {
-    fun observeRequests(deviceId: String): Flow<List<FloconHttpRequestDomainModel>>
+    // lite : exclude headers, sizes, body
+    fun observeRequests(deviceId: String, lite: Boolean): Flow<List<FloconHttpRequestDomainModel>>
 
     fun observeRequest(
         deviceId: String,

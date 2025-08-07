@@ -5,7 +5,7 @@ import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHt
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkLocalDataSource {
-    fun observeRequests(deviceId: DeviceId): Flow<List<FloconHttpRequestDomainModel>>
+    fun observeRequests(deviceId: DeviceId, lite: Boolean): Flow<List<FloconHttpRequestDomainModel>>
 
     fun observeRequest(
         deviceId: DeviceId,
