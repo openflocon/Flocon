@@ -11,13 +11,11 @@ import io.github.openflocon.flocondesktop.features.network.domain.ObserveHttpReq
 import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.ResetCurrentDeviceHttpRequestsUseCase
+import io.github.openflocon.flocondesktop.features.network.ui.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkJsonUi
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
-import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -41,12 +39,14 @@ class NetworkViewModel(
     private val removeHttpRequestUseCase: RemoveHttpRequestUseCase,
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
-) : ViewModel() {
+    private val headerDelegate: HeaderDelegate,
+    private val sortAndFilterNetworkItemsProcessor: SortAndFilterNetworkItemsProcessor,
+) : ViewModel(headerDelegate) {
 
-    private val filterMethod = MethodFilter()
+    private val contentState =
+        MutableStateFlow(ContentUiState(selectedRequestId = null, detailJsons = emptySet()))
 
-    private val contentState = MutableStateFlow(ContentUiState(selectedRequestId = null, detailJsons = emptySet()))
-    private val filterUiState = MutableStateFlow(FilterUiState(query = "", methods = NetworkMethodUi.all()))
+    private val filterUiState = MutableStateFlow(FilterUiState(query = ""))
 
     private val detailState: StateFlow<NetworkDetailViewState?> =
         contentState.map { it.selectedRequestId }
@@ -63,10 +63,26 @@ class NetworkViewModel(
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
     private val filteredItems = combine(
-        observeHttpRequestsUseCase().map { list -> list.map { toUi(it) } },
-        filterUiState
-    ) { items, filterState ->
-        filterItems(items, filterState)
+        observeHttpRequestsUseCase().map { list ->
+            list.map {
+                Pair(
+                    it,
+                    toUi(it)
+                )
+            }
+        }, // keep the domain for the filter
+        filterUiState,
+        headerDelegate.sorted,
+        headerDelegate.allowedMethods(),
+        headerDelegate.textFiltersState,
+    ) { items, filterState, sorted, allowedMethods, textFilters ->
+        sortAndFilterNetworkItemsProcessor(
+            items = items,
+            filterState = filterState,
+            sorted = sorted,
+            allowedMethods = allowedMethods,
+            textFilters = textFilters,
+        )
     }
         .distinctUntilChanged()
 
@@ -74,13 +90,15 @@ class NetworkViewModel(
         filteredItems,
         contentState,
         detailState,
-        filterUiState
-    ) { items, content, detail, filter ->
+        filterUiState,
+        headerDelegate.headerUiState,
+    ) { items, content, detail, filter, header ->
         NetworkUiState(
             items = items,
             contentState = content,
             detailState = detail,
-            filterState = filter
+            filterState = filter,
+            headerState = header,
         )
     }
         .stateIn(
@@ -90,7 +108,8 @@ class NetworkViewModel(
                 items = emptyList(),
                 detailState = detailState.value,
                 contentState = contentState.value,
-                filterState = filterUiState.value
+                filterState = filterUiState.value,
+                headerState = headerDelegate.headerUiState.value,
             )
         )
 
@@ -105,9 +124,16 @@ class NetworkViewModel(
             is NetworkAction.Remove -> onRemove(action)
             is NetworkAction.RemoveLinesAbove -> onRemoveLinesAbove(action)
             is NetworkAction.FilterQuery -> onFilterQuery(action)
-            is NetworkAction.FilterMethod -> onFilterMethod(action)
             is NetworkAction.CloseJsonDetail -> onCloseJsonDetail(action)
             is NetworkAction.JsonDetail -> onJsonDetail(action)
+            is NetworkAction.HeaderAction.ClickOnSort -> headerDelegate.onClickSort(
+                type = action.type,
+                sort = action.sort
+            )
+
+            is NetworkAction.HeaderAction.FilterAction -> headerDelegate.onFilterAction(
+                action = action.action,
+            )
         }
     }
 
@@ -147,7 +173,9 @@ class NetworkViewModel(
     }
 
     private fun onCloseJsonDetail(action: NetworkAction.CloseJsonDetail) {
-        contentState.update { state -> state.copy(detailJsons = state.detailJsons.filterNot { it.id == action.id }.toSet()) }
+        contentState.update { state ->
+            state.copy(detailJsons = state.detailJsons.filterNot { it.id == action.id }.toSet())
+        }
     }
 
     private fun onReset() {
@@ -190,31 +218,5 @@ class NetworkViewModel(
             state.copy(query = action.query)
         }
     }
-
-    private fun onFilterMethod(action: NetworkAction.FilterMethod) {
-        filterUiState.update { state ->
-            state.copy(
-                methods = if (action.add) {
-                    state.methods + action.method
-                } else {
-                    state.methods - action.method
-                }
-            )
-        }
-    }
-
-    private fun filterItems(
-        items: List<NetworkItemViewState>,
-        filterState: FilterUiState
-    ): List<NetworkItemViewState> {
-        var filteredItems = items
-
-        if (filterState.query.isNotEmpty())
-            filteredItems = filteredItems.filter { it.contains(filterState.query) }
-        if (filterState.methods.isNotEmpty())
-            filteredItems = filterMethod.filter(filterState, filteredItems)
-
-        return filteredItems
-    }
-
 }
+

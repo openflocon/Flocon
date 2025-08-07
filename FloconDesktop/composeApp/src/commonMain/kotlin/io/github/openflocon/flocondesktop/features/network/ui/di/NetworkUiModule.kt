@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.ui.di
 
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
+import io.github.openflocon.flocondesktop.features.network.ui.SortAndFilterNetworkItemsProcessor
+import io.github.openflocon.flocondesktop.features.network.ui.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf
@@ -10,4 +12,6 @@ val networkUiModule =
     module {
         viewModelOf(::NetworkViewModel)
         factoryOf(::MessagesServerDelegate)
+        factoryOf(::HeaderDelegate)
+        factoryOf(::SortAndFilterNetworkItemsProcessor)
     }

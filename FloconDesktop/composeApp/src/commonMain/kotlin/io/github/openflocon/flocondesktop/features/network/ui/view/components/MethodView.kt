@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.network.ui.view.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.TextUnit
@@ -51,6 +53,7 @@ fun MethodView(
     method: NetworkMethodUi,
     textSize: TextUnit = 12.sp,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     val (backgroundColor, textColor) =
         when (method) {
@@ -71,6 +74,7 @@ fun MethodView(
         textSize = textSize,
         modifier = modifier,
         icon = method.icon,
+        onClick = onClick,
     )
 }
 
@@ -82,14 +86,17 @@ fun NetworkTag(
     textSize: TextUnit = 12.sp,
     modifier: Modifier = Modifier,
     icon: DrawableResource?,
+    onClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier =
             modifier
+                .clip(RoundedCornerShape(20.dp))
                 .background(
                     color = backgroundColor,
-                    shape = RoundedCornerShape(20.dp), // Pill shape
-                ).padding(horizontal = 4.dp, vertical = 2.dp),
+                )
+                .clickable(onClick = { onClick?.invoke()}, enabled = onClick != null)
+                .padding(horizontal = 4.dp, vertical = 2.dp),
         // Padding inside the tag
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,

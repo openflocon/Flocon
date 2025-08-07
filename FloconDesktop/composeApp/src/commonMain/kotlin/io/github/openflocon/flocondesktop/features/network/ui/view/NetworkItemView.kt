@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.common.ui.ContextualItem
@@ -28,20 +27,6 @@ import io.github.openflocon.flocondesktop.features.network.ui.view.components.Me
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.StatusView
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-/**
- * Data class to define the fixed widths for each column in NetworkItemView.
- * This allows for easy configuration and consistency across all items in a LazyColumn.
- */
-data class NetworkItemColumnWidths(
-    val dateWidth: Dp = 90.dp,
-    val methodWidth: Dp = 70.dp,
-    val statusCodeWidth: Dp = 65.dp,
-    val requestSizeWidth: Dp = 65.dp,
-    val responseSizeWidth: Dp = 65.dp,
-    val timeWidth: Dp = 60.dp,
-    // The 'route' column will use Modifier.weight(1f) to take remaining space
-)
 
 @Composable
 fun NetworkItemView(
@@ -120,7 +105,7 @@ fun NetworkItemView(
                     overflow = TextOverflow.Ellipsis,
                     style = bodySmall,
                     color = FloconTheme.colorPalette.onSurface,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(columnWidths.domainWeight)
                         .padding(horizontal = 4.dp),
                 )
                 when (val type = state.type) {

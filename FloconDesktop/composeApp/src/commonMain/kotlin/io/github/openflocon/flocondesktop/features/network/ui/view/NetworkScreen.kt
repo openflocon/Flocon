@@ -31,10 +31,11 @@ import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkJsonUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.NetworkHeaderUiState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiState
-import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
+import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkFilter
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
@@ -57,7 +58,7 @@ fun NetworkScreen(modifier: Modifier = Modifier) {
 fun NetworkScreen(
     uiState: NetworkUiState,
     onAction: (NetworkAction) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val columnWidths: NetworkItemColumnWidths =
         remember { NetworkItemColumnWidths() } // Default widths provided
@@ -84,7 +85,6 @@ fun NetworkScreen(
                     color = FloconTheme.colorPalette.onSurface,
                 )
                 NetworkFilter(
-                    uiState = uiState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(FloconTheme.colorPalette.panel)
@@ -94,6 +94,13 @@ fun NetworkScreen(
                 NetworkItemHeaderView(
                     columnWidths = columnWidths,
                     modifier = Modifier.fillMaxWidth(),
+                    clickOnSort = { type, sort ->
+                        onAction(NetworkAction.HeaderAction.ClickOnSort(type, sort))
+                    },
+                    onFilterAction = {
+                        onAction(NetworkAction.HeaderAction.FilterAction(it))
+                    },
+                    state = uiState.headerState,
                 )
                 Box(
                     Modifier

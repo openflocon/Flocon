@@ -23,6 +23,9 @@ data class NetworkItemViewState(
         method.text.contains(text, ignoreCase = true)
 
     sealed interface NetworkTypeUi {
+
+        val text: String
+
         fun contains(text: String): Boolean
 
         @Immutable
@@ -31,6 +34,7 @@ data class NetworkItemViewState(
             val query: String,
         ) : NetworkTypeUi {
             override fun contains(text: String): Boolean = query.contains(text, ignoreCase = true)
+            override val text = query
         }
 
         @Immutable
@@ -38,6 +42,7 @@ data class NetworkItemViewState(
             val queryName: String,
         ) : NetworkTypeUi {
             override fun contains(text: String): Boolean = queryName.contains(text, ignoreCase = true)
+            override val text = queryName
         }
 
         @Immutable
@@ -45,6 +50,7 @@ data class NetworkItemViewState(
             val method: String,
         ) : NetworkTypeUi {
             override fun contains(text: String): Boolean = method.contains(text, ignoreCase = true)
+            override val text = method
         }
     }
 }
