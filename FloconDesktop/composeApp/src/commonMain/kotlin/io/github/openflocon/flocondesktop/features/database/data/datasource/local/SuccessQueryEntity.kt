@@ -13,6 +13,7 @@ import androidx.room.PrimaryKey
 data class SuccessQueryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val deviceId: String,
+    val packageName: String,
     val databaseId: String,
     val queryString: String,
     val timestamp: Long,

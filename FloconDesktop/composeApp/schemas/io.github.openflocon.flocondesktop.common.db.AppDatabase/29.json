@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 29,
-    "identityHash": "413be2ae8adf33e95697efba4da4bfab",
+    "identityHash": "24e01eb008d1c1828df3999028e8f0f7",
     "entities": [
       {
         "tableName": "FloconHttpRequestEntity",
@@ -189,7 +189,7 @@
       },
       {
         "tableName": "DashboardEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dashboardId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, PRIMARY KEY(`dashboardId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dashboardId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, PRIMARY KEY(`dashboardId`))",
         "fields": [
           {
             "fieldPath": "dashboardId",
@@ -200,6 +200,12 @@
           {
             "fieldPath": "deviceId",
             "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -582,7 +588,7 @@
       },
       {
         "tableName": "SuccessQueryEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `databaseId` TEXT NOT NULL, `queryString` TEXT NOT NULL, `timestamp` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `databaseId` TEXT NOT NULL, `queryString` TEXT NOT NULL, `timestamp` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -593,6 +599,12 @@
           {
             "fieldPath": "deviceId",
             "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -707,7 +719,7 @@
       },
       {
         "tableName": "AnalyticsItemEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`itemId` TEXT NOT NULL, `analyticsTableId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `eventName` TEXT NOT NULL, `propertiesColumnsNames` TEXT NOT NULL, `propertiesValues` TEXT NOT NULL, PRIMARY KEY(`itemId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`itemId` TEXT NOT NULL, `analyticsTableId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `eventName` TEXT NOT NULL, `propertiesColumnsNames` TEXT NOT NULL, `propertiesValues` TEXT NOT NULL, PRIMARY KEY(`itemId`))",
         "fields": [
           {
             "fieldPath": "itemId",
@@ -724,6 +736,12 @@
           {
             "fieldPath": "deviceId",
             "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -811,7 +829,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '413be2ae8adf33e95697efba4da4bfab')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '24e01eb008d1c1828df3999028e8f0f7')"
     ]
   }
 }

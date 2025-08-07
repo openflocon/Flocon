@@ -4,6 +4,7 @@ import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
@@ -14,9 +15,10 @@ class LocalFilesDataSourceRoom(
     private val fileDao: FloconFileDao,
     private val dispatcherProvider: DispatcherProvider,
 ) : LocalFilesDataSource {
+
     override fun observeFolderContentUseCase(
-        deviceId: DeviceId,
-        folderPath: FilePathDomainModel,
+        deviceIdAndPackageName: DeviceIdAndPackageName,
+        folderPath: FilePathDomainModel
     ): Flow<List<FileDomainModel>> = fileDao
         .observeFolderContent(
             deviceId = deviceId,

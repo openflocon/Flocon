@@ -1,0 +1,8 @@
+package io.github.openflocon.flocondesktop
+
+import kotlinx.serialization.Serializable
+
+data class FloconDeviceIdAndPackageName(
+    val deviceId: DeviceId,
+    val packageName: String
+)

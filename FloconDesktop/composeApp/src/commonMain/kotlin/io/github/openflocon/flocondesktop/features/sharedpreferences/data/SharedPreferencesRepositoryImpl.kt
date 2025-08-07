@@ -12,6 +12,7 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.mode
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.repository.SharedPreferencesRepository
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -57,14 +58,11 @@ class SharedPreferencesRepositoryImpl(
         }
     }
 
-    override fun observeSelectedDeviceSharedPreference(deviceId: DeviceId) = deviceSharedPreferencesDataSource
-        .observeSelectedDeviceSharedPreference(deviceId)
+    override fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<DeviceSharedPreferenceDomainModel?> = deviceSharedPreferencesDataSource
+        .observeSelectedDeviceSharedPreference(deviceIdAndPackageName)
         .flowOn(dispatcherProvider.data)
 
-    override fun selectDeviceSharedPreference(
-        deviceId: DeviceId,
-        sharedPreferenceId: DeviceSharedPreferenceId,
-    ) {
+    override fun selectDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageName, sharedPreferenceId: DeviceSharedPreferenceId) {
         deviceSharedPreferencesDataSource.selectDeviceSharedPreference(
             deviceId = deviceId,
             sharedPreferenceId = sharedPreferenceId,

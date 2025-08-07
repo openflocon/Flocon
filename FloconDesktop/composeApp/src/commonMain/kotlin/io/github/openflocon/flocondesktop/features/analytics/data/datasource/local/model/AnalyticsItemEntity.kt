@@ -14,6 +14,7 @@ data class AnalyticsItemEntity(
     val itemId: String,
     val analyticsTableId: String,
     val deviceId: String,
+    val packageName: String,
     val createdAt: Long,
     val eventName: String,
     val propertiesColumnsNames: List<String>,

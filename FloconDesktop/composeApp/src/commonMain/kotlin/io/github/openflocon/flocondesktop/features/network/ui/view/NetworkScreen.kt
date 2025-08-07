@@ -31,12 +31,11 @@ import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkJsonUi
-import io.github.openflocon.flocondesktop.features.network.ui.model.header.NetworkHeaderUiState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiState
-import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkFilter
+import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkItemHeaderView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -152,7 +151,6 @@ fun NetworkScreen(
     }
 
     val states = remember { mutableStateMapOf<NetworkJsonUi, FloconWindowState>() }
-
 
     LaunchedEffect(uiState.contentState.detailJsons) {
         val deletedJson = states.keys.filter { key -> uiState.contentState.detailJsons.none { key.id == it.id } }

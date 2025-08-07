@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases
 
-import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
 import io.github.openflocon.flocondesktop.Protocol
 import io.github.openflocon.flocondesktop.Server
@@ -12,6 +11,8 @@ import io.github.openflocon.flocondesktop.features.database.data.model.incoming.
 import io.github.openflocon.flocondesktop.features.database.data.model.outgoing.DatabaseOutgoingQueryMessage
 import io.github.openflocon.flocondesktop.features.database.domain.model.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.toFlocon
 import io.github.openflocon.flocondesktop.newRequestId
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,25 +34,24 @@ class QueryDatabaseDataSource(
 
     @OptIn(ExperimentalUuidApi::class)
     suspend fun executeQuery(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageName,
         databaseId: DeviceDataBaseId,
         query: String,
     ): Either<Exception, DatabaseExecuteSqlResponseDomainModel> {
         val requestId = newRequestId()
         server.sendMessageToClient(
-            deviceId = deviceId,
-            message =
-            FloconOutgoingMessageDataModel(
+            deviceIdAndPackageName = deviceIdAndPackageName.toFlocon(),
+            message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Database.Plugin,
                 method = Protocol.ToDevice.Database.Method.Query,
                 body =
-                Json.encodeToString<DatabaseOutgoingQueryMessage>(
-                    DatabaseOutgoingQueryMessage(
-                        requestId = requestId,
-                        query = query,
-                        database = databaseId,
+                    Json.encodeToString<DatabaseOutgoingQueryMessage>(
+                        DatabaseOutgoingQueryMessage(
+                            requestId = requestId,
+                            query = query,
+                            database = databaseId,
+                        ),
                     ),
-                ),
             ),
         )
         // wait for result

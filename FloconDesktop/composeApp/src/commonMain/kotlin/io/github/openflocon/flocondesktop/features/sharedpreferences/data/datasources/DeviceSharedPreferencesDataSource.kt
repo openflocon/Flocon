@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.data.datasources
 
-import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
 import io.github.openflocon.flocondesktop.Protocol
 import io.github.openflocon.flocondesktop.Server
@@ -9,6 +8,8 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.toFlocon
 import io.github.openflocon.flocondesktop.newRequestId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,53 +22,52 @@ class DeviceSharedPreferencesDataSource(
     private val server: Server,
 ) {
     private val deviceSharedPreferences =
-        MutableStateFlow<Map<DeviceId, List<DeviceSharedPreferenceDomainModel>>>(emptyMap())
+        MutableStateFlow<Map<DeviceIdAndPackageName, List<DeviceSharedPreferenceDomainModel>>>(emptyMap())
 
     private val selectedDeviceSharedPreferences =
-        MutableStateFlow<Map<DeviceId, DeviceSharedPreferenceDomainModel?>>(emptyMap())
+        MutableStateFlow<Map<DeviceIdAndPackageName, DeviceSharedPreferenceDomainModel?>>(emptyMap())
 
-    fun observeSelectedDeviceSharedPreference(deviceId: DeviceId): Flow<DeviceSharedPreferenceDomainModel?> = selectedDeviceSharedPreferences
-        .map {
-            it[deviceId]
-        }.distinctUntilChanged()
+    fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<DeviceSharedPreferenceDomainModel?> =
+        selectedDeviceSharedPreferences
+            .map { it[deviceIdAndPackageName] }
+            .distinctUntilChanged()
 
     fun selectDeviceSharedPreference(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageName,
         sharedPreferenceId: DeviceSharedPreferenceId,
     ) {
-        val deviceSharedPreferenceList = deviceSharedPreferences.value[deviceId] ?: return
+        val deviceSharedPreferenceList = deviceSharedPreferences.value[deviceIdAndPackageName] ?: return
         val sharedPreference =
             deviceSharedPreferenceList.firstOrNull { it.id == sharedPreferenceId } ?: return
 
         selectedDeviceSharedPreferences.update {
-            it + (deviceId to sharedPreference)
+            it + (deviceIdAndPackageName to sharedPreference)
         }
     }
 
-    fun observeDeviceSharedPreferences(deviceId: DeviceId): Flow<List<DeviceSharedPreferenceDomainModel>> = deviceSharedPreferences.map {
-        it[deviceId] ?: emptyList()
-    }
+    fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<List<DeviceSharedPreferenceDomainModel>> =
+        deviceSharedPreferences.map { it[deviceIdAndPackageName] ?: emptyList() }
 
     fun registerDeviceSharedPreferences(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageName,
         sharedPreferences: List<DeviceSharedPreferenceDomainModel>,
     ) {
         deviceSharedPreferences.update {
-            val actual = it[deviceId]
+            val actual = it[deviceIdAndPackageName]
             val newList =
                 buildList<DeviceSharedPreferenceDomainModel> {
                     actual?.let { addAll(it) }
                     addAll(sharedPreferences)
                 }.distinct()
-            it + (deviceId to newList)
+            it + (deviceIdAndPackageName to newList)
         }
 
         if (sharedPreferences.isNotEmpty()) {
             // select the first db if no one for this device id
             selectedDeviceSharedPreferences.update { state ->
-                val dbForThisDevice = state[deviceId]
+                val dbForThisDevice = state[deviceIdAndPackageName]
                 if (dbForThisDevice == null) {
-                    state + (deviceId to sharedPreferences.first())
+                    state + (deviceIdAndPackageName to sharedPreferences.first())
                 } else {
                     state
                 }
@@ -75,51 +75,52 @@ class DeviceSharedPreferencesDataSource(
         }
     }
 
-    suspend fun askForDeviceSharedPreferences(deviceId: DeviceId) {
+    suspend fun askForDeviceSharedPreferences(
+        deviceIdAndPackageName: DeviceIdAndPackageName
+    ) {
         server.sendMessageToClient(
-            deviceId = deviceId,
+            deviceIdAndPackageName = deviceIdAndPackageName.toFlocon(),
             message =
-            FloconOutgoingMessageDataModel(
-                plugin = Protocol.ToDevice.SharedPreferences.Plugin,
-                method = Protocol.ToDevice.SharedPreferences.Method.GetSharedPreferences,
-                body = "",
-            ),
+                FloconOutgoingMessageDataModel(
+                    plugin = Protocol.ToDevice.SharedPreferences.Plugin,
+                    method = Protocol.ToDevice.SharedPreferences.Method.GetSharedPreferences,
+                    body = "",
+                ),
         )
     }
 
     suspend fun getDeviceSharedPreferencesValues(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageName,
         sharedPreferenceId: DeviceSharedPreferenceId,
     ) {
         val requestId = newRequestId()
         server.sendMessageToClient(
-            deviceId = deviceId,
+            deviceIdAndPackageName = deviceIdAndPackageName.toFlocon(),
             message =
-            FloconOutgoingMessageDataModel(
-                plugin = Protocol.ToDevice.SharedPreferences.Plugin,
-                method = Protocol.ToDevice.SharedPreferences.Method.GetSharedPreferenceValue,
-                body =
-                Json.encodeToString(
-                    ToDeviceGetSharedPreferenceValueMessage(
-                        requestId = requestId,
-                        sharedPreferenceName = sharedPreferenceId,
-                    ),
+                FloconOutgoingMessageDataModel(
+                    plugin = Protocol.ToDevice.SharedPreferences.Plugin,
+                    method = Protocol.ToDevice.SharedPreferences.Method.GetSharedPreferenceValue,
+                    body =
+                        Json.encodeToString(
+                            ToDeviceGetSharedPreferenceValueMessage(
+                                requestId = requestId,
+                                sharedPreferenceName = sharedPreferenceId,
+                            ),
+                        ),
                 ),
-            ),
         )
     }
 
     suspend fun editSharedPrefField(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageName,
         sharedPreference: DeviceSharedPreferenceDomainModel,
         key: String,
         value: SharedPreferenceRowDomainModel.Value,
     ) {
         val requestId = newRequestId()
         server.sendMessageToClient(
-            deviceId = deviceId,
-            message =
-            FloconOutgoingMessageDataModel(
+            deviceIdAndPackageName = deviceIdAndPackageName.toFlocon(),
+            message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.SharedPreferences.Plugin,
                 method = Protocol.ToDevice.SharedPreferences.Method.SetSharedPreferenceValue,
                 body = Json.encodeToString(
