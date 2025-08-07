@@ -8,6 +8,7 @@ import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDevic
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveDevicesUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.SelectDeviceAppUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.SelectDeviceUseCase
 import io.github.openflocon.flocondesktop.core.domain.settings.InitAdbPathUseCase
 import io.github.openflocon.flocondesktop.core.domain.settings.StartAdbForwardUseCase
@@ -23,6 +24,7 @@ val coreDomainModule =
         // devices
         factoryOf(::HandleDeviceUseCase)
         factoryOf(::SelectDeviceUseCase)
+        factoryOf(::SelectDeviceAppUseCase)
         factoryOf(::ObserveDevicesUseCase)
         factoryOf(::ObserveCurrentDeviceUseCase)
         factoryOf(::ObserveCurrentDeviceIdUseCase)

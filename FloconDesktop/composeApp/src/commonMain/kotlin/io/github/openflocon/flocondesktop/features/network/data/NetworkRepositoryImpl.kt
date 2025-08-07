@@ -12,6 +12,7 @@ import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHt
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -25,15 +26,17 @@ class NetworkRepositoryImpl(
 ) : NetworkRepository,
     MessagesReceiverRepository {
     // maybe inject
-    private val httpParser =
-        Json {
-            ignoreUnknownKeys = true
-        }
+    private val httpParser = Json {
+        ignoreUnknownKeys = true
+    }
 
     override val pluginName = listOf(Protocol.FromDevice.Network.Plugin)
 
-    override fun observeRequests(deviceId: String) = networkLocalDataSource
-        .observeRequests(deviceId = deviceId)
+    override fun observeRequests(
+        deviceId: String,
+        packageName: String
+    ): Flow<List<FloconHttpRequestDomainModel>> = networkLocalDataSource
+        .observeRequests(deviceId = deviceId, packageName = packageName)
         .flowOn(dispatcherProvider.data)
 
     override fun observeRequest(
@@ -55,7 +58,7 @@ class NetworkRepositoryImpl(
                 if (request.response.contentType != null && responseContentType.startsWith("image/")) {
                     networkImageRepository.onImageReceived(deviceId = deviceId, request = request)
                 }
-                networkLocalDataSource.save(deviceId = deviceId, request = request)
+                networkLocalDataSource.save(deviceId = deviceId, packageName = message.appPackageName, request = request)
             }
         }
     }
@@ -120,6 +123,7 @@ class NetworkRepositoryImpl(
                 decoded.floconNetworkType == "grpc" -> FloconHttpRequestDomainModel.Type.Grpc(
                     responseStatus = decoded.responseGrpcStatus!!,
                 )
+
                 graphQl != null -> {
                     val httpCode = decoded.responseHttpCode!! // mandatory for graphQl
                     FloconHttpRequestDomainModel.Type.GraphQl(
@@ -132,6 +136,7 @@ class NetworkRepositoryImpl(
                         httpCode = httpCode,
                     )
                 }
+
                 else -> FloconHttpRequestDomainModel.Type.Http(
                     httpCode = decoded.responseHttpCode!!, // mandatory for http
                 )

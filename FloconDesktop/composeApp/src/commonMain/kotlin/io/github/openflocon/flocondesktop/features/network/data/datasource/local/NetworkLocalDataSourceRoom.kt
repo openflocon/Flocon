@@ -24,24 +24,24 @@ class NetworkLocalDataSourceRoom(
             applicationScope.launch(dispatcherProvider.data) {
                 val fakeRequests = FloconHttpRequestGenerator.generateDynamicFakeFloconHttpRequests(count = 10)
                 fakeRequests.forEach { domainModel ->
-                    floconHttpRequestDao.upsertRequest(domainModel.toEntity(Fakes.FakeDeviceId))
+                    floconHttpRequestDao.upsertRequest(domainModel.toEntity(Fakes.FakeDeviceId, Fakes.FakePackageName))
                 }
             }
         }
     }
 
-    override fun observeRequests(deviceId: DeviceId): Flow<List<FloconHttpRequestDomainModel>> = floconHttpRequestDao
-        .observeRequests(deviceId)
-        .map { entities ->
-            entities.mapNotNull { it.toDomainModel() }
-        }.flowOn(dispatcherProvider.data)
+    override fun observeRequests(deviceId: DeviceId, packageName: String): Flow<List<FloconHttpRequestDomainModel>> = floconHttpRequestDao
+        .observeRequests(deviceId, packageName)
+        .map { entities -> entities.mapNotNull { it.toDomainModel() } }
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun save(
         deviceId: DeviceId,
-        request: FloconHttpRequestDomainModel,
+        packageName: String,
+        request: FloconHttpRequestDomainModel
     ) {
         withContext(dispatcherProvider.data) {
-            val entity = request.toEntity(deviceId)
+            val entity = request.toEntity(deviceId = deviceId, packageName = packageName)
             floconHttpRequestDao.upsertRequest(entity)
         }
     }

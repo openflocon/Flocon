@@ -15,10 +15,11 @@ interface FloconHttpRequestDao {
         SELECT * 
         FROM FloconHttpRequestEntity 
         WHERE deviceId = :deviceId 
+        AND packageName = :packageName
         ORDER BY startTime ASC
     """,
     )
-    fun observeRequests(deviceId: String): Flow<List<FloconHttpRequestEntity>>
+    fun observeRequests(deviceId: String, packageName: String): Flow<List<FloconHttpRequestEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertRequest(request: FloconHttpRequestEntity)

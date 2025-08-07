@@ -8,7 +8,11 @@ import androidx.room.PrimaryKey
 data class FloconHttpRequestEntity(
     @PrimaryKey
     val uuid: String,
+
     val deviceId: String, // To associate with a device
+
+    val packageName: String,
+
     @Embedded
     val infos: FloconHttpRequestInfosEntity,
     // if it's a graphql method, this item is not null

@@ -3,15 +3,16 @@ package io.github.openflocon.flocondesktop.core.domain.device
 import io.github.openflocon.flocondesktop.core.domain.device.repository.DevicesRepository
 import kotlinx.coroutines.flow.firstOrNull
 
-class SelectDeviceUseCase(
+class SelectDeviceAppUseCase(
     private val devicesRepository: DevicesRepository,
 ) {
-    suspend operator fun invoke(deviceId: String) {
-        val device = devicesRepository.devices
+    suspend operator fun invoke(packageName: String) {
+        val app = devicesRepository.currentDevice
             .firstOrNull()
-            ?.find { it.deviceId == deviceId }
+            ?.apps
+            ?.find { it.packageName == packageName }
             ?: return
 
-        devicesRepository.selectDevice(device)
+        devicesRepository.selectApp(app)
     }
 }

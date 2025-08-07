@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -35,6 +36,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
+import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
@@ -56,8 +58,9 @@ fun LeftPanelView(
     state: LeftPanelState,
     expanded: Boolean,
     onClickItem: (LeftPanelItem) -> Unit,
-    devicesState: DevicesStateUiModel, // Pass the state of devices
-    onDeviceSelected: (DeviceItemUiModel) -> Unit, // Callback when a device is selected
+    devicesState: DevicesStateUiModel,
+    onDeviceSelected: (DeviceItemUiModel) -> Unit,
+    onAppSelected: (DeviceAppUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -81,12 +84,13 @@ fun LeftPanelView(
         )
         LeftPannelDivider(modifier = Modifier.padding(vertical = 12.dp))
         DeviceSelectorView(
-            pannelExpanded = expanded,
+            panelExpanded = expanded,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(64.dp),
+                .heightIn(min = 64.dp),
             devicesState = devicesState,
             onDeviceSelected = onDeviceSelected,
+            onAppSelected = onAppSelected
         )
     }
 }
@@ -166,7 +170,7 @@ private fun ColumnScope.MenuItems(
 
 @Composable
 @Preview
-private fun LeftPannelViewPreview() {
+private fun LeftPanelViewPreview() {
     val selectedItem = remember { mutableStateOf<String?>(null) }
     FloconTheme {
         Box(modifier = Modifier.background(Color.White))
@@ -179,6 +183,7 @@ private fun LeftPannelViewPreview() {
             },
             modifier = Modifier.wrapContentHeight(),
             onDeviceSelected = {},
+            onAppSelected = {},
             expanded = false,
             devicesState = previewDevicesStateUiModel()
         )
