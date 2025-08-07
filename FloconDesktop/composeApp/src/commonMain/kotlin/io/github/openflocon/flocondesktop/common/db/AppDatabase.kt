@@ -21,14 +21,16 @@ import io.github.openflocon.flocondesktop.features.files.data.datasources.model.
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.FloconImageDao
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.model.DeviceImageEntity
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.FloconHttpRequestDao
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkFilterDao
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntity
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.NetworkFilterEntity
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.FloconTableDao
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableItemEntity
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 27,
+    version = 28,
     entities = [
         FloconHttpRequestEntity::class,
         FileEntity::class,
@@ -41,6 +43,7 @@ import kotlinx.coroutines.Dispatchers
         SuccessQueryEntity::class,
         DeeplinkEntity::class,
         AnalyticsItemEntity::class,
+        NetworkFilterEntity::class,
     ],
 )
 @TypeConverters(
@@ -56,6 +59,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val queryDao: QueryDao
     abstract val deeplinkDao: FloconDeeplinkDao
     abstract val analyticsDao: FloconAnalyticsDao
+    abstract val networkFilterDao: NetworkFilterDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()

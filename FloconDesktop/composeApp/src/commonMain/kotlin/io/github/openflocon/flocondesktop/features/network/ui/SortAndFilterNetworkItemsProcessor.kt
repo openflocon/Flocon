@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.features.network.ui
 
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.ui.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.NetworkColumnsTypeUiModel
-import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterColumns
-import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterState
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterStateUiModel
 
 class SortAndFilterNetworkItemsProcessor {
     operator fun invoke(
@@ -15,7 +15,7 @@ class SortAndFilterNetworkItemsProcessor {
         filterState: FilterUiState,
         sorted: HeaderDelegate.Sorted?,
         allowedMethods: List<NetworkMethodUi>,
-        textFilters: Map<TextFilterColumns, TextFilterState>,
+        textFilters: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
     ): List<NetworkItemViewState> {
         return items.asSequence()
             .filter { item ->
@@ -62,8 +62,8 @@ private fun sort(
     return sequence.sortedWith(sortedComparator)
 }
 
-private fun TextFilterState.filter(
-    column: TextFilterColumns,
+private fun TextFilterStateUiModel.filter(
+    column: NetworkTextFilterColumns,
     items: List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>
 ): List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> {
     return items.filter { item ->
@@ -71,21 +71,21 @@ private fun TextFilterState.filter(
     }
 }
 
-private fun TextFilterState.filter(
-    column: TextFilterColumns,
+private fun TextFilterStateUiModel.filter(
+    column: NetworkTextFilterColumns,
     item: Pair<FloconHttpRequestDomainModel, NetworkItemViewState>
 ): Boolean {
     val text = when (column) {
-        TextFilterColumns.RequestTime -> item.second.dateFormatted
-        TextFilterColumns.Domain -> item.second.domain
-        TextFilterColumns.Query -> item.second.type.text
-        TextFilterColumns.Status -> item.second.status.text
-        TextFilterColumns.Time -> item.second.timeFormatted
+        NetworkTextFilterColumns.RequestTime -> item.second.dateFormatted
+        NetworkTextFilterColumns.Domain -> item.second.domain
+        NetworkTextFilterColumns.Query -> item.second.type.text
+        NetworkTextFilterColumns.Status -> item.second.status.text
+        NetworkTextFilterColumns.Time -> item.second.timeFormatted
     }
     return filterByText(text)
 }
 
-private fun TextFilterState.filterByText(text: String): Boolean {
+private fun TextFilterStateUiModel.filterByText(text: String): Boolean {
     for (filter in this.allFilters) {
         if (!filter.filterByText(text))
             return false
@@ -94,7 +94,7 @@ private fun TextFilterState.filterByText(text: String): Boolean {
     return true
 }
 
-private fun TextFilterState.FilterItem.filterByText(text: String): Boolean {
+private fun TextFilterStateUiModel.FilterItem.filterByText(text: String): Boolean {
     if (!this.isActive)
         return true
 

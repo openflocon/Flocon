@@ -16,12 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
+import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.NetworkHeaderUiState
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.NetworkColumnsTypeUiModel
-import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.isFiltered
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.previewNetworkHeaderUiState
 import io.github.openflocon.flocondesktop.features.network.ui.view.NetworkItemColumnWidths
@@ -72,7 +71,7 @@ fun NetworkItemHeaderView(
                 },
                 filterState = state.requestTime.filter,
                 textFilterAction = {
-                    onFilterAction(OnFilterAction.TextFilter(TextFilterColumns.RequestTime, it))
+                    onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.RequestTime, it))
                 }
             )
         }
@@ -128,7 +127,7 @@ fun NetworkItemHeaderView(
                         isDropdownExpanded = false
                     },
                     textFilterAction = {
-                        onFilterAction(OnFilterAction.TextFilter(TextFilterColumns.Domain, it))
+                        onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Domain, it))
                     }
                 )
             }
@@ -154,7 +153,7 @@ fun NetworkItemHeaderView(
                         isDropdownExpanded = false
                     },
                     textFilterAction = {
-                        onFilterAction(OnFilterAction.TextFilter(TextFilterColumns.Query,it))
+                        onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Query,it))
                     }
                 )
             }
@@ -181,7 +180,7 @@ fun NetworkItemHeaderView(
                     isDropdownExpanded = false
                 },
                 textFilterAction = {
-                    onFilterAction(OnFilterAction.TextFilter(TextFilterColumns.Status,it))
+                    onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Status,it))
                 }
             )
         }
@@ -207,7 +206,7 @@ fun NetworkItemHeaderView(
                     isDropdownExpanded = false
                 },
                 textFilterAction = {
-                    onFilterAction(OnFilterAction.TextFilter(TextFilterColumns.Time, it))
+                    onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Time, it))
                 }
             )
         }

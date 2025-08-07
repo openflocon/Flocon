@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.common.ui.interactions.hover
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.TextFilterAction
-import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterState
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterStateUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.previewTextFilterState
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -55,7 +55,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun TextFilterDropdown(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    filterState: TextFilterState,
+    filterState: TextFilterStateUiModel,
     textFilterAction: (TextFilterAction) -> Unit,
 ) {
     DropdownMenu(
@@ -74,7 +74,7 @@ fun TextFilterDropdown(
 @Composable
 private fun TextFilterDropdownContent(
     modifier: Modifier = Modifier,
-    filterState: TextFilterState,
+    filterState: TextFilterStateUiModel,
     textFilterAction: (TextFilterAction) -> Unit,
 ) {
     Column(modifier = modifier) {
@@ -163,10 +163,10 @@ private fun TextFilterDropdownContent(
 
 @Composable
 private fun FilterItemView(
-    item: TextFilterState.FilterItem,
+    item: TextFilterStateUiModel.FilterItem,
     modifier: Modifier = Modifier,
-    changeIsActive: (item: TextFilterState.FilterItem, newValue: Boolean) -> Unit,
-    clickDelete: (item: TextFilterState.FilterItem) -> Unit,
+    changeIsActive: (item: TextFilterStateUiModel.FilterItem, newValue: Boolean) -> Unit,
+    clickDelete: (item: TextFilterStateUiModel.FilterItem) -> Unit,
 ) {
     var isHover by remember { mutableStateOf(false) }
     Row(
