@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view.filters
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,14 +20,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.RemoveCircle
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,10 +35,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import io.github.openflocon.flocondesktop.common.ui.interactions.hover
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.TextFilterAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterState
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.previewTextFilterState
@@ -88,7 +88,7 @@ private fun TextFilterDropdownContent(
             }
         )
 
-        if(filterState.allFilters.isNotEmpty()) {
+        if (filterState.allFilters.isNotEmpty()) {
             Column(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
                 if (filterState.includedFilters.isNotEmpty()) {
                     Text(
@@ -165,14 +165,19 @@ private fun FilterItemView(
     changeIsActive: (item: TextFilterState.FilterItem, newValue: Boolean) -> Unit,
     clickDelete: (item: TextFilterState.FilterItem) -> Unit,
 ) {
+    var isHover by remember { mutableStateOf(false) }
     Row(
-        modifier = modifier.padding(horizontal = 6.dp, vertical = 1.dp),
+        modifier = modifier
+            .hover {
+                isHover = it
+            }
+            .padding(horizontal = 6.dp, vertical = 1.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Box(modifier = Modifier.height(12.dp)) {
             Switch(
-                modifier = Modifier.scale(0.7f),
+                modifier = Modifier.scale(0.6f),
                 checked = item.isActive,
                 onCheckedChange = {
                     changeIsActive(item, it)
@@ -187,14 +192,21 @@ private fun FilterItemView(
             color = FloconTheme.colorPalette.onSurface,
         )
 
+        val binAlpha by animateFloatAsState(if(isHover) 1f else 0f)
         Icon(
             imageVector = Icons.Filled.Delete,
             contentDescription = null,
             tint = Color.Gray,
             modifier = Modifier.size(32.dp)
-                .clickable(onClick = {
-                    clickDelete(item)
-                }).padding(5.dp),
+                .graphicsLayer {
+                    alpha = binAlpha
+                }
+                .clickable(
+                    enabled = isHover,
+                    onClick = {
+                        clickDelete(item)
+                    })
+                .padding(5.dp),
         )
     }
 }
@@ -221,7 +233,7 @@ private fun TextFilterFieldView(
                     shape = RoundedCornerShape(8.dp),
                 ).padding(horizontal = 12.dp, vertical = 8.dp),
         ) {
-            if(value.isEmpty()) {
+            if (value.isEmpty()) {
                 Text(
                     text = "Filter by value",
                     style = FloconTheme.typography.bodySmall,
