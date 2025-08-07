@@ -35,35 +35,6 @@ class SortAndFilterNetworkItemsProcessor {
             .map { it.second }
             .toList()
     }
-
-    /*
-    operator fun invoke(
-        items: List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>,
-        filterState: FilterUiState,
-        sorted: HeaderDelegate.Sorted?,
-        allowedMethods: List<NetworkMethodUi>,
-        textFilters: Map<TextFilterColumns, TextFilterState>,
-    ): List<NetworkItemViewState> {
-        var filteredItems = if (filterState.query.isNotEmpty())
-            items.filter { it.second.contains(filterState.query) }
-        else items
-
-        filteredItems = filteredItems.filter {
-            it.second.method in allowedMethods
-        }
-
-        textFilters.forEach { column, textFiler ->
-            if(textFiler.isActive) {
-                filteredItems = textFiler.filter(column, filteredItems)
-            }
-        }
-
-
-
-
-        return sortedItems.map { it.second }
-    }
-     */
 }
 
 fun sort(
@@ -91,7 +62,7 @@ fun sort(
     return sequence.sortedWith(sortedComparator)
 }
 
-fun TextFilterState.filter(
+private fun TextFilterState.filter(
     column: TextFilterColumns,
     items: List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>
 ): List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> {
@@ -100,7 +71,7 @@ fun TextFilterState.filter(
     }
 }
 
-fun TextFilterState.filter(
+private fun TextFilterState.filter(
     column: TextFilterColumns,
     item: Pair<FloconHttpRequestDomainModel, NetworkItemViewState>
 ): Boolean {
