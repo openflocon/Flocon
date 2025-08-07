@@ -31,7 +31,7 @@ actual fun FloconWindow(
     content: @Composable () -> Unit,
 ) {
     Window(
-        title = "Body",
+        title = title,
         icon = painterResource(Res.drawable.app_icon),
         state = (state as FloconWindowStateDesktop).windowState,
         onCloseRequest = onCloseRequest,
