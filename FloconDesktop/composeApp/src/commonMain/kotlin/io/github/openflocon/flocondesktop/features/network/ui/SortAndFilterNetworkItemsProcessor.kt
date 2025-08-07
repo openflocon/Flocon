@@ -17,6 +17,33 @@ class SortAndFilterNetworkItemsProcessor {
         allowedMethods: List<NetworkMethodUi>,
         textFilters: Map<TextFilterColumns, TextFilterState>,
     ): List<NetworkItemViewState> {
+        return items.asSequence()
+            .filter { item ->
+                (filterState.query.isEmpty() || item.second.contains(filterState.query))
+            }
+            .filter { item ->
+                item.second.method in allowedMethods
+            }
+            .filter { item ->
+                textFilters.filter { it.value.isActive }.all { (column, textFilter) ->
+                    textFilter.filter(column, item)
+                }
+            }
+            .let {
+                sort(it, sorted)
+            }
+            .map { it.second }
+            .toList()
+    }
+
+    /*
+    operator fun invoke(
+        items: List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>,
+        filterState: FilterUiState,
+        sorted: HeaderDelegate.Sorted?,
+        allowedMethods: List<NetworkMethodUi>,
+        textFilters: Map<TextFilterColumns, TextFilterState>,
+    ): List<NetworkItemViewState> {
         var filteredItems = if (filterState.query.isNotEmpty())
             items.filter { it.second.contains(filterState.query) }
         else items
@@ -31,86 +58,75 @@ class SortAndFilterNetworkItemsProcessor {
             }
         }
 
-        val sortedItems = if (sorted != null) {
-            when (sorted.column) {
-                NetworkColumnsTypeUiModel.RequestTime -> {
-                    when (sorted.sort) {
-                        SortedByUiModel.Enabled.Ascending -> filteredItems.sortedBy { it.first.request.startTime }
-                        SortedByUiModel.Enabled.Descending -> filteredItems.sortedByDescending { it.first.request.startTime }
-                    }
-                }
 
-                NetworkColumnsTypeUiModel.Method -> {
-                    when (sorted.sort) {
-                        SortedByUiModel.Enabled.Ascending -> filteredItems.sortedBy { it.second.method.text }
-                        SortedByUiModel.Enabled.Descending -> filteredItems.sortedByDescending { it.second.method.text }
-                    }
-                }
-
-                NetworkColumnsTypeUiModel.Domain -> {
-                    when (sorted.sort) {
-                        SortedByUiModel.Enabled.Ascending -> filteredItems.sortedBy { it.second.domain }
-                        SortedByUiModel.Enabled.Descending -> filteredItems.sortedByDescending { it.second.domain }
-                    }
-                }
-
-                NetworkColumnsTypeUiModel.Query -> {
-                    when (sorted.sort) {
-                        SortedByUiModel.Enabled.Ascending -> filteredItems.sortedBy { it.second.type.text }
-                        SortedByUiModel.Enabled.Descending -> filteredItems.sortedByDescending { it.second.type.text }
-                    }
-                }
-
-                NetworkColumnsTypeUiModel.Status -> when (sorted.sort) {
-                    SortedByUiModel.Enabled.Ascending -> filteredItems.sortedBy { it.second.status.text }
-                    SortedByUiModel.Enabled.Descending -> filteredItems.sortedByDescending { it.second.status.text }
-                }
-
-                NetworkColumnsTypeUiModel.Time -> {
-                    when (sorted.sort) {
-                        SortedByUiModel.Enabled.Ascending -> filteredItems.sortedBy { it.first.durationMs }
-                        SortedByUiModel.Enabled.Descending -> filteredItems.sortedByDescending { it.first.durationMs }
-                    }
-                }
-            }
-        } else {
-            filteredItems
-        }
 
 
         return sortedItems.map { it.second }
     }
+     */
+}
+
+fun sort(
+    sequence: Sequence<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>,
+    sorted: HeaderDelegate.Sorted?,
+) : Sequence<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> {
+    if (sorted == null) {
+        return sequence
+    }
+
+    val comparator = when (sorted.column) {
+        NetworkColumnsTypeUiModel.RequestTime -> compareBy<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> { it.first.request.startTime }
+        NetworkColumnsTypeUiModel.Method -> compareBy { it.second.method.text }
+        NetworkColumnsTypeUiModel.Domain -> compareBy { it.second.domain }
+        NetworkColumnsTypeUiModel.Query -> compareBy { it.second.type.text }
+        NetworkColumnsTypeUiModel.Status -> compareBy { it.second.status.text }
+        NetworkColumnsTypeUiModel.Time -> compareBy { it.first.durationMs }
+    }
+
+    val sortedComparator = when (sorted.sort) {
+        is SortedByUiModel.Enabled.Ascending -> comparator
+        is SortedByUiModel.Enabled.Descending -> comparator.reversed()
+    }
+
+    return sequence.sortedWith(sortedComparator)
 }
 
 fun TextFilterState.filter(
     column: TextFilterColumns,
     items: List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>
-) : List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> {
+): List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> {
     return items.filter { item ->
-        val text = when(column) {
-            TextFilterColumns.RequestTime -> item.second.dateFormatted
-            TextFilterColumns.Domain -> item.second.domain
-            TextFilterColumns.Query -> item.second.type.text
-            TextFilterColumns.Time -> item.second.timeFormatted
-        }
-        filterByText(text)
+        filter(column, item)
     }
 }
 
-private fun TextFilterState.filterByText(text: String) : Boolean {
-    for(filter in this.allFilters) {
-        if(!filter.filterByText(text))
+fun TextFilterState.filter(
+    column: TextFilterColumns,
+    item: Pair<FloconHttpRequestDomainModel, NetworkItemViewState>
+): Boolean {
+    val text = when (column) {
+        TextFilterColumns.RequestTime -> item.second.dateFormatted
+        TextFilterColumns.Domain -> item.second.domain
+        TextFilterColumns.Query -> item.second.type.text
+        TextFilterColumns.Time -> item.second.timeFormatted
+    }
+    return filterByText(text)
+}
+
+private fun TextFilterState.filterByText(text: String): Boolean {
+    for (filter in this.allFilters) {
+        if (!filter.filterByText(text))
             return false
     }
 
     return true
 }
 
-private fun TextFilterState.FilterItem.filterByText(text: String) : Boolean {
-    if(!this.isActive)
+private fun TextFilterState.FilterItem.filterByText(text: String): Boolean {
+    if (!this.isActive)
         return true
 
-    return if(this.isExcluded) {
+    return if (this.isExcluded) {
         !text.contains(this.text, ignoreCase = true)
     } else {
         text.contains(this.text, ignoreCase = true)
