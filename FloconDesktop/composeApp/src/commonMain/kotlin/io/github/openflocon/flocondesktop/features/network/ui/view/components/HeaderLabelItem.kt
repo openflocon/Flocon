@@ -69,7 +69,9 @@ fun HeaderLabelItem(
                 .graphicsLayer {
                     alpha = if (isFiltered || isHover) 1f else 0f
                 }
-                .clickable(onClick = clickOnFilter),
+                .clickable(
+                    onClick = clickOnFilter,
+                ),
         )
         Box(
             modifier = Modifier.weight(1f),

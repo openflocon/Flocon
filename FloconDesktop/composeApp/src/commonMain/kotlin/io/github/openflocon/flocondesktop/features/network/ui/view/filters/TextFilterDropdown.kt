@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.AddCircle
@@ -38,6 +40,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.common.ui.interactions.hover
@@ -244,11 +247,21 @@ private fun TextFilterFieldView(
                 textStyle = FloconTheme.typography.bodySmall.copy(
                     color = FloconTheme.colorPalette.onSurface,
                 ),
+                modifier = Modifier.fillMaxWidth(),
                 value = value,
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
                 onValueChange = {
                     value = it
                 },
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        // default action -> add as "include filter"
+                        submitTextField(value, true)
+                        value = "" // reset
+                    }
+                )
             )
         }
         TextFilterButton(
