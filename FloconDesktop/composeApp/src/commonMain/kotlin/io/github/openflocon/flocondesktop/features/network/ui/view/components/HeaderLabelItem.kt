@@ -24,13 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.arrow_up_cropped
+import io.github.openflocon.flocondesktop.common.ui.interactions.hover
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
@@ -55,8 +54,7 @@ fun HeaderLabelItem(
 
     Row(
         modifier = modifier
-            .onPointerEvent(PointerEventType.Enter) { isHover = true }
-            .onPointerEvent(PointerEventType.Exit) { isHover = false }
+            .hover { isHover = it }
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(2.dp),

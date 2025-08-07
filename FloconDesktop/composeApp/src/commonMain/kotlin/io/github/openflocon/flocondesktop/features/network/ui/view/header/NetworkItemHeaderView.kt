@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -15,17 +16,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.NetworkHeaderUiState
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.NetworkColumnsTypeUiModel
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.isFiltered
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.previewNetworkHeaderUiState
 import io.github.openflocon.flocondesktop.features.network.ui.view.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.HeaderLabelItem
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.MethodFilterDropdown
+import io.github.openflocon.flocondesktop.features.network.ui.view.filters.TextFilterDropdown
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.exp
 
 @Composable
 fun NetworkItemHeaderView(
@@ -46,23 +51,36 @@ fun NetworkItemHeaderView(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
-        // Date - Fixed width from data class
-        HeaderLabelItem(
-            modifier = Modifier.width(columnWidths.dateWidth),
-            text = "Request Time",
-            isFiltered = state.time.isFiltered(),
-            sortedBy = state.time.sortedBy,
-            clickOnSort = {
-                clickOnSort(NetworkColumnsTypeUiModel.Time, it)
-            },
-            clickOnFilter = {
-            },
-        )
-
-        Column {
-            var filterMethodExpanded by remember { mutableStateOf(false) }
+        Column(modifier = Modifier.width(columnWidths.dateWidth)) {
+            var isDropdownExpanded by remember { mutableStateOf(false) }
             HeaderLabelItem(
-                modifier = Modifier.width(columnWidths.methodWidth),
+                modifier = Modifier.fillMaxWidth(),
+                text = "Request Time",
+                isFiltered = state.requestTime.isFiltered(),
+                sortedBy = state.requestTime.sortedBy,
+                clickOnSort = {
+                    clickOnSort(NetworkColumnsTypeUiModel.RequestTime, it)
+                },
+                clickOnFilter = {
+                    isDropdownExpanded = true
+                },
+            )
+            TextFilterDropdown(
+                expanded = isDropdownExpanded,
+                onDismissRequest = {
+                    isDropdownExpanded = false
+                },
+                filterState = state.requestTime.filter,
+                textFilterAction = {
+                    onFilterAction(OnFilterAction.TextFilter(TextFilterColumns.RequestTime, it))
+                }
+            )
+        }
+
+        Column(modifier = Modifier.width(columnWidths.methodWidth)) {
+            var isDropdownExpanded by remember { mutableStateOf(false) }
+            HeaderLabelItem(
+                modifier = Modifier.fillMaxWidth(),
                 text = "Method",
                 isFiltered = state.method.isFiltered(),
                 sortedBy = state.method.sortedBy,
@@ -70,13 +88,13 @@ fun NetworkItemHeaderView(
                     clickOnSort(NetworkColumnsTypeUiModel.Method, it)
                 },
                 clickOnFilter = {
-                    filterMethodExpanded = true
+                    isDropdownExpanded = true
                 },
             )
             MethodFilterDropdown(
-                filterMethodExpanded = filterMethodExpanded,
+                expanded = isDropdownExpanded,
                 onDismissRequest = {
-                    filterMethodExpanded = false
+                    isDropdownExpanded = false
                 },
                 filterState = state.method.filter,
                 onItemClicked = {
@@ -88,30 +106,58 @@ fun NetworkItemHeaderView(
 
         // route & method, don't display the label
         Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-            HeaderLabelItem(
-                modifier = Modifier.weight(columnWidths.domainWeight),
-                text = "Domain",
-                labelAlignment = Alignment.CenterStart,
-                isFiltered = state.domain.isFiltered(),
-                sortedBy = state.domain.sortedBy,
-                clickOnSort = {
-                    clickOnSort(NetworkColumnsTypeUiModel.Domain, it)
-                },
-                clickOnFilter = {
-                },
-            )
-            HeaderLabelItem(
-                modifier = Modifier.weight(columnWidths.queryWeight),
-                text = "Query",
-                labelAlignment = Alignment.CenterStart,
-                isFiltered = state.query.isFiltered(),
-                sortedBy = state.query.sortedBy,
-                clickOnSort = {
-                    clickOnSort(NetworkColumnsTypeUiModel.Query, it)
-                },
-                clickOnFilter = {
-                },
-            )
+            Column(modifier = Modifier.weight(columnWidths.domainWeight)) {
+                var isDropdownExpanded by remember { mutableStateOf(false) }
+                HeaderLabelItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Domain",
+                    labelAlignment = Alignment.CenterStart,
+                    isFiltered = state.domain.isFiltered(),
+                    sortedBy = state.domain.sortedBy,
+                    clickOnSort = {
+                        clickOnSort(NetworkColumnsTypeUiModel.Domain, it)
+                    },
+                    clickOnFilter = {
+                        isDropdownExpanded = true
+                    },
+                )
+                TextFilterDropdown(
+                    expanded = isDropdownExpanded,
+                    filterState = state.domain.filter,
+                    onDismissRequest = {
+                        isDropdownExpanded = false
+                    },
+                    textFilterAction = {
+                        onFilterAction(OnFilterAction.TextFilter(TextFilterColumns.Domain, it))
+                    }
+                )
+            }
+            Column(modifier = Modifier.weight(columnWidths.queryWeight)) {
+                var isDropdownExpanded by remember { mutableStateOf(false) }
+                HeaderLabelItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Query",
+                    labelAlignment = Alignment.CenterStart,
+                    isFiltered = state.query.isFiltered(),
+                    sortedBy = state.query.sortedBy,
+                    clickOnSort = {
+                        clickOnSort(NetworkColumnsTypeUiModel.Query, it)
+                    },
+                    clickOnFilter = {
+                        isDropdownExpanded = true
+                    },
+                )
+                TextFilterDropdown(
+                    expanded = isDropdownExpanded,
+                    filterState = state.query.filter,
+                    onDismissRequest = {
+                        isDropdownExpanded = false
+                    },
+                    textFilterAction = {
+                        onFilterAction(OnFilterAction.TextFilter(TextFilterColumns.Query,it))
+                    }
+                )
+            }
         }
 
         HeaderLabelItem(
@@ -125,17 +171,32 @@ fun NetworkItemHeaderView(
             clickOnFilter = {
             },
         )
-        HeaderLabelItem(
-            modifier = Modifier.width(columnWidths.timeWidth),
-            text = "Time",
-            isFiltered = state.time.isFiltered(),
-            sortedBy = state.time.sortedBy,
-            clickOnSort = {
-                clickOnSort(NetworkColumnsTypeUiModel.Time, it)
-            },
-            clickOnFilter = {
-            }
-        )
+
+        Column(modifier = Modifier.width(columnWidths.timeWidth)) {
+            var isDropdownExpanded by remember { mutableStateOf(false) }
+            HeaderLabelItem(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Time",
+                isFiltered = state.time.isFiltered(),
+                sortedBy = state.time.sortedBy,
+                clickOnSort = {
+                    clickOnSort(NetworkColumnsTypeUiModel.Time, it)
+                },
+                clickOnFilter = {
+                    isDropdownExpanded = true
+                }
+            )
+            TextFilterDropdown(
+                expanded = isDropdownExpanded,
+                filterState = state.time.filter,
+                onDismissRequest = {
+                    isDropdownExpanded = false
+                },
+                textFilterAction = {
+                    onFilterAction(OnFilterAction.TextFilter(TextFilterColumns.Time, it))
+                }
+            )
+        }
     }
 }
 

@@ -74,12 +74,14 @@ class NetworkViewModel(
         filterUiState,
         headerDelegate.sorted,
         headerDelegate.allowedMethods(),
-    ) { items, filterState, sorted, allowedMethods ->
+        headerDelegate.textFiltersState,
+    ) { items, filterState, sorted, allowedMethods, textFilters ->
         sortAndFilterNetworkItemsProcessor(
             items = items,
             filterState = filterState,
             sorted = sorted,
             allowedMethods = allowedMethods,
+            textFilters = textFilters,
         )
     }
         .distinctUntilChanged()

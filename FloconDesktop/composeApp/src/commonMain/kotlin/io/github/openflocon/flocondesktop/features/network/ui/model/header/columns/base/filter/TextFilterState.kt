@@ -1,25 +1,51 @@
 package io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter
 
 import androidx.compose.runtime.Immutable
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterState.FilterItem
+
+enum class TextFilterColumns {
+    RequestTime,
+    Domain,
+    Query,
+    Time,
+}
+
 
 @Immutable
 data class TextFilterState(
-    val activeFilters: List<ActiveFilter>,
+    val includedFilters: List<FilterItem>,
+    val excludedFilters: List<FilterItem>,
     val isEnabled: Boolean,
 ) : FilterState {
 
+    val allFilters = includedFilters + excludedFilters
+
     @Immutable
-    data class ActiveFilter(
+    data class FilterItem(
         val text: String,
+        val isActive: Boolean,
         val isExcluded: Boolean,
     )
 
-    override val isActive: Boolean = activeFilters.isNotEmpty() && isEnabled
+    override val isActive: Boolean = allFilters.isNotEmpty() && isEnabled && allFilters.any { it.isActive }
 
     companion object {
         val EMPTY = TextFilterState(
-            activeFilters = emptyList(),
+            includedFilters = emptyList(),
+            excludedFilters = emptyList(),
             isEnabled = false,
         )
     }
 }
+
+fun previewTextFilterState() = TextFilterState(
+    isEnabled = true,
+    includedFilters = listOf(
+        FilterItem(text = "toInclude", isExcluded = false, isActive = true),
+        FilterItem(text = "toInclude2", isExcluded = false, isActive = true),
+    ),
+    excludedFilters = listOf(
+        FilterItem(text = "toExclude", isExcluded = true, isActive = true),
+        FilterItem(text = "toExclude2", isExcluded = true, isActive = false),
+    )
+)

@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.ui.model.header.colu
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterState
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.previewTextFilterState
 
 @Immutable
 data class NetworkTextColumnUiModel(
@@ -19,5 +20,5 @@ data class NetworkTextColumnUiModel(
 
 fun previewNetworkTextColumnUiModel() = NetworkTextColumnUiModel(
     sortedBy = SortedByUiModel.None,
-    filter = TextFilterState(emptyList(), isEnabled = false)
+    filter = previewTextFilterState(),
 )

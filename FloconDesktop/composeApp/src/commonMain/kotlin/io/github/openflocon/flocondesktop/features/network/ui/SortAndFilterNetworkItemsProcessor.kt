@@ -6,6 +6,8 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemV
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.NetworkColumnsTypeUiModel
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterColumns
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterState
 
 class SortAndFilterNetworkItemsProcessor {
     operator fun invoke(
@@ -13,6 +15,7 @@ class SortAndFilterNetworkItemsProcessor {
         filterState: FilterUiState,
         sorted: HeaderDelegate.Sorted?,
         allowedMethods: List<NetworkMethodUi>,
+        textFilters: Map<TextFilterColumns, TextFilterState>,
     ): List<NetworkItemViewState> {
         var filteredItems = if (filterState.query.isNotEmpty())
             items.filter { it.second.contains(filterState.query) }
@@ -20,6 +23,12 @@ class SortAndFilterNetworkItemsProcessor {
 
         filteredItems = filteredItems.filter {
             it.second.method in allowedMethods
+        }
+
+        textFilters.forEach { column, textFiler ->
+            if(textFiler.isActive) {
+                filteredItems = textFiler.filter(column, filteredItems)
+            }
         }
 
         val sortedItems = if (sorted != null) {
@@ -70,5 +79,40 @@ class SortAndFilterNetworkItemsProcessor {
 
 
         return sortedItems.map { it.second }
+    }
+}
+
+fun TextFilterState.filter(
+    column: TextFilterColumns,
+    items: List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>
+) : List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> {
+    return items.filter { item ->
+        val text = when(column) {
+            TextFilterColumns.RequestTime -> item.second.dateFormatted
+            TextFilterColumns.Domain -> item.second.domain
+            TextFilterColumns.Query -> item.second.type.text
+            TextFilterColumns.Time -> item.second.timeFormatted
+        }
+        filterByText(text)
+    }
+}
+
+private fun TextFilterState.filterByText(text: String) : Boolean {
+    for(filter in this.allFilters) {
+        if(!filter.filterByText(text))
+            return false
+    }
+
+    return true
+}
+
+private fun TextFilterState.FilterItem.filterByText(text: String) : Boolean {
+    if(!this.isActive)
+        return true
+
+    return if(this.isExcluded) {
+        !text.contains(this.text, ignoreCase = true)
+    } else {
+        text.contains(this.text, ignoreCase = true)
     }
 }

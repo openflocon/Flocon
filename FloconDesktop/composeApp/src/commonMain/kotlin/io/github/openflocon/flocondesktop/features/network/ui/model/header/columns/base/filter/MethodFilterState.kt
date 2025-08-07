@@ -18,3 +18,13 @@ data class MethodFilterState(
     // here the logo should be active only if we removed one item from the list
     override val isActive: Boolean = items.any { !it.isSelected }
 }
+
+fun previewMethodFilterState() = MethodFilterState(
+    isEnabled = true,
+    items = NetworkMethodUi.all().mapIndexed { index, method ->
+        MethodFilterState.Item(
+            method = method,
+            isSelected = index < 3
+        )
+    }
+)
