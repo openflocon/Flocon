@@ -25,11 +25,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowState
 import com.sebastianneubauer.jsontree.search.rememberSearchState
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.app_icon
+import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
+import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkJsonUi
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
@@ -38,12 +36,11 @@ import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun NetworkJsonScreen(
     json: NetworkJsonUi,
-    state: WindowState,
+    state: FloconWindowState,
     onCloseRequest: () -> Unit
 ) {
     var query by remember { mutableStateOf("") }
@@ -56,9 +53,8 @@ fun NetworkJsonScreen(
         searchState.query = query
     }
 
-    Window(
+    FloconWindow(
         title = "Body",
-        icon = painterResource(Res.drawable.app_icon),
         state = state,
         onCloseRequest = onCloseRequest
     ) {
