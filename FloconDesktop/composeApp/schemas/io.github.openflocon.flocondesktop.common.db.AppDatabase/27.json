@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 27,
-    "identityHash": "6602c9e782a66f200b014ac2cfb4ef99",
+    "identityHash": "2064d08d969f8275c5f4dea45aa8505a",
     "entities": [
       {
         "tableName": "FloconHttpRequestEntity",
@@ -764,11 +764,48 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_AnalyticsItemEntity_deviceId_analyticsTableId` ON `${TABLE_NAME}` (`deviceId`, `analyticsTableId`)"
           }
         ]
+      },
+      {
+        "tableName": "network_filter",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `columnName` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `itemsAsJson` TEXT NOT NULL, PRIMARY KEY(`deviceId`, `columnName`))",
+        "fields": [
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "columnName",
+            "columnName": "columnName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "isEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemsAsJson",
+            "columnName": "itemsAsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "deviceId",
+            "columnName"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6602c9e782a66f200b014ac2cfb4ef99')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2064d08d969f8275c5f4dea45aa8505a')"
     ]
   }
 }

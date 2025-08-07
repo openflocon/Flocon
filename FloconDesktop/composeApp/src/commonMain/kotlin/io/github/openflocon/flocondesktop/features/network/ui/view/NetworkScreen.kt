@@ -23,19 +23,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.WindowPlacement
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.WindowState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
+import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkJsonUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.header.NetworkHeaderUiState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiState
-import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkItemHeaderView
+import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkFilter
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
@@ -58,7 +58,7 @@ fun NetworkScreen(modifier: Modifier = Modifier) {
 fun NetworkScreen(
     uiState: NetworkUiState,
     onAction: (NetworkAction) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val columnWidths: NetworkItemColumnWidths =
         remember { NetworkItemColumnWidths() } // Default widths provided
@@ -85,7 +85,6 @@ fun NetworkScreen(
                     color = FloconTheme.colorPalette.onSurface,
                 )
                 NetworkFilter(
-                    uiState = uiState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(FloconTheme.colorPalette.panel)
@@ -95,6 +94,13 @@ fun NetworkScreen(
                 NetworkItemHeaderView(
                     columnWidths = columnWidths,
                     modifier = Modifier.fillMaxWidth(),
+                    clickOnSort = { type, sort ->
+                        onAction(NetworkAction.HeaderAction.ClickOnSort(type, sort))
+                    },
+                    onFilterAction = {
+                        onAction(NetworkAction.HeaderAction.FilterAction(it))
+                    },
+                    state = uiState.headerState,
                 )
                 Box(
                     Modifier
@@ -145,7 +151,7 @@ fun NetworkScreen(
         }
     }
 
-    val states = remember { mutableStateMapOf<NetworkJsonUi, WindowState>() }
+    val states = remember { mutableStateMapOf<NetworkJsonUi, FloconWindowState>() }
 
 
     LaunchedEffect(uiState.contentState.detailJsons) {
@@ -155,10 +161,7 @@ fun NetworkScreen(
         deletedJson.forEach { states.remove(it) }
         addedJson.forEach {
             states.put(
-                it, WindowState(
-                    placement = WindowPlacement.Floating,
-                    position = WindowPosition(Alignment.Center)
-                )
+                it, createFloconWindowState()
             )
         }
     }

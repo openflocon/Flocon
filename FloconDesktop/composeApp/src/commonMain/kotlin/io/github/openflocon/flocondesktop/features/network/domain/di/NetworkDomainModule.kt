@@ -6,6 +6,9 @@ import io.github.openflocon.flocondesktop.features.network.domain.ObserveHttpReq
 import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.ResetCurrentDeviceHttpRequestsUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.filter.GetNetworkFilterUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.filter.ObserveNetworkFilterUseCase
+import io.github.openflocon.flocondesktop.features.network.domain.filter.UpdateNetworkFilterUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -17,4 +20,7 @@ val networkDomainModule =
         factoryOf(::ResetCurrentDeviceHttpRequestsUseCase)
         factoryOf(::RemoveHttpRequestsBeforeUseCase)
         factoryOf(::RemoveHttpRequestUseCase)
+        factoryOf(::GetNetworkFilterUseCase)
+        factoryOf(::ObserveNetworkFilterUseCase)
+        factoryOf(::UpdateNetworkFilterUseCase)
     }

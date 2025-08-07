@@ -6,10 +6,8 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMetho
 @Immutable
 data class FilterUiState(
     val query: String,
-    val methods: List<NetworkMethodUi>
 )
 
 fun previewFilterUiState() = FilterUiState(
     query = "",
-    methods = emptyList()
 )

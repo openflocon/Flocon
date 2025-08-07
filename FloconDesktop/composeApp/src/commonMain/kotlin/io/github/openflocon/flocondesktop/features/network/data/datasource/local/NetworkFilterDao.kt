@@ -1,0 +1,21 @@
+package io.github.openflocon.flocondesktop.features.network.data.datasource.local
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.NetworkFilterEntity
+import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkTextFilterColumns
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface NetworkFilterDao {
+    @Query("SELECT * FROM network_filter WHERE deviceId = :deviceId AND columnName = :column")
+    suspend fun get(deviceId: String, column: NetworkTextFilterColumns): NetworkFilterEntity?
+
+    @Query("SELECT * FROM network_filter WHERE deviceId = :deviceId")
+    fun observe(deviceId: String): Flow<List<NetworkFilterEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdate(entity: NetworkFilterEntity)
+}
