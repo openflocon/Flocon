@@ -13,7 +13,6 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.header.colum
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.NetworkStatusColumnUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.NetworkTextColumnUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.MethodFilterState
-import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.StatusFilterState
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -103,7 +102,7 @@ class HeaderDelegate(
             status = NetworkStatusColumnUiModel(
                 sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Status }?.sort
                     ?: SortedByUiModel.None,
-                filter = StatusFilterState(isEnabled = false), // TODO
+                filter = textFiltersState[TextFilterColumns.Status] ?: TextFilterState.EMPTY,
             ),
             time = NetworkTextColumnUiModel(
                 sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Time }?.sort

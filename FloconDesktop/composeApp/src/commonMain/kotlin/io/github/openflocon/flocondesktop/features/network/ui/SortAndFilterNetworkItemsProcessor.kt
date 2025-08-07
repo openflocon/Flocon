@@ -108,6 +108,7 @@ fun TextFilterState.filter(
         TextFilterColumns.RequestTime -> item.second.dateFormatted
         TextFilterColumns.Domain -> item.second.domain
         TextFilterColumns.Query -> item.second.type.text
+        TextFilterColumns.Status -> item.second.status.text
         TextFilterColumns.Time -> item.second.timeFormatted
     }
     return filterByText(text)

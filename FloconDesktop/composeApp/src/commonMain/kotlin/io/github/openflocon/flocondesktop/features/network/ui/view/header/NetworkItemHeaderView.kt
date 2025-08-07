@@ -160,17 +160,31 @@ fun NetworkItemHeaderView(
             }
         }
 
-        HeaderLabelItem(
-            modifier = Modifier.width(columnWidths.statusCodeWidth),
-            text = "Status",
-            isFiltered = state.status.isFiltered(),
-            sortedBy = state.status.sortedBy,
-            clickOnSort = {
-                clickOnSort(NetworkColumnsTypeUiModel.Status, it)
-            },
-            clickOnFilter = {
-            },
-        )
+        Column(modifier = Modifier.width(columnWidths.statusCodeWidth)) {
+            var isDropdownExpanded by remember { mutableStateOf(false) }
+            HeaderLabelItem(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Status",
+                isFiltered = state.status.isFiltered(),
+                sortedBy = state.status.sortedBy,
+                clickOnSort = {
+                    clickOnSort(NetworkColumnsTypeUiModel.Status, it)
+                },
+                clickOnFilter = {
+                    isDropdownExpanded = true
+                },
+            )
+            TextFilterDropdown(
+                expanded = isDropdownExpanded,
+                filterState = state.status.filter,
+                onDismissRequest = {
+                    isDropdownExpanded = false
+                },
+                textFilterAction = {
+                    onFilterAction(OnFilterAction.TextFilter(TextFilterColumns.Status,it))
+                }
+            )
+        }
 
         Column(modifier = Modifier.width(columnWidths.timeWidth)) {
             var isDropdownExpanded by remember { mutableStateOf(false) }

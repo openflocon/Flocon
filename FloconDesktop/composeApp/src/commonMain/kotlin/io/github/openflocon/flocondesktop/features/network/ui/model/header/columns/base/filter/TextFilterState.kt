@@ -7,6 +7,7 @@ enum class TextFilterColumns {
     RequestTime,
     Domain,
     Query,
+    Status,
     Time,
 }
 
