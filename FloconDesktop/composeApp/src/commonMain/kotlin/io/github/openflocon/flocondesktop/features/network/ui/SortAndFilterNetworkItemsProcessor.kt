@@ -37,7 +37,7 @@ class SortAndFilterNetworkItemsProcessor {
     }
 }
 
-fun sort(
+private fun sort(
     sequence: Sequence<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>,
     sorted: HeaderDelegate.Sorted?,
 ) : Sequence<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> {
