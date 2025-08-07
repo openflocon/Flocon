@@ -23,10 +23,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.WindowPlacement
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.WindowState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
+import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
@@ -145,7 +144,7 @@ fun NetworkScreen(
         }
     }
 
-    val states = remember { mutableStateMapOf<NetworkJsonUi, WindowState>() }
+    val states = remember { mutableStateMapOf<NetworkJsonUi, FloconWindowState>() }
 
 
     LaunchedEffect(uiState.contentState.detailJsons) {
@@ -155,10 +154,7 @@ fun NetworkScreen(
         deletedJson.forEach { states.remove(it) }
         addedJson.forEach {
             states.put(
-                it, WindowState(
-                    placement = WindowPlacement.Floating,
-                    position = WindowPosition(Alignment.Center)
-                )
+                it, createFloconWindowState()
             )
         }
     }
