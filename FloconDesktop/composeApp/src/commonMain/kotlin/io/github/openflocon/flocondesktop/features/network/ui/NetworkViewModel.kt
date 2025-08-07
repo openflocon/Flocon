@@ -124,7 +124,6 @@ class NetworkViewModel(
             is NetworkAction.Remove -> onRemove(action)
             is NetworkAction.RemoveLinesAbove -> onRemoveLinesAbove(action)
             is NetworkAction.FilterQuery -> onFilterQuery(action)
-            is NetworkAction.FilterMethod -> {} //onFilterMethod(action)
             is NetworkAction.CloseJsonDetail -> onCloseJsonDetail(action)
             is NetworkAction.JsonDetail -> onJsonDetail(action)
             is NetworkAction.HeaderAction.ClickOnSort -> headerDelegate.onClickSort(

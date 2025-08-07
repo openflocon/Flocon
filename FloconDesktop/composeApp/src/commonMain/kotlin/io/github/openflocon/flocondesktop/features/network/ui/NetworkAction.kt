@@ -30,9 +30,6 @@ sealed interface NetworkAction {
 
     data class FilterQuery(val query: String) : NetworkAction
 
-    @Deprecated("use HeaderAction")
-    data class FilterMethod(val method: NetworkMethodUi, val add: Boolean) : NetworkAction
-
     sealed interface HeaderAction : NetworkAction {
         data class ClickOnSort(
             val type: NetworkColumnsTypeUiModel,
