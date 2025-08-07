@@ -29,11 +29,18 @@ class DevicesRepositoryImpl(
 
     override suspend fun register(device: DeviceDomainModel) {
         withContext(dispatcherProvider.data) {
-            _devices.update { (it + device).distinct() }
-            // if no current device, select it
-            _currentDevice.update {
-                it ?: device
-            }
+            val updatedDevice = device.copy(
+                apps = device.apps.plus(
+                    _devices.value
+                        .find { it.deviceId == device.deviceId }
+                        ?.apps.orEmpty()
+                )
+                    .distinctBy(DeviceAppDomainModel::packageName)
+            )
+
+            _devices.update { (it + updatedDevice).distinct() }
+            if (_currentDevice.value?.deviceId == device.deviceId)
+                _currentDevice.update { updatedDevice }
         }
     }
 
@@ -47,11 +54,14 @@ class DevicesRepositoryImpl(
         withContext(dispatcherProvider.data) {
             _devices.update { emptyList() }
             _currentDevice.update { null }
+            _currentDeviceApp.update { null }
         }
     }
 
     override suspend fun selectApp(app: DeviceAppDomainModel) {
-        _currentDeviceApp.update { app }
+        withContext(dispatcherProvider.data) {
+            _currentDeviceApp.update { app }
+        }
     }
 
     override suspend fun selectDevice(device: DeviceDomainModel) {

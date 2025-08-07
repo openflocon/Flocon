@@ -61,7 +61,6 @@ import io.github.openflocon.library.designsystem.components.FloconCircularProgre
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.math.min
 
 private val CelluleHeight = 64.dp
 
@@ -179,6 +178,7 @@ private fun DeviceSelector(
     ) {
         AnimatedContent(
             targetState = state,
+            contentKey = { it::class.simpleName },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(CelluleHeight)
@@ -379,8 +379,6 @@ private fun DeviceAppName(
             Text(
                 text = deviceApp.packageName,
                 style = FloconTheme.typography.bodySmall,
-                maxLines = 1,
-                overflow = TextOverflow.MiddleEllipsis,
                 color = FloconTheme.colorPalette.onPanel.copy(alpha = 0.8f)
             )
         }

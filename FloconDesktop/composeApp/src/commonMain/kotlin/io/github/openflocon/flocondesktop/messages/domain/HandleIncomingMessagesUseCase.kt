@@ -19,7 +19,6 @@ class HandleIncomingMessagesUseCase(
 
     operator fun invoke(): Flow<Unit> = messagesRepository
         .listenMessages()
-        .catch { it.printStackTrace() }
         .onEach {
             val deviceId = handleDeviceUseCase(device = getDevice(it))
             plugins.forEach { plugin ->

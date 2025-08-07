@@ -4,6 +4,7 @@ import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceApp
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.HandleDeviceUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceAppUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
@@ -29,6 +30,7 @@ val coreDomainModule =
         factoryOf(::ObserveCurrentDeviceUseCase)
         factoryOf(::ObserveCurrentDeviceIdUseCase)
         factoryOf(::ObserveCurrentDeviceAppUseCase)
+        factoryOf(::ObserveCurrentDeviceIdAndPackageNameUseCase)
         factoryOf(::GetCurrentDeviceUseCase)
         factoryOf(::GetCurrentDeviceIdUseCase)
         factoryOf(::GetCurrentDeviceAppUseCase)
