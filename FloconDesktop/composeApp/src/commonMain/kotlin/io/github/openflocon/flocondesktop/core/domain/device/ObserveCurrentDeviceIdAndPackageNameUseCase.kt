@@ -4,6 +4,7 @@ import io.github.openflocon.flocondesktop.core.domain.device.repository.DevicesR
 import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 class ObserveCurrentDeviceIdAndPackageNameUseCase(
     private val devicesRepository: DevicesRepository,
@@ -18,4 +19,5 @@ class ObserveCurrentDeviceIdAndPackageNameUseCase(
             null
         }
     }
+        .distinctUntilChanged()
 }
