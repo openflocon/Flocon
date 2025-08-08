@@ -56,7 +56,7 @@ fun toUi(httpRequest: FloconHttpRequestDomainModel): NetworkItemViewState = Netw
 fun getDomainUi(httpRequest: FloconHttpRequestDomainModel): String = when (val t = httpRequest.type) {
     is FloconHttpRequestDomainModel.Type.GraphQl -> extractDomainAndPath(httpRequest.url)
     is FloconHttpRequestDomainModel.Type.Http -> extractDomain(httpRequest.url)
-    is FloconHttpRequestDomainModel.Type.Grpc -> extractDomain(httpRequest.url)
+    is FloconHttpRequestDomainModel.Type.Grpc -> httpRequest.url
 }
 
 fun formatDuration(duration: Double): String = duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)
