@@ -340,7 +340,7 @@ Flocon.deeplinks(
 
 Similar to network inteceptions, Flocon works with grpc 
 
-it works with io.grpc:grpc-android : https://github.com/grpc/grpc-java
+it works with `io.grpc:grpc-android` : https://github.com/grpc/grpc-java
 
 ⚠️ please ensure your version is at lease `1.70.0` ⚠️
 
