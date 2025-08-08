@@ -27,10 +27,14 @@ interface FloconHttpRequestDao {
         SELECT * 
         FROM FloconHttpRequestEntity 
         WHERE deviceId = :deviceId 
+        AND packageName = :packageName
         ORDER BY startTime ASC
     """,
     )
-    fun observeRequestsLite(deviceId: String): Flow<List<FloconHttpRequestEntityLite>>
+    fun observeRequestsLite(
+        deviceId: String,
+        packageName: String
+    ): Flow<List<FloconHttpRequestEntityLite>>
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -55,9 +59,13 @@ interface FloconHttpRequestDao {
         """
         DELETE FROM FloconHttpRequestEntity
         WHERE deviceId = :deviceId
+        AND packageName = :packageName
     """,
     )
-    suspend fun clearDeviceCalls(deviceId: DeviceId)
+    suspend fun clearDeviceCalls(
+        deviceId: DeviceId,
+        packageName: String
+    )
 
     @Query(
         """

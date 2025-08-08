@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 30,
-    "identityHash": "ff3767d620e0f206c8ed148179c1ea45",
+    "identityHash": "96a3f2dfd302f56400866313bc7dfefb",
     "entities": [
       {
         "tableName": "FloconHttpRequestEntity",
@@ -125,7 +125,19 @@
           "columnNames": [
             "uuid"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_FloconHttpRequestEntity_deviceId_packageName",
+            "unique": false,
+            "columnNames": [
+              "deviceId",
+              "packageName"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_FloconHttpRequestEntity_deviceId_packageName` ON `${TABLE_NAME}` (`deviceId`, `packageName`)"
+          }
+        ]
       },
       {
         "tableName": "FileEntity",
@@ -191,7 +203,19 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_FileEntity_deviceId_packageName",
+            "unique": false,
+            "columnNames": [
+              "deviceId",
+              "packageName"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_FileEntity_deviceId_packageName` ON `${TABLE_NAME}` (`deviceId`, `packageName`)"
+          }
+        ]
       },
       {
         "tableName": "DashboardEntity",
@@ -233,13 +257,14 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_DashboardEntity_dashboardId` ON `${TABLE_NAME}` (`dashboardId`)"
           },
           {
-            "name": "index_DashboardEntity_deviceId",
+            "name": "index_DashboardEntity_deviceId_packageName",
             "unique": false,
             "columnNames": [
-              "deviceId"
+              "deviceId",
+              "packageName"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_DashboardEntity_deviceId` ON `${TABLE_NAME}` (`deviceId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_DashboardEntity_deviceId_packageName` ON `${TABLE_NAME}` (`deviceId`, `packageName`)"
           }
         ]
       },
@@ -489,14 +514,15 @@
         },
         "indices": [
           {
-            "name": "index_TableEntity_deviceId_name",
+            "name": "index_TableEntity_deviceId_packageName_name",
             "unique": true,
             "columnNames": [
               "deviceId",
+              "packageName",
               "name"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_TableEntity_deviceId_name` ON `${TABLE_NAME}` (`deviceId`, `name`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_TableEntity_deviceId_packageName_name` ON `${TABLE_NAME}` (`deviceId`, `packageName`, `name`)"
           }
         ]
       },
@@ -647,15 +673,16 @@
         },
         "indices": [
           {
-            "name": "index_SuccessQueryEntity_deviceId_databaseId_queryString",
+            "name": "index_SuccessQueryEntity_deviceId_packageName_databaseId_queryString",
             "unique": true,
             "columnNames": [
               "deviceId",
+              "packageName",
               "databaseId",
               "queryString"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_SuccessQueryEntity_deviceId_databaseId_queryString` ON `${TABLE_NAME}` (`deviceId`, `databaseId`, `queryString`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_SuccessQueryEntity_deviceId_packageName_databaseId_queryString` ON `${TABLE_NAME}` (`deviceId`, `packageName`, `databaseId`, `queryString`)"
           },
           {
             "name": "index_SuccessQueryEntity_databaseId",
@@ -790,14 +817,15 @@
         },
         "indices": [
           {
-            "name": "index_AnalyticsItemEntity_deviceId_analyticsTableId",
+            "name": "index_AnalyticsItemEntity_deviceId_packageName_analyticsTableId",
             "unique": false,
             "columnNames": [
               "deviceId",
+              "packageName",
               "analyticsTableId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_AnalyticsItemEntity_deviceId_analyticsTableId` ON `${TABLE_NAME}` (`deviceId`, `analyticsTableId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_AnalyticsItemEntity_deviceId_packageName_analyticsTableId` ON `${TABLE_NAME}` (`deviceId`, `packageName`, `analyticsTableId`)"
           }
         ]
       },
@@ -841,7 +869,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ff3767d620e0f206c8ed148179c1ea45')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '96a3f2dfd302f56400866313bc7dfefb')"
     ]
   }
 }

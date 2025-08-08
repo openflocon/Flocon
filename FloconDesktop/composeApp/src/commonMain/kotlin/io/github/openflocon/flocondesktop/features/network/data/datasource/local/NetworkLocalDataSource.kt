@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.Flow
 interface NetworkLocalDataSource {
 
     fun observeRequests(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        lite: Boolean
     ): Flow<List<FloconHttpRequestDomainModel>>
 
     fun observeRequest(

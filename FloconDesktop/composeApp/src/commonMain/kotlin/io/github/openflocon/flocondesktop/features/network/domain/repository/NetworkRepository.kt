@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface NetworkRepository {
     // lite : exclude headers, sizes, body
-    fun observeRequests(deviceId: String, lite: Boolean): Flow<List<FloconHttpRequestDomainModel>>
+    fun observeRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, lite: Boolean): Flow<List<FloconHttpRequestDomainModel>>
 
     fun observeRequest(
         deviceId: String,
