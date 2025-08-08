@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
@@ -33,6 +31,7 @@ import io.github.openflocon.flocondesktop.features.analytics.ui.model.items
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -136,14 +135,13 @@ fun AnalyticsScreen(
                 }
             }
 
-            selectedItem?.let {
+            FloconPanel(
+                contentState = selectedItem,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
                 AnalyticsDetailView(
-                    modifier =
-                        Modifier
-                            .align(Alignment.TopEnd)
-                            .fillMaxHeight()
-                            .width(500.dp),
-                    state = it,
+                    modifier = Modifier.fillMaxSize(),
+                    state = it
                 )
             }
         }
