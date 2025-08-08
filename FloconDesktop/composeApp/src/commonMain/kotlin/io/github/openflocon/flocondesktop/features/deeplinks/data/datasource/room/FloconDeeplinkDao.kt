@@ -19,16 +19,18 @@ interface FloconDeeplinkDao {
         """
        DELETE FROM DeeplinkEntity
        WHERE deviceId = :deviceId 
+       AND packageName = :packageName
     """,
     )
-    suspend fun deleteAll(deviceId: String)
+    suspend fun deleteAll(deviceId: String, packageName: String)
 
     @Transaction
     suspend fun updateAll(
         deviceId: DeviceId,
+        packageName: String,
         deeplinks: List<DeeplinkEntity>,
     ) {
-        deleteAll(deviceId)
+        deleteAll(deviceId, packageName)
         deeplinks.forEach { insert(it) }
     }
 
@@ -37,8 +39,9 @@ interface FloconDeeplinkDao {
             SELECT *
             FROM DeeplinkEntity
             WHERE deviceId = :deviceId
+            AND packageName = :packageName
             ORDER BY id ASC
             """,
     )
-    fun observeAll(deviceId: String): Flow<List<DeeplinkEntity>>
+    fun observeAll(deviceId: String, packageName: String): Flow<List<DeeplinkEntity>>
 }

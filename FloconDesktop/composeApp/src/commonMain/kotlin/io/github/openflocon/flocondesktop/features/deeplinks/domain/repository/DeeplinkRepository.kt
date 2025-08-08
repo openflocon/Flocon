@@ -1,17 +1,17 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.domain.repository
 
 import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DeeplinkRepository {
 
     fun executeDeeplink(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         adbPath: String,
-        deviceId: String,
         deeplink: String,
-        packageName: String,
     )
 
-    fun observe(deviceId: String): Flow<List<DeeplinkDomainModel>>
+    fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>>
 
 }

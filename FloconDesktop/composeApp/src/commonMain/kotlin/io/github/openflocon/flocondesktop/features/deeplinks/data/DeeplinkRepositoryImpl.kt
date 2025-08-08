@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.data
 
-import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.Protocol
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
@@ -8,6 +7,7 @@ import io.github.openflocon.flocondesktop.common.executeAdbCommand
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.LocalDeeplinkDataSource
 import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
 import io.github.openflocon.flocondesktop.features.deeplinks.domain.repository.DeeplinkRepository
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -28,27 +28,26 @@ class DeeplinkRepositoryImpl(
             Protocol.FromDevice.Deeplink.Method.GetDeeplinks -> {
                 decodeListDeeplinks(message.body)?.let {
                     localDeeplinkDataSource.update(
-                        deviceId = deviceId,
-                        it.toDomain(),
+                        deviceIdAndPackageNameDomainModel = DeviceIdAndPackageNameDomainModel(
+                            deviceId = deviceId,
+                            packageName = message.appPackageName
+                        ),
+                        deeplinks = it.toDomain(),
                     )
                 }
             }
         }
     }
 
-    override fun observe(deviceId: String): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observe(deviceId)
-        .flowOn(dispatcherProvider.data)
+    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
+        localDeeplinkDataSource.observe(deviceIdAndPackageName)
+            .flowOn(dispatcherProvider.data)
 
-    override fun executeDeeplink(
-        adbPath: String,
-        deviceId: DeviceId,
-        deeplink: String,
-        packageName: String,
-    ) {
+    override fun executeDeeplink(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, adbPath: String, deeplink: String) {
         executeAdbCommand(
             adbPath = adbPath,
             // TODO inject the device serial
-            command = "shell am start -W -a android.intent.action.VIEW -d \"$deeplink\" $packageName",
+            command = "shell am start -W -a android.intent.action.VIEW -d \"$deeplink\" ${deviceIdAndPackageName.packageName}",
         )
     }
 }

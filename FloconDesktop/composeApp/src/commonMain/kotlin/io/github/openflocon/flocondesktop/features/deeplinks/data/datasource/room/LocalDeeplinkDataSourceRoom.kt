@@ -4,6 +4,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.Loc
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.mapper.toDomainModels
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.mapper.toEntities
 import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -11,17 +12,22 @@ import kotlinx.coroutines.flow.map
 class LocalDeeplinkDataSourceRoom(
     private val deeplinkDao: FloconDeeplinkDao,
 ) : LocalDeeplinkDataSource {
-    override suspend fun update(deviceId: String, deeplinks: List<DeeplinkDomainModel>) {
+    override suspend fun update(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel, deeplinks: List<DeeplinkDomainModel>) {
         deeplinkDao.updateAll(
-            deviceId = deviceId,
+            deviceId = deviceIdAndPackageNameDomainModel.deviceId,
+            packageName = deviceIdAndPackageNameDomainModel.packageName,
             deeplinks = toEntities(
                 deeplinks = deeplinks,
-                deviceId = deviceId,
+                deviceIdAndPackageName = deviceIdAndPackageNameDomainModel,
             ),
         )
     }
 
-    override fun observe(deviceId: String): Flow<List<DeeplinkDomainModel>> = deeplinkDao.observeAll(deviceId = deviceId)
-        .map { toDomainModels(it) }
-        .distinctUntilChanged()
+    override fun observe(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
+        deeplinkDao.observeAll(
+            deviceId = deviceIdAndPackageNameDomainModel.deviceId,
+            packageName = deviceIdAndPackageNameDomainModel.packageName
+        )
+            .map { toDomainModels(it) }
+            .distinctUntilChanged()
 }
