@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.domain
 
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.repository.SharedPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -9,23 +9,23 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 
 class ObserveCurrentDeviceSharedPreferenceValuesUseCase(
-    private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
+    private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val sharedPreferencesRepository: SharedPreferencesRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<List<SharedPreferenceRowDomainModel>> = observeCurrentDeviceIdUseCase()
-        .flatMapLatest { deviceId ->
-            if (deviceId == null) {
+    operator fun invoke(): Flow<List<SharedPreferenceRowDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
+        .flatMapLatest { current ->
+            if (current == null) {
                 flowOf(emptyList())
             } else {
                 sharedPreferencesRepository
-                    .observeSelectedDeviceSharedPreference(deviceId = deviceId)
+                    .observeSelectedDeviceSharedPreference(deviceIdAndPackageName = current)
                     .flatMapLatest { sharedPreference ->
                         if (sharedPreference == null) {
                             flowOf(emptyList())
                         } else {
                             sharedPreferencesRepository.observe(
-                                deviceId = deviceId,
+                                deviceIdAndPackageName = current,
                                 sharedPreferenceId = sharedPreference.id,
                             )
                         }

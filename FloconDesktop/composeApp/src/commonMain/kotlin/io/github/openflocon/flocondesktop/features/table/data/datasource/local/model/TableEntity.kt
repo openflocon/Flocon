@@ -6,12 +6,13 @@ import androidx.room.PrimaryKey
 
 @Entity(
     indices = [
-        Index(value = ["deviceId", "name"], unique = true),
+        Index(value = ["deviceId", "packageName", "name"], unique = true),
     ],
 )
 data class TableEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val deviceId: String,
-    val name: String,
+    val packageName: String,
+    val name: String
 )

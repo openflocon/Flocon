@@ -1,17 +1,18 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.domain
 
-import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.repository.SharedPreferencesRepository
 
 class SelectCurrentDeviceSharedPreferenceUseCase(
     private val sharedPreferenceRepository: SharedPreferencesRepository,
-    private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,
+    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
 ) {
     operator fun invoke(sharedPreferenceId: DeviceSharedPreferenceId) {
-        val currentDevice = getCurrentDeviceIdUseCase() ?: return
+        val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return
+
         sharedPreferenceRepository.selectDeviceSharedPreference(
-            deviceId = currentDevice,
+            deviceIdAndPackageName = current,
             sharedPreferenceId = sharedPreferenceId,
         )
     }

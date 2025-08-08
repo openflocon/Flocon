@@ -41,6 +41,7 @@ import io.github.openflocon.flocondesktop.features.images.ui.view.ImagesScreen
 import io.github.openflocon.flocondesktop.features.network.ui.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.view.SharedPreferencesScreen
 import io.github.openflocon.flocondesktop.features.table.ui.view.TableScreen
+import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
@@ -69,6 +70,7 @@ fun MainScreen(
             modifier = Modifier.fillMaxSize(),
             devicesState = devicesState,
             onDeviceSelected = viewModel::onDeviceSelected,
+            onAppSelected = viewModel::onAppSelected,
             leftPanelState = leftPanelState,
             onClickLeftPanelItem = viewModel::onClickLeftPanelItem,
         )
@@ -80,6 +82,7 @@ private fun MainScreen(
     subScreen: SubScreen,
     devicesState: DevicesStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
+    onAppSelected: (DeviceAppUiModel) -> Unit,
     leftPanelState: LeftPanelState,
     onClickLeftPanelItem: (LeftPanelItem) -> Unit,
     modifier: Modifier = Modifier,
@@ -107,7 +110,8 @@ private fun MainScreen(
             onClickItem = onClickLeftPanelItem,
             state = leftPanelState,
             devicesState = devicesState,
-            onDeviceSelected = onDeviceSelected
+            onDeviceSelected = onDeviceSelected,
+            onAppSelected = onAppSelected
         )
         Box(
             modifier = Modifier

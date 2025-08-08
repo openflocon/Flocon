@@ -1,29 +1,29 @@
 package io.github.openflocon.flocondesktop.features.files.domain.repository
 
-import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface FilesRepository {
     fun observeFolderContent(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
     ): Flow<List<FileDomainModel>>
 
     suspend fun refreshFolderContent(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
     ): Either<Throwable, Unit>
 
     suspend fun deleteFolderContent(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
     ): Either<Throwable, Unit>
 
     suspend fun deleteFile(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         parentPath: FilePathDomainModel,
         path: FilePathDomainModel,
     ): Either<Throwable, Unit>

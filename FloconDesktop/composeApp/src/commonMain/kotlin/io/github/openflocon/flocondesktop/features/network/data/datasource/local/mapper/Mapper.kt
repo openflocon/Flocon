@@ -5,7 +5,10 @@ import io.github.openflocon.flocondesktop.features.network.data.datasource.local
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestInfosEntity
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 
-fun FloconHttpRequestDomainModel.toEntity(deviceId: String): FloconHttpRequestEntity = FloconHttpRequestEntity(
+fun FloconHttpRequestDomainModel.toEntity(
+    deviceId: String,
+    packageName: String
+): FloconHttpRequestEntity = FloconHttpRequestEntity(
     uuid = this.uuid,
     infos = this.toInfosEntity(),
     deviceId = deviceId,
@@ -36,6 +39,7 @@ fun FloconHttpRequestDomainModel.toEntity(deviceId: String): FloconHttpRequestEn
         is FloconHttpRequestDomainModel.Type.GraphQl,
         -> null
     },
+    packageName = packageName
 )
 
 private fun FloconHttpRequestDomainModel.toInfosEntity(): FloconHttpRequestInfosEntity = FloconHttpRequestInfosEntity(

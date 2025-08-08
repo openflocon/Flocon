@@ -24,28 +24,41 @@ interface FloconAnalyticsDao {
         FROM AnalyticsItemEntity 
         WHERE deviceId = :deviceId
         AND analyticsTableId = :analyticsTableId 
+        AND packageName = :packageName
         LIMIT 1
     """,
     )
-    fun observeAnalytics(deviceId: DeviceId, analyticsTableId: String): Flow<AnalyticsItemEntity?>
+    fun observeAnalytics(
+        deviceId: DeviceId,
+        packageName: String,
+        analyticsTableId: String
+    ): Flow<AnalyticsItemEntity?>
 
     @Query(
         """
         SELECT DISTINCT analyticsTableId 
         FROM AnalyticsItemEntity 
         WHERE deviceId = :deviceId
+        AND packageName = :packageName
     """,
     )
-    fun observeAnalyticsTableIdsForDevice(deviceId: DeviceId): Flow<List<String>>
+    fun observeAnalyticsTableIdsForDevice(
+        deviceId: DeviceId,
+        packageName: String
+    ): Flow<List<String>>
 
     @Query(
         """
         SELECT DISTINCT analyticsTableId 
         FROM AnalyticsItemEntity 
         WHERE deviceId = :deviceId
+        AND packageName = :packageName
     """,
     )
-    suspend fun getAnalyticsForDevice(deviceId: DeviceId): List<String>
+    suspend fun getAnalyticsForDevice(
+        deviceId: DeviceId,
+        packageName: String
+    ): List<String>
 
     @Query(
         """
@@ -53,11 +66,13 @@ interface FloconAnalyticsDao {
         FROM AnalyticsItemEntity 
         WHERE analyticsTableId = :analyticsTableId 
         AND deviceId = :deviceId
+        AND packageName = :packageName
         ORDER BY createdAt ASC
     """,
     )
     fun observeAnalyticsItems(
         deviceId: DeviceId,
+        packageName: String,
         analyticsTableId: String,
     ): Flow<List<AnalyticsItemEntity>>
 
@@ -66,10 +81,12 @@ interface FloconAnalyticsDao {
         DELETE FROM AnalyticsItemEntity
         WHERE analyticsTableId = :analyticsTableId
         AND deviceId = :deviceId
+        AND packageName = :packageName
         """,
     )
     suspend fun deleteAnalyticsContent(
         deviceId: String,
-        analyticsTableId: String,
+        packageName: String,
+        analyticsTableId: String
     )
 }

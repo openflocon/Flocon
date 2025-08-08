@@ -1,43 +1,67 @@
 package io.github.openflocon.flocondesktop.main.ui.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 sealed interface DevicesStateUiModel {
+
+    @Immutable
     data object Loading : DevicesStateUiModel
 
+    @Immutable
     data object Empty : DevicesStateUiModel
 
+    @Immutable
     data class WithDevices(
         val devices: List<DeviceItemUiModel>,
-        val selected: DeviceItemUiModel,
+        val deviceSelected: DeviceItemUiModel,
+        val appSelected: DeviceAppUiModel?
     ) : DevicesStateUiModel
+
 }
 
 fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.WithDevices(
-    devices =
-    listOf(
+    devices = listOf(
         DeviceItemUiModel(
-            appName = "appName1",
             deviceName = "deviceName1",
-            appPackageName = "appPackageName1",
             id = "id1",
+            apps = listOf(
+                DeviceAppUiModel(
+                    name = "appName1",
+                    packageName = "packageName1"
+                )
+            )
         ),
         DeviceItemUiModel(
-            appName = "appName2",
             deviceName = "deviceName2",
-            appPackageName = "appPackageName2",
             id = "id2",
+            apps = listOf(
+                DeviceAppUiModel(
+                    name = "appName2",
+                    packageName = "packageName2"
+                )
+            )
         ),
         DeviceItemUiModel(
-            appName = "appName",
             deviceName = "deviceName",
-            appPackageName = "appPackageName",
             id = "id",
+            apps = listOf(
+                DeviceAppUiModel(
+                    name = "appName",
+                    packageName = "packageName"
+                )
+            )
         ),
     ),
-    selected =
-    DeviceItemUiModel(
-        appName = "appName",
+    appSelected = null,
+    deviceSelected = DeviceItemUiModel(
         deviceName = "deviceName",
-        appPackageName = "appPackageName",
         id = "id",
-    ),
+        apps = listOf(
+            DeviceAppUiModel(
+                name = "appName",
+                packageName = "packageName"
+            )
+        )
+    )
 )
