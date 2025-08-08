@@ -1,0 +1,88 @@
+name: Build Desktop App
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      # 1. Check out the source code
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # 2. Set up temurin JDK with proper authentication
+      - name: Set up temurin JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+
+      # 3. Configure Gradle
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: '8.12'
+
+      # 4. Build the application
+      - name: Build with Gradle
+        working-directory: FloconDesktop
+        run: ./gradlew packageDistributionForCurrentOS
+        env:
+          PROJECT_VERSION_NAME: ${{ github.ref_name }}
+
+      # 5. Upload OS-specific artifacts
+      - name: Upload Linux artifact
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-deb
+          path: FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb
+
+      - name: Upload macOS artifact
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg
+
+      - name: Upload Windows artifact
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-msi
+          path: FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # 1. Check out the source code
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # 2. Download artifacts from all platforms
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-deb
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-dmg
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-msi
