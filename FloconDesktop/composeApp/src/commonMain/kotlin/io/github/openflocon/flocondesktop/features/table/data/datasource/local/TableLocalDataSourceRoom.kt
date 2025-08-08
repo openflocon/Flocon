@@ -1,12 +1,12 @@
 package io.github.openflocon.flocondesktop.features.table.data.datasource.local
 
-import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.mapper.toEntity
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
 import io.github.openflocon.flocondesktop.features.table.domain.model.TableDomainModel
 import io.github.openflocon.flocondesktop.features.table.domain.model.TableId
 import io.github.openflocon.flocondesktop.features.table.domain.model.TableIdentifierDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -19,15 +19,18 @@ class TableLocalDataSourceRoom(
     private val dispatcherProvider: DispatcherProvider,
 ) : TableLocalDataSource {
 
-    override suspend fun insert(deviceId: DeviceId, tablePartialInfos: List<TableDomainModel>) {
+    override suspend fun insert(deviceIdAndPackageName: DeviceIdAndPackageName, tablePartialInfos: List<TableDomainModel>) {
         withContext(dispatcherProvider.data) {
             tablePartialInfos.forEach { tableInfo ->
-                var tableId = tableDao.insertTable(tableInfo.toEntity(deviceId))
+                var tableId = tableDao.insertTable(tableInfo.toEntity(deviceIdAndPackageName))
                 if (tableId == -1L) {
                     // table already exists
-                    tableId =
-                        tableDao.getTableId(deviceId = deviceId, tableName = tableInfo.name)
-                            ?: return@withContext
+                    tableId = tableDao.getTableId(
+                        deviceId = deviceIdAndPackageName.deviceId,
+                        packageName = deviceIdAndPackageName.packageName,
+                        tableName = tableInfo.name
+                    )
+                        ?: return@withContext
                 }
 
                 tableDao.insertTableItems(
@@ -43,42 +46,45 @@ class TableLocalDataSourceRoom(
         }
     }
 
-    override fun observe(deviceId: DeviceId, tableId: TableId): Flow<TableDomainModel?> = tableDao.observeTable(deviceId = deviceId, tableId = tableId)
-        .flatMapLatest { table ->
-            if (table == null) {
-                flowOf(null)
-            } else {
-                tableDao.observeTableItems(
-                    tableId = table.id,
-                ).map { tableItem ->
-                    TableDomainModel(
-                        name = table.name,
-                        items = tableItem.map {
-                            TableDomainModel.TableItem(
-                                itemId = it.itemId,
-                                createdAt = it.createdAt,
-                                values = it.values,
-                                columns = it.columnsNames,
-                            )
-                        },
-                    )
+    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageName, tableId: TableId): Flow<TableDomainModel?> =
+        tableDao.observeTable(deviceId = deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName, tableId = tableId)
+            .flatMapLatest { table ->
+                if (table == null) {
+                    flowOf(null)
+                } else {
+                    tableDao.observeTableItems(
+                        tableId = table.id,
+                    ).map { tableItem ->
+                        TableDomainModel(
+                            name = table.name,
+                            items = tableItem.map {
+                                TableDomainModel.TableItem(
+                                    itemId = it.itemId,
+                                    createdAt = it.createdAt,
+                                    values = it.values,
+                                    columns = it.columnsNames,
+                                )
+                            },
+                        )
+                    }
                 }
+            }.flowOn(dispatcherProvider.data)
+
+    override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<List<TableIdentifierDomainModel>> =
+        tableDao.observeTablesForDevice(deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName).map { list ->
+            list.map {
+                toDomain(it)
             }
-        }.flowOn(dispatcherProvider.data)
-
-    override fun observeDeviceTables(deviceId: DeviceId): Flow<List<TableIdentifierDomainModel>> = tableDao.observeTablesForDevice(deviceId).map { list ->
-        list.map {
-            toDomain(it)
         }
-    }
 
-    override suspend fun delete(deviceId: DeviceId, tableId: TableIdentifierDomainModel) {
+    override suspend fun delete(deviceIdAndPackageName: DeviceIdAndPackageName, tableId: TableIdentifierDomainModel) {
         tableDao.deleteTableContent(tableId = tableId.id)
     }
 
-    override suspend fun getDeviceTables(deviceId: DeviceId): List<TableIdentifierDomainModel> = tableDao.getTablesForDevice(deviceId).map {
-        toDomain(it)
-    }
+    override suspend fun getDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageName): List<TableIdentifierDomainModel> =
+        tableDao.getTablesForDevice(deviceId = deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName).map {
+            toDomain(it)
+        }
 
     private fun toDomain(entity: TableEntity): TableIdentifierDomainModel = TableIdentifierDomainModel(
         id = entity.id,

@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.table.domain
 
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.features.table.domain.model.TableIdentifierDomainModel
 import io.github.openflocon.flocondesktop.features.table.domain.repository.TableRepository
@@ -9,13 +10,13 @@ import kotlinx.coroutines.flow.flowOf
 
 class ObserveDeviceTablesUseCase(
     private val tableRepository: TableRepository,
-    private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
+    private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(): Flow<List<TableIdentifierDomainModel>> = observeCurrentDeviceIdUseCase().flatMapLatest { deviceId ->
-        if (deviceId == null) {
+    operator fun invoke(): Flow<List<TableIdentifierDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { current ->
+        if (current == null) {
             flowOf(emptyList())
         } else {
-            tableRepository.observeDeviceTables(deviceId = deviceId)
+            tableRepository.observeDeviceTables(deviceIdAndPackageName = current)
         }
     }
 }

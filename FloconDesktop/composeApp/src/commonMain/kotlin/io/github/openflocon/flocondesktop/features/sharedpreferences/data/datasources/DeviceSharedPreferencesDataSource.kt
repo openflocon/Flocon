@@ -54,11 +54,11 @@ class DeviceSharedPreferencesDataSource(
     ) {
         deviceSharedPreferences.update {
             val actual = it[deviceIdAndPackageName]
-            val newList =
-                buildList<DeviceSharedPreferenceDomainModel> {
-                    actual?.let { addAll(it) }
-                    addAll(sharedPreferences)
-                }.distinct()
+            val newList = buildList {
+                actual?.let(::addAll)
+                addAll(sharedPreferences)
+            }
+                .distinct()
             it + (deviceIdAndPackageName to newList)
         }
 
@@ -80,12 +80,11 @@ class DeviceSharedPreferencesDataSource(
     ) {
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toFlocon(),
-            message =
-                FloconOutgoingMessageDataModel(
-                    plugin = Protocol.ToDevice.SharedPreferences.Plugin,
-                    method = Protocol.ToDevice.SharedPreferences.Method.GetSharedPreferences,
-                    body = "",
-                ),
+            message = FloconOutgoingMessageDataModel(
+                plugin = Protocol.ToDevice.SharedPreferences.Plugin,
+                method = Protocol.ToDevice.SharedPreferences.Method.GetSharedPreferences,
+                body = "",
+            ),
         )
     }
 
@@ -96,18 +95,16 @@ class DeviceSharedPreferencesDataSource(
         val requestId = newRequestId()
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toFlocon(),
-            message =
-                FloconOutgoingMessageDataModel(
-                    plugin = Protocol.ToDevice.SharedPreferences.Plugin,
-                    method = Protocol.ToDevice.SharedPreferences.Method.GetSharedPreferenceValue,
-                    body =
-                        Json.encodeToString(
-                            ToDeviceGetSharedPreferenceValueMessage(
-                                requestId = requestId,
-                                sharedPreferenceName = sharedPreferenceId,
-                            ),
-                        ),
+            message = FloconOutgoingMessageDataModel(
+                plugin = Protocol.ToDevice.SharedPreferences.Plugin,
+                method = Protocol.ToDevice.SharedPreferences.Method.GetSharedPreferenceValue,
+                body = Json.encodeToString(
+                    ToDeviceGetSharedPreferenceValueMessage(
+                        requestId = requestId,
+                        sharedPreferenceName = sharedPreferenceId,
+                    ),
                 ),
+            ),
         )
     }
 

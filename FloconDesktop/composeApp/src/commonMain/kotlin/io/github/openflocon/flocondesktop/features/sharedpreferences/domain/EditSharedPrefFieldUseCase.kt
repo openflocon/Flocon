@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.domain
 
-import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.repository.SharedPreferencesRepository
 
 class EditSharedPrefFieldUseCase(
-    private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,
+    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val getCurrentDeviceSelectedSharedPreferenceUseCase: GetCurrentDeviceSelectedSharedPreferenceUseCase,
     private val sharedPreferencesRepository: SharedPreferencesRepository,
 ) {
@@ -13,10 +13,11 @@ class EditSharedPrefFieldUseCase(
         key: String,
         value: SharedPreferenceRowDomainModel.Value,
     ) {
-        val currentDeviceId = getCurrentDeviceIdUseCase() ?: return
+        val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return
         val selectedSharedPreference = getCurrentDeviceSelectedSharedPreferenceUseCase() ?: return
+
         sharedPreferencesRepository.editSharedPrefField(
-            deviceId = currentDeviceId,
+            deviceIdAndPackageName = current,
             sharedPreference = selectedSharedPreference,
             key = key,
             value = value,

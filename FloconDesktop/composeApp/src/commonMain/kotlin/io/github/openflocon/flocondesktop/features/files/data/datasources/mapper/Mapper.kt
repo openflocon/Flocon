@@ -32,9 +32,11 @@ fun FileEntity.toDomainModel(): FileDomainModel = FileDomainModel(
 
 fun FileDomainModel.toEntity(
     deviceId: String,
+    packageName: String,
     parentFilePath: FilePathDomainModel,
 ): FileEntity = FileEntity(
     deviceId = deviceId,
+    packageName = packageName,
     name = name,
     isDirectory = isDirectory,
     path = path.mapToLocal(),
