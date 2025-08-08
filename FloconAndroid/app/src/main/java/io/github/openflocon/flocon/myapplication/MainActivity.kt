@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         intent.data?.let {
-            Toast.makeText(this, "opend with : ${it.toString()}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "opend with : $it", Toast.LENGTH_LONG).show()
         }
 
         val okHttpClient = OkHttpClient()
@@ -58,13 +58,6 @@ class MainActivity : ComponentActivity() {
         initializeDatabases(context = applicationContext)
 
         Flocon.initialize(this)
-        Flocon.deeplinks(
-            listOf(
-                Deeplink(
-                    link = "http://myapp.com"
-                )
-            )
-        )
         initializeDeeplinks()
 
         val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)

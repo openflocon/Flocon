@@ -30,8 +30,8 @@ interface FloconDeeplinkDao {
         packageName: String,
         deeplinks: List<DeeplinkEntity>,
     ) {
-        deleteAll(deviceId, packageName)
-        deeplinks.forEach { insert(it) }
+        deleteAll(deviceId = deviceId, packageName = packageName)
+        deeplinks.forEach { insert(deeplink = it) }
     }
 
     @Query(
