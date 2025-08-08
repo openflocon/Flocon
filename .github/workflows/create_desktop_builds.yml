@@ -6,10 +6,11 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: macOS-latest
+    # runs-on: ${{ matrix.os }}
+    # strategy:
+    #   matrix:
+    #     os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       # 1. Check out the source code
@@ -21,7 +22,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           token: ${{ secrets.GITHUB_TOKEN }}
 
 
@@ -34,31 +35,38 @@ jobs:
       # 4. Build the application
       - name: Build with Gradle
         working-directory: FloconDesktop
-        run: ./gradlew packageDistributionForCurrentOS
+        run: ./gradlew packageDistributionForCurrentOS packageUberJarForCurrentOS
         env:
-          PROJECT_VERSION_NAME: ${{ github.ref_name }}
+          PROJECT_VERSION_NAME: "1.0.0"
 
       # 5. Upload OS-specific artifacts
-      - name: Upload Linux artifact
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-deb
-          path: FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb
+      # - name: Upload Linux artifact
+      #   if: matrix.os == 'ubuntu-latest'
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: linux-deb
+      #     path: FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb
 
       - name: Upload macOS artifact
-        if: matrix.os == 'macos-latest'
+        #if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
           name: macos-dmg
           path: FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg
 
-      - name: Upload Windows artifact
-        if: matrix.os == 'windows-latest'
+      - name: Upload macOS jar artifact
+        #if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: windows-msi
-          path: FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi
+          name: macos-jar
+          path: FloconDesktop/composeApp/build/compose/jars/*.jar
+
+      # - name: Upload Windows artifact
+      #   if: matrix.os == 'windows-latest'
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: windows-msi
+      #     path: FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi
 
   release:
     needs: build
@@ -72,17 +80,22 @@ jobs:
         uses: actions/checkout@v4
 
       # 2. Download artifacts from all platforms
-      - name: Download Linux artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-deb
+      # - name: Download Linux artifact
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: linux-deb
 
       - name: Download macOS artifact
         uses: actions/download-artifact@v4
         with:
           name: macos-dmg
 
-      - name: Download Windows artifact
+      - name: Download macOS jar
         uses: actions/download-artifact@v4
         with:
-          name: windows-msi
+          name: macos-jar
+
+      #- name: Download Windows artifact
+      #  uses: actions/download-artifact@v4
+      #  with:
+      #    name: windows-msi
