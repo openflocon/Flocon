@@ -2,11 +2,12 @@ package io.github.openflocon.flocondesktop.features.network.domain.repository
 
 import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkRepository {
     // lite : exclude headers, sizes, body
-    fun observeRequests(deviceId: String, lite: Boolean): Flow<List<FloconHttpRequestDomainModel>>
+    fun observeRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, lite: Boolean): Flow<List<FloconHttpRequestDomainModel>>
 
     fun observeRequest(
         deviceId: String,
@@ -14,7 +15,7 @@ interface NetworkRepository {
     ): Flow<FloconHttpRequestDomainModel?>
 
     suspend fun clear()
-    suspend fun clearDeviceCalls(deviceId: DeviceId)
+    suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     suspend fun deleteRequest(
         deviceId: DeviceId,

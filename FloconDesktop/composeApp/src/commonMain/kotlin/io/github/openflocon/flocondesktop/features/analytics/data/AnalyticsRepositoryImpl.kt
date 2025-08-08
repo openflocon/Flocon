@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.analytics.data
 
-import io.github.openflocon.flocondesktop.DeviceId
+import io.github.openflocon.flocondesktop.FloconDeviceIdAndPackageName
 import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.Protocol
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
@@ -13,6 +13,7 @@ import io.github.openflocon.flocondesktop.features.analytics.domain.model.Analyt
 import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsItemDomainModel
 import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsTableId
 import io.github.openflocon.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -28,10 +29,9 @@ class AnalyticsRepositoryImpl(
     MessagesReceiverRepository {
 
     // maybe inject
-    private val analyticsParser =
-        Json {
-            ignoreUnknownKeys = true
-        }
+    private val analyticsParser = Json {
+        ignoreUnknownKeys = true
+    }
 
     override val pluginName = listOf(Protocol.FromDevice.Analytics.Plugin)
 
@@ -48,11 +48,17 @@ class AnalyticsRepositoryImpl(
                         ?.takeIf { it.isNotEmpty() }
                         ?.let { analytics ->
                             analyticsLocalDataSource.insert(
-                                deviceId = deviceId,
+                                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                                    deviceId = deviceId,
+                                    packageName = message.appPackageName
+                                ),
                                 items = analytics,
                             )
                             remoteAnalyticsDataSource.clearReceivedItem(
-                                deviceId = deviceId,
+                                deviceIdAndPackageName = FloconDeviceIdAndPackageName(
+                                    deviceId = deviceId,
+                                    packageName = message.appPackageName
+                                ),
                                 items = analytics.map { it.itemId },
                             )
                         }
@@ -69,34 +75,39 @@ class AnalyticsRepositoryImpl(
     }
 
     override fun observeAnalytics(
-        deviceId: DeviceId,
-        analyticsTableId: AnalyticsTableId,
-    ): Flow<List<AnalyticsItemDomainModel>> = analyticsLocalDataSource.observe(deviceId = deviceId, analyticsTableId = analyticsTableId)
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsTableId: AnalyticsTableId
+    ): Flow<List<AnalyticsItemDomainModel>> = analyticsLocalDataSource.observe(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+        analyticsTableId = analyticsTableId
+    )
         .flowOn(dispatcherProvider.data)
 
     override suspend fun deleteAnalytics(
-        deviceId: DeviceId,
-        analyticsId: AnalyticsIdentifierDomainModel,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsId: AnalyticsIdentifierDomainModel
     ) {
         withContext(dispatcherProvider.data) {
-            analyticsLocalDataSource.delete(deviceId = deviceId, analyticsId = analyticsId)
+            analyticsLocalDataSource.delete(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                analyticsId = analyticsId
+            )
         }
     }
 
-    override suspend fun selectDeviceAnalytics(
-        deviceId: DeviceId,
-        analyticsTableId: AnalyticsTableId,
-    ) {
+    override suspend fun selectDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsTableId: AnalyticsTableId) {
         deviceAnalyticsDataSource.selectDeviceAnalytics(
-            deviceId = deviceId,
+            deviceIdAndPackageName = deviceIdAndPackageName,
             analyticsTableId = analyticsTableId,
-            deviceAnalytics = analyticsLocalDataSource.getDeviceAnalytics(deviceId = deviceId),
+            deviceAnalytics = analyticsLocalDataSource.getDeviceAnalytics(deviceIdAndPackageName = deviceIdAndPackageName)
         )
     }
 
-    override fun observeSelectedDeviceAnalytics(deviceId: DeviceId): Flow<AnalyticsIdentifierDomainModel?> = deviceAnalyticsDataSource.observeSelectedDeviceAnalytics(deviceId = deviceId)
-        .flowOn(dispatcherProvider.data)
+    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> =
+        deviceAnalyticsDataSource.observeSelectedDeviceAnalytics(deviceIdAndPackageName)
+            .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceAnalytics(deviceId: DeviceId): Flow<List<AnalyticsIdentifierDomainModel>> = analyticsLocalDataSource.observeDeviceAnalytics(deviceId = deviceId)
-        .flowOn(dispatcherProvider.data)
+    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
+        analyticsLocalDataSource.observeDeviceAnalytics(deviceIdAndPackageName)
+            .flowOn(dispatcherProvider.data)
 }

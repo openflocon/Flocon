@@ -22,10 +22,14 @@ interface FloconTableDao {
         """
         SELECT id
         FROM TableEntity 
-        WHERE deviceId = :deviceId AND name = :tableName LIMIT 1
+        WHERE deviceId = :deviceId
+        AND name = :tableName
+        AND packageName = :packageName
+        LIMIT 1
+
     """,
     )
-    suspend fun getTableId(deviceId: DeviceId, tableName: String): Long?
+    suspend fun getTableId(deviceId: DeviceId, packageName: String, tableName: String): Long?
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -35,28 +39,33 @@ interface FloconTableDao {
         """
         SELECT * 
         FROM TableEntity 
-        WHERE deviceId = :deviceId AND id = :tableId LIMIT 1
+        WHERE deviceId = :deviceId 
+        AND id = :tableId
+        AND packageName = :packageName
+        LIMIT 1
     """,
     )
-    fun observeTable(deviceId: DeviceId, tableId: TableId): Flow<TableEntity?>
+    fun observeTable(deviceId: DeviceId, packageName: String, tableId: TableId): Flow<TableEntity?>
 
     @Query(
         """
         SELECT * 
         FROM TableEntity 
         WHERE deviceId = :deviceId
+        AND packageName = :packageName
     """,
     )
-    fun observeTablesForDevice(deviceId: DeviceId): Flow<List<TableEntity>>
+    fun observeTablesForDevice(deviceId: DeviceId, packageName: String): Flow<List<TableEntity>>
 
     @Query(
         """
         SELECT * 
         FROM TableEntity 
         WHERE deviceId = :deviceId
+        AND packageName = :packageName
     """,
     )
-    suspend fun getTablesForDevice(deviceId: DeviceId): List<TableEntity>
+    suspend fun getTablesForDevice(deviceId: DeviceId, packageName: String): List<TableEntity>
 
     @Query(
         """

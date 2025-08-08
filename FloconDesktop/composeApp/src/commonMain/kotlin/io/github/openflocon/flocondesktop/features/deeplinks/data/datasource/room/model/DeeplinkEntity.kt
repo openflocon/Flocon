@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(
     indices = [
-        Index(value = ["deviceId"]),
+        Index(value = ["deviceId", "packageName"]),
         Index(value = ["deviceId", "link"], unique = true),
     ],
 )
@@ -14,6 +14,7 @@ data class DeeplinkEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val deviceId: String,
+    val packageName: String,
     val link: String,
     val label: String?,
     val description: String?,

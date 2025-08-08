@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device
 
-import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -9,20 +9,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 class DeviceDashboardsDataSourceInMemory : DeviceDashboardsDataSource {
-    private val selectedDeviceDashboards =
-        MutableStateFlow<Map<DeviceId, DashboardId?>>(emptyMap())
+    private val selectedDeviceDashboards = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DashboardId?>>(emptyMap())
 
-    override fun observeSelectedDeviceDashboard(deviceId: DeviceId): Flow<DashboardId?> = selectedDeviceDashboards
-        .map {
-            it[deviceId]
-        }.distinctUntilChanged()
+    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> = selectedDeviceDashboards
+        .map { it[deviceIdAndPackageName] }
+        .distinctUntilChanged()
 
-    override fun selectDeviceDashboard(
-        deviceId: DeviceId,
-        dashboardId: DashboardId,
-    ) {
+    override fun selectDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId) {
         selectedDeviceDashboards.update {
-            it + (deviceId to dashboardId)
+            it + (deviceIdAndPackageName to dashboardId)
         }
     }
 }

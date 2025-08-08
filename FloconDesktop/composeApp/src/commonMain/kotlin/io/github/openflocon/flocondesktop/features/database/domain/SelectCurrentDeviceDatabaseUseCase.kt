@@ -1,17 +1,18 @@
 package io.github.openflocon.flocondesktop.features.database.domain
 
-import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.features.database.domain.repository.DatabaseRepository
 
 class SelectCurrentDeviceDatabaseUseCase(
     private val databaseRepository: DatabaseRepository,
-    private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,
+    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
 ) {
     operator fun invoke(databaseId: DeviceDataBaseId) {
-        val currentDevice = getCurrentDeviceIdUseCase() ?: return
+        val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return
+
         databaseRepository.selectDeviceDatabase(
-            deviceId = currentDevice,
+            deviceIdAndPackageName = current,
             databaseId = databaseId,
         )
     }

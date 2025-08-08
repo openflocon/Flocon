@@ -21,11 +21,13 @@ interface FloconDashboardDao {
         """
         SELECT * FROM DashboardEntity 
         WHERE deviceId = :deviceId AND dashboardId = :dashboardId
+        AND packageName = :packageName
         LIMIT 1
     """,
     )
     fun observeDashboardWithSectionsAndElements(
         deviceId: String,
+        packageName: String,
         dashboardId: String,
     ): Flow<DashboardWithSectionsAndElements?>
 
@@ -35,9 +37,13 @@ interface FloconDashboardDao {
         SELECT dashboardId
         FROM DashboardEntity 
         WHERE deviceId = :deviceId 
+        AND packageName = :packageName
     """,
     )
-    fun observeDeviceDashboards(deviceId: String): Flow<List<String>>
+    fun observeDeviceDashboards(
+        deviceId: String,
+        packageName: String
+    ): Flow<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDashboard(dashboard: DashboardEntity): Long // Returns generated ID
@@ -59,6 +65,7 @@ interface FloconDashboardDao {
     @Transaction
     suspend fun saveFullDashboard(
         deviceId: DeviceId,
+        packageName: String,
         dashboard: DashboardDomainModel,
     ) {
         // 1. Clear old data
@@ -67,7 +74,8 @@ interface FloconDashboardDao {
         // 2. insert the new dashboatd data
         insertDashboard(
             dashboard = dashboard.toEntity(
-                deviceId = deviceId,
+                packageName = packageName,
+                deviceId = deviceId
             ),
         )
 

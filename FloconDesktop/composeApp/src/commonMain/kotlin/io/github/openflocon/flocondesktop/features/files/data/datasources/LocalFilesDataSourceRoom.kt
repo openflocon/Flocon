@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.files.data.datasources
 
-import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
@@ -14,29 +14,32 @@ class LocalFilesDataSourceRoom(
     private val fileDao: FloconFileDao,
     private val dispatcherProvider: DispatcherProvider,
 ) : LocalFilesDataSource {
+
     override fun observeFolderContentUseCase(
-        deviceId: DeviceId,
-        folderPath: FilePathDomainModel,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        folderPath: FilePathDomainModel
     ): Flow<List<FileDomainModel>> = fileDao
         .observeFolderContent(
-            deviceId = deviceId,
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
             parentFilePath = folderPath.mapToLocal(),
         ).map { list ->
             list.map { it.toDomainModel() }
         }.distinctUntilChanged()
         .flowOn(dispatcherProvider.data)
 
-    override suspend fun storeFiles(
-        deviceId: DeviceId,
-        parentPath: FilePathDomainModel,
-        files: List<FileDomainModel>,
-    ) {
+    override suspend fun storeFiles(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, parentPath: FilePathDomainModel, files: List<FileDomainModel>) {
         withContext(dispatcherProvider.data) {
-            fileDao.clearFolderContent(deviceId, parentPath.mapToLocal())
+            fileDao.clearFolderContent(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+                parentPath = parentPath.mapToLocal()
+            )
             fileDao.insertFiles(
                 files.map {
                     it.toEntity(
-                        deviceId = deviceId,
+                        deviceId = deviceIdAndPackageName.deviceId,
+                        packageName = deviceIdAndPackageName.packageName,
                         parentFilePath = parentPath,
                     )
                 },

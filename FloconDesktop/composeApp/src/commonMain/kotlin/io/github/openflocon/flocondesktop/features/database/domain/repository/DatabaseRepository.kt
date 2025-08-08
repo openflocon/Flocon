@@ -1,39 +1,40 @@
 package io.github.openflocon.flocondesktop.features.database.domain.repository
 
-import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.features.database.domain.model.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseDomainModel
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DatabaseRepository {
-    fun observeDeviceDatabases(deviceId: DeviceId): Flow<List<DeviceDataBaseDomainModel>>
+    fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>>
 
-    fun observeSelectedDeviceDatabase(deviceId: DeviceId): Flow<DeviceDataBaseDomainModel?>
+    fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?>
 
     fun selectDeviceDatabase(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: DeviceDataBaseId,
     )
 
     suspend fun registerDeviceDatabases(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databases: List<DeviceDataBaseDomainModel>,
     )
 
-    suspend fun askForDeviceDatabases(deviceId: DeviceId)
+    suspend fun askForDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     suspend fun executeQuery(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: DeviceDataBaseId,
         query: String,
     ): Either<Throwable, DatabaseExecuteSqlResponseDomainModel>
 
     suspend fun saveSuccessQuery(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: DeviceDataBaseId,
         query: String,
     )
-    fun observeLastSuccessQuery(deviceId: DeviceId, databaseId: DeviceDataBaseId): Flow<List<String>>
+
+    fun observeLastSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId): Flow<List<String>>
 }
