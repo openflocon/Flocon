@@ -87,12 +87,6 @@ jobs:
         with:
           name: windows-msi
 
-      - name: Move all artifacts to current directory
-        run: |
-          mv linux-deb/*.deb .
-          mv macos-dmg/*.dmg .
-          mv windows-msi/*.msi .    
-
       # 3. List downloaded artifacts
       - name: Check downloaded artifacts
         run: ls -R

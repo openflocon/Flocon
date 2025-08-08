@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper
 
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntity
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntityLite
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestInfosEntity
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 
@@ -72,6 +73,46 @@ fun FloconHttpRequestEntity.toDomainModel(): FloconHttpRequestDomainModel? {
             body = this.infos.responseBody,
             headers = this.infos.responseHeaders,
             byteSize = this.infos.responseByteSize,
+        ),
+        type = when {
+            this.graphql != null -> FloconHttpRequestDomainModel.Type.GraphQl(
+                query = this.graphql.query,
+                operationType = this.graphql.operationType,
+                isSuccess = this.graphql.isSuccess,
+                httpCode = this.graphql.responseHttpCode,
+            )
+
+            this.http != null -> FloconHttpRequestDomainModel.Type.Http(
+                httpCode = this.http.responseHttpCode,
+            )
+
+            this.grpc != null -> FloconHttpRequestDomainModel.Type.Grpc(
+                responseStatus = this.grpc.responseStatus,
+            )
+
+            else -> return null
+        },
+    )
+}
+
+
+fun FloconHttpRequestEntityLite.toDomainModel(): FloconHttpRequestDomainModel? {
+    return FloconHttpRequestDomainModel(
+        uuid = this.uuid,
+        url = this.url,
+        durationMs = this.durationMs,
+        request = FloconHttpRequestDomainModel.Request(
+            method = this.method,
+            startTime = this.startTime,
+            headers = emptyMap(), // removed for lite
+            body = null, // removed for lite
+            byteSize = 0L, // removed for lite
+        ),
+        response = FloconHttpRequestDomainModel.Response(
+            contentType = null, // removed for lite
+            body = null, // removed for lite
+            headers = emptyMap(), // removed for lite
+            byteSize = 0L, // removed for lite
         ),
         type = when {
             this.graphql != null -> FloconHttpRequestDomainModel.Type.GraphQl(

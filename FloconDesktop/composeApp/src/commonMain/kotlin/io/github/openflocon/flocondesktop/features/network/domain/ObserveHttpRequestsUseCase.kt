@@ -11,7 +11,13 @@ class ObserveHttpRequestsUseCase(
     private val networkRepository: NetworkRepository,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase
 ) {
-    operator fun invoke(): Flow<List<FloconHttpRequestDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
-        .filterNotNull()
-        .flatMapLatest { networkRepository.observeRequests(it) }
+    // lite : exclude headers, sizes, body
+    operator fun invoke(lite: Boolean): Flow<List<FloconHttpRequestDomainModel>> = observeCurrentDeviceIdUseCase()
+        .flatMapLatest { deviceId ->
+            if (deviceId == null) {
+                flowOf(emptyList())
+            } else {
+                networkRepository.observeRequests(deviceId = deviceId, lite = lite)
+            }
+        }.distinctUntilChanged()
 }

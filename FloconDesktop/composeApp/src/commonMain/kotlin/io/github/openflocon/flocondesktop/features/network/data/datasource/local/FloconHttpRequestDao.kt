@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntity
+import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntityLite
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -20,6 +21,17 @@ interface FloconHttpRequestDao {
     """,
     )
     fun observeRequests(deviceId: String, packageName: String): Flow<List<FloconHttpRequestEntity>>
+
+    @Query(
+        """
+        SELECT * 
+        FROM FloconHttpRequestEntity 
+        WHERE deviceId = :deviceId 
+        ORDER BY startTime ASC
+    """,
+    )
+    fun observeRequestsLite(deviceId: String): Flow<List<FloconHttpRequestEntityLite>>
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertRequest(request: FloconHttpRequestEntity)

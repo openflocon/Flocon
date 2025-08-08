@@ -33,8 +33,8 @@ class NetworkRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Network.Plugin)
 
-    override fun observeRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<FloconHttpRequestDomainModel>> = networkLocalDataSource
-        .observeRequests(deviceIdAndPackageName = deviceIdAndPackageName)
+    override fun observeRequests(deviceId: String, lite: Boolean) = networkLocalDataSource
+        .observeRequests(deviceId = deviceId, lite = lite)
         .flowOn(dispatcherProvider.data)
 
     override fun observeRequest(
