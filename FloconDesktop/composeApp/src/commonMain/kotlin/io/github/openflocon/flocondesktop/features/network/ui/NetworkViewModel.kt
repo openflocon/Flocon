@@ -63,7 +63,7 @@ class NetworkViewModel(
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
     private val filteredItems = combine(
-        observeHttpRequestsUseCase().map { list ->
+        observeHttpRequestsUseCase(lite = true).map { list ->
             list.map {
                 Pair(
                     it,

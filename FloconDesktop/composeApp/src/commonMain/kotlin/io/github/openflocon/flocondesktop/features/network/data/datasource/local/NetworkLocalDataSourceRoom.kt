@@ -22,7 +22,8 @@ class NetworkLocalDataSourceRoom(
     init {
         if (Fakes.Enabled) {
             applicationScope.launch(dispatcherProvider.data) {
-                val fakeRequests = FloconHttpRequestGenerator.generateDynamicFakeFloconHttpRequests(count = 10)
+                val fakeRequests =
+                    FloconHttpRequestGenerator.generateDynamicFakeFloconHttpRequests(count = 10)
                 fakeRequests.forEach { domainModel ->
                     floconHttpRequestDao.upsertRequest(domainModel.toEntity(Fakes.FakeDeviceId))
                 }
@@ -30,11 +31,20 @@ class NetworkLocalDataSourceRoom(
         }
     }
 
-    override fun observeRequests(deviceId: DeviceId): Flow<List<FloconHttpRequestDomainModel>> = floconHttpRequestDao
-        .observeRequests(deviceId)
-        .map { entities ->
-            entities.mapNotNull { it.toDomainModel() }
-        }.flowOn(dispatcherProvider.data)
+    override fun observeRequests(
+        deviceId: DeviceId,
+        lite: Boolean
+    ): Flow<List<FloconHttpRequestDomainModel>> = floconHttpRequestDao
+        .let {
+            if (lite)
+                it.observeRequestsLite(deviceId).map { entities ->
+                    entities.mapNotNull { it.toDomainModel() }
+                }
+            else it.observeRequests(deviceId).map { entities ->
+                entities.mapNotNull { it.toDomainModel() }
+            }
+        }
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun save(
         deviceId: DeviceId,
