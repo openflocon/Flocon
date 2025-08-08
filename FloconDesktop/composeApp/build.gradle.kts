@@ -157,7 +157,7 @@ compose.desktop {
         buildTypes.release {
             proguard {
                 // Active ProGuard
-                isEnabled.set(true)
+                isEnabled.set(false)
 
                 configurationFiles.from(file("proguard-rules.pro"))
             }
