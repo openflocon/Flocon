@@ -11,6 +11,7 @@ import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.e
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -32,11 +33,8 @@ class NetworkRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Network.Plugin)
 
-    override fun observeRequests(
-        deviceId: String,
-        packageName: String
-    ): Flow<List<FloconHttpRequestDomainModel>> = networkLocalDataSource
-        .observeRequests(deviceId = deviceId, packageName = packageName)
+    override fun observeRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<FloconHttpRequestDomainModel>> = networkLocalDataSource
+        .observeRequests(deviceIdAndPackageName = deviceIdAndPackageName)
         .flowOn(dispatcherProvider.data)
 
     override fun observeRequest(
@@ -70,8 +68,8 @@ class NetworkRepositoryImpl(
         null
     }
 
-    override suspend fun clearDeviceCalls(deviceId: DeviceId) {
-        networkLocalDataSource.clearDeviceCalls(deviceId = deviceId)
+    override suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        networkLocalDataSource.clearDeviceCalls(deviceIdAndPackageName = deviceIdAndPackageName)
     }
 
     override suspend fun deleteRequest(

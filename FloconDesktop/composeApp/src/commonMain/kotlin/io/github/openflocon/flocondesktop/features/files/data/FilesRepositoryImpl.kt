@@ -10,7 +10,7 @@ import io.github.openflocon.flocondesktop.features.files.data.mapper.decodeListF
 import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.repository.FilesRepository
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -42,14 +42,14 @@ class FilesRepositoryImpl(
         }
     }
 
-    override fun observeFolderContent(deviceIdAndPackageName: DeviceIdAndPackageName, path: FilePathDomainModel): Flow<List<FileDomainModel>> =
+    override fun observeFolderContent(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, path: FilePathDomainModel): Flow<List<FileDomainModel>> =
         localFilesDataSource
             .observeFolderContentUseCase(
                 deviceIdAndPackageName = deviceIdAndPackageName,
                 folderPath = path,
             ).flowOn(dispatcherProvider.data)
 
-    override suspend fun refreshFolderContent(deviceIdAndPackageName: DeviceIdAndPackageName, path: FilePathDomainModel): Either<Throwable, Unit> =
+    override suspend fun refreshFolderContent(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, path: FilePathDomainModel): Either<Throwable, Unit> =
         withContext(dispatcherProvider.data) {
             remoteFilesDataSource
                 .executeGetFile(
@@ -65,7 +65,7 @@ class FilesRepositoryImpl(
                 }.mapSuccess { }
         }
 
-    override suspend fun deleteFolderContent(deviceIdAndPackageName: DeviceIdAndPackageName, path: FilePathDomainModel): Either<Throwable, Unit> =
+    override suspend fun deleteFolderContent(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, path: FilePathDomainModel): Either<Throwable, Unit> =
         withContext(dispatcherProvider.data) {
             remoteFilesDataSource
                 .executeDeleteFolderContent(
@@ -82,7 +82,7 @@ class FilesRepositoryImpl(
         }
 
     override suspend fun deleteFile(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         parentPath: FilePathDomainModel,
         path: FilePathDomainModel
     ): Either<Throwable, Unit> = withContext(dispatcherProvider.data) {

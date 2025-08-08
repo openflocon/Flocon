@@ -5,7 +5,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.Da
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
 import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
@@ -17,7 +17,7 @@ class DashboardLocalDataSourceRoom(
     private val dispatcherProvider: DispatcherProvider,
 ) : DashboardLocalDataSource {
 
-    override suspend fun saveDashboard(deviceIdAndPackageName: DeviceIdAndPackageName, dashboard: DashboardDomainModel) {
+    override suspend fun saveDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboard: DashboardDomainModel) {
         withContext(dispatcherProvider.data) {
             dashboardDao.saveFullDashboard(
                 deviceId = deviceIdAndPackageName.deviceId,
@@ -27,7 +27,7 @@ class DashboardLocalDataSourceRoom(
         }
     }
 
-    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageName, dashboardId: DashboardId): Flow<DashboardDomainModel?> =
+    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> =
         dashboardDao.observeDashboardWithSectionsAndElements(
             deviceId = deviceIdAndPackageName.deviceId,
             packageName = deviceIdAndPackageName.packageName,
@@ -37,7 +37,7 @@ class DashboardLocalDataSourceRoom(
             .distinctUntilChanged()
             .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<List<DashboardId>> =
+    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> =
         dashboardDao.observeDeviceDashboards(
             deviceId = deviceIdAndPackageName.deviceId,
             packageName = deviceIdAndPackageName.packageName

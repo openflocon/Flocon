@@ -2,10 +2,10 @@ package io.github.openflocon.flocondesktop.features.analytics.data.datasource.lo
 
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.model.AnalyticsItemEntity
 import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsItemDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 
 internal fun AnalyticsItemDomainModel.toEntity(
-    deviceIdAndPackageName: DeviceIdAndPackageName
+    deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
 ) = AnalyticsItemEntity(
     analyticsTableId = analyticsTableId,
     createdAt = createdAt,

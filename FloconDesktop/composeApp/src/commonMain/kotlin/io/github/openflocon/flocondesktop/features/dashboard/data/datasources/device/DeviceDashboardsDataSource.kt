@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device
 
 import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DeviceDashboardsDataSource {
-    fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<DashboardId?>
+    fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?>
     fun selectDeviceDashboard(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId,
     )
 }

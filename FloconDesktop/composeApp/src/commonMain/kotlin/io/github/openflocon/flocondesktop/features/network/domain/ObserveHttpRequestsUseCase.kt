@@ -13,7 +13,5 @@ class ObserveHttpRequestsUseCase(
 ) {
     operator fun invoke(): Flow<List<FloconHttpRequestDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
         .filterNotNull()
-        .flatMapLatest { (deviceId, packageName) ->
-            networkRepository.observeRequests(deviceId = deviceId, packageName = packageName)
-        }
+        .flatMapLatest { networkRepository.observeRequests(it) }
 }

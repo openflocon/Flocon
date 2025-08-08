@@ -1,12 +1,12 @@
 package io.github.openflocon.flocondesktop.features.database.data.datasource.local
 
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 class LocalDatabaseDataSourceRoom(private val successQueryDao: QueryDao) : LocalDatabaseDataSource {
 
-    override suspend fun saveSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageName, databaseId: DeviceDataBaseId, query: String) {
+    override suspend fun saveSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId, query: String) {
         if (successQueryDao.doesQueryExists(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
@@ -33,7 +33,7 @@ class LocalDatabaseDataSourceRoom(private val successQueryDao: QueryDao) : Local
         successQueryDao.insertSuccessQuery(entity)
     }
 
-    override fun observeLastSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageName, databaseId: DeviceDataBaseId): Flow<List<String>> =
+    override fun observeLastSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId): Flow<List<String>> =
         successQueryDao.observeSuccessQueriesByDeviceId(
             deviceId = deviceIdAndPackageName.deviceId,
             packageName = deviceIdAndPackageName.packageName,

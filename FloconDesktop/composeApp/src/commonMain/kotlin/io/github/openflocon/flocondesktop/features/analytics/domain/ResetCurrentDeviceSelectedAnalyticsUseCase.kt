@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.features.analytics.domain
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceAppUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 
 class ResetCurrentDeviceSelectedAnalyticsUseCase(
     private val analyticsRepository: AnalyticsRepository,
@@ -17,7 +17,7 @@ class ResetCurrentDeviceSelectedAnalyticsUseCase(
         val analyticsId = getCurrentDeviceSelectedAnalyticsUseCase() ?: return
 
         analyticsRepository.deleteAnalytics(
-            deviceIdAndPackageName = DeviceIdAndPackageName(
+            deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                 deviceId = deviceId,
                 packageName = packageName
             ),

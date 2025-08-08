@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(
     indices = [
-        Index(value = ["deviceId", "analyticsTableId"]),
+        Index(value = ["deviceId", "packageName", "analyticsTableId"]),
     ],
 )
 data class AnalyticsItemEntity(

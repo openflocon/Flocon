@@ -2,9 +2,14 @@ package io.github.openflocon.flocondesktop.features.network.data.datasource.loca
 
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(
+    indices = [
+        Index(value = ["deviceId", "packageName"])
+    ]
+)
 data class FloconHttpRequestEntity(
     @PrimaryKey
     val uuid: String,

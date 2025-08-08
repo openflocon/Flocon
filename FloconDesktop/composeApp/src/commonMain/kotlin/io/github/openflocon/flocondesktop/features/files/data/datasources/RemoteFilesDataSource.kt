@@ -12,8 +12,8 @@ import io.github.openflocon.flocondesktop.features.files.data.model.todevice.ToD
 import io.github.openflocon.flocondesktop.features.files.data.model.todevice.ToDeviceGetFilesMessage
 import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
-import io.github.openflocon.flocondesktop.messages.domain.model.toFlocon
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.toRemote
 import io.github.openflocon.flocondesktop.newRequestId
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +37,7 @@ class RemoteFilesDataSource(
 
     @OptIn(ExperimentalUuidApi::class)
     suspend fun executeGetFile(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
     ): Either<Throwable, List<FileDomainModel>> {
         val requestId = newRequestId()
@@ -50,7 +50,7 @@ class RemoteFilesDataSource(
             }
 
         server.sendMessageToClient(
-            deviceIdAndPackageName = deviceIdAndPackageName.toFlocon(),
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.ListFiles,
@@ -69,7 +69,7 @@ class RemoteFilesDataSource(
     }
 
     suspend fun executeDeleteFolderContent(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         folderPath: FilePathDomainModel,
     ): Either<Exception, List<FileDomainModel>> {
         val requestId = newRequestId()
@@ -82,7 +82,7 @@ class RemoteFilesDataSource(
             }
 
         server.sendMessageToClient(
-            deviceIdAndPackageName = deviceIdAndPackageName.toFlocon(),
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFolderContent,
@@ -102,7 +102,7 @@ class RemoteFilesDataSource(
     }
 
     suspend fun executeDeleteFile(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         folderPath: FilePathDomainModel,
         filePath: FilePathDomainModel,
     ): Either<Exception, List<FileDomainModel>> {
@@ -123,7 +123,7 @@ class RemoteFilesDataSource(
             }
 
         server.sendMessageToClient(
-            deviceIdAndPackageName = deviceIdAndPackageName.toFlocon(),
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFile,

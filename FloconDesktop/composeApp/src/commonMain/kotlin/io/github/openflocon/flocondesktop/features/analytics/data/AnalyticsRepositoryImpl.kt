@@ -13,7 +13,7 @@ import io.github.openflocon.flocondesktop.features.analytics.domain.model.Analyt
 import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsItemDomainModel
 import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsTableId
 import io.github.openflocon.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -48,7 +48,7 @@ class AnalyticsRepositoryImpl(
                         ?.takeIf { it.isNotEmpty() }
                         ?.let { analytics ->
                             analyticsLocalDataSource.insert(
-                                deviceIdAndPackageName = DeviceIdAndPackageName(
+                                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                                     deviceId = deviceId,
                                     packageName = message.appPackageName
                                 ),
@@ -75,7 +75,7 @@ class AnalyticsRepositoryImpl(
     }
 
     override fun observeAnalytics(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId
     ): Flow<List<AnalyticsItemDomainModel>> = analyticsLocalDataSource.observe(
         deviceIdAndPackageName = deviceIdAndPackageName,
@@ -84,7 +84,7 @@ class AnalyticsRepositoryImpl(
         .flowOn(dispatcherProvider.data)
 
     override suspend fun deleteAnalytics(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsId: AnalyticsIdentifierDomainModel
     ) {
         withContext(dispatcherProvider.data) {
@@ -95,7 +95,7 @@ class AnalyticsRepositoryImpl(
         }
     }
 
-    override suspend fun selectDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageName, analyticsTableId: AnalyticsTableId) {
+    override suspend fun selectDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsTableId: AnalyticsTableId) {
         deviceAnalyticsDataSource.selectDeviceAnalytics(
             deviceIdAndPackageName = deviceIdAndPackageName,
             analyticsTableId = analyticsTableId,
@@ -103,11 +103,11 @@ class AnalyticsRepositoryImpl(
         )
     }
 
-    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<AnalyticsIdentifierDomainModel?> =
+    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> =
         deviceAnalyticsDataSource.observeSelectedDeviceAnalytics(deviceIdAndPackageName)
             .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<List<AnalyticsIdentifierDomainModel>> =
+    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
         analyticsLocalDataSource.observeDeviceAnalytics(deviceIdAndPackageName)
             .flowOn(dispatcherProvider.data)
 }

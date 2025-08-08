@@ -9,11 +9,11 @@ class GetCurrentDeviceSharedPreferenceValuesUseCase(
     private val getCurrentDeviceSelectedSharedPreferenceUseCase: GetCurrentDeviceSelectedSharedPreferenceUseCase,
 ) {
     suspend operator fun invoke() {
-        val rename = getCurrentDeviceIdAndPackageNameUseCase() ?: return
+        val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
         val sharedPreferenceId = getCurrentDeviceSelectedSharedPreferenceUseCase() ?: return
 
         sharedPreferenceRepository.getDeviceSharedPreferencesValues(
-            deviceIdAndPackageName = rename,
+            deviceIdAndPackageName = deviceIdAndPackageName,
             sharedPreferenceId = sharedPreferenceId.id,
         )
     }

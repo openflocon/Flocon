@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(
     indices = [
-        Index(value = ["deviceId", "databaseId", "queryString"], unique = true),
+        Index(value = ["deviceId", "packageName", "databaseId", "queryString"], unique = true),
         Index(value = ["databaseId"]),
     ],
 )

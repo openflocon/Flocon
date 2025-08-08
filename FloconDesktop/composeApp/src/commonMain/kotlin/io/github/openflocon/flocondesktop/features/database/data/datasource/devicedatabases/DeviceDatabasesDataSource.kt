@@ -5,8 +5,8 @@ import io.github.openflocon.flocondesktop.Protocol
 import io.github.openflocon.flocondesktop.Server
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseDomainModel
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
-import io.github.openflocon.flocondesktop.messages.domain.model.toFlocon
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.toRemote
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -16,15 +16,15 @@ import kotlinx.coroutines.flow.update
 class DeviceDatabasesDataSource(
     private val server: Server,
 ) {
-    private val deviceDatabases = MutableStateFlow<Map<DeviceIdAndPackageName, List<DeviceDataBaseDomainModel>>>(emptyMap())
-    private val selectedDeviceDatabases = MutableStateFlow<Map<DeviceIdAndPackageName, DeviceDataBaseDomainModel?>>(emptyMap())
+    private val deviceDatabases = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, List<DeviceDataBaseDomainModel>>>(emptyMap())
+    private val selectedDeviceDatabases = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DeviceDataBaseDomainModel?>>(emptyMap())
 
-    fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<DeviceDataBaseDomainModel?> = selectedDeviceDatabases
+    fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?> = selectedDeviceDatabases
         .map { it[deviceIdAndPackageName] }
         .distinctUntilChanged()
 
     fun selectDeviceDatabase(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: DeviceDataBaseId,
     ) {
         val deviceDatabaseList = deviceDatabases.value[deviceIdAndPackageName] ?: return
@@ -33,11 +33,11 @@ class DeviceDatabasesDataSource(
         selectedDeviceDatabases.update { it + (deviceIdAndPackageName to database) }
     }
 
-    fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<List<DeviceDataBaseDomainModel>> =
+    fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>> =
         deviceDatabases.map { it[deviceIdAndPackageName] ?: emptyList() }
 
     fun registerDeviceDatabases(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databases: List<DeviceDataBaseDomainModel>,
     ) {
         deviceDatabases.update {
@@ -63,9 +63,9 @@ class DeviceDatabasesDataSource(
         }
     }
 
-    suspend fun askForDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageName) {
+    suspend fun askForDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         server.sendMessageToClient(
-            deviceIdAndPackageName = deviceIdAndPackageName.toFlocon(),
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Database.Plugin,
                 method = Protocol.ToDevice.Database.Method.GetDatabases,

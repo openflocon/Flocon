@@ -29,18 +29,19 @@ class DevicesRepositoryImpl(
 
     override suspend fun register(device: DeviceDomainModel) {
         withContext(dispatcherProvider.data) {
-            val updatedDevice = device.copy(
-                apps = device.apps.plus(
-                    _devices.value
-                        .find { it.deviceId == device.deviceId }
-                        ?.apps.orEmpty()
+            _devices.update { currentDevices ->
+                val updatedDevice = device.copy(
+                    apps = device.apps.plus(
+                        _devices.value
+                            .find { it.deviceId == device.deviceId }
+                            ?.apps.orEmpty()
+                    )
+                        .distinctBy(DeviceAppDomainModel::packageName)
                 )
-                    .distinctBy(DeviceAppDomainModel::packageName)
-            )
-
-            _devices.update { (it + updatedDevice).distinct() }
-            if (_currentDevice.value?.deviceId == device.deviceId)
-                _currentDevice.update { updatedDevice }
+                if (_currentDevice.value?.deviceId == device.deviceId)
+                    _currentDevice.update { updatedDevice }
+                (currentDevices + updatedDevice).distinct()
+            }
         }
     }
 

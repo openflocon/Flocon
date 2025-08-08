@@ -2,13 +2,13 @@ package io.github.openflocon.flocondesktop.features.network.data.datasource.loca
 
 import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkLocalDataSource {
 
     fun observeRequests(
-        deviceId: DeviceId,
-        packageName: String
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     ): Flow<List<FloconHttpRequestDomainModel>>
 
     fun observeRequest(
@@ -22,7 +22,7 @@ interface NetworkLocalDataSource {
         request: FloconHttpRequestDomainModel
     )
 
-    suspend fun clearDeviceCalls(deviceId: DeviceId)
+    suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     suspend fun deleteRequest(deviceId: DeviceId, requestId: String)
 

@@ -3,38 +3,38 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences.domain.rep
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface SharedPreferencesRepository {
-    fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<List<DeviceSharedPreferenceDomainModel>>
+    fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>>
 
-    fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<DeviceSharedPreferenceDomainModel?>
+    fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?>
 
     fun selectDeviceSharedPreference(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreferenceId: DeviceSharedPreferenceId,
     )
 
     suspend fun registerDeviceSharedPreferences(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreferences: List<DeviceSharedPreferenceDomainModel>,
     )
 
-    suspend fun askForDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageName)
+    suspend fun askForDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     suspend fun getDeviceSharedPreferencesValues(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreferenceId: DeviceSharedPreferenceId,
     )
 
     fun observe(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreferenceId: DeviceSharedPreferenceId,
     ): Flow<List<SharedPreferenceRowDomainModel>>
 
     suspend fun editSharedPrefField(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreference: DeviceSharedPreferenceDomainModel,
         key: String,
         value: SharedPreferenceRowDomainModel.Value,

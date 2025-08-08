@@ -11,8 +11,8 @@ import io.github.openflocon.flocondesktop.features.database.data.model.incoming.
 import io.github.openflocon.flocondesktop.features.database.data.model.outgoing.DatabaseOutgoingQueryMessage
 import io.github.openflocon.flocondesktop.features.database.domain.model.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
-import io.github.openflocon.flocondesktop.messages.domain.model.toFlocon
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.toRemote
 import io.github.openflocon.flocondesktop.newRequestId
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,13 +34,13 @@ class QueryDatabaseDataSource(
 
     @OptIn(ExperimentalUuidApi::class)
     suspend fun executeQuery(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: DeviceDataBaseId,
         query: String,
     ): Either<Exception, DatabaseExecuteSqlResponseDomainModel> {
         val requestId = newRequestId()
         server.sendMessageToClient(
-            deviceIdAndPackageName = deviceIdAndPackageName.toFlocon(),
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Database.Plugin,
                 method = Protocol.ToDevice.Database.Method.Query,

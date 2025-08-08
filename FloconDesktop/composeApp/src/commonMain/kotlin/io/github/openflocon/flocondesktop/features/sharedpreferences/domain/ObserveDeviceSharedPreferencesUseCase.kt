@@ -12,12 +12,12 @@ class ObserveDeviceSharedPreferencesUseCase(
     private val sharedPreferenceRepository: SharedPreferencesRepository,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(): Flow<List<DeviceSharedPreferenceDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { rename ->
-        if (rename == null) {
+    operator fun invoke(): Flow<List<DeviceSharedPreferenceDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { current ->
+        if (current == null) {
             flowOf(emptyList())
         } else {
             sharedPreferenceRepository.observeDeviceSharedPreferences(
-                deviceIdAndPackageName = rename
+                deviceIdAndPackageName = current
             )
         }
     }

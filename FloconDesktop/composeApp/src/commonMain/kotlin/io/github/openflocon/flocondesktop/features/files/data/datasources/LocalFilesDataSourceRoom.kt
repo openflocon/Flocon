@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.features.files.data.datasources
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
@@ -16,7 +16,7 @@ class LocalFilesDataSourceRoom(
 ) : LocalFilesDataSource {
 
     override fun observeFolderContentUseCase(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         folderPath: FilePathDomainModel
     ): Flow<List<FileDomainModel>> = fileDao
         .observeFolderContent(
@@ -28,7 +28,7 @@ class LocalFilesDataSourceRoom(
         }.distinctUntilChanged()
         .flowOn(dispatcherProvider.data)
 
-    override suspend fun storeFiles(deviceIdAndPackageName: DeviceIdAndPackageName, parentPath: FilePathDomainModel, files: List<FileDomainModel>) {
+    override suspend fun storeFiles(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, parentPath: FilePathDomainModel, files: List<FileDomainModel>) {
         withContext(dispatcherProvider.data) {
             fileDao.clearFolderContent(
                 deviceId = deviceIdAndPackageName.deviceId,

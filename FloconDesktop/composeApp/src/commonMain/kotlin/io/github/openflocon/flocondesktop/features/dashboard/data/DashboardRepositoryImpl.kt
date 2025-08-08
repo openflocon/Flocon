@@ -11,7 +11,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.data.model.Dashboar
 import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
 import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
 import io.github.openflocon.flocondesktop.features.dashboard.domain.repository.DashboardRepository
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageName
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -41,7 +41,7 @@ class DashboardRepositoryImpl(
         withContext(dispatcherProvider.data) {
             decode(message)?.let { toDomain(it) }?.let { request ->
                 dashboardLocalDataSource.saveDashboard(
-                    deviceIdAndPackageName = DeviceIdAndPackageName(
+                    deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                         deviceId = deviceId,
                         packageName = message.appPackageName
                     ),
@@ -58,14 +58,14 @@ class DashboardRepositoryImpl(
         null
     }
 
-    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageName, dashboardId: DashboardId): Flow<DashboardDomainModel?> =
+    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> =
         dashboardLocalDataSource.observeDashboard(
             deviceIdAndPackageName = deviceIdAndPackageName,
             dashboardId = dashboardId,
         )
             .flowOn(dispatcherProvider.data)
 
-    override suspend fun sendClickEvent(deviceIdAndPackageName: DeviceIdAndPackageName, dashboardId: DashboardId, buttonId: String) {
+    override suspend fun sendClickEvent(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId, buttonId: String) {
         withContext(dispatcherProvider.data) {
             toDeviceDashboardDataSource.sendClickEvent(
                 deviceIdAndPackageName = deviceIdAndPackageName,
@@ -75,7 +75,7 @@ class DashboardRepositoryImpl(
     }
 
     override suspend fun submitTextFieldEvent(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId,
         textFieldId: String,
         value: String
@@ -90,7 +90,7 @@ class DashboardRepositoryImpl(
     }
 
     override suspend fun sendUpdateCheckBoxEvent(
-        deviceIdAndPackageName: DeviceIdAndPackageName,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId,
         checkBoxId: String,
         value: Boolean
@@ -104,7 +104,7 @@ class DashboardRepositoryImpl(
         }
     }
 
-    override suspend fun selectDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageName, dashboardId: DashboardId) {
+    override suspend fun selectDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId) {
         withContext(dispatcherProvider.data) {
             deviceDashboardsDataSource.selectDeviceDashboard(
                 deviceIdAndPackageName = deviceIdAndPackageName,
@@ -113,12 +113,12 @@ class DashboardRepositoryImpl(
         }
     }
 
-    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<DashboardId?> =
+    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> =
         deviceDashboardsDataSource.observeSelectedDeviceDashboard(
             deviceIdAndPackageName = deviceIdAndPackageName,
         )
 
-    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageName): Flow<List<DashboardId>> =
+    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> =
         dashboardLocalDataSource.observeDeviceDashboards(
             deviceIdAndPackageName = deviceIdAndPackageName
         )
