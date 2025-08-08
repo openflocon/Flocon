@@ -37,7 +37,7 @@ jobs:
         working-directory: FloconDesktop
         run: ./gradlew packageDistributionForCurrentOS packageUberJarForCurrentOS
         env:
-          PROJECT_VERSION_NAME: ${{ github.ref_name }}
+          PROJECT_VERSION_NAME: "1.0.0"
 
       # 5. Upload OS-specific artifacts
       # - name: Upload Linux artifact
