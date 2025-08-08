@@ -43,7 +43,7 @@ dependencies {
 }
 
 mavenPublishing {
-    publishToMavenCentral()
+    publishToMavenCentral(automaticRelease = true)
 
     if (project.hasProperty("signing.required") && project.property("signing.required") == "false") {
         // Skip signing
