@@ -52,8 +52,8 @@ dependencies {
         implementation("io.github.openflocon:flocon-grpc-interceptor:$floconVersion")
         implementation("io.github.openflocon:flocon-okhttp-interceptor:$floconVersion")
     } else {
-        //implementation(project(":flocon"))
-        implementation(project(":flocon-no-op"))
+        implementation(project(":flocon"))
+        //implementation(project(":flocon-no-op"))
         implementation(project(":okhttp-interceptor"))
         implementation(project(":grpc-interceptor"))
     }

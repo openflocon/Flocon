@@ -146,6 +146,7 @@ class FloconOkhttpInterceptor() : Interceptor {
                 return Response.Builder()
                     .request(request)
                     .protocol(Protocol.HTTP_1_1)
+                    .message("Mocked response")
                     .code(mock.response.httpCode)
                     .body(body)
                     .apply {

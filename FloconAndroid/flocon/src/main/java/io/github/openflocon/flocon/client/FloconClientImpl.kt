@@ -49,7 +49,7 @@ internal class FloconClientImpl(
     override val tablePlugin = FloconTablePluginImpl(sender = this)
     override val deeplinksPlugin = FloconDeeplinksPluginImpl(sender = this)
     override val analyticsPlugin = FloconAnalyticsPluginImpl(sender = this)
-    override val networkPlugin = FloconNetworkPluginImpl(sender = this)
+    override val networkPlugin = FloconNetworkPluginImpl(context = appContext, sender = this)
 
     private val allPlugins = listOf<FloconPlugin>(
         databasePlugin,

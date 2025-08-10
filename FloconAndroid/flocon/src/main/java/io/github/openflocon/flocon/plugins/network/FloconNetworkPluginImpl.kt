@@ -14,6 +14,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.regex.Pattern
 
 class FloconNetworkPluginImpl(
     private val context: Context,
