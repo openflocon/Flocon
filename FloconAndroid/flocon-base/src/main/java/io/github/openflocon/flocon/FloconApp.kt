@@ -7,6 +7,8 @@ import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPlugin
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPlugin
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
 import io.github.openflocon.flocon.plugins.tables.FloconTablePlugin
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 abstract class FloconApp {
 
@@ -29,6 +31,8 @@ abstract class FloconApp {
     }
 
     open val client: FloconApp.Client? = null
+
+    abstract val isInitialized : StateFlow<Boolean>
 
     open fun initialize(context: Context) {
         instance = this

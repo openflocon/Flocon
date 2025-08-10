@@ -1,3 +1,7 @@
 package io.github.openflocon.flocon
 
-object Flocon : FloconApp()
+import kotlinx.coroutines.flow.MutableStateFlow
+
+object Flocon : FloconApp() {
+    override val isInitialized = MutableStateFlow(false)
+}

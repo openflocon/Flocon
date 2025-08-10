@@ -11,6 +11,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 object Flocon : FloconApp() {
@@ -24,10 +26,13 @@ object Flocon : FloconApp() {
             return _client
         }
 
+    override val isInitialized = MutableStateFlow(false)
+
     override fun initialize(context: Context) {
         val app = context.applicationContext
         val newClient = FloconClientImpl(app)
         _client = newClient
+        isInitialized.value = true
 
         scope.launch {
             start(newClient)
