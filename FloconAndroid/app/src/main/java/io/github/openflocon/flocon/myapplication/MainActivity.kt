@@ -58,13 +58,6 @@ class MainActivity : ComponentActivity() {
         initializeDatabases(context = applicationContext)
 
         Flocon.initialize(this)
-        Flocon.deeplinks(
-            listOf(
-                Deeplink(
-                    link = "http://myapp.com"
-                )
-            )
-        )
         initializeDeeplinks()
 
         val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)
