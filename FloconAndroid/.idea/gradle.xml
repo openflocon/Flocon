@@ -11,7 +11,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/flocon" />
+            <option value="$PROJECT_DIR$/flocon-base" />
+            <option value="$PROJECT_DIR$/flocon-no-op" />
             <option value="$PROJECT_DIR$/grpc-interceptor" />
             <option value="$PROJECT_DIR$/okhttp-interceptor" />
           </set>

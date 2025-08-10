@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.openflocon.flocon.okhttp"
+    namespace = "io.github.openflocon.flocon.base"
     compileSdk = 36
 
     defaultConfig {
@@ -24,7 +24,6 @@ android {
             )
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -35,17 +34,10 @@ android {
 }
 
 dependencies {
-
-    implementation(project(":flocon-base"))
-
     implementation(platform(libs.kotlinx.coroutines.bom))
-    implementation(libs.jetbrains.kotlinx.coroutines.core)
-    implementation(libs.jetbrains.kotlinx.coroutines.android)
-
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.okhttp3.okhttp)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 }
-
 
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
@@ -58,12 +50,12 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-        artifactId = "flocon-okhttp-interceptor",
+        artifactId = "flocon-base",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
     pom {
-        name = "Flocon OkHttp Interceptor"
+        name = "Flocon"
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"
