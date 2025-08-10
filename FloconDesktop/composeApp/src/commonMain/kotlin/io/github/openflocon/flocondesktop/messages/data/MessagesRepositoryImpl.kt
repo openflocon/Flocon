@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.messages.data
 
-import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
-import io.github.openflocon.flocondesktop.Server
+import com.flocon.data.remote.models.FloconIncomingMessageDataModel
+import com.flocon.data.remote.server.Server
 import io.github.openflocon.flocondesktop.messages.domain.repository.MessagesRepository
 import kotlinx.coroutines.flow.Flow
 

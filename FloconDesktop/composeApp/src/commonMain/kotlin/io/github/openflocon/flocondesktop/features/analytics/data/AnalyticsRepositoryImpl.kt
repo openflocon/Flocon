@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.analytics.data
 
-import io.github.openflocon.flocondesktop.FloconDeviceIdAndPackageName
-import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
-import io.github.openflocon.flocondesktop.Protocol
+import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
+import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.RemoteAnalyticsDataSource
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSource
@@ -55,7 +55,7 @@ class AnalyticsRepositoryImpl(
                                 items = analytics,
                             )
                             remoteAnalyticsDataSource.clearReceivedItem(
-                                deviceIdAndPackageName = FloconDeviceIdAndPackageName(
+                                deviceIdAndPackageName = FloconDeviceIdAndPackageNameDataModel(
                                     deviceId = deviceId,
                                     packageName = message.appPackageName,
                                 ),

@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.files.data
 
-import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
-import io.github.openflocon.flocondesktop.Protocol
+import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.files.data.datasources.LocalFilesDataSource
@@ -42,13 +42,19 @@ class FilesRepositoryImpl(
         }
     }
 
-    override fun observeFolderContent(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, path: FilePathDomainModel): Flow<List<FileDomainModel>> = localFilesDataSource
+    override fun observeFolderContent(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        path: FilePathDomainModel
+    ): Flow<List<FileDomainModel>> = localFilesDataSource
         .observeFolderContentUseCase(
             deviceIdAndPackageName = deviceIdAndPackageName,
             folderPath = path,
         ).flowOn(dispatcherProvider.data)
 
-    override suspend fun refreshFolderContent(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, path: FilePathDomainModel): Either<Throwable, Unit> = withContext(dispatcherProvider.data) {
+    override suspend fun refreshFolderContent(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        path: FilePathDomainModel
+    ): Either<Throwable, Unit> = withContext(dispatcherProvider.data) {
         remoteFilesDataSource
             .executeGetFile(
                 deviceIdAndPackageName = deviceIdAndPackageName,
@@ -63,7 +69,10 @@ class FilesRepositoryImpl(
             }.mapSuccess { }
     }
 
-    override suspend fun deleteFolderContent(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, path: FilePathDomainModel): Either<Throwable, Unit> = withContext(dispatcherProvider.data) {
+    override suspend fun deleteFolderContent(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        path: FilePathDomainModel
+    ): Either<Throwable, Unit> = withContext(dispatcherProvider.data) {
         remoteFilesDataSource
             .executeDeleteFolderContent(
                 deviceIdAndPackageName = deviceIdAndPackageName,

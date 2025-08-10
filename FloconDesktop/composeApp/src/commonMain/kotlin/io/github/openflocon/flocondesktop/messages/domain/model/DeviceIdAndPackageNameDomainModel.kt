@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.messages.domain.model
 
-import io.github.openflocon.flocondesktop.DeviceId
-import io.github.openflocon.flocondesktop.FloconDeviceIdAndPackageName
+import com.flocon.data.remote.models.DeviceId
+import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
 
 data class DeviceIdAndPackageNameDomainModel(
     val deviceId: DeviceId,
@@ -10,7 +10,7 @@ data class DeviceIdAndPackageNameDomainModel(
 
 // TODO Move
 
-fun DeviceIdAndPackageNameDomainModel.toRemote() = FloconDeviceIdAndPackageName(
+fun DeviceIdAndPackageNameDomainModel.toRemote() = FloconDeviceIdAndPackageNameDataModel(
     deviceId = deviceId,
     packageName = packageName,
 )
