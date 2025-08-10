@@ -15,11 +15,16 @@ interface QueryDao {
         SELECT DISTINCT queryString
         FROM SuccessQueryEntity 
         WHERE deviceId = :deviceId 
-        AND databaseId = :databaseId 
+        AND packageName = :packageName
+        AND databaseId = :databaseId
         ORDER BY timestamp DESC
     """,
     )
-    fun observeSuccessQueriesByDeviceId(deviceId: String, databaseId: String): Flow<List<String>>
+    fun observeSuccessQueriesByDeviceId(
+        deviceId: String,
+        packageName: String,
+        databaseId: String
+    ): Flow<List<String>>
 
     @Query(
         """
@@ -29,11 +34,13 @@ interface QueryDao {
             WHERE queryString = :queryString 
             AND databaseId = :databaseId 
             AND deviceId = :deviceId 
+            AND packageName = :packageName
         )
     """,
     )
     suspend fun doesQueryExists(
         deviceId: String,
+        packageName: String,
         databaseId: String,
         queryString: String,
     ): Boolean
@@ -44,10 +51,12 @@ interface QueryDao {
         WHERE deviceId = :deviceId 
         AND databaseId = :databaseId
         AND queryString = :queryString
+        AND packageName = :packageName
     """,
     )
     suspend fun deleteQuery(
         deviceId: String,
+        packageName: String,
         databaseId: String,
         queryString: String,
     )

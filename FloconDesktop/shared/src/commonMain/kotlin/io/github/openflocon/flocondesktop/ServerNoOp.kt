@@ -9,10 +9,7 @@ class ServerNoOp : Server {
         // no op
     }
 
-    override suspend fun sendMessageToClient(
-        deviceId: DeviceId,
-        message: FloconOutgoingMessageDataModel,
-    ) {
+    override suspend fun sendMessageToClient(deviceIdAndPackageName: FloconDeviceIdAndPackageName, message: FloconOutgoingMessageDataModel) {
         // no op
     }
 

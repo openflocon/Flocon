@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.domain
 
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.repository.SharedPreferencesRepository
@@ -9,13 +10,15 @@ import kotlinx.coroutines.flow.flowOf
 
 class ObserveDeviceSharedPreferencesUseCase(
     private val sharedPreferenceRepository: SharedPreferencesRepository,
-    private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
+    private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(): Flow<List<DeviceSharedPreferenceDomainModel>> = observeCurrentDeviceIdUseCase().flatMapLatest { deviceId ->
-        if (deviceId == null) {
+    operator fun invoke(): Flow<List<DeviceSharedPreferenceDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { current ->
+        if (current == null) {
             flowOf(emptyList())
         } else {
-            sharedPreferenceRepository.observeDeviceSharedPreferences(deviceId = deviceId)
+            sharedPreferenceRepository.observeDeviceSharedPreferences(
+                deviceIdAndPackageName = current
+            )
         }
     }
 }

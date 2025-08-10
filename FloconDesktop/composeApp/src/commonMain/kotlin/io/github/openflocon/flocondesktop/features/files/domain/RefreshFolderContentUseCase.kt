@@ -1,12 +1,12 @@
 package io.github.openflocon.flocondesktop.features.files.domain
 
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.repository.FilesRepository
 
 class RefreshFolderContentUseCase(
-    private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,
+    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val filesRepository: FilesRepository,
     private val dispatcherProvider: DispatcherProvider,
 ) {
@@ -14,7 +14,7 @@ class RefreshFolderContentUseCase(
         path: FilePathDomainModel,
     ) {
         filesRepository.refreshFolderContent(
-            deviceId = getCurrentDeviceIdUseCase() ?: return,
+            deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return,
             path = path,
         )
     }

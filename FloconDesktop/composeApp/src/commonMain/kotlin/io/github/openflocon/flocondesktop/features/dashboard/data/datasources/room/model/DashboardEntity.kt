@@ -7,11 +7,12 @@ import androidx.room.PrimaryKey
 @Entity(
     indices = [
         Index(value = ["dashboardId"]),
-        Index(value = ["deviceId"]),
+        Index(value = ["deviceId", "packageName"]),
     ],
 )
 data class DashboardEntity(
     @PrimaryKey
     val dashboardId: String,
     val deviceId: String,
+    val packageName: String
 )

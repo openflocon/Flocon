@@ -2,13 +2,22 @@ package io.github.openflocon.flocondesktop.features.network.data.datasource.loca
 
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(
+    indices = [
+        Index(value = ["deviceId", "packageName"])
+    ]
+)
 data class FloconHttpRequestEntity(
     @PrimaryKey
     val uuid: String,
+
     val deviceId: String, // To associate with a device
+
+    val packageName: String,
+
     @Embedded
     val infos: FloconHttpRequestInfosEntity,
     // if it's a graphql method, this item is not null

@@ -1,14 +1,15 @@
 package io.github.openflocon.flocondesktop.features.table.data.datasource.local.mapper
 
-import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableItemEntity
 import io.github.openflocon.flocondesktop.features.table.domain.model.TableDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 
 internal fun TableDomainModel.toEntity(
-    deviceId: DeviceId,
+    deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
 ): TableEntity = TableEntity(
-    deviceId = deviceId,
+    deviceId = deviceIdAndPackageName.deviceId,
+    packageName = deviceIdAndPackageName.packageName,
     name = name,
 )
 

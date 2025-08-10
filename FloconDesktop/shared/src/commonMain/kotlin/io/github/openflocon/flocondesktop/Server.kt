@@ -14,7 +14,7 @@ interface Server {
     val receivedMessages: Flow<FloconIncomingMessageDataModel>
 
     suspend fun sendMessageToClient(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: FloconDeviceIdAndPackageName,
         message: FloconOutgoingMessageDataModel,
     )
 }

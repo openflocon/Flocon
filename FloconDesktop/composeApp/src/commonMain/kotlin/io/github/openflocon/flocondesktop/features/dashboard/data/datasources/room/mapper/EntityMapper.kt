@@ -14,8 +14,9 @@ import io.github.openflocon.flocondesktop.features.dashboard.domain.model.Dashbo
 import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
 import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardSectionDomainModel
 
-internal fun DashboardDomainModel.toEntity(deviceId: DeviceId): DashboardEntity = DashboardEntity(
+internal fun DashboardDomainModel.toEntity(deviceId: DeviceId, packageName: String): DashboardEntity = DashboardEntity(
     deviceId = deviceId,
+    packageName = packageName,
     dashboardId = dashboardId,
 )
 

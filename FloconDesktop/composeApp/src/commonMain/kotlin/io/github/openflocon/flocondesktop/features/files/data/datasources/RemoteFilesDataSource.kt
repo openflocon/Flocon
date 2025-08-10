@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.files.data.datasources
 
-import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
 import io.github.openflocon.flocondesktop.Protocol
 import io.github.openflocon.flocondesktop.Server
@@ -13,6 +12,8 @@ import io.github.openflocon.flocondesktop.features.files.data.model.todevice.ToD
 import io.github.openflocon.flocondesktop.features.files.data.model.todevice.ToDeviceGetFilesMessage
 import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.flocondesktop.messages.domain.model.toRemote
 import io.github.openflocon.flocondesktop.newRequestId
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +37,7 @@ class RemoteFilesDataSource(
 
     @OptIn(ExperimentalUuidApi::class)
     suspend fun executeGetFile(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
     ): Either<Throwable, List<FileDomainModel>> {
         val requestId = newRequestId()
@@ -49,19 +50,18 @@ class RemoteFilesDataSource(
             }
 
         server.sendMessageToClient(
-            deviceId = deviceId,
-            message =
-            FloconOutgoingMessageDataModel(
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
+            message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.ListFiles,
                 body =
-                Json.encodeToString(
-                    ToDeviceGetFilesMessage(
-                        requestId = requestId,
-                        path = filePath,
-                        isConstantPath = isConstantPath,
+                    Json.encodeToString(
+                        ToDeviceGetFilesMessage(
+                            requestId = requestId,
+                            path = filePath,
+                            isConstantPath = isConstantPath,
+                        ),
                     ),
-                ),
             ),
         )
         // wait for result
@@ -69,7 +69,7 @@ class RemoteFilesDataSource(
     }
 
     suspend fun executeDeleteFolderContent(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         folderPath: FilePathDomainModel,
     ): Either<Exception, List<FileDomainModel>> {
         val requestId = newRequestId()
@@ -82,19 +82,18 @@ class RemoteFilesDataSource(
             }
 
         server.sendMessageToClient(
-            deviceId = deviceId,
-            message =
-            FloconOutgoingMessageDataModel(
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
+            message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFolderContent,
                 body =
-                Json.encodeToString(
-                    ToDeviceDeleteFolderContentMessage(
-                        requestId = requestId,
-                        path = realPath,
-                        isConstantPath = isConstantPath,
+                    Json.encodeToString(
+                        ToDeviceDeleteFolderContentMessage(
+                            requestId = requestId,
+                            path = realPath,
+                            isConstantPath = isConstantPath,
+                        ),
                     ),
-                ),
             ),
         )
 
@@ -103,7 +102,7 @@ class RemoteFilesDataSource(
     }
 
     suspend fun executeDeleteFile(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         folderPath: FilePathDomainModel,
         filePath: FilePathDomainModel,
     ): Either<Exception, List<FileDomainModel>> {
@@ -124,20 +123,19 @@ class RemoteFilesDataSource(
             }
 
         server.sendMessageToClient(
-            deviceId = deviceId,
-            message =
-            FloconOutgoingMessageDataModel(
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
+            message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFile,
                 body =
-                Json.encodeToString(
-                    ToDeviceDeleteFileMessage(
-                        requestId = requestId,
-                        parentPath = parentPath,
-                        filePath = filePathValue,
-                        isConstantParentPath = isConstantParentPath,
+                    Json.encodeToString(
+                        ToDeviceDeleteFileMessage(
+                            requestId = requestId,
+                            parentPath = parentPath,
+                            filePath = filePathValue,
+                            isConstantParentPath = isConstantParentPath,
+                        ),
                     ),
-                ),
             ),
         )
 

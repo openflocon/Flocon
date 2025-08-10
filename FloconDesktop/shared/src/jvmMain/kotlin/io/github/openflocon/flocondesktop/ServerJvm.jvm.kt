@@ -18,8 +18,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.serialization.json.Json
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.time.Duration.Companion.seconds
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.time.Duration.Companion.seconds
 
 class ServerJvm : Server {
     private val _receivedMessages = MutableSharedFlow<FloconIncomingMessageDataModel>()
@@ -27,7 +27,7 @@ class ServerJvm : Server {
 
     private var server: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? = null
     private val isStarted = AtomicBoolean(false)
-    private val activeSessions = ConcurrentHashMap<DeviceId, WebSocketSession>()
+    private val activeSessions = ConcurrentHashMap<FloconDeviceIdAndPackageName, WebSocketSession>()
 
     override fun start(port: Int) {
         if (server != null && isStarted.get()) return
@@ -54,7 +54,13 @@ class ServerJvm : Server {
                                             Json.decodeFromString<FloconIncomingMessageDataModel>(
                                                 receivedText,
                                             )
-                                        activeSessions.put(floconIncomingMessageDataModel.deviceId, this)
+                                        activeSessions.put(
+                                            FloconDeviceIdAndPackageName(
+                                                deviceId = floconIncomingMessageDataModel.deviceId,
+                                                packageName = floconIncomingMessageDataModel.appPackageName
+                                            ),
+                                            this
+                                        )
                                         //println("+ new client : ${floconIncomingMessageDataModel.deviceId}")
                                         _receivedMessages.emit(floconIncomingMessageDataModel)
                                         // Access other fields of floconMessage as needed
@@ -64,16 +70,20 @@ class ServerJvm : Server {
                                         // outgoing.send(Frame.Text("Error: Could not parse message as FloconIncomingMessageDataModel. ${e.message}"))
                                     }
                                 }
+
                                 is Frame.Binary -> {
                                     println("Received binary message (not printed): ${frame.data.size} bytes")
                                 }
+
                                 is Frame.Close -> {
                                     val reason = frame.readReason()
                                     println("WebSocket connection closed: ${reason?.message}")
                                 }
+
                                 is Frame.Ping -> {
                                     println("Received Ping frame.")
                                 }
+
                                 is Frame.Pong -> {
                                     println("Received Pong frame.")
                                 }
@@ -99,11 +109,8 @@ class ServerJvm : Server {
      * @param targetSession The WebSocketSession of the client to send the message to.
      * @param message The message to send.
      */
-    override suspend fun sendMessageToClient(
-        deviceId: DeviceId,
-        message: FloconOutgoingMessageDataModel,
-    ) {
-        val session = activeSessions[deviceId]
+    override suspend fun sendMessageToClient(deviceIdAndPackageName: FloconDeviceIdAndPackageName, message: FloconOutgoingMessageDataModel) {
+        val session = activeSessions[deviceIdAndPackageName]
         if (session != null) {
             try {
                 val jsonMessage =
@@ -116,10 +123,10 @@ class ServerJvm : Server {
             } catch (e: Exception) {
                 println("Error sending message to client: ${e.message}")
                 // The session might have closed unexpectedly
-                activeSessions.remove(deviceId)
+                activeSessions.remove(deviceIdAndPackageName)
             }
         } else {
-            println("Target session is no longer active. deviceId=$deviceId, message=$message")
+            println("Target session is no longer active. deviceId=$deviceIdAndPackageName, message=$message")
         }
     }
 

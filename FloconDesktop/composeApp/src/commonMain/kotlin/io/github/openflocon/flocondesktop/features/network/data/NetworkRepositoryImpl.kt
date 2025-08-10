@@ -11,7 +11,9 @@ import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.e
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -25,16 +27,16 @@ class NetworkRepositoryImpl(
 ) : NetworkRepository,
     MessagesReceiverRepository {
     // maybe inject
-    private val httpParser =
-        Json {
-            ignoreUnknownKeys = true
-        }
+    private val httpParser = Json {
+        ignoreUnknownKeys = true
+    }
 
     override val pluginName = listOf(Protocol.FromDevice.Network.Plugin)
 
-    override fun observeRequests(deviceId: String, lite: Boolean) = networkLocalDataSource
-        .observeRequests(deviceId = deviceId, lite = lite)
-        .flowOn(dispatcherProvider.data)
+    override fun observeRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, lite: Boolean): Flow<List<FloconHttpRequestDomainModel>> =
+        networkLocalDataSource
+            .observeRequests(deviceIdAndPackageName = deviceIdAndPackageName, lite = lite)
+            .flowOn(dispatcherProvider.data)
 
     override fun observeRequest(
         deviceId: String,
@@ -55,7 +57,7 @@ class NetworkRepositoryImpl(
                 if (request.response.contentType != null && responseContentType.startsWith("image/")) {
                     networkImageRepository.onImageReceived(deviceId = deviceId, request = request)
                 }
-                networkLocalDataSource.save(deviceId = deviceId, request = request)
+                networkLocalDataSource.save(deviceId = deviceId, packageName = message.appPackageName, request = request)
             }
         }
     }
@@ -67,8 +69,8 @@ class NetworkRepositoryImpl(
         null
     }
 
-    override suspend fun clearDeviceCalls(deviceId: DeviceId) {
-        networkLocalDataSource.clearDeviceCalls(deviceId = deviceId)
+    override suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        networkLocalDataSource.clearDeviceCalls(deviceIdAndPackageName = deviceIdAndPackageName)
     }
 
     override suspend fun deleteRequest(
@@ -120,6 +122,7 @@ class NetworkRepositoryImpl(
                 decoded.floconNetworkType == "grpc" -> FloconHttpRequestDomainModel.Type.Grpc(
                     responseStatus = decoded.responseGrpcStatus!!,
                 )
+
                 graphQl != null -> {
                     val httpCode = decoded.responseHttpCode!! // mandatory for graphQl
                     FloconHttpRequestDomainModel.Type.GraphQl(
@@ -132,6 +135,7 @@ class NetworkRepositoryImpl(
                         httpCode = httpCode,
                     )
                 }
+
                 else -> FloconHttpRequestDomainModel.Type.Http(
                     httpCode = decoded.responseHttpCode!!, // mandatory for http
                 )

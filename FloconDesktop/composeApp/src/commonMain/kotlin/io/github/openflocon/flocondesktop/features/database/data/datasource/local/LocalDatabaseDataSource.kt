@@ -1,17 +1,18 @@
 package io.github.openflocon.flocondesktop.features.database.data.datasource.local
 
-import io.github.openflocon.flocondesktop.DeviceId
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
+import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface LocalDatabaseDataSource {
     suspend fun saveSuccessQuery(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: DeviceDataBaseId,
         query: String,
     )
+
     fun observeLastSuccessQuery(
-        deviceId: DeviceId,
-        databaseId: DeviceDataBaseId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: DeviceDataBaseId
     ): Flow<List<String>>
 }

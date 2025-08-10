@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.domain
 
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
 import io.github.openflocon.flocondesktop.features.dashboard.domain.repository.DashboardRepository
 import kotlinx.coroutines.flow.Flow
@@ -9,22 +9,23 @@ import kotlinx.coroutines.flow.flowOf
 
 class ObserveCurrentDeviceDashboardUseCase(
     private val dashboardRepository: DashboardRepository,
-    private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
+    private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(): Flow<DashboardDomainModel?> = observeCurrentDeviceIdUseCase().flatMapLatest { deviceId ->
-        if (deviceId == null) {
+    operator fun invoke(): Flow<DashboardDomainModel?> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { model ->
+        if (model == null) {
             flowOf(null)
         } else {
-            dashboardRepository.observeSelectedDeviceDashboard(deviceId = deviceId).flatMapLatest { dashboardId ->
-                if (dashboardId == null) {
-                    flowOf(null)
-                } else {
-                    dashboardRepository.observeDashboard(
-                        deviceId = deviceId,
-                        dashboardId = dashboardId,
-                    )
+            dashboardRepository.observeSelectedDeviceDashboard(deviceIdAndPackageName = model)
+                .flatMapLatest { dashboardId ->
+                    if (dashboardId == null) {
+                        flowOf(null)
+                    } else {
+                        dashboardRepository.observeDashboard(
+                            deviceIdAndPackageName = model,
+                            dashboardId = dashboardId,
+                        )
+                    }
                 }
-            }
         }
     }
 }

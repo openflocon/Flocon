@@ -1,16 +1,17 @@
 package io.github.openflocon.flocondesktop.features.table.domain
 
-import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.features.table.domain.repository.TableRepository
 
 class ResetCurrentDeviceSelectedTableUseCase(
     private val tableRepository: TableRepository,
-    private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,
+    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val getCurrentDeviceSelectedTableUseCase: GetCurrentDeviceSelectedTableUseCase,
 ) {
     suspend operator fun invoke() {
-        val deviceId = getCurrentDeviceIdUseCase() ?: return
+        val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return
         val tableId = getCurrentDeviceSelectedTableUseCase() ?: return
-        tableRepository.deleteTable(deviceId = deviceId, tableId = tableId)
+
+        tableRepository.deleteTable(deviceIdAndPackageName = current, tableId = tableId)
     }
 }
