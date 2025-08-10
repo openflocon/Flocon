@@ -15,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -120,28 +119,14 @@ fun NetworkScreen(
                     }
                 }
             }
-            AnimatedContent(
-                targetState = uiState.detailState,
-                transitionSpec = {
-                    slideIntoContainer(SlideDirection.Start)
-                        .togetherWith(slideOutOfContainer(SlideDirection.End))
-                },
-                contentKey = { it != null },
-                contentAlignment = Alignment.TopEnd,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .requiredWidth(500.dp)
-                    .align(Alignment.TopEnd),
+            FloconPanel(
+                contentState = uiState.detailState
             ) {
-                if (it != null) {
-                    NetworkDetailView(
-                        modifier = Modifier.fillMaxSize(),
-                        state = it,
-                        onAction = onAction,
-                    )
-                } else {
-                    Box(Modifier.fillMaxSize())
-                }
+                NetworkDetailView(
+                    modifier = Modifier.fillMaxSize(),
+                    state = it,
+                    onAction = onAction,
+                )
             }
         }
     }

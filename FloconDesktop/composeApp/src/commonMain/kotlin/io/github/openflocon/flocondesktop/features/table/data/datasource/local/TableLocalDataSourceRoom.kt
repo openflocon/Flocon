@@ -46,47 +46,44 @@ class TableLocalDataSourceRoom(
         }
     }
 
-    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> = tableDao.observeTable(deviceId = deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName, tableId = tableId)
-        .flatMapLatest { table ->
-            if (table == null) {
-                flowOf(null)
-            } else {
-                tableDao.observeTableItems(
-                    tableId = table.id,
-                ).map { tableItem ->
-                    TableDomainModel(
-                        name = table.name,
-                        items = tableItem.map {
-                            TableDomainModel.TableItem(
-                                itemId = it.itemId,
-                                createdAt = it.createdAt,
-                                values = it.values,
-                                columns = it.columnsNames,
-                            )
-                        },
-                    )
+    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> =
+        tableDao.observeTable(deviceId = deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName, tableId = tableId)
+            .flatMapLatest { table ->
+                if (table == null) {
+                    flowOf(null)
+                } else {
+                    tableDao.observeTableItems(
+                        tableId = table.id,
+                    ).map { tableItem ->
+                        TableDomainModel(
+                            name = table.name,
+                            items = tableItem.map {
+                                TableDomainModel.TableItem(
+                                    itemId = it.itemId,
+                                    createdAt = it.createdAt,
+                                    values = it.values,
+                                    columns = it.columnsNames,
+                                )
+                            },
+                        )
+                    }
                 }
-            }.flowOn(dispatcherProvider.data)
+                    .flowOn(dispatcherProvider.data)
+            }
 
     override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> =
-        tableDao.observeTablesForDevice(deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName).map { list ->
-            list.map {
-                toDomain(it)
-            }
-        }.flowOn(dispatcherProvider.data)
-
-    override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> = tableDao.observeTablesForDevice(deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName).map { list ->
-        list.map {
-            toDomain(it)
-        }
+        tableDao.observeTablesForDevice(deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName)
+            .map { list -> list.map { toDomain(it) } }
+            .flowOn(dispatcherProvider.data)
 
     override suspend fun delete(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableIdentifierDomainModel) {
         tableDao.deleteTableContent(tableId = tableId.id)
     }
 
-    override suspend fun getDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<TableIdentifierDomainModel> = tableDao.getTablesForDevice(deviceId = deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName).map {
-        toDomain(it)
-    }
+    override suspend fun getDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<TableIdentifierDomainModel> =
+        tableDao.getTablesForDevice(deviceId = deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName).map {
+            toDomain(it)
+        }
 
     private fun toDomain(entity: TableEntity): TableIdentifierDomainModel = TableIdentifierDomainModel(
         id = entity.id,
