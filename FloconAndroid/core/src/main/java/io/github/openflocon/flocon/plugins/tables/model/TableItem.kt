@@ -3,26 +3,17 @@ package io.github.openflocon.flocon.plugins.tables.model
 import org.json.JSONArray
 import org.json.JSONObject
 
-data class TableItem(
-    val id: String,
-    val name: String,
-    val createdAt: Long,
-    val columns: List<TableColumnConfig>,
-) {
-    companion object {
-        fun listToJson(items: Collection<TableItem>) : JSONArray {
-            val array = JSONArray()
+fun tableItemListToJson(items: Collection<TableItem>): JSONArray {
+    val array = JSONArray()
 
-            items.forEach {
-                array.put(it.toJson())
-            }
-
-            return array
-        }
+    items.forEach {
+        array.put(it.toJson())
     }
+
+    return array
 }
 
-private fun TableItem.toJson() : JSONObject {
+private fun TableItem.toJson(): JSONObject {
     val tableItemJson = JSONObject()
 
     tableItemJson.put("id", this.id)

@@ -15,6 +15,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "My Application"
 include(":app")
+include(":flocon-base")
 include(":core")
 include(":okhttp-interceptor")
 include(":grpc-interceptor")

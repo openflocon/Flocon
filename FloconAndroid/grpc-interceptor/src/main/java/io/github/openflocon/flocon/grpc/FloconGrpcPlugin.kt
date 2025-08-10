@@ -1,12 +1,14 @@
 package io.github.openflocon.flocon.grpc
 
 import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
+import io.github.openflocon.flocon.plugins.network.model.floconNetworkRequestToJson
 import java.util.concurrent.ConcurrentHashMap
 
 internal class FloconGrpcPlugin(
-    private val floconClient: Flocon.Client? = null,
+    private val floconClient: FloconApp.Client? = null,
 ) {
 
     private val requests = ConcurrentHashMap<String,FloconNetworkRequest.Request>()
@@ -28,7 +30,7 @@ internal class FloconGrpcPlugin(
         (floconClient ?: Flocon.client)?.send(
             plugin = Protocol.FromDevice.Network.Plugin,
             method = Protocol.FromDevice.Network.Method.LogNetworkCall,
-            body = call.toJson().toString(),
+            body = floconNetworkRequestToJson(call).toString(),
         )
         requests.remove(callId)
     }

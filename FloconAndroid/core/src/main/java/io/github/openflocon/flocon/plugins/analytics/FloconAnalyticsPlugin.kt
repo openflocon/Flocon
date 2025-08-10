@@ -1,25 +1,12 @@
 package io.github.openflocon.flocon.plugins.analytics
 
-import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
-import io.github.openflocon.flocon.plugins.analytics.builder.AnalyticsBuilder
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
+import io.github.openflocon.flocon.plugins.analytics.model.analyticsItemsToJson
 import org.json.JSONArray
 import java.util.concurrent.ConcurrentLinkedQueue
-
-fun Flocon.analytics(analyticsName: String): AnalyticsBuilder {
-    return AnalyticsBuilder(
-        analyticsTableId = analyticsName,
-        analyticsPlugin = this.client?.analyticsPlugin,
-    )
-}
-
-interface FloconAnalyticsPlugin : FloconPlugin {
-    fun registerAnalytics(analyticsItems: List<AnalyticsItem>)
-}
 
 class FloconAnalyticsPluginImpl(
     private val sender: FloconMessageSender,
@@ -31,17 +18,17 @@ class FloconAnalyticsPluginImpl(
         messageFromServer: FloconMessageFromServer,
         sender: FloconMessageSender,
     ) {
-        when(messageFromServer.method) {
-            Protocol.ToDevice.Analytics.Method.ClearItems-> {
+        when (messageFromServer.method) {
+            Protocol.ToDevice.Analytics.Method.ClearItems -> {
                 val items = readIds(messageFromServer.body)
-                if(items.isNotEmpty()) {
+                if (items.isNotEmpty()) {
                     clearItems(items.toSet())
                 }
             }
         }
     }
 
-    private fun readIds(body: String) : List<String> {
+    private fun readIds(body: String): List<String> {
         return try {
             val array = JSONArray(body)
             val items = mutableListOf<String>()
@@ -69,7 +56,7 @@ class FloconAnalyticsPluginImpl(
             sender.send(
                 plugin = Protocol.FromDevice.Analytics.Plugin,
                 method = Protocol.FromDevice.Analytics.Method.AddItems,
-                body = AnalyticsItem.listToJson(toSend).toString()
+                body = analyticsItemsToJson(toSend).toString()
             )
         }
     }

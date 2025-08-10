@@ -19,9 +19,6 @@ import io.github.openflocon.flocon.plugins.sharedprefs.model.todevice.ToDeviceGe
 // Got some code from Flipper client
 // https://github.com/facebook/flipper/blob/main/android/src/main/java/com/facebook/flipper/plugins/sharedpreferences/SharedPreferencesFlipperPlugin.java
 
-interface FloconSharedPreferencesPlugin : FloconPlugin {
-}
-
 class FloconSharedPreferencesPluginImpl(
     private val context: Context,
 ) : FloconSharedPreferencesPlugin {

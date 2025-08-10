@@ -16,9 +16,6 @@ import io.github.openflocon.flocon.plugins.database.model.todevice.DatabaseQuery
 import java.io.File
 import java.util.Locale
 
-
-interface FloconDatabasePlugin : FloconPlugin
-
 class FloconDatabasePluginImpl(
     private val context: Context,
 ) : FloconDatabasePlugin {

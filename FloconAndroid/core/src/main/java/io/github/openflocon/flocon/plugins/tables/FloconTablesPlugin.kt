@@ -1,26 +1,12 @@
 package io.github.openflocon.flocon.plugins.tables
 
-import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
-import io.github.openflocon.flocon.plugins.tables.builder.TableBuilder
 import io.github.openflocon.flocon.plugins.tables.model.TableItem
+import io.github.openflocon.flocon.plugins.tables.model.tableItemListToJson
 import org.json.JSONArray
 import java.util.concurrent.ConcurrentLinkedQueue
-
-
-fun Flocon.table(tableName: String): TableBuilder {
-    return TableBuilder(
-        tableName = tableName,
-        tablePlugin = this.client?.tablePlugin,
-    )
-}
-
-interface FloconTablePlugin : FloconPlugin {
-    fun registerTable(tableItem: TableItem)
-}
 
 class FloconTablePluginImpl(
     private val sender: FloconMessageSender,
@@ -32,17 +18,17 @@ class FloconTablePluginImpl(
         messageFromServer: FloconMessageFromServer,
         sender: FloconMessageSender,
     ) {
-        when(messageFromServer.method) {
-            Protocol.ToDevice.Table.Method.ClearItems-> {
+        when (messageFromServer.method) {
+            Protocol.ToDevice.Table.Method.ClearItems -> {
                 val items = readIds(messageFromServer.body)
-                if(items.isNotEmpty()) {
+                if (items.isNotEmpty()) {
                     clearItems(items.toSet())
                 }
             }
         }
     }
 
-    private fun readIds(body: String) : List<String> {
+    private fun readIds(body: String): List<String> {
         return try {
             val array = JSONArray(body)
             val items = mutableListOf<String>()
@@ -70,7 +56,7 @@ class FloconTablePluginImpl(
             sender.send(
                 plugin = Protocol.FromDevice.Table.Plugin,
                 method = Protocol.FromDevice.Table.Method.AddItems,
-                body = TableItem.listToJson(tableMessages).toString()
+                body = tableItemListToJson(tableMessages).toString()
             )
         }
     }

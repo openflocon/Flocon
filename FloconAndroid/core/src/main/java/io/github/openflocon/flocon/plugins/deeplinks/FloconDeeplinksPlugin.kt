@@ -1,22 +1,11 @@
 package io.github.openflocon.flocon.plugins.deeplinks
 
-import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.deeplinks.model.Deeplink
 import org.json.JSONArray
 import org.json.JSONObject
-
-
-fun Flocon.deeplinks(deeplinks: List<Deeplink>) {
-    this.client?.deeplinksPlugin?.registerDeeplinks(deeplinks)
-}
-
-interface FloconDeeplinksPlugin : FloconPlugin {
-    fun registerDeeplinks(deeplinks: List<Deeplink>)
-}
 
 class FloconDeeplinksPluginImpl(
     private val sender: FloconMessageSender,

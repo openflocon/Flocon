@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.openflocon.flocon"
+    namespace = "io.github.openflocon.flocon.base"
     compileSdk = 36
 
     defaultConfig {
@@ -37,10 +37,6 @@ dependencies {
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.okhttp)
-    api(project(":flocon-base"))
 }
 
 mavenPublishing {

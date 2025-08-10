@@ -13,10 +13,6 @@ import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFo
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFilesMessage
 import java.io.File
 
-
-interface FloconFilesPlugin : FloconPlugin {
-}
-
 class FloconFilesPluginImpl(
     private val context: Context,
 ) : FloconFilesPlugin {

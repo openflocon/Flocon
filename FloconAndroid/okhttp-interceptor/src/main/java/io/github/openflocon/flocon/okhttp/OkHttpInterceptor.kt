@@ -1,8 +1,10 @@
 package io.github.openflocon.flocon.okhttp
 
 import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
+import io.github.openflocon.flocon.plugins.network.model.floconNetworkRequestToJson
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Response
@@ -11,7 +13,7 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 class FloconOkhttpInterceptor(
-    private val floconClient: Flocon.Client? = null,
+    private val floconClient: FloconApp.Client? = null,
 ) : Interceptor {
 
     @Throws(IOException::class)
@@ -85,7 +87,7 @@ class FloconOkhttpInterceptor(
             )
         )
 
-        val json = floconRequest.toJson()
+        val json = floconNetworkRequestToJson(floconRequest)
         (floconClient ?: Flocon.client)?.send( // Use Flocon.client directly
             plugin = Protocol.FromDevice.Network.Plugin,
             method = Protocol.FromDevice.Network.Method.LogNetworkCall,

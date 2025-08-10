@@ -3,10 +3,11 @@ package io.github.openflocon.flocon.client
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
+import io.github.openflocon.flocon.model.floconMessageFromServerFromJson
 import io.github.openflocon.flocon.model.toFloconMessageToServer
 import io.github.openflocon.flocon.plugins.SharedPreferences.FloconSharedPreferencesPluginImpl
 import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPluginImpl
@@ -26,7 +27,7 @@ import kotlinx.coroutines.launch
 
 internal class FloconClientImpl(
     appContext: Context,
-) : Flocon.Client {
+) : FloconApp.Client {
 
     private val FLOCON_PORT = 9023
 
@@ -79,7 +80,7 @@ internal class FloconClientImpl(
 
     private fun onMessageReceived(message: String) {
         coroutineScope.launch(Dispatchers.IO) {
-            FloconMessageFromServer.fromJson(message)?.let { messageFromServer ->
+            floconMessageFromServerFromJson(message)?.let { messageFromServer ->
                 when (messageFromServer.plugin) {
                     Protocol.ToDevice.Database.Plugin -> {
                         databasePlugin.onMessageReceived(

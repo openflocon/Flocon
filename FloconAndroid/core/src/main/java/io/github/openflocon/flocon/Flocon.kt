@@ -13,29 +13,21 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-object Flocon {
+object Flocon : FloconApp {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    interface Client : FloconMessageSender {
+    private var _client: FloconApp.Client? = null
 
-        @Throws(Throwable::class)
-        suspend fun connect(onClosed: () -> Unit)
-        fun disconnect()
+    override val client: FloconApp.Client?
+        get() {
+            return _client
+        }
 
-        val dashboardPlugin: FloconDashboardPlugin
-        val tablePlugin: FloconTablePlugin
-        val deeplinksPlugin: FloconDeeplinksPlugin
-        val analyticsPlugin: FloconAnalyticsPlugin
-    }
-
-    var client: Flocon.Client? = null
-        private set
-
-    fun initialize(context: Context) {
+    override fun initialize(context: Context) {
         val app = context.applicationContext
         val newClient = FloconClientImpl(app)
-        client = newClient
+        _client = newClient
 
         scope.launch {
             start(newClient)

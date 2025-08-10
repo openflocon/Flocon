@@ -1,28 +1,14 @@
 package io.github.openflocon.flocon.plugins.dashboard
 
-import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
-import io.github.openflocon.flocon.plugins.dashboard.dsl.DashboardBuilder
-import io.github.openflocon.flocon.plugins.dashboard.dsl.dashboardConfig
 import io.github.openflocon.flocon.plugins.dashboard.mapper.toJson
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.todevice.ToDeviceCheckBoxValueChangedMessage
 import io.github.openflocon.flocon.plugins.dashboard.model.todevice.ToDeviceSubmittedTextFieldMessage
 import java.util.concurrent.ConcurrentHashMap
-
-
-fun Flocon.dashboard(id: String, block: DashboardBuilder.() -> Unit) {
-    val dashboardConfig = dashboardConfig(id = id, block)
-    this.client?.dashboardPlugin?.registerDashboard(dashboardConfig)
-}
-
-interface FloconDashboardPlugin : FloconPlugin {
-    fun registerDashboard(dashboardConfig: DashboardConfig)
-}
 
 class FloconDashboardPluginImpl(
     private val sender: FloconMessageSender,
@@ -41,14 +27,20 @@ class FloconDashboardPluginImpl(
 
                 callbackMap[id]?.let { it as? DashboardCallback.ButtonCallback }?.action?.invoke()
             }
+
             Protocol.ToDevice.Dashboard.Method.OnTextFieldSubmitted -> {
                 ToDeviceSubmittedTextFieldMessage.fromJson(messageFromServer.body)?.let {
-                    callbackMap[it.id]?.let { it as? DashboardCallback.TextFieldCallback }?.action?.invoke(it.value)
+                    callbackMap[it.id]?.let { it as? DashboardCallback.TextFieldCallback }?.action?.invoke(
+                        it.value
+                    )
                 }
             }
+
             Protocol.ToDevice.Dashboard.Method.OnCheckBoxValueChanged -> {
                 ToDeviceCheckBoxValueChangedMessage.fromJson(messageFromServer.body)?.let {
-                    callbackMap[it.id]?.let { it as? DashboardCallback.CheckBoxCallback }?.action?.invoke(it.value)
+                    callbackMap[it.id]?.let { it as? DashboardCallback.CheckBoxCallback }?.action?.invoke(
+                        it.value
+                    )
                 }
             }
         }
