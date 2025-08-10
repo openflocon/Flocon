@@ -77,6 +77,7 @@ fun DashboardTextFieldView(
                     textStyle = FloconTheme.typography.bodySmall.copy(
                         color = FloconTheme.colorPalette.onSurface,
                     ),
+                    modifier = Modifier.fillMaxWidth(),
                     value = value,
                     cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
                     onValueChange = {
