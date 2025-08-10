@@ -50,7 +50,7 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-        artifactId = "flocon",
+        artifactId = "flocon-base",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 

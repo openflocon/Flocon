@@ -17,7 +17,7 @@ jobs:
           distribution: 'zulu'
           java-version: 21
       - name: Publish to MavenCentral
-        run: ./gradlew :core:publishToMavenCentral :okhttp-interceptor:publishToMavenCentral :grpc-interceptor:publishToMavenCentral --no-configuration-cache
+        run: ./gradlew :flocon-base:publishToMavenCentral :flocon:publishToMavenCentral :flocon-no-op:publishToMavenCentral :okhttp-interceptor:publishToMavenCentral :grpc-interceptor:publishToMavenCentral --no-configuration-cache
         working-directory: FloconAndroid
         env:
           PROJECT_VERSION_NAME: ${{ github.ref_name }}
