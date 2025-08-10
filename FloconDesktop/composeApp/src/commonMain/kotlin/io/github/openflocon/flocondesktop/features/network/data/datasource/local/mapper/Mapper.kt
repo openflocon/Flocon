@@ -7,7 +7,7 @@ import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHt
 
 fun FloconHttpRequestDomainModel.toEntity(
     deviceId: String,
-    packageName: String
+    packageName: String,
 ): FloconHttpRequestEntity = FloconHttpRequestEntity(
     uuid = this.uuid,
     infos = this.toInfosEntity(),
@@ -39,7 +39,7 @@ fun FloconHttpRequestDomainModel.toEntity(
         is FloconHttpRequestDomainModel.Type.GraphQl,
         -> null
     },
-    packageName = packageName
+    packageName = packageName,
 )
 
 private fun FloconHttpRequestDomainModel.toInfosEntity(): FloconHttpRequestInfosEntity = FloconHttpRequestInfosEntity(
@@ -94,7 +94,6 @@ fun FloconHttpRequestEntity.toDomainModel(): FloconHttpRequestDomainModel? {
         },
     )
 }
-
 
 fun FloconHttpRequestEntityLite.toDomainModel(): FloconHttpRequestDomainModel? {
     return FloconHttpRequestDomainModel(

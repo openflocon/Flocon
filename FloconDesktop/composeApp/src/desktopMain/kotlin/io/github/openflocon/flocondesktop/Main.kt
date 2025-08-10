@@ -1,13 +1,7 @@
 package io.github.openflocon.flocondesktop
 
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.ImageLoader
@@ -40,7 +34,7 @@ fun main() = application {
 
     val windowState = rememberWindowState(
         size = savedState.size(),
-        position = savedState.windowPosition()
+        position = savedState.windowPosition(),
     )
 
     Window(
@@ -54,7 +48,7 @@ fun main() = application {
                     height = currentSize.height.value.toInt(),
                     x = currentPosition.x.value.toInt(),
                     y = currentPosition.y.value.toInt(),
-                )
+                ),
             )
 
             exitApplication()

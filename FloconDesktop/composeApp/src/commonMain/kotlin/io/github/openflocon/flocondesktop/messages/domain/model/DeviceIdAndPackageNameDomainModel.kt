@@ -5,12 +5,12 @@ import io.github.openflocon.flocondesktop.FloconDeviceIdAndPackageName
 
 data class DeviceIdAndPackageNameDomainModel(
     val deviceId: DeviceId,
-    val packageName: String
+    val packageName: String,
 )
 
 // TODO Move
 
 fun DeviceIdAndPackageNameDomainModel.toRemote() = FloconDeviceIdAndPackageName(
     deviceId = deviceId,
-    packageName = packageName
+    packageName = packageName,
 )

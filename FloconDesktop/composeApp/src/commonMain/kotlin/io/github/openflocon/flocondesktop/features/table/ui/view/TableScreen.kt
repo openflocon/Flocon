@@ -141,8 +141,8 @@ fun TableScreen(
                                     if (index < tableItems.lastIndex) {
                                         HorizontalDivider(
                                             modifier =
-                                                Modifier.fillMaxWidth()
-                                                    .padding(top = 4.dp),
+                                            Modifier.fillMaxWidth()
+                                                .padding(top = 4.dp),
                                         )
                                     }
                                 }
@@ -155,10 +155,10 @@ fun TableScreen(
             selectedItem?.let {
                 TableDetailView(
                     modifier =
-                        Modifier
-                            .align(Alignment.TopEnd)
-                            .fillMaxHeight()
-                            .width(500.dp),
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .fillMaxHeight()
+                        .width(500.dp),
                     state = it,
                 )
             }

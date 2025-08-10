@@ -17,7 +17,7 @@ class LocalFilesDataSourceRoom(
 
     override fun observeFolderContentUseCase(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        folderPath: FilePathDomainModel
+        folderPath: FilePathDomainModel,
     ): Flow<List<FileDomainModel>> = fileDao
         .observeFolderContent(
             deviceId = deviceIdAndPackageName.deviceId,
@@ -33,7 +33,7 @@ class LocalFilesDataSourceRoom(
             fileDao.clearFolderContent(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
-                parentPath = parentPath.mapToLocal()
+                parentPath = parentPath.mapToLocal(),
             )
             fileDao.insertFiles(
                 files.map {

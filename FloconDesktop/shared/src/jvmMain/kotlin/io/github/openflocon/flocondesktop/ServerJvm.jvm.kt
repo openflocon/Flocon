@@ -57,11 +57,11 @@ class ServerJvm : Server {
                                         activeSessions.put(
                                             FloconDeviceIdAndPackageName(
                                                 deviceId = floconIncomingMessageDataModel.deviceId,
-                                                packageName = floconIncomingMessageDataModel.appPackageName
+                                                packageName = floconIncomingMessageDataModel.appPackageName,
                                             ),
-                                            this
+                                            this,
                                         )
-                                        //println("+ new client : ${floconIncomingMessageDataModel.deviceId}")
+                                        // println("+ new client : ${floconIncomingMessageDataModel.deviceId}")
                                         _receivedMessages.emit(floconIncomingMessageDataModel)
                                         // Access other fields of floconMessage as needed
                                     } catch (e: Exception) {

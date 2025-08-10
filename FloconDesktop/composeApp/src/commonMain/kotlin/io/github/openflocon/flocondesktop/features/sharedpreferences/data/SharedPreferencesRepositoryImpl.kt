@@ -33,13 +33,13 @@ class SharedPreferencesRepositoryImpl(
         withContext(dispatcherProvider.data) {
             when (message.method) {
                 Protocol.FromDevice.SharedPreferences.Method.GetSharedPreferences ->
-                    decodeDeviceSharedPreferences(message.body,)
+                    decodeDeviceSharedPreferences(message.body)
                         ?.let { toDeviceSharedPreferenceDomain(it) }
                         ?.let {
                             deviceSharedPreferencesDataSource.registerDeviceSharedPreferences(
                                 deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                                     deviceId = deviceId,
-                                    packageName = message.appPackageName
+                                    packageName = message.appPackageName,
                                 ),
                                 sharedPreferences = it,
                             )
@@ -53,7 +53,7 @@ class SharedPreferencesRepositoryImpl(
                             deviceSharedPreferencesValuesDataSource.onSharedPreferencesValuesReceived(
                                 deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                                     deviceId = deviceId,
-                                    packageName = message.appPackageName
+                                    packageName = message.appPackageName,
                                 ),
                                 received = it,
                             )
@@ -62,10 +62,9 @@ class SharedPreferencesRepositoryImpl(
         }
     }
 
-    override fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> =
-        deviceSharedPreferencesDataSource
-            .observeSelectedDeviceSharedPreference(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> = deviceSharedPreferencesDataSource
+        .observeSelectedDeviceSharedPreference(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override fun selectDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, sharedPreferenceId: DeviceSharedPreferenceId) {
         deviceSharedPreferencesDataSource.selectDeviceSharedPreference(
@@ -74,14 +73,13 @@ class SharedPreferencesRepositoryImpl(
         )
     }
 
-    override fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> =
-        deviceSharedPreferencesDataSource
-            .observeDeviceSharedPreferences(deviceIdAndPackageName = deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> = deviceSharedPreferencesDataSource
+        .observeDeviceSharedPreferences(deviceIdAndPackageName = deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun registerDeviceSharedPreferences(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        sharedPreferences: List<DeviceSharedPreferenceDomainModel>
+        sharedPreferences: List<DeviceSharedPreferenceDomainModel>,
     ) = withContext(dispatcherProvider.data) {
         deviceSharedPreferencesDataSource.registerDeviceSharedPreferences(
             deviceIdAndPackageName = deviceIdAndPackageName,
@@ -95,7 +93,7 @@ class SharedPreferencesRepositoryImpl(
 
     override suspend fun getDeviceSharedPreferencesValues(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        sharedPreferenceId: DeviceSharedPreferenceId
+        sharedPreferenceId: DeviceSharedPreferenceId,
     ) = withContext(dispatcherProvider.data) {
         deviceSharedPreferencesDataSource.getDeviceSharedPreferencesValues(
             deviceIdAndPackageName = deviceIdAndPackageName,
@@ -105,7 +103,7 @@ class SharedPreferencesRepositoryImpl(
 
     override fun observe(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        sharedPreferenceId: DeviceSharedPreferenceId
+        sharedPreferenceId: DeviceSharedPreferenceId,
     ): Flow<List<SharedPreferenceRowDomainModel>> = deviceSharedPreferencesValuesDataSource
         .observe(
             deviceIdAndPackageName = deviceIdAndPackageName,
@@ -117,7 +115,7 @@ class SharedPreferencesRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreference: DeviceSharedPreferenceDomainModel,
         key: String,
-        value: SharedPreferenceRowDomainModel.Value
+        value: SharedPreferenceRowDomainModel.Value,
     ) {
         withContext(dispatcherProvider.data) {
             deviceSharedPreferencesDataSource.editSharedPrefField(

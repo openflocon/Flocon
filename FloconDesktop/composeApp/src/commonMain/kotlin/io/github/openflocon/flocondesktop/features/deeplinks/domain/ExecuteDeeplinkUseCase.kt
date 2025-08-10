@@ -7,7 +7,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.domain.repository.D
 class ExecuteDeeplinkUseCase(
     private val deeplinkRepository: DeeplinkRepository,
     private val settingsRepository: SettingsRepository,
-    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase
+    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
 ) {
     operator fun invoke(deeplink: String) {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return

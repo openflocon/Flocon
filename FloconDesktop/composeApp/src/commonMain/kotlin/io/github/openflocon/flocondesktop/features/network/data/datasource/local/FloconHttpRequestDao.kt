@@ -33,9 +33,8 @@ interface FloconHttpRequestDao {
     )
     fun observeRequestsLite(
         deviceId: String,
-        packageName: String
+        packageName: String,
     ): Flow<List<FloconHttpRequestEntityLite>>
-
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertRequest(request: FloconHttpRequestEntity)
@@ -64,7 +63,7 @@ interface FloconHttpRequestDao {
     )
     suspend fun clearDeviceCalls(
         deviceId: DeviceId,
-        packageName: String
+        packageName: String,
     )
 
     @Query(

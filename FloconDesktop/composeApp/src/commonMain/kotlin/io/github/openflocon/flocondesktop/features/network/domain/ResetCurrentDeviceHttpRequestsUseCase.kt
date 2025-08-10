@@ -1,7 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.domain
 
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
-import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
 
 class ResetCurrentDeviceHttpRequestsUseCase(

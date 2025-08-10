@@ -29,7 +29,6 @@ import io.github.openflocon.flocondesktop.features.network.ui.view.filters.Metho
 import io.github.openflocon.flocondesktop.features.network.ui.view.filters.TextFilterDropdown
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.math.exp
 
 @Composable
 fun NetworkItemHeaderView(
@@ -42,10 +41,10 @@ fun NetworkItemHeaderView(
 ) {
     Row(
         modifier =
-            modifier
-                .background(FloconTheme.colorPalette.panel)
-                .padding(horizontal = 8.dp, vertical = 6.dp)
-                .padding(contentPadding),
+        modifier
+            .background(FloconTheme.colorPalette.panel)
+            .padding(horizontal = 8.dp, vertical = 6.dp)
+            .padding(contentPadding),
 
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom,
@@ -72,7 +71,7 @@ fun NetworkItemHeaderView(
                 filterState = state.requestTime.filter,
                 textFilterAction = {
                     onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.RequestTime, it))
-                }
+                },
             )
         }
 
@@ -98,10 +97,9 @@ fun NetworkItemHeaderView(
                 filterState = state.method.filter,
                 onItemClicked = {
                     onFilterAction(OnFilterAction.ClickOnMethod(it))
-                }
+                },
             )
         }
-
 
         // route & method, don't display the label
         Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
@@ -128,7 +126,7 @@ fun NetworkItemHeaderView(
                     },
                     textFilterAction = {
                         onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Domain, it))
-                    }
+                    },
                 )
             }
             Column(modifier = Modifier.weight(columnWidths.queryWeight)) {
@@ -153,8 +151,8 @@ fun NetworkItemHeaderView(
                         isDropdownExpanded = false
                     },
                     textFilterAction = {
-                        onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Query,it))
-                    }
+                        onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Query, it))
+                    },
                 )
             }
         }
@@ -180,8 +178,8 @@ fun NetworkItemHeaderView(
                     isDropdownExpanded = false
                 },
                 textFilterAction = {
-                    onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Status,it))
-                }
+                    onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Status, it))
+                },
             )
         }
 
@@ -197,7 +195,7 @@ fun NetworkItemHeaderView(
                 },
                 clickOnFilter = {
                     isDropdownExpanded = true
-                }
+                },
             )
             TextFilterDropdown(
                 expanded = isDropdownExpanded,
@@ -207,7 +205,7 @@ fun NetworkItemHeaderView(
                 },
                 textFilterAction = {
                     onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Time, it))
-                }
+                },
             )
         }
     }

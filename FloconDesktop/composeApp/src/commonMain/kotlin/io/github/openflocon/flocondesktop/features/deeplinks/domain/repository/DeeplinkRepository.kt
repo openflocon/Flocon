@@ -13,5 +13,4 @@ interface DeeplinkRepository {
     )
 
     fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>>
-
 }

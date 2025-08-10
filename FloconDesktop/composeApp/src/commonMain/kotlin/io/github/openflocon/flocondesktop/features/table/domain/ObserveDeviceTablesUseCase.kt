@@ -1,7 +1,6 @@
 package io.github.openflocon.flocondesktop.features.table.domain
 
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdAndPackageNameUseCase
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.features.table.domain.model.TableIdentifierDomainModel
 import io.github.openflocon.flocondesktop.features.table.domain.repository.TableRepository
 import kotlinx.coroutines.flow.Flow

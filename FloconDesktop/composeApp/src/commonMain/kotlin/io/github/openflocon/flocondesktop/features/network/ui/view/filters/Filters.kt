@@ -8,5 +8,4 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemV
 interface Filters {
 
     fun filter(state: FilterUiState, list: List<NetworkItemViewState>): List<NetworkItemViewState>
-
 }

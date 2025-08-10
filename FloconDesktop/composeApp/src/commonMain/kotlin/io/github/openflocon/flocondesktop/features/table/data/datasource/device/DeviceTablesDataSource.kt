@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface DeviceTablesDataSource {
     fun observeSelectedDeviceTable(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Flow<TableIdentifierDomainModel?>
 
     fun selectDeviceTable(

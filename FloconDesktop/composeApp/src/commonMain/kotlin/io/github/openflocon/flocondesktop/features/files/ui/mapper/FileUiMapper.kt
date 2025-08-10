@@ -12,8 +12,7 @@ import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel.ContextualAction
 import kotlin.time.Instant
 
-fun FileUiModel.icon(): ImageVector =
-    if (this.isDirectory) Icons.Outlined.Folder else Icons.Outlined.Drafts
+fun FileUiModel.icon(): ImageVector = if (this.isDirectory) Icons.Outlined.Folder else Icons.Outlined.Drafts
 
 fun FileDomainModel.toUi(): FileUiModel = FileUiModel(
     name = name,

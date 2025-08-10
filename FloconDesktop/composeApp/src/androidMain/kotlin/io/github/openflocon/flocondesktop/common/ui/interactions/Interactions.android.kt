@@ -4,6 +4,4 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-actual fun Modifier.hover(isHover: (Boolean) -> Unit): Modifier {
-    return this
-}
+actual fun Modifier.hover(isHover: (Boolean) -> Unit): Modifier = this

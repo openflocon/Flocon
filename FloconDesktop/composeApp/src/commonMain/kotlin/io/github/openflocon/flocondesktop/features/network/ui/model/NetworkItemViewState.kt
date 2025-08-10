@@ -66,7 +66,7 @@ fun previewNetworkItemViewState(): NetworkItemViewState = NetworkItemViewState(
     status = NetworkStatusUi("200", true),
     type = NetworkItemViewState.NetworkTypeUi.Url(
         query = "/search?q=test",
-        method = "get"
+        method = "get",
     ),
 )
 

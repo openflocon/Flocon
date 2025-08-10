@@ -42,7 +42,7 @@ interface FloconDashboardDao {
     )
     fun observeDeviceDashboards(
         deviceId: String,
-        packageName: String
+        packageName: String,
     ): Flow<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -75,7 +75,7 @@ interface FloconDashboardDao {
         insertDashboard(
             dashboard = dashboard.toEntity(
                 packageName = packageName,
-                deviceId = deviceId
+                deviceId = deviceId,
             ),
         )
 

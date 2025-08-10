@@ -16,31 +16,29 @@ class SortAndFilterNetworkItemsProcessor {
         sorted: HeaderDelegate.Sorted?,
         allowedMethods: List<NetworkMethodUi>,
         textFilters: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
-    ): List<NetworkItemViewState> {
-        return items.asSequence()
-            .filter { item ->
-                (filterState.query.isEmpty() || item.second.contains(filterState.query))
+    ): List<NetworkItemViewState> = items.asSequence()
+        .filter { item ->
+            (filterState.query.isEmpty() || item.second.contains(filterState.query))
+        }
+        .filter { item ->
+            item.second.method in allowedMethods
+        }
+        .filter { item ->
+            textFilters.filter { it.value.isActive }.all { (column, textFilter) ->
+                textFilter.filter(column, item)
             }
-            .filter { item ->
-                item.second.method in allowedMethods
-            }
-            .filter { item ->
-                textFilters.filter { it.value.isActive }.all { (column, textFilter) ->
-                    textFilter.filter(column, item)
-                }
-            }
-            .let {
-                sort(it, sorted)
-            }
-            .map { it.second }
-            .toList()
-    }
+        }
+        .let {
+            sort(it, sorted)
+        }
+        .map { it.second }
+        .toList()
 }
 
 private fun sort(
     sequence: Sequence<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>,
     sorted: HeaderDelegate.Sorted?,
-) : Sequence<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> {
+): Sequence<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> {
     if (sorted == null) {
         return sequence
     }
@@ -64,16 +62,14 @@ private fun sort(
 
 private fun TextFilterStateUiModel.filter(
     column: NetworkTextFilterColumns,
-    items: List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>
-): List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> {
-    return items.filter { item ->
-        filter(column, item)
-    }
+    items: List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>,
+): List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> = items.filter { item ->
+    filter(column, item)
 }
 
 private fun TextFilterStateUiModel.filter(
     column: NetworkTextFilterColumns,
-    item: Pair<FloconHttpRequestDomainModel, NetworkItemViewState>
+    item: Pair<FloconHttpRequestDomainModel, NetworkItemViewState>,
 ): Boolean {
     val text = when (column) {
         NetworkTextFilterColumns.RequestTime -> item.second.dateFormatted

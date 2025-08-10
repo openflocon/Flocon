@@ -15,9 +15,8 @@ sealed interface DevicesStateUiModel {
     data class WithDevices(
         val devices: List<DeviceItemUiModel>,
         val deviceSelected: DeviceItemUiModel,
-        val appSelected: DeviceAppUiModel?
+        val appSelected: DeviceAppUiModel?,
     ) : DevicesStateUiModel
-
 }
 
 fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.WithDevices(
@@ -28,9 +27,9 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
             apps = listOf(
                 DeviceAppUiModel(
                     name = "appName1",
-                    packageName = "packageName1"
-                )
-            )
+                    packageName = "packageName1",
+                ),
+            ),
         ),
         DeviceItemUiModel(
             deviceName = "deviceName2",
@@ -38,9 +37,9 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
             apps = listOf(
                 DeviceAppUiModel(
                     name = "appName2",
-                    packageName = "packageName2"
-                )
-            )
+                    packageName = "packageName2",
+                ),
+            ),
         ),
         DeviceItemUiModel(
             deviceName = "deviceName",
@@ -48,9 +47,9 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
             apps = listOf(
                 DeviceAppUiModel(
                     name = "appName",
-                    packageName = "packageName"
-                )
-            )
+                    packageName = "packageName",
+                ),
+            ),
         ),
     ),
     appSelected = null,
@@ -60,8 +59,8 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
         apps = listOf(
             DeviceAppUiModel(
                 name = "appName",
-                packageName = "packageName"
-            )
-        )
-    )
+                packageName = "packageName",
+            ),
+        ),
+    ),
 )

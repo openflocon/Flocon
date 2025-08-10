@@ -24,7 +24,7 @@ fun previewMethodFilterState() = MethodFilterState(
     items = NetworkMethodUi.all().mapIndexed { index, method ->
         MethodFilterState.Item(
             method = method,
-            isSelected = index < 3
+            isSelected = index < 3,
         )
-    }
+    },
 )

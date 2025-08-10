@@ -6,8 +6,8 @@ import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkT
 @Entity(
     tableName = "network_filter",
     primaryKeys = [
-        "deviceId", "columnName"
-    ]
+        "deviceId", "columnName",
+    ],
 )
 data class NetworkFilterEntity(
     val deviceId: String,

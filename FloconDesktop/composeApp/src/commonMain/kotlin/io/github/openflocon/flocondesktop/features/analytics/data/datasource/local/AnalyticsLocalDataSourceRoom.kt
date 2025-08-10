@@ -27,28 +27,26 @@ class AnalyticsLocalDataSourceRoom(
         }
     }
 
-    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsTableId: AnalyticsTableId): Flow<List<AnalyticsItemDomainModel>> =
-        analyticsDao.observeAnalyticsItems(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-            analyticsTableId = analyticsTableId,
-        )
-            .map { it.map(::toAnalyticsDomain) }
-            .flowOn(dispatcherProvider.data)
+    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsTableId: AnalyticsTableId): Flow<List<AnalyticsItemDomainModel>> = analyticsDao.observeAnalyticsItems(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        analyticsTableId = analyticsTableId,
+    )
+        .map { it.map(::toAnalyticsDomain) }
+        .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
-        analyticsDao.observeAnalyticsTableIdsForDevice(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName
-        )
-            .map { list ->
-                list.map {
-                    AnalyticsIdentifierDomainModel(
-                        id = it,
-                        name = it,
-                    )
-                }
+    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> = analyticsDao.observeAnalyticsTableIdsForDevice(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    )
+        .map { list ->
+            list.map {
+                AnalyticsIdentifierDomainModel(
+                    id = it,
+                    name = it,
+                )
             }
+        }
 
     override suspend fun delete(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsId: AnalyticsIdentifierDomainModel) {
         analyticsDao.deleteAnalyticsContent(
@@ -58,15 +56,14 @@ class AnalyticsLocalDataSourceRoom(
         )
     }
 
-    override suspend fun getDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<AnalyticsIdentifierDomainModel> =
-        analyticsDao.getAnalyticsForDevice(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName
-        )
-            .map {
-                AnalyticsIdentifierDomainModel(
-                    id = it,
-                    name = it,
-                )
-            }
+    override suspend fun getDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<AnalyticsIdentifierDomainModel> = analyticsDao.getAnalyticsForDevice(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    )
+        .map {
+            AnalyticsIdentifierDomainModel(
+                id = it,
+                name = it,
+            )
+        }
 }

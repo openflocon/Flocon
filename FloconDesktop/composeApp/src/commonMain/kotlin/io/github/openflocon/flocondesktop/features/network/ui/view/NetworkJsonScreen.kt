@@ -50,16 +50,16 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun NetworkBodyWindow(
     body: NetworkBodyDetailUi,
     state: FloconWindowState,
-    onCloseRequest: () -> Unit
+    onCloseRequest: () -> Unit,
 ) {
     FloconWindow(
         title = "Body",
         state = state,
-        onCloseRequest = onCloseRequest
+        onCloseRequest = onCloseRequest,
     ) {
         NetworkBodyContent(
             body = body,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }
@@ -69,7 +69,6 @@ private fun NetworkBodyContent(
     body: NetworkBodyDetailUi,
     modifier: Modifier = Modifier,
 ) {
-
     var jsonError by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
 
@@ -84,7 +83,7 @@ private fun NetworkBodyContent(
         modifier = modifier,
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
             if (!jsonError) {
                 SearchBar(
@@ -112,7 +111,7 @@ private fun NetworkBodyContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(8.dp)
+                    .padding(8.dp),
             )
         }
     }
@@ -132,9 +131,8 @@ private fun SearchBar(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .background(FloconTheme.colorPalette.panel)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
     ) {
-
         FloconSmallTextField(
             value = query,
             onValueChange = { queryChanged(it) },
@@ -144,7 +142,7 @@ private fun SearchBar(
                 .clip(RoundedCornerShape(16.dp))
                 .background(FloconTheme.colorPalette.surfaceVariant)
                 .padding(vertical = 8.dp, horizontal = 12.dp)
-                .heightIn(min = 24.dp)
+                .heightIn(min = 24.dp),
         )
 
         AnimatedVisibility(visible = totalResults > 0) {
@@ -152,10 +150,10 @@ private fun SearchBar(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(start = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = "${selectedResultIndex?.inc() ?: 0}/${totalResults}",
+                    text = "${selectedResultIndex?.inc() ?: 0}/$totalResults",
                     modifier = Modifier.widthIn(min = 40.dp),
                     textAlign = TextAlign.End,
                     style = FloconTheme.typography.bodyMedium.copy(fontSize = 14.sp),
@@ -164,7 +162,7 @@ private fun SearchBar(
                     modifier = Modifier
                         .height(32.dp)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(FloconTheme.colorPalette.surfaceVariant)
+                        .background(FloconTheme.colorPalette.surfaceVariant),
                 ) {
                     FloconSmallIconButton(
                         imageVector = Icons.Outlined.ArrowUpward,
@@ -184,7 +182,6 @@ private fun SearchBar(
                 }
             }
         }
-
     }
 }
 

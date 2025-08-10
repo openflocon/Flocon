@@ -34,9 +34,9 @@ class DevicesRepositoryImpl(
                     apps = device.apps.plus(
                         _devices.value
                             .find { it.deviceId == device.deviceId }
-                            ?.apps.orEmpty()
+                            ?.apps.orEmpty(),
                     )
-                        .distinctBy(DeviceAppDomainModel::packageName)
+                        .distinctBy(DeviceAppDomainModel::packageName),
                 )
                 if (_currentDevice.value?.deviceId == device.deviceId)
                     _currentDevice.update { updatedDevice }
@@ -77,8 +77,8 @@ class DevicesRepositoryImpl(
         apps = listOf(
             DeviceAppDomainModel(
                 name = "name",
-                packageName = "com.package.name"
-            )
+                packageName = "com.package.name",
+            ),
         ),
     )
 

@@ -37,18 +37,18 @@ class NetworkLocalDataSourceRoom(
 
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        lite: Boolean
+        lite: Boolean,
     ): Flow<List<FloconHttpRequestDomainModel>> = floconHttpRequestDao.let {
         if (lite) {
             it.observeRequestsLite(
                 deviceId = deviceIdAndPackageName.deviceId,
-                packageName = deviceIdAndPackageName.packageName
+                packageName = deviceIdAndPackageName.packageName,
             )
                 .map { entities -> entities.mapNotNull(FloconHttpRequestEntityLite::toDomainModel) }
         } else {
             it.observeRequests(
                 deviceId = deviceIdAndPackageName.deviceId,
-                packageName = deviceIdAndPackageName.packageName
+                packageName = deviceIdAndPackageName.packageName,
             )
                 .map { entities -> entities.mapNotNull(FloconHttpRequestEntity::toDomainModel) }
         }
@@ -58,7 +58,7 @@ class NetworkLocalDataSourceRoom(
     override suspend fun save(
         deviceId: DeviceId,
         packageName: String,
-        request: FloconHttpRequestDomainModel
+        request: FloconHttpRequestDomainModel,
     ) {
         withContext(dispatcherProvider.data) {
             val entity = request.toEntity(deviceId = deviceId, packageName = packageName)
@@ -79,7 +79,7 @@ class NetworkLocalDataSourceRoom(
         withContext(dispatcherProvider.data) {
             floconHttpRequestDao.clearDeviceCalls(
                 deviceId = deviceIdAndPackageName.deviceId,
-                packageName = deviceIdAndPackageName.packageName
+                packageName = deviceIdAndPackageName.packageName,
             )
         }
     }

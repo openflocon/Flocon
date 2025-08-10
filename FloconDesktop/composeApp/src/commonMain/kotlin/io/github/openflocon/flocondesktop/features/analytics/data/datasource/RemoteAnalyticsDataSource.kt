@@ -17,7 +17,7 @@ class RemoteAnalyticsDataSource(
                 plugin = Protocol.ToDevice.Analytics.Plugin,
                 method = Protocol.ToDevice.Analytics.Method.ClearItems,
                 body = Json.encodeToString(items),
-            )
+            ),
         )
     }
 }

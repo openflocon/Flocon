@@ -14,8 +14,8 @@ import io.github.openflocon.flocondesktop.features.network.domain.ResetCurrentDe
 import io.github.openflocon.flocondesktop.features.network.ui.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkBodyDetailUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -67,7 +67,7 @@ class NetworkViewModel(
             list.map {
                 Pair(
                     it,
-                    toUi(it)
+                    toUi(it),
                 )
             }
         }, // keep the domain for the filter
@@ -110,7 +110,7 @@ class NetworkViewModel(
                 contentState = contentState.value,
                 filterState = filterUiState.value,
                 headerState = headerDelegate.headerUiState.value,
-            )
+            ),
         )
 
     fun onAction(action: NetworkAction) {
@@ -128,7 +128,7 @@ class NetworkViewModel(
             is NetworkAction.JsonDetail -> onJsonDetail(action)
             is NetworkAction.HeaderAction.ClickOnSort -> headerDelegate.onClickSort(
                 type = action.type,
-                sort = action.sort
+                sort = action.sort,
             )
 
             is NetworkAction.HeaderAction.FilterAction -> headerDelegate.onFilterAction(
@@ -144,7 +144,7 @@ class NetworkViewModel(
                     null
                 } else {
                     action.id
-                }
+                },
             )
         }
     }
@@ -166,8 +166,8 @@ class NetworkViewModel(
             state.copy(
                 detailJsons = state.detailJsons + NetworkBodyDetailUi(
                     id = action.id,
-                    text = action.json
-                )
+                    text = action.json,
+                ),
             )
         }
     }
@@ -219,4 +219,3 @@ class NetworkViewModel(
         }
     }
 }
-

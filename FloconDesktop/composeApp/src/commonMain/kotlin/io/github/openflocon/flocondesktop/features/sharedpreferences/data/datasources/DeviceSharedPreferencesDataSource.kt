@@ -27,10 +27,9 @@ class DeviceSharedPreferencesDataSource(
     private val selectedDeviceSharedPreferences =
         MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DeviceSharedPreferenceDomainModel?>>(emptyMap())
 
-    fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> =
-        selectedDeviceSharedPreferences
-            .map { it[deviceIdAndPackageName] }
-            .distinctUntilChanged()
+    fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> = selectedDeviceSharedPreferences
+        .map { it[deviceIdAndPackageName] }
+        .distinctUntilChanged()
 
     fun selectDeviceSharedPreference(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -45,8 +44,7 @@ class DeviceSharedPreferencesDataSource(
         }
     }
 
-    fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> =
-        deviceSharedPreferences.map { it[deviceIdAndPackageName] ?: emptyList() }
+    fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> = deviceSharedPreferences.map { it[deviceIdAndPackageName] ?: emptyList() }
 
     fun registerDeviceSharedPreferences(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -76,7 +74,7 @@ class DeviceSharedPreferencesDataSource(
     }
 
     suspend fun askForDeviceSharedPreferences(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ) {
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),

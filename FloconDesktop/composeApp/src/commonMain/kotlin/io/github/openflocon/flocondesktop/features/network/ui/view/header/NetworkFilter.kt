@@ -28,13 +28,12 @@ fun NetworkFilter(
             FilterBar(
                 placeholderText = "Filter route",
                 onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             FloconIconButton(
                 imageVector = Icons.Outlined.Delete,
-                onClick = { onAction(NetworkAction.Reset) }
+                onClick = { onAction(NetworkAction.Reset) },
             )
         }
     }
 }
-

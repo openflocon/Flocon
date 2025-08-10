@@ -7,27 +7,22 @@ import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkT
 import io.github.openflocon.flocondesktop.features.network.domain.model.TextFilterStateDomainModel
 import kotlinx.serialization.json.Json
 
+fun textFilterItemToEntity(item: TextFilterStateDomainModel.FilterItem): FilterItemSavedEntity = FilterItemSavedEntity(
+    text = item.text,
+    isActive = item.isActive,
+    isExcluded = item.isExcluded,
+)
 
-fun textFilterItemToEntity(item: TextFilterStateDomainModel.FilterItem): FilterItemSavedEntity {
-    return FilterItemSavedEntity(
-        text = item.text,
-        isActive = item.isActive,
-        isExcluded = item.isExcluded,
-    )
-}
-
-fun textFilterItemToDomain(item: FilterItemSavedEntity): TextFilterStateDomainModel.FilterItem {
-    return TextFilterStateDomainModel.FilterItem(
-        text = item.text,
-        isActive = item.isActive,
-        isExcluded = item.isExcluded,
-    )
-}
+fun textFilterItemToDomain(item: FilterItemSavedEntity): TextFilterStateDomainModel.FilterItem = TextFilterStateDomainModel.FilterItem(
+    text = item.text,
+    isActive = item.isActive,
+    isExcluded = item.isExcluded,
+)
 
 fun textFilterToEntity(
     deviceId: DeviceId,
     column: NetworkTextFilterColumns,
-    domain: TextFilterStateDomainModel
+    domain: TextFilterStateDomainModel,
 ): NetworkFilterEntity {
     val itemsEntity: List<FilterItemSavedEntity> = domain.items.map {
         textFilterItemToEntity(it)
@@ -36,19 +31,18 @@ fun textFilterToEntity(
         deviceId = deviceId,
         columnName = column,
         isEnabled = domain.isEnabled,
-        itemsAsJson = Json.encodeToString(itemsEntity)
+        itemsAsJson = Json.encodeToString(itemsEntity),
     )
 }
 
-
 fun textFilterToDomain(
-    entity: NetworkFilterEntity
+    entity: NetworkFilterEntity,
 ): TextFilterStateDomainModel {
     val itemsEntity = Json.decodeFromString<List<FilterItemSavedEntity>>(entity.itemsAsJson)
     return TextFilterStateDomainModel(
         isEnabled = entity.isEnabled,
         items = itemsEntity.map {
             textFilterItemToDomain(it)
-        }
+        },
     )
 }

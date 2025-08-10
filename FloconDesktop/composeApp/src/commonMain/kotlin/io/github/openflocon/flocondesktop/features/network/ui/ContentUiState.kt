@@ -6,10 +6,10 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkBodyD
 @Immutable
 data class ContentUiState(
     val selectedRequestId: String?,
-    val detailJsons: Set<NetworkBodyDetailUi>
+    val detailJsons: Set<NetworkBodyDetailUi>,
 )
 
 fun previewContentUiState() = ContentUiState(
     selectedRequestId = null,
-    detailJsons = emptySet()
+    detailJsons = emptySet(),
 )

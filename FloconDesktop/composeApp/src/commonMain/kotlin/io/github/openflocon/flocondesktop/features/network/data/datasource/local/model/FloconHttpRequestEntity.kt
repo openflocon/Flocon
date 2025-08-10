@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey
 
 @Entity(
     indices = [
-        Index(value = ["deviceId", "packageName"])
-    ]
+        Index(value = ["deviceId", "packageName"]),
+    ],
 )
 data class FloconHttpRequestEntity(
     @PrimaryKey

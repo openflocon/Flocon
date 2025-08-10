@@ -41,14 +41,14 @@ internal fun DashboardPlainTextView(
             )
             Box(
                 modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .padding(bottom = 8.dp)
-                        .background(
-                            color = FloconTheme.colorPalette.surfaceVariant,
-                            shape = RoundedCornerShape(8.dp),
-                        ).padding(8.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+                    .padding(bottom = 8.dp)
+                    .background(
+                        color = FloconTheme.colorPalette.surfaceVariant,
+                        shape = RoundedCornerShape(8.dp),
+                    ).padding(8.dp),
             ) {
                 SelectionContainer {
                     Text(

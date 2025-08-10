@@ -9,7 +9,7 @@ interface NetworkLocalDataSource {
 
     fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        lite: Boolean
+        lite: Boolean,
     ): Flow<List<FloconHttpRequestDomainModel>>
 
     fun observeRequest(
@@ -20,7 +20,7 @@ interface NetworkLocalDataSource {
     suspend fun save(
         deviceId: DeviceId,
         packageName: String,
-        request: FloconHttpRequestDomainModel
+        request: FloconHttpRequestDomainModel,
     )
 
     suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
@@ -30,5 +30,4 @@ interface NetworkLocalDataSource {
     suspend fun deleteRequestsBefore(deviceId: DeviceId, requestId: String)
 
     suspend fun clear()
-
 }

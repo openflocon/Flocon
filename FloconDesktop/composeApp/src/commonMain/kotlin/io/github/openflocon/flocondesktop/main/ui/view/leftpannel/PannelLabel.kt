@@ -25,11 +25,11 @@ fun PannelLabel(
         targetState = expanded,
         modifier = modifier
             .fillMaxWidth()
-            .height(28.dp)
+            .height(28.dp),
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.CenterStart
+            contentAlignment = Alignment.CenterStart,
         ) {
             if (it) {
                 Text(
@@ -40,12 +40,11 @@ fun PannelLabel(
                     style = FloconTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.Thin,
                         color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
-                    )
+                    ),
                 )
             } else {
                 HorizontalDivider()
             }
         }
     }
-
 }

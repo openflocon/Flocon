@@ -33,8 +33,7 @@ class DeviceDatabasesDataSource(
         selectedDeviceDatabases.update { it + (deviceIdAndPackageName to database) }
     }
 
-    fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>> =
-        deviceDatabases.map { it[deviceIdAndPackageName] ?: emptyList() }
+    fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>> = deviceDatabases.map { it[deviceIdAndPackageName] ?: emptyList() }
 
     fun registerDeviceDatabases(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

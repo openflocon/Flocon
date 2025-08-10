@@ -9,7 +9,6 @@ import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
 class AppViewModel(
     messagesServerDelegate: MessagesServerDelegate,

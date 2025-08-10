@@ -14,5 +14,5 @@ data class DashboardEntity(
     @PrimaryKey
     val dashboardId: String,
     val deviceId: String,
-    val packageName: String
+    val packageName: String,
 )

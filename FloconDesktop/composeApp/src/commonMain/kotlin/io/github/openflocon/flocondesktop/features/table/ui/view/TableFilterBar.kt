@@ -58,7 +58,7 @@ fun TableFilterBar(
         )
         FloconIconButton(
             imageVector = Icons.Outlined.Delete,
-            onClick = onResetClicked
+            onClick = onResetClicked,
         )
     }
 }

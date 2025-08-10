@@ -49,24 +49,24 @@ fun FilterBar(
         // Custom styled BasicTextField
         Box(
             modifier =
-                Modifier
-                    .weight(1f)
-                    .height(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(FloconTheme.colorPalette.surfaceVariant)
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+            Modifier
+                .weight(1f)
+                .height(48.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(FloconTheme.colorPalette.surfaceVariant)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
             contentAlignment = Alignment.CenterStart,
         ) {
             if (displayPlaceholder) {
                 Text(
                     text = placeholderText,
                     style =
-                        FloconTheme.typography.bodySmall.copy(
-                            color =
-                                FloconTheme.colorPalette.onSurfaceVariant.copy(
-                                    alpha = 0.4f,
-                                ),
+                    FloconTheme.typography.bodySmall.copy(
+                        color =
+                        FloconTheme.colorPalette.onSurfaceVariant.copy(
+                            alpha = 0.4f,
                         ),
+                    ),
                 )
             }
             BasicTextField(
@@ -91,12 +91,12 @@ fun FilterBar(
             Text(
                 text = "Clear",
                 modifier =
-                    Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable {
-                            filterText = ""
-                            onTextChangedCallback("")
-                        }.padding(horizontal = 12.dp),
+                Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable {
+                        filterText = ""
+                        onTextChangedCallback("")
+                    }.padding(horizontal = 12.dp),
                 color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
                 style = FloconTheme.typography.titleMedium,
             )

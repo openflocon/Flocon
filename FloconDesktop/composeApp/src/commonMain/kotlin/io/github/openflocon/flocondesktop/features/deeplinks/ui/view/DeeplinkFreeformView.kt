@@ -75,7 +75,7 @@ fun DeeplinkFreeformItemView(
                         .padding(horizontal = 2.dp, vertical = 2.dp)
                         .fillMaxWidth(),
 
-                    ) {
+                ) {
                     Text(
                         text = "freeform link",
                         style = FloconTheme.typography.bodySmall,

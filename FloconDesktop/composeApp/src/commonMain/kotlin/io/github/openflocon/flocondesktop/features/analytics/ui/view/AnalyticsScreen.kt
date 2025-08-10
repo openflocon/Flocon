@@ -139,10 +139,10 @@ fun AnalyticsScreen(
             selectedItem?.let {
                 AnalyticsDetailView(
                     modifier =
-                        Modifier
-                            .align(Alignment.TopEnd)
-                            .fillMaxHeight()
-                            .width(500.dp),
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .fillMaxHeight()
+                        .width(500.dp),
                     state = it,
                 )
             }

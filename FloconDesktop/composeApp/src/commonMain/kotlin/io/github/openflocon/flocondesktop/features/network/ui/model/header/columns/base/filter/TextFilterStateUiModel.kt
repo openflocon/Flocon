@@ -3,7 +3,6 @@ package io.github.openflocon.flocondesktop.features.network.ui.model.header.colu
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterStateUiModel.FilterItem
 
-
 @Immutable
 data class TextFilterStateUiModel(
     val includedFilters: List<FilterItem>,
@@ -40,5 +39,5 @@ fun previewTextFilterState() = TextFilterStateUiModel(
     excludedFilters = listOf(
         FilterItem(text = "toExclude", isExcluded = true, isActive = true),
         FilterItem(text = "toExclude2", isExcluded = true, isActive = false),
-    )
+    ),
 )

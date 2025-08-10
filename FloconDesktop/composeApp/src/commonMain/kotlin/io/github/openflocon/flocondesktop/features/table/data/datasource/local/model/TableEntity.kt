@@ -14,5 +14,5 @@ data class TableEntity(
     val id: Long = 0,
     val deviceId: String,
     val packageName: String,
-    val name: String
+    val name: String,
 )

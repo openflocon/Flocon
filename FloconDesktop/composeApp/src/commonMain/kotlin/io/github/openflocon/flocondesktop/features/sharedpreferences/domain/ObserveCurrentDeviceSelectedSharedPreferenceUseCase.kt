@@ -16,7 +16,7 @@ class ObserveCurrentDeviceSelectedSharedPreferenceUseCase(
             flowOf(null)
         } else {
             sharedPreferenceRepository.observeSelectedDeviceSharedPreference(
-                deviceIdAndPackageName = current
+                deviceIdAndPackageName = current,
             )
         }
     }

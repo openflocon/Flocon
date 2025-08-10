@@ -91,119 +91,122 @@ private fun MainScreen(
     val width by animateDpAsState(targetValue = if (expanded) PanelMaxWidth else PanelMinWidth)
     var windowSize by remember { mutableStateOf(IntSize.Zero) }
     val position by animateDpAsState(
-        targetValue = if (expanded) PanelMaxWidth else PanelMinWidth
+        targetValue = if (expanded) PanelMaxWidth else PanelMinWidth,
     )
     val rotate by animateFloatAsState(targetValue = if (expanded) 180f else 0f)
 
-    Row(
-        modifier = modifier
-            .fillMaxSize()
-            .onGloballyPositioned {
-                windowSize = it.size // TODO Add windowsize lib
-            }
+    Box(
+        modifier = modifier.onGloballyPositioned {
+            windowSize = it.size // TODO Add windowsize lib
+        },
     ) {
-        LeftPanelView(
+        Row(
             modifier = Modifier
-                .width(width)
-                .fillMaxHeight(),
-            expanded = expanded,
-            onClickItem = onClickLeftPanelItem,
-            state = leftPanelState,
-            devicesState = devicesState,
-            onDeviceSelected = onDeviceSelected,
-            onAppSelected = onAppSelected
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .shadow(6.dp)
+                .fillMaxSize(),
         ) {
-            when (subScreen) {
-                SubScreen.Network ->
-                    NetworkScreen(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    )
+            LeftPanelView(
+                modifier = Modifier
+                    .width(width)
+                    .fillMaxHeight(),
+                expanded = expanded,
+                onClickItem = onClickLeftPanelItem,
+                state = leftPanelState,
+                devicesState = devicesState,
+                onDeviceSelected = onDeviceSelected,
+                onAppSelected = onAppSelected,
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shadow(6.dp),
+            ) {
+                when (subScreen) {
+                    SubScreen.Network ->
+                        NetworkScreen(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
 
-                SubScreen.Database ->
-                    DatabaseScreen(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    )
+                    SubScreen.Database ->
+                        DatabaseScreen(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
 
-                SubScreen.Images ->
-                    ImagesScreen(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    )
+                    SubScreen.Images ->
+                        ImagesScreen(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
 
-                SubScreen.Files ->
-                    FilesScreen(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    )
+                    SubScreen.Files ->
+                        FilesScreen(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
 
-                SubScreen.Tables ->
-                    TableScreen(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    )
+                    SubScreen.Tables ->
+                        TableScreen(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
 
-                SubScreen.SharedPreferences ->
-                    SharedPreferencesScreen(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    )
+                    SubScreen.SharedPreferences ->
+                        SharedPreferencesScreen(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
 
-                SubScreen.Dashboard ->
-                    DashboardScreen(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    )
+                    SubScreen.Dashboard ->
+                        DashboardScreen(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
 
-                SubScreen.Settings -> {
-                    SettingsScreen(
-                        modifier =
+                    SubScreen.Settings -> {
+                        SettingsScreen(
+                            modifier =
                             Modifier
                                 .fillMaxSize(),
-                    )
-                }
+                        )
+                    }
 
-                SubScreen.Deeplinks -> {
-                    DeeplinkScreen(
-                        modifier =
+                    SubScreen.Deeplinks -> {
+                        DeeplinkScreen(
+                            modifier =
                             Modifier
                                 .fillMaxSize(),
-                    )
-                }
+                        )
+                    }
 
-                SubScreen.Analytics -> {
-                    AnalyticsScreen(
-                        modifier =
+                    SubScreen.Analytics -> {
+                        AnalyticsScreen(
+                            modifier =
                             Modifier
                                 .fillMaxSize(),
-                    )
+                        )
+                    }
                 }
             }
         }
-    }
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .width(20.dp)
-            .height(60.dp)
-            .graphicsLayer {
-                translationX = position.toPx() - size.width / 2
-                translationY = (windowSize.height / 2) - (size.height / 2)
-            }
-            .clip(RoundedCornerShape(4.dp))
-            .background(FloconTheme.colorPalette.panel)
-            .clickable(onClick = { expanded = !expanded })
-    ) {
-        FloconIcon(
-            imageVector = Icons.Outlined.ChevronRight,
-            tint = Color.LightGray,
-            modifier = Modifier.rotate(rotate)
-        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .width(20.dp)
+                .height(60.dp)
+                .graphicsLayer {
+                    translationX = position.toPx() - size.width / 2
+                    translationY = (windowSize.height / 2) - (size.height / 2)
+                }
+                .clip(RoundedCornerShape(4.dp))
+                .background(FloconTheme.colorPalette.panel)
+                .clickable(onClick = { expanded = !expanded }),
+        ) {
+            FloconIcon(
+                imageVector = Icons.Outlined.ChevronRight,
+                tint = Color.LightGray,
+                modifier = Modifier.rotate(rotate),
+            )
+        }
     }
 }

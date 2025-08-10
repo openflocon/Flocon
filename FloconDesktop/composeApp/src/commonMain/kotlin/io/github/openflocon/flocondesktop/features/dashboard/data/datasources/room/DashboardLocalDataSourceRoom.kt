@@ -27,20 +27,18 @@ class DashboardLocalDataSourceRoom(
         }
     }
 
-    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> =
-        dashboardDao.observeDashboardWithSectionsAndElements(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-            dashboardId = dashboardId,
-        )
-            .map { it?.toDomain() }
-            .distinctUntilChanged()
-            .flowOn(dispatcherProvider.data)
+    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> = dashboardDao.observeDashboardWithSectionsAndElements(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        dashboardId = dashboardId,
+    )
+        .map { it?.toDomain() }
+        .distinctUntilChanged()
+        .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> =
-        dashboardDao.observeDeviceDashboards(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName
-        )
-            .flowOn(dispatcherProvider.data)
+    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> = dashboardDao.observeDeviceDashboards(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    )
+        .flowOn(dispatcherProvider.data)
 }

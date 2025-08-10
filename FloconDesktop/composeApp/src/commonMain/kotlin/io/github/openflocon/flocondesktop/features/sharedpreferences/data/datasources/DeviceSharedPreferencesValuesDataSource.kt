@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.update
 
 private data class SharedPrefKeyForDevice(
     val deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    val sharedPreferenceId: DeviceSharedPreferenceId
+    val sharedPreferenceId: DeviceSharedPreferenceId,
 )
 
 class DeviceSharedPreferencesValuesDataSource {
@@ -36,7 +36,7 @@ class DeviceSharedPreferencesValuesDataSource {
 
     fun observe(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        sharedPreferenceId: DeviceSharedPreferenceId
+        sharedPreferenceId: DeviceSharedPreferenceId,
     ): Flow<List<SharedPreferenceRowDomainModel>> {
         val key = SharedPrefKeyForDevice(
             deviceIdAndPackageName = deviceIdAndPackageName,

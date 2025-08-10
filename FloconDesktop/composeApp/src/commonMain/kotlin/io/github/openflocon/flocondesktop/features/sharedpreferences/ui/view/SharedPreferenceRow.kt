@@ -249,7 +249,7 @@ fun SharedPreferenceRowView(
 private fun SharedPreferenceSendButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    icon: ImageVector = Icons.AutoMirrored.Outlined.Send
+    icon: ImageVector = Icons.AutoMirrored.Outlined.Send,
 ) {
     Box(
         modifier = modifier

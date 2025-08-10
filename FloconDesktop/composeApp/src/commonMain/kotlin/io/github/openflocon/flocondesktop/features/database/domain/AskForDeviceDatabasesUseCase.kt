@@ -5,7 +5,7 @@ import io.github.openflocon.flocondesktop.features.database.domain.repository.Da
 
 class AskForDeviceDatabasesUseCase(
     private val databaseRepository: DatabaseRepository,
-    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase
+    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
 ) {
     suspend operator fun invoke() {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return

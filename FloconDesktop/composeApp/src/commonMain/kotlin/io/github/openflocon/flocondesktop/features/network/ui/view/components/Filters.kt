@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 fun FilterDropdown(
     text: String,
     icon: ImageVector?,
-    content: @Composable ColumnScope.(dismiss: () -> Unit) -> Unit
+    content: @Composable ColumnScope.(dismiss: () -> Unit) -> Unit,
 ) {
     var filterExpanded by remember { mutableStateOf(false) }
 
@@ -35,11 +35,11 @@ fun FilterDropdown(
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                     )
-            }
+            },
         )
         DropdownMenu(
             expanded = filterExpanded,
-            onDismissRequest = { filterExpanded = false }
+            onDismissRequest = { filterExpanded = false },
         ) {
             content({ filterExpanded = false })
         }

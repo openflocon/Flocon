@@ -12,15 +12,14 @@ import kotlinx.coroutines.flow.update
 class DeviceAnalyticsDataSourceInMemory : DeviceAnalyticsDataSource {
     private val selectedDeviceAnalytics = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, AnalyticsIdentifierDomainModel?>>(emptyMap())
 
-    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> =
-        selectedDeviceAnalytics
-            .map { it[deviceIdAndPackageName] }
-            .distinctUntilChanged()
+    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> = selectedDeviceAnalytics
+        .map { it[deviceIdAndPackageName] }
+        .distinctUntilChanged()
 
     override fun selectDeviceAnalytics(
         deviceAnalytics: List<AnalyticsIdentifierDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        analyticsTableId: AnalyticsTableId
+        analyticsTableId: AnalyticsTableId,
     ) {
         val analytics = deviceAnalytics.firstOrNull { it.id == analyticsTableId } ?: return
 

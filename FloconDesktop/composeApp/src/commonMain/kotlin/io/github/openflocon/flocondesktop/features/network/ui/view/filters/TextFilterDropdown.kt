@@ -50,7 +50,6 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.header.colum
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-
 @Composable
 fun TextFilterDropdown(
     expanded: Boolean,
@@ -60,7 +59,7 @@ fun TextFilterDropdown(
 ) {
     DropdownMenu(
         expanded = expanded,
-        onDismissRequest = onDismissRequest
+        onDismissRequest = onDismissRequest,
     ) {
         TextFilterDropdownContent(
             modifier = Modifier.width(300.dp),
@@ -69,7 +68,6 @@ fun TextFilterDropdown(
         )
     }
 }
-
 
 @Composable
 private fun TextFilterDropdownContent(
@@ -88,7 +86,7 @@ private fun TextFilterDropdownContent(
                 } else {
                     textFilterAction.invoke(TextFilterAction.Exclude(text))
                 }
-            }
+            },
         )
 
         if (filterState.allFilters.isNotEmpty()) {
@@ -102,7 +100,7 @@ private fun TextFilterDropdownContent(
                         style = FloconTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
-                        )
+                        ),
                     )
 
                     filterState.includedFilters.fastForEach {
@@ -116,10 +114,10 @@ private fun TextFilterDropdownContent(
                                 textFilterAction(
                                     TextFilterAction.SetIsActive(
                                         item = item,
-                                        isActive = newValue
-                                    )
+                                        isActive = newValue,
+                                    ),
                                 )
-                            }
+                            },
                         )
                     }
                 }
@@ -135,7 +133,7 @@ private fun TextFilterDropdownContent(
                         style = FloconTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
-                        )
+                        ),
                     )
 
                     filterState.excludedFilters.fastForEach {
@@ -149,10 +147,10 @@ private fun TextFilterDropdownContent(
                                 textFilterAction(
                                     TextFilterAction.SetIsActive(
                                         item = item,
-                                        isActive = newValue
-                                    )
+                                        isActive = newValue,
+                                    ),
                                 )
-                            }
+                            },
                         )
                     }
                 }
@@ -184,7 +182,7 @@ private fun FilterItemView(
                 checked = item.isActive,
                 onCheckedChange = {
                     changeIsActive(item, it)
-                }
+                },
             )
         }
 
@@ -195,7 +193,7 @@ private fun FilterItemView(
             color = FloconTheme.colorPalette.onSurface,
         )
 
-        val binAlpha by animateFloatAsState(if(isHover) 1f else 0f)
+        val binAlpha by animateFloatAsState(if (isHover) 1f else 0f)
         Icon(
             imageVector = Icons.Filled.Delete,
             contentDescription = null,
@@ -208,7 +206,8 @@ private fun FilterItemView(
                     enabled = isHover,
                     onClick = {
                         clickDelete(item)
-                    })
+                    },
+                )
                 .padding(5.dp),
         )
     }
@@ -260,8 +259,8 @@ private fun TextFilterFieldView(
                         // default action -> add as "include filter"
                         submitTextField(value, true)
                         value = "" // reset
-                    }
-                )
+                    },
+                ),
             )
         }
         TextFilterButton(
@@ -280,7 +279,6 @@ private fun TextFilterFieldView(
         )
     }
 }
-
 
 @Composable
 private fun TextFilterButton(
