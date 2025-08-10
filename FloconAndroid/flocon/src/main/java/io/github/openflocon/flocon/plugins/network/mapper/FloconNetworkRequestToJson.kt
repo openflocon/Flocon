@@ -1,5 +1,6 @@
-package io.github.openflocon.flocon.plugins.network.model
+package io.github.openflocon.flocon.plugins.network.mapper
 
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import org.json.JSONObject
 
 
@@ -8,6 +9,7 @@ fun floconNetworkRequestToJson(network: FloconNetworkRequest): JSONObject {
 
     with(network) {
         json.put("floconNetworkType", floconNetworkType)
+        json.put("isMocked", isMocked)
 
         json.put("url", request.url)
         json.put("method", request.method)

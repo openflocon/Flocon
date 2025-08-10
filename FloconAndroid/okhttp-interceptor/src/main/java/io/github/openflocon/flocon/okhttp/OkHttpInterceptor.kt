@@ -1,10 +1,16 @@
 package io.github.openflocon.flocon.okhttp
 
 import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import okhttp3.Interceptor
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.Protocol
+import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import java.io.IOException
 import java.nio.charset.StandardCharsets
@@ -41,7 +47,15 @@ class FloconOkhttpInterceptor() : Interceptor {
         }
 
         val startTime = System.nanoTime()
-        val response = chain.proceed(request)
+
+        var isMocked = false
+        val response = tryToMock(
+            request = request,
+            floconNetworkPlugin = floconNetworkPlugin,
+        )?.also {
+            isMocked = true
+        } ?: chain.proceed(request)
+
         val endTime = System.nanoTime()
 
         val durationMs: Double = (endTime - startTime) / 1e6
@@ -87,7 +101,8 @@ class FloconOkhttpInterceptor() : Interceptor {
                 headers = responseHeadersMap,
                 size = responseSize,
                 grpcStatus = null,
-            )
+            ),
+            isMocked = isMocked,
         )
 
         floconNetworkPlugin.log(floconRequest)
@@ -96,5 +111,51 @@ class FloconOkhttpInterceptor() : Interceptor {
         // The original response body is already consumed by peekBody, so no need to rebuild with it.
         // Just return the original response if you don't modify the body itself.
         return response
+    }
+
+    private fun tryToMock(
+        request: Request,
+        floconNetworkPlugin: FloconNetworkPlugin,
+    ): Response? {
+        for (mock in floconNetworkPlugin.mocks) {
+            val url = request.url.toString()
+            val method = request.method
+
+            val urlMatches = mock.expectation.pattern.matcher(url).matches()
+            val methodMatches = mock.expectation.method == "*" || mock.expectation.method.equals(
+                method,
+                ignoreCase = true
+            )
+
+            if (urlMatches && methodMatches) {
+                FloconLogger.log("Request $url mocked with HTTP code ${mock.response.httpCode}")
+
+                // Applique le délai si nécessaire
+                if (mock.response.delay > 0) {
+                    try {
+                        Thread.sleep(mock.response.delay)
+                    } catch (e: InterruptedException) {
+                        Thread.currentThread().interrupt()
+                    }
+                }
+
+                val body = mock.response.body.toResponseBody(
+                    mock.response.mediaType.toMediaTypeOrNull()
+                )
+
+                return Response.Builder()
+                    .request(request)
+                    .protocol(Protocol.HTTP_1_1)
+                    .code(mock.response.httpCode)
+                    .body(body)
+                    .apply {
+                        mock.response.headers.forEach { (name, value) ->
+                            addHeader(name, value)
+                        }
+                    }
+                    .build()
+            }
+        }
+        return null
     }
 }

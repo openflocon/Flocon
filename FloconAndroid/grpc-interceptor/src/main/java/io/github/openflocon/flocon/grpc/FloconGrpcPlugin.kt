@@ -21,6 +21,7 @@ internal class FloconGrpcPlugin() {
             request = request,
             response = response,
             floconNetworkType = "grpc",
+            isMocked = false,
         )
 
         FloconApp.instance?.client?.networkPlugin?.log(call)

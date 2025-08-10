@@ -126,6 +126,13 @@ internal class FloconClientImpl(
                             sender = this@FloconClientImpl,
                         )
                     }
+
+                    Protocol.ToDevice.Network.Plugin -> {
+                        networkPlugin.onMessageReceived(
+                            messageFromServer = messageFromServer,
+                            sender = this@FloconClientImpl,
+                        )
+                    }
                 }
             }
         }

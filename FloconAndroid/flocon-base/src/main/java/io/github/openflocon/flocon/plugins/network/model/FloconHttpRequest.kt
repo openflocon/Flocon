@@ -5,6 +5,7 @@ data class FloconNetworkRequest(
     val response: Response,
     val durationMs: Double,
     val floconNetworkType: String,
+    val isMocked: Boolean,
 ) {
     data class Request(
         val url: String,
