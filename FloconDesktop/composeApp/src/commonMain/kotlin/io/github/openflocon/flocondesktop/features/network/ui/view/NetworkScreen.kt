@@ -173,7 +173,9 @@ fun NetworkScreen(
                 NetworkBodyWindow(
                     body = item,
                     state = state,
-                    onCloseRequest = { onAction(NetworkAction.CloseJsonDetail(item.id)) }
+                    onCloseRequest = {
+                        onAction(NetworkAction.CloseJsonDetail(item.id))
+                    }
                 )
             }
         }
