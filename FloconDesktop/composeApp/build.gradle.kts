@@ -77,7 +77,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.ktor.clientJava)
-            implementation(libs.ui.tooling.preview.desktop)
+            //implementation(libs.ui.tooling.preview.desktop)
         }
     }
 }
