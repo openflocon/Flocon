@@ -62,6 +62,7 @@ class FloconNetworkPluginImpl(
     }
 
     private fun loadMocksFromFile(): List<MockNetworkResponse> {
+        /*
         return listOf(
             MockNetworkResponse(
                 expectation = MockNetworkResponse.Expectation(
@@ -78,6 +79,7 @@ class FloconNetworkPluginImpl(
                 )
             )
         )
+         */
 
         return try {
             val file = File(context.filesDir, "flocon_network_mocks.json")
