@@ -5,9 +5,15 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPlugin
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPlugin
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPlugin
+import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
 import io.github.openflocon.flocon.plugins.tables.FloconTablePlugin
 
-interface FloconApp {
+abstract class FloconApp {
+
+    companion object {
+        var instance: FloconApp? = null
+            private set
+    }
 
     interface Client : FloconMessageSender {
 
@@ -19,10 +25,13 @@ interface FloconApp {
         val tablePlugin: FloconTablePlugin
         val deeplinksPlugin: FloconDeeplinksPlugin
         val analyticsPlugin: FloconAnalyticsPlugin
+        val networkPlugin: FloconNetworkPlugin
     }
 
-    val client: FloconApp.Client?
+    open val client: FloconApp.Client? = null
 
-    fun initialize(context: Context)
+    open fun initialize(context: Context) {
+        instance = this
+    }
 
 }

@@ -17,5 +17,6 @@ rootProject.name = "My Application"
 include(":app")
 include(":flocon-base")
 include(":core")
+include(":no-op")
 include(":okhttp-interceptor")
 include(":grpc-interceptor")

@@ -1,10 +1,7 @@
 package io.github.openflocon.flocon.okhttp
 
-import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconApp
-import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
-import io.github.openflocon.flocon.plugins.network.model.floconNetworkRequestToJson
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Response
@@ -61,8 +58,10 @@ class FloconOkhttpInterceptor(
                 if (it != -1L) it else responseBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
             }
         }
-        val requestHeadersMap = request.headers.toMultimap().mapValues { it.value.joinToString(",") }
-        val responseHeadersMap = response.headers.toMultimap().mapValues { it.value.joinToString(",") }
+        val requestHeadersMap =
+            request.headers.toMultimap().mapValues { it.value.joinToString(",") }
+        val responseHeadersMap =
+            response.headers.toMultimap().mapValues { it.value.joinToString(",") }
 
         val isImage = responseContentType?.toString()?.startsWith("image/") == true
 
@@ -87,12 +86,7 @@ class FloconOkhttpInterceptor(
             )
         )
 
-        val json = floconNetworkRequestToJson(floconRequest)
-        (floconClient ?: Flocon.client)?.send( // Use Flocon.client directly
-            plugin = Protocol.FromDevice.Network.Plugin,
-            method = Protocol.FromDevice.Network.Method.LogNetworkCall,
-            body = json.toString(),
-        )
+        (floconClient ?: FloconApp.instance?.client)?.networkPlugin?.log(floconRequest)
 
         // Rebuild the response with a new body so that the chain can continue
         // The original response body is already consumed by peekBody, so no need to rebuild with it.

@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/flocon-base" />
             <option value="$PROJECT_DIR$/grpc-interceptor" />
+            <option value="$PROJECT_DIR$/no-op" />
             <option value="$PROJECT_DIR$/okhttp-interceptor" />
           </set>
         </option>

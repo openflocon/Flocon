@@ -13,7 +13,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-object Flocon : FloconApp {
+object Flocon : FloconApp() {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
