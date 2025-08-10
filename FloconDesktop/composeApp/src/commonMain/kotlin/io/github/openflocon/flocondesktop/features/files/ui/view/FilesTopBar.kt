@@ -81,12 +81,12 @@ fun FilesTopBar(
             FloconIconButton(
                 imageVector = Icons.Outlined.Delete,
                 enabled = isDirectory,
-                onClick = onDeleteContent
+                onClick = onDeleteContent,
             )
             FloconIconButton(
                 imageVector = Icons.Outlined.Refresh,
                 enabled = isDirectory,
-                onClick = onRefresh
+                onClick = onRefresh,
             )
         }
     }

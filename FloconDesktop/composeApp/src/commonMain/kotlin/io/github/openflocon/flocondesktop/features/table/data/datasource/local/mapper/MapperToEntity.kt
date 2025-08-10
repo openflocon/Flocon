@@ -6,7 +6,7 @@ import io.github.openflocon.flocondesktop.features.table.domain.model.TableDomai
 import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 
 internal fun TableDomainModel.toEntity(
-    deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
 ): TableEntity = TableEntity(
     deviceId = deviceIdAndPackageName.deviceId,
     packageName = deviceIdAndPackageName.packageName,

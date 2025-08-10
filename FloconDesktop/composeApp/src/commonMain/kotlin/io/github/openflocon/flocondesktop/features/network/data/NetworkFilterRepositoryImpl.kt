@@ -14,28 +14,22 @@ class NetworkFilterRepositoryImpl(
     override suspend fun get(
         deviceId: DeviceId,
         column: NetworkTextFilterColumns,
-    ): TextFilterStateDomainModel? {
-        return networkFilterLocalDataSource.get(
-            deviceId = deviceId,
-            column = column,
-        )
-    }
+    ): TextFilterStateDomainModel? = networkFilterLocalDataSource.get(
+        deviceId = deviceId,
+        column = column,
+    )
 
-    override fun observe(deviceId: DeviceId): Flow<Map<NetworkTextFilterColumns, TextFilterStateDomainModel>> {
-        return networkFilterLocalDataSource.observe(
-            deviceId = deviceId,
-        ).distinctUntilChanged()
-    }
+    override fun observe(deviceId: DeviceId): Flow<Map<NetworkTextFilterColumns, TextFilterStateDomainModel>> = networkFilterLocalDataSource.observe(
+        deviceId = deviceId,
+    ).distinctUntilChanged()
 
     override suspend fun update(
         deviceId: DeviceId,
         column: NetworkTextFilterColumns,
-        newValue: TextFilterStateDomainModel
-    ) {
-        return networkFilterLocalDataSource.update(
-            deviceId = deviceId,
-            column = column,
-            newValue = newValue,
-        )
-    }
+        newValue: TextFilterStateDomainModel,
+    ) = networkFilterLocalDataSource.update(
+        deviceId = deviceId,
+        column = column,
+        newValue = newValue,
+    )
 }

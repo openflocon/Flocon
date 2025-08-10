@@ -31,7 +31,7 @@ interface FloconAnalyticsDao {
     fun observeAnalytics(
         deviceId: DeviceId,
         packageName: String,
-        analyticsTableId: String
+        analyticsTableId: String,
     ): Flow<AnalyticsItemEntity?>
 
     @Query(
@@ -44,7 +44,7 @@ interface FloconAnalyticsDao {
     )
     fun observeAnalyticsTableIdsForDevice(
         deviceId: DeviceId,
-        packageName: String
+        packageName: String,
     ): Flow<List<String>>
 
     @Query(
@@ -57,7 +57,7 @@ interface FloconAnalyticsDao {
     )
     suspend fun getAnalyticsForDevice(
         deviceId: DeviceId,
-        packageName: String
+        packageName: String,
     ): List<String>
 
     @Query(
@@ -87,6 +87,6 @@ interface FloconAnalyticsDao {
     suspend fun deleteAnalyticsContent(
         deviceId: String,
         packageName: String,
-        analyticsTableId: String
+        analyticsTableId: String,
     )
 }

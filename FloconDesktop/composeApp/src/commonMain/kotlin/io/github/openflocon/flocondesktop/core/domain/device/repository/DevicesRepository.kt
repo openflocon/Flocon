@@ -24,5 +24,4 @@ interface DevicesRepository {
     suspend fun selectDevice(device: DeviceDomainModel)
 
     suspend fun selectApp(app: DeviceAppDomainModel)
-
 }

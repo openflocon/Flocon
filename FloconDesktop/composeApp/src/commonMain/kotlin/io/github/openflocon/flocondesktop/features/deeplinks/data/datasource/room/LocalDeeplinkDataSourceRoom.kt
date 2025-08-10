@@ -23,11 +23,10 @@ class LocalDeeplinkDataSourceRoom(
         )
     }
 
-    override fun observe(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
-        deeplinkDao.observeAll(
-            deviceId = deviceIdAndPackageNameDomainModel.deviceId,
-            packageName = deviceIdAndPackageNameDomainModel.packageName
-        )
-            .map { toDomainModels(it) }
-            .distinctUntilChanged()
+    override fun observe(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = deeplinkDao.observeAll(
+        deviceId = deviceIdAndPackageNameDomainModel.deviceId,
+        packageName = deviceIdAndPackageNameDomainModel.packageName,
+    )
+        .map { toDomainModels(it) }
+        .distinctUntilChanged()
 }

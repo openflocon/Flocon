@@ -11,13 +11,13 @@ class UpdateNetworkFilterUseCase(
 ) {
     suspend operator fun invoke(
         column: NetworkTextFilterColumns,
-        newValue: TextFilterStateDomainModel
+        newValue: TextFilterStateDomainModel,
     ) {
         getCurrentDeviceIdUseCase()?.let { deviceId ->
             networkFilterRepository.update(
                 deviceId = deviceId,
                 column = column,
-                newValue = newValue
+                newValue = newValue,
             )
         }
     }

@@ -11,7 +11,7 @@ class LocalDatabaseDataSourceRoom(private val successQueryDao: QueryDao) : Local
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
                 databaseId = databaseId,
-                queryString = query
+                queryString = query,
             )
         ) {
             // put it in top if we already have it
@@ -19,7 +19,7 @@ class LocalDatabaseDataSourceRoom(private val successQueryDao: QueryDao) : Local
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
                 databaseId = databaseId,
-                queryString = query
+                queryString = query,
             )
         }
 
@@ -33,10 +33,9 @@ class LocalDatabaseDataSourceRoom(private val successQueryDao: QueryDao) : Local
         successQueryDao.insertSuccessQuery(entity)
     }
 
-    override fun observeLastSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId): Flow<List<String>> =
-        successQueryDao.observeSuccessQueriesByDeviceId(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-            databaseId = databaseId,
-        )
+    override fun observeLastSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId): Flow<List<String>> = successQueryDao.observeSuccessQueriesByDeviceId(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        databaseId = databaseId,
+    )
 }

@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core"))
+    implementation(project(":flocon-base"))
 
     implementation(libs.gson)
     implementation(libs.grpc.android)

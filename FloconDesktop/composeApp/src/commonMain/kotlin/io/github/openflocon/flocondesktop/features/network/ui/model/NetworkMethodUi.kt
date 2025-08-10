@@ -68,7 +68,7 @@ sealed interface NetworkMethodUi {
             GraphQl.QUERY,
             GraphQl.MUTATION,
             Grpc,
-            OTHER(text = "Other", icon = null)
+            OTHER(text = "Other", icon = null),
         )
     }
 }

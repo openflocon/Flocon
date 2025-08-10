@@ -4,7 +4,7 @@ import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPacka
 
 class GetCurrentDeviceIdAndPackageNameUseCase(
     private val getCurrentDeviceUseCase: GetCurrentDeviceUseCase,
-    private val getCurrentDeviceAppUseCase: GetCurrentDeviceAppUseCase
+    private val getCurrentDeviceAppUseCase: GetCurrentDeviceAppUseCase,
 ) {
     operator fun invoke(): DeviceIdAndPackageNameDomainModel? {
         val deviceId = getCurrentDeviceUseCase()?.deviceId ?: return null
@@ -12,7 +12,7 @@ class GetCurrentDeviceIdAndPackageNameUseCase(
 
         return DeviceIdAndPackageNameDomainModel(
             deviceId = deviceId,
-            packageName = packageName
+            packageName = packageName,
         )
     }
 }

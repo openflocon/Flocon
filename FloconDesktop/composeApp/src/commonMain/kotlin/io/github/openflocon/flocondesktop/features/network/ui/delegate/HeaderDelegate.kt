@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-
 class HeaderDelegate(
     private val closeableDelegate: CloseableDelegate,
     dispatcherProvider: DispatcherProvider,
@@ -59,7 +58,7 @@ class HeaderDelegate(
                 )
             },
             isEnabled = true,
-        )
+        ),
     )
 
     fun allowedMethods() = methodFilterState.map {
@@ -83,59 +82,55 @@ class HeaderDelegate(
         .stateIn(
             coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            defaultHeaderValue()
+            defaultHeaderValue(),
         )
 
     fun buildHeaderValue(
         sorted: Sorted?,
         methodFilterState: MethodFilterState,
         textFiltersState: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
-    ): NetworkHeaderUiState {
-        return NetworkHeaderUiState(
-            requestTime = NetworkTextColumnUiModel(
-                sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.RequestTime }?.sort
-                    ?: SortedByUiModel.None,
-                filter = textFiltersState[NetworkTextFilterColumns.RequestTime]
-                    ?: TextFilterStateUiModel.EMPTY,
-            ),
-            method = NetworkMethodColumnUiModel(
-                sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Method }?.sort
-                    ?: SortedByUiModel.None,
-                filter = methodFilterState,
-            ),
-            domain = NetworkTextColumnUiModel(
-                sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Domain }?.sort
-                    ?: SortedByUiModel.None,
-                filter = textFiltersState[NetworkTextFilterColumns.Domain] ?: TextFilterStateUiModel.EMPTY,
-            ),
-            query = NetworkTextColumnUiModel(
-                sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Query }?.sort
-                    ?: SortedByUiModel.None,
-                filter = textFiltersState[NetworkTextFilterColumns.Query] ?: TextFilterStateUiModel.EMPTY,
-            ),
-            status = NetworkStatusColumnUiModel(
-                sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Status }?.sort
-                    ?: SortedByUiModel.None,
-                filter = textFiltersState[NetworkTextFilterColumns.Status] ?: TextFilterStateUiModel.EMPTY,
-            ),
-            time = NetworkTextColumnUiModel(
-                sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Time }?.sort
-                    ?: SortedByUiModel.None,
-                filter = textFiltersState[NetworkTextFilterColumns.Time] ?: TextFilterStateUiModel.EMPTY,
-            ),
-        )
-    }
+    ): NetworkHeaderUiState = NetworkHeaderUiState(
+        requestTime = NetworkTextColumnUiModel(
+            sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.RequestTime }?.sort
+                ?: SortedByUiModel.None,
+            filter = textFiltersState[NetworkTextFilterColumns.RequestTime]
+                ?: TextFilterStateUiModel.EMPTY,
+        ),
+        method = NetworkMethodColumnUiModel(
+            sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Method }?.sort
+                ?: SortedByUiModel.None,
+            filter = methodFilterState,
+        ),
+        domain = NetworkTextColumnUiModel(
+            sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Domain }?.sort
+                ?: SortedByUiModel.None,
+            filter = textFiltersState[NetworkTextFilterColumns.Domain] ?: TextFilterStateUiModel.EMPTY,
+        ),
+        query = NetworkTextColumnUiModel(
+            sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Query }?.sort
+                ?: SortedByUiModel.None,
+            filter = textFiltersState[NetworkTextFilterColumns.Query] ?: TextFilterStateUiModel.EMPTY,
+        ),
+        status = NetworkStatusColumnUiModel(
+            sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Status }?.sort
+                ?: SortedByUiModel.None,
+            filter = textFiltersState[NetworkTextFilterColumns.Status] ?: TextFilterStateUiModel.EMPTY,
+        ),
+        time = NetworkTextColumnUiModel(
+            sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Time }?.sort
+                ?: SortedByUiModel.None,
+            filter = textFiltersState[NetworkTextFilterColumns.Time] ?: TextFilterStateUiModel.EMPTY,
+        ),
+    )
 
-    fun defaultHeaderValue(): NetworkHeaderUiState {
-        return NetworkHeaderUiState(
-            requestTime = NetworkTextColumnUiModel.EMPTY,
-            method = NetworkMethodColumnUiModel.EMPTY,
-            domain = NetworkTextColumnUiModel.EMPTY,
-            query = NetworkTextColumnUiModel.EMPTY,
-            status = NetworkStatusColumnUiModel.EMPTY,
-            time = NetworkTextColumnUiModel.EMPTY,
-        )
-    }
+    fun defaultHeaderValue(): NetworkHeaderUiState = NetworkHeaderUiState(
+        requestTime = NetworkTextColumnUiModel.EMPTY,
+        method = NetworkMethodColumnUiModel.EMPTY,
+        domain = NetworkTextColumnUiModel.EMPTY,
+        query = NetworkTextColumnUiModel.EMPTY,
+        status = NetworkStatusColumnUiModel.EMPTY,
+        time = NetworkTextColumnUiModel.EMPTY,
+    )
 
     fun onClickSort(type: NetworkColumnsTypeUiModel, sort: SortedByUiModel.Enabled) {
         val newValue = Sorted(
@@ -158,11 +153,13 @@ class HeaderDelegate(
                 is OnFilterAction.ClickOnMethod -> {
                     val clicked = action.methodUi
                     methodFilterState.update {
-                        it.copy(items = it.items.map { item ->
-                            if (item.method == clicked) {
-                                item.copy(isSelected = !item.isSelected)
-                            } else item
-                        })
+                        it.copy(
+                            items = it.items.map { item ->
+                                if (item.method == clicked) {
+                                    item.copy(isSelected = !item.isSelected)
+                                } else item
+                            },
+                        )
                     }
                 }
 
@@ -175,63 +172,65 @@ class HeaderDelegate(
 
     private suspend fun textFilterAction(
         column: NetworkTextFilterColumns,
-        action: TextFilterAction
+        action: TextFilterAction,
     ) {
         val filter: TextFilterStateUiModel = getNetworkFilterUseCase(column).let { toTextFilterUi(it) }
         val updated = parformAction(filter, action)
 
         updateNetworkFilterUseCase(
             column = column,
-            newValue = toTextFilterDomain(updated)
+            newValue = toTextFilterDomain(updated),
         )
     }
 }
 
 private fun parformAction(
     filter: TextFilterStateUiModel,
-    action: TextFilterAction
-): TextFilterStateUiModel {
-    return when (action) {
-        is TextFilterAction.Delete -> {
-            filter.copy(
-                includedFilters = filter.includedFilters - action.item,
-                excludedFilters = filter.excludedFilters - action.item,
-            )
-        }
+    action: TextFilterAction,
+): TextFilterStateUiModel = when (action) {
+    is TextFilterAction.Delete -> {
+        filter.copy(
+            includedFilters = filter.includedFilters - action.item,
+            excludedFilters = filter.excludedFilters - action.item,
+        )
+    }
 
-        is TextFilterAction.Exclude -> {
-            filter.copy(
-                excludedFilters = (filter.excludedFilters + TextFilterStateUiModel.FilterItem(
+    is TextFilterAction.Exclude -> {
+        filter.copy(
+            excludedFilters = (
+                filter.excludedFilters + TextFilterStateUiModel.FilterItem(
                     text = action.text,
                     isActive = true,
-                    isExcluded = true
-                )).distinctBy { it.text },
-            )
-        }
+                    isExcluded = true,
+                )
+                ).distinctBy { it.text },
+        )
+    }
 
-        is TextFilterAction.Include -> {
-            filter.copy(
-                includedFilters = (filter.includedFilters + TextFilterStateUiModel.FilterItem(
+    is TextFilterAction.Include -> {
+        filter.copy(
+            includedFilters = (
+                filter.includedFilters + TextFilterStateUiModel.FilterItem(
                     text = action.text,
                     isActive = true,
-                    isExcluded = false
-                )).distinctBy { it.text },
-            )
-        }
+                    isExcluded = false,
+                )
+                ).distinctBy { it.text },
+        )
+    }
 
-        is TextFilterAction.SetIsActive -> {
-            filter.copy(
-                includedFilters = filter.includedFilters.map {
-                    if (it == action.item) {
-                        action.item.copy(isActive = action.isActive)
-                    } else it
-                },
-                excludedFilters = filter.excludedFilters.map {
-                    if (it == action.item) {
-                        action.item.copy(isActive = action.isActive)
-                    } else it
-                },
-            )
-        }
+    is TextFilterAction.SetIsActive -> {
+        filter.copy(
+            includedFilters = filter.includedFilters.map {
+                if (it == action.item) {
+                    action.item.copy(isActive = action.isActive)
+                } else it
+            },
+            excludedFilters = filter.excludedFilters.map {
+                if (it == action.item) {
+                    action.item.copy(isActive = action.isActive)
+                } else it
+            },
+        )
     }
 }

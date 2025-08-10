@@ -5,6 +5,7 @@ import com.google.gson.ExclusionStrategy
 import com.google.gson.FieldAttributes
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import io.grpc.CallOptions
 import io.grpc.Channel
@@ -48,6 +49,12 @@ class FloconGrpcInterceptor(
         callOptions: CallOptions,
         next: Channel,
     ): ClientCall<ReqT, RespT> {
+        val networkPlugin = FloconApp.instance?.client?.networkPlugin
+        if(networkPlugin == null) {
+            // do not intercept if no network plugin, just call
+            return next.newCall(method, callOptions)
+        }
+
         val requestId = UUID.randomUUID().toString()
         return LoggingForwardingClientCall(
             floconGrpcPlugin = flipperGrpcPlugin,

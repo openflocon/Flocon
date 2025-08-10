@@ -1,7 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.ui
 
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.NetworkColumnsTypeUiModel
@@ -33,7 +32,7 @@ sealed interface NetworkAction {
     sealed interface HeaderAction : NetworkAction {
         data class ClickOnSort(
             val type: NetworkColumnsTypeUiModel,
-            val sort: SortedByUiModel.Enabled
+            val sort: SortedByUiModel.Enabled,
         ) : HeaderAction
 
         data class FilterAction(

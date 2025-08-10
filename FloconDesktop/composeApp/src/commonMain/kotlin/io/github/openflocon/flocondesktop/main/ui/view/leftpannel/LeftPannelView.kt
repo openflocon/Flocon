@@ -73,14 +73,14 @@ fun LeftPanelView(
         MenuSection(
             items = state.sections,
             expanded = expanded,
-            onClickItem = onClickItem
+            onClickItem = onClickItem,
         )
         Spacer(modifier = Modifier.height(12.dp))
         Spacer(Modifier.weight(1f))
         MenuItems(
             items = state.bottomItems,
             expanded = expanded,
-            onClickItem = onClickItem
+            onClickItem = onClickItem,
         )
         LeftPannelDivider(modifier = Modifier.padding(vertical = 12.dp))
         DeviceSelectorView(
@@ -90,14 +90,14 @@ fun LeftPanelView(
                 .heightIn(min = 64.dp),
             devicesState = devicesState,
             onDeviceSelected = onDeviceSelected,
-            onAppSelected = onAppSelected
+            onAppSelected = onAppSelected,
         )
     }
 }
 
 @Composable
 fun Title(
-    expanded: Boolean
+    expanded: Boolean,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -114,7 +114,7 @@ fun Title(
         AnimatedVisibility(
             visible = expanded,
             enter = fadeIn() + slideInHorizontally(),
-            exit = fadeOut() + slideOutHorizontally()
+            exit = fadeOut() + slideOutHorizontally(),
         ) {
             Text(
                 text = "Flocon",
@@ -123,7 +123,7 @@ fun Title(
                     color = FloconTheme.colorPalette.onSurface,
                     fontWeight = FontWeight.Bold,
                 ),
-                modifier = Modifier.padding(start = 12.dp)
+                modifier = Modifier.padding(start = 12.dp),
             )
         }
     }
@@ -133,17 +133,17 @@ fun Title(
 private fun ColumnScope.MenuSection(
     items: List<LeftPannelSection>,
     expanded: Boolean,
-    onClickItem: (LeftPanelItem) -> Unit
+    onClickItem: (LeftPanelItem) -> Unit,
 ) {
     items.fastForEachIndexed { index, section ->
         PannelLabel(
             expanded = expanded,
-            text = section.title
+            text = section.title,
         )
         MenuItems(
             items = section.items,
             expanded = expanded,
-            onClickItem = onClickItem
+            onClickItem = onClickItem,
         )
     }
 }
@@ -152,7 +152,7 @@ private fun ColumnScope.MenuSection(
 private fun ColumnScope.MenuItems(
     items: List<LeftPanelItem>,
     expanded: Boolean,
-    onClickItem: (LeftPanelItem) -> Unit
+    onClickItem: (LeftPanelItem) -> Unit,
 ) {
     items.fastForEach { item ->
         PannelView(
@@ -185,7 +185,7 @@ private fun LeftPanelViewPreview() {
             onDeviceSelected = {},
             onAppSelected = {},
             expanded = false,
-            devicesState = previewDevicesStateUiModel()
+            devicesState = previewDevicesStateUiModel(),
         )
     }
 }

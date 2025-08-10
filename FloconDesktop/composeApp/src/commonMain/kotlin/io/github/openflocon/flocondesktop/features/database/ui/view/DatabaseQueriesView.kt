@@ -16,9 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabaseScreenStateQueries
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DatabaseQueriesView(
@@ -36,7 +34,7 @@ fun DatabaseQueriesView(
             style = FloconTheme.typography.titleSmall,
         )
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(all = 4.dp),
+            modifier = Modifier.fillMaxWidth().padding(all = 4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             items(queries) {
@@ -70,23 +68,5 @@ fun DatabaseQueriesItemView(
             color = FloconTheme.colorPalette.onSurface,
             style = FloconTheme.typography.bodySmall,
         )
-    }
-}
-
-@Composable
-@Preview
-private fun DatabaseQueriesViewPreview() {
-    FloconTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(FloconTheme.colorPalette.surface),
-        ) {
-            DatabaseQueriesView(
-                onClickQuery = {},
-                modifier = Modifier.fillMaxSize(),
-                queries = previewDatabaseScreenStateQueries().queries,
-            )
-        }
     }
 }

@@ -62,9 +62,9 @@ internal fun DatabaseSelectorView(
             DatabasesStateUiModel.Empty -> {
                 Text(
                     modifier =
-                        Modifier
-                            .background(FloconTheme.colorPalette.onBackground, shape = shape)
-                            .padding(contentPadding),
+                    Modifier
+                        .background(FloconTheme.colorPalette.onBackground, shape = shape)
+                        .padding(contentPadding),
                     text = "No Databases Found",
                     style = FloconTheme.typography.bodySmall,
                     color = FloconTheme.colorPalette.background,
@@ -78,11 +78,11 @@ internal fun DatabaseSelectorView(
                     database = databasesState.selected,
                     textColor = FloconTheme.colorPalette.background,
                     modifier =
-                        Modifier
-                            .clip(shape)
-                            .background(FloconTheme.colorPalette.onBackground)
-                            .clickable { expanded = true }
-                            .padding(contentPadding),
+                    Modifier
+                        .clip(shape)
+                        .background(FloconTheme.colorPalette.onBackground)
+                        .clickable { expanded = true }
+                        .padding(contentPadding),
                 )
 
                 DropdownMenu(

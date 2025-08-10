@@ -73,13 +73,13 @@ internal fun ColumnScope.DeviceSelectorView(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     ) {
         AnimatedVisibility(devicesState is DevicesStateUiModel.WithDevices) {
             DeviceAppSelector(
                 state = devicesState,
                 panelExpanded = panelExpanded,
-                onAppSelected = onAppSelected
+                onAppSelected = onAppSelected,
             )
         }
         AnimatedVisibility(visible = devicesState is DevicesStateUiModel.WithDevices) {
@@ -88,7 +88,7 @@ internal fun ColumnScope.DeviceSelectorView(
         DeviceSelector(
             state = devicesState,
             panelExpanded = panelExpanded,
-            onDeviceSelected = onDeviceSelected
+            onDeviceSelected = onDeviceSelected,
         )
     }
 }
@@ -97,7 +97,7 @@ internal fun ColumnScope.DeviceSelectorView(
 private fun DeviceAppSelector(
     state: DevicesStateUiModel,
     panelExpanded: Boolean,
-    onAppSelected: (DeviceAppUiModel) -> Unit
+    onAppSelected: (DeviceAppUiModel) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -110,7 +110,7 @@ private fun DeviceAppSelector(
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = false },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             val modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
 
@@ -118,7 +118,7 @@ private fun DeviceAppSelector(
                 DeviceAppName(
                     deviceApp = state.appSelected,
                     onClick = { expanded = true },
-                    modifier = modifier
+                    modifier = modifier,
                 )
             } else {
                 Selector(
@@ -126,14 +126,14 @@ private fun DeviceAppSelector(
                 ) {
                     Text(
                         text = "Select",
-                        modifier = modifier
+                        modifier = modifier,
                     )
                 }
             }
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.exposedDropdownSize()
+                modifier = Modifier.exposedDropdownSize(),
             ) {
                 state.deviceSelected
                     .apps
@@ -143,7 +143,7 @@ private fun DeviceAppSelector(
                             onClick = {
                                 onAppSelected(app)
                                 expanded = false
-                            }
+                            },
                         )
                     }
             }
@@ -156,11 +156,11 @@ private fun DeviceSelector(
     state: DevicesStateUiModel,
     panelExpanded: Boolean,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val topRadius by animateDpAsState(
-        targetValue = if (expanded) 0.dp else 12.dp
+        targetValue = if (expanded) 0.dp else 12.dp,
     )
 
     LaunchedEffect(panelExpanded) {
@@ -174,7 +174,7 @@ private fun DeviceSelector(
             if (panelExpanded)
                 expanded = it
         },
-        modifier = modifier
+        modifier = modifier,
     ) {
         AnimatedContent(
             targetState = state,
@@ -188,11 +188,11 @@ private fun DeviceSelector(
                         topStart = topRadius,
                         topEnd = topRadius,
                         bottomEnd = 12.dp,
-                        bottomStart = 12.dp
+                        bottomStart = 12.dp,
                     ),
-                    clip = true
+                    clip = true,
                 )
-                .background(color = FloconTheme.colorPalette.panel)
+                .background(color = FloconTheme.colorPalette.panel),
         ) { targetState ->
             when (targetState) {
                 DevicesStateUiModel.Empty -> Empty(expanded = panelExpanded)
@@ -200,7 +200,7 @@ private fun DeviceSelector(
                 is DevicesStateUiModel.WithDevices -> Device(
                     state = targetState,
                     panelExpanded = panelExpanded,
-                    onClick = {}
+                    onClick = {},
                 )
             }
         }
@@ -210,7 +210,7 @@ private fun DeviceSelector(
             containerColor = FloconTheme.colorPalette.panel,
             shadowElevation = 0.dp,
             shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-            modifier = Modifier.exposedDropdownSize()
+            modifier = Modifier.exposedDropdownSize(),
         ) {
             if (state is DevicesStateUiModel.WithDevices) {
                 state.devices.forEach { device ->
@@ -226,7 +226,6 @@ private fun DeviceSelector(
                             .fillMaxWidth()
                             .height(64.dp)
                             .clickable(enabled = panelExpanded) {
-
                             },
                     )
                 }
@@ -243,7 +242,7 @@ private fun Selector(
     alignment: Alignment = Alignment.CenterStart,
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(12.dp),
-    content: @Composable BoxScope.() -> Unit
+    content: @Composable BoxScope.() -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -253,19 +252,19 @@ private fun Selector(
                     .heightIn(min = 64.dp)
                     .clip(shape)
                     .background(FloconTheme.colorPalette.panel)
-                    .clickable(enabled = enabled, onClick = onClick)
+                    .clickable(enabled = enabled, onClick = onClick),
             ),
         contentAlignment = alignment,
-        content = content
+        content = content,
     )
 }
 
 @Composable
 private fun Empty(
-    expanded: Boolean
+    expanded: Boolean,
 ) {
     Selector(
-        onClick = {}
+        onClick = {},
     ) {
         Crossfade(expanded) {
             if (it) {
@@ -278,7 +277,7 @@ private fun Empty(
             } else {
                 FloconIcon(
                     imageVector = Icons.Outlined.PhoneDisabled,
-                    tint = Color.White
+                    tint = Color.White,
                 )
             }
         }
@@ -288,7 +287,7 @@ private fun Empty(
 @Composable
 private fun Loading() {
     Selector(
-        onClick = {}
+        onClick = {},
     ) {
         FloconCircularProgressIndicator()
     }
@@ -298,13 +297,13 @@ private fun Loading() {
 private fun ExposedDropdownMenuBoxScope.Device(
     panelExpanded: Boolean,
     state: DevicesStateUiModel.WithDevices,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     DeviceView(
         device = state.deviceSelected,
         panelExpanded = panelExpanded,
         onClick = onClick,
-        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
+        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
     )
 }
 
@@ -315,12 +314,12 @@ private fun DeviceView(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    selected: Boolean = false
+    selected: Boolean = false,
 ) {
     Selector(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
@@ -333,21 +332,21 @@ private fun DeviceView(
             )
             AnimatedVisibility(
                 visible = panelExpanded,
-                exit = fadeOut(tween(100))
+                exit = fadeOut(tween(100)),
             ) {
                 Row(
-                    modifier = Modifier.padding(start = 4.dp, end = 8.dp)
+                    modifier = Modifier.padding(start = 4.dp, end = 8.dp),
                 ) {
                     Text(
                         text = device.deviceName,
                         color = FloconTheme.colorPalette.onPanel,
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                     if (selected)
                         FloconIcon(
                             imageVector = Icons.Outlined.Check,
-                            tint = FloconTheme.colorPalette.onPanel
+                            tint = FloconTheme.colorPalette.onPanel,
                         )
                 }
             }
@@ -359,27 +358,27 @@ private fun DeviceView(
 private fun DeviceAppName(
     deviceApp: DeviceAppUiModel,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Selector(
         onClick = onClick,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Column(
             verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.padding(horizontal = 8.dp)
+            modifier = Modifier.padding(horizontal = 8.dp),
         ) {
             Text(
                 text = deviceApp.name,
                 style = FloconTheme.typography.labelMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = FloconTheme.colorPalette.onPanel
+                color = FloconTheme.colorPalette.onPanel,
             )
             Text(
                 text = deviceApp.packageName,
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPanel.copy(alpha = 0.8f)
+                color = FloconTheme.colorPalette.onPanel.copy(alpha = 0.8f),
             )
         }
     }
@@ -392,7 +391,7 @@ private fun DeviceViewPreview() {
         DeviceView(
             device = previewDeviceItemUiModel(),
             panelExpanded = false,
-            onClick = {}
+            onClick = {},
         )
     }
 }

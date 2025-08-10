@@ -58,10 +58,12 @@ fun NetworkDetailView(
             .padding(all = 12.dp),
     ) {
         Request(
+            modifier = Modifier
+                .fillMaxWidth(),
             state = state,
             onAction = onAction,
             linesLabelWidth = linesLabelWidth,
-            headersLabelWidth = headersLabelWidth
+            headersLabelWidth = headersLabelWidth,
         )
         HorizontalDivider(
             modifier = Modifier
@@ -70,9 +72,11 @@ fun NetworkDetailView(
                 .padding(vertical = 12.dp),
         )
         Response(
+            modifier = Modifier
+                .fillMaxWidth(),
             state = state,
             onAction = onAction,
-            headersLabelWidth = headersLabelWidth
+            headersLabelWidth = headersLabelWidth,
         )
     }
 }
@@ -82,175 +86,185 @@ private fun Request(
     state: NetworkDetailViewState,
     onAction: (NetworkAction) -> Unit,
     linesLabelWidth: Dp,
-    headersLabelWidth: Dp
+    headersLabelWidth: Dp,
+    modifier: Modifier = Modifier,
 ) {
     var isRequestExpanded by remember { mutableStateOf(true) }
     var isRequestBodyExpanded by remember { mutableStateOf(true) }
     var isRequestHeadersExpanded by remember { mutableStateOf(true) }
     var isGraphQlRequestExpanded by remember { mutableStateOf(true) }
 
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        DetailSectionTitleView(
-            isExpanded = isRequestExpanded,
-            title = "Request",
-            onCopy = null,
-            onToggle = {
-                isRequestExpanded = it
-            },
-            modifier = Modifier.weight(1f)
-        )
-        FloconIconButton(
-            imageVector = Icons.Outlined.Close,
-            onClick = { onAction(NetworkAction.ClosePanel) }
-        )
-    }
-    FloconSectionExpandable(
-        expanded = isRequestExpanded,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp)
-    ) {
-        Column {
-            Column(
-                modifier =
+    Column(modifier = modifier) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            DetailSectionTitleView(
+                isExpanded = isRequestExpanded,
+                title = "Request",
+                onCopy = null,
+                onToggle = {
+                    isRequestExpanded = it
+                },
+                modifier = Modifier.weight(1f),
+            )
+            FloconIconButton(
+                imageVector = Icons.Outlined.Close,
+                onClick = { onAction(NetworkAction.ClosePanel) },
+            )
+        }
+        FloconSectionExpandable(
+            expanded = isRequestExpanded,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+        ) {
+            Column {
+                Column(
+                    modifier =
                     Modifier
                         .background(
                             color = FloconTheme.colorPalette.surfaceVariant,
                             shape = RoundedCornerShape(12.dp),
                         ).padding(horizontal = 8.dp, vertical = 4.dp),
-            ) {
-                DetailLineTextView(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = "Full url",
-                    value = state.fullUrl,
-                    labelWidth = linesLabelWidth,
-                )
-                DetailLineView(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = "Method",
-                    labelWidth = linesLabelWidth,
                 ) {
-                    when (val m = state.method) {
-                        is NetworkDetailViewState.Method.Http -> MethodView(method = m.method)
-                        is NetworkDetailViewState.Method.MethodName -> {
-                            Text(
-                                text = m.name,
-                                style = FloconTheme.typography.bodySmall,
-                                color = FloconTheme.colorPalette.onSurface,
-                                modifier = Modifier.weight(2f)
-                                    .background(
-                                        color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
-                                    .padding(horizontal = 8.dp, vertical = 6.dp),
-                            )
+                    DetailLineTextView(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Full url",
+                        value = state.fullUrl,
+                        labelWidth = linesLabelWidth,
+                    )
+                    DetailLineView(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Method",
+                        labelWidth = linesLabelWidth,
+                    ) {
+                        when (val m = state.method) {
+                            is NetworkDetailViewState.Method.Http -> MethodView(method = m.method)
+                            is NetworkDetailViewState.Method.MethodName -> {
+                                Text(
+                                    text = m.name,
+                                    style = FloconTheme.typography.bodySmall,
+                                    color = FloconTheme.colorPalette.onSurface,
+                                    modifier = Modifier.weight(2f)
+                                        .background(
+                                            color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
+                                            shape = RoundedCornerShape(4.dp),
+                                        )
+                                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                                )
+                            }
                         }
                     }
+                    DetailLineView(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Status",
+                        labelWidth = linesLabelWidth,
+                    ) {
+                        StatusView(status = state.status)
+                    }
+                    DetailLineTextView(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Request Time",
+                        value = state.requestTimeFormatted,
+                        labelWidth = linesLabelWidth,
+                    )
+                    DetailLineTextView(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Time",
+                        value = state.durationFormatted,
+                        labelWidth = linesLabelWidth,
+                    )
                 }
-                DetailLineView(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = "Status",
-                    labelWidth = linesLabelWidth,
-                ) {
-                    StatusView(status = state.status)
-                }
-                DetailLineTextView(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = "Request Time",
-                    value = state.requestTimeFormatted,
-                    labelWidth = linesLabelWidth,
-                )
-                DetailLineTextView(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = "Time",
-                    value = state.durationFormatted,
-                    labelWidth = linesLabelWidth,
-                )
-            }
 
-            state.graphQlSection?.let {
-                Spacer(modifier = Modifier.height(12.dp))
-                DetailSectionTitleView(
-                    isExpanded = isRequestExpanded,
-                    title = "GraphQl",
-                    onCopy = null,
-                    onToggle = {
-                        isGraphQlRequestExpanded = !isGraphQlRequestExpanded
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                FloconSectionExpandable(
-                    expanded = isGraphQlRequestExpanded,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        modifier =
+                state.graphQlSection?.let {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    DetailSectionTitleView(
+                        isExpanded = isRequestExpanded,
+                        title = "GraphQl",
+                        onCopy = null,
+                        onToggle = {
+                            isGraphQlRequestExpanded = !isGraphQlRequestExpanded
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    FloconSectionExpandable(
+                        expanded = isGraphQlRequestExpanded,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Column(
+                            modifier =
                             Modifier
                                 .background(
                                     color = FloconTheme.colorPalette.surfaceVariant,
                                     shape = RoundedCornerShape(12.dp),
                                 ).padding(horizontal = 8.dp, vertical = 4.dp),
-                    ) {
-                        DetailLineTextView(
-                            modifier = Modifier.fillMaxWidth(),
-                            label = "Query name",
-                            value = it.queryName,
-                            labelWidth = linesLabelWidth,
-                        )
-                        DetailLineView(
-                            modifier = Modifier.fillMaxWidth(),
-                            label = "Type",
-                            labelWidth = linesLabelWidth,
                         ) {
-                            MethodView(method = it.method)
+                            DetailLineTextView(
+                                modifier = Modifier.fillMaxWidth(),
+                                label = "Query name",
+                                value = it.queryName,
+                                labelWidth = linesLabelWidth,
+                            )
+                            DetailLineView(
+                                modifier = Modifier.fillMaxWidth(),
+                                label = "Type",
+                                labelWidth = linesLabelWidth,
+                            ) {
+                                MethodView(method = it.method)
+                            }
                         }
                     }
                 }
-            }
 
-            // headers
-            DetailSectionTitleView(
-                isExpanded = isRequestHeadersExpanded,
-                title = "Request Headers",
-                onCopy = null,
-                onToggle = {
-                    isRequestHeadersExpanded = it
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-            FloconSectionExpandable(
-                modifier = Modifier.fillMaxWidth(),
-                expanded = isRequestHeadersExpanded,
-            ) {
-                DetailHeadersView(
-                    headers = state.requestHeaders,
-                    modifier = Modifier.fillMaxWidth(),
-                    labelWidth = headersLabelWidth,
-                )
-            }
-
-            // body
-            DetailSectionTitleView(
-                isExpanded = isRequestBodyExpanded,
-                title = "Request Body",
-                onDetail = { onAction(NetworkAction.JsonDetail(state.uuid + "request", state.requestBody)) },
-                onCopy = { onAction(NetworkAction.CopyText(state.requestBody)) },
-                onToggle = {
-                    isRequestBodyExpanded = it
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-            FloconSectionExpandable(
-                modifier = Modifier.fillMaxWidth(),
-                expanded = isRequestBodyExpanded,
-            ) {
-                CodeBlockView(
-                    code = state.requestBody,
+                // headers
+                DetailSectionTitleView(
+                    isExpanded = isRequestHeadersExpanded,
+                    title = "Request Headers",
+                    onCopy = null,
+                    onToggle = {
+                        isRequestHeadersExpanded = it
+                    },
                     modifier = Modifier.fillMaxWidth(),
                 )
+                FloconSectionExpandable(
+                    modifier = Modifier.fillMaxWidth(),
+                    expanded = isRequestHeadersExpanded,
+                ) {
+                    DetailHeadersView(
+                        headers = state.requestHeaders,
+                        modifier = Modifier.fillMaxWidth(),
+                        labelWidth = headersLabelWidth,
+                    )
+                }
+
+                // body
+                DetailSectionTitleView(
+                    isExpanded = isRequestBodyExpanded,
+                    title = "Request Body",
+                    onDetail = {
+                        onAction(
+                            NetworkAction.JsonDetail(
+                                state.uuid + "request",
+                                state.requestBody,
+                            ),
+                        )
+                    },
+                    onCopy = { onAction(NetworkAction.CopyText(state.requestBody)) },
+                    onToggle = {
+                        isRequestBodyExpanded = it
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                FloconSectionExpandable(
+                    modifier = Modifier.fillMaxWidth(),
+                    expanded = isRequestBodyExpanded,
+                ) {
+                    CodeBlockView(
+                        code = state.requestBody,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
     }
@@ -260,68 +274,78 @@ private fun Request(
 private fun Response(
     state: NetworkDetailViewState,
     onAction: (NetworkAction) -> Unit,
-    headersLabelWidth: Dp
+    headersLabelWidth: Dp,
+    modifier: Modifier = Modifier,
 ) {
     var isResponseExpanded by remember { mutableStateOf(true) }
     var isResponseHeadersExpanded by remember { mutableStateOf(true) }
     var isResponseBodyExpanded by remember { mutableStateOf(true) }
 
-    DetailSectionTitleView(
-        isExpanded = isResponseExpanded,
-        title = "Response",
-        onCopy = null,
-        onToggle = {
-            isResponseExpanded = it
-        },
-        modifier = Modifier.fillMaxWidth()
-    )
-    FloconSectionExpandable(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp),
-        expanded = isResponseExpanded,
-    ) {
-        // headers
-        Column {
-            DetailSectionTitleView(
-                isExpanded = isResponseHeadersExpanded,
-                title = "Response Headers",
-                onCopy = null,
-                onToggle = {
-                    isResponseHeadersExpanded = it
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-            FloconSectionExpandable(
-                modifier = Modifier.fillMaxWidth(),
-                expanded = isResponseHeadersExpanded,
-            ) {
-                DetailHeadersView(
-                    headers = state.responseHeaders,
+    Column(modifier = modifier) {
+        DetailSectionTitleView(
+            isExpanded = isResponseExpanded,
+            title = "Response",
+            onCopy = null,
+            onToggle = {
+                isResponseExpanded = it
+            },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        FloconSectionExpandable(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            expanded = isResponseExpanded,
+        ) {
+            // headers
+            Column {
+                DetailSectionTitleView(
+                    isExpanded = isResponseHeadersExpanded,
+                    title = "Response Headers",
+                    onCopy = null,
+                    onToggle = {
+                        isResponseHeadersExpanded = it
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    labelWidth = headersLabelWidth
                 )
-            }
+                FloconSectionExpandable(
+                    modifier = Modifier.fillMaxWidth(),
+                    expanded = isResponseHeadersExpanded,
+                ) {
+                    DetailHeadersView(
+                        headers = state.responseHeaders,
+                        modifier = Modifier.fillMaxWidth(),
+                        labelWidth = headersLabelWidth,
+                    )
+                }
 
-            // body
-            DetailSectionTitleView(
-                isExpanded = isResponseBodyExpanded,
-                title = "Response Body",
-                onCopy = { onAction(NetworkAction.CopyText(state.responseBody)) },
-                onToggle = {
-                    isResponseBodyExpanded = it
-                },
-                onDetail = { onAction(NetworkAction.JsonDetail(state.uuid + "response", state.responseBody)) },
-                modifier = Modifier.fillMaxWidth()
-            )
-            FloconSectionExpandable(
-                modifier = Modifier.fillMaxWidth(),
-                expanded = isResponseBodyExpanded,
-            ) {
-                CodeBlockView(
-                    code = state.responseBody,
+                // body
+                DetailSectionTitleView(
+                    isExpanded = isResponseBodyExpanded,
+                    title = "Response Body",
+                    onCopy = { onAction(NetworkAction.CopyText(state.responseBody)) },
+                    onToggle = {
+                        isResponseBodyExpanded = it
+                    },
+                    onDetail = {
+                        onAction(
+                            NetworkAction.JsonDetail(
+                                state.uuid + "response",
+                                state.responseBody,
+                            ),
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth(),
                 )
+                FloconSectionExpandable(
+                    modifier = Modifier.fillMaxWidth(),
+                    expanded = isResponseBodyExpanded,
+                ) {
+                    CodeBlockView(
+                        code = state.responseBody,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
     }
@@ -337,18 +361,18 @@ private fun NetworkDetailViewPreview() {
                 fullUrl = "http://www.google.com",
                 method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
                 status =
-                    NetworkStatusUi(
-                        text = "200",
-                        isSuccess = true,
-                    ),
+                NetworkStatusUi(
+                    text = "200",
+                    isSuccess = true,
+                ),
                 requestHeaders =
-                    listOf(
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                    ),
+                listOf(
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                ),
                 requestBody =
-                    """
+                """
                         {
                             "id": "123",
                             "name": "Flocon App",
@@ -362,17 +386,17 @@ private fun NetworkDetailViewPreview() {
                         }
                 """.trimIndent(),
                 responseHeaders =
-                    listOf(
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                    ),
+                listOf(
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                ),
                 requestTimeFormatted = "00:00:00.000",
                 durationFormatted = "300ms",
                 responseBody =
-                    """
+                """
                         {
                             "networkStatusUi": "success",
                             "message": "Data received and processed.",
@@ -387,7 +411,7 @@ private fun NetworkDetailViewPreview() {
                 graphQlSection = null,
             ),
             modifier = Modifier.padding(16.dp), // Padding pour la preview
-            onAction = {}
+            onAction = {},
         )
     }
 }

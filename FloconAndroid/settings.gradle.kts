@@ -10,11 +10,14 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
     }
 }
 
 rootProject.name = "My Application"
 include(":app")
-include(":core")
+include(":flocon-base")
+include(":flocon")
+include(":flocon-no-op")
 include(":okhttp-interceptor")
 include(":grpc-interceptor")

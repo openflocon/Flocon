@@ -43,9 +43,9 @@ class DashboardRepositoryImpl(
                 dashboardLocalDataSource.saveDashboard(
                     deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                         deviceId = deviceId,
-                        packageName = message.appPackageName
+                        packageName = message.appPackageName,
                     ),
-                    dashboard = request
+                    dashboard = request,
                 )
             }
         }
@@ -58,12 +58,11 @@ class DashboardRepositoryImpl(
         null
     }
 
-    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> =
-        dashboardLocalDataSource.observeDashboard(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-            dashboardId = dashboardId,
-        )
-            .flowOn(dispatcherProvider.data)
+    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> = dashboardLocalDataSource.observeDashboard(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+        dashboardId = dashboardId,
+    )
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun sendClickEvent(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId, buttonId: String) {
         withContext(dispatcherProvider.data) {
@@ -113,13 +112,11 @@ class DashboardRepositoryImpl(
         }
     }
 
-    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> =
-        deviceDashboardsDataSource.observeSelectedDeviceDashboard(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        )
+    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> = deviceDashboardsDataSource.observeSelectedDeviceDashboard(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    )
 
-    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> =
-        dashboardLocalDataSource.observeDeviceDashboards(
-            deviceIdAndPackageName = deviceIdAndPackageName
-        )
+    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> = dashboardLocalDataSource.observeDeviceDashboards(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    )
 }

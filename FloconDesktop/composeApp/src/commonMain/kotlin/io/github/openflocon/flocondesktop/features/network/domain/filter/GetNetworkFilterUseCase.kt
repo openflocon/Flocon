@@ -9,12 +9,10 @@ class GetNetworkFilterUseCase(
     private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,
     private val networkFilterRepository: NetworkFilterRepository,
 ) {
-    suspend operator fun invoke(column: NetworkTextFilterColumns): TextFilterStateDomainModel {
-        return getCurrentDeviceIdUseCase()?.let { deviceId ->
-            networkFilterRepository.get(deviceId = deviceId, column = column)
-        } ?: TextFilterStateDomainModel(
-            items = listOf(),
-            isEnabled = true,
-        )
-    }
+    suspend operator fun invoke(column: NetworkTextFilterColumns): TextFilterStateDomainModel = getCurrentDeviceIdUseCase()?.let { deviceId ->
+        networkFilterRepository.get(deviceId = deviceId, column = column)
+    } ?: TextFilterStateDomainModel(
+        items = listOf(),
+        isEnabled = true,
+    )
 }

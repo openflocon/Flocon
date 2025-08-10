@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flowOf
 
 class ObserveHttpRequestsUseCase(
     private val networkRepository: NetworkRepository,
-    private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase
+    private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
     // lite : exclude headers, sizes, body
     operator fun invoke(lite: Boolean): Flow<List<FloconHttpRequestDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()

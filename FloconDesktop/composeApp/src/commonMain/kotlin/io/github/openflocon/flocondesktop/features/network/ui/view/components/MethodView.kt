@@ -90,13 +90,13 @@ fun NetworkTag(
 ) {
     Row(
         modifier =
-            modifier
-                .clip(RoundedCornerShape(20.dp))
-                .background(
-                    color = backgroundColor,
-                )
-                .clickable(onClick = { onClick?.invoke()}, enabled = onClick != null)
-                .padding(horizontal = 4.dp, vertical = 2.dp),
+        modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(
+                color = backgroundColor,
+            )
+            .clickable(onClick = { onClick?.invoke() }, enabled = onClick != null)
+            .padding(horizontal = 4.dp, vertical = 2.dp),
         // Padding inside the tag
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,

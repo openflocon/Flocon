@@ -12,7 +12,7 @@ fun toTypeUi(networkRequest: FloconHttpRequestDomainModel): NetworkItemViewState
         val query = extractPath(networkRequest.url)
         NetworkItemViewState.NetworkTypeUi.Url(
             query = query,
-            method = networkRequest.request.method
+            method = networkRequest.request.method,
         )
     }
 

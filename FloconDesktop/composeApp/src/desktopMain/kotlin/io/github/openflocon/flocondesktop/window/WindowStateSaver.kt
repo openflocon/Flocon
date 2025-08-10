@@ -15,14 +15,12 @@ object WindowStateSaver {
         }
     }
 
-    fun load(): WindowStateData? {
-        return try {
-            settings.getStringOrNull("window")?.let { json ->
-                Json.decodeFromString<WindowStateData>(json)
-            }
-        } catch (t: Throwable) {
-            t.printStackTrace()
-            null
+    fun load(): WindowStateData? = try {
+        settings.getStringOrNull("window")?.let { json ->
+            Json.decodeFromString<WindowStateData>(json)
         }
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        null
     }
 }

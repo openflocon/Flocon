@@ -30,7 +30,7 @@ class DevicesDelegate(
         combine(
             observeDevicesUseCase(),
             observeCurrentDeviceUseCase(),
-            observeCurrentDeviceAppUseCase()
+            observeCurrentDeviceAppUseCase(),
         ) { devices, current, currentApp ->
             if (devices.isEmpty()) {
                 DevicesStateUiModel.Empty
@@ -41,13 +41,13 @@ class DevicesDelegate(
                     DevicesStateUiModel.WithDevices(
                         devices = mapToUi(devices),
                         deviceSelected = mapToUi(firstDevice),
-                        appSelected = defaultApp(firstDevice, currentApp)
+                        appSelected = defaultApp(firstDevice, currentApp),
                     )
                 } else {
                     DevicesStateUiModel.WithDevices(
                         devices = mapToUi(devices),
                         deviceSelected = mapToUi(current),
-                        appSelected = defaultApp(current, currentApp)
+                        appSelected = defaultApp(current, currentApp),
                     )
                 }
             }
@@ -66,17 +66,15 @@ class DevicesDelegate(
         selectDeviceAppUseCase(packageName)
     }
 
-    private suspend fun defaultApp(device: DeviceDomainModel, currentApp: DeviceAppDomainModel?): DeviceAppUiModel? {
-        return if (currentApp == null || currentApp.packageName !in device.apps.map(DeviceAppDomainModel::packageName)) {
-            device.apps
-                .firstOrNull()
-                ?.let {
-                    selectApp(it.packageName)
-                    mapToUi(it)
-                }
-        } else {
-            mapToUi(currentApp)
-        }
+    private suspend fun defaultApp(device: DeviceDomainModel, currentApp: DeviceAppDomainModel?): DeviceAppUiModel? = if (currentApp == null || currentApp.packageName !in device.apps.map(DeviceAppDomainModel::packageName)) {
+        device.apps
+            .firstOrNull()
+            ?.let {
+                selectApp(it.packageName)
+                mapToUi(it)
+            }
+    } else {
+        mapToUi(currentApp)
     }
 
     private fun mapToUi(devices: List<DeviceDomainModel>): List<DeviceItemUiModel> = devices.map {
@@ -87,11 +85,11 @@ class DevicesDelegate(
         deviceName = device.deviceName,
         id = device.deviceId,
         apps = device.apps
-            .map { mapToUi(it) }
+            .map { mapToUi(it) },
     )
 
     private fun mapToUi(app: DeviceAppDomainModel) = DeviceAppUiModel(
         name = app.name,
-        packageName = app.packageName
+        packageName = app.packageName,
     )
 }

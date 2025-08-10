@@ -36,7 +36,7 @@ import org.jetbrains.compose.resources.painterResource
 
 private val iconsSize = 8.dp
 
-private const val notEnabledOpacity = 0.3f
+private const val NOT_ENABLED_OPACITY = 0.3f
 
 @Composable
 fun HeaderLabelItem(
@@ -63,7 +63,7 @@ fun HeaderLabelItem(
             imageVector = Icons.Rounded.FilterAlt,
             contentDescription = "Filter",
             colorFilter = ColorFilter.tint(
-                if (isFiltered) textColor else textColor.copy(alpha = notEnabledOpacity)
+                if (isFiltered) textColor else textColor.copy(alpha = NOT_ENABLED_OPACITY),
             ),
             modifier = Modifier.size(14.dp)
                 .graphicsLayer {
@@ -89,7 +89,6 @@ fun HeaderLabelItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-
             // image to not have paddings
             Box(
                 modifier = Modifier
@@ -100,7 +99,8 @@ fun HeaderLabelItem(
                     }
                     .clickable(onClick = {
                         clickOnSort(SortedByUiModel.Enabled.Ascending)
-                    }), contentAlignment = Alignment.BottomCenter
+                    }),
+                contentAlignment = Alignment.BottomCenter,
             ) {
                 Image(
                     painter = painterResource(Res.drawable.arrow_up_cropped),
@@ -109,35 +109,38 @@ fun HeaderLabelItem(
                         when (sortedBy) {
                             SortedByUiModel.Enabled.Ascending -> textColor
                             SortedByUiModel.Enabled.Descending,
-                            SortedByUiModel.None -> textColor.copy(alpha = notEnabledOpacity)
-                        }
+                            SortedByUiModel.None,
+                            -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
+                        },
                     ),
-                    modifier = Modifier.size(iconsSize)
+                    modifier = Modifier.size(iconsSize),
                 )
             }
             Box(
                 modifier = Modifier
                     .size(14.dp)
                     .graphicsLayer {
-                        alpha = if(isHover || sortedBy is SortedByUiModel.Enabled.Descending) 1f else 0f
+                        alpha = if (isHover || sortedBy is SortedByUiModel.Enabled.Descending) 1f else 0f
                     }
                     .clickable(
                         onClick = {
                             clickOnSort(SortedByUiModel.Enabled.Descending)
-                        }
-                    ), contentAlignment = Alignment.TopCenter) {
+                        },
+                    ),
+                contentAlignment = Alignment.TopCenter,
+            ) {
                 Image(
                     painter = painterResource(Res.drawable.arrow_up_cropped),
                     contentDescription = "Sort descending",
                     colorFilter = ColorFilter.tint(
                         when (sortedBy) {
-                            SortedByUiModel.Enabled.Ascending -> textColor.copy(alpha = notEnabledOpacity)
+                            SortedByUiModel.Enabled.Ascending -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
                             SortedByUiModel.Enabled.Descending -> textColor
-                            SortedByUiModel.None -> textColor.copy(alpha = notEnabledOpacity)
-                        }
+                            SortedByUiModel.None -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
+                        },
                     ),
                     modifier = Modifier.size(iconsSize)
-                        .rotate(180f)
+                        .rotate(180f),
                 )
             }
         }

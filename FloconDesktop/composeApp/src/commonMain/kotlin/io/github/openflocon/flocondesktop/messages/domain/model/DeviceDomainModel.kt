@@ -5,5 +5,5 @@ import io.github.openflocon.flocondesktop.DeviceId
 data class DeviceDomainModel(
     val deviceId: DeviceId,
     val deviceName: String,
-    val apps: List<DeviceAppDomainModel>
+    val apps: List<DeviceAppDomainModel>,
 )

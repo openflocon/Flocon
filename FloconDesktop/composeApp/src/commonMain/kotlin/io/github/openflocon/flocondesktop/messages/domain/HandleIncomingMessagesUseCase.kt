@@ -35,8 +35,8 @@ class HandleIncomingMessagesUseCase(
         apps = listOf(
             DeviceAppDomainModel(
                 name = message.appName,
-                packageName = message.appPackageName
-            )
-        )
+                packageName = message.appPackageName,
+            ),
+        ),
     )
 }

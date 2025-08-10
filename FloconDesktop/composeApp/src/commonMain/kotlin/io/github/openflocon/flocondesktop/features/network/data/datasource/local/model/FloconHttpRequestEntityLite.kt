@@ -1,8 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.data.datasource.local.model
 
 import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 
 data class FloconHttpRequestEntityLite(
     val uuid: String,

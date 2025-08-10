@@ -19,9 +19,9 @@ class ResetCurrentDeviceSelectedAnalyticsUseCase(
         analyticsRepository.deleteAnalytics(
             deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                 deviceId = deviceId,
-                packageName = packageName
+                packageName = packageName,
             ),
-            analyticsId = analyticsId
+            analyticsId = analyticsId,
         )
     }
 }

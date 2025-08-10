@@ -23,7 +23,7 @@ interface QueryDao {
     fun observeSuccessQueriesByDeviceId(
         deviceId: String,
         packageName: String,
-        databaseId: String
+        databaseId: String,
     ): Flow<List<String>>
 
     @Query(

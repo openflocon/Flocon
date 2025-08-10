@@ -14,7 +14,6 @@ import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.MethodFilterState
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.previewMethodFilterState
-import io.github.openflocon.flocondesktop.features.network.ui.previewFilterUiState
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.MethodView
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -28,7 +27,7 @@ fun MethodFilterDropdown(
 ) {
     DropdownMenu(
         expanded = expanded,
-        onDismissRequest = onDismissRequest
+        onDismissRequest = onDismissRequest,
     ) {
         MethodFilterDropdownContent(filterState = filterState, onItemClicked = onItemClicked)
     }
@@ -37,7 +36,7 @@ fun MethodFilterDropdown(
 @Composable
 private fun MethodFilterDropdownContent(
     filterState: MethodFilterState,
-    onItemClicked: (NetworkMethodUi) -> Unit
+    onItemClicked: (NetworkMethodUi) -> Unit,
 ) {
     Column {
         filterState.items.fastForEach { item ->
@@ -48,7 +47,7 @@ private fun MethodFilterDropdownContent(
                     modifier = Modifier.alpha(alpha),
                     onClick = {
                         onItemClicked(item.method)
-                    }
+                    },
                 )
             }
         }
@@ -61,7 +60,7 @@ private fun MethodFilterDropdownContentPreview() {
     FloconTheme {
         MethodFilterDropdownContent(
             filterState = previewMethodFilterState(),
-            onItemClicked = {}
+            onItemClicked = {},
         )
     }
 }

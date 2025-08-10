@@ -12,7 +12,6 @@ import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Drafts
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -50,10 +49,10 @@ fun FileItemRow(
     ) {
         Row(
             modifier =
-                modifier
-                    .clickable {
-                        onClick(file)
-                    }.padding(vertical = 8.dp, horizontal = 16.dp),
+            modifier
+                .clickable {
+                    onClick(file)
+                }.padding(vertical = 8.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(

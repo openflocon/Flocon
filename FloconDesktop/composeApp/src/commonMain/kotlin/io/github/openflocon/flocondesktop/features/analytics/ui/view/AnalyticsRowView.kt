@@ -61,7 +61,7 @@ fun AnalyticsRowView(
                     Modifier
                         .background(
                             shape = RoundedCornerShape(20.dp),
-                            color = Color.White.copy(alpha = 0.1f)
+                            color = Color.White.copy(alpha = 0.1f),
                         )
                         .padding(horizontal = 12.dp, vertical = 1.dp),
                 ) {
@@ -81,8 +81,8 @@ fun AnalyticsRowView(
                 Text(
                     text = "...",
                     modifier =
-                        Modifier
-                            .padding(horizontal = 4.dp),
+                    Modifier
+                        .padding(horizontal = 4.dp),
                     style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                     color = FloconTheme.colorPalette.onPrimaryContainer,
                 )

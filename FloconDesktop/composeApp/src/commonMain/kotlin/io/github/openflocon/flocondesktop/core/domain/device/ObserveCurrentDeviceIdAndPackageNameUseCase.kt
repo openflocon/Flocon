@@ -11,7 +11,7 @@ class ObserveCurrentDeviceIdAndPackageNameUseCase(
 ) {
     operator fun invoke(): Flow<DeviceIdAndPackageNameDomainModel?> = combine(
         devicesRepository.currentDevice,
-        devicesRepository.currentDeviceApp
+        devicesRepository.currentDeviceApp,
     ) { device, app ->
         if (device != null && app != null) {
             DeviceIdAndPackageNameDomainModel(deviceId = device.deviceId, packageName = app.packageName)

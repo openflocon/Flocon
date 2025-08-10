@@ -13,6 +13,6 @@ interface LocalDatabaseDataSource {
 
     fun observeLastSuccessQuery(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        databaseId: DeviceDataBaseId
+        databaseId: DeviceDataBaseId,
     ): Flow<List<String>>
 }

@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.messages.ui
 
-import androidx.lifecycle.viewModelScope
 import io.github.openflocon.flocondesktop.SERVER_PORT
 import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.common.Failure
@@ -42,27 +41,26 @@ class MessagesServerDelegate(
                     },
                     doOnFailure = {
                         delay(3.seconds)
-                    }
+                    },
                 )
             }
         }
     }
 
-
-
-    private fun startServer(): Either<Throwable, Unit> {
-        return try {
-            startServerUseCase()
-            Success(Unit)
-        } catch (t: Throwable) {
-            feedbackDisplayer.displayMessage(buildString {
+    private fun startServer(): Either<Throwable, Unit> = try {
+        startServerUseCase()
+        Success(Unit)
+    } catch (t: Throwable) {
+        feedbackDisplayer.displayMessage(
+            buildString {
                 append("Cannot start server on port $SERVER_PORT")
                 t.message?.let {
                     append(" : ")
                     append(it)
                 }
-            }, type = FeedbackDisplayer.MessageType.Error)
-            Failure(t)
-        }
+            },
+            type = FeedbackDisplayer.MessageType.Error,
+        )
+        Failure(t)
     }
 }

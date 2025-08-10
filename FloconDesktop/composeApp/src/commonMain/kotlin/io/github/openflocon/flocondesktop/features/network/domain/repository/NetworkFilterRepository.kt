@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.Flow
 interface NetworkFilterRepository {
     suspend fun get(
         deviceId: DeviceId,
-        column: NetworkTextFilterColumns
+        column: NetworkTextFilterColumns,
     ): TextFilterStateDomainModel?
 
     fun observe(deviceId: DeviceId): Flow<Map<NetworkTextFilterColumns, TextFilterStateDomainModel>>
     suspend fun update(
         deviceId: DeviceId,
         column: NetworkTextFilterColumns,
-        newValue: TextFilterStateDomainModel
+        newValue: TextFilterStateDomainModel,
     )
 }

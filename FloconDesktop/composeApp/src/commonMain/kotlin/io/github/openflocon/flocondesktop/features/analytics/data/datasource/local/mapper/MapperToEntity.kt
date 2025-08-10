@@ -5,7 +5,7 @@ import io.github.openflocon.flocondesktop.features.analytics.domain.model.Analyt
 import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 
 internal fun AnalyticsItemDomainModel.toEntity(
-    deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
 ) = AnalyticsItemEntity(
     analyticsTableId = analyticsTableId,
     createdAt = createdAt,

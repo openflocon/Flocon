@@ -6,7 +6,6 @@ actual fun createFloconWindowState(): FloconWindowState {
     TODO("Not yet implemented")
 }
 
-
 @Composable
 actual fun FloconWindow(
     title: String,

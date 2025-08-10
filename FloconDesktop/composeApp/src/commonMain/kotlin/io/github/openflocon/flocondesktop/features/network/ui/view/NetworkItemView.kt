@@ -93,8 +93,8 @@ fun NetworkItemView(
             MethodView(
                 method = state.method,
                 modifier =
-                    Modifier
-                        .width(columnWidths.methodWidth),
+                Modifier
+                    .width(columnWidths.methodWidth),
             )
 
             // Route - Takes remaining space (weight)
@@ -119,7 +119,7 @@ fun NetworkItemView(
                             modifier = Modifier.weight(2f)
                                 .background(
                                     color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
-                                    shape = RoundedCornerShape(4.dp)
+                                    shape = RoundedCornerShape(4.dp),
                                 )
                                 .padding(horizontal = 8.dp, vertical = 6.dp),
                         )
@@ -135,7 +135,7 @@ fun NetworkItemView(
                             modifier = Modifier.weight(2f)
                                 .background(
                                     color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
-                                    shape = RoundedCornerShape(4.dp)
+                                    shape = RoundedCornerShape(4.dp),
                                 )
                                 .padding(horizontal = 8.dp, vertical = 6.dp),
                         )
@@ -151,7 +151,7 @@ fun NetworkItemView(
                             modifier = Modifier.weight(2f)
                                 .background(
                                     color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
-                                    shape = RoundedCornerShape(4.dp)
+                                    shape = RoundedCornerShape(4.dp),
                                 )
                                 .padding(horizontal = 8.dp, vertical = 6.dp),
                         )
@@ -187,7 +187,7 @@ private fun ItemViewPreview() {
         NetworkItemView(
             modifier = Modifier.fillMaxWidth(),
             state = previewNetworkItemViewState(),
-            onAction = {}
+            onAction = {},
         )
     }
 }

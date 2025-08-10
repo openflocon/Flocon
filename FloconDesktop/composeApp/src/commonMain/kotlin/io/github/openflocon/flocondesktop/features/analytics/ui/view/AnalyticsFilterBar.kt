@@ -58,7 +58,7 @@ fun AnalyticsFilterBar(
         )
         FloconIconButton(
             imageVector = Icons.Outlined.Delete,
-            onClick = onResetClicked
+            onClick = onResetClicked,
         )
     }
 }

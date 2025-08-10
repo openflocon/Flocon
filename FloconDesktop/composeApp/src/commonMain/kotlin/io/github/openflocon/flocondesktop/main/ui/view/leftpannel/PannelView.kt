@@ -11,7 +11,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -43,11 +42,11 @@ fun PannelView(
     val shape = RoundedCornerShape(8.dp)
     val shadow by animateDpAsState(
         targetValue = if (isSelected) 6.dp else 0.dp,
-        label = "shadow"
+        label = "shadow",
     )
     val color by animateColorAsState(
         targetValue = if (isSelected) FloconTheme.colorPalette.panel else FloconTheme.colorPalette.surface,
-        label = "color"
+        label = "color",
     )
 
     Row(
@@ -57,26 +56,26 @@ fun PannelView(
             .background(color)
             .clickable(onClick = onClick, interactionSource = null, indication = null)
             .padding(horizontal = 12.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             modifier = Modifier
                 .size(16.dp),
             imageVector = icon,
             contentDescription = "Description de mon image",
-            tint = FloconTheme.colorPalette.onSurface
+            tint = FloconTheme.colorPalette.onSurface,
         )
         AnimatedVisibility(
             expanded,
             enter = fadeIn(),
-            exit = fadeOut(tween(100))
+            exit = fadeOut(tween(100)),
         ) {
             Text(
                 text = text,
                 color = FloconTheme.colorPalette.onSurface,
                 style = FloconTheme.typography.bodyMedium,
                 maxLines = 1,
-                modifier = Modifier.padding(start = 12.dp)
+                modifier = Modifier.padding(start = 12.dp),
             )
         }
     }
@@ -91,7 +90,7 @@ private fun PannelViewPreview() {
             text = "text",
             isSelected = false,
             onClick = {},
-            expanded = false
+            expanded = false,
         )
     }
 }
@@ -105,7 +104,7 @@ private fun PannelViewPreview_Selected() {
             text = "text",
             isSelected = true,
             onClick = {},
-            expanded = false
+            expanded = false,
         )
     }
 }

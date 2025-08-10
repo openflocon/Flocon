@@ -24,8 +24,8 @@ import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowSta
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkJsonUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiState
@@ -45,7 +45,7 @@ fun NetworkScreen(modifier: Modifier = Modifier) {
     NetworkScreen(
         uiState = uiState,
         onAction = viewModel::onAction,
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -67,8 +67,8 @@ fun NetworkScreen(
                         interactionSource = null,
                         indication = null,
                         enabled = uiState.detailState != null,
-                        onClick = { onAction(NetworkAction.ClosePanel) }
-                    )
+                        onClick = { onAction(NetworkAction.ClosePanel) },
+                    ),
             ) {
                 Text(
                     text = "Network",
@@ -84,7 +84,7 @@ fun NetworkScreen(
                         .fillMaxWidth()
                         .background(FloconTheme.colorPalette.panel)
                         .padding(horizontal = 12.dp),
-                    onAction = onAction
+                    onAction = onAction,
                 )
                 NetworkItemHeaderView(
                     columnWidths = columnWidths,
@@ -106,7 +106,7 @@ fun NetworkScreen(
                     ) {
                         items(
                             items = uiState.items,
-                            key = NetworkItemViewState::uuid
+                            key = NetworkItemViewState::uuid,
                         ) {
                             NetworkItemView(
                                 state = it,
@@ -114,26 +114,39 @@ fun NetworkScreen(
                                 onAction = onAction,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .animateItem()
+                                    .animateItem(),
                             )
                         }
                     }
                 }
             }
-            FloconPanel(
-                contentState = uiState.detailState,
-                modifier = Modifier.align(Alignment.CenterEnd)
+            AnimatedContent(
+                targetState = uiState.detailState,
+                transitionSpec = {
+                    slideIntoContainer(SlideDirection.Start)
+                        .togetherWith(slideOutOfContainer(SlideDirection.End))
+                },
+                contentKey = { it != null },
+                contentAlignment = Alignment.TopEnd,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .requiredWidth(500.dp)
+                    .align(Alignment.TopEnd),
             ) {
-                NetworkDetailView(
-                    modifier = Modifier.fillMaxSize(),
-                    state = it,
-                    onAction = onAction
-                )
+                if (it != null) {
+                    NetworkDetailView(
+                        modifier = Modifier.fillMaxSize(),
+                        state = it,
+                        onAction = onAction,
+                    )
+                } else {
+                    Box(Modifier.fillMaxSize())
+                }
             }
         }
     }
 
-    val states = remember { mutableStateMapOf<NetworkJsonUi, FloconWindowState>() }
+    val states = remember { mutableStateMapOf<NetworkBodyDetailUi, FloconWindowState>() }
 
     LaunchedEffect(uiState.contentState.detailJsons) {
         val deletedJson = states.keys.filter { key -> uiState.contentState.detailJsons.none { key.id == it.id } }
@@ -142,7 +155,7 @@ fun NetworkScreen(
         deletedJson.forEach { states.remove(it) }
         addedJson.forEach {
             states.put(
-                it, createFloconWindowState()
+                it, createFloconWindowState(),
             )
         }
     }
@@ -153,10 +166,12 @@ fun NetworkScreen(
             val state = states[item]
 
             if (state != null) {
-                NetworkJsonScreen(
-                    json = item,
+                NetworkBodyWindow(
+                    body = item,
                     state = state,
-                    onCloseRequest = { onAction(NetworkAction.CloseJsonDetail(item.id)) }
+                    onCloseRequest = {
+                        onAction(NetworkAction.CloseJsonDetail(item.id))
+                    },
                 )
             }
         }
@@ -176,12 +191,12 @@ private fun NetworkScreenPreview() {
                     previewGraphQlItemViewState(),
                     previewNetworkItemViewState(),
                 )
-            }
+            },
         )
 
         NetworkScreen(
             uiState = uiState,
-            onAction = {}
+            onAction = {},
         )
     }
 }

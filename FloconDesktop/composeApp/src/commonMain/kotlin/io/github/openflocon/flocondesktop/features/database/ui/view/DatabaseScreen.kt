@@ -20,7 +20,7 @@ import io.github.openflocon.flocondesktop.features.database.ui.DatabaseViewModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.DeviceDataBaseUiModel
-import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabaseScreenStateQueries
+import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabasesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
@@ -32,6 +32,7 @@ fun DatabaseScreen(modifier: Modifier = Modifier) {
     val viewModel: DatabaseViewModel = koinViewModel()
     val deviceDataBases by viewModel.deviceDataBases.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val recentQueries by viewModel.recentQueries.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {
         viewModel.onVisible()
         onDispose {
@@ -44,6 +45,7 @@ fun DatabaseScreen(modifier: Modifier = Modifier) {
         executeQuery = viewModel::executeQuery,
         clearQuery = viewModel::clearQuery,
         state = state,
+        recentQueries = recentQueries,
         modifier = modifier,
     )
 }
@@ -54,6 +56,7 @@ fun DatabaseScreen(
     onDatabaseSelected: (DeviceDataBaseUiModel) -> Unit,
     executeQuery: (query: String) -> Unit,
     clearQuery: () -> Unit,
+    recentQueries: List<String>,
     state: DatabaseScreenState,
     modifier: Modifier = Modifier,
 ) {
@@ -90,12 +93,19 @@ fun DatabaseScreen(
                 )
             }
 
+            recentQueries.takeIf { it.isNotEmpty() }?.let {
+                DatabaseQueriesView(
+                    modifier = Modifier.fillMaxWidth(),
+                    queries = recentQueries,
+                    onClickQuery = {
+                        query = it
+                    },
+                )
+            }
+
             DatabaseContentView(
                 state = state,
                 modifier = Modifier.fillMaxWidth(),
-                onClickQuery = {
-                    query = it
-                },
             )
         }
     }
@@ -111,6 +121,7 @@ private fun DatabaseScreenPreview() {
             executeQuery = {},
             clearQuery = {},
             state = DatabaseScreenState.Idle,
+            recentQueries = emptyList(),
         )
     }
 }
@@ -129,6 +140,7 @@ private fun DatabaseScreenPreview_Result() {
                     "query result",
                 ),
             ),
+            recentQueries = listOf("SELECT * FROM TOTO", "SELECT * FROM TATA"),
         )
     }
 }
@@ -142,7 +154,8 @@ private fun DatabaseScreenPreview_Queries() {
             onDatabaseSelected = {},
             executeQuery = {},
             clearQuery = {},
-            state = previewDatabaseScreenStateQueries(),
+            recentQueries = listOf("SELECT * FROM TOTO", "SELECT * FROM TATA"),
+            state = previewDatabaseScreenState(),
         )
     }
 }

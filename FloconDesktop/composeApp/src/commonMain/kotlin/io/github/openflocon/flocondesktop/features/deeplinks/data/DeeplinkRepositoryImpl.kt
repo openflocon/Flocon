@@ -30,7 +30,7 @@ class DeeplinkRepositoryImpl(
                     localDeeplinkDataSource.update(
                         deviceIdAndPackageNameDomainModel = DeviceIdAndPackageNameDomainModel(
                             deviceId = deviceId,
-                            packageName = message.appPackageName
+                            packageName = message.appPackageName,
                         ),
                         deeplinks = it.toDomain(),
                     )
@@ -39,9 +39,8 @@ class DeeplinkRepositoryImpl(
         }
     }
 
-    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
-        localDeeplinkDataSource.observe(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observe(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override fun executeDeeplink(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, adbPath: String, deeplink: String) {
         executeAdbCommand(

@@ -14,7 +14,6 @@ interface ViewModelEvent<E> {
     fun ViewModel.sendEvents(vararg event: E)
 
     interface Event
-
 }
 
 class ViewModelEventImpl<E : ViewModelEvent.Event> : ViewModelEvent<E> {
@@ -27,5 +26,4 @@ class ViewModelEventImpl<E : ViewModelEvent.Event> : ViewModelEvent<E> {
             event.forEach { _events.emit(it) }
         }
     }
-
 }

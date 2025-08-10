@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CopyAll
-import androidx.compose.material.icons.outlined.Details
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.OpenInFull
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,7 +30,7 @@ fun DetailSectionTitleView(
 ) {
     val rotate by animateFloatAsState(
         targetValue = if (isExpanded) 180f else 0f,
-        label = "rotate"
+        label = "rotate",
     )
 
     Row(
@@ -44,13 +41,13 @@ fun DetailSectionTitleView(
         if (onToggle != null) {
             // Toggle Button for Request Body
             FloconIconButton(
-                onClick = { onToggle(!isExpanded) }
+                onClick = { onToggle(!isExpanded) },
             ) {
                 FloconIcon(
                     imageVector = Icons.Outlined.ExpandMore,
                     modifier = Modifier.graphicsLayer {
                         rotationZ = rotate
-                    }
+                    },
                 )
             }
         }
@@ -64,13 +61,13 @@ fun DetailSectionTitleView(
         if (onDetail != null) {
             FloconIconButton(
                 onClick = onDetail,
-                imageVector = Icons.Outlined.OpenInFull
+                imageVector = Icons.Outlined.OpenInFull,
             )
         }
         if (onCopy != null) {
             FloconIconButton(
                 imageVector = Icons.Outlined.CopyAll,
-                onClick = onCopy
+                onClick = onCopy,
             )
         }
     }

@@ -50,14 +50,14 @@ class AnalyticsRepositoryImpl(
                             analyticsLocalDataSource.insert(
                                 deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                                     deviceId = deviceId,
-                                    packageName = message.appPackageName
+                                    packageName = message.appPackageName,
                                 ),
                                 items = analytics,
                             )
                             remoteAnalyticsDataSource.clearReceivedItem(
                                 deviceIdAndPackageName = FloconDeviceIdAndPackageName(
                                     deviceId = deviceId,
-                                    packageName = message.appPackageName
+                                    packageName = message.appPackageName,
                                 ),
                                 items = analytics.map { it.itemId },
                             )
@@ -76,21 +76,21 @@ class AnalyticsRepositoryImpl(
 
     override fun observeAnalytics(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        analyticsTableId: AnalyticsTableId
+        analyticsTableId: AnalyticsTableId,
     ): Flow<List<AnalyticsItemDomainModel>> = analyticsLocalDataSource.observe(
         deviceIdAndPackageName = deviceIdAndPackageName,
-        analyticsTableId = analyticsTableId
+        analyticsTableId = analyticsTableId,
     )
         .flowOn(dispatcherProvider.data)
 
     override suspend fun deleteAnalytics(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        analyticsId: AnalyticsIdentifierDomainModel
+        analyticsId: AnalyticsIdentifierDomainModel,
     ) {
         withContext(dispatcherProvider.data) {
             analyticsLocalDataSource.delete(
                 deviceIdAndPackageName = deviceIdAndPackageName,
-                analyticsId = analyticsId
+                analyticsId = analyticsId,
             )
         }
     }
@@ -99,15 +99,13 @@ class AnalyticsRepositoryImpl(
         deviceAnalyticsDataSource.selectDeviceAnalytics(
             deviceIdAndPackageName = deviceIdAndPackageName,
             analyticsTableId = analyticsTableId,
-            deviceAnalytics = analyticsLocalDataSource.getDeviceAnalytics(deviceIdAndPackageName = deviceIdAndPackageName)
+            deviceAnalytics = analyticsLocalDataSource.getDeviceAnalytics(deviceIdAndPackageName = deviceIdAndPackageName),
         )
     }
 
-    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> =
-        deviceAnalyticsDataSource.observeSelectedDeviceAnalytics(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> = deviceAnalyticsDataSource.observeSelectedDeviceAnalytics(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
-        analyticsLocalDataSource.observeDeviceAnalytics(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> = analyticsLocalDataSource.observeDeviceAnalytics(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 }

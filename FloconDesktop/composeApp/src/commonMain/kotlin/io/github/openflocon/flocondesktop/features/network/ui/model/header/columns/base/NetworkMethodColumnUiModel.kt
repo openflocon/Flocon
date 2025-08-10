@@ -12,7 +12,7 @@ data class NetworkMethodColumnUiModel(
     companion object {
         val EMPTY = NetworkMethodColumnUiModel(
             sortedBy = SortedByUiModel.None,
-            filter = MethodFilterState(isEnabled = false, items = emptyList())
+            filter = MethodFilterState(isEnabled = false, items = emptyList()),
         )
     }
 }

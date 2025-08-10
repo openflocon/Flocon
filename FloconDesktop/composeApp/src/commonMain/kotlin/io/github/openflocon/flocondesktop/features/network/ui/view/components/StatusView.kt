@@ -50,10 +50,10 @@ private fun StatusView_Preview() {
     FloconTheme {
         StatusView(
             status =
-                NetworkStatusUi(
-                    text = "200",
-                    isSuccess = true,
-                ),
+            NetworkStatusUi(
+                text = "200",
+                isSuccess = true,
+            ),
         )
     }
 }

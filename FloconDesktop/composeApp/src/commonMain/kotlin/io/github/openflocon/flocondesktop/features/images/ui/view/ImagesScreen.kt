@@ -95,14 +95,14 @@ private fun ImagesScreen(
                     Box(modifier = Modifier.weight(1f))
                     FloconIconButton(
                         imageVector = Icons.Outlined.Delete,
-                        onClick = onReset
+                        onClick = onReset,
                     )
                 }
             }
             when (state) {
                 ImagesStateUiModel.Empty,
                 ImagesStateUiModel.Idle,
-                    -> Box(Modifier)
+                -> Box(Modifier)
 
                 is ImagesStateUiModel.WithImages -> {
                     val gridPadding = 12.dp
