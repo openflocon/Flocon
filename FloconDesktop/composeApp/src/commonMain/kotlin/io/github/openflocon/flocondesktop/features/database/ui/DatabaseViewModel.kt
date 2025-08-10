@@ -16,8 +16,8 @@ import io.github.openflocon.flocondesktop.features.database.ui.model.QueryResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,15 +33,18 @@ class DatabaseViewModel(
 
     private val queryResult = MutableStateFlow<QueryResultUiModel?>(null)
 
-    val state: StateFlow<DatabaseScreenState> = combine(
-        queryResult,
-        observeLastSuccessQueriesUseCase(),
-    ) { queryResult, lastSuccessQueries ->
-        if (queryResult == null) {
-            DatabaseScreenState.Queries(lastSuccessQueries)
-        } else {
-            DatabaseScreenState.Result(queryResult)
-        }
+    val recentQueries: StateFlow<List<String>> = observeLastSuccessQueriesUseCase()
+        .map { it.take(5) }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList(),
+        )
+
+    val state: StateFlow<DatabaseScreenState> = queryResult.map { queryResult ->
+        if (queryResult == null) DatabaseScreenState.Idle
+        else DatabaseScreenState.Result(queryResult)
     }.flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
@@ -75,9 +78,9 @@ class DatabaseViewModel(
             QueryResultUiModel.Values(
                 columns = this.columns,
                 rows =
-                values.map {
-                    DatabaseRowUiModel(it)
-                },
+                    values.map {
+                        DatabaseRowUiModel(it)
+                    },
             )
 
         is DatabaseExecuteSqlResponseDomainModel.UpdateDelete -> QueryResultUiModel.Text("Done, affected=$affectedCount")
