@@ -62,6 +62,23 @@ class FloconNetworkPluginImpl(
     }
 
     private fun loadMocksFromFile(): List<MockNetworkResponse> {
+        return listOf(
+            MockNetworkResponse(
+                expectation = MockNetworkResponse.Expectation(
+                    method = "*",
+                    urlPattern = ".*todo.*",
+                    pattern = Pattern.compile(".*"),
+                ),
+                response = MockNetworkResponse.Response(
+                    httpCode = 201,
+                    mediaType = "application/json",
+                    body = "{ \"florent\" : \"champigny\" }",
+                    delay = 0L,
+                    headers = emptyMap(),
+                )
+            )
+        )
+
         return try {
             val file = File(context.filesDir, "flocon_network_mocks.json")
             if (!file.exists()) {
