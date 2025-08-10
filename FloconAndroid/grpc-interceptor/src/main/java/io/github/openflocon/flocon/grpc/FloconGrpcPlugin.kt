@@ -4,9 +4,7 @@ import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import java.util.concurrent.ConcurrentHashMap
 
-internal class FloconGrpcPlugin(
-    private val floconClient: FloconApp.Client? = null,
-) {
+internal class FloconGrpcPlugin() {
 
     private val requests = ConcurrentHashMap<String,FloconNetworkRequest.Request>()
 
@@ -25,7 +23,7 @@ internal class FloconGrpcPlugin(
             floconNetworkType = "grpc",
         )
 
-        (floconClient ?: FloconApp.instance?.client)?.networkPlugin?.log(call)
+        FloconApp.instance?.client?.networkPlugin?.log(call)
 
         requests.remove(callId)
     }

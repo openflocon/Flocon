@@ -9,12 +9,16 @@ import okio.Buffer
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
-class FloconOkhttpInterceptor(
-    private val floconClient: FloconApp.Client? = null,
-) : Interceptor {
+class FloconOkhttpInterceptor() : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
+        val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin
+        if (floconNetworkPlugin == null) {
+            // on no op, do not intercept the call, just execute it
+            return chain.proceed(chain.request())
+        }
+
         val request = chain.request()
 
         val requestedAt = System.currentTimeMillis()
@@ -86,7 +90,7 @@ class FloconOkhttpInterceptor(
             )
         )
 
-        (floconClient ?: FloconApp.instance?.client)?.networkPlugin?.log(floconRequest)
+        floconNetworkPlugin.log(floconRequest)
 
         // Rebuild the response with a new body so that the chain can continue
         // The original response body is already consumed by peekBody, so no need to rebuild with it.

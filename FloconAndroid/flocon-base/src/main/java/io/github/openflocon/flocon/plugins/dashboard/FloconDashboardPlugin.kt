@@ -8,8 +8,11 @@ import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
 
 
 fun FloconApp.dashboard(id: String, block: DashboardBuilder.() -> Unit) {
-    val dashboardConfig = dashboardConfig(id = id, block)
-    this.client?.dashboardPlugin?.registerDashboard(dashboardConfig)
+    this.client?.dashboardPlugin?.let {
+        // on no op, this callback is never called
+        val dashboardConfig = dashboardConfig(id = id, block)
+        it.registerDashboard(dashboardConfig)
+    }
 }
 
 interface FloconDashboardPlugin : FloconPlugin {
