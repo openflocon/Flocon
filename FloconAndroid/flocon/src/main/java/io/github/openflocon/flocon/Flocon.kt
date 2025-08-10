@@ -37,6 +37,8 @@ object Flocon : FloconApp() {
         scope.launch {
             start(newClient)
         }
+
+        super.initialize(context)
     }
 
     private suspend fun start(client: FloconClientImpl) {
