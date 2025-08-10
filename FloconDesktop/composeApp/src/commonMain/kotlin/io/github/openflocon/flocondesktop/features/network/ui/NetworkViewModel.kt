@@ -15,7 +15,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.delegate.HeaderDel
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkJsonUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkBodyDetailUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -164,9 +164,9 @@ class NetworkViewModel(
                 return
 
             state.copy(
-                detailJsons = state.detailJsons + NetworkJsonUi(
+                detailJsons = state.detailJsons + NetworkBodyDetailUi(
                     id = action.id,
-                    json = action.json
+                    text = action.json
                 )
             )
         }

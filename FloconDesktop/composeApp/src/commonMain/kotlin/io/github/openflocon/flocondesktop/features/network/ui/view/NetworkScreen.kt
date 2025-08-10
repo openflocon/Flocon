@@ -30,7 +30,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkJsonUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiState
@@ -150,7 +150,7 @@ fun NetworkScreen(
         }
     }
 
-    val states = remember { mutableStateMapOf<NetworkJsonUi, FloconWindowState>() }
+    val states = remember { mutableStateMapOf<NetworkBodyDetailUi, FloconWindowState>() }
 
     LaunchedEffect(uiState.contentState.detailJsons) {
         val deletedJson = states.keys.filter { key -> uiState.contentState.detailJsons.none { key.id == it.id } }
@@ -170,10 +170,12 @@ fun NetworkScreen(
             val state = states[item]
 
             if (state != null) {
-                NetworkJsonScreen(
-                    json = item,
+                NetworkBodyWindow(
+                    body = item,
                     state = state,
-                    onCloseRequest = { onAction(NetworkAction.CloseJsonDetail(item.id)) }
+                    onCloseRequest = {
+                        onAction(NetworkAction.CloseJsonDetail(item.id))
+                    }
                 )
             }
         }
