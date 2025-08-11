@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.analytics.data.datasource.device
 
+import io.github.openflocon.data.core.analytics.datasource.DeviceAnalyticsDataSource
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel

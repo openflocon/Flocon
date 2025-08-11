@@ -4,7 +4,7 @@ import io.github.openflocon.domain.files.repository.FilesRepository
 import io.github.openflocon.flocondesktop.features.files.data.FilesRepositoryImpl
 import io.github.openflocon.data.core.files.datasource.FilesRemoteDataSource
 import com.flocon.data.remote.files.datasource.FilesRemoteDataSourceImpl
-import io.github.openflocon.flocondesktop.features.files.data.datasources.LocalFilesDataSource
+import io.github.openflocon.data.core.files.datasource.FilesLocalDataSource
 import io.github.openflocon.flocondesktop.features.files.data.datasources.LocalFilesDataSourceRoom
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
@@ -20,7 +20,7 @@ val filesDataModule =
             bind<MessagesReceiverRepository>()
         }
         singleOf(::LocalFilesDataSourceRoom) {
-            bind<LocalFilesDataSource>()
+            bind<FilesLocalDataSource>()
         }
         singleOf(::FilesRemoteDataSourceImpl) bind FilesRemoteDataSource::class
     }

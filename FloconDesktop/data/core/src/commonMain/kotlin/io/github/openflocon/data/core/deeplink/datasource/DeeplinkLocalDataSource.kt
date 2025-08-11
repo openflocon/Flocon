@@ -1,10 +1,10 @@
-package io.github.openflocon.flocondesktop.features.deeplinks.data.datasource
+package io.github.openflocon.data.core.deeplink.datasource
 
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
-interface LocalDeeplinkDataSource {
+interface DeeplinkLocalDataSource {
 
     suspend fun update(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel, deeplinks: List<DeeplinkDomainModel>)
 

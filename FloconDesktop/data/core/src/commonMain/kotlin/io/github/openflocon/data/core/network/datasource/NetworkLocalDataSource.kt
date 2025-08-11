@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.network.data.datasource.local
+package io.github.openflocon.data.core.network.datasource
 
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel

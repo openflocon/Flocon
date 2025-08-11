@@ -1,9 +1,10 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.data.datasources
 
+import io.github.openflocon.data.core.sharedpreference.datasource.DeviceSharedPreferencesValuesDataSource
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceId
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceValuesResponseDomainModel
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -15,11 +16,11 @@ private data class SharedPrefKeyForDevice(
     val sharedPreferenceId: DeviceSharedPreferenceId,
 )
 
-class DeviceSharedPreferencesValuesDataSource {
+class DeviceSharedPreferencesValuesDataSourceImpl : DeviceSharedPreferencesValuesDataSource {
     private val sharedPreferencesValues =
         MutableStateFlow<Map<SharedPrefKeyForDevice, List<SharedPreferenceRowDomainModel>>>(emptyMap())
 
-    fun onSharedPreferencesValuesReceived(
+    override fun onSharedPreferencesValuesReceived(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         received: SharedPreferenceValuesResponseDomainModel,
     ) {
@@ -34,7 +35,7 @@ class DeviceSharedPreferencesValuesDataSource {
         }
     }
 
-    fun observe(
+    override fun observe(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreferenceId: DeviceSharedPreferenceId,
     ): Flow<List<SharedPreferenceRowDomainModel>> {

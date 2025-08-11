@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.analytics.data.datasource.local
 
+import io.github.openflocon.data.core.analytics.datasource.AnalyticsLocalDataSource
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.mapper.toAnalyticsDomain
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.mapper.toEntity

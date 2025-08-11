@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.images.data.datasources
+package io.github.openflocon.data.core.images.datasource
 
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel

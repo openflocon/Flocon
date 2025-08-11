@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.data.datasource.local
+package io.github.openflocon.data.core.analytics.datasource
 
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel

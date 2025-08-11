@@ -1,11 +1,11 @@
-package io.github.openflocon.flocondesktop.features.files.data.datasources
+package io.github.openflocon.data.core.files.datasource
 
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
-interface LocalFilesDataSource {
+interface FilesLocalDataSource {
     fun observeFolderContentUseCase(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         folderPath: FilePathDomainModel,

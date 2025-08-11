@@ -2,9 +2,9 @@ package io.github.openflocon.flocondesktop.features.network.data.di
 
 import io.github.openflocon.flocondesktop.features.network.data.NetworkFilterRepositoryImpl
 import io.github.openflocon.flocondesktop.features.network.data.NetworkRepositoryImpl
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkFilterLocalDataSource
+import io.github.openflocon.data.core.network.datasource.NetworkFilterLocalDataSource
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkFilterLocalDataSourceRoom
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
+import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSourceRoom
 import io.github.openflocon.domain.network.repository.NetworkFilterRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository

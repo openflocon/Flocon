@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.table.data.datasource.local
 
+import io.github.openflocon.data.core.table.datasource.TableLocalDataSource
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.mapper.toEntity
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
