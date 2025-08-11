@@ -4,7 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Folder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flocon.data.remote.common.copyToClipboard
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.files.domain.DeleteFileUseCase
