@@ -4,8 +4,11 @@ import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCall
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkResponse
+import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -16,6 +19,7 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import java.io.IOException
 import java.nio.charset.StandardCharsets
+import java.util.UUID
 
 class FloconOkhttpInterceptor() : Interceptor {
 
@@ -26,6 +30,9 @@ class FloconOkhttpInterceptor() : Interceptor {
             // on no op, do not intercept the call, just execute it
             return chain.proceed(chain.request())
         }
+
+        val floconCallId = UUID.randomUUID().toString()
+        val floconNetworkType = "http"
 
         val request = chain.request()
 
@@ -47,16 +54,41 @@ class FloconOkhttpInterceptor() : Interceptor {
                 if (it != -1L) it else requestBodyString?.toByteArray(charset)?.size?.toLong()
             }
         }
+        val requestHeadersMap =
+            request.headers.toMultimap().mapValues { it.value.joinToString(",") }
 
         val startTime = System.nanoTime()
 
-        var isMocked = false
-        val response = tryToMock(
+        val mockConfig = findMock(
             request = request,
             floconNetworkPlugin = floconNetworkPlugin,
-        )?.also {
-            isMocked = true
-        } ?: chain.proceed(request)
+        )
+        val isMocked = mockConfig != null
+
+        val floconNetworkRequest = FloconNetworkRequest(
+            url = request.url.toString(),
+            method = request.method,
+            startTime = requestedAt,
+            headers = requestHeadersMap,
+            body = requestBodyString,
+            size = requestSize,
+            isMocked = isMocked,
+        )
+
+        floconNetworkPlugin.logRequest(
+            FloconNetworkCallRequest(
+                floconCallId = floconCallId,
+                floconNetworkType = floconNetworkType,
+                isMocked = isMocked,
+                request = floconNetworkRequest,
+            )
+        )
+
+        val response = if(isMocked) {
+            executeMock(request = request, mock = mockConfig)
+        } else {
+            chain.proceed(request)
+        }
 
         val endTime = System.nanoTime()
 
@@ -78,36 +110,40 @@ class FloconOkhttpInterceptor() : Interceptor {
                 if (it != -1L) it else responseBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
             }
         }
-        val requestHeadersMap =
-            request.headers.toMultimap().mapValues { it.value.joinToString(",") }
         val responseHeadersMap =
             response.headers.toMultimap().mapValues { it.value.joinToString(",") }
 
         val isImage = responseContentType?.toString()?.startsWith("image/") == true
 
-        val floconRequest = FloconNetworkCall(
-            durationMs = durationMs,
-            floconNetworkType = "http",
-            request = FloconNetworkRequest(
-                url = request.url.toString(),
-                method = request.method,
-                startTime = requestedAt,
-                headers = requestHeadersMap,
-                body = requestBodyString,
-                size = requestSize,
-            ),
-            response = FloconNetworkResponse(
-                httpCode = response.code,
-                contentType = responseContentType?.toString(),
-                body = responseBodyString.takeUnless { isImage }, // dont send images responses bytes
-                headers = responseHeadersMap,
-                size = responseSize,
-                grpcStatus = null,
-            ),
-            isMocked = isMocked,
+        val floconCallResponse = FloconNetworkResponse(
+            httpCode = response.code,
+            contentType = responseContentType?.toString(),
+            body = responseBodyString.takeUnless { isImage }, // dont send images responses bytes
+            headers = responseHeadersMap,
+            size = responseSize,
+            grpcStatus = null,
         )
 
-        floconNetworkPlugin.log(floconRequest)
+        /*
+        floconNetworkPlugin.log(
+            FloconNetworkCall(
+                durationMs = durationMs,
+                floconNetworkType = floconNetworkType,
+                request = floconNetworkRequest,
+                response = floconCallResponse,
+                isMocked = isMocked,
+            )
+        )
+         */
+        floconNetworkPlugin.logResponse(
+            FloconNetworkCallResponse(
+                floconCallId = floconCallId,
+                durationMs = durationMs,
+                floconNetworkType = floconNetworkType,
+                isMocked = isMocked,
+                response = floconCallResponse,
+            )
+        )
 
         // Rebuild the response with a new body so that the chain can continue
         // The original response body is already consumed by peekBody, so no need to rebuild with it.
@@ -115,10 +151,10 @@ class FloconOkhttpInterceptor() : Interceptor {
         return response
     }
 
-    private fun tryToMock(
+    private fun findMock(
         request: Request,
         floconNetworkPlugin: FloconNetworkPlugin,
-    ): Response? {
+    ): MockNetworkResponse? {
         for (mock in floconNetworkPlugin.mocks) {
             val url = request.url.toString()
             val method = request.method
@@ -130,34 +166,37 @@ class FloconOkhttpInterceptor() : Interceptor {
             )
 
             if (urlMatches && methodMatches) {
-                FloconLogger.log("Request $url mocked with HTTP code ${mock.response.httpCode}")
-
-                if (mock.response.delay > 0) {
-                    try {
-                        Thread.sleep(mock.response.delay)
-                    } catch (e: InterruptedException) {
-                        Thread.currentThread().interrupt()
-                    }
-                }
-
-                val body = mock.response.body.toResponseBody(
-                    mock.response.mediaType.toMediaTypeOrNull()
-                )
-
-                return Response.Builder()
-                    .request(request)
-                    .protocol(Protocol.HTTP_1_1)
-                    .message(getHttpMessage(mock.response.httpCode))
-                    .code(mock.response.httpCode)
-                    .body(body)
-                    .apply {
-                        mock.response.headers.forEach { (name, value) ->
-                            addHeader(name, value)
-                        }
-                    }
-                    .build()
+                return mock
             }
         }
+
         return null
+    }
+
+    private fun executeMock(request: Request, mock: MockNetworkResponse): Response {
+        if (mock.response.delay > 0) {
+            try {
+                Thread.sleep(mock.response.delay)
+            } catch (e: InterruptedException) {
+                Thread.currentThread().interrupt()
+            }
+        }
+
+        val body = mock.response.body.toResponseBody(
+            mock.response.mediaType.toMediaTypeOrNull()
+        )
+
+        return Response.Builder()
+            .request(request)
+            .protocol(Protocol.HTTP_1_1)
+            .message(getHttpMessage(mock.response.httpCode))
+            .code(mock.response.httpCode)
+            .body(body)
+            .apply {
+                mock.response.headers.forEach { (name, value) ->
+                    addHeader(name, value)
+                }
+            }
+            .build()
     }
 }

@@ -15,6 +15,7 @@ data class FloconNetworkRequest(
     val headers: Map<String, String>,
     val body: String?,
     val size: Long?,
+    val isMocked: Boolean,
 )
 
 data class FloconNetworkResponse(

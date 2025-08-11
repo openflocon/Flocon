@@ -108,6 +108,7 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
                 startTime = System.currentTimeMillis(),
                 headers = headers?.toHeaders().orEmpty(),
                 size = 0, // TODO
+                isMocked = false, // cannot mock grpc
             )
         )
     }
