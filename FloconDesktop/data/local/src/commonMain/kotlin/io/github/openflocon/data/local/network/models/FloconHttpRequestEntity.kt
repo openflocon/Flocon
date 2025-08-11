@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.network.data.datasource.local.model
+package io.github.openflocon.data.local.network.models
 
 import androidx.room.Embedded
 import androidx.room.Entity

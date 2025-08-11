@@ -1,11 +1,12 @@
-package io.github.openflocon.flocondesktop.features.network.data.datasource.local
+package io.github.openflocon.data.local.network.datasource
 
 import io.github.openflocon.data.core.network.datasource.NetworkFilterLocalDataSource
+import io.github.openflocon.data.local.network.dao.NetworkFilterDao
+import io.github.openflocon.data.local.network.mapper.textFilterToDomain
+import io.github.openflocon.data.local.network.mapper.textFilterToEntity
 import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper.textFilterToDomain
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper.textFilterToEntity
-import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

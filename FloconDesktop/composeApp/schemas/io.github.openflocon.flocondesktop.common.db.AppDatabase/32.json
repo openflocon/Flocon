@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 32,
-    "identityHash": "873530f918e3a974de03bbc7d6ea7830",
+    "identityHash": "c74e4518811ed0faf0db883de7952ff8",
     "entities": [
       {
         "tableName": "FloconHttpRequestEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uuid` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `url` TEXT NOT NULL, `method` TEXT NOT NULL, `startTime` INTEGER NOT NULL, `durationMs` REAL NOT NULL, `requestHeaders` TEXT NOT NULL, `requestBody` TEXT, `requestByteSize` INTEGER NOT NULL, `responseContentType` TEXT, `responseBody` TEXT, `responseHeaders` TEXT NOT NULL, `responseByteSize` INTEGER NOT NULL, `graphql_query` TEXT, `graphql_operationType` TEXT, `graphql_isSuccess` INTEGER, `graphql_responseHttpCode` INTEGER, `http_responseHttpCode` INTEGER, `grpc_responseStatus` TEXT, PRIMARY KEY(`uuid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uuid` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `url` TEXT NOT NULL, `method` TEXT NOT NULL, `startTime` INTEGER NOT NULL, `durationMs` REAL NOT NULL, `requestHeaders` TEXT NOT NULL, `requestBody` TEXT, `requestByteSize` INTEGER NOT NULL, `responseContentType` TEXT, `responseBody` TEXT, `responseHeaders` TEXT NOT NULL, `responseByteSize` INTEGER NOT NULL, PRIMARY KEY(`uuid`))",
         "fields": [
           {
             "fieldPath": "uuid",
@@ -88,36 +88,6 @@
             "columnName": "responseByteSize",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "graphql.query",
-            "columnName": "graphql_query",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "graphql.operationType",
-            "columnName": "graphql_operationType",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "graphql.isSuccess",
-            "columnName": "graphql_isSuccess",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "graphql.responseHttpCode",
-            "columnName": "graphql_responseHttpCode",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "http.responseHttpCode",
-            "columnName": "http_responseHttpCode",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "grpc.responseStatus",
-            "columnName": "grpc_responseStatus",
-            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -876,7 +846,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '873530f918e3a974de03bbc7d6ea7830')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c74e4518811ed0faf0db883de7952ff8')"
     ]
   }
 }

@@ -1,10 +1,10 @@
-package io.github.openflocon.flocondesktop.features.network.data.datasource.local
+package io.github.openflocon.data.local.network.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.NetworkFilterEntity
+import io.github.openflocon.data.local.network.models.NetworkFilterEntity
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import kotlinx.coroutines.flow.Flow
 

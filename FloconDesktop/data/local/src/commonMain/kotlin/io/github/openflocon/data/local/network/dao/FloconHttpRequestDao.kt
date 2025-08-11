@@ -1,12 +1,12 @@
-package io.github.openflocon.flocondesktop.features.network.data.datasource.local
+package io.github.openflocon.data.local.network.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
+import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
 import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntity
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntityLite
 import kotlinx.coroutines.flow.Flow
 
 @Dao

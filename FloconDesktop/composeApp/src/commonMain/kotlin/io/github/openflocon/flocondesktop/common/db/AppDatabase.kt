@@ -6,6 +6,10 @@ import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
+import io.github.openflocon.data.local.network.dao.FloconHttpRequestDao
+import io.github.openflocon.data.local.network.dao.NetworkFilterDao
+import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
+import io.github.openflocon.data.local.network.models.NetworkFilterEntity
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.FloconDashboardDao
@@ -20,10 +24,6 @@ import io.github.openflocon.flocondesktop.features.files.data.datasources.Flocon
 import io.github.openflocon.flocondesktop.features.files.data.datasources.model.FileEntity
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.FloconImageDao
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.model.DeviceImageEntity
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.FloconHttpRequestDao
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkFilterDao
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntity
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.NetworkFilterEntity
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.FloconTableDao
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableItemEntity

@@ -1,10 +1,10 @@
-package io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper
+package io.github.openflocon.data.local.network.mapper
 
+import io.github.openflocon.data.local.network.models.FilterItemSavedEntity
+import io.github.openflocon.data.local.network.models.NetworkFilterEntity
 import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FilterItemSavedEntity
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.NetworkFilterEntity
-import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import kotlinx.serialization.json.Json
 
 fun textFilterItemToEntity(item: TextFilterStateDomainModel.FilterItem): FilterItemSavedEntity = FilterItemSavedEntity(

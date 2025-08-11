@@ -1,8 +1,8 @@
-package io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper
+package io.github.openflocon.data.local.network.mapper
 
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntity
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntityLite
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestInfosEntity
+import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
+import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
+import io.github.openflocon.data.local.network.models.FloconHttpRequestInfosEntity
 import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
 
 fun FloconHttpRequestDomainModel.toEntity(
@@ -16,9 +16,10 @@ fun FloconHttpRequestDomainModel.toEntity(
         is FloconHttpRequestDomainModel.Type.Http -> FloconHttpRequestEntity.HttpEmbedded(
             responseHttpCode = t.httpCode,
         )
+
         is FloconHttpRequestDomainModel.Type.GraphQl,
         is FloconHttpRequestDomainModel.Type.Grpc,
-        -> null
+            -> null
     },
     graphql = when (val t = this.type) {
         is FloconHttpRequestDomainModel.Type.GraphQl -> FloconHttpRequestEntity.GraphQlEmbedded(
@@ -27,17 +28,19 @@ fun FloconHttpRequestDomainModel.toEntity(
             isSuccess = t.isSuccess,
             responseHttpCode = t.httpCode,
         )
+
         is FloconHttpRequestDomainModel.Type.Http,
         is FloconHttpRequestDomainModel.Type.Grpc,
-        -> null
+            -> null
     },
     grpc = when (val t = this.type) {
         is FloconHttpRequestDomainModel.Type.Grpc -> FloconHttpRequestEntity.GrpcEmbedded(
             responseStatus = t.responseStatus,
         )
+
         is FloconHttpRequestDomainModel.Type.Http,
         is FloconHttpRequestDomainModel.Type.GraphQl,
-        -> null
+            -> null
     },
     packageName = packageName,
 )

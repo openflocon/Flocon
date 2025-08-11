@@ -1,40 +1,24 @@
-package io.github.openflocon.flocondesktop.features.network.data.datasource.local
+package io.github.openflocon.data.local.network.datasource
 
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
+import io.github.openflocon.data.local.network.dao.FloconHttpRequestDao
+import io.github.openflocon.data.local.network.mapper.toDomainModel
+import io.github.openflocon.data.local.network.mapper.toEntity
+import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
+import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
-import io.github.openflocon.flocondesktop.common.Fakes
-import io.github.openflocon.flocondesktop.features.network.data.FloconHttpRequestGenerator
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper.toDomainModel
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper.toEntity
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntity
-import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntityLite
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class NetworkLocalDataSourceRoom(
     private val dispatcherProvider: DispatcherProvider,
-    private val floconHttpRequestDao: FloconHttpRequestDao,
-    applicationScope: CoroutineScope, // Needed for init Fakes
+    private val floconHttpRequestDao: FloconHttpRequestDao
 ) : NetworkLocalDataSource {
-
-    init {
-        if (Fakes.Enabled) {
-            applicationScope.launch(dispatcherProvider.data) {
-                val fakeRequests =
-                    FloconHttpRequestGenerator.generateDynamicFakeFloconHttpRequests(count = 10)
-                fakeRequests.forEach { domainModel ->
-                    floconHttpRequestDao.upsertRequest(domainModel.toEntity(Fakes.FakeDeviceId, Fakes.FakePackageName))
-                }
-            }
-        }
-    }
 
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
