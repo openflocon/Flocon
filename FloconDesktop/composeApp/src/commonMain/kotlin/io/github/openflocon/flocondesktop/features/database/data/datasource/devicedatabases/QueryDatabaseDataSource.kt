@@ -1,8 +1,9 @@
 package io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases
 
-import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
-import io.github.openflocon.flocondesktop.Protocol
-import io.github.openflocon.flocondesktop.Server
+import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import com.flocon.data.remote.server.Server
+import com.flocon.data.remote.server.newRequestId
 import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.common.Failure
 import io.github.openflocon.flocondesktop.common.Success
@@ -13,7 +14,6 @@ import io.github.openflocon.flocondesktop.features.database.domain.model.Databas
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.model.toRemote
-import io.github.openflocon.flocondesktop.newRequestId
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first

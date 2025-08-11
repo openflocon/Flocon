@@ -1,8 +1,9 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.data.datasources
 
-import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
-import io.github.openflocon.flocondesktop.Protocol
-import io.github.openflocon.flocondesktop.Server
+import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import com.flocon.data.remote.server.Server
+import com.flocon.data.remote.server.newRequestId
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceEditSharedPreferenceValueMessage
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceGetSharedPreferenceValueMessage
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
@@ -10,7 +11,6 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.mode
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.model.toRemote
-import io.github.openflocon.flocondesktop.newRequestId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -27,9 +27,10 @@ class DeviceSharedPreferencesDataSource(
     private val selectedDeviceSharedPreferences =
         MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DeviceSharedPreferenceDomainModel?>>(emptyMap())
 
-    fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> = selectedDeviceSharedPreferences
-        .map { it[deviceIdAndPackageName] }
-        .distinctUntilChanged()
+    fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> =
+        selectedDeviceSharedPreferences
+            .map { it[deviceIdAndPackageName] }
+            .distinctUntilChanged()
 
     fun selectDeviceSharedPreference(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -44,7 +45,8 @@ class DeviceSharedPreferencesDataSource(
         }
     }
 
-    fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> = deviceSharedPreferences.map { it[deviceIdAndPackageName] ?: emptyList() }
+    fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> =
+        deviceSharedPreferences.map { it[deviceIdAndPackageName] ?: emptyList() }
 
     fun registerDeviceSharedPreferences(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.messages.ui
 
-import io.github.openflocon.flocondesktop.SERVER_PORT
+import com.flocon.data.remote.server.SERVER_PORT
 import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.common.Failure
 import io.github.openflocon.flocondesktop.common.Success

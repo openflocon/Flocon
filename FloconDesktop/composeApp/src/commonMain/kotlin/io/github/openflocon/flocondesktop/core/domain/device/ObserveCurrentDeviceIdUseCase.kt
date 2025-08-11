@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.core.domain.device
 
-import io.github.openflocon.flocondesktop.DeviceId
+import com.flocon.data.remote.models.DeviceId
 import io.github.openflocon.flocondesktop.core.domain.device.repository.DevicesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

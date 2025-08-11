@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases
 
-import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
-import io.github.openflocon.flocondesktop.Protocol
-import io.github.openflocon.flocondesktop.Server
+import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import com.flocon.data.remote.server.Server
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseDomainModel
 import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
@@ -19,9 +19,10 @@ class DeviceDatabasesDataSource(
     private val deviceDatabases = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, List<DeviceDataBaseDomainModel>>>(emptyMap())
     private val selectedDeviceDatabases = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DeviceDataBaseDomainModel?>>(emptyMap())
 
-    fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?> = selectedDeviceDatabases
-        .map { it[deviceIdAndPackageName] }
-        .distinctUntilChanged()
+    fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?> =
+        selectedDeviceDatabases
+            .map { it[deviceIdAndPackageName] }
+            .distinctUntilChanged()
 
     fun selectDeviceDatabase(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -33,7 +34,8 @@ class DeviceDatabasesDataSource(
         selectedDeviceDatabases.update { it + (deviceIdAndPackageName to database) }
     }
 
-    fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>> = deviceDatabases.map { it[deviceIdAndPackageName] ?: emptyList() }
+    fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>> =
+        deviceDatabases.map { it[deviceIdAndPackageName] ?: emptyList() }
 
     fun registerDeviceDatabases(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

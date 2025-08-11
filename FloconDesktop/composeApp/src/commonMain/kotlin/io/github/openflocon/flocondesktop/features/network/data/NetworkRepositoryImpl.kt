@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.data
 
-import io.github.openflocon.flocondesktop.DeviceId
-import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
-import io.github.openflocon.flocondesktop.Protocol
+import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.models.DeviceId
+import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
@@ -33,9 +33,10 @@ class NetworkRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Network.Plugin)
 
-    override fun observeRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, lite: Boolean): Flow<List<FloconHttpRequestDomainModel>> = networkLocalDataSource
-        .observeRequests(deviceIdAndPackageName = deviceIdAndPackageName, lite = lite)
-        .flowOn(dispatcherProvider.data)
+    override fun observeRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, lite: Boolean): Flow<List<FloconHttpRequestDomainModel>> =
+        networkLocalDataSource
+            .observeRequests(deviceIdAndPackageName = deviceIdAndPackageName, lite = lite)
+            .flowOn(dispatcherProvider.data)
 
     override fun observeRequest(
         deviceId: String,
