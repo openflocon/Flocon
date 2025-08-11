@@ -4,7 +4,7 @@ import com.flocon.data.remote.Protocol
 import io.github.openflocon.domain.device.models.DeviceId
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.images.data.datasources.ImagesLocalDataSource
+import io.github.openflocon.data.core.images.datasource.ImagesLocalDataSource
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import io.github.openflocon.domain.images.repository.ImagesRepository
 import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel

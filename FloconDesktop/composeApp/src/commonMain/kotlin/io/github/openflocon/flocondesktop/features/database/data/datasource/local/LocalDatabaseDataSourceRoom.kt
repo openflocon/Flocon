@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.database.data.datasource.local
 
+import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow

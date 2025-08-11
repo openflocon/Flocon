@@ -5,7 +5,7 @@ import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.data.core.table.datasource.TableRemoteDataSource
 import io.github.openflocon.flocondesktop.features.table.data.datasource.device.DeviceTablesDataSource
-import io.github.openflocon.flocondesktop.features.table.data.datasource.local.TableLocalDataSource
+import io.github.openflocon.data.core.table.datasource.TableLocalDataSource
 import io.github.openflocon.flocondesktop.features.table.data.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.table.data.model.TableItemDataModel
 import io.github.openflocon.domain.table.models.TableDomainModel

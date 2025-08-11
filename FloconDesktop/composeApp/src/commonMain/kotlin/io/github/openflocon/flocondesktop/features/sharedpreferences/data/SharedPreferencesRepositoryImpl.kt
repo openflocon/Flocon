@@ -4,7 +4,7 @@ import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.datasources.DeviceSharedPreferencesDataSource
-import io.github.openflocon.flocondesktop.features.sharedpreferences.data.datasources.DeviceSharedPreferencesValuesDataSource
+import io.github.openflocon.data.core.sharedpreference.datasource.DeviceSharedPreferencesValuesDataSource
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming.toDeviceSharedPreferenceDomain
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming.toSharedPreferenceValuesResponseDomain
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel

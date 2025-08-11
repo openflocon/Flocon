@@ -71,6 +71,7 @@ kotlin {
 
             // TODO Remove
             implementation(projects.data.remote)
+            implementation(projects.data.local)
             implementation(projects.data.core)
 
             implementation(projects.domain)

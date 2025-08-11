@@ -14,7 +14,7 @@ import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.repository.DatabaseRepository
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSource
+import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

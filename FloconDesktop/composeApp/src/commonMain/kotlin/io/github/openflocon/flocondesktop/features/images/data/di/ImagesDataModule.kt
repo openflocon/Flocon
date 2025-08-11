@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.images.data.di
 
 import io.github.openflocon.flocondesktop.features.images.data.ImagesRepositoryImpl
-import io.github.openflocon.flocondesktop.features.images.data.datasources.ImagesLocalDataSource
+import io.github.openflocon.data.core.images.datasource.ImagesLocalDataSource
 import io.github.openflocon.flocondesktop.features.images.data.datasources.ImagesLocalDataSourceRoom
 import io.github.openflocon.domain.images.repository.ImagesRepository
 import io.github.openflocon.domain.network.repository.NetworkImageRepository

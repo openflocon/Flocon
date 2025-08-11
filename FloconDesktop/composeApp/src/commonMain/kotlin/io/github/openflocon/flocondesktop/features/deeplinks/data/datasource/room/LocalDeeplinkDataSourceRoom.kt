@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room
 
-import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.LocalDeeplinkDataSource
+import io.github.openflocon.data.core.deeplink.datasource.DeeplinkLocalDataSource
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.mapper.toDomainModels
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.mapper.toEntities
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.map
 
 class LocalDeeplinkDataSourceRoom(
     private val deeplinkDao: FloconDeeplinkDao,
-) : LocalDeeplinkDataSource {
+) : DeeplinkLocalDataSource {
     override suspend fun update(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel, deeplinks: List<DeeplinkDomainModel>) {
         deeplinkDao.updateAll(
             deviceId = deviceIdAndPackageNameDomainModel.deviceId,

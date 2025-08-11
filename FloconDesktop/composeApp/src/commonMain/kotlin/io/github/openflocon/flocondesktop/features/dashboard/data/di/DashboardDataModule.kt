@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.di
 
 import io.github.openflocon.flocondesktop.features.dashboard.data.DashboardRepositoryImpl
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.DashboardLocalDataSource
+import io.github.openflocon.data.core.dashboard.datasource.DashboardLocalDataSource
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.ToDeviceDashboardDataSource
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSource
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSourceInMemory
