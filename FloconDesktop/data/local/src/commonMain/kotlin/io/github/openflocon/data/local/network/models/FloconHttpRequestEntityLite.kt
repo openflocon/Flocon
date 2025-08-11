@@ -7,13 +7,13 @@ data class FloconHttpRequestEntityLite(
     val deviceId: String, // To associate with a device
     // if it's a graphql method, this item is not null
     @Embedded(prefix = "graphql_")
-    val graphql: GraphQlEmbedded?,
+    val graphql: FloconHttpRequestEntityGraphQlEmbedded?,
 
     @Embedded(prefix = "http_")
-    val http: HttpEmbedded?,
+    val http: FloconHttpRequestEntityHttpEmbedded?,
 
     @Embedded(prefix = "grpc_")
-    val grpc: GrpcEmbedded?,
+    val grpc: FloconHttpRequestEntityGrpcEmbedded?,
 
     val url: String,
     val method: String,
@@ -26,19 +26,4 @@ data class FloconHttpRequestEntityLite(
     // removed val responseBody: String?,
     // removed val responseHeaders: Map<String, String>,
     // removed val responseByteSize: Long,
-) {
-    data class GraphQlEmbedded(
-        val query: String,
-        val operationType: String,
-        val isSuccess: Boolean,
-        val responseHttpCode: Int,
-    )
-
-    data class HttpEmbedded(
-        val responseHttpCode: Int,
-    )
-
-    data class GrpcEmbedded(
-        val responseStatus: String,
-    )
-}
+)

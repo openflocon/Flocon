@@ -3,6 +3,9 @@ package io.github.openflocon.data.local.network.mapper
 import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
 import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
 import io.github.openflocon.data.local.network.models.FloconHttpRequestInfosEntity
+import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityGraphQlEmbedded
+import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityGrpcEmbedded
+import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityHttpEmbedded
 import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
 
 fun FloconHttpRequestDomainModel.toEntity(
@@ -13,7 +16,7 @@ fun FloconHttpRequestDomainModel.toEntity(
     infos = this.toInfosEntity(),
     deviceId = deviceId,
     http = when (val t = this.type) {
-        is FloconHttpRequestDomainModel.Type.Http -> FloconHttpRequestEntity.HttpEmbedded(
+        is FloconHttpRequestDomainModel.Type.Http -> FloconHttpRequestEntityHttpEmbedded(
             responseHttpCode = t.httpCode,
         )
 
@@ -22,7 +25,7 @@ fun FloconHttpRequestDomainModel.toEntity(
             -> null
     },
     graphql = when (val t = this.type) {
-        is FloconHttpRequestDomainModel.Type.GraphQl -> FloconHttpRequestEntity.GraphQlEmbedded(
+        is FloconHttpRequestDomainModel.Type.GraphQl -> FloconHttpRequestEntityGraphQlEmbedded(
             query = t.query,
             operationType = t.operationType,
             isSuccess = t.isSuccess,
@@ -34,7 +37,7 @@ fun FloconHttpRequestDomainModel.toEntity(
             -> null
     },
     grpc = when (val t = this.type) {
-        is FloconHttpRequestDomainModel.Type.Grpc -> FloconHttpRequestEntity.GrpcEmbedded(
+        is FloconHttpRequestDomainModel.Type.Grpc -> FloconHttpRequestEntityGrpcEmbedded(
             responseStatus = t.responseStatus,
         )
 

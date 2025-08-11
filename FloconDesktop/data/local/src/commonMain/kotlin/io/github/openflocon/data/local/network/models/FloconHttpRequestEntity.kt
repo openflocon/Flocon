@@ -22,29 +22,14 @@ data class FloconHttpRequestEntity(
     val infos: FloconHttpRequestInfosEntity,
     // if it's a graphql method, this item is not null
     @Embedded(prefix = "graphql_")
-    val graphql: GraphQlEmbedded?,
+    val graphql: FloconHttpRequestEntityGraphQlEmbedded?,
 
     @Embedded(prefix = "http_")
-    val http: HttpEmbedded?,
+    val http: FloconHttpRequestEntityHttpEmbedded?,
 
     @Embedded(prefix = "grpc_")
-    val grpc: GrpcEmbedded?,
-) {
-    data class GraphQlEmbedded(
-        val query: String,
-        val operationType: String,
-        val isSuccess: Boolean,
-        val responseHttpCode: Int,
-    )
-
-    data class HttpEmbedded(
-        val responseHttpCode: Int,
-    )
-
-    data class GrpcEmbedded(
-        val responseStatus: String,
-    )
-}
+    val grpc: FloconHttpRequestEntityGrpcEmbedded?,
+)
 
 data class FloconHttpRequestInfosEntity(
     val url: String,
