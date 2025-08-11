@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.data.datasource.local
 
-import com.flocon.data.remote.models.DeviceId
+import io.github.openflocon.domain.models.DeviceId
 import io.github.openflocon.flocondesktop.common.Fakes
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.network.data.FloconHttpRequestGenerator
@@ -8,8 +8,8 @@ import io.github.openflocon.flocondesktop.features.network.data.datasource.local
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper.toEntity
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntity
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntityLite
-import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

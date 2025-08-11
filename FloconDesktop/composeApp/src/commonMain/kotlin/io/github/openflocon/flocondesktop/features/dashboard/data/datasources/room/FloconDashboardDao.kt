@@ -5,12 +5,12 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.flocon.data.remote.models.DeviceId
+import io.github.openflocon.domain.models.DashboardDomainModel
+import io.github.openflocon.domain.models.DeviceId
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper.toEntity
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementEntity
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardEntity
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardSectionEntity
-import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao

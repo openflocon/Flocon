@@ -6,7 +6,7 @@ import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.D
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.domain.ExecuteDatabaseQueryUseCase
 import io.github.openflocon.flocondesktop.features.database.domain.ObserveLastSuccessQueriesUseCase
-import io.github.openflocon.flocondesktop.features.database.domain.model.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.flocondesktop.features.database.ui.delegate.DatabaseSelectorDelegate
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseRowUiModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseScreenState
