@@ -45,11 +45,12 @@ private fun decodeMockNetworkResponse(jsonObject: JSONObject): MockNetworkRespon
 
         // Décoder les headers
         val headersJson = responseJson.getJSONObject("headers")
-        val headers = mutableMapOf<String, String>()
-        val keys = headersJson.keys()
-        while (keys.hasNext()) {
-            val key = keys.next()
-            headers[key] = headersJson.getString(key)
+        val headers = buildMap<String, String> {
+            val keys = headersJson.keys()
+            while (keys.hasNext()) {
+                val key = keys.next()
+                put(key = key, value = headersJson.getString(key))
+            }
         }
 
         val response = MockNetworkResponse.Response(
