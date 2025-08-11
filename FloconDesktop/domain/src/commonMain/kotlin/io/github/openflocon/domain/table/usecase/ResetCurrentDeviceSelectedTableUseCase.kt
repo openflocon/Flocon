@@ -1,6 +1,6 @@
 package io.github.openflocon.domain.table.usecase
 
-import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
+import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.table.repository.TableRepository
 
 class ResetCurrentDeviceSelectedTableUseCase(

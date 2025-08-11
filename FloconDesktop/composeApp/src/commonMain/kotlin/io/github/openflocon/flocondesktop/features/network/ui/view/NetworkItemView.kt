@@ -18,8 +18,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.openflocon.flocondesktop.common.ui.ContextualItem
-import io.github.openflocon.flocondesktop.common.ui.ContextualView
+import io.github.openflocon.domain.common.ui.ContextualItem
+import io.github.openflocon.domain.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkItemViewState

@@ -3,8 +3,8 @@ package io.github.openflocon.flocondesktop.features.network.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.library.designsystem.common.copyToClipboard
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsUseCase

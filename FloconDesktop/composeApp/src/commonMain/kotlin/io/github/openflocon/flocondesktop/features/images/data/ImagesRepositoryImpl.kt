@@ -3,10 +3,10 @@ package io.github.openflocon.flocondesktop.features.images.data
 import com.flocon.data.remote.Protocol
 import io.github.openflocon.domain.device.models.DeviceId
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.images.data.datasources.ImagesLocalDataSource
-import io.github.openflocon.domain.models.DeviceImageDomainModel
-import io.github.openflocon.flocondesktop.features.images.domain.repository.ImagesRepository
+import io.github.openflocon.domain.images.models.DeviceImageDomainModel
+import io.github.openflocon.domain.images.repository.ImagesRepository
 import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository

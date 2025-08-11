@@ -1,7 +1,7 @@
 package io.github.openflocon.domain.database.usecase
 
-import io.github.openflocon.flocondesktop.common.Either
-import io.github.openflocon.flocondesktop.common.Failure
+import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.repository.DatabaseRepository

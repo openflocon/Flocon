@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.openflocon.flocondesktop.app.AppViewModel
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
+import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayerView
 import io.github.openflocon.flocondesktop.main.ui.MainScreen
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.koin.compose.viewmodel.koinViewModel

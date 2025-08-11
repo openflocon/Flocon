@@ -1,6 +1,6 @@
 package io.github.openflocon.domain.network.usecase
 
-import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
 import io.github.openflocon.domain.network.repository.NetworkRepository
 
 class RemoveHttpRequestsBeforeUseCase(

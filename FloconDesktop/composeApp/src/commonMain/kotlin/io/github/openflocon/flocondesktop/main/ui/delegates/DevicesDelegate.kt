@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.main.ui.delegates
 
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.domain.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.domain.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceUseCase
 import io.github.openflocon.domain.device.usecase.ObserveDevicesUseCase
@@ -10,8 +10,8 @@ import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
-import io.github.openflocon.domain.models.DeviceAppDomainModel
-import io.github.openflocon.domain.models.DeviceDomainModel
+import io.github.openflocon.domain.device.models.DeviceAppDomainModel
+import io.github.openflocon.domain.device.models.DeviceDomainModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

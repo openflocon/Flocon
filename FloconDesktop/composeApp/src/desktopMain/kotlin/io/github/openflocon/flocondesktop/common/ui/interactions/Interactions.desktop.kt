@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.common.ui.interactions
+package io.github.openflocon.domain.common.ui.interactions
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

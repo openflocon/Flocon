@@ -1,9 +1,9 @@
 package io.github.openflocon.domain.database.repository
 
-import io.github.openflocon.flocondesktop.common.Either
+import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
-import io.github.openflocon.domain.models.DeviceDataBaseDomainModel
-import io.github.openflocon.domain.models.DeviceDataBaseId
+import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
+import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 

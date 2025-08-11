@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming
 
-import io.github.openflocon.domain.models.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
 import kotlinx.serialization.Serializable
 
 @Serializable

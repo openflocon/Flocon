@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.common.ui
+package io.github.openflocon.domain.common.ui
 
 import androidx.compose.foundation.ContextMenuArea
 import androidx.compose.foundation.ContextMenuItem

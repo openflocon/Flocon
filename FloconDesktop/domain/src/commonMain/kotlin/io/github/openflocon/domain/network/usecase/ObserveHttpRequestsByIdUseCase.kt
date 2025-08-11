@@ -1,6 +1,6 @@
 package io.github.openflocon.domain.network.usecase
 
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
 import io.github.openflocon.domain.network.repository.NetworkRepository
 import kotlinx.coroutines.flow.Flow

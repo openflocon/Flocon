@@ -6,9 +6,9 @@ import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.models.DeviceSharedPreferenceDomainModel
-import io.github.openflocon.domain.models.DeviceSharedPreferenceId
-import io.github.openflocon.domain.models.SharedPreferenceRowDomainModel
+import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceId
+import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceEditSharedPreferenceValueMessage
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceGetSharedPreferenceValueMessage
 import kotlinx.coroutines.flow.Flow

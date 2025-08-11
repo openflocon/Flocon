@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room
 
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.DashboardLocalDataSource
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper.toDomain
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel

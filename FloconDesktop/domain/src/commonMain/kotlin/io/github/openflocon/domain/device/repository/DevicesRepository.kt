@@ -1,7 +1,7 @@
 package io.github.openflocon.domain.device.repository
 
-import io.github.openflocon.domain.models.DeviceAppDomainModel
-import io.github.openflocon.domain.models.DeviceDomainModel
+import io.github.openflocon.domain.device.models.DeviceAppDomainModel
+import io.github.openflocon.domain.device.models.DeviceDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DevicesRepository {

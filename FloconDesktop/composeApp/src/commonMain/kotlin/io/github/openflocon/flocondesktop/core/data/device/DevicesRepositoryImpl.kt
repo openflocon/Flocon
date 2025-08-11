@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.core.data.device
 
-import io.github.openflocon.flocondesktop.common.Fakes
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.models.DeviceAppDomainModel
+import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.repository.DevicesRepository
-import io.github.openflocon.domain.models.DeviceAppDomainModel
-import io.github.openflocon.domain.models.DeviceDomainModel
+import io.github.openflocon.flocondesktop.common.Fakes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

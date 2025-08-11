@@ -4,7 +4,7 @@ import io.github.openflocon.flocondesktop.features.files.data.FilesRepositoryImp
 import io.github.openflocon.flocondesktop.features.files.data.datasources.LocalFilesDataSource
 import io.github.openflocon.flocondesktop.features.files.data.datasources.LocalFilesDataSourceRoom
 import io.github.openflocon.flocondesktop.features.files.data.datasources.RemoteFilesDataSource
-import io.github.openflocon.flocondesktop.features.files.domain.repository.FilesRepository
+import io.github.openflocon.domain.files.repository.FilesRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf

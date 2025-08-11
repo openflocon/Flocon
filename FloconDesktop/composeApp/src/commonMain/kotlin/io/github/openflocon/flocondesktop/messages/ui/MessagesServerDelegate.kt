@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.messages.ui
 
-import com.flocon.data.remote.server.SERVER_PORT
-import io.github.openflocon.flocondesktop.common.Either
-import io.github.openflocon.flocondesktop.common.Failure
-import io.github.openflocon.flocondesktop.common.Success
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.Constant
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.common.Failure
+import io.github.openflocon.domain.common.Success
+import io.github.openflocon.domain.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.domain.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.messages.domain.HandleIncomingMessagesUseCase
 import io.github.openflocon.flocondesktop.messages.domain.StartServerUseCase
 import kotlinx.coroutines.delay
@@ -53,7 +53,7 @@ class MessagesServerDelegate(
     } catch (t: Throwable) {
         feedbackDisplayer.displayMessage(
             buildString {
-                append("Cannot start server on port $SERVER_PORT")
+                append("Cannot start server on port ${Constant.SERVER_PORT}")
                 t.message?.let {
                     append(" : ")
                     append(it)

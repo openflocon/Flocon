@@ -2,11 +2,11 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.EditSharedPrefFieldUseCase
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.ObserveCurrentDeviceSharedPreferenceValuesUseCase
-import io.github.openflocon.domain.models.SharedPreferenceRowDomainModel
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.sharedpreference.usecase.EditSharedPrefFieldUseCase
+import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSharedPreferenceValuesUseCase
+import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.delegate.SharedPrefSelectorDelegate
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowUiModel

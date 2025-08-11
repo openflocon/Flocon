@@ -5,7 +5,7 @@ import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.computeIsGraphQlSuccess

@@ -1,9 +1,11 @@
 package io.github.openflocon.flocondesktop.common
 
-actual fun executeAdbCommand(adbPath: String, command: String): Either<Throwable, String> {
+import io.github.openflocon.domain.common.Either
+
+actual fun localExecuteAdbCommand(adbPath: String, command: String): Either<Throwable, String> {
     TODO("Not yet implemented")
 }
 
-actual fun findAdbPath(): String? {
+actual fun localFindAdbPath(): String? {
     TODO("Not yet implemented")
 }

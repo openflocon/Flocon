@@ -18,8 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
-import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
+import io.github.openflocon.domain.common.ui.window.FloconWindowState
+import io.github.openflocon.domain.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel

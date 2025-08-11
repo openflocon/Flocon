@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.images.data.datasources
 
 import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.FloconImageDao
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.toDomainModel
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.toEntity
-import io.github.openflocon.domain.models.DeviceImageDomainModel
+import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map

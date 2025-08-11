@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.features.analytics.data
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.RemoteAnalyticsDataSource
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSource
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSource

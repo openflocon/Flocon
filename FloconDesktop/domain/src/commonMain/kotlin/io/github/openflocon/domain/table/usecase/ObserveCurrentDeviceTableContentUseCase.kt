@@ -1,6 +1,6 @@
 package io.github.openflocon.domain.table.usecase
 
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdAndPackageNameUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.table.models.TableDomainModel
 import io.github.openflocon.domain.table.repository.TableRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi

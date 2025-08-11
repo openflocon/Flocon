@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.common.ui
+package io.github.openflocon.domain.common.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

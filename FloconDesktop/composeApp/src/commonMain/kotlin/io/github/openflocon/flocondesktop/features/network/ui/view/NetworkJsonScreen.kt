@@ -34,8 +34,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sebastianneubauer.jsontree.search.rememberSearchState
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
+import io.github.openflocon.domain.common.ui.window.FloconWindow
+import io.github.openflocon.domain.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.FloconTheme

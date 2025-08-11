@@ -8,7 +8,6 @@ val dashboardModule =
     module {
         includes(
             dashboardDataModule,
-            dashboardModule,
             dashboardUiModule,
         )
     }

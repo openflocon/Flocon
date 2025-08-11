@@ -43,7 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.common.ui.interactions.hover
+import io.github.openflocon.domain.common.ui.interactions.hover
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.TextFilterAction
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterStateUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.previewTextFilterState

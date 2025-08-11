@@ -1,6 +1,6 @@
-package io.github.openflocon.flocondesktop.common.coroutines.closeable
+package io.github.openflocon.domain.common.coroutines.closeable
 
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.domain.common.DispatcherProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob

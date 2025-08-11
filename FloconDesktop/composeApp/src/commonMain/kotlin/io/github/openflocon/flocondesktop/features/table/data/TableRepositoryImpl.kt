@@ -2,7 +2,7 @@ package io.github.openflocon.flocondesktop.features.table.data
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.table.data.datasource.RemoteTableDataSource
 import io.github.openflocon.flocondesktop.features.table.data.datasource.device.DeviceTablesDataSource
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.TableLocalDataSource

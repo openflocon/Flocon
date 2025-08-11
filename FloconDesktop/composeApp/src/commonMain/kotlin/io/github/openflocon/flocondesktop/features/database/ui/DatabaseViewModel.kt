@@ -2,8 +2,8 @@ package io.github.openflocon.flocondesktop.features.database.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
 import io.github.openflocon.domain.database.usecase.ObserveLastSuccessQueriesUseCase
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel

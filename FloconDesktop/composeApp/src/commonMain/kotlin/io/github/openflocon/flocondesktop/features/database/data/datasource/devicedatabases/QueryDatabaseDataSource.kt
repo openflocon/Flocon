@@ -6,11 +6,11 @@ import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
-import io.github.openflocon.domain.models.DeviceDataBaseId
+import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.common.Either
-import io.github.openflocon.flocondesktop.common.Failure
-import io.github.openflocon.flocondesktop.common.Success
+import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.common.Failure
+import io.github.openflocon.domain.common.Success
 import io.github.openflocon.flocondesktop.features.database.data.model.incoming.DatabaseExecuteSqlResponse
 import io.github.openflocon.flocondesktop.features.database.data.model.incoming.ResponseAndRequestId
 import io.github.openflocon.flocondesktop.features.database.data.model.outgoing.DatabaseOutgoingQueryMessage

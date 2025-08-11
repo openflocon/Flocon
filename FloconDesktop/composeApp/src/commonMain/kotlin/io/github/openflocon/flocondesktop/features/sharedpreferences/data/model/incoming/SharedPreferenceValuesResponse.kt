@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming
 
-import io.github.openflocon.domain.models.SharedPreferenceRowDomainModel
-import io.github.openflocon.domain.models.SharedPreferenceValuesResponseDomainModel
+import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
+import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceValuesResponseDomainModel
 import kotlinx.serialization.Serializable
 
 @Serializable

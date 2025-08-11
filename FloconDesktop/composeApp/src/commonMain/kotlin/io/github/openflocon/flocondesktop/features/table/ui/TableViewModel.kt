@@ -2,8 +2,8 @@ package io.github.openflocon.flocondesktop.features.table.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.formatTimestamp
 import io.github.openflocon.domain.table.usecase.ObserveCurrentDeviceTableContentUseCase
 import io.github.openflocon.domain.table.usecase.ResetCurrentDeviceSelectedTableUseCase
