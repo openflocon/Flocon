@@ -130,7 +130,6 @@ class FloconOkhttpInterceptor() : Interceptor {
             if (urlMatches && methodMatches) {
                 FloconLogger.log("Request $url mocked with HTTP code ${mock.response.httpCode}")
 
-                // Applique le délai si nécessaire
                 if (mock.response.delay > 0) {
                     try {
                         Thread.sleep(mock.response.delay)
