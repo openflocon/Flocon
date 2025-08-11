@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.messages.domain
 
-import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
+import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.core.domain.device.HandleDeviceUseCase
 import io.github.openflocon.flocondesktop.messages.domain.model.DeviceAppDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.model.DeviceDomainModel

@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources
 
-import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
-import io.github.openflocon.flocondesktop.Protocol
-import io.github.openflocon.flocondesktop.Server
+import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import com.flocon.data.remote.server.Server
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.remote.model.ToDeviceCheckBoxValueChangedMessage
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.remote.model.ToDeviceSubmittedTextFieldMessage
 import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel

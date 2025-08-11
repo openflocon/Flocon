@@ -1,0 +1,28 @@
+package com.flocon.data.remote.server
+
+import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
+import com.flocon.data.remote.models.FloconIncomingMessageDataModel
+import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import kotlinx.coroutines.flow.Flow
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+val SERVER_PORT: Int = 9023
+
+interface Server {
+    fun start(port: Int = SERVER_PORT)
+
+    fun stop()
+
+    val receivedMessages: Flow<FloconIncomingMessageDataModel>
+
+    suspend fun sendMessageToClient(
+        deviceIdAndPackageName: FloconDeviceIdAndPackageNameDataModel,
+        message: FloconOutgoingMessageDataModel,
+    )
+}
+
+@OptIn(ExperimentalUuidApi::class)
+fun newRequestId(): String = Uuid.random().toString()
+
+expect fun getServer(): Server
