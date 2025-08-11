@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.images.data.datasources.local
 
-import io.github.openflocon.domain.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.model.DeviceImageEntity
 import io.github.openflocon.domain.models.DeviceImageDomainModel
 

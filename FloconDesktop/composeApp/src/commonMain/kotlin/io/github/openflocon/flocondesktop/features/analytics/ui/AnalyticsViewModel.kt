@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
-import io.github.openflocon.flocondesktop.features.analytics.domain.ObserveCurrentDeviceAnalyticsContentUseCase
-import io.github.openflocon.flocondesktop.features.analytics.domain.ResetCurrentDeviceSelectedAnalyticsUseCase
+import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
+import io.github.openflocon.domain.analytics.usecase.ResetCurrentDeviceSelectedAnalyticsUseCase
 import io.github.openflocon.flocondesktop.features.analytics.ui.delegate.AnalyticsSelectorDelegate
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel

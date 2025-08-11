@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.data
 
 import com.flocon.data.remote.Protocol
-import io.github.openflocon.domain.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceId
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
@@ -9,11 +9,11 @@ import io.github.openflocon.flocondesktop.features.database.data.datasource.devi
 import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.QueryDatabaseDataSource
 import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSource
 import io.github.openflocon.flocondesktop.features.database.data.model.incoming.toDeviceDatabasesDomain
-import io.github.openflocon.domain.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.models.DeviceDataBaseId
-import io.github.openflocon.flocondesktop.features.database.domain.repository.DatabaseRepository
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.database.repository.DatabaseRepository
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.images.domain
 
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.domain.models.DeviceImageDomainModel
 import io.github.openflocon.flocondesktop.features.images.domain.repository.ImagesRepository
 import kotlinx.coroutines.flow.Flow

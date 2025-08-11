@@ -5,9 +5,9 @@ import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
-import io.github.openflocon.domain.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.models.DeviceDataBaseId
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.common.Failure
 import io.github.openflocon.flocondesktop.common.Success

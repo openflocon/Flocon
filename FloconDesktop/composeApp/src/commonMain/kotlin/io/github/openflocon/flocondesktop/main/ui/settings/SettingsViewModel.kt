@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
-import io.github.openflocon.flocondesktop.core.domain.settings.TestAdbUseCase
-import io.github.openflocon.flocondesktop.core.domain.settings.repository.SettingsRepository
+import io.github.openflocon.domain.settings.TestAdbUseCase
+import io.github.openflocon.domain.settings.repository.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

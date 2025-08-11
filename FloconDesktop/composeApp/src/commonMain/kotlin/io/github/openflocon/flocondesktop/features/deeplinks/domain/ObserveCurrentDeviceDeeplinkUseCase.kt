@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.domain
 
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdAndPackageNameUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.models.DeeplinkDomainModel
 import io.github.openflocon.flocondesktop.features.deeplinks.domain.repository.DeeplinkRepository
 import kotlinx.coroutines.flow.Flow

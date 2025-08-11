@@ -6,7 +6,7 @@ import io.github.openflocon.flocondesktop.features.analytics.data.datasource.dev
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSourceInMemory
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSource
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSourceRoom
-import io.github.openflocon.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
+import io.github.openflocon.domain.analytics.repository.AnalyticsRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf

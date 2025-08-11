@@ -10,7 +10,7 @@ import io.github.openflocon.flocondesktop.features.files.data.mapper.decodeListF
 import io.github.openflocon.domain.models.FileDomainModel
 import io.github.openflocon.domain.models.FilePathDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.repository.FilesRepository
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

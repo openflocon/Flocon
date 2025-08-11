@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.table.data.datasource.local
 
-import io.github.openflocon.domain.models.TableDomainModel
-import io.github.openflocon.domain.models.TableId
-import io.github.openflocon.domain.models.TableIdentifierDomainModel
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.table.models.TableDomainModel
+import io.github.openflocon.domain.table.models.TableId
+import io.github.openflocon.domain.table.models.TableIdentifierDomainModel
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface TableLocalDataSource {

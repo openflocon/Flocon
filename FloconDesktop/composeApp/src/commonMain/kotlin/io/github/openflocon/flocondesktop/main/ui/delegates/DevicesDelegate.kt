@@ -2,11 +2,11 @@ package io.github.openflocon.flocondesktop.main.ui.delegates
 
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceAppUseCase
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveDevicesUseCase
-import io.github.openflocon.flocondesktop.core.domain.device.SelectDeviceAppUseCase
-import io.github.openflocon.flocondesktop.core.domain.device.SelectDeviceUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceUseCase
+import io.github.openflocon.domain.device.usecase.ObserveDevicesUseCase
+import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
+import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel

@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.table.domain.di
 
-import io.github.openflocon.flocondesktop.features.table.domain.GetCurrentDeviceSelectedTableUseCase
-import io.github.openflocon.flocondesktop.features.table.domain.ObserveCurrentDeviceSelectedTableUseCase
-import io.github.openflocon.flocondesktop.features.table.domain.ObserveCurrentDeviceTableContentUseCase
-import io.github.openflocon.flocondesktop.features.table.domain.ObserveDeviceTablesUseCase
-import io.github.openflocon.flocondesktop.features.table.domain.ResetCurrentDeviceSelectedTableUseCase
-import io.github.openflocon.flocondesktop.features.table.domain.SelectCurrentDeviceTableUseCase
+import io.github.openflocon.domain.table.usecase.GetCurrentDeviceSelectedTableUseCase
+import io.github.openflocon.domain.table.usecase.ObserveCurrentDeviceSelectedTableUseCase
+import io.github.openflocon.domain.table.usecase.ObserveCurrentDeviceTableContentUseCase
+import io.github.openflocon.domain.table.usecase.ObserveDeviceTablesUseCase
+import io.github.openflocon.domain.table.usecase.ResetCurrentDeviceSelectedTableUseCase
+import io.github.openflocon.domain.table.usecase.SelectCurrentDeviceTableUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

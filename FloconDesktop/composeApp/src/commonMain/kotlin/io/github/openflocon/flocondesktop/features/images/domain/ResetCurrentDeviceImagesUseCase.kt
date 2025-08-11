@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.images.domain
 
-import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.features.images.domain.repository.ImagesRepository
 
 class ResetCurrentDeviceImagesUseCase(

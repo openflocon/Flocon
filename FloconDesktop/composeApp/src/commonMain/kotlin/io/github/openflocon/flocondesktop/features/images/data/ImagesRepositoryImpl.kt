@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.images.data
 
 import com.flocon.data.remote.Protocol
-import io.github.openflocon.domain.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceId
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.images.data.datasources.ImagesLocalDataSource

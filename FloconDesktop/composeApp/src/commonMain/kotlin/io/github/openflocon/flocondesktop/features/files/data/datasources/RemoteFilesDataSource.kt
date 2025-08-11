@@ -5,7 +5,7 @@ import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.models.FileDomainModel
 import io.github.openflocon.domain.models.FilePathDomainModel
 import io.github.openflocon.flocondesktop.common.Either

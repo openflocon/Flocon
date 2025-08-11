@@ -5,7 +5,7 @@ import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.models.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.domain.models.DeviceSharedPreferenceId
 import io.github.openflocon.domain.models.SharedPreferenceRowDomainModel

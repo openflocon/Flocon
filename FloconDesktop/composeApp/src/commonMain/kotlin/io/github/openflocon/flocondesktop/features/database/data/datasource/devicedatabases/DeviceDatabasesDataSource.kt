@@ -6,7 +6,7 @@ import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import io.github.openflocon.domain.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.models.DeviceDataBaseId
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged

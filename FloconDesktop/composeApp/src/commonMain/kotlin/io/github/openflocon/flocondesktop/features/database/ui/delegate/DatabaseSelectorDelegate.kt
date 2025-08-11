@@ -3,11 +3,11 @@ package io.github.openflocon.flocondesktop.features.database.ui.delegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
-import io.github.openflocon.flocondesktop.features.database.domain.AskForDeviceDatabasesUseCase
-import io.github.openflocon.flocondesktop.features.database.domain.ObserveCurrentDeviceSelectedDatabaseUseCase
-import io.github.openflocon.flocondesktop.features.database.domain.ObserveDeviceDatabaseUseCase
-import io.github.openflocon.flocondesktop.features.database.domain.SelectCurrentDeviceDatabaseUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceUseCase
+import io.github.openflocon.domain.database.usecase.AskForDeviceDatabasesUseCase
+import io.github.openflocon.domain.database.usecase.ObserveCurrentDeviceSelectedDatabaseUseCase
+import io.github.openflocon.domain.database.usecase.ObserveDeviceDatabaseUseCase
+import io.github.openflocon.domain.database.usecase.SelectCurrentDeviceDatabaseUseCase
 import io.github.openflocon.domain.models.DeviceDataBaseDomainModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.DeviceDataBaseUiModel

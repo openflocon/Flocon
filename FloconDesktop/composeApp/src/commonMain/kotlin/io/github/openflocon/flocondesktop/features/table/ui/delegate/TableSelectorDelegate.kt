@@ -3,10 +3,10 @@ package io.github.openflocon.flocondesktop.features.table.ui.delegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.table.domain.ObserveCurrentDeviceSelectedTableUseCase
-import io.github.openflocon.flocondesktop.features.table.domain.ObserveDeviceTablesUseCase
-import io.github.openflocon.flocondesktop.features.table.domain.SelectCurrentDeviceTableUseCase
-import io.github.openflocon.domain.models.TableIdentifierDomainModel
+import io.github.openflocon.domain.table.usecase.ObserveCurrentDeviceSelectedTableUseCase
+import io.github.openflocon.domain.table.usecase.ObserveDeviceTablesUseCase
+import io.github.openflocon.domain.table.usecase.SelectCurrentDeviceTableUseCase
+import io.github.openflocon.domain.table.models.TableIdentifierDomainModel
 import io.github.openflocon.flocondesktop.features.table.ui.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.ui.model.TablesStateUiModel
 import kotlinx.coroutines.flow.SharingStarted

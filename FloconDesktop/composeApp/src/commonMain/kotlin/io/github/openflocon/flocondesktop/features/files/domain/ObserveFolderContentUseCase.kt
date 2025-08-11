@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.files.domain
 
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdAndPackageNameUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.models.FileDomainModel
 import io.github.openflocon.domain.models.FilePathDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.repository.FilesRepository

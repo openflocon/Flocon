@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences.ui.delegat
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.AskForDeviceSharedPreferencesUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.GetCurrentDeviceSharedPreferenceValuesUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.ObserveCurrentDeviceSelectedSharedPreferenceUseCase

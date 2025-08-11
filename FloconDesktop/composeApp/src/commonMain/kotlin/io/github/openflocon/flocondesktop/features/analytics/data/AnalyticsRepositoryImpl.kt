@@ -9,11 +9,11 @@ import io.github.openflocon.flocondesktop.features.analytics.data.datasource.dev
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSource
 import io.github.openflocon.flocondesktop.features.analytics.data.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.analytics.data.model.AnalyticsItemDataModel
-import io.github.openflocon.domain.models.AnalyticsIdentifierDomainModel
-import io.github.openflocon.domain.models.AnalyticsItemDomainModel
-import io.github.openflocon.domain.models.AnalyticsTableId
-import io.github.openflocon.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
+import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
+import io.github.openflocon.domain.analytics.models.AnalyticsTableId
+import io.github.openflocon.domain.analytics.repository.AnalyticsRepository
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
