@@ -36,14 +36,12 @@ private fun decodeMockNetworkResponse(jsonObject: JSONObject): MockNetworkRespon
             method = method,
         )
 
-        // Décoder l'objet response
         val responseJson = jsonObject.getJSONObject("response")
         val httpCode = responseJson.getInt("httpCode")
         val body = responseJson.getString("body")
         val mediaType = responseJson.getString("mediaType")
         val delay = responseJson.getLong("delay")
 
-        // Décoder les headers
         val headersJson = responseJson.getJSONObject("headers")
         val headers = buildMap<String, String> {
             val keys = headersJson.keys()
@@ -69,11 +67,6 @@ private fun decodeMockNetworkResponse(jsonObject: JSONObject): MockNetworkRespon
 }
 
 
-/**
- * Sérialise une liste de MockNetworkResponse en une chaîne JSON.
- * @param mocks La liste des objets MockNetworkResponse à sérialiser.
- * @return La chaîne JSON représentant la liste des mocks, ou une chaîne vide en cas d'erreur.
- */
 fun writeMockResponsesToJson(mocks: List<MockNetworkResponse>): JSONArray {
     val jsonArray = JSONArray()
     try {
@@ -87,11 +80,6 @@ fun writeMockResponsesToJson(mocks: List<MockNetworkResponse>): JSONArray {
     return jsonArray
 }
 
-/**
- * Sérialise un MockNetworkResponse en un JSONObject.
- * @param mock L'objet MockNetworkResponse à sérialiser.
- * @return Un JSONObject représentant l'objet mock, ou un JSONObject vide en cas d'erreur.
- */
 private fun encodeMockNetworkResponse(mock: MockNetworkResponse): JSONObject {
     return try {
         val expectationJson = JSONObject().apply {
