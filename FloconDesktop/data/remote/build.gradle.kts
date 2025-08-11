@@ -21,6 +21,9 @@ kotlin {
             implementation(libs.kotlinx.coroutinesCore)
             implementation(libs.kotlinx.serializationJson)
 
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            
             implementation(projects.domain)
             implementation(projects.data.core)
         }
