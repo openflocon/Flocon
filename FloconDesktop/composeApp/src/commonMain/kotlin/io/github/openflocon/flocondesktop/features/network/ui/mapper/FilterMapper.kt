@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.ui.mapper
 
-import com.flocon.library.domain.models.TextFilterStateDomainModel
+import io.github.openflocon.domain.models.TextFilterStateDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.columns.base.filter.TextFilterStateUiModel
 
 fun toTextFilterUi(textFilter: TextFilterStateDomainModel): TextFilterStateUiModel = TextFilterStateUiModel(

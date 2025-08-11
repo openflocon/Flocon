@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.data.datasource.loca
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntity
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestEntityLite
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.FloconHttpRequestInfosEntity
-import com.flocon.library.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
 
 fun FloconHttpRequestDomainModel.toEntity(
     deviceId: String,

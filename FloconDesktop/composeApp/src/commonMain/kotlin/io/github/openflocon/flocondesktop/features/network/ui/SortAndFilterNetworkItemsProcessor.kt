@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.ui
 
-import com.flocon.library.domain.models.FloconHttpRequestDomainModel
-import com.flocon.library.domain.models.NetworkTextFilterColumns
+import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.ui.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi

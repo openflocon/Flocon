@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.analytics.domain.repository
 
-import com.flocon.library.domain.models.AnalyticsIdentifierDomainModel
-import com.flocon.library.domain.models.AnalyticsItemDomainModel
-import com.flocon.library.domain.models.AnalyticsTableId
-import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.AnalyticsIdentifierDomainModel
+import io.github.openflocon.domain.models.AnalyticsItemDomainModel
+import io.github.openflocon.domain.models.AnalyticsTableId
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface AnalyticsRepository {

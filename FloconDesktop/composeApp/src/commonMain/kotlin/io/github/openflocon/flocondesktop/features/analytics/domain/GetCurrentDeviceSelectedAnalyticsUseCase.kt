@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.analytics.domain
 
-import com.flocon.library.domain.models.AnalyticsIdentifierDomainModel
+import io.github.openflocon.domain.models.AnalyticsIdentifierDomainModel
 import kotlinx.coroutines.flow.firstOrNull
 
 class GetCurrentDeviceSelectedAnalyticsUseCase(

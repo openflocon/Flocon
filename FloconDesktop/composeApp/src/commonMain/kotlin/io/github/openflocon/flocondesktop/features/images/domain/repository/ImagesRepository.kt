@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.images.domain.repository
 
-import com.flocon.library.domain.models.DeviceId
-import com.flocon.library.domain.models.DeviceImageDomainModel
+import io.github.openflocon.domain.models.DeviceId
+import io.github.openflocon.domain.models.DeviceImageDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface ImagesRepository {

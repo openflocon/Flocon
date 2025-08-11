@@ -4,7 +4,7 @@ import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.failure
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
-import com.flocon.library.domain.models.FilePathDomainModel
+import io.github.openflocon.domain.models.FilePathDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.repository.FilesRepository
 
 class DeleteFolderContentUseCase(

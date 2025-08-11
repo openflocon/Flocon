@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.mapper
 
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.model.AnalyticsItemEntity
-import com.flocon.library.domain.models.AnalyticsItemDomainModel
-import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.AnalyticsItemDomainModel
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 
 internal fun AnalyticsItemDomainModel.toEntity(
     deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

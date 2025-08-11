@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.data.datasource.local
 
-import com.flocon.library.domain.models.DeviceDataBaseId
-import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.DeviceDataBaseId
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 class LocalDatabaseDataSourceRoom(private val successQueryDao: QueryDao) : LocalDatabaseDataSource {

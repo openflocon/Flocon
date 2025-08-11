@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.features.database.domain
 import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.common.Failure
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
-import com.flocon.library.domain.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.flocondesktop.features.database.domain.repository.DatabaseRepository
 
 class ExecuteDatabaseQueryUseCase(

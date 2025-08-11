@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.table.domain.repository
 
-import com.flocon.library.domain.models.TableDomainModel
-import com.flocon.library.domain.models.TableId
-import com.flocon.library.domain.models.TableIdentifierDomainModel
-import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.TableDomainModel
+import io.github.openflocon.domain.models.TableId
+import io.github.openflocon.domain.models.TableIdentifierDomainModel
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface TableRepository {

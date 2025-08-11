@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper
 
-import com.flocon.library.domain.models.DeviceId
+import io.github.openflocon.domain.models.DeviceId
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementButton
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementCheckBox
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementEntity
@@ -9,10 +9,10 @@ import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.ro
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementTextField
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardEntity
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardSectionEntity
-import com.flocon.library.domain.models.DashboardDomainModel
-import com.flocon.library.domain.models.DashboardElementDomainModel
-import com.flocon.library.domain.models.DashboardId
-import com.flocon.library.domain.models.DashboardSectionDomainModel
+import io.github.openflocon.domain.models.DashboardDomainModel
+import io.github.openflocon.domain.models.DashboardElementDomainModel
+import io.github.openflocon.domain.models.DashboardId
+import io.github.openflocon.domain.models.DashboardSectionDomainModel
 
 internal fun DashboardDomainModel.toEntity(deviceId: DeviceId, packageName: String): DashboardEntity = DashboardEntity(
     deviceId = deviceId,

@@ -2,9 +2,9 @@ package io.github.openflocon.flocondesktop.features.network.data
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import com.flocon.library.domain.models.DeviceId
-import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
-import com.flocon.library.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.models.DeviceId
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel

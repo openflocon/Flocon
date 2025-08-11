@@ -3,9 +3,9 @@ package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.r
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.DashboardWithSectionsAndElements
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.SectionWithElements
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementEntity
-import com.flocon.library.domain.models.DashboardDomainModel
-import com.flocon.library.domain.models.DashboardElementDomainModel
-import com.flocon.library.domain.models.DashboardSectionDomainModel
+import io.github.openflocon.domain.models.DashboardDomainModel
+import io.github.openflocon.domain.models.DashboardElementDomainModel
+import io.github.openflocon.domain.models.DashboardSectionDomainModel
 
 internal fun DashboardWithSectionsAndElements.toDomain(): DashboardDomainModel = DashboardDomainModel(
     dashboardId = dashboard.dashboardId,

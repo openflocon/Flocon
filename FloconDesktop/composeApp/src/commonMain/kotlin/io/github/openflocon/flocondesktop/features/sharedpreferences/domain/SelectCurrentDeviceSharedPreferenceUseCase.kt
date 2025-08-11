@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.domain
 
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
-import com.flocon.library.domain.models.DeviceSharedPreferenceId
+import io.github.openflocon.domain.models.DeviceSharedPreferenceId
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.repository.SharedPreferencesRepository
 
 class SelectCurrentDeviceSharedPreferenceUseCase(

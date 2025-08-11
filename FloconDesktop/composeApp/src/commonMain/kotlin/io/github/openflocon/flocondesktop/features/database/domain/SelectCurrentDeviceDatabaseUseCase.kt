@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.domain
 
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
-import com.flocon.library.domain.models.DeviceDataBaseId
+import io.github.openflocon.domain.models.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.features.database.domain.repository.DatabaseRepository
 
 class SelectCurrentDeviceDatabaseUseCase(

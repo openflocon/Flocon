@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.ui.mapper
 
-import com.flocon.library.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 
 fun toTypeUi(networkRequest: FloconHttpRequestDomainModel): NetworkItemViewState.NetworkTypeUi = when (val t = networkRequest.type) {

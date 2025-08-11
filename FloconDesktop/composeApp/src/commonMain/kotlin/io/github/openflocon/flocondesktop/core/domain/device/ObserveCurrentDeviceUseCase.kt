@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.core.domain.device
 
 import io.github.openflocon.flocondesktop.core.domain.device.repository.DevicesRepository
-import com.flocon.library.domain.models.DeviceDomainModel
+import io.github.openflocon.domain.models.DeviceDomainModel
 import kotlinx.coroutines.flow.Flow
 
 class ObserveCurrentDeviceUseCase(

@@ -9,7 +9,7 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.GetC
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.ObserveCurrentDeviceSelectedSharedPreferenceUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.ObserveDeviceSharedPreferencesUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.SelectCurrentDeviceSharedPreferenceUseCase
-import com.flocon.library.domain.models.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.domain.models.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPrefsStateUiModel
 import kotlinx.coroutines.Job

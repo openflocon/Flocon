@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.domain
 
-import com.flocon.library.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
 
 class GenerateCurlCommandUseCase {
     operator fun invoke(infos: FloconHttpRequestDomainModel): String {

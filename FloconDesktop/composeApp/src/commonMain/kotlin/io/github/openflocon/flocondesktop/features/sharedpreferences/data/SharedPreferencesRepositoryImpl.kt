@@ -7,11 +7,11 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.data.dataso
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.datasources.DeviceSharedPreferencesValuesDataSource
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming.toDeviceSharedPreferenceDomain
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming.toSharedPreferenceValuesResponseDomain
-import com.flocon.library.domain.models.DeviceSharedPreferenceDomainModel
-import com.flocon.library.domain.models.DeviceSharedPreferenceId
-import com.flocon.library.domain.models.SharedPreferenceRowDomainModel
+import io.github.openflocon.domain.models.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.domain.models.DeviceSharedPreferenceId
+import io.github.openflocon.domain.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.repository.SharedPreferencesRepository
-import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

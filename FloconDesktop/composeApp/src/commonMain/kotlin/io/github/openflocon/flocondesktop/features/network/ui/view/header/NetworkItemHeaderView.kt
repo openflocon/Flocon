@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.flocon.library.domain.models.NetworkTextFilterColumns
+import io.github.openflocon.domain.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.ui.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.NetworkHeaderUiState
 import io.github.openflocon.flocondesktop.features.network.ui.model.header.OnFilterAction

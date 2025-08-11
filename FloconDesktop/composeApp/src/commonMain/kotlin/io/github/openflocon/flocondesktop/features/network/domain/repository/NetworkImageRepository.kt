@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.domain.repository
 
-import com.flocon.library.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
 
 interface NetworkImageRepository {
     suspend fun onImageReceived(

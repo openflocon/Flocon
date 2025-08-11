@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.analytics.domain
 
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdAndPackageNameUseCase
-import com.flocon.library.domain.models.AnalyticsItemDomainModel
+import io.github.openflocon.domain.models.AnalyticsItemDomainModel
 import io.github.openflocon.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

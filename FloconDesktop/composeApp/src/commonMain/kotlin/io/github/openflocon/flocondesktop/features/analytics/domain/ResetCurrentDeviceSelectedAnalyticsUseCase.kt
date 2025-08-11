@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.features.analytics.domain
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceAppUseCase
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
-import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 
 class ResetCurrentDeviceSelectedAnalyticsUseCase(
     private val analyticsRepository: AnalyticsRepository,

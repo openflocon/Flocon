@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.flocon.library.domain.models.DeviceId
+import io.github.openflocon.domain.models.DeviceId
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.model.AnalyticsItemEntity
 import kotlinx.coroutines.flow.Flow
 

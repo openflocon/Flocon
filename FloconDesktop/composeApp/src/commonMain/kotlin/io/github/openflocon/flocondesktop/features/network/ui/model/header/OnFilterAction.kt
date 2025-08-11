@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.ui.model.header
 
-import com.flocon.library.domain.models.NetworkTextFilterColumns
+import io.github.openflocon.domain.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
 
 sealed interface OnFilterAction {

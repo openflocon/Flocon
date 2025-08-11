@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.features.database.domain.repository
 
 import io.github.openflocon.flocondesktop.common.Either
-import com.flocon.library.domain.models.DatabaseExecuteSqlResponseDomainModel
-import com.flocon.library.domain.models.DeviceDataBaseDomainModel
-import com.flocon.library.domain.models.DeviceDataBaseId
-import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.models.DeviceDataBaseDomainModel
+import io.github.openflocon.domain.models.DeviceDataBaseId
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DatabaseRepository {
