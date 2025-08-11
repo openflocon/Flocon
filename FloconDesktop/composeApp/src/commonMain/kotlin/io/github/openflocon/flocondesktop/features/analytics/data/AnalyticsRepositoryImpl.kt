@@ -1,19 +1,18 @@
 package io.github.openflocon.flocondesktop.features.analytics.data
 
 import com.flocon.data.remote.Protocol
-import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.analytics.data.datasource.RemoteAnalyticsDataSource
-import io.github.openflocon.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSource
-import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSource
-import io.github.openflocon.flocondesktop.features.analytics.data.mapper.toDomain
-import io.github.openflocon.flocondesktop.features.analytics.data.model.AnalyticsItemDataModel
+import io.github.openflocon.data.core.analytics.datasource.AnalyticsRemoteDataSource
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
 import io.github.openflocon.domain.analytics.repository.AnalyticsRepository
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSource
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSource
+import io.github.openflocon.flocondesktop.features.analytics.data.mapper.toDomain
+import io.github.openflocon.flocondesktop.features.analytics.data.model.AnalyticsItemDataModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -24,7 +23,7 @@ class AnalyticsRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val analyticsLocalDataSource: AnalyticsLocalDataSource,
     private val deviceAnalyticsDataSource: DeviceAnalyticsDataSource,
-    private val remoteAnalyticsDataSource: RemoteAnalyticsDataSource,
+    private val remoteAnalyticsDataSource: AnalyticsRemoteDataSource,
 ) : AnalyticsRepository,
     MessagesReceiverRepository {
 
@@ -55,7 +54,7 @@ class AnalyticsRepositoryImpl(
                                 items = analytics,
                             )
                             remoteAnalyticsDataSource.clearReceivedItem(
-                                deviceIdAndPackageName = FloconDeviceIdAndPackageNameDataModel(
+                                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                                     deviceId = deviceId,
                                     packageName = message.appPackageName,
                                 ),
@@ -103,9 +102,11 @@ class AnalyticsRepositoryImpl(
         )
     }
 
-    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> = deviceAnalyticsDataSource.observeSelectedDeviceAnalytics(deviceIdAndPackageName)
-        .flowOn(dispatcherProvider.data)
+    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> =
+        deviceAnalyticsDataSource.observeSelectedDeviceAnalytics(deviceIdAndPackageName)
+            .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> = analyticsLocalDataSource.observeDeviceAnalytics(deviceIdAndPackageName)
-        .flowOn(dispatcherProvider.data)
+    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
+        analyticsLocalDataSource.observeDeviceAnalytics(deviceIdAndPackageName)
+            .flowOn(dispatcherProvider.data)
 }
