@@ -24,6 +24,7 @@ kotlin {
         freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
         freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
         freeCompilerArgs.add("-Xcontext-parameters")
+        freeCompilerArgs.add("-Xcontext-sensitive-resolution")
     }
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -70,6 +71,8 @@ kotlin {
 
             // TODO Remove
             implementation(projects.data.remote)
+
+            implementation(projects.domain)
 
             implementation(projects.library.designsystem)
         }

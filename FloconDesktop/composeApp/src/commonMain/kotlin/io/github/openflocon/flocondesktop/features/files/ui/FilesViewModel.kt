@@ -11,7 +11,7 @@ import io.github.openflocon.flocondesktop.features.files.domain.DeleteFileUseCas
 import io.github.openflocon.flocondesktop.features.files.domain.DeleteFolderContentUseCase
 import io.github.openflocon.flocondesktop.features.files.domain.ObserveFolderContentUseCase
 import io.github.openflocon.flocondesktop.features.files.domain.RefreshFolderContentUseCase
-import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
+import io.github.openflocon.domain.models.FileDomainModel
 import io.github.openflocon.flocondesktop.features.files.ui.mapper.buildContextualActions
 import io.github.openflocon.flocondesktop.features.files.ui.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.files.ui.mapper.toUi

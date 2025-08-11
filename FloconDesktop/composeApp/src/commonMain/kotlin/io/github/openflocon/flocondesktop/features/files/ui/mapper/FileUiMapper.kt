@@ -4,8 +4,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Drafts
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.ui.graphics.vector.ImageVector
-import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
-import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
+import io.github.openflocon.domain.models.FileDomainModel
+import io.github.openflocon.domain.models.FilePathDomainModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel

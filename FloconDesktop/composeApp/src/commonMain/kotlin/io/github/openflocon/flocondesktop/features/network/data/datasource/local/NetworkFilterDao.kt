@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.model.NetworkFilterEntity
-import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkTextFilterColumns
+import io.github.openflocon.domain.models.NetworkTextFilterColumns
 import kotlinx.coroutines.flow.Flow
 
 @Dao

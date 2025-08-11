@@ -1,17 +1,17 @@
 package io.github.openflocon.flocondesktop.features.network.data
 
 import com.flocon.data.remote.Protocol
-import com.flocon.data.remote.models.DeviceId
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
+import io.github.openflocon.domain.models.DeviceId
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.computeIsGraphQlSuccess
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.extractGraphQl
-import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -54,7 +54,7 @@ class NetworkRepositoryImpl(
         withContext(dispatcherProvider.data) {
             decode(message)?.let { toDomain(it) }?.let { request ->
                 val responseContentType = request.response.contentType
-                if (request.response.contentType != null && responseContentType.startsWith("image/")) {
+                if (request.response.contentType != null && responseContentType?.startsWith("image/") == true) {
                     networkImageRepository.onImageReceived(deviceId = deviceId, request = request)
                 }
                 networkLocalDataSource.save(deviceId = deviceId, packageName = message.appPackageName, request = request)

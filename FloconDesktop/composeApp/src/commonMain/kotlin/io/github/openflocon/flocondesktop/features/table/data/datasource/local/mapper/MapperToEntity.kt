@@ -2,8 +2,8 @@ package io.github.openflocon.flocondesktop.features.table.data.datasource.local.
 
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableItemEntity
-import io.github.openflocon.flocondesktop.features.table.domain.model.TableDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.TableDomainModel
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 
 internal fun TableDomainModel.toEntity(
     deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.analytics.data.datasource.device
 
-import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsIdentifierDomainModel
-import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsTableId
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.AnalyticsIdentifierDomainModel
+import io.github.openflocon.domain.models.AnalyticsTableId
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DeviceAnalyticsDataSource {

@@ -2,8 +2,8 @@ package io.github.openflocon.flocondesktop.messages.domain
 
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.core.domain.device.HandleDeviceUseCase
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceAppDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceDomainModel
+import io.github.openflocon.domain.models.DeviceAppDomainModel
+import io.github.openflocon.domain.models.DeviceDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.MessagesRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow

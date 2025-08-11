@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.flocon.data.remote.models.DeviceId
+import io.github.openflocon.domain.models.DeviceId
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.model.DeeplinkEntity
 import kotlinx.coroutines.flow.Flow
 

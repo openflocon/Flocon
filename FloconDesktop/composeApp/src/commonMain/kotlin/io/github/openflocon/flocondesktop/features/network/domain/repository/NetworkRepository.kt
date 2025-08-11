@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.domain.repository
 
-import com.flocon.data.remote.models.DeviceId
-import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.DeviceId
+import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkRepository {

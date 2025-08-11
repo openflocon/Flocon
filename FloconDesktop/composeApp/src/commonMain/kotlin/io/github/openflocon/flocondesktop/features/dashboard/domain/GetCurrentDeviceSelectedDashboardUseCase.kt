@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.domain
 
-import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
+import io.github.openflocon.domain.models.DashboardId
 import kotlinx.coroutines.flow.firstOrNull
 
 class GetCurrentDeviceSelectedDashboardUseCase(
