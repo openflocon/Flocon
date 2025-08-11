@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.files.data.datasources
 
+import io.github.openflocon.data.core.files.datasource.FilesLocalDataSource
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
@@ -13,7 +14,7 @@ import kotlinx.coroutines.withContext
 class LocalFilesDataSourceRoom(
     private val fileDao: FloconFileDao,
     private val dispatcherProvider: DispatcherProvider,
-) : LocalFilesDataSource {
+) : FilesLocalDataSource {
 
     override fun observeFolderContentUseCase(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

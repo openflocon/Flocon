@@ -7,13 +7,13 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.domain.deeplink.repository.DeeplinkRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.LocalDeeplinkDataSource
+import io.github.openflocon.data.core.deeplink.datasource.DeeplinkLocalDataSource
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 
 class DeeplinkRepositoryImpl(
-    private val localDeeplinkDataSource: LocalDeeplinkDataSource,
+    private val localDeeplinkDataSource: DeeplinkLocalDataSource,
     private val dispatcherProvider: DispatcherProvider,
     private val adbRepository: AdbRepository
 ) : DeeplinkRepository,

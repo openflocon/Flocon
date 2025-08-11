@@ -10,7 +10,7 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.repository.FilesRepository
-import io.github.openflocon.flocondesktop.features.files.data.datasources.LocalFilesDataSource
+import io.github.openflocon.data.core.files.datasource.FilesLocalDataSource
 import io.github.openflocon.flocondesktop.features.files.data.mapper.decodeListFilesResult
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 
 class FilesRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
-    private val localFilesDataSource: LocalFilesDataSource,
+    private val localFilesDataSource: FilesLocalDataSource,
     private val remoteFilesDataSource: FilesRemoteDataSource,
 ) : FilesRepository,
     MessagesReceiverRepository {

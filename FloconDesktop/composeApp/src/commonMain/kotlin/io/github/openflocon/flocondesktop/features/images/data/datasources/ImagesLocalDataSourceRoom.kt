@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.images.data.datasources
 
+import io.github.openflocon.data.core.images.datasource.ImagesLocalDataSource
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.FloconImageDao
