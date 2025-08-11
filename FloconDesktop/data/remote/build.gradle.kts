@@ -14,6 +14,7 @@ kotlin {
             implementation(libs.kotlinx.serializationJson)
 
             implementation(projects.domain)
+            implementation(projects.data.core)
         }
 
         commonTest.dependencies {

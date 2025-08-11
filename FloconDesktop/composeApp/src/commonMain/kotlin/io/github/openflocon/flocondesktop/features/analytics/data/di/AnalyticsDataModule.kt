@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.analytics.data.di
 
 import io.github.openflocon.flocondesktop.features.analytics.data.AnalyticsRepositoryImpl
-import io.github.openflocon.flocondesktop.features.analytics.data.datasource.RemoteAnalyticsDataSource
+import io.github.openflocon.flocondesktop.features.analytics.data.datasource.AnalyticsRemoteDataSourceImpl
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSource
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSourceInMemory
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSource
@@ -24,5 +24,5 @@ val analyticsDataModule =
         singleOf(::DeviceAnalyticsDataSourceInMemory) {
             bind<DeviceAnalyticsDataSource>()
         }
-        singleOf(::RemoteAnalyticsDataSource)
+        singleOf(::AnalyticsRemoteDataSourceImpl)
     }
