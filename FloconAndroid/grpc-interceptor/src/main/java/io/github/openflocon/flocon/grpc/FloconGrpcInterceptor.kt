@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkResponse
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.ClientCall
@@ -100,7 +101,7 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
         super.sendMessage(message)
         floconGrpcPlugin.reportRequest(
             callId = requestId,
-            request = FloconNetworkRequest.Request(
+            request = FloconNetworkRequest(
                 url = next.authority(),
                 method = method.fullMethodName,
                 body = message?.toJson(gson = gson) ?: "",
@@ -128,7 +129,7 @@ private class LoggingClientCallListener<RespT>(
         super.onClose(status, trailers)
         floconGrpcPlugin.reportResponse(
             callId = requestId,
-            response = FloconNetworkRequest.Response(
+            response = FloconNetworkResponse(
                 body = message?.toJson(gson),
                 headers = (this.headers ?: trailers).toHeaders(),
                 httpCode = null,

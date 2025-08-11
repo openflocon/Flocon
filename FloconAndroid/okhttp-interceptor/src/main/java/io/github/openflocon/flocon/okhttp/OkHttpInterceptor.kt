@@ -3,7 +3,9 @@ package io.github.openflocon.flocon.okhttp
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCall
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkResponse
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -83,10 +85,10 @@ class FloconOkhttpInterceptor() : Interceptor {
 
         val isImage = responseContentType?.toString()?.startsWith("image/") == true
 
-        val floconRequest = FloconNetworkRequest(
+        val floconRequest = FloconNetworkCall(
             durationMs = durationMs,
             floconNetworkType = "http",
-            request = FloconNetworkRequest.Request(
+            request = FloconNetworkRequest(
                 url = request.url.toString(),
                 method = request.method,
                 startTime = requestedAt,
@@ -94,7 +96,7 @@ class FloconOkhttpInterceptor() : Interceptor {
                 body = requestBodyString,
                 size = requestSize,
             ),
-            response = FloconNetworkRequest.Response(
+            response = FloconNetworkResponse(
                 httpCode = response.code,
                 contentType = responseContentType?.toString(),
                 body = responseBodyString.takeUnless { isImage }, // dont send images responses bytes

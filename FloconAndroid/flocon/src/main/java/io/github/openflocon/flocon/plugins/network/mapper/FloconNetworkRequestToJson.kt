@@ -1,10 +1,10 @@
 package io.github.openflocon.flocon.plugins.network.mapper
 
-import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCall
 import org.json.JSONObject
 
 
-fun floconNetworkRequestToJson(network: FloconNetworkRequest): JSONObject {
+fun floconNetworkCallToJson(network: FloconNetworkCall): JSONObject {
     val json = JSONObject()
 
     with(network) {

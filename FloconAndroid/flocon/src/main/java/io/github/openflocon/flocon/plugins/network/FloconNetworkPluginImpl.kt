@@ -5,16 +5,16 @@ import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
-import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkRequestToJson
+import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallToJson
 import io.github.openflocon.flocon.plugins.network.mapper.parseMockResponses
 import io.github.openflocon.flocon.plugins.network.mapper.writeMockResponsesToJson
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCall
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.regex.Pattern
 
 class FloconNetworkPluginImpl(
     private val context: Context,
@@ -23,11 +23,27 @@ class FloconNetworkPluginImpl(
 
     override val mocks = CopyOnWriteArrayList<MockNetworkResponse>(loadMocksFromFile())
 
-    override fun log(call: FloconNetworkRequest) {
+    override fun log(call: FloconNetworkCall) {
         sender.send(
             plugin = Protocol.FromDevice.Network.Plugin,
             method = Protocol.FromDevice.Network.Method.LogNetworkCall,
-            body = floconNetworkRequestToJson(call).toString(),
+            body = floconNetworkCallToJson(call).toString(),
+        )
+    }
+
+    override fun logRequest(request: FloconNetworkRequest) {
+        sender.send(
+            plugin = Protocol.FromDevice.Network.Plugin,
+            method = Protocol.FromDevice.Network.Method.LogNetworkRequest,
+            body = floconNetworkCallToJson(call).toString(),
+        )
+    }
+
+    override fun logResponse(response: FloconNetworkRequest) {
+        sender.send(
+            plugin = Protocol.FromDevice.Network.Plugin,
+            method = Protocol.FromDevice.Network.Method.LogNetworkResponse,
+            body = floconNetworkCallToJson(call).toString(),
         )
     }
 
