@@ -2,11 +2,11 @@ package io.github.openflocon.flocondesktop.features.database.data.datasource.dev
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
-import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseDomainModel
-import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.toRemote
+import com.flocon.library.domain.models.DeviceDataBaseDomainModel
+import com.flocon.library.domain.models.DeviceDataBaseId
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged

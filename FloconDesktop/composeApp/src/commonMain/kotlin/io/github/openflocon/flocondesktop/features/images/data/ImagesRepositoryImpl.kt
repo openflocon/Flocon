@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.features.images.data
 
 import com.flocon.data.remote.Protocol
-import com.flocon.data.remote.models.DeviceId
+import com.flocon.library.domain.models.DeviceId
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.images.data.datasources.ImagesLocalDataSource
-import io.github.openflocon.flocondesktop.features.images.domain.model.DeviceImageDomainModel
+import com.flocon.library.domain.models.DeviceImageDomainModel
 import io.github.openflocon.flocondesktop.features.images.domain.repository.ImagesRepository
-import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import com.flocon.library.domain.models.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow

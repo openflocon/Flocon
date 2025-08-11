@@ -3,8 +3,8 @@ package io.github.openflocon.flocondesktop.core.data.device
 import io.github.openflocon.flocondesktop.common.Fakes
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.core.domain.device.repository.DevicesRepository
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceAppDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceDomainModel
+import com.flocon.library.domain.models.DeviceAppDomainModel
+import com.flocon.library.domain.models.DeviceDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

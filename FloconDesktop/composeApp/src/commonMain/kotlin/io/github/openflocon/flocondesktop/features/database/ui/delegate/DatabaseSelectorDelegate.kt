@@ -8,7 +8,7 @@ import io.github.openflocon.flocondesktop.features.database.domain.AskForDeviceD
 import io.github.openflocon.flocondesktop.features.database.domain.ObserveCurrentDeviceSelectedDatabaseUseCase
 import io.github.openflocon.flocondesktop.features.database.domain.ObserveDeviceDatabaseUseCase
 import io.github.openflocon.flocondesktop.features.database.domain.SelectCurrentDeviceDatabaseUseCase
-import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseDomainModel
+import com.flocon.library.domain.models.DeviceDataBaseDomainModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.ui.model.DeviceDataBaseUiModel
 import kotlinx.coroutines.Job

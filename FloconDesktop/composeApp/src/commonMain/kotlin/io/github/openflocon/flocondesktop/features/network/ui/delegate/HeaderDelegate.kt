@@ -6,7 +6,7 @@ import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.D
 import io.github.openflocon.flocondesktop.features.network.domain.filter.GetNetworkFilterUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.filter.ObserveNetworkFilterUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.filter.UpdateNetworkFilterUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkTextFilterColumns
+import com.flocon.library.domain.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toTextFilterDomain
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toTextFilterUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi

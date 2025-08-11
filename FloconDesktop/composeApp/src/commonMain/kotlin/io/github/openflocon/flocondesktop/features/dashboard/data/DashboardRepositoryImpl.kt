@@ -8,10 +8,10 @@ import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.To
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSource
 import io.github.openflocon.flocondesktop.features.dashboard.data.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.DashboardConfigDataModel
-import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
-import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
+import com.flocon.library.domain.models.DashboardDomainModel
+import com.flocon.library.domain.models.DashboardId
 import io.github.openflocon.flocondesktop.features.dashboard.domain.repository.DashboardRepository
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

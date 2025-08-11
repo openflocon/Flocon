@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.analytics.ui.model
 
 import androidx.compose.runtime.Immutable
-import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsTableId
+import com.flocon.library.domain.models.AnalyticsTableId
 
 @Immutable
 data class DeviceAnalyticsUiModel(

@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.analytics.data.datasource.device
 
-import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsIdentifierDomainModel
-import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsTableId
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import com.flocon.library.domain.models.AnalyticsIdentifierDomainModel
+import com.flocon.library.domain.models.AnalyticsTableId
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged

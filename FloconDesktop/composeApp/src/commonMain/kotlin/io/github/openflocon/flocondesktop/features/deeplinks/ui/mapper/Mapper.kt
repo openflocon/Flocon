@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.ui.mapper
 
-import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
+import com.flocon.library.domain.models.DeeplinkDomainModel
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
 

@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.database.domain
 
-import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseDomainModel
+import com.flocon.library.domain.models.DeviceDataBaseDomainModel
 import kotlinx.coroutines.flow.firstOrNull
 
 class GetCurrentDeviceSelectedDatabaseUseCase(

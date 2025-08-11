@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.dashboard.domain.repository
 
-import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
-import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import com.flocon.library.domain.models.DashboardDomainModel
+import com.flocon.library.domain.models.DashboardId
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DashboardRepository {

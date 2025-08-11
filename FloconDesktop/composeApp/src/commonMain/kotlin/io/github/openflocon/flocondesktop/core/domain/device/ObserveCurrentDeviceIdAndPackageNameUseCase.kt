@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.core.domain.device
 
 import io.github.openflocon.flocondesktop.core.domain.device.repository.DevicesRepository
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged

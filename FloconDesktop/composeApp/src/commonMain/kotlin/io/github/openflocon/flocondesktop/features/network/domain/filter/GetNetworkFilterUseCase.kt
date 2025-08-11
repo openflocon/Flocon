@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.domain.filter
 
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkTextFilterColumns
-import io.github.openflocon.flocondesktop.features.network.domain.model.TextFilterStateDomainModel
+import com.flocon.library.domain.models.NetworkTextFilterColumns
+import com.flocon.library.domain.models.TextFilterStateDomainModel
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkFilterRepository
 
 class GetNetworkFilterUseCase(

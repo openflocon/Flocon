@@ -6,7 +6,7 @@ import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.D
 import io.github.openflocon.flocondesktop.features.dashboard.domain.ObserveCurrentDeviceSelectedDashboardUseCase
 import io.github.openflocon.flocondesktop.features.dashboard.domain.ObserveDeviceDashboardsUseCase
 import io.github.openflocon.flocondesktop.features.dashboard.domain.SelectCurrentDeviceDashboardUseCase
-import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
+import com.flocon.library.domain.models.DashboardId
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DeviceDashboardUiModel
 import kotlinx.coroutines.flow.SharingStarted

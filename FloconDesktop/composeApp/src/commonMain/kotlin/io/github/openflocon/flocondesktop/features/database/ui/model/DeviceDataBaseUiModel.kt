@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.database.ui.model
 
-import io.github.openflocon.flocondesktop.features.database.domain.model.DeviceDataBaseId
+import com.flocon.library.domain.models.DeviceDataBaseId
 
 data class DeviceDataBaseUiModel(
     val id: DeviceDataBaseId,

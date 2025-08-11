@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.dashboard.ui.model
 
 import androidx.compose.runtime.Immutable
-import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardId
+import com.flocon.library.domain.models.DashboardId
 
 @Immutable
 data class DeviceDashboardUiModel(

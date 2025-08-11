@@ -6,7 +6,7 @@ import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.D
 import io.github.openflocon.flocondesktop.features.analytics.domain.ObserveCurrentDeviceSelectedAnalyticsUseCase
 import io.github.openflocon.flocondesktop.features.analytics.domain.ObserveDeviceAnalyticsUseCase
 import io.github.openflocon.flocondesktop.features.analytics.domain.SelectCurrentDeviceAnalyticsUseCase
-import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsIdentifierDomainModel
+import com.flocon.library.domain.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
 import kotlinx.coroutines.flow.SharingStarted

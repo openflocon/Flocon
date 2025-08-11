@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.images.domain
 
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
-import io.github.openflocon.flocondesktop.features.images.domain.model.DeviceImageDomainModel
+import com.flocon.library.domain.models.DeviceImageDomainModel
 import io.github.openflocon.flocondesktop.features.images.domain.repository.ImagesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

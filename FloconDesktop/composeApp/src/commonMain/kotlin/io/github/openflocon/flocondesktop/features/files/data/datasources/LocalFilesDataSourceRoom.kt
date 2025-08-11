@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.files.data.datasources
 
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
-import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import com.flocon.library.domain.models.FileDomainModel
+import com.flocon.library.domain.models.FilePathDomainModel
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn

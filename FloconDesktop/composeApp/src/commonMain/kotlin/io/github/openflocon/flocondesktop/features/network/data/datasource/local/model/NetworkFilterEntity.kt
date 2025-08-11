@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.data.datasource.local.model
 
 import androidx.room.Entity
-import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkTextFilterColumns
+import com.flocon.library.domain.models.NetworkTextFilterColumns
 
 @Entity(
     tableName = "network_filter",

@@ -7,9 +7,9 @@ import io.github.openflocon.flocondesktop.features.dashboard.data.model.Dashboar
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.SectionConfigDataModel
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.TextConfigDataModel
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.TextFieldConfigDataModel
-import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardDomainModel
-import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardElementDomainModel
-import io.github.openflocon.flocondesktop.features.dashboard.domain.model.DashboardSectionDomainModel
+import com.flocon.library.domain.models.DashboardDomainModel
+import com.flocon.library.domain.models.DashboardElementDomainModel
+import com.flocon.library.domain.models.DashboardSectionDomainModel
 
 fun toDomain(model: DashboardConfigDataModel): DashboardDomainModel = DashboardDomainModel(
     dashboardId = model.dashboardId,

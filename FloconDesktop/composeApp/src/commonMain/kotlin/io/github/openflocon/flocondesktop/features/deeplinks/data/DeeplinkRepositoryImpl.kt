@@ -5,9 +5,9 @@ import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.executeAdbCommand
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.LocalDeeplinkDataSource
-import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
+import com.flocon.library.domain.models.DeeplinkDomainModel
 import io.github.openflocon.flocondesktop.features.deeplinks.domain.repository.DeeplinkRepository
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.network.data
 
-import com.flocon.data.remote.models.DeviceId
+import com.flocon.library.domain.models.DeviceId
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkFilterLocalDataSource
-import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkTextFilterColumns
-import io.github.openflocon.flocondesktop.features.network.domain.model.TextFilterStateDomainModel
+import com.flocon.library.domain.models.NetworkTextFilterColumns
+import com.flocon.library.domain.models.TextFilterStateDomainModel
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkFilterRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

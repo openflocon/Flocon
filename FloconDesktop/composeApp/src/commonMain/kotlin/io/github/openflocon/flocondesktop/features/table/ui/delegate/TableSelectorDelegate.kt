@@ -6,7 +6,7 @@ import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.D
 import io.github.openflocon.flocondesktop.features.table.domain.ObserveCurrentDeviceSelectedTableUseCase
 import io.github.openflocon.flocondesktop.features.table.domain.ObserveDeviceTablesUseCase
 import io.github.openflocon.flocondesktop.features.table.domain.SelectCurrentDeviceTableUseCase
-import io.github.openflocon.flocondesktop.features.table.domain.model.TableIdentifierDomainModel
+import com.flocon.library.domain.models.TableIdentifierDomainModel
 import io.github.openflocon.flocondesktop.features.table.ui.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.ui.model.TablesStateUiModel
 import kotlinx.coroutines.flow.SharingStarted

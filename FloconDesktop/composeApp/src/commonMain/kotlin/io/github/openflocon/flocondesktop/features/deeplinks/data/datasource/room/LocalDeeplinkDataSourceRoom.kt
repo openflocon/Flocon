@@ -3,8 +3,8 @@ package io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.ro
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.LocalDeeplinkDataSource
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.mapper.toDomainModels
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.mapper.toEntities
-import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import com.flocon.library.domain.models.DeeplinkDomainModel
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map

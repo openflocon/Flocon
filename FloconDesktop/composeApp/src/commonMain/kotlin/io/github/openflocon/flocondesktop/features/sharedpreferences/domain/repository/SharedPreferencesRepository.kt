@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.domain.repository
 
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import com.flocon.library.domain.models.DeviceSharedPreferenceDomainModel
+import com.flocon.library.domain.models.DeviceSharedPreferenceId
+import com.flocon.library.domain.models.SharedPreferenceRowDomainModel
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface SharedPreferencesRepository {

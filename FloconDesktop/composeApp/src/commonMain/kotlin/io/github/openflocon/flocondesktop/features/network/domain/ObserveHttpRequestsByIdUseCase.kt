@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.domain
 
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
+import com.flocon.library.domain.models.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

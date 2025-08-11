@@ -8,11 +8,11 @@ import io.github.openflocon.flocondesktop.features.table.data.datasource.device.
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.TableLocalDataSource
 import io.github.openflocon.flocondesktop.features.table.data.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.table.data.model.TableItemDataModel
-import io.github.openflocon.flocondesktop.features.table.domain.model.TableDomainModel
-import io.github.openflocon.flocondesktop.features.table.domain.model.TableId
-import io.github.openflocon.flocondesktop.features.table.domain.model.TableIdentifierDomainModel
+import com.flocon.library.domain.models.TableDomainModel
+import com.flocon.library.domain.models.TableId
+import com.flocon.library.domain.models.TableIdentifierDomainModel
 import io.github.openflocon.flocondesktop.features.table.domain.repository.TableRepository
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

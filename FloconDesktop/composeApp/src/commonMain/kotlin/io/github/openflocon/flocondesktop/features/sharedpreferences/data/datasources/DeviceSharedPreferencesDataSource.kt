@@ -2,15 +2,15 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences.data.datas
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
+import com.flocon.library.domain.models.DeviceSharedPreferenceDomainModel
+import com.flocon.library.domain.models.DeviceSharedPreferenceId
+import com.flocon.library.domain.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceEditSharedPreferenceValueMessage
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.todevice.ToDeviceGetSharedPreferenceValueMessage
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceDomainModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.DeviceSharedPreferenceId
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.toRemote
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged

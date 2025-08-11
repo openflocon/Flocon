@@ -2,9 +2,9 @@ package io.github.openflocon.flocondesktop.features.table.data.datasource
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.toRemote
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.serialization.json.Json
 
 class RemoteTableDataSource(
@@ -14,11 +14,11 @@ class RemoteTableDataSource(
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
             message =
-            FloconOutgoingMessageDataModel(
-                plugin = Protocol.ToDevice.Table.Plugin,
-                method = Protocol.ToDevice.Table.Method.ClearItems,
-                body = Json.encodeToString(items),
-            ),
+                FloconOutgoingMessageDataModel(
+                    plugin = Protocol.ToDevice.Table.Plugin,
+                    method = Protocol.ToDevice.Table.Method.ClearItems,
+                    body = Json.encodeToString(items),
+                ),
         )
     }
 }

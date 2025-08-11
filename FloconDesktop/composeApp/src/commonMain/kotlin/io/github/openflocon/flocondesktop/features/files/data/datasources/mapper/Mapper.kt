@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.files.data.datasources
 
 import io.github.openflocon.flocondesktop.features.files.data.datasources.model.FileEntity
-import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
-import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
+import com.flocon.library.domain.models.FileDomainModel
+import com.flocon.library.domain.models.FilePathDomainModel
 import kotlin.time.Instant
 
 internal fun FilePathDomainModel.mapToLocal(): String = when (this) {

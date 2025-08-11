@@ -2,11 +2,11 @@ package io.github.openflocon.flocondesktop.features.dashboard.data.datasources
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.remote.model.ToDeviceCheckBoxValueChangedMessage
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.remote.model.ToDeviceSubmittedTextFieldMessage
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.toRemote
 import kotlinx.serialization.json.Json
 import kotlin.uuid.ExperimentalUuidApi
 

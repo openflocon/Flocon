@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.table.domain
 
-import io.github.openflocon.flocondesktop.features.table.domain.model.TableIdentifierDomainModel
+import com.flocon.library.domain.models.TableIdentifierDomainModel
 import kotlinx.coroutines.flow.firstOrNull
 
 class GetCurrentDeviceSelectedTableUseCase(

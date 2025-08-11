@@ -6,7 +6,7 @@ import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.D
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.EditSharedPrefFieldUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.ObserveCurrentDeviceSharedPreferenceValuesUseCase
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.model.SharedPreferenceRowDomainModel
+import com.flocon.library.domain.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.delegate.SharedPrefSelectorDelegate
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowUiModel

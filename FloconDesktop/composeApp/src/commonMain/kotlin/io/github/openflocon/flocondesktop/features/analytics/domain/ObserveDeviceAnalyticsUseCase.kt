@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.analytics.domain
 
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdAndPackageNameUseCase
-import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsIdentifierDomainModel
+import com.flocon.library.domain.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.flocondesktop.features.analytics.domain.repository.AnalyticsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

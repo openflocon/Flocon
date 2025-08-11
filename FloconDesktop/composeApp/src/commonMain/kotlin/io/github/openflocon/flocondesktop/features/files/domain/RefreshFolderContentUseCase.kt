@@ -2,7 +2,7 @@ package io.github.openflocon.flocondesktop.features.files.domain
 
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdAndPackageNameUseCase
-import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
+import com.flocon.library.domain.models.FilePathDomainModel
 import io.github.openflocon.flocondesktop.features.files.domain.repository.FilesRepository
 
 class RefreshFolderContentUseCase(

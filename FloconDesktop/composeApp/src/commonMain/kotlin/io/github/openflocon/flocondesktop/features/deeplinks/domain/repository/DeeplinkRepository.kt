@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.domain.repository
 
-import io.github.openflocon.flocondesktop.features.deeplinks.domain.model.DeeplinkDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import com.flocon.library.domain.models.DeeplinkDomainModel
+import com.flocon.library.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DeeplinkRepository {
