@@ -2,13 +2,13 @@ package io.github.openflocon.flocondesktop.features.analytics.data
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
+import io.github.openflocon.data.core.analytics.datasource.AnalyticsRemoteDataSource
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
 import io.github.openflocon.domain.analytics.repository.AnalyticsRepository
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import com.flocon.data.remote.analytics.datasource.AnalyticsRemoteDataSourceImpl
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSource
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSource
 import io.github.openflocon.flocondesktop.features.analytics.data.mapper.toDomain
@@ -23,7 +23,7 @@ class AnalyticsRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val analyticsLocalDataSource: AnalyticsLocalDataSource,
     private val deviceAnalyticsDataSource: DeviceAnalyticsDataSource,
-    private val remoteAnalyticsDataSource: AnalyticsRemoteDataSourceImpl,
+    private val remoteAnalyticsDataSource: AnalyticsRemoteDataSource,
 ) : AnalyticsRepository,
     MessagesReceiverRepository {
 

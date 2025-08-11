@@ -1,20 +1,20 @@
 package io.github.openflocon.flocondesktop.features.database.data
 
 import com.flocon.data.remote.Protocol
-import io.github.openflocon.domain.device.models.DeviceId
-import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.domain.common.Either
-import io.github.openflocon.domain.common.DispatcherProvider
-import com.flocon.data.remote.database.datasource.DeviceDatabasesRemoteDataSourceImpl
-import com.flocon.data.remote.database.datasource.QueryDatabaseRemoteDataSourceImpl
-import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSource
+import com.flocon.data.remote.database.datasource.toDomain
 import com.flocon.data.remote.database.models.toDeviceDatabasesDomain
+import com.flocon.data.remote.models.FloconIncomingMessageDataModel
+import io.github.openflocon.data.core.database.datasource.DeviceDatabasesRemoteDataSource
+import io.github.openflocon.data.core.database.datasource.QueryDatabaseRemoteDataSource
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.repository.DatabaseRepository
+import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import com.flocon.data.remote.database.datasource.toDomain
+import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSource
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -23,8 +23,8 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class DatabaseRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
-    private val deviceDatabasesDataSource: DeviceDatabasesRemoteDataSourceImpl,
-    private val queryDatabaseDataSource: QueryDatabaseRemoteDataSourceImpl,
+    private val deviceDatabasesDataSource: DeviceDatabasesRemoteDataSource,
+    private val queryDatabaseDataSource: QueryDatabaseRemoteDataSource,
     private val localDatabaseDataSource: LocalDatabaseDataSource,
 ) : DatabaseRepository,
     MessagesReceiverRepository {
