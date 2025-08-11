@@ -31,6 +31,8 @@ import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
 import io.github.openflocon.flocon.plugins.analytics.analytics
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsEvent
 import io.github.openflocon.flocon.plugins.analytics.model.analyticsProperty
+import io.github.openflocon.flocon.plugins.deeplinks.deeplinks
+import io.github.openflocon.flocon.plugins.deeplinks.model.Deeplink
 import io.github.openflocon.flocon.plugins.tables.model.toParam
 import io.github.openflocon.flocon.plugins.tables.table
 import kotlinx.coroutines.GlobalScope

@@ -121,7 +121,7 @@ class SharedPreferencesRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreference: DeviceSharedPreferenceDomainModel,
         key: String,
-        value: SharedPreferenceRowDomainModel.Value,
+        value: SharedPreferenceRowDomainModel.Value
     ) {
         withContext(dispatcherProvider.data) {
             deviceSharedPreferencesDataSource.editSharedPrefField(

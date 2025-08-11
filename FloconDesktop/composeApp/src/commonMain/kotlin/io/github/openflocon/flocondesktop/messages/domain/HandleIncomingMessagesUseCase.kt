@@ -7,6 +7,7 @@ import io.github.openflocon.flocondesktop.messages.domain.model.DeviceDomainMode
 import io.github.openflocon.flocondesktop.messages.domain.repository.MessagesRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 

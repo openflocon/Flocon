@@ -78,7 +78,7 @@ class DashboardRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId,
         textFieldId: String,
-        value: String,
+        value: String
     ) {
         withContext(dispatcherProvider.data) {
             toDeviceDashboardDataSource.submitTextFieldEvent(
@@ -93,7 +93,7 @@ class DashboardRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId,
         checkBoxId: String,
-        value: Boolean,
+        value: Boolean
     ) {
         withContext(dispatcherProvider.data) {
             toDeviceDashboardDataSource.sendUpdateCheckBoxEvent(

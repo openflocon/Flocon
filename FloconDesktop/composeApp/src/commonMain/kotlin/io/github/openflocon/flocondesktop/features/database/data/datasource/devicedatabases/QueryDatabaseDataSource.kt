@@ -45,13 +45,13 @@ class QueryDatabaseDataSource(
                 plugin = Protocol.ToDevice.Database.Plugin,
                 method = Protocol.ToDevice.Database.Method.Query,
                 body =
-                Json.encodeToString<DatabaseOutgoingQueryMessage>(
-                    DatabaseOutgoingQueryMessage(
-                        requestId = requestId,
-                        query = query,
-                        database = databaseId,
+                    Json.encodeToString<DatabaseOutgoingQueryMessage>(
+                        DatabaseOutgoingQueryMessage(
+                            requestId = requestId,
+                            query = query,
+                            database = databaseId,
+                        ),
                     ),
-                ),
             ),
         )
         // wait for result

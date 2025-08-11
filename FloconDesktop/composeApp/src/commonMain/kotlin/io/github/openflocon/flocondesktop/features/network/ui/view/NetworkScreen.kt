@@ -1,17 +1,12 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -20,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,6 +31,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiSt
 import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkFilter
 import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkItemHeaderView
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -124,28 +119,14 @@ fun NetworkScreen(
                     }
                 }
             }
-            AnimatedContent(
-                targetState = uiState.detailState,
-                transitionSpec = {
-                    slideIntoContainer(SlideDirection.Start)
-                        .togetherWith(slideOutOfContainer(SlideDirection.End))
-                },
-                contentKey = { it != null },
-                contentAlignment = Alignment.TopEnd,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .requiredWidth(500.dp)
-                    .align(Alignment.TopEnd),
+            FloconPanel(
+                contentState = uiState.detailState
             ) {
-                if (it != null) {
-                    NetworkDetailView(
-                        modifier = Modifier.fillMaxSize(),
-                        state = it,
-                        onAction = onAction,
-                    )
-                } else {
-                    Box(Modifier.fillMaxSize())
-                }
+                NetworkDetailView(
+                    modifier = Modifier.fillMaxSize(),
+                    state = it,
+                    onAction = onAction,
+                )
             }
         }
     }

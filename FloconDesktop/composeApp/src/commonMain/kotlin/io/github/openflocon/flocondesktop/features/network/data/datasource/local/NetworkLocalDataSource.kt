@@ -30,4 +30,5 @@ interface NetworkLocalDataSource {
     suspend fun deleteRequestsBefore(deviceId: DeviceId, requestId: String)
 
     suspend fun clear()
+
 }

@@ -7,9 +7,13 @@ import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPacka
 import kotlinx.coroutines.flow.Flow
 
 interface TableLocalDataSource {
+
     suspend fun insert(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tablePartialInfos: List<TableDomainModel>)
+
     fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?>
+
     fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>>
+
     suspend fun getDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<TableIdentifierDomainModel>
 
     suspend fun delete(
