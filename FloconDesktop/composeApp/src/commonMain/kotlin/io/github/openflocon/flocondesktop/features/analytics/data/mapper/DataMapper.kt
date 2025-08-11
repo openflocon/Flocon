@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.analytics.data.mapper
 
 import io.github.openflocon.flocondesktop.features.analytics.data.model.AnalyticsItemDataModel
-import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsItemDomainModel
-import io.github.openflocon.flocondesktop.features.analytics.domain.model.AnalyticsPropertyDomainModel
+import io.github.openflocon.domain.models.AnalyticsItemDomainModel
+import io.github.openflocon.domain.models.AnalyticsPropertyDomainModel
 
 internal fun toDomain(dataModel: AnalyticsItemDataModel) = AnalyticsItemDomainModel(
     analyticsTableId = dataModel.analyticsTableId,

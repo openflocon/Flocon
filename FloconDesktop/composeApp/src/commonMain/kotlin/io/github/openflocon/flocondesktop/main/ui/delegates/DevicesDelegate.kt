@@ -10,8 +10,8 @@ import io.github.openflocon.flocondesktop.core.domain.device.SelectDeviceUseCase
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceAppDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceDomainModel
+import io.github.openflocon.domain.models.DeviceAppDomainModel
+import io.github.openflocon.domain.models.DeviceDomainModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

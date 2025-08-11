@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.files.data.datasources
 
-import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomainModel
-import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.FileDomainModel
+import io.github.openflocon.domain.models.FilePathDomainModel
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface LocalFilesDataSource {

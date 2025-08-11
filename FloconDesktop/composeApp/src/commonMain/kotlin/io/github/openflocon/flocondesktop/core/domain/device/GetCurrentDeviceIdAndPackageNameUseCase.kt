@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.core.domain.device
 
-import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 
 class GetCurrentDeviceIdAndPackageNameUseCase(
     private val getCurrentDeviceUseCase: GetCurrentDeviceUseCase,
