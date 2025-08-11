@@ -1,4 +1,4 @@
-package io.github.openflocon.domain.common.coroutines.dispatcherprovider
+package io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider
 
 import io.github.openflocon.domain.common.DispatcherProvider
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,4 @@
-package io.github.openflocon.domain.common.ui.feedback
+package io.github.openflocon.flocondesktop.common.ui.feedback
 
 import io.github.openflocon.domain.common.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope

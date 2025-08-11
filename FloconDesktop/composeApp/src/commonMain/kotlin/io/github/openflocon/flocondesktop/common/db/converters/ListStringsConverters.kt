@@ -1,4 +1,4 @@
-package io.github.openflocon.domain.common.db.converters
+package io.github.openflocon.flocondesktop.common.db.converters
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.json.Json

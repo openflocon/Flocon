@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.files.usecase.DeleteFileUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.ObserveFolderContentUseCase

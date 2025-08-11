@@ -1,4 +1,4 @@
-package io.github.openflocon.domain.common.db
+package io.github.openflocon.flocondesktop.common.db
 
 import org.koin.dsl.module
 

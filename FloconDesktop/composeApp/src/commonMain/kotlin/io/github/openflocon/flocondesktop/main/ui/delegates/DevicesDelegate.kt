@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.main.ui.delegates
 
-import io.github.openflocon.domain.common.coroutines.closeable.CloseableDelegate
-import io.github.openflocon.domain.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceUseCase
 import io.github.openflocon.domain.device.usecase.ObserveDevicesUseCase

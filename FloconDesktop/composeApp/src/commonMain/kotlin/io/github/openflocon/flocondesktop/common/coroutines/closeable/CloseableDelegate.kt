@@ -1,4 +1,4 @@
-package io.github.openflocon.domain.common.coroutines.closeable
+package io.github.openflocon.flocondesktop.common.coroutines.closeable
 
 import io.github.openflocon.domain.common.DispatcherProvider
 import kotlinx.coroutines.CoroutineDispatcher

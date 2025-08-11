@@ -19,7 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import io.github.openflocon.domain.common.ui.isInPreview
+import io.github.openflocon.flocondesktop.common.ui.isInPreview
 import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.ui.model.previewImagesUiModel
 import io.github.openflocon.library.designsystem.FloconTheme

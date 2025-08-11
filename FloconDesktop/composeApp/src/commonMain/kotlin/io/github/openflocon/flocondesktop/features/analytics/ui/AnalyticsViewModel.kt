@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.features.analytics.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
 import io.github.openflocon.domain.analytics.usecase.ResetCurrentDeviceSelectedAnalyticsUseCase
 import io.github.openflocon.flocondesktop.features.analytics.ui.delegate.AnalyticsSelectorDelegate

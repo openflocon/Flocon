@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.app.di
 
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
-import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayer
-import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayerHandler
-import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayerImpl
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerHandler
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerImpl
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module

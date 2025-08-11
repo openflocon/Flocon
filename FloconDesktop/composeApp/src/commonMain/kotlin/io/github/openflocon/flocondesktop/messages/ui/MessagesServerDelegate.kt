@@ -5,9 +5,9 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
-import io.github.openflocon.domain.common.coroutines.closeable.CloseableDelegate
-import io.github.openflocon.domain.common.coroutines.closeable.CloseableScoped
-import io.github.openflocon.domain.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.messages.domain.HandleIncomingMessagesUseCase
 import io.github.openflocon.flocondesktop.messages.domain.StartServerUseCase
 import kotlinx.coroutines.delay

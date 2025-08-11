@@ -1,4 +1,4 @@
-package io.github.openflocon.domain.common.db
+package io.github.openflocon.flocondesktop.common.db
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
