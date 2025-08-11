@@ -72,7 +72,8 @@ kotlin {
             // TODO Remove
             implementation(projects.data.remote)
 
-            implementation(projects.library.domain)
+            implementation(projects.domain)
+
             implementation(projects.library.designsystem)
         }
         commonTest.dependencies {

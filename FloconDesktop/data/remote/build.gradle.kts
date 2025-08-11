@@ -13,7 +13,7 @@ kotlin {
             implementation(libs.kotlinx.coroutinesCore)
             implementation(libs.kotlinx.serializationJson)
 
-            implementation(projects.library.domain)
+            implementation(projects.domain)
         }
 
         commonTest.dependencies {

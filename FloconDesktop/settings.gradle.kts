@@ -35,4 +35,4 @@ plugins {
 include(":composeApp")
 include(":library:designsystem")
 include(":data:remote")
-include(":library:domain")
+include(":domain")
