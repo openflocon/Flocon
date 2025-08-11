@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.mapper
 
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.model.DeeplinkEntity
-import io.github.openflocon.domain.models.DeeplinkDomainModel
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 
 fun DeeplinkEntity.toDomainModel(): DeeplinkDomainModel = DeeplinkDomainModel(
     label = this.label,

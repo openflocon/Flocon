@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.ui
 
-import io.github.openflocon.domain.models.SharedPreferenceRowDomainModel
+import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowUiModel
 
 internal fun SharedPreferenceRowDomainModel.Value.toUi(): SharedPreferencesRowUiModel.Value = when (this) {

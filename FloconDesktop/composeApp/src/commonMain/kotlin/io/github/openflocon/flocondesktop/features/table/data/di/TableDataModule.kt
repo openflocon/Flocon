@@ -6,7 +6,7 @@ import io.github.openflocon.flocondesktop.features.table.data.datasource.device.
 import io.github.openflocon.flocondesktop.features.table.data.datasource.device.DeviceTablesDataSourceInMemory
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.TableLocalDataSource
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.TableLocalDataSourceRoom
-import io.github.openflocon.flocondesktop.features.table.domain.repository.TableRepository
+import io.github.openflocon.domain.table.repository.TableRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf

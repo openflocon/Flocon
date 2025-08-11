@@ -5,8 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import io.github.openflocon.domain.models.DashboardDomainModel
-import io.github.openflocon.domain.models.DeviceId
+import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
+import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper.toEntity
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementEntity
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardEntity

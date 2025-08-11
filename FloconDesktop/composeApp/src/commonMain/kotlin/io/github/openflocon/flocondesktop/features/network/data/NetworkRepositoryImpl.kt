@@ -2,16 +2,16 @@ package io.github.openflocon.flocondesktop.features.network.data
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.domain.models.DeviceId
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.NetworkLocalDataSource
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.computeIsGraphQlSuccess
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.extractGraphQl
-import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkImageRepository
-import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
+import io.github.openflocon.domain.network.repository.NetworkImageRepository
+import io.github.openflocon.domain.network.repository.NetworkRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

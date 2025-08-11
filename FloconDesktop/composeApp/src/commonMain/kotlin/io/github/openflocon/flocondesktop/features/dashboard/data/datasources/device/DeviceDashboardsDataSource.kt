@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device
 
-import io.github.openflocon.domain.models.DashboardId
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.dashboard.models.DashboardId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DeviceDashboardsDataSource {

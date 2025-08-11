@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.database.data.model.incoming
 
-import io.github.openflocon.domain.models.DeviceDataBaseDomainModel
+import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import kotlinx.serialization.Serializable
 
 @Serializable

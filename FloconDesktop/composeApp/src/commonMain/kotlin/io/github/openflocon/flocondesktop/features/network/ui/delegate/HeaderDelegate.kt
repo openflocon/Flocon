@@ -2,11 +2,11 @@ package io.github.openflocon.flocondesktop.features.network.ui.delegate
 
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.network.domain.filter.GetNetworkFilterUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.filter.ObserveNetworkFilterUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.filter.UpdateNetworkFilterUseCase
-import io.github.openflocon.domain.models.NetworkTextFilterColumns
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.network.usecase.GetNetworkFilterUseCase
+import io.github.openflocon.domain.network.usecase.ObserveNetworkFilterUseCase
+import io.github.openflocon.domain.network.usecase.UpdateNetworkFilterUseCase
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toTextFilterDomain
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toTextFilterUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi

@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.common
 
-expect fun findAdbPath(): String?
+import io.github.openflocon.domain.common.Either
 
-expect fun executeAdbCommand(adbPath: String, command: String): Either<Throwable, String>
+expect fun localFindAdbPath(): String?
+
+expect fun localExecuteAdbCommand(adbPath: String, command: String): Either<Throwable, String>
