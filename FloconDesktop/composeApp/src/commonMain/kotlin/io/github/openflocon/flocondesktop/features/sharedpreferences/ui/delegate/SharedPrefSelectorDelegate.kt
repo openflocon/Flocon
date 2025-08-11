@@ -2,14 +2,14 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences.ui.delegat
 
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceUseCase
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.AskForDeviceSharedPreferencesUseCase
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.GetCurrentDeviceSharedPreferenceValuesUseCase
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.ObserveCurrentDeviceSelectedSharedPreferenceUseCase
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.ObserveDeviceSharedPreferencesUseCase
-import io.github.openflocon.flocondesktop.features.sharedpreferences.domain.SelectCurrentDeviceSharedPreferenceUseCase
-import io.github.openflocon.domain.models.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceUseCase
+import io.github.openflocon.domain.sharedpreference.usecase.AskForDeviceSharedPreferencesUseCase
+import io.github.openflocon.domain.sharedpreference.usecase.GetCurrentDeviceSharedPreferenceValuesUseCase
+import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSelectedSharedPreferenceUseCase
+import io.github.openflocon.domain.sharedpreference.usecase.ObserveDeviceSharedPreferencesUseCase
+import io.github.openflocon.domain.sharedpreference.usecase.SelectCurrentDeviceSharedPreferenceUseCase
+import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPrefsStateUiModel
 import kotlinx.coroutines.Job

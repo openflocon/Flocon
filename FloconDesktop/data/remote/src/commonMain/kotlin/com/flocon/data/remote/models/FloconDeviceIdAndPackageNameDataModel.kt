@@ -1,7 +1,7 @@
 package com.flocon.data.remote.models
 
-import io.github.openflocon.domain.models.DeviceId
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.serialization.Serializable
 
 // TODO Set internal

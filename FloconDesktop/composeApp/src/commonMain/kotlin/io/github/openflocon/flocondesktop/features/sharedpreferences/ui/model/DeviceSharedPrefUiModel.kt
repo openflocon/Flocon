@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model
 
-import io.github.openflocon.domain.models.DeviceDataBaseId
+import io.github.openflocon.domain.database.models.DeviceDataBaseId
 
 data class DeviceSharedPrefUiModel(
     val id: DeviceDataBaseId,

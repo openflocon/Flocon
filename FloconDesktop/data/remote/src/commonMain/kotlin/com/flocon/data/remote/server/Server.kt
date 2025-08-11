@@ -3,14 +3,14 @@ package com.flocon.data.remote.server
 import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import io.github.openflocon.domain.Constant
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-val SERVER_PORT: Int = 9023
 
 interface Server {
-    fun start(port: Int = SERVER_PORT)
+    fun start(port: Int = Constant.SERVER_PORT)
 
     fun stop()
 

@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -120,7 +121,8 @@ fun NetworkScreen(
                 }
             }
             FloconPanel(
-                contentState = uiState.detailState
+                contentState = uiState.detailState,
+                modifier = Modifier.align(Alignment.CenterEnd)
             ) {
                 NetworkDetailView(
                     modifier = Modifier.fillMaxSize(),

@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.ui.mapper
 
-import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatusUi
 
 fun getStatusUi(httpRequest: FloconHttpRequestDomainModel): NetworkStatusUi = when (val t = httpRequest.type) {

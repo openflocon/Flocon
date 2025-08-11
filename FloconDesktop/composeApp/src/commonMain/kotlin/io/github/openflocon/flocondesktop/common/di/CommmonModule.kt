@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.common.di
 
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProviderImpl
 import io.github.openflocon.flocondesktop.common.db.roomModule
 import kotlinx.coroutines.CoroutineScope

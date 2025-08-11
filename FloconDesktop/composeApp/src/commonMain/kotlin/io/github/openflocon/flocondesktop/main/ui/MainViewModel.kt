@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.main.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.main.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel

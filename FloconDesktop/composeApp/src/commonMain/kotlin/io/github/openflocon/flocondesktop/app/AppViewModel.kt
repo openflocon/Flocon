@@ -2,9 +2,9 @@ package io.github.openflocon.flocondesktop.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
-import io.github.openflocon.flocondesktop.core.domain.settings.InitAdbPathUseCase
-import io.github.openflocon.flocondesktop.core.domain.settings.StartAdbForwardUseCase
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
+import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive

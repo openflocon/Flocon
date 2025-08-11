@@ -2,16 +2,16 @@ package io.github.openflocon.flocondesktop.features.dashboard.data
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.DashboardLocalDataSource
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.ToDeviceDashboardDataSource
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSource
 import io.github.openflocon.flocondesktop.features.dashboard.data.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.DashboardConfigDataModel
-import io.github.openflocon.domain.models.DashboardDomainModel
-import io.github.openflocon.domain.models.DashboardId
-import io.github.openflocon.flocondesktop.features.dashboard.domain.repository.DashboardRepository
-import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
+import io.github.openflocon.domain.dashboard.models.DashboardId
+import io.github.openflocon.domain.dashboard.repository.DashboardRepository
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

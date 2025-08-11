@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.common
 
+import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.common.Failure
+import io.github.openflocon.domain.common.Success
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -9,7 +12,7 @@ import kotlin.io.println
 import kotlin.io.readText
 import kotlin.use
 
-actual fun findAdbPath(): String? {
+actual fun localFindAdbPath(): String? {
     // 1. Check if 'adb' is already in the system PATH
     try {
         val process =
@@ -52,7 +55,7 @@ actual fun findAdbPath(): String? {
     return null
 }
 
-actual fun executeAdbCommand(adbPath: String, command: String): Either<Throwable, String> = try {
+actual fun localExecuteAdbCommand(adbPath: String, command: String): Either<Throwable, String> = try {
     val devices = listConnectedDevices(adbPath)
     if (devices.isEmpty() || devices.size == 1) {
         singleDeviceExecuteSystemCommand(adbPath = adbPath, command = command)

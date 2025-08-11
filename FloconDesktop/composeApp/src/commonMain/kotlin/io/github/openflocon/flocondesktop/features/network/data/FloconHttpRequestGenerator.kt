@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.data
 
-import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
 import kotlin.time.Clock
 
 object FloconHttpRequestGenerator {
