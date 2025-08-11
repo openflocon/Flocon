@@ -2,9 +2,9 @@ package io.github.openflocon.flocondesktop.features.network.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
-import io.github.openflocon.flocondesktop.copyToClipboard
 import io.github.openflocon.flocondesktop.features.network.domain.GenerateCurlCommandUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.ObserveHttpRequestsByIdUseCase
 import io.github.openflocon.flocondesktop.features.network.domain.ObserveHttpRequestsUseCase

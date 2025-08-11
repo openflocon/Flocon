@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.messages.domain.repository.sub
 
-import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
+import com.flocon.data.remote.models.FloconIncomingMessageDataModel
+
 
 interface MessagesReceiverRepository {
     val pluginName: List<String>

@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.data.datasource.local
 
-import io.github.openflocon.flocondesktop.DeviceId
+import com.flocon.data.remote.models.DeviceId
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper.textFilterToDomain
 import io.github.openflocon.flocondesktop.features.network.data.datasource.local.mapper.textFilterToEntity
 import io.github.openflocon.flocondesktop.features.network.domain.model.NetworkTextFilterColumns

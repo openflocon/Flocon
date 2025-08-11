@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.messages.domain.repository
 
-import io.github.openflocon.flocondesktop.FloconIncomingMessageDataModel
+import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import kotlinx.coroutines.flow.Flow
 
 interface MessagesRepository {

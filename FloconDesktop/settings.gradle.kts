@@ -33,5 +33,5 @@ plugins {
 }
 
 include(":composeApp")
-include(":shared")
 include(":library:designsystem")
+include(":data:remote")

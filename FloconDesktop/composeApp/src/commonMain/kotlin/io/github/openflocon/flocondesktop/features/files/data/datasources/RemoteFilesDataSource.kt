@@ -1,8 +1,9 @@
 package io.github.openflocon.flocondesktop.features.files.data.datasources
 
-import io.github.openflocon.flocondesktop.FloconOutgoingMessageDataModel
-import io.github.openflocon.flocondesktop.Protocol
-import io.github.openflocon.flocondesktop.Server
+import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import com.flocon.data.remote.server.Server
+import com.flocon.data.remote.server.newRequestId
 import io.github.openflocon.flocondesktop.common.Either
 import io.github.openflocon.flocondesktop.common.Failure
 import io.github.openflocon.flocondesktop.common.Success
@@ -14,7 +15,6 @@ import io.github.openflocon.flocondesktop.features.files.domain.model.FileDomain
 import io.github.openflocon.flocondesktop.features.files.domain.model.FilePathDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.model.toRemote
-import io.github.openflocon.flocondesktop.newRequestId
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -55,13 +55,13 @@ class RemoteFilesDataSource(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.ListFiles,
                 body =
-                Json.encodeToString(
-                    ToDeviceGetFilesMessage(
-                        requestId = requestId,
-                        path = filePath,
-                        isConstantPath = isConstantPath,
+                    Json.encodeToString(
+                        ToDeviceGetFilesMessage(
+                            requestId = requestId,
+                            path = filePath,
+                            isConstantPath = isConstantPath,
+                        ),
                     ),
-                ),
             ),
         )
         // wait for result
@@ -87,13 +87,13 @@ class RemoteFilesDataSource(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFolderContent,
                 body =
-                Json.encodeToString(
-                    ToDeviceDeleteFolderContentMessage(
-                        requestId = requestId,
-                        path = realPath,
-                        isConstantPath = isConstantPath,
+                    Json.encodeToString(
+                        ToDeviceDeleteFolderContentMessage(
+                            requestId = requestId,
+                            path = realPath,
+                            isConstantPath = isConstantPath,
+                        ),
                     ),
-                ),
             ),
         )
 
@@ -128,14 +128,14 @@ class RemoteFilesDataSource(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFile,
                 body =
-                Json.encodeToString(
-                    ToDeviceDeleteFileMessage(
-                        requestId = requestId,
-                        parentPath = parentPath,
-                        filePath = filePathValue,
-                        isConstantParentPath = isConstantParentPath,
+                    Json.encodeToString(
+                        ToDeviceDeleteFileMessage(
+                            requestId = requestId,
+                            parentPath = parentPath,
+                            filePath = filePathValue,
+                            isConstantParentPath = isConstantParentPath,
+                        ),
                     ),
-                ),
             ),
         )
 

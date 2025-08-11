@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.data.datasource.local
 
-import io.github.openflocon.flocondesktop.DeviceId
+import com.flocon.data.remote.models.DeviceId
 import io.github.openflocon.flocondesktop.features.network.domain.model.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.model.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -30,4 +30,5 @@ interface NetworkLocalDataSource {
     suspend fun deleteRequestsBefore(deviceId: DeviceId, requestId: String)
 
     suspend fun clear()
+
 }

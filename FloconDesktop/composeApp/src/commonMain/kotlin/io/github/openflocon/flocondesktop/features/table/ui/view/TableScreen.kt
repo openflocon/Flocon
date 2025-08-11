@@ -40,6 +40,7 @@ import io.github.openflocon.flocondesktop.features.table.ui.model.items
 import io.github.openflocon.flocondesktop.features.table.ui.model.previewTableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.ui.model.previewTablesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -152,7 +153,10 @@ fun TableScreen(
                 }
             }
 
-            selectedItem?.let {
+            FloconPanel(
+                contentState = selectedItem,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
                 TableDetailView(
                     modifier =
                     Modifier
