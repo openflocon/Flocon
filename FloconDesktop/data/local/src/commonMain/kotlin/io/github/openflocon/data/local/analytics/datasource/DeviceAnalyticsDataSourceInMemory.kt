@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.data.datasource.device
+package io.github.openflocon.data.local.analytics.datasource
 
 import io.github.openflocon.data.core.analytics.datasource.DeviceAnalyticsDataSource
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
@@ -13,9 +13,10 @@ import kotlinx.coroutines.flow.update
 class DeviceAnalyticsDataSourceInMemory : DeviceAnalyticsDataSource {
     private val selectedDeviceAnalytics = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, AnalyticsIdentifierDomainModel?>>(emptyMap())
 
-    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> = selectedDeviceAnalytics
-        .map { it[deviceIdAndPackageName] }
-        .distinctUntilChanged()
+    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> =
+        selectedDeviceAnalytics
+            .map { it[deviceIdAndPackageName] }
+            .distinctUntilChanged()
 
     override fun selectDeviceAnalytics(
         deviceAnalytics: List<AnalyticsIdentifierDomainModel>,

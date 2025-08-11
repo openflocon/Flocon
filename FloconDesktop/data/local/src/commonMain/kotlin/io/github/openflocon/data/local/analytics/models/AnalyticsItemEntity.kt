@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.model
+package io.github.openflocon.data.local.analytics.models
 
 import androidx.room.Entity
 import androidx.room.Index

@@ -1,12 +1,13 @@
-package io.github.openflocon.flocondesktop.features.analytics.data.datasource.local
+package io.github.openflocon.data.local.analytics.datasource
 
 import io.github.openflocon.data.core.analytics.datasource.AnalyticsLocalDataSource
-import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.mapper.toAnalyticsDomain
-import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.mapper.toEntity
+import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
+import io.github.openflocon.data.local.analytics.mapper.toAnalyticsDomain
+import io.github.openflocon.data.local.analytics.mapper.toEntity
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -28,26 +29,30 @@ class AnalyticsLocalDataSourceRoom(
         }
     }
 
-    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsTableId: AnalyticsTableId): Flow<List<AnalyticsItemDomainModel>> = analyticsDao.observeAnalyticsItems(
+    override fun observe(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsTableId: AnalyticsTableId
+    ): Flow<List<AnalyticsItemDomainModel>> = analyticsDao.observeAnalyticsItems(
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
         analyticsTableId = analyticsTableId,
     )
-        .map { it.map(::toAnalyticsDomain) }
+        .map { it.map { toAnalyticsDomain(it) } }
         .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> = analyticsDao.observeAnalyticsTableIdsForDevice(
-        deviceId = deviceIdAndPackageName.deviceId,
-        packageName = deviceIdAndPackageName.packageName,
-    )
-        .map { list ->
-            list.map {
-                AnalyticsIdentifierDomainModel(
-                    id = it,
-                    name = it,
-                )
+    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
+        analyticsDao.observeAnalyticsTableIdsForDevice(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+        )
+            .map { list ->
+                list.map {
+                    AnalyticsIdentifierDomainModel(
+                        id = it,
+                        name = it,
+                    )
+                }
             }
-        }
 
     override suspend fun delete(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsId: AnalyticsIdentifierDomainModel) {
         analyticsDao.deleteAnalyticsContent(
@@ -57,14 +62,15 @@ class AnalyticsLocalDataSourceRoom(
         )
     }
 
-    override suspend fun getDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<AnalyticsIdentifierDomainModel> = analyticsDao.getAnalyticsForDevice(
-        deviceId = deviceIdAndPackageName.deviceId,
-        packageName = deviceIdAndPackageName.packageName,
-    )
-        .map {
-            AnalyticsIdentifierDomainModel(
-                id = it,
-                name = it,
-            )
-        }
+    override suspend fun getDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<AnalyticsIdentifierDomainModel> =
+        analyticsDao.getAnalyticsForDevice(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+        )
+            .map {
+                AnalyticsIdentifierDomainModel(
+                    id = it,
+                    name = it,
+                )
+            }
 }

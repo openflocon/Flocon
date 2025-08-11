@@ -1,19 +1,19 @@
-package io.github.openflocon.flocondesktop.features.analytics.data.datasource.local
+package io.github.openflocon.data.local.analytics.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
 import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.model.AnalyticsItemEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FloconAnalyticsDao {
 
     @Transaction
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAnalyticsItems(
         analyticsItemEntities: List<AnalyticsItemEntity>,
     )
