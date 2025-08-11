@@ -1,4 +1,4 @@
-package io.github.openflocon.domain.models
+package io.github.openflocon.domain.network.models
 
 data class FloconHttpRequestDomainModel(
     val uuid: String,

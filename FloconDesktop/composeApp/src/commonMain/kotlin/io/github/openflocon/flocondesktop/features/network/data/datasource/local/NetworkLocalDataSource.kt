@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.data.datasource.local
 
 import io.github.openflocon.domain.models.DeviceId
-import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
 import io.github.openflocon.domain.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 

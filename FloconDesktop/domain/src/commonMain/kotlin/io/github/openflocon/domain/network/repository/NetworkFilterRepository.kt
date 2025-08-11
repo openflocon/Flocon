@@ -1,7 +1,7 @@
-package io.github.openflocon.flocondesktop.features.network.domain.repository
+package io.github.openflocon.domain.network.repository
 
 import io.github.openflocon.domain.models.DeviceId
-import io.github.openflocon.domain.models.NetworkTextFilterColumns
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
 import kotlinx.coroutines.flow.Flow
 

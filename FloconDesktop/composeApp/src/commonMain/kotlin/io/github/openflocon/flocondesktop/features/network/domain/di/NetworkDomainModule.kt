@@ -1,14 +1,14 @@
 package io.github.openflocon.flocondesktop.features.network.domain.di
 
-import io.github.openflocon.flocondesktop.features.network.domain.GenerateCurlCommandUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.ObserveHttpRequestsByIdUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.ObserveHttpRequestsUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.RemoveHttpRequestsBeforeUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.ResetCurrentDeviceHttpRequestsUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.filter.GetNetworkFilterUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.filter.ObserveNetworkFilterUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.filter.UpdateNetworkFilterUseCase
+import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
+import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsByIdUseCase
+import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsUseCase
+import io.github.openflocon.domain.network.usecase.RemoveHttpRequestUseCase
+import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
+import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
+import io.github.openflocon.domain.network.usecase.GetNetworkFilterUseCase
+import io.github.openflocon.domain.network.usecase.ObserveNetworkFilterUseCase
+import io.github.openflocon.domain.network.usecase.UpdateNetworkFilterUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

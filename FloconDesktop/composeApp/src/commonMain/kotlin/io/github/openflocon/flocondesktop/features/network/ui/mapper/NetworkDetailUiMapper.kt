@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.ui.mapper
 
-import io.github.openflocon.domain.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
 import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
 import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailHeaderUi

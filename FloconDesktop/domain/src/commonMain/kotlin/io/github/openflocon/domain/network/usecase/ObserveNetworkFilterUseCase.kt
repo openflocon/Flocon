@@ -1,9 +1,9 @@
-package io.github.openflocon.flocondesktop.features.network.domain.filter
+package io.github.openflocon.domain.network.usecase
 
 import io.github.openflocon.flocondesktop.core.domain.device.ObserveCurrentDeviceIdUseCase
-import io.github.openflocon.domain.models.NetworkTextFilterColumns
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
-import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkFilterRepository
+import io.github.openflocon.domain.network.repository.NetworkFilterRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest

@@ -1,7 +1,7 @@
-package io.github.openflocon.flocondesktop.features.network.domain
+package io.github.openflocon.domain.network.usecase
 
 import io.github.openflocon.flocondesktop.core.domain.device.GetCurrentDeviceIdUseCase
-import io.github.openflocon.flocondesktop.features.network.domain.repository.NetworkRepository
+import io.github.openflocon.domain.network.repository.NetworkRepository
 
 class RemoveHttpRequestUseCase(
     private val networkRepository: NetworkRepository,

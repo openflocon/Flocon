@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop
 
+import io.github.openflocon.domain.domainModule
 import io.github.openflocon.flocondesktop.app.di.appModule
 import io.github.openflocon.flocondesktop.common.di.commonModule
 import io.github.openflocon.flocondesktop.core.di.coreModule
@@ -15,6 +16,7 @@ fun startKoinApp() {
             coreModule,
             mainModule,
             featuresModule,
+            domainModule
         )
     }
 }
