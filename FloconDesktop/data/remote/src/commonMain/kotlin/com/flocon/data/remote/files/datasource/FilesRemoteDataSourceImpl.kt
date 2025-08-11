@@ -1,20 +1,21 @@
-package io.github.openflocon.flocondesktop.features.files.data.datasources
+package com.flocon.data.remote.files.datasource
 
 import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.files.models.ToDeviceDeleteFileMessage
+import com.flocon.data.remote.files.models.ToDeviceDeleteFolderContentMessage
+import com.flocon.data.remote.files.models.ToDeviceGetFilesMessage
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.files.models.FileDomainModel
-import io.github.openflocon.domain.files.models.FilePathDomainModel
+import io.github.openflocon.data.core.files.datasource.FilesRemoteDataSource
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
-import io.github.openflocon.flocondesktop.features.files.data.model.incoming.FromDeviceFilesResultDataModel
-import io.github.openflocon.flocondesktop.features.files.data.model.todevice.ToDeviceDeleteFileMessage
-import io.github.openflocon.flocondesktop.features.files.data.model.todevice.ToDeviceDeleteFolderContentMessage
-import io.github.openflocon.flocondesktop.features.files.data.model.todevice.ToDeviceGetFilesMessage
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.files.models.FileDomainModel
+import io.github.openflocon.domain.files.models.FilePathDomainModel
+import io.github.openflocon.domain.files.models.FromDeviceFilesResultDomainModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -25,18 +26,18 @@ import kotlinx.serialization.json.Json
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 
-class RemoteFilesDataSource(
+class FilesRemoteDataSourceImpl(
     private val server: Server,
-) {
+) : FilesRemoteDataSource {
     private val getFilesResultReceived =
-        MutableStateFlow<Set<FromDeviceFilesResultDataModel>>(emptySet())
+        MutableStateFlow<Set<FromDeviceFilesResultDomainModel>>(emptySet())
 
-    fun onGetFilesResultReceived(received: FromDeviceFilesResultDataModel) {
+    override fun onGetFilesResultReceived(received: FromDeviceFilesResultDomainModel) {
         getFilesResultReceived.update { it + received }
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    suspend fun executeGetFile(
+    override suspend fun executeGetFile(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
     ): Either<Throwable, List<FileDomainModel>> {
@@ -55,7 +56,7 @@ class RemoteFilesDataSource(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.ListFiles,
                 body =
-                    Json.encodeToString(
+                    Json.Default.encodeToString(
                         ToDeviceGetFilesMessage(
                             requestId = requestId,
                             path = filePath,
@@ -68,7 +69,7 @@ class RemoteFilesDataSource(
         return waitForResult(requestId)
     }
 
-    suspend fun executeDeleteFolderContent(
+    override suspend fun executeDeleteFolderContent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         folderPath: FilePathDomainModel,
     ): Either<Exception, List<FileDomainModel>> {
@@ -87,7 +88,7 @@ class RemoteFilesDataSource(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFolderContent,
                 body =
-                    Json.encodeToString(
+                    Json.Default.encodeToString(
                         ToDeviceDeleteFolderContentMessage(
                             requestId = requestId,
                             path = realPath,
@@ -101,7 +102,7 @@ class RemoteFilesDataSource(
         return waitForResult(requestId)
     }
 
-    suspend fun executeDeleteFile(
+    override suspend fun executeDeleteFile(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         folderPath: FilePathDomainModel,
         filePath: FilePathDomainModel,
@@ -128,7 +129,7 @@ class RemoteFilesDataSource(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFile,
                 body =
-                    Json.encodeToString(
+                    Json.Default.encodeToString(
                         ToDeviceDeleteFileMessage(
                             requestId = requestId,
                             parentPath = parentPath,
@@ -145,12 +146,11 @@ class RemoteFilesDataSource(
 
     private suspend fun waitForResult(requestId: String): Either<Exception, List<FileDomainModel>> {
         try {
-            val result =
-                withTimeout(3_000) {
-                    getFilesResultReceived
-                        .mapNotNull { it.firstOrNull { it.requestId == requestId } }
-                        .first()
-                }
+            val result = withTimeout(3_000) {
+                getFilesResultReceived
+                    .mapNotNull { it.firstOrNull { it.requestId == requestId } }
+                    .first()
+            }
             val files: List<FileDomainModel> = getFilesFromResult(result)
             return Success(files)
         } catch (e: TimeoutCancellationException) {
@@ -166,13 +166,13 @@ class RemoteFilesDataSource(
         }
     }
 
-    private fun getFilesFromResult(result: FromDeviceFilesResultDataModel): List<FileDomainModel> = result.files.map {
+    private fun getFilesFromResult(result: FromDeviceFilesResultDomainModel): List<FileDomainModel> = result.files.map {
         FileDomainModel(
             name = it.name,
             isDirectory = it.isDirectory,
             path = FilePathDomainModel.Real(it.path),
             size = it.size,
-            lastModified = Instant.fromEpochMilliseconds(it.lastModified),
+            lastModified = Instant.Companion.fromEpochMilliseconds(it.lastModified),
         )
     }
 }

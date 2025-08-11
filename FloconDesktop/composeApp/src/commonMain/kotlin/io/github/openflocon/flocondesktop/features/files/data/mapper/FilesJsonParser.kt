@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.files.data.mapper
 
-import io.github.openflocon.flocondesktop.features.files.data.model.incoming.FromDeviceFilesResultDataModel
+import com.flocon.data.remote.files.models.FromDeviceFilesResultDataModel
 import kotlinx.serialization.json.Json
 
 private val filesJsonParser =

@@ -8,6 +8,14 @@ plugins {
 kotlin {
     jvm("desktop")
 
+    compilerOptions {
+        // Pour Kotlin 1.9+
+        freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
+        freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+        freeCompilerArgs.add("-Xcontext-parameters")
+        freeCompilerArgs.add("-Xcontext-sensitive-resolution")
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutinesCore)

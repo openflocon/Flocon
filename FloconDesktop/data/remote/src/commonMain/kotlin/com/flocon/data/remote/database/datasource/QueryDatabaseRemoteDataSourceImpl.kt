@@ -4,7 +4,7 @@ import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.database.models.DatabaseExecuteSqlResponseDataModel
 import com.flocon.data.remote.database.models.DatabaseOutgoingQueryMessage
 import com.flocon.data.remote.database.models.ResponseAndRequestIdDataModel
-import com.flocon.data.remote.database.models.datasource.QueryDatabaseRemoteDataSource
+import io.github.openflocon.data.core.database.datasource.QueryDatabaseRemoteDataSource
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server

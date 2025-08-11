@@ -1,4 +1,4 @@
-package com.flocon.data.remote.database.models.datasource
+package io.github.openflocon.data.core.database.datasource
 
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
