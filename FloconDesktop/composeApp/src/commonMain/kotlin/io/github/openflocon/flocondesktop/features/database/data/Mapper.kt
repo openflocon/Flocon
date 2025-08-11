@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.database.data
 
-import io.github.openflocon.flocondesktop.features.database.data.model.incoming.DatabaseExecuteSqlResponseDataModel
-import io.github.openflocon.flocondesktop.features.database.data.model.incoming.DeviceDataBaseDataModel
-import io.github.openflocon.flocondesktop.features.database.data.model.incoming.QueryResultReceivedDataModel
-import io.github.openflocon.flocondesktop.features.database.data.model.incoming.ResponseAndRequestIdDataModel
+import com.flocon.data.remote.database.models.DatabaseExecuteSqlResponseDataModel
+import com.flocon.data.remote.database.models.DeviceDataBaseDataModel
+import com.flocon.data.remote.database.models.QueryResultReceivedDataModel
+import com.flocon.data.remote.database.models.ResponseAndRequestIdDataModel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 

@@ -1,4 +1,4 @@
-package io.github.openflocon.data.core.database.datasource
+package com.flocon.data.remote.database.models.datasource
 
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId

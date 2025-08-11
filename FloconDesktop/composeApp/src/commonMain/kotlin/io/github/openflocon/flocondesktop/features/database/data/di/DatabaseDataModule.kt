@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.database.data.di
 
 import io.github.openflocon.flocondesktop.features.database.data.DatabaseRepositoryImpl
-import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.DeviceDatabasesRemoteDataSourceImpl
-import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.QueryDatabaseRemoteDataSourceImpl
+import com.flocon.data.remote.database.datasource.DeviceDatabasesRemoteDataSourceImpl
+import com.flocon.data.remote.database.datasource.QueryDatabaseRemoteDataSourceImpl
 import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSource
 import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSourceRoom
 import io.github.openflocon.domain.database.repository.DatabaseRepository

@@ -1,11 +1,14 @@
-package io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases
+package com.flocon.data.remote.database.datasource
 
 import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.database.models.DatabaseExecuteSqlResponseDataModel
+import com.flocon.data.remote.database.models.DatabaseOutgoingQueryMessage
+import com.flocon.data.remote.database.models.ResponseAndRequestIdDataModel
+import com.flocon.data.remote.database.models.datasource.QueryDatabaseRemoteDataSource
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
-import io.github.openflocon.data.core.database.datasource.QueryDatabaseRemoteDataSource
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
@@ -13,9 +16,6 @@ import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDom
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.models.ResponseAndRequestIdDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.features.database.data.model.incoming.DatabaseExecuteSqlResponseDataModel
-import io.github.openflocon.flocondesktop.features.database.data.model.incoming.ResponseAndRequestIdDataModel
-import io.github.openflocon.flocondesktop.features.database.data.model.outgoing.DatabaseOutgoingQueryMessage
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first

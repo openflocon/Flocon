@@ -1,10 +1,10 @@
-package io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases
+package com.flocon.data.remote.database.datasource
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
-import io.github.openflocon.data.core.database.datasource.DeviceDatabasesRemoteDataSource
+import com.flocon.data.remote.database.models.datasource.DeviceDatabasesRemoteDataSource
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel

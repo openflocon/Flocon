@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.database.data.model.incoming
+package com.flocon.data.remote.database.models
 
 data class ResponseAndRequestIdDataModel(
     val requestId: String,
