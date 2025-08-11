@@ -5,8 +5,8 @@ import io.github.openflocon.domain.device.models.DeviceId
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.DeviceDatabasesDataSource
-import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.QueryDatabaseDataSource
+import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.DeviceDatabasesRemoteDataSourceImpl
+import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.QueryDatabaseRemoteDataSourceImpl
 import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSource
 import io.github.openflocon.flocondesktop.features.database.data.model.incoming.toDeviceDatabasesDomain
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
@@ -14,6 +14,7 @@ import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.repository.DatabaseRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.toDomain
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -22,8 +23,8 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class DatabaseRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
-    private val deviceDatabasesDataSource: DeviceDatabasesDataSource,
-    private val queryDatabaseDataSource: QueryDatabaseDataSource,
+    private val deviceDatabasesDataSource: DeviceDatabasesRemoteDataSourceImpl,
+    private val queryDatabaseDataSource: QueryDatabaseRemoteDataSourceImpl,
     private val localDatabaseDataSource: LocalDatabaseDataSource,
 ) : DatabaseRepository,
     MessagesReceiverRepository {
@@ -84,7 +85,7 @@ class DatabaseRepositoryImpl(
                     decodeReceivedQuery(message.body)
                         ?.let { received ->
                             queryDatabaseDataSource.onQueryResultReceived(
-                                received = received,
+                                received = received.toDomain(),
                             )
                         }
 

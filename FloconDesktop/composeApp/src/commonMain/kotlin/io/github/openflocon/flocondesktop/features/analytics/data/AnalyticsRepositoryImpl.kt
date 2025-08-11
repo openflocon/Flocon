@@ -8,7 +8,7 @@ import io.github.openflocon.domain.analytics.models.AnalyticsTableId
 import io.github.openflocon.domain.analytics.repository.AnalyticsRepository
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.features.analytics.data.datasource.AnalyticsRemoteDataSourceImpl
+import com.flocon.data.remote.analytics.datasource.AnalyticsRemoteDataSourceImpl
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.device.DeviceAnalyticsDataSource
 import io.github.openflocon.flocondesktop.features.analytics.data.datasource.local.AnalyticsLocalDataSource
 import io.github.openflocon.flocondesktop.features.analytics.data.mapper.toDomain

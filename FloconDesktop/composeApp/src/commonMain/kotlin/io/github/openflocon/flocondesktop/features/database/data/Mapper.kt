@@ -1,17 +1,16 @@
 package io.github.openflocon.flocondesktop.features.database.data
 
-import io.github.openflocon.flocondesktop.features.database.data.model.incoming.DatabaseExecuteSqlResponse
+import io.github.openflocon.flocondesktop.features.database.data.model.incoming.DatabaseExecuteSqlResponseDataModel
 import io.github.openflocon.flocondesktop.features.database.data.model.incoming.DeviceDataBaseDataModel
 import io.github.openflocon.flocondesktop.features.database.data.model.incoming.QueryResultReceivedDataModel
-import io.github.openflocon.flocondesktop.features.database.data.model.incoming.ResponseAndRequestId
+import io.github.openflocon.flocondesktop.features.database.data.model.incoming.ResponseAndRequestIdDataModel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 // maybe inject
-private val databasesJsonParser =
-    Json {
-        ignoreUnknownKeys = true
-    }
+private val databasesJsonParser = Json {
+    ignoreUnknownKeys = true
+}
 
 @Serializable
 data class ReceivedQueryWrapper(
@@ -19,38 +18,38 @@ data class ReceivedQueryWrapper(
     val body: String,
 )
 
-internal fun decodeReceivedQuery(body: String): ResponseAndRequestId? = try {
+internal fun decodeReceivedQuery(body: String): ResponseAndRequestIdDataModel? = try {
     val result = databasesJsonParser.decodeFromString<QueryResultReceivedDataModel>(body)
     val queryWrapper = databasesJsonParser.decodeFromString<ReceivedQueryWrapper>(result.result)
     when (queryWrapper.type) {
         "Error" ->
-            databasesJsonParser.decodeFromString<DatabaseExecuteSqlResponse.Error>(
+            databasesJsonParser.decodeFromString<DatabaseExecuteSqlResponseDataModel.Error>(
                 queryWrapper.body,
             )
 
         "Insert" ->
-            databasesJsonParser.decodeFromString<DatabaseExecuteSqlResponse.Insert>(
+            databasesJsonParser.decodeFromString<DatabaseExecuteSqlResponseDataModel.Insert>(
                 queryWrapper.body,
             )
 
         "RawSuccess" ->
-            databasesJsonParser.decodeFromString<DatabaseExecuteSqlResponse.RawSuccess>(
+            databasesJsonParser.decodeFromString<DatabaseExecuteSqlResponseDataModel.RawSuccess>(
                 queryWrapper.body,
             )
 
         "Select" ->
-            databasesJsonParser.decodeFromString<DatabaseExecuteSqlResponse.Select>(
+            databasesJsonParser.decodeFromString<DatabaseExecuteSqlResponseDataModel.Select>(
                 queryWrapper.body,
             )
 
         "UpdateDelete" ->
-            databasesJsonParser.decodeFromString<DatabaseExecuteSqlResponse.UpdateDelete>(
+            databasesJsonParser.decodeFromString<DatabaseExecuteSqlResponseDataModel.UpdateDelete>(
                 queryWrapper.body,
             )
 
         else -> null
     }?.let {
-        ResponseAndRequestId(
+        ResponseAndRequestIdDataModel(
             requestId = result.requestId,
             response = it,
         )

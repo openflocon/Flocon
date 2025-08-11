@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.data.datasource
+package com.flocon.data.remote.analytics.datasource
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
@@ -17,7 +17,7 @@ class AnalyticsRemoteDataSourceImpl(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Analytics.Plugin,
                 method = Protocol.ToDevice.Analytics.Method.ClearItems,
-                body = Json.encodeToString(items),
+                body = Json.Default.encodeToString(items),
             )
         )
     }

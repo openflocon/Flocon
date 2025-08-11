@@ -3,30 +3,30 @@ package io.github.openflocon.flocondesktop.features.database.data.model.incoming
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface DatabaseExecuteSqlResponse {
+sealed interface DatabaseExecuteSqlResponseDataModel {
     @Serializable
     data class Select(
         val columns: List<String>,
         val values: List<List<String?>>,
-    ) : DatabaseExecuteSqlResponse
+    ) : DatabaseExecuteSqlResponseDataModel
 
     @Serializable
     data class Insert(
         val insertedId: Long,
-    ) : DatabaseExecuteSqlResponse
+    ) : DatabaseExecuteSqlResponseDataModel
 
     @Serializable
     data class UpdateDelete(
         val affectedCount: Int,
-    ) : DatabaseExecuteSqlResponse
+    ) : DatabaseExecuteSqlResponseDataModel
 
     // Pour les objets singuliers, vous pouvez utiliser @Serializable object
     @Serializable
-    object RawSuccess : DatabaseExecuteSqlResponse
+    object RawSuccess : DatabaseExecuteSqlResponseDataModel
 
     @Serializable
     data class Error(
         val message: String,
         val originalSql: String,
-    ) : DatabaseExecuteSqlResponse
+    ) : DatabaseExecuteSqlResponseDataModel
 }

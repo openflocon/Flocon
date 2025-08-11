@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.database.data.di
 
 import io.github.openflocon.flocondesktop.features.database.data.DatabaseRepositoryImpl
-import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.DeviceDatabasesDataSource
-import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.QueryDatabaseDataSource
+import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.DeviceDatabasesRemoteDataSourceImpl
+import io.github.openflocon.flocondesktop.features.database.data.datasource.devicedatabases.QueryDatabaseRemoteDataSourceImpl
 import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSource
 import io.github.openflocon.flocondesktop.features.database.data.datasource.local.LocalDatabaseDataSourceRoom
 import io.github.openflocon.domain.database.repository.DatabaseRepository
@@ -18,8 +18,8 @@ val databaseDataModule =
             bind<DatabaseRepository>()
             bind<MessagesReceiverRepository>()
         }
-        singleOf(::DeviceDatabasesDataSource)
-        singleOf(::QueryDatabaseDataSource)
+        singleOf(::DeviceDatabasesRemoteDataSourceImpl)
+        singleOf(::QueryDatabaseRemoteDataSourceImpl)
         singleOf(::LocalDatabaseDataSourceRoom) {
             bind<LocalDatabaseDataSource>()
         }
