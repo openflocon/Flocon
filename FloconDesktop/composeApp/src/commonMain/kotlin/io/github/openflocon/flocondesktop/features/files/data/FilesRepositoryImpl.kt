@@ -1,16 +1,17 @@
 package io.github.openflocon.flocondesktop.features.files.data
 
 import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.files.mapper.toDomain
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.domain.common.Either
+import io.github.openflocon.data.core.files.datasource.FilesRemoteDataSource
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.files.data.datasources.LocalFilesDataSource
-import io.github.openflocon.flocondesktop.features.files.data.datasources.RemoteFilesDataSource
-import io.github.openflocon.flocondesktop.features.files.data.mapper.decodeListFilesResult
+import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.repository.FilesRepository
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.flocondesktop.features.files.data.datasources.LocalFilesDataSource
+import io.github.openflocon.flocondesktop.features.files.data.mapper.decodeListFilesResult
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -19,7 +20,7 @@ import kotlinx.coroutines.withContext
 class FilesRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val localFilesDataSource: LocalFilesDataSource,
-    private val remoteFilesDataSource: RemoteFilesDataSource,
+    private val remoteFilesDataSource: FilesRemoteDataSource,
 ) : FilesRepository,
     MessagesReceiverRepository {
 
@@ -35,7 +36,7 @@ class FilesRepositoryImpl(
                     decodeListFilesResult(message.body)
                         ?.let { received ->
                             remoteFilesDataSource.onGetFilesResultReceived(
-                                received = received,
+                                received = received.toDomain(),
                             )
                         }
             }

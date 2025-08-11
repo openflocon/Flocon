@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.features.table.data
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.table.data.datasource.RemoteTableDataSource
+import io.github.openflocon.data.core.table.datasource.TableRemoteDataSource
 import io.github.openflocon.flocondesktop.features.table.data.datasource.device.DeviceTablesDataSource
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.TableLocalDataSource
 import io.github.openflocon.flocondesktop.features.table.data.mapper.toDomain
@@ -23,7 +23,7 @@ class TableRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val tableLocalDataSource: TableLocalDataSource,
     private val deviceTablesDataSource: DeviceTablesDataSource,
-    private val remoteTableDataSource: RemoteTableDataSource,
+    private val remoteTableDataSource: TableRemoteDataSource,
 ) : TableRepository,
     MessagesReceiverRepository {
 
