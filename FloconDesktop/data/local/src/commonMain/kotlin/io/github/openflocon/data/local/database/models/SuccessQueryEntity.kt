@@ -1,0 +1,20 @@
+package io.github.openflocon.data.local.database.models
+
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
+
+@Entity(
+    indices = [
+        Index(value = ["deviceId", "packageName", "databaseId", "queryString"], unique = true),
+        Index(value = ["databaseId"]),
+    ],
+)
+data class SuccessQueryEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val deviceId: String,
+    val packageName: String,
+    val databaseId: String,
+    val queryString: String,
+    val timestamp: Long,
+)

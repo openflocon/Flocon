@@ -1,0 +1,87 @@
+package io.github.openflocon.data.local.table.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import io.github.openflocon.data.local.table.models.TableEntity
+import io.github.openflocon.data.local.table.models.TableItemEntity
+import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.table.models.TableId
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface FloconTableDao {
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
+    suspend fun insertTable(table: TableEntity): Long
+
+    @Query(
+        """
+        SELECT id
+        FROM TableEntity 
+        WHERE deviceId = :deviceId
+        AND name = :tableName
+        AND packageName = :packageName
+        LIMIT 1
+
+    """,
+    )
+    suspend fun getTableId(deviceId: DeviceId, packageName: String, tableName: String): Long?
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    suspend fun insertTableItems(tableItemEntities: List<TableItemEntity>)
+
+    @Query(
+        """
+        SELECT * 
+        FROM TableEntity 
+        WHERE deviceId = :deviceId 
+        AND id = :tableId
+        AND packageName = :packageName
+        LIMIT 1
+    """,
+    )
+    fun observeTable(deviceId: DeviceId, packageName: String, tableId: TableId): Flow<TableEntity?>
+
+    @Query(
+        """
+        SELECT * 
+        FROM TableEntity 
+        WHERE deviceId = :deviceId
+        AND packageName = :packageName
+    """,
+    )
+    fun observeTablesForDevice(deviceId: DeviceId, packageName: String): Flow<List<TableEntity>>
+
+    @Query(
+        """
+        SELECT * 
+        FROM TableEntity 
+        WHERE deviceId = :deviceId
+        AND packageName = :packageName
+    """,
+    )
+    suspend fun getTablesForDevice(deviceId: DeviceId, packageName: String): List<TableEntity>
+
+    @Query(
+        """
+        SELECT * 
+        FROM TableItemEntity 
+        WHERE tableId = :tableId 
+        ORDER BY createdAt ASC
+    """,
+    )
+    fun observeTableItems(tableId: Long): Flow<List<TableItemEntity>>
+
+    @Query(
+        """
+        DELETE FROM TableItemEntity
+        WHERE tableId = :tableId
+        """,
+    )
+    suspend fun deleteTableContent(tableId: Long)
+}
