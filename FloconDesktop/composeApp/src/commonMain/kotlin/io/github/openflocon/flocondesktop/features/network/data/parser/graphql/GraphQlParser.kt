@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.data.parser.graphql
 
-import io.github.openflocon.flocondesktop.features.network.data.model.FloconHttpRequestDataModel
+import io.github.openflocon.flocondesktop.features.network.data.model.FloconNetworkRequestDataModel
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.model.GraphQlExtracted
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.model.GraphQlRequestBody
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.model.GraphQlResponseBody
@@ -12,7 +12,7 @@ private val graphQlParser =
     }
 
 // maybe use graphql-java
-fun extractGraphQl(decoded: FloconHttpRequestDataModel): GraphQlExtracted? {
+fun extractGraphQl(decoded: FloconNetworkRequestDataModel): GraphQlExtracted? {
     val request = decoded.requestBody?.let {
         try {
             val requestBody = graphQlParser.decodeFromString<GraphQlRequestBody>(it)
@@ -29,18 +29,10 @@ fun extractGraphQl(decoded: FloconHttpRequestDataModel): GraphQlExtracted? {
             null
         }
     }
-    val response = decoded.responseBody?.let {
-        try {
-            graphQlParser.decodeFromString<GraphQlResponseBody>(it)
-        } catch (t: Throwable) {
-            null
-        }
-    }
 
-    return if (request != null && response != null) {
+    return if (request != null) {
         GraphQlExtracted(
             request = request,
-            response = response,
         )
     } else null
 }

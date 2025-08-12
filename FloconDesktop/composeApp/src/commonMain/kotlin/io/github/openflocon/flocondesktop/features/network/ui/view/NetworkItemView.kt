@@ -171,7 +171,7 @@ fun NetworkItemView(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    state.timeFormatted,
+                    state.timeFormatted ?: "",
                     style = bodySmall,
                     color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
                 )

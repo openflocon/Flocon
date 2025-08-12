@@ -7,8 +7,8 @@ data class NetworkItemViewState(
     val uuid: String,
     val dateFormatted: String,
     val requestSize: String,
-    val responseSize: String,
-    val timeFormatted: String,
+    val responseSize: String?,
+    val timeFormatted: String?,
     val type: NetworkTypeUi,
     val domain: String,
     val status: NetworkStatusUi,
@@ -17,7 +17,7 @@ data class NetworkItemViewState(
 
     fun contains(text: String): Boolean = type.contains(text) ||
         domain.contains(text, ignoreCase = true) ||
-        timeFormatted.contains(text, ignoreCase = true) ||
+        timeFormatted?.contains(text, ignoreCase = true) == true ||
         dateFormatted.contains(text, ignoreCase = true) ||
         status.text.contains(text, ignoreCase = true) ||
         method.text.contains(text, ignoreCase = true)
@@ -63,7 +63,7 @@ fun previewNetworkItemViewState(): NetworkItemViewState = NetworkItemViewState(
     timeFormatted = "333ms",
     domain = "google.com",
     method = NetworkMethodUi.Http.GET,
-    status = NetworkStatusUi("200", true),
+    status = NetworkStatusUi("200", NetworkStatusUi.Status.SUCCESS),
     type = NetworkItemViewState.NetworkTypeUi.Url(
         query = "/search?q=test",
         method = "get",
@@ -78,7 +78,7 @@ fun previewGraphQlItemViewState(): NetworkItemViewState = NetworkItemViewState(
     timeFormatted = "333ms",
     domain = "google.com",
     method = NetworkMethodUi.GraphQl.QUERY,
-    status = NetworkStatusUi("Success", true),
+    status = NetworkStatusUi("Success", status = NetworkStatusUi.Status.SUCCESS),
     type = NetworkItemViewState.NetworkTypeUi.GraphQl(
         queryName = "GetUserInfoQuery",
     ),

@@ -1,9 +1,7 @@
 package io.github.openflocon.flocon.okhttp
 
 import io.github.openflocon.flocon.FloconApp
-import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
-import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCall
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest

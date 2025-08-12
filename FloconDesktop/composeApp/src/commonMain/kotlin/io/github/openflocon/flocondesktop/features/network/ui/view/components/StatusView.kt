@@ -20,6 +20,9 @@ val successTagText = Color(0xFF28A745) // Brighter green for text
 val errorTagBackground = Color(0xFFDC3545).copy(alpha = 0.3f) // Muted red for error
 val errorTagText = Color(0xFFDC3545) // Brighter red for text
 
+val loadingTagBackground = Color(0xFF6C757D).copy(alpha = 0.3f) // Muted gray for OTHER
+val loadingTagText = Color(0xFF6C757D)
+
 @Composable
 fun StatusView(
     status: NetworkStatusUi,
@@ -35,9 +38,10 @@ fun StatusView(
             ),
             maxLines = 1,
             style = FloconTheme.typography.labelSmall.copy(
-                color = when (status.isSuccess) {
-                    true -> successTagText
-                    false -> errorTagText
+                color = when (status.status) {
+                    NetworkStatusUi.Status.SUCCESS -> successTagText
+                    NetworkStatusUi.Status.ERROR -> errorTagText
+                    NetworkStatusUi.Status.LOADING -> loadingTagText
                 },
             ),
         )
@@ -52,7 +56,7 @@ private fun StatusView_Preview() {
             status =
             NetworkStatusUi(
                 text = "200",
-                isSuccess = true,
+                status = NetworkStatusUi.Status.SUCCESS,
             ),
         )
     }

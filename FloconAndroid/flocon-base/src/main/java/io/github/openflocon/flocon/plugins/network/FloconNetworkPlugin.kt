@@ -11,9 +11,6 @@ import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
 interface FloconNetworkPlugin : FloconPlugin {
     val mocks: Collection<MockNetworkResponse>
 
-    @Deprecated("use logRequest & logResponse")
-    fun log(call: FloconNetworkCall)
-
     fun logRequest(request: FloconNetworkCallRequest)
     fun logResponse(response: FloconNetworkCallResponse)
 }

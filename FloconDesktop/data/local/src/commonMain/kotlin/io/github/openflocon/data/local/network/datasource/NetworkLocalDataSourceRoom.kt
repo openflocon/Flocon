@@ -4,12 +4,11 @@ import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.local.network.dao.FloconHttpRequestDao
 import io.github.openflocon.data.local.network.mapper.toDomainModel
 import io.github.openflocon.data.local.network.mapper.toEntity
-import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
 import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
+import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -23,7 +22,7 @@ class NetworkLocalDataSourceRoom(
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         lite: Boolean,
-    ): Flow<List<FloconHttpRequestDomainModel>> = floconHttpRequestDao.let {
+    ): Flow<List<FloconNetworkCallDomainModel>> = floconHttpRequestDao.let {
         if (lite) {
             it.observeRequestsLite(
                 deviceId = deviceIdAndPackageName.deviceId,
@@ -35,27 +34,46 @@ class NetworkLocalDataSourceRoom(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
             )
-                .map { entities -> entities.mapNotNull(FloconHttpRequestEntity::toDomainModel) }
+                .map { entities -> entities.mapNotNull(FloconNetworkCallEntity::toDomainModel) }
         }
     }
         .flowOn(dispatcherProvider.data)
 
     override suspend fun save(
-        deviceId: DeviceId,
-        packageName: String,
-        request: FloconHttpRequestDomainModel,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        call: FloconNetworkCallDomainModel,
     ) {
         withContext(dispatcherProvider.data) {
-            val entity = request.toEntity(deviceId = deviceId, packageName = packageName)
+            val entity = call.toEntity(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+            )
             floconHttpRequestDao.upsertRequest(entity)
         }
     }
 
-    override fun observeRequest(
-        deviceId: DeviceId,
-        requestId: String,
-    ): Flow<FloconHttpRequestDomainModel?> = floconHttpRequestDao
-        .observeRequestById(deviceId, requestId)
+    override suspend fun getCall(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String,
+    ): FloconNetworkCallDomainModel? = withContext(dispatcherProvider.data) {
+        floconHttpRequestDao
+            .getCallById(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+                callId = callId,
+            )
+            ?.toDomainModel()
+    }
+
+    override fun observeCall(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String,
+    ): Flow<FloconNetworkCallDomainModel?> = floconHttpRequestDao
+        .observeCallById(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            callId = callId,
+        )
         .map { entity ->
             entity?.toDomainModel()
         }.flowOn(dispatcherProvider.data)
@@ -70,19 +88,24 @@ class NetworkLocalDataSourceRoom(
     }
 
     override suspend fun deleteRequest(
-        deviceId: DeviceId,
-        requestId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String,
     ) {
         floconHttpRequestDao.deleteRequest(
-            requestId = requestId,
-            deviceId = deviceId,
+            callId = callId,
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
         )
     }
 
-    override suspend fun deleteRequestsBefore(deviceId: DeviceId, requestId: String) {
+    override suspend fun deleteRequestsBefore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String
+    ) {
         floconHttpRequestDao.deleteRequestBefore(
-            requestId = requestId,
-            deviceId = deviceId,
+            callId = callId,
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
         )
     }
 

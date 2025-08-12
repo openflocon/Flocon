@@ -4,10 +4,10 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class NetworkDetailViewState(
-    val uuid: String,
+    val callId: String,
     val fullUrl: String,
     val requestTimeFormatted: String,
-    val durationFormatted: String,
+    val durationFormatted: String?,
 
     val method: Method,
     val status: NetworkStatusUi,
@@ -19,10 +19,15 @@ data class NetworkDetailViewState(
     val requestSize: String,
     val requestHeaders: List<NetworkDetailHeaderUi>,
     // response
-    val responseBody: String,
-    val responseSize: String,
-    val responseHeaders: List<NetworkDetailHeaderUi>,
+    val response: Response?,
 ) {
+    @Immutable
+    data class Response(
+        val body: String,
+        val size: String,
+        val headers: List<NetworkDetailHeaderUi>,
+    )
+
     @Immutable
     data class GraphQlSection(
         val queryName: String,

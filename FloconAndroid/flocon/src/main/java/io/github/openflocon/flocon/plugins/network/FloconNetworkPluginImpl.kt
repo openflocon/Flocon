@@ -7,15 +7,15 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallRequestToJson
 import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallResponseToJson
-import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallToJson
 import io.github.openflocon.flocon.plugins.network.mapper.parseMockResponses
 import io.github.openflocon.flocon.plugins.network.mapper.writeMockResponsesToJson
-import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCall
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
-import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
-import io.github.openflocon.flocon.plugins.network.model.FloconNetworkResponse
 import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -24,17 +24,10 @@ import java.util.concurrent.CopyOnWriteArrayList
 class FloconNetworkPluginImpl(
     private val context: Context,
     private var sender: FloconMessageSender,
+    private val coroutineScope: CoroutineScope,
 ) : FloconNetworkPlugin {
 
     override val mocks = CopyOnWriteArrayList<MockNetworkResponse>(loadMocksFromFile())
-
-    override fun log(call: FloconNetworkCall) {
-        sender.send(
-            plugin = Protocol.FromDevice.Network.Plugin,
-            method = Protocol.FromDevice.Network.Method.LogNetworkCall,
-            body = floconNetworkCallToJson(call).toString(),
-        )
-    }
 
     override fun logRequest(request: FloconNetworkCallRequest) {
         sender.send(
@@ -45,11 +38,14 @@ class FloconNetworkPluginImpl(
     }
 
     override fun logResponse(response: FloconNetworkCallResponse) {
-        sender.send(
-            plugin = Protocol.FromDevice.Network.Plugin,
-            method = Protocol.FromDevice.Network.Method.LogNetworkCallResponse,
-            body = floconNetworkCallResponseToJson(response).toString(),
-        )
+        coroutineScope.launch(Dispatchers.IO) {
+            delay(200) // to be sure the request is handled before the response, in case of mocks or direct connection refused
+            sender.send(
+                plugin = Protocol.FromDevice.Network.Plugin,
+                method = Protocol.FromDevice.Network.Method.LogNetworkCallResponse,
+                body = floconNetworkCallResponseToJson(response).toString(),
+            )
+        }
     }
 
     override fun onMessageReceived(
