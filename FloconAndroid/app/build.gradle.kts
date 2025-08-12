@@ -106,9 +106,8 @@ dependencies {
     // endregion
 
     // region ktor
-    val ktorVersion = "3.2.3"
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.core)
     //endregion
 }
 

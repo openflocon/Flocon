@@ -40,7 +40,7 @@ dependencies {
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutines.core)
 
-    implementation("io.ktor:ktor-client-core:3.2.3")
+    implementation(libs.ktor.client.core)
 }
 
 
