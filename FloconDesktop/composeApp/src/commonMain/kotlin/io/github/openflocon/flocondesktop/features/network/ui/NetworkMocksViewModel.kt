@@ -1,10 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.ui
 
-import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.usecase.mocks.AddNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.DeleteNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.GetNetworkMockByIdUseCase
@@ -23,7 +21,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class NetworkMocksViewModel(
     private val observeNetworkMocksUseCase: ObserveNetworkMocksUseCase,

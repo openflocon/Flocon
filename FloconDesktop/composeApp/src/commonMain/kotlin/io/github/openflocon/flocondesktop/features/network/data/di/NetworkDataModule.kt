@@ -7,6 +7,7 @@ import io.github.openflocon.data.local.network.datasource.NetworkFilterLocalData
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.local.network.datasource.NetworkLocalDataSourceRoom
 import io.github.openflocon.domain.network.repository.NetworkFilterRepository
+import io.github.openflocon.domain.network.repository.NetworkMocksRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
@@ -18,6 +19,7 @@ val networkDataModule =
         singleOf(::NetworkRepositoryImpl) {
             bind<NetworkRepository>()
             bind<MessagesReceiverRepository>()
+            bind<NetworkMocksRepository>()
         }
         singleOf(::NetworkFilterRepositoryImpl) {
             bind<NetworkFilterRepository>()

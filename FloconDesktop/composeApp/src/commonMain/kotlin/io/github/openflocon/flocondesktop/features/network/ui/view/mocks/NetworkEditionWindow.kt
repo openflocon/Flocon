@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view.mocks
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,8 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
@@ -26,6 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
@@ -35,6 +42,8 @@ import io.github.openflocon.flocondesktop.features.network.ui.mapper.createEdita
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.editableToUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.MockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.SelectedMockUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import java.util.UUID
 
 @Composable
@@ -52,11 +61,13 @@ fun NetworkEditionWindow(
         state = windowState,
         onCloseRequest = onCloseRequest,
     ) {
-        NetworkEditionContent(
-            state = state,
-            onCancel = onCancel,
-            onSave = onSave,
-        )
+        FloconSurface {
+            NetworkEditionContent(
+                state = state,
+                onCancel = onCancel,
+                onSave = onSave,
+            )
+        }
     }
 }
 
@@ -86,30 +97,41 @@ fun MockEditorScreen(
     // TODO more granularity on error
     var error by remember { mutableStateOf<String?>(null) }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TextButton(
-            onClick = {
-                editableToUi(mock).fold(
-                    doOnFailure = {
-                        error = "All fields are required"
-                    },
-                    doOnSuccess = {
-                        onSave(it)
-                        error = null
-                    }
-                )
-
-            }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .background(FloconTheme.colorPalette.panel)
+                .padding(all = 12.dp)
         ) {
-            Text("Save")
-        }
-
-        TextButton(
-            onClick = {
-                onCancel()
+            TextButton(
+                modifier = Modifier.align(Alignment.CenterStart),
+                onClick = {
+                    onCancel()
+                }
+            ) {
+                Text("Cancel")
             }
-        ) {
-            Text("Cancel")
+            TextButton(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                onClick = {
+                    editableToUi(mock).fold(
+                        doOnFailure = {
+                            error = "All fields are required"
+                        },
+                        doOnSuccess = {
+                            onSave(it)
+                            error = null
+                        }
+                    )
+
+                }
+            ) {
+                Text("Save")
+            }
         }
 
         error?.let {
@@ -128,21 +150,23 @@ fun MockEditorScreen(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
+            NetworkMockFieldView(
                 value = mock.expectation.urlPattern ?: "",
                 onValueChange = { newValue ->
                     mock = mock.copy(expectation = mock.expectation.copy(urlPattern = newValue))
                 },
-                label = { Text("URL Pattern") },
+                label = "URL Pattern",
+                placeHolder = "https://www.myDomain.*",
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
+            NetworkMockFieldView(
+                // TODO should be a dropdown
+                label = "Method",
                 value = mock.expectation.method ?: "",
                 onValueChange = { newValue ->
                     mock = mock.copy(expectation = mock.expectation.copy(method = newValue))
                 },
-                label = { Text("Method") },
+                placeHolder = "GET",
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -152,8 +176,9 @@ fun MockEditorScreen(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
+            NetworkMockFieldView(
+                label = "HTTP Code",
+                placeHolder = "eg: 200",
                 value = mock.response.httpCode.toString(),
                 onValueChange = { newValue ->
                     if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
@@ -164,27 +189,30 @@ fun MockEditorScreen(
                         )
                     }
                 },
-                label = { Text("HTTP Code") },
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
+            NetworkMockFieldView(
+                label = "Body",
                 value = mock.response.body ?: "",
+                placeHolder = null,
                 onValueChange = { newValue ->
                     mock = mock.copy(response = mock.response.copy(body = newValue))
                 },
-                label = { Text("Body") },
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
+            NetworkMockFieldView(
+                label = "Media Type",
                 value = mock.response.mediaType,
+                placeHolder = "application/json",
                 onValueChange = { newValue ->
                     mock = mock.copy(response = mock.response.copy(mediaType = newValue))
                 },
-                label = { Text("Media Type") },
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
+            NetworkMockFieldView(
+                label = "Delay (ms)",
                 value = mock.response.delay.toString(),
+                placeHolder = "0",
                 onValueChange = { newValue ->
                     // On vérifie si la nouvelle valeur est vide ou si elle contient uniquement des chiffres
                     if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
@@ -193,7 +221,6 @@ fun MockEditorScreen(
                         mock = mock.copy(response = mock.response.copy(delay = newDelay))
                     }
                 },
-                label = { Text("Delay (ms)") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -284,6 +311,62 @@ private fun HeaderInputField(
             modifier = Modifier.weight(0.1f)
         ) {
             Icon(Icons.Default.Delete, contentDescription = "Remove Header")
+        }
+    }
+}
+
+@Composable
+fun NetworkMockFieldView(
+    label :String,
+    placeHolder: String?,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(
+            label,
+            modifier = Modifier.padding(start = 4.dp),
+            color = FloconTheme.colorPalette.onSurface,
+            style = FloconTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Thin,
+            ),
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(
+                        color = Color.White.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(8.dp),
+                    ).padding(horizontal = 12.dp, vertical = 8.dp),
+            ) {
+                placeHolder?.takeIf { value.isEmpty() }?.let {
+                    Text(
+                        text = it,
+                        style = FloconTheme.typography.bodySmall,
+                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
+                    )
+                }
+                BasicTextField(
+                    textStyle = FloconTheme.typography.bodySmall.copy(
+                        color = FloconTheme.colorPalette.onSurface,
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    value = value,
+                    cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
+                    onValueChange = {
+                        onValueChange(it)
+                    },
+                )
+            }
         }
     }
 }

@@ -34,7 +34,7 @@ data class EditableMockNetworkUiModel(
         val httpCode: Int,
         val body: String?,
         val mediaType: String,
-        val delay: Long?,
+        val delay: Long,
         val headers: Map<String, String>,
     )
 }
