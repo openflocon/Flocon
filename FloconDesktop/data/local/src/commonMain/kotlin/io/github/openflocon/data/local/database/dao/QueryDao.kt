@@ -1,8 +1,9 @@
-package io.github.openflocon.flocondesktop.features.database.data.datasource.local
+package io.github.openflocon.data.local.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

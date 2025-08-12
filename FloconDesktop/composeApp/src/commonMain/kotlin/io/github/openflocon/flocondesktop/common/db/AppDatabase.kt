@@ -10,14 +10,14 @@ import io.github.openflocon.data.local.dashboard.dao.FloconDashboardDao
 import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardSectionEntity
+import io.github.openflocon.data.local.database.dao.QueryDao
+import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import io.github.openflocon.data.local.network.dao.FloconHttpRequestDao
 import io.github.openflocon.data.local.network.dao.NetworkFilterDao
 import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
 import io.github.openflocon.data.local.network.models.NetworkFilterEntity
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters
-import io.github.openflocon.flocondesktop.features.database.data.datasource.local.QueryDao
-import io.github.openflocon.flocondesktop.features.database.data.datasource.local.SuccessQueryEntity
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.FloconDeeplinkDao
 import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.model.DeeplinkEntity
 import io.github.openflocon.flocondesktop.features.files.data.datasources.FloconFileDao
