@@ -7,6 +7,7 @@ import io.github.openflocon.data.local.deeplink.deeplinkModule
 import io.github.openflocon.data.local.files.filesModule
 import io.github.openflocon.data.local.images.imagesModule
 import io.github.openflocon.data.local.network.networkModule
+import io.github.openflocon.data.local.sharedpreference.sharedPreferenceModule
 import org.koin.dsl.module
 
 val dataLocalModule = module {
@@ -17,6 +18,7 @@ val dataLocalModule = module {
         deeplinkModule,
         filesModule,
         imagesModule,
-        networkModule
+        networkModule,
+        sharedPreferenceModule
     )
 }

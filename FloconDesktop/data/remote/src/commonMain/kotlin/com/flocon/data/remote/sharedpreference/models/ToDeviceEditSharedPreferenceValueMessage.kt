@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.todevice
+package com.flocon.data.remote.sharedpreference.models
 
 import kotlinx.serialization.Serializable
 

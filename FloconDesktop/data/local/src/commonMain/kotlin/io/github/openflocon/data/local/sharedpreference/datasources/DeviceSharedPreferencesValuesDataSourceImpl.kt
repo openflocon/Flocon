@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.sharedpreferences.data.datasources
+package io.github.openflocon.data.local.sharedpreference.datasources
 
 import io.github.openflocon.data.core.sharedpreference.datasource.DeviceSharedPreferencesValuesDataSource
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
