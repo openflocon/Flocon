@@ -1,14 +1,12 @@
-package io.github.openflocon.data.local.sharedpreference.mapper
+package com.flocon.data.remote.sharedpreference.mapper
 
-import io.github.openflocon.data.local.sharedpreference.model.DeviceSharedPreferenceDataModel
-import io.github.openflocon.data.local.sharedpreference.model.SharedPreferenceValuesResponse
+import com.flocon.data.remote.sharedpreference.models.DeviceSharedPreferenceDataModel
 import kotlinx.serialization.json.Json
 
 // maybe inject
-private val sharedPreferencesJsonParser =
-    Json {
-        ignoreUnknownKeys = true
-    }
+private val sharedPreferencesJsonParser = Json {
+    ignoreUnknownKeys = true
+}
 
 // TODO Internal
 fun decodeDeviceSharedPreferences(body: String): List<DeviceSharedPreferenceDataModel>? = try {

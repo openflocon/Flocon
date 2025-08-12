@@ -2,12 +2,13 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences.data
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
+import com.flocon.data.remote.sharedpreference.datasource.DeviceSharedPreferencesRemoteDataSource
 import io.github.openflocon.data.core.sharedpreference.datasource.DeviceSharedPreferencesValuesDataSource
 import io.github.openflocon.data.local.sharedpreference.datasources.DeviceSharedPreferencesDataSource
-import io.github.openflocon.data.local.sharedpreference.mapper.decodeDeviceSharedPreferences
-import io.github.openflocon.data.local.sharedpreference.mapper.decodeSharedPreferenceValuesResponse
-import io.github.openflocon.data.local.sharedpreference.model.toDeviceSharedPreferenceDomain
-import io.github.openflocon.data.local.sharedpreference.model.toSharedPreferenceValuesResponseDomain
+import com.flocon.data.remote.sharedpreference.mapper.decodeDeviceSharedPreferences
+import com.flocon.data.remote.sharedpreference.mapper.decodeSharedPreferenceValuesResponse
+import com.flocon.data.remote.sharedpreference.models.toDeviceSharedPreferenceDomain
+import com.flocon.data.remote.sharedpreference.mapper.toSharedPreferenceValuesResponseDomain
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
@@ -22,7 +23,7 @@ import kotlinx.coroutines.withContext
 class SharedPreferencesRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val deviceSharedPreferencesDataSource: DeviceSharedPreferencesDataSource,
-    private val remote: com.flocon.data.remote.sharedpreference.datasource.DeviceSharedPreferencesDataSource,
+    private val remote: DeviceSharedPreferencesRemoteDataSource,
     private val deviceSharedPreferencesValuesDataSource: DeviceSharedPreferencesValuesDataSource,
 ) : SharedPreferencesRepository,
     MessagesReceiverRepository {

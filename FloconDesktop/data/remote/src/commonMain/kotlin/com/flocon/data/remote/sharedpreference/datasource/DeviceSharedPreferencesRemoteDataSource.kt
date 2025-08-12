@@ -13,7 +13,7 @@ import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenc
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
 import kotlinx.serialization.json.Json
 
-class DeviceSharedPreferencesDataSource(
+class DeviceSharedPreferencesRemoteDataSource(
     private val server: Server,
 ) {
     suspend fun askForDeviceSharedPreferences(

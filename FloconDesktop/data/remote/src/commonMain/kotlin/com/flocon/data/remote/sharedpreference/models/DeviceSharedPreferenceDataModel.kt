@@ -1,4 +1,4 @@
-package io.github.openflocon.data.local.sharedpreference.model
+package com.flocon.data.remote.sharedpreference.models
 
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
 import kotlinx.serialization.Serializable
