@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.dashboard.ui.view.items
+package io.github.openflocon.flocondesktop.features.dashboard.view.items
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

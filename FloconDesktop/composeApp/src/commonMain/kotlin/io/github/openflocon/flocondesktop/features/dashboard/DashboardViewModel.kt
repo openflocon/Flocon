@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.dashboard.ui
+package io.github.openflocon.flocondesktop.features.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,11 +8,11 @@ import io.github.openflocon.domain.dashboard.usecase.ObserveCurrentDeviceDashboa
 import io.github.openflocon.domain.dashboard.usecase.SendCheckBoxUpdateDeviceDeviceUseCase
 import io.github.openflocon.domain.dashboard.usecase.SendClickEventToDeviceDeviceUseCase
 import io.github.openflocon.domain.dashboard.usecase.SubmitTextFieldToDeviceDeviceUseCase
-import io.github.openflocon.flocondesktop.features.dashboard.ui.delegate.DashboardSelectorDelegate
-import io.github.openflocon.flocondesktop.features.dashboard.ui.mapper.toUi
-import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardViewState
-import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardsStateUiModel
-import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DeviceDashboardUiModel
+import io.github.openflocon.flocondesktop.features.dashboard.delegate.DashboardSelectorDelegate
+import io.github.openflocon.flocondesktop.features.dashboard.mapper.toUi
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
+import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn

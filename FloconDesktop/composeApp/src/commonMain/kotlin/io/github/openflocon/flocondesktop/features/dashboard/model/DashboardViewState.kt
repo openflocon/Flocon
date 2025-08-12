@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.dashboard.ui.model
+package io.github.openflocon.flocondesktop.features.dashboard.model
 
 data class DashboardViewState(
     val items: List<DashboardItemViewState>,

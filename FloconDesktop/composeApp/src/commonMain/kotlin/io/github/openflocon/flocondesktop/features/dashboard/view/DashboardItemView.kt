@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.dashboard.ui.view
+package io.github.openflocon.flocondesktop.features.dashboard.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,13 +16,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardItemViewState
-import io.github.openflocon.flocondesktop.features.dashboard.ui.model.previewDashboardItemViewState
-import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardButtonView
-import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardCheckBoxView
-import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardPlainTextView
-import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardTextFieldView
-import io.github.openflocon.flocondesktop.features.dashboard.ui.view.items.DashboardTextView
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.previewDashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardButtonView
+import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardCheckBoxView
+import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardPlainTextView
+import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextFieldView
+import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextView
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

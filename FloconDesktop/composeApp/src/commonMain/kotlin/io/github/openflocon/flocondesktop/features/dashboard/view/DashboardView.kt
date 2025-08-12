@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.dashboard.ui.view
+package io.github.openflocon.flocondesktop.features.dashboard.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,8 +8,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardViewState
-import io.github.openflocon.flocondesktop.features.dashboard.ui.model.previewDashboardViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.previewDashboardViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

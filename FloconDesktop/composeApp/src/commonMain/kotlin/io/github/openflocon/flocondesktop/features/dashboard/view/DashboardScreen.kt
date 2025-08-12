@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.dashboard.ui.view
+package io.github.openflocon.flocondesktop.features.dashboard.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -12,10 +12,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.features.dashboard.ui.DashboardViewModel
-import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardViewState
-import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardsStateUiModel
-import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DeviceDashboardUiModel
+import io.github.openflocon.flocondesktop.features.dashboard.DashboardViewModel
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
+import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.koin.compose.viewmodel.koinViewModel

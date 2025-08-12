@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features
 
 import io.github.openflocon.flocondesktop.features.analytics.di.analyticsModule
-import io.github.openflocon.flocondesktop.features.dashboard.di.dashboardModule
+import io.github.openflocon.flocondesktop.features.dashboard.dashboardModule
 import io.github.openflocon.flocondesktop.features.database.di.databaseModule
 import io.github.openflocon.flocondesktop.features.deeplinks.di.deeplinkModule
 import io.github.openflocon.flocondesktop.features.files.di.filesModule
