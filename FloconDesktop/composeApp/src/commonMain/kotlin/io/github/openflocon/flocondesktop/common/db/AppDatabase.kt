@@ -22,11 +22,11 @@ import io.github.openflocon.data.local.network.dao.FloconHttpRequestDao
 import io.github.openflocon.data.local.network.dao.NetworkFilterDao
 import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
 import io.github.openflocon.data.local.network.models.NetworkFilterEntity
+import io.github.openflocon.data.local.table.dao.FloconTableDao
+import io.github.openflocon.data.local.table.models.TableEntity
+import io.github.openflocon.data.local.table.models.TableItemEntity
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters
-import io.github.openflocon.flocondesktop.features.table.data.datasource.local.FloconTableDao
-import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
-import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableItemEntity
 import kotlinx.coroutines.Dispatchers
 
 @Database(

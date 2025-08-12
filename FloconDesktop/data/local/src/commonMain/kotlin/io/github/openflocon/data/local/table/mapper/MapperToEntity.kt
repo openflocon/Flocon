@@ -1,9 +1,9 @@
-package io.github.openflocon.flocondesktop.features.table.data.datasource.local.mapper
+package io.github.openflocon.data.local.table.mapper
 
-import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
-import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableItemEntity
-import io.github.openflocon.domain.table.models.TableDomainModel
+import io.github.openflocon.data.local.table.models.TableEntity
+import io.github.openflocon.data.local.table.models.TableItemEntity
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.table.models.TableDomainModel
 
 internal fun TableDomainModel.toEntity(
     deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

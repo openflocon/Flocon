@@ -1,21 +1,21 @@
-package io.github.openflocon.flocondesktop.features.table.data.datasource.local
+package io.github.openflocon.data.local.table.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import io.github.openflocon.data.local.table.models.TableEntity
+import io.github.openflocon.data.local.table.models.TableItemEntity
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.table.models.TableId
-import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
-import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableItemEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FloconTableDao {
 
     @Transaction
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
     suspend fun insertTable(table: TableEntity): Long
 
     @Query(
@@ -32,7 +32,7 @@ interface FloconTableDao {
     suspend fun getTableId(deviceId: DeviceId, packageName: String, tableName: String): Long?
 
     @Transaction
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertTableItems(tableItemEntities: List<TableItemEntity>)
 
     @Query(

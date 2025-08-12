@@ -1,13 +1,14 @@
-package io.github.openflocon.flocondesktop.features.table.data.datasource.local
+package io.github.openflocon.data.local.table.datasource
 
 import io.github.openflocon.data.core.table.datasource.TableLocalDataSource
+import io.github.openflocon.data.local.table.dao.FloconTableDao
+import io.github.openflocon.data.local.table.mapper.toEntity
+import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.table.data.datasource.local.mapper.toEntity
-import io.github.openflocon.flocondesktop.features.table.data.datasource.local.model.TableEntity
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.table.models.TableDomainModel
 import io.github.openflocon.domain.table.models.TableId
 import io.github.openflocon.domain.table.models.TableIdentifierDomainModel
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
