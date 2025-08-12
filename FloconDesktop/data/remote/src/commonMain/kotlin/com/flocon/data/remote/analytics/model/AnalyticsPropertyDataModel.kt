@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.data.model
+package com.flocon.data.remote.analytics.model
 
 import kotlinx.serialization.Serializable
 

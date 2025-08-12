@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.datasources
 
-import com.flocon.data.remote.Protocol
+import io.github.openflocon.domain.Protocol
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server

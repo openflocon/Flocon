@@ -1,10 +1,11 @@
 package io.github.openflocon.flocondesktop.features.network.data
 
-import com.flocon.data.remote.Protocol
-import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
+import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
@@ -14,7 +15,6 @@ import io.github.openflocon.flocondesktop.features.network.data.model.FloconNetw
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconNetworkRequestDataModel
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconNetworkResponseDataModel
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.extractGraphQl
-import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -51,10 +51,7 @@ class NetworkRepositoryImpl(
             callId = requestId,
         ).flowOn(dispatcherProvider.data)
 
-    override suspend fun onMessageReceived(
-        deviceId: String,
-        message: FloconIncomingMessageDataModel,
-    ) {
+    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
                 Protocol.FromDevice.Network.Method.LogNetworkCallRequest -> {
@@ -115,7 +112,7 @@ class NetworkRepositoryImpl(
         }
     }
 
-    private fun decodeRequest(message: FloconIncomingMessageDataModel): FloconNetworkRequestDataModel? =
+    private fun decodeRequest(message: FloconIncomingMessageDomainModel): FloconNetworkRequestDataModel? =
         try {
             httpParser.decodeFromString<FloconNetworkRequestDataModel>(message.body)
         } catch (t: Throwable) {
@@ -123,7 +120,7 @@ class NetworkRepositoryImpl(
             null
         }
 
-    private fun decodeResponseCallId(message: FloconIncomingMessageDataModel): FloconNetworkCallIdDataModel? =
+    private fun decodeResponseCallId(message: FloconIncomingMessageDomainModel): FloconNetworkCallIdDataModel? =
         try {
             httpParser.decodeFromString<FloconNetworkCallIdDataModel>(message.body)
         } catch (t: Throwable) {
@@ -131,7 +128,7 @@ class NetworkRepositoryImpl(
             null
         }
 
-    private fun decodeResponse(message: FloconIncomingMessageDataModel): FloconNetworkResponseDataModel? =
+    private fun decodeResponse(message: FloconIncomingMessageDomainModel): FloconNetworkResponseDataModel? =
         try {
             httpParser.decodeFromString<FloconNetworkResponseDataModel>(message.body)
         } catch (t: Throwable) {
@@ -192,6 +189,7 @@ class NetworkRepositoryImpl(
                         response = response
                     )
                 }
+
                 is FloconNetworkCallDomainModel.Grpc -> {
                     val response = FloconNetworkCallDomainModel.Grpc.Response(
                         networkResponse = networkResponse,
@@ -201,6 +199,7 @@ class NetworkRepositoryImpl(
                         response = response
                     )
                 }
+
                 is FloconNetworkCallDomainModel.Http -> {
                     val response = FloconNetworkCallDomainModel.Http.Response(
                         networkResponse = networkResponse,

@@ -1,18 +1,18 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data
 
-import com.flocon.data.remote.Protocol
-import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.data.core.dashboard.datasource.DashboardLocalDataSource
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.ToDeviceDashboardDataSource
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSource
-import io.github.openflocon.flocondesktop.features.dashboard.data.mapper.toDomain
-import io.github.openflocon.flocondesktop.features.dashboard.data.model.DashboardConfigDataModel
+import io.github.openflocon.domain.Protocol
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.dashboard.repository.DashboardRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.ToDeviceDashboardDataSource
+import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSource
+import io.github.openflocon.flocondesktop.features.dashboard.data.mapper.toDomain
+import io.github.openflocon.flocondesktop.features.dashboard.data.model.DashboardConfigDataModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -34,10 +34,7 @@ class DashboardRepositoryImpl(
             ignoreUnknownKeys = true
         }
 
-    override suspend fun onMessageReceived(
-        deviceId: String,
-        message: FloconIncomingMessageDataModel,
-    ) {
+    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         withContext(dispatcherProvider.data) {
             decode(message)?.let { toDomain(it) }?.let { request ->
                 dashboardLocalDataSource.saveDashboard(
@@ -51,7 +48,7 @@ class DashboardRepositoryImpl(
         }
     }
 
-    private fun decode(message: FloconIncomingMessageDataModel): DashboardConfigDataModel? = try {
+    private fun decode(message: FloconIncomingMessageDomainModel): DashboardConfigDataModel? = try {
         dashboardParser.decodeFromString<DashboardConfigDataModel>(message.body)
     } catch (t: Throwable) {
         t.printStackTrace()

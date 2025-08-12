@@ -1,6 +1,6 @@
 package com.flocon.data.remote.files.datasource
 
-import com.flocon.data.remote.Protocol
+import io.github.openflocon.domain.Protocol
 import com.flocon.data.remote.files.models.ToDeviceDeleteFileMessage
 import com.flocon.data.remote.files.models.ToDeviceDeleteFolderContentMessage
 import com.flocon.data.remote.files.models.ToDeviceGetFilesMessage

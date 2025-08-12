@@ -1,11 +1,11 @@
-package io.github.openflocon.flocondesktop.messages.domain
+package io.github.openflocon.domain.messages.usecase
 
-import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.domain.device.usecase.HandleDeviceUseCase
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.repository.MessagesRepository
-import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.domain.device.usecase.HandleDeviceUseCase
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
+import io.github.openflocon.domain.messages.repository.MessagesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -28,7 +28,7 @@ class HandleIncomingMessagesUseCase(
         }
         .map { }
 
-    private fun getDevice(message: FloconIncomingMessageDataModel): DeviceDomainModel = DeviceDomainModel(
+    private fun getDevice(message: FloconIncomingMessageDomainModel): DeviceDomainModel = DeviceDomainModel(
         deviceName = message.deviceName,
         deviceId = message.deviceId,
         apps = listOf(

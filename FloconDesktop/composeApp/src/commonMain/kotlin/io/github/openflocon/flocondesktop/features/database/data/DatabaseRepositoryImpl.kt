@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.database.data
 
-import com.flocon.data.remote.Protocol
+import io.github.openflocon.domain.Protocol
 import com.flocon.data.remote.database.datasource.toDomain
 import com.flocon.data.remote.database.models.toDeviceDatabasesDomain
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
@@ -15,7 +15,8 @@ import io.github.openflocon.domain.database.repository.DatabaseRepository
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
-import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -75,10 +76,7 @@ class DatabaseRepositoryImpl(
         )
     }
 
-    override suspend fun onMessageReceived(
-        deviceId: DeviceId,
-        message: FloconIncomingMessageDataModel,
-    ) {
+    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
                 Protocol.FromDevice.Database.Method.Query ->

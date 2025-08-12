@@ -7,7 +7,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.de
 import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSourceInMemory
 import io.github.openflocon.data.local.dashboard.datasource.DashboardLocalDataSourceRoom
 import io.github.openflocon.domain.dashboard.repository.DashboardRepository
-import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf

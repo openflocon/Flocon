@@ -5,7 +5,7 @@ import io.github.openflocon.domain.sharedpreference.repository.SharedPreferences
 import io.github.openflocon.flocondesktop.features.sharedpreferences.data.SharedPreferencesRepositoryImpl
 import io.github.openflocon.data.local.sharedpreference.datasources.DeviceSharedPreferencesDataSource
 import io.github.openflocon.data.local.sharedpreference.datasources.DeviceSharedPreferencesValuesDataSourceImpl
-import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf

@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.files.data
 
-import com.flocon.data.remote.Protocol
+import io.github.openflocon.domain.Protocol
 import com.flocon.data.remote.files.mapper.toDomain
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.data.core.files.datasource.FilesRemoteDataSource
@@ -11,8 +11,9 @@ import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.repository.FilesRepository
 import io.github.openflocon.data.core.files.datasource.FilesLocalDataSource
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.flocondesktop.features.files.data.mapper.decodeListFilesResult
-import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -26,10 +27,7 @@ class FilesRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Files.Plugin)
 
-    override suspend fun onMessageReceived(
-        deviceId: String,
-        message: FloconIncomingMessageDataModel,
-    ) {
+    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
                 Protocol.FromDevice.Files.Method.ListFiles ->

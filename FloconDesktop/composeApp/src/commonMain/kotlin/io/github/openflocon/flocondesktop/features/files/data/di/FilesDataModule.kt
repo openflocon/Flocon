@@ -6,7 +6,7 @@ import io.github.openflocon.data.core.files.datasource.FilesRemoteDataSource
 import com.flocon.data.remote.files.datasource.FilesRemoteDataSourceImpl
 import io.github.openflocon.data.core.files.datasource.FilesLocalDataSource
 import io.github.openflocon.data.local.files.datasource.LocalFilesDataSourceRoom
-import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf

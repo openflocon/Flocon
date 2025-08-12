@@ -1,15 +1,16 @@
 package io.github.openflocon.flocondesktop.features.images.data
 
-import com.flocon.data.remote.Protocol
+import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.device.models.DeviceId
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.data.core.images.datasource.ImagesLocalDataSource
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import io.github.openflocon.domain.images.repository.ImagesRepository
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
-import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
@@ -25,10 +26,7 @@ class ImagesRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Images.Plugin)
 
-    override suspend fun onMessageReceived(
-        deviceId: String,
-        message: FloconIncomingMessageDataModel,
-    ) {
+    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         // no op for now
     }
 

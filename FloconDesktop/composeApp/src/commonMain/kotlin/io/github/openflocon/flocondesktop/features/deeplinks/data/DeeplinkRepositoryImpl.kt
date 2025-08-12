@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.data
 
-import com.flocon.data.remote.Protocol
+import io.github.openflocon.domain.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.DispatcherProvider
@@ -8,7 +8,8 @@ import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.domain.deeplink.repository.DeeplinkRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.data.core.deeplink.datasource.DeeplinkLocalDataSource
-import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 
@@ -21,10 +22,7 @@ class DeeplinkRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Deeplink.Plugin)
 
-    override suspend fun onMessageReceived(
-        deviceId: String,
-        message: FloconIncomingMessageDataModel,
-    ) {
+    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         when (message.method) {
             Protocol.FromDevice.Deeplink.Method.GetDeeplinks -> {
                 decodeListDeeplinks(message.body)?.let {

@@ -1,19 +1,19 @@
 package io.github.openflocon.flocondesktop.features.table.data
 
-import com.flocon.data.remote.Protocol
-import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.data.core.table.datasource.TableRemoteDataSource
 import io.github.openflocon.data.core.table.datasource.DeviceTablesDataSource
 import io.github.openflocon.data.core.table.datasource.TableLocalDataSource
-import io.github.openflocon.flocondesktop.features.table.data.mapper.toDomain
-import io.github.openflocon.flocondesktop.features.table.data.model.TableItemDataModel
+import io.github.openflocon.data.core.table.datasource.TableRemoteDataSource
+import io.github.openflocon.domain.Protocol
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.table.models.TableDomainModel
 import io.github.openflocon.domain.table.models.TableId
 import io.github.openflocon.domain.table.models.TableIdentifierDomainModel
 import io.github.openflocon.domain.table.repository.TableRepository
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
+import io.github.openflocon.flocondesktop.features.table.data.mapper.toDomain
+import io.github.openflocon.flocondesktop.features.table.data.model.TableItemDataModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -35,10 +35,7 @@ class TableRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Table.Plugin)
 
-    override suspend fun onMessageReceived(
-        deviceId: String,
-        message: FloconIncomingMessageDataModel,
-    ) {
+    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
                 Protocol.FromDevice.Table.Method.AddItems -> {
@@ -65,7 +62,7 @@ class TableRepositoryImpl(
         }
     }
 
-    private fun decodeAddItems(message: FloconIncomingMessageDataModel): List<TableItemDataModel> = try {
+    private fun decodeAddItems(message: FloconIncomingMessageDomainModel): List<TableItemDataModel> = try {
         tableParser.decodeFromString<List<TableItemDataModel>>(message.body)
     } catch (t: Throwable) {
         t.printStackTrace()

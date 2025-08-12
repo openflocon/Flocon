@@ -1,6 +1,6 @@
-package io.github.openflocon.flocondesktop.features.analytics.data.mapper
+package com.flocon.data.remote.analytics.mapper
 
-import io.github.openflocon.flocondesktop.features.analytics.data.model.AnalyticsItemDataModel
+import com.flocon.data.remote.analytics.model.AnalyticsItemDataModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsPropertyDomainModel
 

@@ -1,6 +1,6 @@
-package io.github.openflocon.flocondesktop.messages.domain
+package io.github.openflocon.domain.messages.usecase
 
-import io.github.openflocon.flocondesktop.messages.domain.repository.MessagesRepository
+import io.github.openflocon.domain.messages.repository.MessagesRepository
 
 class StartServerUseCase(
     private val messagesRepository: MessagesRepository,

@@ -1,6 +1,6 @@
 package com.flocon.data.remote.database.datasource
 
-import com.flocon.data.remote.Protocol
+import io.github.openflocon.domain.Protocol
 import com.flocon.data.remote.database.models.DatabaseExecuteSqlResponseDataModel
 import com.flocon.data.remote.database.models.DatabaseOutgoingQueryMessage
 import com.flocon.data.remote.database.models.ResponseAndRequestIdDataModel

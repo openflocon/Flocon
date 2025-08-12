@@ -1,4 +1,4 @@
-package com.flocon.data.remote
+package io.github.openflocon.domain
 
 object Protocol {
     object FromDevice {
