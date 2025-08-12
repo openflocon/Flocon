@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.ui.view
+package io.github.openflocon.flocondesktop.features.analytics.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,14 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.features.analytics.ui.AnalyticsViewModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsContentStateUiModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.items
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsContentStateUiModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewAnalyticsStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.AnalyticsViewModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsContentStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.items
+import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsContentStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface

@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.ui.view
+package io.github.openflocon.flocondesktop.features.analytics.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable

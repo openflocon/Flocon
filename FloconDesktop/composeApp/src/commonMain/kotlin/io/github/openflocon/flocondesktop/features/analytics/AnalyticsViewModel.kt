@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.ui
+package io.github.openflocon.flocondesktop.features.analytics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,11 +6,11 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
 import io.github.openflocon.domain.analytics.usecase.ResetCurrentDeviceSelectedAnalyticsUseCase
-import io.github.openflocon.flocondesktop.features.analytics.ui.delegate.AnalyticsSelectorDelegate
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsContentStateUiModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
+import io.github.openflocon.flocondesktop.features.analytics.delegate.AnalyticsSelectorDelegate
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsContentStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.formatTimestamp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

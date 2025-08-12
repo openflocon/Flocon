@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.ui.model
+package io.github.openflocon.flocondesktop.features.analytics.model
 
 import androidx.compose.runtime.Immutable
 

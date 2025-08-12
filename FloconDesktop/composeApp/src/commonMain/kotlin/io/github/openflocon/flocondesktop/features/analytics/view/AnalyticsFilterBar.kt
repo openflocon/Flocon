@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.ui.view
+package io.github.openflocon.flocondesktop.features.analytics.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -14,7 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsRowUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.view.components.FilterBar
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 

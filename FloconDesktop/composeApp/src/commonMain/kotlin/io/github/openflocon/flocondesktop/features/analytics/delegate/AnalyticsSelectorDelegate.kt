@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.ui.delegate
+package io.github.openflocon.flocondesktop.features.analytics.delegate
 
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
@@ -7,8 +7,8 @@ import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceSelecte
 import io.github.openflocon.domain.analytics.usecase.ObserveDeviceAnalyticsUseCase
 import io.github.openflocon.domain.analytics.usecase.SelectCurrentDeviceAnalyticsUseCase
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

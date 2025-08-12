@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.analytics.ui.view
+package io.github.openflocon.flocondesktop.features.analytics.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,9 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.AnalyticsStateUiModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.DeviceAnalyticsUiModel
-import io.github.openflocon.flocondesktop.features.analytics.ui.model.previewDeviceAnalyticsUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.previewDeviceAnalyticsUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
