@@ -1,6 +1,6 @@
 package io.github.openflocon.data.local.network.mapper
 
-import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
+import io.github.openflocon.data.local.network.models.FloconNetwockCallEntityLite
 import io.github.openflocon.data.local.network.models.FloconNetworkCallType
 import io.github.openflocon.data.local.network.models.FloconNetworkRequestLiteEmbedded
 import io.github.openflocon.data.local.network.models.FloconNetworkResponseLiteEmbedded
@@ -21,7 +21,7 @@ fun toDomainModel(request: FloconNetworkRequestLiteEmbedded): FloconNetworkReque
     }
 }
 
-fun FloconHttpRequestEntityLite.toDomainModel(): FloconNetworkCallDomainModel? {
+fun FloconNetwockCallEntityLite.toDomainModel(): FloconNetworkCallDomainModel? {
     return try {
         val networkRequest = toDomainModel(request)
         when (type) {

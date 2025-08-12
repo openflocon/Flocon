@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
-import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
+import io.github.openflocon.data.local.network.models.FloconNetwockCallEntityLite
 import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
 
@@ -34,7 +34,7 @@ interface FloconNetworkDao {
     fun observeRequestsLite(
         deviceId: String,
         packageName: String,
-    ): Flow<List<FloconHttpRequestEntityLite>>
+    ): Flow<List<FloconNetwockCallEntityLite>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertRequest(request: FloconNetworkCallEntity)
