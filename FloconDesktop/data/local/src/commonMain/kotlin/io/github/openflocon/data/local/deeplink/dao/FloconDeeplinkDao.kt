@@ -1,18 +1,18 @@
-package io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room
+package io.github.openflocon.data.local.deeplink.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
 import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.model.DeeplinkEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FloconDeeplinkDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insert(deeplink: DeeplinkEntity)
 
     @Query(

@@ -1,6 +1,6 @@
-package io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.mapper
+package io.github.openflocon.data.local.deeplink.mapper
 
-import io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.model.DeeplinkEntity
+import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 
@@ -28,6 +28,7 @@ fun DeeplinkDomainModel.toEntity(
 // Pour une liste
 fun toDomainModels(entities: List<DeeplinkEntity>): List<DeeplinkDomainModel> = entities.map { it.toDomainModel() }
 
-fun toEntities(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, deeplinks: List<DeeplinkDomainModel>): List<DeeplinkEntity> = deeplinks.map {
-    it.toEntity(deviceIdAndPackageName = deviceIdAndPackageName)
-}
+fun toEntities(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, deeplinks: List<DeeplinkDomainModel>): List<DeeplinkEntity> =
+    deeplinks.map {
+        it.toEntity(deviceIdAndPackageName = deviceIdAndPackageName)
+    }

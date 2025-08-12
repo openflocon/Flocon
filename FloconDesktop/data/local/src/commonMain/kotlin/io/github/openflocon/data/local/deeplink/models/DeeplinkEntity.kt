@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.deeplinks.data.datasource.room.model
+package io.github.openflocon.data.local.deeplink.models
 
 import androidx.room.Entity
 import androidx.room.Index
