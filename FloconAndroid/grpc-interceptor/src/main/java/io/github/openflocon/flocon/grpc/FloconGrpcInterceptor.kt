@@ -56,10 +56,10 @@ class FloconGrpcInterceptor(
             return next.newCall(method, callOptions)
         }
 
-        val requestId = UUID.randomUUID().toString()
+        val callId = UUID.randomUUID().toString()
         return LoggingForwardingClientCall(
             floconGrpcPlugin = flipperGrpcPlugin,
-            requestId = requestId,
+            callId = callId,
             method = method,
             next = next,
             callOptions = callOptions,
@@ -70,7 +70,7 @@ class FloconGrpcInterceptor(
 
 private class LoggingForwardingClientCall<ReqT, RespT>(
     private val floconGrpcPlugin: FloconGrpcPlugin,
-    private val requestId: String,
+    private val callId: String,
     private val method: MethodDescriptor<ReqT, RespT>,
     private val next: Channel,
     callOptions: CallOptions,
@@ -89,7 +89,7 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
         super.start(
             LoggingClientCallListener(
                 floconGrpcPlugin = floconGrpcPlugin,
-                requestId = requestId,
+                callId = callId,
                 responseListener = responseListener,
                 gson = gson
             ),
@@ -100,7 +100,7 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
     override fun sendMessage(message: ReqT) {
         super.sendMessage(message)
         floconGrpcPlugin.reportRequest(
-            callId = requestId,
+            callId = callId,
             request = FloconNetworkRequest(
                 url = next.authority(),
                 method = method.fullMethodName,
@@ -116,7 +116,7 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
 
 private class LoggingClientCallListener<RespT>(
     private val floconGrpcPlugin: FloconGrpcPlugin,
-    private val requestId: String,
+    private val callId: String,
     responseListener: ClientCall.Listener<RespT>,
     private val gson: Gson,
 ) : ForwardingClientCallListener.SimpleForwardingClientCallListener<RespT>(
@@ -129,7 +129,7 @@ private class LoggingClientCallListener<RespT>(
     override fun onClose(status: Status, trailers: Metadata) {
         super.onClose(status, trailers)
         floconGrpcPlugin.reportResponse(
-            callId = requestId,
+            callId = callId,
             response = FloconNetworkResponse(
                 body = message?.toJson(gson),
                 headers = (this.headers ?: trailers).toHeaders(),
