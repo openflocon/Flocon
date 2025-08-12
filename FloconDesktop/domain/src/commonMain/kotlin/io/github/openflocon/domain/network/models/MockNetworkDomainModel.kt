@@ -1,6 +1,6 @@
 package io.github.openflocon.domain.network.models
 
-data class MockNetworkResponseDomainModel(
+data class MockNetworkDomainModel(
     val id: String,
     val expectation: Expectation,
     val response: Response,

@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
         Index("deviceId", "packageName")
     ]
 )
-data class MockNetworkResponseEntity(
+data class MockNetworkEntity(
     @PrimaryKey
     val mockId: String,
     val deviceId: String,

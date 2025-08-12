@@ -10,7 +10,7 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
-import io.github.openflocon.domain.network.models.MockNetworkResponseDomainModel
+import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
 import io.github.openflocon.domain.network.repository.NetworkMocksRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
@@ -275,7 +275,7 @@ class NetworkRepositoryImpl(
 
     override suspend fun setupMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        mocks: List<MockNetworkResponseDomainModel>
+        mocks: List<MockNetworkDomainModel>
     ) {
         withContext(dispatcherProvider.data) {
             networkRemoteDataSource.setupMocks(
@@ -285,9 +285,21 @@ class NetworkRepositoryImpl(
         }
     }
 
+    override suspend fun getMock(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        id: String
+    ): MockNetworkDomainModel? {
+        return withContext(dispatcherProvider.data) {
+            networkMocksLocalDataSource.getMock(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                id = id,
+            )
+        }
+    }
+
     override suspend fun getAllMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): List<MockNetworkResponseDomainModel> {
+    ): List<MockNetworkDomainModel> {
         return withContext(dispatcherProvider.data) {
             networkMocksLocalDataSource.getAllMocks(
                 deviceIdAndPackageName = deviceIdAndPackageName,
@@ -297,7 +309,7 @@ class NetworkRepositoryImpl(
 
     override suspend fun addMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        mock: MockNetworkResponseDomainModel
+        mock: MockNetworkDomainModel
     ) {
         return withContext(dispatcherProvider.data) {
             networkMocksLocalDataSource.addMock(
@@ -307,7 +319,7 @@ class NetworkRepositoryImpl(
         }
     }
 
-    override suspend fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<MockNetworkResponseDomainModel>> {
+    override suspend fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<MockNetworkDomainModel>> {
         return networkMocksLocalDataSource.observeAll(
             deviceIdAndPackageName = deviceIdAndPackageName,
         ).flowOn(dispatcherProvider.data)

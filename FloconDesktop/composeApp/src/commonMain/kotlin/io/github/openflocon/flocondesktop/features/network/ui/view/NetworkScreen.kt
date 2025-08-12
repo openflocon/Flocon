@@ -162,6 +162,14 @@ fun NetworkScreen(
                 )
             }
         }
+
+    if(uiState.contentState.mocksDisplayed) {
+        NetworkMocksWindow(
+            onCloseRequest = {
+                onAction(NetworkAction.CloseMocks)
+            }
+        )
+    }
 }
 
 @Composable

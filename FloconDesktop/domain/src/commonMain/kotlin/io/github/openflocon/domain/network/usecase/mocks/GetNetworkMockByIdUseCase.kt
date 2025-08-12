@@ -4,21 +4,19 @@ import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNa
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.repository.NetworkMocksRepository
 
-class AddNetworkMocksUseCase(
+class GetNetworkMockByIdUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val networkMocksRepository: NetworkMocksRepository,
     private val setupNetworkMocksUseCase: SetupNetworkMocksUseCase,
 ) {
     suspend operator fun invoke(
-        mock: MockNetworkDomainModel,
-    ) {
-        getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
-            networkMocksRepository.addMock(
+        id: String
+    ): MockNetworkDomainModel? {
+        return getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
+            networkMocksRepository.getMock(
                 deviceIdAndPackageName = deviceIdAndPackageName,
-                mock = mock,
+                id = id,
             )
-            // after a change, update the device mocks
-            setupNetworkMocksUseCase()
         }
     }
 }

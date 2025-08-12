@@ -2,16 +2,16 @@ package io.github.openflocon.data.local.network.mapper
 
 import io.github.openflocon.data.local.network.models.mock.MockNetworkExpectationEmbedded
 import io.github.openflocon.data.local.network.models.mock.MockNetworkResponseEmbedded
-import io.github.openflocon.data.local.network.models.mock.MockNetworkResponseEntity
+import io.github.openflocon.data.local.network.models.mock.MockNetworkEntity
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.network.models.MockNetworkResponseDomainModel
+import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 
 
 fun toEntity(
-    domainModel: MockNetworkResponseDomainModel,
+    domainModel: MockNetworkDomainModel,
     deviceInfo: DeviceIdAndPackageNameDomainModel
-): MockNetworkResponseEntity {
-    return MockNetworkResponseEntity(
+): MockNetworkEntity {
+    return MockNetworkEntity(
         deviceId = deviceInfo.deviceId,
         packageName = deviceInfo.packageName,
         mockId = domainModel.id,
@@ -29,14 +29,14 @@ fun toEntity(
     )
 }
 
-fun toDomain(entity: MockNetworkResponseEntity): MockNetworkResponseDomainModel {
-    return MockNetworkResponseDomainModel(
+fun toDomain(entity: MockNetworkEntity): MockNetworkDomainModel {
+    return MockNetworkDomainModel(
         id = entity.mockId,
-        expectation = MockNetworkResponseDomainModel.Expectation(
+        expectation = MockNetworkDomainModel.Expectation(
             urlPattern = entity.expectation.urlPattern,
             method = entity.expectation.method,
         ),
-        response = MockNetworkResponseDomainModel.Response(
+        response = MockNetworkDomainModel.Response(
             httpCode = entity.response.httpCode,
             body = entity.response.body,
             mediaType = entity.response.mediaType,

@@ -5,7 +5,7 @@ import io.github.openflocon.data.local.network.dao.NetworkMocksDao
 import io.github.openflocon.data.local.network.mapper.toDomain
 import io.github.openflocon.data.local.network.mapper.toEntity
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.network.models.MockNetworkResponseDomainModel
+import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -15,15 +15,28 @@ class NetworkMocksLocalDataSourceImpl(
 
     override suspend fun addMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        mock: MockNetworkResponseDomainModel,
+        mock: MockNetworkDomainModel,
     ) {
         val mockEntity = toEntity(mock, deviceIdAndPackageName)
         dao.addMock(mockEntity)
     }
 
+    override suspend fun getMock(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        id: String
+    ): MockNetworkDomainModel? {
+        return dao.getMock(
+            deviceIdAndPackageName.deviceId,
+            deviceIdAndPackageName.packageName,
+            id
+        )?.let {
+            toDomain(it)
+        }
+    }
+
     override suspend fun getAllMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): List<MockNetworkResponseDomainModel> {
+    ): List<MockNetworkDomainModel> {
         return dao.getAllMocks(
             deviceIdAndPackageName.deviceId,
             deviceIdAndPackageName.packageName
@@ -34,7 +47,7 @@ class NetworkMocksLocalDataSourceImpl(
 
     override suspend fun observeAll(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): Flow<List<MockNetworkResponseDomainModel>> {
+    ): Flow<List<MockNetworkDomainModel>> {
         return dao.observeAllMocks(
             deviceIdAndPackageName.deviceId,
             deviceIdAndPackageName.packageName

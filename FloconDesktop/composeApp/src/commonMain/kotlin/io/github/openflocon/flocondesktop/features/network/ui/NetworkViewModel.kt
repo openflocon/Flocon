@@ -43,8 +43,13 @@ class NetworkViewModel(
     private val sortAndFilterNetworkItemsProcessor: SortAndFilterNetworkItemsProcessor,
 ) : ViewModel(headerDelegate) {
 
-    private val contentState =
-        MutableStateFlow(ContentUiState(selectedRequestId = null, detailJsons = emptySet()))
+    private val contentState = MutableStateFlow(
+        ContentUiState(
+            selectedRequestId = null,
+            detailJsons = emptySet(),
+            mocksDisplayed = false,
+        )
+    )
 
     private val filterUiState = MutableStateFlow(FilterUiState(query = ""))
 
@@ -116,9 +121,11 @@ class NetworkViewModel(
     fun onAction(action: NetworkAction) {
         when (action) {
             is NetworkAction.SelectRequest -> onSelectRequest(action)
-            NetworkAction.ClosePanel -> onClosePanel()
+            is NetworkAction.ClosePanel -> onClosePanel()
             is NetworkAction.CopyText -> onCopyText(action)
-            NetworkAction.Reset -> onReset()
+            is NetworkAction.Reset -> onReset()
+            is NetworkAction.OpenMocks -> openMocks(true)
+            is NetworkAction.CloseMocks -> openMocks(false)
             is NetworkAction.CopyCUrl -> onCopyCUrl(action)
             is NetworkAction.CopyUrl -> onCopyUrl(action)
             is NetworkAction.Remove -> onRemove(action)
@@ -145,6 +152,14 @@ class NetworkViewModel(
                 } else {
                     action.id
                 },
+            )
+        }
+    }
+
+    private fun openMocks(value: Boolean) {
+        contentState.update { state ->
+            state.copy(
+                mocksDisplayed = value
             )
         }
     }

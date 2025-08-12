@@ -17,6 +17,9 @@ sealed interface NetworkAction {
 
     data class JsonDetail(val id: String, val json: String) : NetworkAction
 
+    data object OpenMocks : NetworkAction
+    data object CloseMocks : NetworkAction
+
     data class CloseJsonDetail(val id: String) : NetworkAction
 
     data class CopyUrl(val item: NetworkItemViewState) : NetworkAction

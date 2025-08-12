@@ -1,27 +1,32 @@
 package io.github.openflocon.domain.network.repository
 
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.network.models.MockNetworkResponseDomainModel
+import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkMocksRepository {
     suspend fun addMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        mock: MockNetworkResponseDomainModel,
+        mock: MockNetworkDomainModel,
     )
+
+    suspend fun getMock(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        id: String
+    ): MockNetworkDomainModel?
 
     suspend fun getAllMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : List<MockNetworkResponseDomainModel>
+    ) : List<MockNetworkDomainModel>
 
     suspend fun observeAll(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : Flow<List<MockNetworkResponseDomainModel>>
+    ) : Flow<List<MockNetworkDomainModel>>
 
 
     suspend fun setupMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        mocks: List<MockNetworkResponseDomainModel>,
+        mocks: List<MockNetworkDomainModel>,
     )
     suspend fun deleteMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

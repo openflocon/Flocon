@@ -23,7 +23,7 @@ import io.github.openflocon.data.local.network.dao.NetworkFilterDao
 import io.github.openflocon.data.local.network.dao.NetworkMocksDao
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.data.local.network.models.NetworkFilterEntity
-import io.github.openflocon.data.local.network.models.mock.MockNetworkResponseEntity
+import io.github.openflocon.data.local.network.models.mock.MockNetworkEntity
 import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.data.local.table.models.TableItemEntity
@@ -46,7 +46,7 @@ import kotlinx.coroutines.Dispatchers
         DeeplinkEntity::class,
         AnalyticsItemEntity::class,
         NetworkFilterEntity::class,
-        MockNetworkResponseEntity::class,
+        MockNetworkEntity::class,
     ],
 )
 @TypeConverters(

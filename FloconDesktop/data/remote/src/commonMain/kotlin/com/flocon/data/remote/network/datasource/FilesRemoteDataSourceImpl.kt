@@ -7,7 +7,7 @@ import com.flocon.data.remote.network.mapper.listToRemote
 import com.flocon.data.remote.server.Server
 import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.network.models.MockNetworkResponseDomainModel
+import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.serialization.json.Json
 
 class NetworkRemoteDataSourceImpl(
@@ -16,7 +16,7 @@ class NetworkRemoteDataSourceImpl(
 
     override suspend fun setupMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        mocks: List<MockNetworkResponseDomainModel>
+        mocks: List<MockNetworkDomainModel>
     ) {
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
