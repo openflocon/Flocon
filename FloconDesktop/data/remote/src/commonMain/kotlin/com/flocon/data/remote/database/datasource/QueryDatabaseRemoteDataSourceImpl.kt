@@ -93,7 +93,7 @@ class QueryDatabaseRemoteDataSourceImpl(
     }
 }
 
-// TODO Move
+// TODO internal
 fun ResponseAndRequestIdDataModel.toDomain() = ResponseAndRequestIdDomainModel(
     requestId = requestId,
     response = response.toDomain()

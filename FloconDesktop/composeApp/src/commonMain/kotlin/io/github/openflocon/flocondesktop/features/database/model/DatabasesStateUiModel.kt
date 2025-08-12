@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.database.ui.model
+package io.github.openflocon.flocondesktop.features.database.model
 
 sealed interface DatabasesStateUiModel {
     data object Loading : DatabasesStateUiModel

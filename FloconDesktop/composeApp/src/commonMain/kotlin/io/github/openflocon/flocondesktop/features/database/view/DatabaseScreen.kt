@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.database.ui.view
+package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,12 +16,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.features.database.ui.DatabaseViewModel
-import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseScreenState
-import io.github.openflocon.flocondesktop.features.database.ui.model.DatabasesStateUiModel
-import io.github.openflocon.flocondesktop.features.database.ui.model.DeviceDataBaseUiModel
-import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabaseScreenState
-import io.github.openflocon.flocondesktop.features.database.ui.model.previewDatabasesStateUiModel
+import io.github.openflocon.flocondesktop.features.database.DatabaseViewModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
+import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
+import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
+import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
+import io.github.openflocon.flocondesktop.features.database.model.previewDatabaseScreenState
+import io.github.openflocon.flocondesktop.features.database.model.previewDatabasesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -136,7 +137,7 @@ private fun DatabaseScreenPreview_Result() {
             executeQuery = {},
             clearQuery = {},
             state = DatabaseScreenState.Result(
-                result = io.github.openflocon.flocondesktop.features.database.ui.model.QueryResultUiModel.Text(
+                result = QueryResultUiModel.Text(
                     "query result",
                 ),
             ),

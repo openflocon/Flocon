@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.database.ui.model
+package io.github.openflocon.flocondesktop.features.database.model
 
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 

@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.database.ui.view
+package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -20,8 +20,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseRowUiModel
-import io.github.openflocon.flocondesktop.features.database.ui.model.QueryResultUiModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
+import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

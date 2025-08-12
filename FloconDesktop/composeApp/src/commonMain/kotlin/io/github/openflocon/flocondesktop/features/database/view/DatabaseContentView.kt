@@ -1,9 +1,8 @@
-package io.github.openflocon.flocondesktop.features.database.ui.view
+package io.github.openflocon.flocondesktop.features.database.view
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseScreenState
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
 
 @Composable
 fun DatabaseContentView(

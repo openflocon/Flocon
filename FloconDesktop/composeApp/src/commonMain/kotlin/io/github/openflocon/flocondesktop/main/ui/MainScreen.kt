@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.analytics.ui.view.AnalyticsScreen
 import io.github.openflocon.flocondesktop.features.dashboard.view.DashboardScreen
-import io.github.openflocon.flocondesktop.features.database.ui.view.DatabaseScreen
+import io.github.openflocon.flocondesktop.features.database.view.DatabaseScreen
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.view.DeeplinkScreen
 import io.github.openflocon.flocondesktop.features.files.ui.view.FilesScreen
 import io.github.openflocon.flocondesktop.features.images.ui.view.ImagesScreen

@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.database.ui.view
+package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
