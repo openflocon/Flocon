@@ -1,20 +1,16 @@
-package io.github.openflocon.flocondesktop.features.database.data
+package io.github.openflocon.data.core.database.repository
 
-import io.github.openflocon.domain.Protocol
-import com.flocon.data.remote.database.datasource.toDomain
-import com.flocon.data.remote.database.models.toDeviceDatabasesDomain
-import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.data.core.database.datasource.DeviceDatabasesRemoteDataSource
+import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
 import io.github.openflocon.data.core.database.datasource.QueryDatabaseRemoteDataSource
+import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.repository.DatabaseRepository
-import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
@@ -79,26 +75,22 @@ class DatabaseRepositoryImpl(
     override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
-                Protocol.FromDevice.Database.Method.Query ->
-                    decodeReceivedQuery(message.body)
-                        ?.let { received ->
-                            queryDatabaseDataSource.onQueryResultReceived(
-                                received = received.toDomain(),
-                            )
-                        }
+                Protocol.FromDevice.Database.Method.Query -> {
+                    queryDatabaseDataSource.getReceiveQuery(message)
+                        ?.let { queryDatabaseDataSource.onQueryResultReceived(received = it) }
+                }
 
-                Protocol.FromDevice.Database.Method.GetDatabases ->
-                    decodeDeviceDatabases(message.body)
-                        ?.let { toDeviceDatabasesDomain(it) }
-                        ?.let {
-                            deviceDatabasesDataSource.registerDeviceDatabases(
-                                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                                    deviceId = deviceId,
-                                    packageName = message.appPackageName,
-                                ),
-                                databases = it,
-                            )
-                        }
+                Protocol.FromDevice.Database.Method.GetDatabases -> {
+                    val items = queryDatabaseDataSource.getDeviceDatabases(message)
+
+                    deviceDatabasesDataSource.registerDeviceDatabases(
+                        deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                            deviceId = deviceId,
+                            packageName = message.appPackageName,
+                        ),
+                        databases = items,
+                    )
+                }
             }
         }
     }

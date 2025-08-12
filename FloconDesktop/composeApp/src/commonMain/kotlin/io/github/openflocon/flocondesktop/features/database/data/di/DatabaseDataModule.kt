@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.features.database.data.di
 import com.flocon.data.remote.database.datasource.DeviceDatabasesRemoteDataSourceImpl
 import com.flocon.data.remote.database.datasource.QueryDatabaseRemoteDataSourceImpl
 import io.github.openflocon.domain.database.repository.DatabaseRepository
-import io.github.openflocon.flocondesktop.features.database.data.DatabaseRepositoryImpl
+import io.github.openflocon.data.core.database.repository.DatabaseRepositoryImpl
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
