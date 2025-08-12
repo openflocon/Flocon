@@ -10,7 +10,7 @@ import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface FloconHttpRequestDao {
+interface FloconNetworkDao {
     @Query(
         """
         SELECT * 

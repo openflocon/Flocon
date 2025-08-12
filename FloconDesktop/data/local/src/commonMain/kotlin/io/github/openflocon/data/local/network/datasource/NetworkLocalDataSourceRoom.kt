@@ -1,7 +1,7 @@
 package io.github.openflocon.data.local.network.datasource
 
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
-import io.github.openflocon.data.local.network.dao.FloconHttpRequestDao
+import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.mapper.toDomainModel
 import io.github.openflocon.data.local.network.mapper.toEntity
 import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
@@ -16,13 +16,13 @@ import kotlinx.coroutines.withContext
 
 class NetworkLocalDataSourceRoom(
     private val dispatcherProvider: DispatcherProvider,
-    private val floconHttpRequestDao: FloconHttpRequestDao
+    private val floconNetworkDao: FloconNetworkDao
 ) : NetworkLocalDataSource {
 
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         lite: Boolean,
-    ): Flow<List<FloconNetworkCallDomainModel>> = floconHttpRequestDao.let {
+    ): Flow<List<FloconNetworkCallDomainModel>> = floconNetworkDao.let {
         if (lite) {
             it.observeRequestsLite(
                 deviceId = deviceIdAndPackageName.deviceId,
@@ -48,7 +48,7 @@ class NetworkLocalDataSourceRoom(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
             )
-            floconHttpRequestDao.upsertRequest(entity)
+            floconNetworkDao.upsertRequest(entity)
         }
     }
 
@@ -56,7 +56,7 @@ class NetworkLocalDataSourceRoom(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         callId: String,
     ): FloconNetworkCallDomainModel? = withContext(dispatcherProvider.data) {
-        floconHttpRequestDao
+        floconNetworkDao
             .getCallById(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
@@ -68,7 +68,7 @@ class NetworkLocalDataSourceRoom(
     override fun observeCall(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         callId: String,
-    ): Flow<FloconNetworkCallDomainModel?> = floconHttpRequestDao
+    ): Flow<FloconNetworkCallDomainModel?> = floconNetworkDao
         .observeCallById(
             deviceId = deviceIdAndPackageName.deviceId,
             packageName = deviceIdAndPackageName.packageName,
@@ -80,7 +80,7 @@ class NetworkLocalDataSourceRoom(
 
     override suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         withContext(dispatcherProvider.data) {
-            floconHttpRequestDao.clearDeviceCalls(
+            floconNetworkDao.clearDeviceCalls(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
             )
@@ -91,7 +91,7 @@ class NetworkLocalDataSourceRoom(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         callId: String,
     ) {
-        floconHttpRequestDao.deleteRequest(
+        floconNetworkDao.deleteRequest(
             callId = callId,
             deviceId = deviceIdAndPackageName.deviceId,
             packageName = deviceIdAndPackageName.packageName,
@@ -102,7 +102,7 @@ class NetworkLocalDataSourceRoom(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         callId: String
     ) {
-        floconHttpRequestDao.deleteRequestBefore(
+        floconNetworkDao.deleteRequestBefore(
             callId = callId,
             deviceId = deviceIdAndPackageName.deviceId,
             packageName = deviceIdAndPackageName.packageName,
@@ -111,7 +111,7 @@ class NetworkLocalDataSourceRoom(
 
     override suspend fun clear() {
         withContext(dispatcherProvider.data) {
-            floconHttpRequestDao.clearAll()
+            floconNetworkDao.clearAll()
         }
     }
 }
