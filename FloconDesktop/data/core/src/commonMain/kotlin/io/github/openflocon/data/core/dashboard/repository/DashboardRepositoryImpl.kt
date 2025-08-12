@@ -25,7 +25,6 @@ class DashboardRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Dashboard.Plugin)
 
-
     override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         withContext(dispatcherProvider.data) {
             val item = toDeviceDashboardDataSource.getItem(message) ?: return@withContext
