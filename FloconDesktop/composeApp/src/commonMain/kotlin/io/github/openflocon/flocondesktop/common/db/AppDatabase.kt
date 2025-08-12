@@ -14,14 +14,14 @@ import io.github.openflocon.data.local.database.dao.QueryDao
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkDao
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
+import io.github.openflocon.data.local.files.dao.FloconFileDao
+import io.github.openflocon.data.local.files.models.FileEntity
 import io.github.openflocon.data.local.network.dao.FloconHttpRequestDao
 import io.github.openflocon.data.local.network.dao.NetworkFilterDao
 import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
 import io.github.openflocon.data.local.network.models.NetworkFilterEntity
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters
-import io.github.openflocon.flocondesktop.features.files.data.datasources.FloconFileDao
-import io.github.openflocon.flocondesktop.features.files.data.datasources.model.FileEntity
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.FloconImageDao
 import io.github.openflocon.flocondesktop.features.images.data.datasources.local.model.DeviceImageEntity
 import io.github.openflocon.flocondesktop.features.table.data.datasource.local.FloconTableDao

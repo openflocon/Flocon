@@ -1,6 +1,6 @@
-package io.github.openflocon.flocondesktop.features.files.data.datasources
+package io.github.openflocon.data.local.files.mapper
 
-import io.github.openflocon.flocondesktop.features.files.data.datasources.model.FileEntity
+import io.github.openflocon.data.local.files.models.FileEntity
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import kotlin.time.Instant

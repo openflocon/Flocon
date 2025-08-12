@@ -1,10 +1,14 @@
-package io.github.openflocon.flocondesktop.features.files.data.datasources
+package io.github.openflocon.data.local.files.datasource
 
 import io.github.openflocon.data.core.files.datasource.FilesLocalDataSource
+import io.github.openflocon.data.local.files.dao.FloconFileDao
+import io.github.openflocon.data.local.files.mapper.mapToLocal
+import io.github.openflocon.data.local.files.mapper.toDomainModel
+import io.github.openflocon.data.local.files.mapper.toEntity
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
@@ -29,7 +33,11 @@ class LocalFilesDataSourceRoom(
         }.distinctUntilChanged()
         .flowOn(dispatcherProvider.data)
 
-    override suspend fun storeFiles(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, parentPath: FilePathDomainModel, files: List<FileDomainModel>) {
+    override suspend fun storeFiles(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        parentPath: FilePathDomainModel,
+        files: List<FileDomainModel>
+    ) {
         withContext(dispatcherProvider.data) {
             fileDao.clearFolderContent(
                 deviceId = deviceIdAndPackageName.deviceId,
