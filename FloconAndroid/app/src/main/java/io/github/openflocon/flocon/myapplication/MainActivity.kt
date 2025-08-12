@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.myapplication.dashboard.initializeDashboard
 import io.github.openflocon.flocon.myapplication.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.deeplinks.initializeDeeplinks
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
         initializeSharedPreferences(applicationContext)
         initializeDatabases(context = applicationContext)
 
+        FloconLogger.enabled = true
         Flocon.initialize(this)
         initializeDeeplinks()
 

@@ -4,7 +4,7 @@ import android.util.Log
 
 object FloconLogger {
     var enabled = false
-    private const val TAG = "Flocon"
+    private const val TAG = "FloconLogger"
     fun logError(text: String, throwable: Throwable?) {
         if(enabled) {
             Log.e(TAG, text, throwable)
