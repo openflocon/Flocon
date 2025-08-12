@@ -1,8 +1,8 @@
-package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper
+package io.github.openflocon.data.local.dashboard.mapper
 
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.DashboardWithSectionsAndElements
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.SectionWithElements
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardWithSectionsAndElements
+import io.github.openflocon.data.local.dashboard.models.SectionWithElements
+import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardSectionDomainModel

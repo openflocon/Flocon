@@ -1,16 +1,17 @@
-package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room
+package io.github.openflocon.data.local.dashboard.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import io.github.openflocon.data.local.dashboard.mapper.toEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardSectionEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardWithSectionsAndElements
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper.toEntity
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementEntity
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardEntity
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardSectionEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -45,13 +46,13 @@ interface FloconDashboardDao {
         packageName: String,
     ): Flow<List<String>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertDashboard(dashboard: DashboardEntity): Long // Returns generated ID
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertSections(sections: List<DashboardSectionEntity>): List<Long> // Returns generated IDs
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertDashboardElements(elements: List<DashboardElementEntity>)
 
     @Query(

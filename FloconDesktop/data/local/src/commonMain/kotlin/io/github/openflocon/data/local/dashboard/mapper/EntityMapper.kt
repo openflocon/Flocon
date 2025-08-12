@@ -1,14 +1,14 @@
-package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper
+package io.github.openflocon.data.local.dashboard.mapper
 
 import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementButton
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementCheckBox
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementEntity
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementPlainText
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementText
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardElementTextField
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardEntity
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.model.DashboardSectionEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardElementButton
+import io.github.openflocon.data.local.dashboard.models.DashboardElementCheckBox
+import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardElementPlainText
+import io.github.openflocon.data.local.dashboard.models.DashboardElementText
+import io.github.openflocon.data.local.dashboard.models.DashboardElementTextField
+import io.github.openflocon.data.local.dashboard.models.DashboardEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardSectionEntity
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardId

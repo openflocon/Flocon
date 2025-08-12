@@ -1,8 +1,9 @@
-package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room
+package io.github.openflocon.data.local.dashboard.datasource
 
-import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.data.core.dashboard.datasource.DashboardLocalDataSource
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.room.mapper.toDomain
+import io.github.openflocon.data.local.dashboard.dao.FloconDashboardDao
+import io.github.openflocon.data.local.dashboard.mapper.toDomain
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -27,18 +28,20 @@ class DashboardLocalDataSourceRoom(
         }
     }
 
-    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> = dashboardDao.observeDashboardWithSectionsAndElements(
-        deviceId = deviceIdAndPackageName.deviceId,
-        packageName = deviceIdAndPackageName.packageName,
-        dashboardId = dashboardId,
-    )
-        .map { it?.toDomain() }
-        .distinctUntilChanged()
-        .flowOn(dispatcherProvider.data)
+    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> =
+        dashboardDao.observeDashboardWithSectionsAndElements(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            dashboardId = dashboardId,
+        )
+            .map { it?.toDomain() }
+            .distinctUntilChanged()
+            .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> = dashboardDao.observeDeviceDashboards(
-        deviceId = deviceIdAndPackageName.deviceId,
-        packageName = deviceIdAndPackageName.packageName,
-    )
-        .flowOn(dispatcherProvider.data)
+    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> =
+        dashboardDao.observeDeviceDashboards(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+        )
+            .flowOn(dispatcherProvider.data)
 }
