@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.ui
 
-import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.ui.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
@@ -11,7 +11,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.header.colum
 
 class SortAndFilterNetworkItemsProcessor {
     operator fun invoke(
-        items: List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>,
+        items: List<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>>,
         filterState: FilterUiState,
         sorted: HeaderDelegate.Sorted?,
         allowedMethods: List<NetworkMethodUi>,
@@ -36,20 +36,20 @@ class SortAndFilterNetworkItemsProcessor {
 }
 
 private fun sort(
-    sequence: Sequence<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>,
+    sequence: Sequence<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>>,
     sorted: HeaderDelegate.Sorted?,
-): Sequence<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> {
+): Sequence<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>> {
     if (sorted == null) {
         return sequence
     }
 
     val comparator = when (sorted.column) {
-        NetworkColumnsTypeUiModel.RequestTime -> compareBy<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> { it.first.request.startTime }
+        NetworkColumnsTypeUiModel.RequestTime -> compareBy<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>> { it.first.networkRequest.startTime }
         NetworkColumnsTypeUiModel.Method -> compareBy { it.second.method.text }
         NetworkColumnsTypeUiModel.Domain -> compareBy { it.second.domain }
         NetworkColumnsTypeUiModel.Query -> compareBy { it.second.type.text }
         NetworkColumnsTypeUiModel.Status -> compareBy { it.second.status.text }
-        NetworkColumnsTypeUiModel.Time -> compareBy { it.first.durationMs }
+        NetworkColumnsTypeUiModel.Time -> compareBy { it.first.networkResponse?.durationMs }
     }
 
     val sortedComparator = when (sorted.sort) {
@@ -62,14 +62,14 @@ private fun sort(
 
 private fun TextFilterStateUiModel.filter(
     column: NetworkTextFilterColumns,
-    items: List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>>,
-): List<Pair<FloconHttpRequestDomainModel, NetworkItemViewState>> = items.filter { item ->
+    items: List<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>>,
+): List<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>> = items.filter { item ->
     filter(column, item)
 }
 
 private fun TextFilterStateUiModel.filter(
     column: NetworkTextFilterColumns,
-    item: Pair<FloconHttpRequestDomainModel, NetworkItemViewState>,
+    item: Pair<FloconNetworkCallDomainModel, NetworkItemViewState>,
 ): Boolean {
     val text = when (column) {
         NetworkTextFilterColumns.RequestTime -> item.second.dateFormatted
@@ -81,7 +81,10 @@ private fun TextFilterStateUiModel.filter(
     return filterByText(text)
 }
 
-private fun TextFilterStateUiModel.filterByText(text: String): Boolean {
+private fun TextFilterStateUiModel.filterByText(text: String?): Boolean {
+    if(text == null)
+        return true // accepts if text is null
+
     for (filter in this.allFilters) {
         if (!filter.filterByText(text))
             return false

@@ -1,7 +1,7 @@
 package io.github.openflocon.domain.network.usecase
 
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
-import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.repository.NetworkRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -12,7 +12,7 @@ class ObserveHttpRequestsByIdUseCase(
     private val networkRepository: NetworkRepository,
     private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
 ) {
-    operator fun invoke(requestId: String): Flow<FloconHttpRequestDomainModel?> = observeCurrentDeviceIdUseCase()
+    operator fun invoke(requestId: String): Flow<FloconNetworkCallDomainModel?> = observeCurrentDeviceIdUseCase()
         .flatMapLatest { deviceId ->
             if (deviceId == null) {
                 flowOf(null)

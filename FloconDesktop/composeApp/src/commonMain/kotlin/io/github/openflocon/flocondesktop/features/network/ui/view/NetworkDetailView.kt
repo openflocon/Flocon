@@ -363,7 +363,7 @@ private fun NetworkDetailViewPreview() {
                 status =
                 NetworkStatusUi(
                     text = "200",
-                    isSuccess = true,
+                    status = NetworkStatusUi.Status.SUCCESS,
                 ),
                 requestHeaders =
                 listOf(

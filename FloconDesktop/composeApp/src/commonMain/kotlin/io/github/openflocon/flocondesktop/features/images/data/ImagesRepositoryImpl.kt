@@ -7,7 +7,7 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.data.core.images.datasource.ImagesLocalDataSource
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import io.github.openflocon.domain.images.repository.ImagesRepository
-import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
@@ -34,13 +34,14 @@ class ImagesRepositoryImpl(
 
     override suspend fun onImageReceived(
         deviceId: String,
-        request: FloconHttpRequestDomainModel,
+        request: FloconNetworkCallDomainModel,
     ) {
+        val duration = request.networkResponse?.durationMs ?: return
         imagesLocalDataSource.addImage(
             deviceId = deviceId,
             image = DeviceImageDomainModel(
-                url = request.url,
-                time = (request.request.startTime + request.durationMs).toLong(),
+                url = request.networkRequest.url,
+                time = (request.networkRequest.startTime + duration).toLong(),
             ),
         )
     }

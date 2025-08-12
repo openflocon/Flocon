@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.ui.mapper
 
 import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
-import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.ktor.http.Url
 import kotlinx.datetime.TimeZone
@@ -10,7 +10,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 import kotlin.time.Instant
 
-fun listToUi(httpRequests: List<FloconHttpRequestDomainModel>): List<NetworkItemViewState> = httpRequests.map { toUi(it) }
+fun listToUi(networkCalls: List<FloconNetworkCallDomainModel>): List<NetworkItemViewState> = networkCalls.map { toUi(it) }
 
 fun extractDomain(url: String): String {
     // Parse l'URL en un objet Url
@@ -41,22 +41,22 @@ fun extractPath(url: String): String {
     return parsedUrl.encodedPathAndQuery
 }
 
-fun toUi(httpRequest: FloconHttpRequestDomainModel): NetworkItemViewState = NetworkItemViewState(
-    uuid = httpRequest.uuid,
-    dateFormatted = formatTimestamp(httpRequest.request.startTime),
-    timeFormatted = formatDuration(httpRequest.durationMs),
-    requestSize = ByteFormatter.formatBytes(httpRequest.request.byteSize),
-    responseSize = ByteFormatter.formatBytes(httpRequest.response.byteSize),
-    domain = getDomainUi(httpRequest),
-    type = toTypeUi(httpRequest),
-    method = getMethodUi(httpRequest),
-    status = getStatusUi(httpRequest),
+fun toUi(networkCall: FloconNetworkCallDomainModel): NetworkItemViewState = NetworkItemViewState(
+    uuid = networkCall.callId,
+    dateFormatted = formatTimestamp(networkCall.networkRequest.startTime),
+    timeFormatted = networkCall.networkResponse?.durationMs?.let { formatDuration(it) },
+    requestSize = ByteFormatter.formatBytes(networkCall.networkRequest.byteSize),
+    responseSize = networkCall.networkResponse?.byteSize?.let { ByteFormatter.formatBytes(it) },
+    domain = getDomainUi(networkCall),
+    type = toTypeUi(networkCall),
+    method = getMethodUi(networkCall),
+    status = getStatusUi(networkCall),
 )
 
-fun getDomainUi(httpRequest: FloconHttpRequestDomainModel): String = when (val t = httpRequest.type) {
-    is FloconHttpRequestDomainModel.Type.GraphQl -> extractDomainAndPath(httpRequest.url)
-    is FloconHttpRequestDomainModel.Type.Http -> extractDomain(httpRequest.url)
-    is FloconHttpRequestDomainModel.Type.Grpc -> httpRequest.url
+fun getDomainUi(networkRequest: FloconNetworkCallDomainModel): String = when (networkRequest) {
+    is FloconNetworkCallDomainModel.GraphQl -> extractDomainAndPath(networkRequest.networkRequest.url)
+    is FloconNetworkCallDomainModel.Http -> extractDomain(networkRequest.networkRequest.url)
+    is FloconNetworkCallDomainModel.Grpc -> networkRequest.networkRequest.url
 }
 
 fun formatDuration(duration: Double): String = duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)

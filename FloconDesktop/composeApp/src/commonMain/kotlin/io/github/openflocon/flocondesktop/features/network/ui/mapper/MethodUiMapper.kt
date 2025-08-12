@@ -1,17 +1,16 @@
 package io.github.openflocon.flocondesktop.features.network.ui.mapper
 
-import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi
-import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkMethodUi.OTHER
 
-fun getMethodUi(httpRequest: FloconHttpRequestDomainModel): NetworkMethodUi = when (val t = httpRequest.type) {
-    is FloconHttpRequestDomainModel.Type.GraphQl -> when (t.operationType.lowercase()) {
+fun getMethodUi(networkRequest: FloconNetworkCallDomainModel): NetworkMethodUi = when (networkRequest) {
+    is FloconNetworkCallDomainModel.GraphQl -> when (val t = networkRequest.request.operationType.lowercase()) {
         "query" -> NetworkMethodUi.GraphQl.QUERY
         "mutation" -> NetworkMethodUi.GraphQl.MUTATION
-        else -> OTHER(t.operationType, icon = null)
+        else -> NetworkMethodUi.OTHER(networkRequest.request.operationType, icon = null)
     }
-    is FloconHttpRequestDomainModel.Type.Http -> toHttpMethodUi(httpRequest.request.method)
-    is FloconHttpRequestDomainModel.Type.Grpc -> NetworkMethodUi.Grpc
+    is FloconNetworkCallDomainModel.Http -> toHttpMethodUi(networkRequest.networkRequest.method)
+    is FloconNetworkCallDomainModel.Grpc -> NetworkMethodUi.Grpc
 }
 
 fun toHttpMethodUi(httpMethod: String): NetworkMethodUi = when (httpMethod.lowercase()) {

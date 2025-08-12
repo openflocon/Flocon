@@ -197,7 +197,7 @@ class NetworkViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
                 ?: return@launch
-            copyToClipboard(domainModel.url)
+            copyToClipboard(domainModel.networkRequest.url)
         }
     }
 

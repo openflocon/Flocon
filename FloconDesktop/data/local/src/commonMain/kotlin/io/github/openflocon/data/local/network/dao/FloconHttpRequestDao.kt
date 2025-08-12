@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
+import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
 import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
@@ -14,21 +14,21 @@ interface FloconHttpRequestDao {
     @Query(
         """
         SELECT * 
-        FROM FloconHttpRequestEntity 
+        FROM FloconNetworkCallEntity 
         WHERE deviceId = :deviceId 
         AND packageName = :packageName
-        ORDER BY startTime ASC
+        ORDER BY request_startTime ASC
     """,
     )
-    fun observeRequests(deviceId: String, packageName: String): Flow<List<FloconHttpRequestEntity>>
+    fun observeRequests(deviceId: String, packageName: String): Flow<List<FloconNetworkCallEntity>>
 
     @Query(
         """
         SELECT * 
-        FROM FloconHttpRequestEntity 
+        FROM FloconNetworkCallEntity 
         WHERE deviceId = :deviceId 
         AND packageName = :packageName
-        ORDER BY startTime ASC
+        ORDER BY request_startTime ASC
     """,
     )
     fun observeRequestsLite(
@@ -37,26 +37,26 @@ interface FloconHttpRequestDao {
     ): Flow<List<FloconHttpRequestEntityLite>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertRequest(request: FloconHttpRequestEntity)
+    suspend fun upsertRequest(request: FloconNetworkCallEntity)
 
     @Query(
         """
         SELECT *
-        FROM FloconHttpRequestEntity
-        WHERE deviceId = :deviceId AND uuid = :requestId
+        FROM FloconNetworkCallEntity
+        WHERE deviceId = :deviceId AND callId = :requestId
     """,
     )
     fun observeRequestById(
         deviceId: String,
         requestId: String,
-    ): Flow<FloconHttpRequestEntity?>
+    ): Flow<FloconNetworkCallEntity?>
 
-    @Query("DELETE FROM FloconHttpRequestEntity")
+    @Query("DELETE FROM FloconNetworkCallEntity")
     suspend fun clearAll()
 
     @Query(
         """
-        DELETE FROM FloconHttpRequestEntity
+        DELETE FROM FloconNetworkCallEntity
         WHERE deviceId = :deviceId
         AND packageName = :packageName
     """,
@@ -68,9 +68,9 @@ interface FloconHttpRequestDao {
 
     @Query(
         """
-        DELETE FROM FloconHttpRequestEntity
+        DELETE FROM FloconNetworkCallEntity
         WHERE deviceId = :deviceId
-        AND uuid = :requestId
+        AND callId = :requestId
     """,
     )
     suspend fun deleteRequest(
@@ -80,12 +80,12 @@ interface FloconHttpRequestDao {
 
     @Query(
         """
-        DELETE FROM FloconHttpRequestEntity
+        DELETE FROM FloconNetworkCallEntity
         WHERE deviceId = :deviceId
-        AND startTime < (
-            SELECT startTime 
-            FROM FloconHttpRequestEntity 
-            WHERE uuid = :requestId 
+        AND request_startTime < (
+            SELECT request_startTime 
+            FROM FloconNetworkCallEntity 
+            WHERE callId = :requestId 
             AND deviceId = :deviceId
             LIMIT 1
         )
