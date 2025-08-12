@@ -4,7 +4,8 @@ import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.request.get
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -16,14 +17,12 @@ import javax.net.ssl.X509ExtendedTrustManager
 
 object DummyHttpKtorCaller {
 
-    val client = HttpClient(CIO) {
+    val cioClient = HttpClient(CIO) {
         install(FloconKtorPlugin)
 
-        // Configuration du moteur CIO
         engine {
             https {
-                // Attention : ceci désactive la vérification des certificats SSL/TLS.
-                // Utilisez-le uniquement pour le développement ou des serveurs de test.
+                // for CIO we need to disable the trust manager for jsonplaceholder
                 trustManager = object : X509ExtendedTrustManager() {
                     override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?, socket: Socket?) {}
                     override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?, socket: Socket?) {}
@@ -37,10 +36,14 @@ object DummyHttpKtorCaller {
         }
     }
 
+    val okHttpClient = HttpClient(OkHttp) {
+        install(FloconKtorPlugin)
+    }
+
     fun call() {
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                val response = client.get("https://jsonplaceholder.typicode.com/posts") {
+                val response = okHttpClient.post("https://jsonplaceholder.typicode.com/posts") {
                     setBody("{ \"test\" : \"yes\" }")
                 }
 
