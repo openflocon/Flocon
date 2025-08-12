@@ -5,6 +5,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
+import io.ktor.client.request.setBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -39,7 +40,9 @@ object DummyHttpKtorCaller {
     fun call() {
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                val response = client.get("https://jsonplaceholder.typicode.com/todos/1")
+                val response = client.get("https://jsonplaceholder.typicode.com/posts") {
+                    setBody("{ \"test\" : \"yes\" }")
+                }
 
                 if (response.status.value in 200..299) {
                     val responseBody: String = response.body()
