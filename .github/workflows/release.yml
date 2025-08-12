@@ -12,11 +12,9 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      # 1. Check out the source code
       - name: Checkout source
         uses: actions/checkout@v4
 
-      # 2. Set up temurin JDK with proper authentication
       - name: Set up temurin JDK
         uses: actions/setup-java@v4
         with:
@@ -25,20 +23,22 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
 
-      # 3. Configure Gradle
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: '8.12'
 
-      # 4. Build the application
+      - name: Generate aboutlibraries
+        working-directory: FloconDesktop
+        run: ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.outputFile=src/commonMain/composeResources/files/aboutlibraries.json
+
       - name: Build with Gradle
         working-directory: FloconDesktop
         run: ./gradlew packageDistributionForCurrentOS
         env:
           PROJECT_VERSION_NAME: ${{ github.ref_name }}
 
-      # 5. Upload OS-specific artifacts
+      # Upload OS-specific artifacts
       - name: Upload Linux artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
@@ -67,11 +67,10 @@ jobs:
       contents: write
 
     steps:
-      # 1. Check out the source code
       - name: Checkout source
         uses: actions/checkout@v4
 
-      # 2. Download artifacts from all platforms
+      # Download artifacts from all platforms
       - name: Download Linux artifact
         uses: actions/download-artifact@v4
         with:
@@ -87,11 +86,11 @@ jobs:
         with:
           name: windows-msi
 
-      # 3. List downloaded artifacts
+      # List downloaded artifacts
       - name: Check downloaded artifacts
         run: ls -R
 
-      # 4. Create GitHub Release
+      # Create GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:

@@ -1,15 +1,14 @@
 package io.github.openflocon.data.local.network.datasource
 
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
-import io.github.openflocon.data.local.network.dao.FloconHttpRequestDao
+import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.mapper.toDomainModel
 import io.github.openflocon.data.local.network.mapper.toEntity
-import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
-import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
+import io.github.openflocon.data.local.network.models.FloconNetwockCallEntityLite
+import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -17,52 +16,71 @@ import kotlinx.coroutines.withContext
 
 class NetworkLocalDataSourceRoom(
     private val dispatcherProvider: DispatcherProvider,
-    private val floconHttpRequestDao: FloconHttpRequestDao
+    private val floconNetworkDao: FloconNetworkDao
 ) : NetworkLocalDataSource {
 
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         lite: Boolean,
-    ): Flow<List<FloconHttpRequestDomainModel>> = floconHttpRequestDao.let {
+    ): Flow<List<FloconNetworkCallDomainModel>> = floconNetworkDao.let {
         if (lite) {
             it.observeRequestsLite(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
             )
-                .map { entities -> entities.mapNotNull(FloconHttpRequestEntityLite::toDomainModel) }
+                .map { entities -> entities.mapNotNull(FloconNetwockCallEntityLite::toDomainModel) }
         } else {
             it.observeRequests(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
             )
-                .map { entities -> entities.mapNotNull(FloconHttpRequestEntity::toDomainModel) }
+                .map { entities -> entities.mapNotNull(FloconNetworkCallEntity::toDomainModel) }
         }
     }
         .flowOn(dispatcherProvider.data)
 
     override suspend fun save(
-        deviceId: DeviceId,
-        packageName: String,
-        request: FloconHttpRequestDomainModel,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        call: FloconNetworkCallDomainModel,
     ) {
         withContext(dispatcherProvider.data) {
-            val entity = request.toEntity(deviceId = deviceId, packageName = packageName)
-            floconHttpRequestDao.upsertRequest(entity)
+            val entity = call.toEntity(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+            )
+            floconNetworkDao.upsertRequest(entity)
         }
     }
 
-    override fun observeRequest(
-        deviceId: DeviceId,
-        requestId: String,
-    ): Flow<FloconHttpRequestDomainModel?> = floconHttpRequestDao
-        .observeRequestById(deviceId, requestId)
+    override suspend fun getCall(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String,
+    ): FloconNetworkCallDomainModel? = withContext(dispatcherProvider.data) {
+        floconNetworkDao
+            .getCallById(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+                callId = callId,
+            )
+            ?.toDomainModel()
+    }
+
+    override fun observeCall(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String,
+    ): Flow<FloconNetworkCallDomainModel?> = floconNetworkDao
+        .observeCallById(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            callId = callId,
+        )
         .map { entity ->
             entity?.toDomainModel()
         }.flowOn(dispatcherProvider.data)
 
     override suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         withContext(dispatcherProvider.data) {
-            floconHttpRequestDao.clearDeviceCalls(
+            floconNetworkDao.clearDeviceCalls(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
             )
@@ -70,25 +88,30 @@ class NetworkLocalDataSourceRoom(
     }
 
     override suspend fun deleteRequest(
-        deviceId: DeviceId,
-        requestId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String,
     ) {
-        floconHttpRequestDao.deleteRequest(
-            requestId = requestId,
-            deviceId = deviceId,
+        floconNetworkDao.deleteRequest(
+            callId = callId,
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
         )
     }
 
-    override suspend fun deleteRequestsBefore(deviceId: DeviceId, requestId: String) {
-        floconHttpRequestDao.deleteRequestBefore(
-            requestId = requestId,
-            deviceId = deviceId,
+    override suspend fun deleteRequestsBefore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String
+    ) {
+        floconNetworkDao.deleteRequestBefore(
+            callId = callId,
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
         )
     }
 
     override suspend fun clear() {
         withContext(dispatcherProvider.data) {
-            floconHttpRequestDao.clearAll()
+            floconNetworkDao.clearAll()
         }
     }
 }

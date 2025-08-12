@@ -2,15 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 32,
-    "identityHash": "873530f918e3a974de03bbc7d6ea7830",
+    "identityHash": "d41ddb927dc326793c38172bbf556e40",
     "entities": [
       {
-        "tableName": "FloconHttpRequestEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uuid` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `url` TEXT NOT NULL, `method` TEXT NOT NULL, `startTime` INTEGER NOT NULL, `durationMs` REAL NOT NULL, `requestHeaders` TEXT NOT NULL, `requestBody` TEXT, `requestByteSize` INTEGER NOT NULL, `responseContentType` TEXT, `responseBody` TEXT, `responseHeaders` TEXT NOT NULL, `responseByteSize` INTEGER NOT NULL, `graphql_query` TEXT, `graphql_operationType` TEXT, `graphql_isSuccess` INTEGER, `graphql_responseHttpCode` INTEGER, `http_responseHttpCode` INTEGER, `grpc_responseStatus` TEXT, PRIMARY KEY(`uuid`))",
+        "tableName": "FloconNetworkCallEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`callId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `type` TEXT NOT NULL, `request_url` TEXT NOT NULL, `request_method` TEXT NOT NULL, `request_startTime` INTEGER NOT NULL, `request_requestHeaders` TEXT NOT NULL, `request_requestBody` TEXT, `request_requestByteSize` INTEGER NOT NULL, `request_graphql_query` TEXT, `request_graphql_operationType` TEXT, `response_durationMs` REAL, `response_responseContentType` TEXT, `response_responseBody` TEXT, `response_responseHeaders` TEXT, `response_responseByteSize` INTEGER, `response_graphql_isSuccess` INTEGER, `response_graphql_responseHttpCode` INTEGER, `response_http_responseHttpCode` INTEGER, `response_grpc_responseStatus` TEXT, PRIMARY KEY(`callId`))",
         "fields": [
           {
-            "fieldPath": "uuid",
-            "columnName": "uuid",
+            "fieldPath": "callId",
+            "columnName": "callId",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -27,115 +27,118 @@
             "notNull": true
           },
           {
-            "fieldPath": "infos.url",
-            "columnName": "url",
+            "fieldPath": "type",
+            "columnName": "type",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "infos.method",
-            "columnName": "method",
+            "fieldPath": "request.url",
+            "columnName": "request_url",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "infos.startTime",
-            "columnName": "startTime",
+            "fieldPath": "request.method",
+            "columnName": "request_method",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "request.startTime",
+            "columnName": "request_startTime",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "infos.durationMs",
-            "columnName": "durationMs",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "infos.requestHeaders",
-            "columnName": "requestHeaders",
+            "fieldPath": "request.requestHeaders",
+            "columnName": "request_requestHeaders",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "infos.requestBody",
-            "columnName": "requestBody",
+            "fieldPath": "request.requestBody",
+            "columnName": "request_requestBody",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "infos.requestByteSize",
-            "columnName": "requestByteSize",
+            "fieldPath": "request.requestByteSize",
+            "columnName": "request_requestByteSize",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "infos.responseContentType",
-            "columnName": "responseContentType",
+            "fieldPath": "request.graphql.query",
+            "columnName": "request_graphql_query",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "infos.responseBody",
-            "columnName": "responseBody",
+            "fieldPath": "request.graphql.operationType",
+            "columnName": "request_graphql_operationType",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "infos.responseHeaders",
-            "columnName": "responseHeaders",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "response.durationMs",
+            "columnName": "response_durationMs",
+            "affinity": "REAL"
           },
           {
-            "fieldPath": "infos.responseByteSize",
-            "columnName": "responseByteSize",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "graphql.query",
-            "columnName": "graphql_query",
+            "fieldPath": "response.responseContentType",
+            "columnName": "response_responseContentType",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "graphql.operationType",
-            "columnName": "graphql_operationType",
+            "fieldPath": "response.responseBody",
+            "columnName": "response_responseBody",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "graphql.isSuccess",
-            "columnName": "graphql_isSuccess",
+            "fieldPath": "response.responseHeaders",
+            "columnName": "response_responseHeaders",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "response.responseByteSize",
+            "columnName": "response_responseByteSize",
             "affinity": "INTEGER"
           },
           {
-            "fieldPath": "graphql.responseHttpCode",
-            "columnName": "graphql_responseHttpCode",
+            "fieldPath": "response.graphql.isSuccess",
+            "columnName": "response_graphql_isSuccess",
             "affinity": "INTEGER"
           },
           {
-            "fieldPath": "http.responseHttpCode",
-            "columnName": "http_responseHttpCode",
+            "fieldPath": "response.graphql.responseHttpCode",
+            "columnName": "response_graphql_responseHttpCode",
             "affinity": "INTEGER"
           },
           {
-            "fieldPath": "grpc.responseStatus",
-            "columnName": "grpc_responseStatus",
+            "fieldPath": "response.http.responseHttpCode",
+            "columnName": "response_http_responseHttpCode",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "response.grpc.responseStatus",
+            "columnName": "response_grpc_responseStatus",
             "affinity": "TEXT"
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "uuid"
+            "callId"
           ]
         },
         "indices": [
           {
-            "name": "index_FloconHttpRequestEntity_deviceId_packageName",
+            "name": "index_FloconNetworkCallEntity_deviceId_packageName",
             "unique": false,
             "columnNames": [
               "deviceId",
               "packageName"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_FloconHttpRequestEntity_deviceId_packageName` ON `${TABLE_NAME}` (`deviceId`, `packageName`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_FloconNetworkCallEntity_deviceId_packageName` ON `${TABLE_NAME}` (`deviceId`, `packageName`)"
           }
         ]
       },
@@ -876,7 +879,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '873530f918e3a974de03bbc7d6ea7830')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd41ddb927dc326793c38172bbf556e40')"
     ]
   }
 }

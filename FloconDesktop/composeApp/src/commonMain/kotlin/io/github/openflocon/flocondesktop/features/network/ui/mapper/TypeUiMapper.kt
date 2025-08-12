@@ -1,24 +1,24 @@
 package io.github.openflocon.flocondesktop.features.network.ui.mapper
 
-import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 
-fun toTypeUi(networkRequest: FloconHttpRequestDomainModel): NetworkItemViewState.NetworkTypeUi = when (val t = networkRequest.type) {
-    is FloconHttpRequestDomainModel.Type.GraphQl -> NetworkItemViewState.NetworkTypeUi.GraphQl(
-        queryName = t.query,
+fun toTypeUi(call: FloconNetworkCallDomainModel): NetworkItemViewState.NetworkTypeUi = when (call) {
+    is FloconNetworkCallDomainModel.GraphQl -> NetworkItemViewState.NetworkTypeUi.GraphQl(
+        queryName = call.request.query,
     )
 
-    is FloconHttpRequestDomainModel.Type.Http -> {
-        val query = extractPath(networkRequest.url)
+    is FloconNetworkCallDomainModel.Http -> {
+        val query = extractPath(call.networkRequest.url)
         NetworkItemViewState.NetworkTypeUi.Url(
             query = query,
-            method = networkRequest.request.method,
+            method = call.networkRequest.method,
         )
     }
 
-    is FloconHttpRequestDomainModel.Type.Grpc -> {
+    is FloconNetworkCallDomainModel.Grpc -> {
         NetworkItemViewState.NetworkTypeUi.Grpc(
-            method = networkRequest.request.method,
+            method = call.networkRequest.method,
         )
     }
 }

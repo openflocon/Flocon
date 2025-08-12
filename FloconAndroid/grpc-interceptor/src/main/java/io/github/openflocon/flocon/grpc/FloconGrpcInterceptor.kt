@@ -1,12 +1,15 @@
 package io.github.openflocon.flocon.grpc
 
-import io.github.openflocon.flocon.grpc.model.toHeaders
 import com.google.gson.ExclusionStrategy
 import com.google.gson.FieldAttributes
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.grpc.model.RequestHolder
+import io.github.openflocon.flocon.grpc.model.toHeaders
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkResponse
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.ClientCall
@@ -16,6 +19,7 @@ import io.grpc.ForwardingClientCallListener
 import io.grpc.Metadata
 import io.grpc.MethodDescriptor
 import io.grpc.Status
+import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
 private val excluded = setOf(
@@ -26,7 +30,7 @@ private val excluded = setOf(
     "bytes",
 )
 
-private val defaultFieldExcluder : (name: String) -> Boolean = { name ->
+private val defaultFieldExcluder: (name: String) -> Boolean = { name ->
     var isExcluded = false
     excluded.forEach { toExclude ->
         if (name.startsWith(prefix = toExclude)) {
@@ -50,15 +54,15 @@ class FloconGrpcInterceptor(
         next: Channel,
     ): ClientCall<ReqT, RespT> {
         val networkPlugin = FloconApp.instance?.client?.networkPlugin
-        if(networkPlugin == null) {
+        if (networkPlugin == null) {
             // do not intercept if no network plugin, just call
             return next.newCall(method, callOptions)
         }
 
-        val requestId = UUID.randomUUID().toString()
+        val callId = UUID.randomUUID().toString()
         return LoggingForwardingClientCall(
             floconGrpcPlugin = flipperGrpcPlugin,
-            requestId = requestId,
+            callId = callId,
             method = method,
             next = next,
             callOptions = callOptions,
@@ -69,7 +73,7 @@ class FloconGrpcInterceptor(
 
 private class LoggingForwardingClientCall<ReqT, RespT>(
     private val floconGrpcPlugin: FloconGrpcPlugin,
-    private val requestId: String,
+    private val callId: String,
     private val method: MethodDescriptor<ReqT, RespT>,
     private val next: Channel,
     callOptions: CallOptions,
@@ -81,6 +85,8 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
     ),
 ) {
 
+    val requestHolder = RequestHolder()
+
     private var headers: Metadata? = null
 
     override fun start(responseListener: Listener<RespT>, headers: Metadata) {
@@ -88,7 +94,8 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
         super.start(
             LoggingClientCallListener(
                 floconGrpcPlugin = floconGrpcPlugin,
-                requestId = requestId,
+                callId = callId,
+                requestHolder = requestHolder,
                 responseListener = responseListener,
                 gson = gson
             ),
@@ -97,26 +104,30 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
     }
 
     override fun sendMessage(message: ReqT) {
-        super.sendMessage(message)
-        floconGrpcPlugin.reportRequest(
-            callId = requestId,
-            request = FloconNetworkRequest.Request(
-                url = next.authority(),
-                method = method.fullMethodName,
-                body = message?.toJson(gson = gson) ?: "",
-                startTime = System.currentTimeMillis(),
-                headers = headers?.toHeaders().orEmpty(),
-                size = 0, // TODO
-            )
+        val request = FloconNetworkRequest(
+            url = next.authority(),
+            method = method.fullMethodName,
+            body = message?.toJson(gson = gson) ?: "",
+            startTime = System.currentTimeMillis(),
+            headers = headers?.toHeaders().orEmpty(),
+            size = 0, // TODO
+            isMocked = false, // cannot mock grpc
         )
+        requestHolder.request.complete(request)
+        floconGrpcPlugin.reportRequest(
+            callId = callId,
+            request = request
+        )
+        super.sendMessage(message)
     }
 }
 
 private class LoggingClientCallListener<RespT>(
     private val floconGrpcPlugin: FloconGrpcPlugin,
-    private val requestId: String,
+    private val callId: String,
     responseListener: ClientCall.Listener<RespT>,
     private val gson: Gson,
+    private val requestHolder: RequestHolder,
 ) : ForwardingClientCallListener.SimpleForwardingClientCallListener<RespT>(
     responseListener,
 ) {
@@ -125,18 +136,25 @@ private class LoggingClientCallListener<RespT>(
     private var message: RespT? = null
 
     override fun onClose(status: Status, trailers: Metadata) {
+        try {
+            runBlocking { requestHolder.request.await() }.let { request ->
+                floconGrpcPlugin.reportResponse(
+                    callId = callId,
+                    request = request,
+                    response = FloconNetworkResponse(
+                        body = message?.toJson(gson),
+                        headers = (this.headers ?: trailers).toHeaders(),
+                        httpCode = null,
+                        contentType = "grpc",
+                        size = 0L,
+                        grpcStatus = status.code.toString(),
+                    ),
+                )
+            }
+        } catch (t: Throwable) {
+            FloconLogger.logError("cannot find request for callId $callId", t)
+        }
         super.onClose(status, trailers)
-        floconGrpcPlugin.reportResponse(
-            callId = requestId,
-            response = FloconNetworkRequest.Response(
-                body = message?.toJson(gson),
-                headers = (this.headers ?: trailers).toHeaders(),
-                httpCode = null,
-                contentType = "grpc",
-                size = 0L,
-                grpcStatus = status.code.toString(),
-            ),
-        )
     }
 
     override fun onMessage(message: RespT) {
