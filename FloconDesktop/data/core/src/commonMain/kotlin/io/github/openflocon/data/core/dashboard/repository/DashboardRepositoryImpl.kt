@@ -1,6 +1,8 @@
-package io.github.openflocon.flocondesktop.features.dashboard.data
+package io.github.openflocon.data.core.dashboard.repository
 
 import io.github.openflocon.data.core.dashboard.datasource.DashboardLocalDataSource
+import io.github.openflocon.data.core.dashboard.datasource.DeviceDashboardsDataSource
+import io.github.openflocon.data.core.dashboard.datasource.ToDeviceDashboardDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
@@ -9,50 +11,33 @@ import io.github.openflocon.domain.dashboard.repository.DashboardRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
-import com.flocon.data.remote.dashboard.datasource.ToDeviceDashboardDataSourceImpl
-import io.github.openflocon.data.core.dashboard.datasource.DeviceDashboardsDataSource
-import io.github.openflocon.flocondesktop.features.dashboard.data.mapper.toDomain
-import io.github.openflocon.flocondesktop.features.dashboard.data.model.DashboardConfigDataModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 
 class DashboardRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val dashboardLocalDataSource: DashboardLocalDataSource,
-    private val toDeviceDashboardDataSource: ToDeviceDashboardDataSourceImpl,
+    private val toDeviceDashboardDataSource: ToDeviceDashboardDataSource,
     private val deviceDashboardsDataSource: DeviceDashboardsDataSource,
 ) : DashboardRepository,
     MessagesReceiverRepository {
 
     override val pluginName = listOf(Protocol.FromDevice.Dashboard.Plugin)
 
-    // maybe inject
-    private val dashboardParser =
-        Json {
-            ignoreUnknownKeys = true
-        }
 
     override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         withContext(dispatcherProvider.data) {
-            decode(message)?.let { toDomain(it) }?.let { request ->
-                dashboardLocalDataSource.saveDashboard(
-                    deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                        deviceId = deviceId,
-                        packageName = message.appPackageName,
-                    ),
-                    dashboard = request,
-                )
-            }
-        }
-    }
+            val item = toDeviceDashboardDataSource.getItem(message) ?: return@withContext
 
-    private fun decode(message: FloconIncomingMessageDomainModel): DashboardConfigDataModel? = try {
-        dashboardParser.decodeFromString<DashboardConfigDataModel>(message.body)
-    } catch (t: Throwable) {
-        t.printStackTrace()
-        null
+            dashboardLocalDataSource.saveDashboard(
+                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                    deviceId = deviceId,
+                    packageName = message.appPackageName,
+                ),
+                dashboard = item
+            )
+        }
     }
 
     override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> =

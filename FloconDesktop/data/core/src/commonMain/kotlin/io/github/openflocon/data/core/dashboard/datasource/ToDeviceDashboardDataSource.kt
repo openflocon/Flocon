@@ -1,6 +1,8 @@
 package io.github.openflocon.data.core.dashboard.datasource
 
+import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import kotlin.uuid.ExperimentalUuidApi
 
 interface ToDeviceDashboardDataSource {
@@ -24,4 +26,7 @@ interface ToDeviceDashboardDataSource {
         checkBoxId: String,
         value: Boolean,
     )
+
+    fun getItem(message: FloconIncomingMessageDomainModel): DashboardDomainModel?
+
 }

@@ -1,12 +1,12 @@
-package io.github.openflocon.flocondesktop.features.dashboard.data.mapper
+package com.flocon.data.remote.dashboard.mapper
 
-import io.github.openflocon.flocondesktop.features.dashboard.data.model.ButtonConfigDataModel
-import io.github.openflocon.flocondesktop.features.dashboard.data.model.CheckBoxConfigDataModel
-import io.github.openflocon.flocondesktop.features.dashboard.data.model.DashboardConfigDataModel
-import io.github.openflocon.flocondesktop.features.dashboard.data.model.DashboardElementDataModel
-import io.github.openflocon.flocondesktop.features.dashboard.data.model.SectionConfigDataModel
-import io.github.openflocon.flocondesktop.features.dashboard.data.model.TextConfigDataModel
-import io.github.openflocon.flocondesktop.features.dashboard.data.model.TextFieldConfigDataModel
+import com.flocon.data.remote.dashboard.models.ButtonConfigDataModel
+import com.flocon.data.remote.dashboard.models.CheckBoxConfigDataModel
+import com.flocon.data.remote.dashboard.models.DashboardConfigDataModel
+import com.flocon.data.remote.dashboard.models.DashboardElementDataModel
+import com.flocon.data.remote.dashboard.models.SectionConfigDataModel
+import com.flocon.data.remote.dashboard.models.TextConfigDataModel
+import com.flocon.data.remote.dashboard.models.TextFieldConfigDataModel
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardSectionDomainModel
