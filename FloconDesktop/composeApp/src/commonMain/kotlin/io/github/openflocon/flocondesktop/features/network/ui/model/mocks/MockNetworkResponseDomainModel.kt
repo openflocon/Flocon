@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.ui.model.mocks
 
+import java.util.UUID
+
 data class MockNetworkUiModel(
     val id: String?,
     val expectation: Expectation,
@@ -7,7 +9,7 @@ data class MockNetworkUiModel(
 ) {
     data class Expectation(
         val urlPattern: String, // a regex
-        val method: String, // can be get, post, put, ... or a wildcard *
+        val method: MockNetworkMethodUi,
     )
 
     data class Response(
@@ -27,7 +29,7 @@ data class EditableMockNetworkUiModel(
 ) {
     data class Expectation(
         val urlPattern: String?, // a regex
-        val method: String?, // can be get, post, put, ... or a wildcard *
+        val method: MockNetworkMethodUi, // can be get, post, put, ... or a wildcard *
     )
 
     data class Response(
@@ -35,6 +37,12 @@ data class EditableMockNetworkUiModel(
         val body: String?,
         val mediaType: String,
         val delay: Long,
-        val headers: Map<String, String>,
+        val headers: List<HeaderUiModel>,
     )
 }
+
+data class HeaderUiModel(
+    val id: String = UUID.randomUUID().toString(),
+    val key: String,
+    val value: String,
+)

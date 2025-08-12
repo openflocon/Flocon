@@ -74,6 +74,10 @@ class NetworkMocksViewModel(
     fun addMock(uiModel: MockNetworkUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             addNetworkMocksUseCase(toDomain(uiModel))
+            // close
+            selectedItem.update {
+                null
+            }
         }
     }
 

@@ -1,12 +1,13 @@
 package io.github.openflocon.flocondesktop.features.network.ui.mapper
 
 import io.github.openflocon.domain.common.Either
-import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.failure
 import io.github.openflocon.domain.common.success
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.EditableMockNetworkUiModel
+import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.HeaderUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.MockNetworkLineUiModel
+import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.MockNetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.MockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.SelectedMockUiModel
 import java.util.UUID
@@ -24,7 +25,7 @@ fun toDomain(uiModel: MockNetworkUiModel): MockNetworkDomainModel {
         id = uiModel.id ?: UUID.randomUUID().toString(),
         expectation = MockNetworkDomainModel.Expectation(
             urlPattern = uiModel.expectation.urlPattern,
-            method = uiModel.expectation.method,
+            method = uiModel.expectation.method.text,
         ),
         response = MockNetworkDomainModel.Response(
             httpCode = uiModel.response.httpCode,
@@ -36,13 +37,23 @@ fun toDomain(uiModel: MockNetworkUiModel): MockNetworkDomainModel {
     )
 }
 
+fun toMethodUi(text: String): MockNetworkMethodUi {
+    return when (text.lowercase()) {
+        "get" -> MockNetworkMethodUi.GET
+        "post" -> MockNetworkMethodUi.POST
+        "put" -> MockNetworkMethodUi.PUT
+        "delete" -> MockNetworkMethodUi.DELETE
+        "patch" -> MockNetworkMethodUi.PATCH
+        else -> MockNetworkMethodUi.ALL
+    }
+}
 
 fun toUi(domainModel: MockNetworkDomainModel): MockNetworkUiModel {
     return MockNetworkUiModel(
         id = domainModel.id,
         expectation = MockNetworkUiModel.Expectation(
             urlPattern = domainModel.expectation.urlPattern,
-            method = domainModel.expectation.method,
+            method = toMethodUi(domainModel.expectation.method),
         ),
         response = MockNetworkUiModel.Response(
             httpCode = domainModel.response.httpCode,
@@ -54,24 +65,30 @@ fun toUi(domainModel: MockNetworkDomainModel): MockNetworkUiModel {
     )
 }
 
-fun createEditable(initialMock: SelectedMockUiModel): EditableMockNetworkUiModel = when(initialMock) {
-    is SelectedMockUiModel.Creation -> createEditable(null)
-    is SelectedMockUiModel.Edition -> createEditable(initialMock.existing)
-}
+fun createEditable(initialMock: SelectedMockUiModel): EditableMockNetworkUiModel =
+    when (initialMock) {
+        is SelectedMockUiModel.Creation -> createEditable(null)
+        is SelectedMockUiModel.Edition -> createEditable(initialMock.existing)
+    }
 
-fun createEditable(initialMock: MockNetworkUiModel?) : EditableMockNetworkUiModel{
+fun createEditable(initialMock: MockNetworkUiModel?): EditableMockNetworkUiModel {
     return EditableMockNetworkUiModel(
         id = initialMock?.id,
         expectation = EditableMockNetworkUiModel.Expectation(
             urlPattern = initialMock?.expectation?.urlPattern,
-            method = initialMock?.expectation?.method,
+            method = initialMock?.expectation?.method ?: MockNetworkMethodUi.GET,
         ),
         response = EditableMockNetworkUiModel.Response(
             httpCode = initialMock?.response?.httpCode ?: 200,
             body = initialMock?.response?.body,
             mediaType = initialMock?.response?.mediaType ?: "application/json",
             delay = initialMock?.response?.delay ?: 0,
-            headers = initialMock?.response?.headers?.toMap() ?: emptyMap(),
+            headers = initialMock?.response?.headers?.map {
+                HeaderUiModel(
+                    key = it.key,
+                    value = it.value,
+                )
+            } ?: emptyList(),
         )
     )
 }
@@ -82,14 +99,16 @@ fun editableToUi(editable: EditableMockNetworkUiModel): Either<Throwable, MockNe
             id = editable.id,
             expectation = MockNetworkUiModel.Expectation(
                 urlPattern = editable.expectation.urlPattern!!,
-                method = editable.expectation.method!!,
+                method = editable.expectation.method,
             ),
             response = MockNetworkUiModel.Response(
                 httpCode = editable.response.httpCode,
                 body = editable.response.body!!,
                 mediaType = editable.response.mediaType,
                 delay = editable.response.delay,
-                headers = editable.response.headers,
+                headers = editable.response.headers.associate {
+                    it.key to it.value
+                }.filterNot { it.key.isEmpty() },
             )
         ).success()
     } catch (t: Throwable) {

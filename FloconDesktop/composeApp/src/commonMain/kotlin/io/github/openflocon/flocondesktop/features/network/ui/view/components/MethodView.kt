@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -26,27 +27,27 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-private val getMethodBackground = Color(0xFF007BFF).copy(alpha = 0.3f) // Muted blue for GET
-private val getMethodText = Color(0xFF007BFF)
+val getMethodBackground = Color(0xFF007BFF).copy(alpha = 0.3f) // Muted blue for GET
+val getMethodText = Color(0xFF007BFF)
 
-private val postMethodBackground = Color(0xFF28A745).copy(alpha = 0.3f) // Muted green for POST
-private val postMethodText = Color(0xFF28A745)
+val postMethodBackground = Color(0xFF28A745).copy(alpha = 0.3f) // Muted green for POST
+val postMethodText = Color(0xFF28A745)
 
-private val putMethodBackground = Color(0xFFFFC107).copy(alpha = 0.3f) // Muted yellow for PUT
-private val putMethodText = Color(0xFFFFC107)
+val putMethodBackground = Color(0xFFFFC107).copy(alpha = 0.3f) // Muted yellow for PUT
+val putMethodText = Color(0xFFFFC107)
 
-private val deleteMethodBackground = Color(0xFFDC3545).copy(alpha = 0.3f) // Muted red for DELETE
-private val deleteMethodText = Color(0xFFDC3545)
+val deleteMethodBackground = Color(0xFFDC3545).copy(alpha = 0.3f) // Muted red for DELETE
+val deleteMethodText = Color(0xFFDC3545)
 
-private val otherMethodBackground = Color(0xFF6C757D).copy(alpha = 0.3f) // Muted gray for OTHER
-private val otherMethodText = Color(0xFF6C757D)
+val otherMethodBackground = Color(0xFF6C757D).copy(alpha = 0.3f) // Muted gray for OTHER
+val otherMethodText = Color(0xFF6C757D)
 
 private val graphQlQueryMethodBackground =
     Color(0XAAE235A9).copy(alpha = 0.8f) // Muted gray for OTHER
 private val graphQlQueryMethodText = Color(0XAAFFFFFF)
 
-private val grpcMethodBackground = Color(0xff71CCCB)
-private val grpcMethodText = Color(0xff244B5A)
+val grpcMethodBackground = Color(0xff71CCCB)
+val grpcMethodText = Color(0xff244B5A)
 
 @Composable
 fun MethodView(
@@ -86,6 +87,7 @@ fun NetworkTag(
     textSize: TextUnit = 12.sp,
     modifier: Modifier = Modifier,
     icon: DrawableResource?,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     onClick: (() -> Unit)? = null,
 ) {
     Row(
@@ -96,7 +98,8 @@ fun NetworkTag(
                 color = backgroundColor,
             )
             .clickable(onClick = { onClick?.invoke() }, enabled = onClick != null)
-            .padding(horizontal = 4.dp, vertical = 2.dp),
+            .padding(horizontal = 4.dp, vertical = 2.dp)
+            .padding(contentPadding),
         // Padding inside the tag
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,

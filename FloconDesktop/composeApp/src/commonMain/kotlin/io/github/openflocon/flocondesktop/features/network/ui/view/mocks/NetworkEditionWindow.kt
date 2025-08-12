@@ -4,24 +4,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,13 +34,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.createEditable
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.editableToUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.HeaderUiModel
+import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.MockNetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.MockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.SelectedMockUiModel
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.NetworkTag
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.deleteMethodBackground
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.deleteMethodText
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.getMethodBackground
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.getMethodText
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.grpcMethodBackground
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.grpcMethodText
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.otherMethodBackground
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.otherMethodText
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.postMethodBackground
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.postMethodText
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.putMethodBackground
+import io.github.openflocon.flocondesktop.features.network.ui.view.components.putMethodText
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import java.util.UUID
@@ -159,15 +175,14 @@ fun MockEditorScreen(
                 placeHolder = "https://www.myDomain.*",
                 modifier = Modifier.fillMaxWidth()
             )
-            NetworkMockFieldView(
+            MockNetworkMethodDropdown(
                 // TODO should be a dropdown
                 label = "Method",
-                value = mock.expectation.method ?: "",
+                value = mock.expectation.method,
                 onValueChange = { newValue ->
                     mock = mock.copy(expectation = mock.expectation.copy(method = newValue))
                 },
-                placeHolder = "GET",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             // Section Response
@@ -237,9 +252,11 @@ fun MockEditorScreen(
                 )
                 IconButton(
                     onClick = {
-                        val newHeaders = mock.response.headers.toMutableMap().apply {
-                            this[UUID.randomUUID().toString()] = ""
-                        }
+                        // TODO use a list
+                        val newHeaders = mock.response.headers + HeaderUiModel(
+                            key = "",
+                            value = "",
+                        )
                         mock = mock.copy(response = mock.response.copy(headers = newHeaders))
                     }
                 ) {
@@ -247,34 +264,39 @@ fun MockEditorScreen(
                 }
             }
 
-            mock.response.headers.forEach { (key, value) ->
-                HeaderInputField(
-                    key = key,
-                    value = value,
-                    onKeyChange = { newKey ->
-                        val newHeaders = mock.response.headers.toMutableMap().apply {
-                            val originalKey =
-                                this.entries.find { it.value == value && it.key == key }?.key
-                            if (originalKey != null) {
-                                this.remove(originalKey)
-                                this[newKey] = value
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ){
+                mock.response.headers.fastForEach { header ->
+                    HeaderInputField(
+                        key = header.key,
+                        value = header.value,
+                        onKeyChange = { newKey ->
+                            val newHeaders = mock.response.headers.map {
+                                if (it.id == header.id) {
+                                    it.copy(key = newKey)
+                                } else {
+                                    it
+                                }
                             }
+                            mock = mock.copy(response = mock.response.copy(headers = newHeaders))
+                        },
+                        onValueChange = { newValue ->
+                            val newHeaders = mock.response.headers.map {
+                                if (it.id == header.id) {
+                                    it.copy(value = newValue)
+                                } else {
+                                    it
+                                }
+                            }
+                            mock = mock.copy(response = mock.response.copy(headers = newHeaders))
+                        },
+                        onRemove = {
+                            val newHeaders = mock.response.headers.filterNot { it.id == header.id }
+                            mock = mock.copy(response = mock.response.copy(headers = newHeaders))
                         }
-                        mock = mock.copy(response = mock.response.copy(headers = newHeaders))
-                    },
-                    onValueChange = { newValue ->
-                        val newHeaders = mock.response.headers.toMutableMap().apply {
-                            this[key] = newValue
-                        }
-                        mock = mock.copy(response = mock.response.copy(headers = newHeaders))
-                    },
-                    onRemove = {
-                        val newHeaders = mock.response.headers.toMutableMap().apply {
-                            remove(key)
-                        }
-                        mock = mock.copy(response = mock.response.copy(headers = newHeaders))
-                    }
-                )
+                    )
+                }
             }
         }
     }
@@ -294,21 +316,61 @@ private fun HeaderInputField(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        OutlinedTextField(
-            value = key,
-            onValueChange = onKeyChange,
-            label = { Text("Key") },
-            modifier = Modifier.weight(0.45f)
-        )
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            label = { Text("Value") },
-            modifier = Modifier.weight(0.45f)
-        )
+        Box(
+            Modifier.weight(1f)
+                .background(
+                    color = Color.White.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(8.dp),
+                ).padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            if (key.isEmpty()) {
+                Text(
+                    text = "Key",
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
+                )
+            }
+            BasicTextField(
+                textStyle = FloconTheme.typography.bodySmall.copy(
+                    color = FloconTheme.colorPalette.onSurface,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                value = key,
+                cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
+                onValueChange = {
+                    onKeyChange(it)
+                },
+            )
+        }
+        Box(
+            Modifier.weight(1f)
+                .background(
+                    color = Color.White.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(8.dp),
+                ).padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            if (value.isEmpty()) {
+                Text(
+                    text = "Value",
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
+                )
+            }
+            BasicTextField(
+                textStyle = FloconTheme.typography.bodySmall.copy(
+                    color = FloconTheme.colorPalette.onSurface,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                value = value,
+                cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
+                onValueChange = {
+                    onValueChange(it)
+                },
+            )
+        }
+
         IconButton(
             onClick = onRemove,
-            modifier = Modifier.weight(0.1f)
         ) {
             Icon(Icons.Default.Delete, contentDescription = "Remove Header")
         }
@@ -317,7 +379,7 @@ private fun HeaderInputField(
 
 @Composable
 fun NetworkMockFieldView(
-    label :String,
+    label: String,
     placeHolder: String?,
     value: String,
     onValueChange: (String) -> Unit,
@@ -327,14 +389,7 @@ fun NetworkMockFieldView(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Text(
-            label,
-            modifier = Modifier.padding(start = 4.dp),
-            color = FloconTheme.colorPalette.onSurface,
-            style = FloconTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.Thin,
-            ),
-        )
+        LabelView(label)
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
@@ -369,4 +424,82 @@ fun NetworkMockFieldView(
             }
         }
     }
+}
+
+@Composable
+private fun LabelView(label: String) {
+    Text(
+        label,
+        modifier = Modifier.padding(start = 4.dp),
+        color = FloconTheme.colorPalette.onSurface,
+        style = FloconTheme.typography.bodyMedium.copy(
+            fontWeight = FontWeight.Thin,
+        ),
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MockNetworkMethodDropdown(
+    label: String,
+    value: MockNetworkMethodUi,
+    onValueChange: (MockNetworkMethodUi) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        LabelView(label)
+
+        Box {
+            MockNetworkMethodView(
+                method = value,
+                onClick = {
+                    expanded = true
+                }
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                MockNetworkMethodUi.values().forEach { method ->
+                    MockNetworkMethodView(
+                        modifier = Modifier.padding(all = 4.dp),
+                        method = method,
+                        onClick = {
+                            onValueChange(method)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MockNetworkMethodView(
+    method: MockNetworkMethodUi,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val (backgroundColor, textColor) =
+        when (method) {
+            MockNetworkMethodUi.DELETE -> deleteMethodBackground to deleteMethodText
+            MockNetworkMethodUi.GET -> getMethodBackground to getMethodText
+            MockNetworkMethodUi.PATCH -> otherMethodBackground to otherMethodText
+            MockNetworkMethodUi.POST -> postMethodBackground to postMethodText
+            MockNetworkMethodUi.PUT -> putMethodBackground to putMethodText
+            MockNetworkMethodUi.ALL -> grpcMethodBackground to grpcMethodText
+        }
+    NetworkTag(
+        text = method.text,
+        backgroundColor = backgroundColor,
+        textColor = textColor,
+        textSize = 14.sp,
+        modifier = modifier,
+        icon = null,
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+        onClick = onClick,
+    )
 }
