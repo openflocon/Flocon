@@ -56,6 +56,7 @@ dependencies {
         //implementation(project(":flocon-no-op"))
         implementation(project(":okhttp-interceptor"))
         implementation(project(":grpc-interceptor"))
+        implementation(project(":ktor-interceptor"))
     }
 
 
@@ -103,6 +104,12 @@ dependencies {
     implementation(libs.apollo.runtime)
     //implementation(libs.apollo.http.okhttprealization)
     // endregion
+
+    // region ktor
+    val ktorVersion = "3.2.3"
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    //endregion
 }
 
 apollo {
