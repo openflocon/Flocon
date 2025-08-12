@@ -4,12 +4,13 @@ import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
+import io.github.openflocon.flocondesktop.features.network.data.model.FloconNetworkCallIdDataModel
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconNetworkRequestDataModel
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconNetworkResponseDataModel
 import io.github.openflocon.flocondesktop.features.network.data.parser.graphql.extractGraphQl
@@ -42,12 +43,12 @@ class NetworkRepositoryImpl(
             .flowOn(dispatcherProvider.data)
 
     override fun observeRequest(
-        deviceId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         requestId: String,
     ) = networkLocalDataSource
-        .observeRequest(
-            deviceId = deviceId,
-            requestId = requestId,
+        .observeCall(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            callId = requestId,
         ).flowOn(dispatcherProvider.data)
 
     override suspend fun onMessageReceived(
@@ -59,26 +60,49 @@ class NetworkRepositoryImpl(
                 Protocol.FromDevice.Network.Method.LogNetworkCallRequest -> {
                     decodeRequest(message)?.let { toDomain(it) }?.let { call ->
                         networkLocalDataSource.save(
-                            deviceId = deviceId,
-                            packageName = message.appPackageName,
+                            deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                                deviceId = deviceId,
+                                packageName = message.appPackageName,
+                            ),
                             call = call
                         )
                     }
                 }
 
                 Protocol.FromDevice.Network.Method.LogNetworkCallResponse -> {
-                    /*
-                    decodeResponse(message)?.let { toDomain(it) }?.let { response ->
-                        val request: FloconNetworkCallDomainModel? =
-                            TODO() ?: return@let // find by callId
-                        val callWithResponse = // inject response
-                            networkLocalDataSource.save(
+                    decodeResponseCallId(message)?.let {
+                        val callId = it.floconCallId ?: run {
+                            println("cannot find floconCallId in message")
+                            return@let null
+                        }
+                        val request = networkLocalDataSource.getCall(
+                            deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                                 deviceId = deviceId,
                                 packageName = message.appPackageName,
-                                request = request
-                            )
+                            ),
+                            callId = callId,
+                        ) ?: run {
+                            println("cannot find request")
+                            return@let null
+                        }
+
+                        val response = decodeResponse(message) ?: run {
+                            println("cannot decide response")
+                            return@let null
+                        }
+                        toDomainForResponse(decoded = response, request = request)
+                    }?.let { call ->
+                        if (call.networkResponse?.contentType?.startsWith("image/") == true) {
+                            networkImageRepository.onImageReceived(deviceId = deviceId, call = call)
+                        }
+                        networkLocalDataSource.save(
+                            deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                                deviceId = deviceId,
+                                packageName = message.appPackageName,
+                            ),
+                            call = call
+                        )
                     }
-                     */
                 }
             }
             //decode(message)?.let { toDomain(it) }?.let { request ->
@@ -99,6 +123,14 @@ class NetworkRepositoryImpl(
             null
         }
 
+    private fun decodeResponseCallId(message: FloconIncomingMessageDataModel): FloconNetworkCallIdDataModel? =
+        try {
+            httpParser.decodeFromString<FloconNetworkCallIdDataModel>(message.body)
+        } catch (t: Throwable) {
+            t.printStackTrace()
+            null
+        }
+
     private fun decodeResponse(message: FloconIncomingMessageDataModel): FloconNetworkResponseDataModel? =
         try {
             httpParser.decodeFromString<FloconNetworkResponseDataModel>(message.body)
@@ -112,28 +144,77 @@ class NetworkRepositoryImpl(
     }
 
     override suspend fun deleteRequest(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         requestId: String,
     ) {
         withContext(dispatcherProvider.data) {
             networkLocalDataSource.deleteRequest(
-                deviceId = deviceId,
-                requestId = requestId,
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                callId = requestId,
             )
         }
     }
 
-    override suspend fun deleteRequestsBefore(deviceId: DeviceId, requestId: String) {
+    override suspend fun deleteRequestsBefore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        requestId: String
+    ) {
         withContext(dispatcherProvider.data) {
             networkLocalDataSource.deleteRequestsBefore(
-                deviceId = deviceId,
-                requestId = requestId,
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                callId = requestId,
             )
         }
     }
 
     override suspend fun clear() {
         networkLocalDataSource.clear()
+    }
+
+    fun toDomainForResponse(decoded: FloconNetworkResponseDataModel, request: FloconNetworkCallDomainModel): FloconNetworkCallDomainModel? {
+        try {
+            val networkResponse = FloconNetworkResponseDomainModel(
+                contentType = decoded.responseContentType,
+                body = decoded.responseBody,
+                headers = decoded.responseHeaders ?: emptyMap(),
+                byteSize = decoded.responseSize ?: 0L,
+                durationMs = decoded.durationMs!!,
+            )
+
+            return when (request) {
+                is FloconNetworkCallDomainModel.GraphQl -> {
+                    val response = FloconNetworkCallDomainModel.GraphQl.Response(
+                        networkResponse = networkResponse,
+                        httpCode = decoded.responseHttpCode!!,
+                        isSuccess = decoded.responseGrpcStatus == "OK",
+                    )
+                    request.copy(
+                        response = response
+                    )
+                }
+                is FloconNetworkCallDomainModel.Grpc -> {
+                    val response = FloconNetworkCallDomainModel.Grpc.Response(
+                        networkResponse = networkResponse,
+                        responseStatus = decoded.responseGrpcStatus!!,
+                    )
+                    request.copy(
+                        response = response
+                    )
+                }
+                is FloconNetworkCallDomainModel.Http -> {
+                    val response = FloconNetworkCallDomainModel.Http.Response(
+                        networkResponse = networkResponse,
+                        httpCode = decoded.responseHttpCode!!,
+                    )
+                    request.copy(
+                        response = response
+                    )
+                }
+            }
+        } catch (t: Throwable) {
+            t.printStackTrace()
+            return null
+        }
     }
 
     @OptIn(ExperimentalUuidApi::class)

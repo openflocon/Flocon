@@ -7,7 +7,6 @@ import io.github.openflocon.data.local.network.mapper.toEntity
 import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -41,21 +40,40 @@ class NetworkLocalDataSourceRoom(
         .flowOn(dispatcherProvider.data)
 
     override suspend fun save(
-        deviceId: DeviceId,
-        packageName: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         call: FloconNetworkCallDomainModel,
     ) {
         withContext(dispatcherProvider.data) {
-            val entity = call.toEntity(deviceId = deviceId, packageName = packageName)
+            val entity = call.toEntity(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+            )
             floconHttpRequestDao.upsertRequest(entity)
         }
     }
 
-    override fun observeRequest(
-        deviceId: DeviceId,
-        requestId: String,
+    override suspend fun getCall(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String,
+    ): FloconNetworkCallDomainModel? = withContext(dispatcherProvider.data) {
+        floconHttpRequestDao
+            .getCallById(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+                callId = callId,
+            )
+            ?.toDomainModel()
+    }
+
+    override fun observeCall(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String,
     ): Flow<FloconNetworkCallDomainModel?> = floconHttpRequestDao
-        .observeRequestById(deviceId, requestId)
+        .observeCallById(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            callId = callId,
+        )
         .map { entity ->
             entity?.toDomainModel()
         }.flowOn(dispatcherProvider.data)
@@ -70,19 +88,24 @@ class NetworkLocalDataSourceRoom(
     }
 
     override suspend fun deleteRequest(
-        deviceId: DeviceId,
-        requestId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String,
     ) {
         floconHttpRequestDao.deleteRequest(
-            requestId = requestId,
-            deviceId = deviceId,
+            callId = callId,
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
         )
     }
 
-    override suspend fun deleteRequestsBefore(deviceId: DeviceId, requestId: String) {
+    override suspend fun deleteRequestsBefore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        callId: String
+    ) {
         floconHttpRequestDao.deleteRequestBefore(
-            requestId = requestId,
-            deviceId = deviceId,
+            callId = callId,
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
         )
     }
 

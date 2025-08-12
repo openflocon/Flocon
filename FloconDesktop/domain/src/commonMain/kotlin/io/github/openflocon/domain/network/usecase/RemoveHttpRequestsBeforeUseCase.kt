@@ -1,16 +1,17 @@
 package io.github.openflocon.domain.network.usecase
 
+import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
 import io.github.openflocon.domain.network.repository.NetworkRepository
 
 class RemoveHttpRequestsBeforeUseCase(
     private val networkRepository: NetworkRepository,
-    private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,
+    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
 ) {
     suspend operator fun invoke(requestId: String) {
-        getCurrentDeviceIdUseCase()?.let { deviceId ->
+        getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
             networkRepository.deleteRequestsBefore(
-                deviceId = deviceId,
+                deviceIdAndPackageName = deviceIdAndPackageName,
                 requestId = requestId,
             )
         }

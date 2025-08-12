@@ -43,13 +43,31 @@ interface FloconHttpRequestDao {
         """
         SELECT *
         FROM FloconNetworkCallEntity
-        WHERE deviceId = :deviceId AND callId = :requestId
+        WHERE deviceId = :deviceId 
+        AND packageName = :packageName 
+        AND callId = :callId
     """,
     )
-    fun observeRequestById(
+    fun observeCallById(
         deviceId: String,
-        requestId: String,
+        packageName: String,
+        callId: String,
     ): Flow<FloconNetworkCallEntity?>
+
+    @Query(
+        """
+        SELECT *
+        FROM FloconNetworkCallEntity
+        WHERE deviceId = :deviceId 
+        AND packageName = :packageName 
+        AND callId = :callId
+    """,
+    )
+    suspend fun getCallById(
+        deviceId: String,
+        packageName: String,
+        callId: String,
+    ): FloconNetworkCallEntity?
 
     @Query("DELETE FROM FloconNetworkCallEntity")
     suspend fun clearAll()
@@ -70,22 +88,25 @@ interface FloconHttpRequestDao {
         """
         DELETE FROM FloconNetworkCallEntity
         WHERE deviceId = :deviceId
-        AND callId = :requestId
+        AND packageName = :packageName
+        AND callId = :callId
     """,
     )
     suspend fun deleteRequest(
         deviceId: String,
-        requestId: String,
+        packageName: String,
+        callId: String,
     )
 
     @Query(
         """
         DELETE FROM FloconNetworkCallEntity
         WHERE deviceId = :deviceId
+        AND packageName = :packageName
         AND request_startTime < (
             SELECT request_startTime 
             FROM FloconNetworkCallEntity 
-            WHERE callId = :requestId 
+            WHERE callId = :callId 
             AND deviceId = :deviceId
             LIMIT 1
         )
@@ -93,6 +114,7 @@ interface FloconHttpRequestDao {
     )
     suspend fun deleteRequestBefore(
         deviceId: String,
-        requestId: String,
+        packageName: String,
+        callId: String,
     )
 }

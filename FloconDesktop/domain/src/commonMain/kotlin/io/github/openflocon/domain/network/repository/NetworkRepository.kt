@@ -7,10 +7,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface NetworkRepository {
     // lite : exclude headers, sizes, body
-    fun observeRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, lite: Boolean): Flow<List<FloconNetworkCallDomainModel>>
+    fun observeRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        lite: Boolean,
+    ): Flow<List<FloconNetworkCallDomainModel>>
 
     fun observeRequest(
-        deviceId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         requestId: String,
     ): Flow<FloconNetworkCallDomainModel?>
 
@@ -18,12 +21,12 @@ interface NetworkRepository {
     suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     suspend fun deleteRequest(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         requestId: String,
     )
 
     suspend fun deleteRequestsBefore(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         requestId: String,
     )
 }

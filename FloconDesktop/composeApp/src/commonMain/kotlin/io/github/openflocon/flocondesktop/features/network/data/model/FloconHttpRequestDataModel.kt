@@ -17,10 +17,16 @@ data class FloconNetworkRequestDataModel(
 )
 
 @Serializable
+data class FloconNetworkCallIdDataModel(
+    val floconCallId: String? = null,
+)
+
+@Serializable
 data class FloconNetworkResponseDataModel(
     val floconCallId: String? = null,
     val floconNetworkType: String? = null,
 
+    val durationMs: Double? = null,
     val responseHttpCode: Int? = null, // ex: 200
     val responseContentType: String? = null,
     val responseBody: String? = null,

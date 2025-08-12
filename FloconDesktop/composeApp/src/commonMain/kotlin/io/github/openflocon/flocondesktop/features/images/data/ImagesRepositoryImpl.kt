@@ -34,14 +34,14 @@ class ImagesRepositoryImpl(
 
     override suspend fun onImageReceived(
         deviceId: String,
-        request: FloconNetworkCallDomainModel,
+        call: FloconNetworkCallDomainModel,
     ) {
-        val duration = request.networkResponse?.durationMs ?: return
+        val duration = call.networkResponse?.durationMs ?: return
         imagesLocalDataSource.addImage(
             deviceId = deviceId,
             image = DeviceImageDomainModel(
-                url = request.networkRequest.url,
-                time = (request.networkRequest.startTime + duration).toLong(),
+                url = call.networkRequest.url,
+                time = (call.networkRequest.startTime + duration).toLong(),
             ),
         )
     }
