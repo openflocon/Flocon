@@ -2,16 +2,19 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences.data
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.sharedpreferences.data.datasources.DeviceSharedPreferencesDataSource
+import com.flocon.data.remote.sharedpreference.datasource.DeviceSharedPreferencesRemoteDataSource
 import io.github.openflocon.data.core.sharedpreference.datasource.DeviceSharedPreferencesValuesDataSource
-import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming.toDeviceSharedPreferenceDomain
-import io.github.openflocon.flocondesktop.features.sharedpreferences.data.model.incoming.toSharedPreferenceValuesResponseDomain
+import io.github.openflocon.data.local.sharedpreference.datasources.DeviceSharedPreferencesDataSource
+import com.flocon.data.remote.sharedpreference.mapper.decodeDeviceSharedPreferences
+import com.flocon.data.remote.sharedpreference.mapper.decodeSharedPreferenceValuesResponse
+import com.flocon.data.remote.sharedpreference.models.toDeviceSharedPreferenceDomain
+import com.flocon.data.remote.sharedpreference.mapper.toSharedPreferenceValuesResponseDomain
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceId
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.domain.sharedpreference.repository.SharedPreferencesRepository
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -20,6 +23,7 @@ import kotlinx.coroutines.withContext
 class SharedPreferencesRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val deviceSharedPreferencesDataSource: DeviceSharedPreferencesDataSource,
+    private val remote: DeviceSharedPreferencesRemoteDataSource,
     private val deviceSharedPreferencesValuesDataSource: DeviceSharedPreferencesValuesDataSource,
 ) : SharedPreferencesRepository,
     MessagesReceiverRepository {
@@ -94,14 +98,14 @@ class SharedPreferencesRepositoryImpl(
 
     override suspend fun askForDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) =
         withContext(dispatcherProvider.data) {
-            deviceSharedPreferencesDataSource.askForDeviceSharedPreferences(deviceIdAndPackageName = deviceIdAndPackageName)
+            remote.askForDeviceSharedPreferences(deviceIdAndPackageName = deviceIdAndPackageName)
         }
 
     override suspend fun getDeviceSharedPreferencesValues(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreferenceId: DeviceSharedPreferenceId,
     ) = withContext(dispatcherProvider.data) {
-        deviceSharedPreferencesDataSource.getDeviceSharedPreferencesValues(
+        remote.getDeviceSharedPreferencesValues(
             deviceIdAndPackageName = deviceIdAndPackageName,
             sharedPreferenceId = sharedPreferenceId,
         )
@@ -124,7 +128,7 @@ class SharedPreferencesRepositoryImpl(
         value: SharedPreferenceRowDomainModel.Value
     ) {
         withContext(dispatcherProvider.data) {
-            deviceSharedPreferencesDataSource.editSharedPrefField(
+            remote.editSharedPrefField(
                 deviceIdAndPackageName = deviceIdAndPackageName,
                 sharedPreference = sharedPreference,
                 key = key,
