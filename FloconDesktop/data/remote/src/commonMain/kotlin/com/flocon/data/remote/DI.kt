@@ -1,6 +1,7 @@
 package com.flocon.data.remote
 
 import com.flocon.data.remote.analytics.analyticsModule
+import com.flocon.data.remote.dashboard.dashboardModule
 import com.flocon.data.remote.database.databaseModule
 import com.flocon.data.remote.files.filesModule
 import com.flocon.data.remote.messages.messagesModule
@@ -12,6 +13,7 @@ import org.koin.dsl.module
 val dataRemoteModule = module {
     includes(
         analyticsModule,
+        dashboardModule,
         databaseModule,
         filesModule,
         messagesModule,

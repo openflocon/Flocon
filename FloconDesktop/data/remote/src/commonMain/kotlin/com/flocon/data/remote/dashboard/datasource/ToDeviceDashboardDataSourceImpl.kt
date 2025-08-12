@@ -1,21 +1,22 @@
-package io.github.openflocon.flocondesktop.features.dashboard.data.datasources
+package com.flocon.data.remote.dashboard.datasource
 
-import io.github.openflocon.domain.Protocol
+import com.flocon.data.remote.dashboard.models.ToDeviceCheckBoxValueChangedMessage
+import com.flocon.data.remote.dashboard.models.ToDeviceSubmittedTextFieldMessage
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
+import io.github.openflocon.data.core.dashboard.datasource.ToDeviceDashboardDataSource
+import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.remote.model.ToDeviceCheckBoxValueChangedMessage
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.remote.model.ToDeviceSubmittedTextFieldMessage
 import kotlinx.serialization.json.Json
 import kotlin.uuid.ExperimentalUuidApi
 
-class ToDeviceDashboardDataSource(
+class ToDeviceDashboardDataSourceImpl(
     private val server: Server,
-) {
+) : ToDeviceDashboardDataSource {
 
     @OptIn(ExperimentalUuidApi::class)
-    suspend fun sendClickEvent(
+    override suspend fun sendClickEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         buttonId: String,
     ) {
@@ -30,7 +31,7 @@ class ToDeviceDashboardDataSource(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    suspend fun submitTextFieldEvent(
+    override suspend fun submitTextFieldEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         textFieldId: String,
         value: String,
@@ -40,7 +41,7 @@ class ToDeviceDashboardDataSource(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Dashboard.Plugin,
                 method = Protocol.ToDevice.Dashboard.Method.OnTextFieldSubmitted,
-                body = Json.encodeToString(
+                body = Json.Default.encodeToString(
                     ToDeviceSubmittedTextFieldMessage(
                         id = textFieldId,
                         value = value,
@@ -51,7 +52,7 @@ class ToDeviceDashboardDataSource(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    suspend fun sendUpdateCheckBoxEvent(
+    override suspend fun sendUpdateCheckBoxEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         checkBoxId: String,
         value: Boolean,
@@ -61,7 +62,7 @@ class ToDeviceDashboardDataSource(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Dashboard.Plugin,
                 method = Protocol.ToDevice.Dashboard.Method.OnCheckBoxValueChanged,
-                body = Json.encodeToString(
+                body = Json.Default.encodeToString(
                     ToDeviceCheckBoxValueChangedMessage(
                         id = checkBoxId,
                         value = value,

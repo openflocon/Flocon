@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.remote.model
+package com.flocon.data.remote.dashboard.models
 
 import kotlinx.serialization.Serializable
 

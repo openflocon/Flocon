@@ -1,5 +1,6 @@
-package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device
+package io.github.openflocon.data.local.dashboard.datasource
 
+import io.github.openflocon.data.core.dashboard.datasource.DeviceDashboardsDataSource
 import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device
+package io.github.openflocon.data.core.dashboard.datasource
 
 import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel

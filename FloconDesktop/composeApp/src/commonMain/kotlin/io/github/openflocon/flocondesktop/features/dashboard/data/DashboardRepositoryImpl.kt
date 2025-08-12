@@ -9,8 +9,8 @@ import io.github.openflocon.domain.dashboard.repository.DashboardRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.ToDeviceDashboardDataSource
-import io.github.openflocon.flocondesktop.features.dashboard.data.datasources.device.DeviceDashboardsDataSource
+import com.flocon.data.remote.dashboard.datasource.ToDeviceDashboardDataSourceImpl
+import io.github.openflocon.data.core.dashboard.datasource.DeviceDashboardsDataSource
 import io.github.openflocon.flocondesktop.features.dashboard.data.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.DashboardConfigDataModel
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +21,7 @@ import kotlinx.serialization.json.Json
 class DashboardRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val dashboardLocalDataSource: DashboardLocalDataSource,
-    private val toDeviceDashboardDataSource: ToDeviceDashboardDataSource,
+    private val toDeviceDashboardDataSource: ToDeviceDashboardDataSourceImpl,
     private val deviceDashboardsDataSource: DeviceDashboardsDataSource,
 ) : DashboardRepository,
     MessagesReceiverRepository {
