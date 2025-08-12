@@ -1,26 +1,42 @@
 package io.github.openflocon.flocon.ktor
+
 import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkResponse
 import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
-import io.ktor.client.*
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.HttpClientCall
-import io.ktor.client.plugins.api.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.util.*
-import io.ktor.util.date.*
-import io.ktor.utils.io.*
+import io.ktor.client.plugins.api.createClientPlugin
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.HttpResponseData
+import io.ktor.client.request.HttpSendPipeline
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpReceivePipeline
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.http.Headers
+import io.ktor.http.HeadersBuilder
+import io.ktor.http.HttpProtocolVersion
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.ByteArrayContent
+import io.ktor.http.content.OutgoingContent
+import io.ktor.http.contentType
+import io.ktor.util.AttributeKey
+import io.ktor.util.date.GMTDate
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.InternalAPI
 import io.ktor.utils.io.core.readText
-import kotlinx.coroutines.*
+import io.ktor.utils.io.readRemaining
+import io.ktor.utils.io.toByteArray
+import kotlinx.coroutines.delay
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
 val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
@@ -29,56 +45,62 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
 
     // Interception des requêtes
     client.sendPipeline.intercept(HttpSendPipeline.Monitoring) {
-        val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin
-        if (floconNetworkPlugin == null) {
-            proceed()
-            return@intercept
-        }
+        try {
+            val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin
+            if (floconNetworkPlugin == null) {
+                proceed()
+                return@intercept
+            }
 
-        val request = context
-        val floconCallId = UUID.randomUUID().toString()
-        val floconNetworkType = "http"
-        val requestedAt = System.currentTimeMillis()
+            val request = context
+            val floconCallId = UUID.randomUUID().toString()
+            val floconNetworkType = "http"
+            val requestedAt = System.currentTimeMillis()
 
-        // Lecture du body sans le consommer
-        val requestBodyString = extractAndReplaceRequestBody(request)
-        val requestSize = requestBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
-        val requestHeadersMap = request.headers.entries().associate { it.key to it.value.joinToString(",") }
+            // Lecture du body sans le consommer
+            val requestBodyString = extractAndReplaceRequestBody(request)
+            val requestSize = requestBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
+            val requestHeadersMap =
+                request.headers.entries().associate { it.key to it.value.joinToString(",") }
 
-        val mockConfig = findMock(request, floconNetworkPlugin)
-        val isMocked = mockConfig != null
+            val mockConfig = findMock(request, floconNetworkPlugin)
+            val isMocked = mockConfig != null
 
-        val floconNetworkRequest = FloconNetworkRequest(
-            url = request.url.toString(),
-            method = request.method.value,
-            startTime = requestedAt,
-            headers = requestHeadersMap,
-            body = requestBodyString,
-            size = requestSize,
-            isMocked = isMocked
-        )
-
-        floconNetworkPlugin.logRequest(
-            FloconNetworkCallRequest(
-                floconCallId = floconCallId,
-                floconNetworkType = floconNetworkType,
-                isMocked = isMocked,
-                request = floconNetworkRequest
+            val floconNetworkRequest = FloconNetworkRequest(
+                url = request.url.toString(),
+                method = request.method.value,
+                startTime = requestedAt,
+                headers = requestHeadersMap,
+                body = requestBodyString,
+                size = requestSize,
+                isMocked = isMocked
             )
-        )
 
-        if (isMocked) {
-            val fakeCall = executeMock(client = theClient, request = request, mock = mockConfig)
-            proceedWith(fakeCall)
-            return@intercept
+            floconNetworkPlugin.logRequest(
+                FloconNetworkCallRequest(
+                    floconCallId = floconCallId,
+                    floconNetworkType = floconNetworkType,
+                    isMocked = isMocked,
+                    request = floconNetworkRequest
+                )
+            )
+
+            if (isMocked) {
+                val fakeCall = executeMock(client = theClient, request = request, mock = mockConfig)
+                proceedWith(fakeCall)
+                return@intercept
+            }
+
+            // Stocker métadonnées pour phase réponse
+            request.attributes.put(FLOCON_CALL_ID_KEY, floconCallId)
+            request.attributes.put(FLOCON_START_TIME_KEY, System.nanoTime())
+            request.attributes.put(FLOCON_IS_MOCKED_KEY, isMocked)
+
+            proceed()
+        } catch (t: Throwable) {
+            FloconLogger.logError("Ktor interceptor issue", t)
+            proceed()
         }
-
-        // Stocker métadonnées pour phase réponse
-        request.attributes.put(FLOCON_CALL_ID_KEY, floconCallId)
-        request.attributes.put(FLOCON_START_TIME_KEY, System.nanoTime())
-        request.attributes.put(FLOCON_IS_MOCKED_KEY, isMocked)
-
-        proceed()
     }
 
     // Interception des réponses
@@ -99,7 +121,8 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
         val bodyString = originalBodyBytes.toString(StandardCharsets.UTF_8)
         val responseSize = originalBodyBytes.size.toLong()
 
-        val responseHeadersMap = response.headers.entries().associate { it.key to it.value.joinToString(",") }
+        val responseHeadersMap =
+            response.headers.entries().associate { it.key to it.value.joinToString(",") }
         val contentType = response.contentType()?.toString()
         val isImage = contentType?.startsWith("image/") == true
 
@@ -126,6 +149,11 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
         val newResponse = response.cloneWithBody(ByteReadChannel(originalBodyBytes))
         proceedWith(newResponse)
     }
+}
+
+
+fun HttpClientConfig<*>.floconInterceptor() {
+    install(FloconKtorPlugin)
 }
 
 // === Utilitaires ===
@@ -184,15 +212,12 @@ private suspend fun extractRequestBody(body: Any?, charset: Charset = Charsets.U
     }
 }
 
-fun HttpClientConfig<*>.floconInterceptor() {
-    install(FloconKtorPlugin)
-}
-
 // L'extension de la classe HttpResponse pourrait ressembler à ça :
 @OptIn(InternalAPI::class)
-fun HttpResponse.cloneWithBody(newBody: ByteReadChannel): HttpResponse {
+private fun HttpResponse.cloneWithBody(newBody: ByteReadChannel): HttpResponse {
     return object : HttpResponse() {
         override val call: HttpClientCall = this@cloneWithBody.call
+
         //override val content: ByteReadChannel = newBody
         override val coroutineContext: CoroutineContext = this@cloneWithBody.coroutineContext
         override val headers: Headers = this@cloneWithBody.headers
