@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 class DashboardRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val dashboardLocalDataSource: DashboardLocalDataSource,
-    private val toDeviceDashboardDataSource: ToDeviceDashboardDataSourceImpl,
+    private val toDeviceDashboardDataSource: ToDeviceDashboardDataSource,
     private val deviceDashboardsDataSource: DeviceDashboardsDataSource,
 ) : DashboardRepository,
     MessagesReceiverRepository {
