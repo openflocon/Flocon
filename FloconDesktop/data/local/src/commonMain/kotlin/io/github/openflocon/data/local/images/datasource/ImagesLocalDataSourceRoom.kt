@@ -1,18 +1,18 @@
-package io.github.openflocon.flocondesktop.features.images.data.datasources
+package io.github.openflocon.data.local.images.datasource
 
 import io.github.openflocon.data.core.images.datasource.ImagesLocalDataSource
-import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.data.local.images.dao.FloconImageDao
+import io.github.openflocon.data.local.images.mapper.toDomainModel
+import io.github.openflocon.data.local.images.mapper.toEntity
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.features.images.data.datasources.local.FloconImageDao
-import io.github.openflocon.flocondesktop.features.images.data.datasources.local.toDomainModel
-import io.github.openflocon.flocondesktop.features.images.data.datasources.local.toEntity
+import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-class ImagesLocalDataSourceRoom(
+internal class ImagesLocalDataSourceRoom(
     private val imageDao: FloconImageDao,
     private val dispatcherProvider: DispatcherProvider,
 ) : ImagesLocalDataSource {
@@ -28,9 +28,9 @@ class ImagesLocalDataSourceRoom(
         }
     }
 
-    override fun observeImages(deviceId: DeviceId): Flow<List<DeviceImageDomainModel>> = imageDao.observeImagesForDevice(deviceId).map { entities ->
-        entities.map { it.toDomainModel() }
-    }.flowOn(dispatcherProvider.data)
+    override fun observeImages(deviceId: DeviceId): Flow<List<DeviceImageDomainModel>> = imageDao.observeImagesForDevice(deviceId)
+        .map { entities -> entities.map { it.toDomainModel() } }
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun clearImages(deviceId: DeviceId) {
         withContext(dispatcherProvider.data) {

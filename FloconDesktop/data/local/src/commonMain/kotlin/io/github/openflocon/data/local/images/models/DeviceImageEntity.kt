@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.images.data.datasources.local.model
+package io.github.openflocon.data.local.images.models
 
 import androidx.room.Entity
 

@@ -1,7 +1,7 @@
-package io.github.openflocon.flocondesktop.features.images.data.datasources.local
+package io.github.openflocon.data.local.images.mapper
 
+import io.github.openflocon.data.local.images.models.DeviceImageEntity
 import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.flocondesktop.features.images.data.datasources.local.model.DeviceImageEntity
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 
 fun DeviceImageEntity.toDomainModel(): DeviceImageDomainModel = DeviceImageDomainModel(

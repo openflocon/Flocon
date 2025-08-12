@@ -1,16 +1,16 @@
-package io.github.openflocon.flocondesktop.features.images.data.datasources.local
+package io.github.openflocon.data.local.images.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.github.openflocon.flocondesktop.features.images.data.datasources.local.model.DeviceImageEntity
+import io.github.openflocon.data.local.images.models.DeviceImageEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FloconImageDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertImage(image: DeviceImageEntity)
 
     @Query("SELECT * FROM DeviceImageEntity WHERE deviceId = :deviceId ORDER BY time DESC")
