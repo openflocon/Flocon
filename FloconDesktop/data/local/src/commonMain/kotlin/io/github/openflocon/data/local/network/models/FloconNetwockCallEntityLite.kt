@@ -6,7 +6,7 @@ import io.github.openflocon.data.local.network.models.graphql.NetworkCallGraphQl
 import io.github.openflocon.data.local.network.models.grpc.NetworkCallGrpcResponseEmbedded
 import io.github.openflocon.data.local.network.models.http.NetworkCallHttpResponseEmbedded
 
-data class FloconHttpRequestEntityLite(
+data class FloconNetwockCallEntityLite(
     val callId: String,
 
     val deviceId: String, // To associate with a device

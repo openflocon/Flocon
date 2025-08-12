@@ -4,7 +4,7 @@ import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.mapper.toDomainModel
 import io.github.openflocon.data.local.network.mapper.toEntity
-import io.github.openflocon.data.local.network.models.FloconHttpRequestEntityLite
+import io.github.openflocon.data.local.network.models.FloconNetwockCallEntityLite
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -28,7 +28,7 @@ class NetworkLocalDataSourceRoom(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
             )
-                .map { entities -> entities.mapNotNull(FloconHttpRequestEntityLite::toDomainModel) }
+                .map { entities -> entities.mapNotNull(FloconNetwockCallEntityLite::toDomainModel) }
         } else {
             it.observeRequests(
                 deviceId = deviceIdAndPackageName.deviceId,
