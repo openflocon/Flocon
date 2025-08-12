@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.deeplinks.ui.view
+package io.github.openflocon.flocondesktop.features.deeplinks.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -36,9 +37,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
-import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
-import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.previewDeeplinkViewState
+import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
+import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
+import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -64,7 +65,7 @@ fun DeeplinkItemView(
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Row(
@@ -74,7 +75,7 @@ fun DeeplinkItemView(
                         color = Color.White.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(8.dp),
                     ).padding(horizontal = 12.dp, vertical = 8.dp),
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 item.parts.fastForEach { part ->
                     TextFieldPart(

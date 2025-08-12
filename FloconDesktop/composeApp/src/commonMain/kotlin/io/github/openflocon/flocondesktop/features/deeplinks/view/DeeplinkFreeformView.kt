@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.deeplinks.ui.view
+package io.github.openflocon.flocondesktop.features.deeplinks.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,8 +30,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
-import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
+import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
+import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

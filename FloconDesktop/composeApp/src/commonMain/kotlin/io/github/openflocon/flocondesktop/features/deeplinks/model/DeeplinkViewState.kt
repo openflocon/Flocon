@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.deeplinks.ui.model
+package io.github.openflocon.flocondesktop.features.deeplinks.model
 
 import androidx.compose.runtime.Immutable
 

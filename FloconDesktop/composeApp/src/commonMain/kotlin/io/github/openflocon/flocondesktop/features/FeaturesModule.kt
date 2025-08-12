@@ -3,7 +3,7 @@ package io.github.openflocon.flocondesktop.features
 import io.github.openflocon.flocondesktop.features.analytics.analyticsModule
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardModule
 import io.github.openflocon.flocondesktop.features.database.databaseModule
-import io.github.openflocon.flocondesktop.features.deeplinks.di.deeplinkModule
+import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkModule
 import io.github.openflocon.flocondesktop.features.files.di.filesModule
 import io.github.openflocon.flocondesktop.features.images.di.imagesModule
 import io.github.openflocon.flocondesktop.features.network.di.networkModule

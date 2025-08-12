@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.deeplinks.ui.view
+package io.github.openflocon.flocondesktop.features.deeplinks.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,10 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.features.deeplinks.ui.DeepLinkViewModel
-import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
-import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState
-import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.previewDeeplinkViewState
+import io.github.openflocon.flocondesktop.features.deeplinks.DeepLinkViewModel
+import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
+import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
+import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
