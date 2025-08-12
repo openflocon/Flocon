@@ -9,6 +9,10 @@ import io.github.openflocon.domain.network.usecase.RemoveHttpRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.UpdateNetworkFilterUseCase
+import io.github.openflocon.domain.network.usecase.mocks.AddNetworkMocksUseCase
+import io.github.openflocon.domain.network.usecase.mocks.DeleteNetworkMocksUseCase
+import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
+import io.github.openflocon.domain.network.usecase.mocks.SetupNetworkMocksUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -19,7 +23,13 @@ internal val networkModule = module {
     factoryOf(::ResetCurrentDeviceHttpRequestsUseCase)
     factoryOf(::RemoveHttpRequestsBeforeUseCase)
     factoryOf(::RemoveHttpRequestUseCase)
+    // filters
     factoryOf(::GetNetworkFilterUseCase)
     factoryOf(::ObserveNetworkFilterUseCase)
     factoryOf(::UpdateNetworkFilterUseCase)
+    // mocks
+    factoryOf(::ObserveNetworkMocksUseCase)
+    factoryOf(::AddNetworkMocksUseCase)
+    factoryOf(::DeleteNetworkMocksUseCase)
+    factoryOf(::SetupNetworkMocksUseCase)
 }

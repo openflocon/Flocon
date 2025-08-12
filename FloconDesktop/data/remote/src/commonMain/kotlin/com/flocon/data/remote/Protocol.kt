@@ -122,6 +122,14 @@ object Protocol {
             }
         }
 
+        object Network {
+            const val Plugin = "network"
+
+            object Method {
+                const val SetupMocks = "setupMocks"
+            }
+        }
+
         object SharedPreferences {
             const val Plugin = "sharedPreferences"
 

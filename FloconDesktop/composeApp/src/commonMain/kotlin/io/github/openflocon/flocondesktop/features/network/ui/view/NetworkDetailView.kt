@@ -288,7 +288,7 @@ private fun Response(
     Column(modifier = modifier) {
         DetailSectionTitleView(
             isExpanded = isResponseExpanded,
-            title = "Response",
+            title = "MockNetworkResponseEmbedded",
             onCopy = null,
             onToggle = {
                 isResponseExpanded = it
@@ -305,7 +305,7 @@ private fun Response(
             Column {
                 DetailSectionTitleView(
                     isExpanded = isResponseHeadersExpanded,
-                    title = "Response Headers",
+                    title = "MockNetworkResponseEmbedded Headers",
                     onCopy = null,
                     onToggle = {
                         isResponseHeadersExpanded = it
@@ -326,7 +326,7 @@ private fun Response(
                 // body
                 DetailSectionTitleView(
                     isExpanded = isResponseBodyExpanded,
-                    title = "Response Body",
+                    title = "MockNetworkResponseEmbedded Body",
                     onCopy = { onAction(NetworkAction.CopyText(response.body)) },
                     onToggle = {
                         isResponseBodyExpanded = it

@@ -20,8 +20,10 @@ import io.github.openflocon.data.local.images.dao.FloconImageDao
 import io.github.openflocon.data.local.images.models.DeviceImageEntity
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.dao.NetworkFilterDao
+import io.github.openflocon.data.local.network.dao.NetworkMocksDao
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.data.local.network.models.NetworkFilterEntity
+import io.github.openflocon.data.local.network.models.mock.MockNetworkResponseEntity
 import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.data.local.table.models.TableItemEntity
@@ -30,7 +32,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 33,
+    version = 34,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -44,6 +46,7 @@ import kotlinx.coroutines.Dispatchers
         DeeplinkEntity::class,
         AnalyticsItemEntity::class,
         NetworkFilterEntity::class,
+        MockNetworkResponseEntity::class,
     ],
 )
 @TypeConverters(
@@ -60,6 +63,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val deeplinkDao: FloconDeeplinkDao
     abstract val analyticsDao: FloconAnalyticsDao
     abstract val networkFilterDao: NetworkFilterDao
+    abstract val networkMocksDao: NetworkMocksDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()

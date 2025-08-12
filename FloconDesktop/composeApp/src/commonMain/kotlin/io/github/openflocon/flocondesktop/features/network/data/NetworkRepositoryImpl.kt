@@ -3,12 +3,16 @@ package io.github.openflocon.flocondesktop.features.network.data
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
+import io.github.openflocon.data.core.network.datasource.NetworkMocksLocalDataSource
+import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
+import io.github.openflocon.domain.network.models.MockNetworkResponseDomainModel
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
+import io.github.openflocon.domain.network.repository.NetworkMocksRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconNetworkCallIdDataModel
 import io.github.openflocon.flocondesktop.features.network.data.model.FloconNetworkRequestDataModel
@@ -24,8 +28,11 @@ import kotlin.uuid.ExperimentalUuidApi
 class NetworkRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val networkLocalDataSource: NetworkLocalDataSource,
+    private val networkMocksLocalDataSource: NetworkMocksLocalDataSource,
     private val networkImageRepository: NetworkImageRepository,
+    private val networkRemoteDataSource: NetworkRemoteDataSource,
 ) : NetworkRepository,
+    NetworkMocksRepository,
     MessagesReceiverRepository {
     // maybe inject
     private val httpParser = Json {
@@ -171,7 +178,10 @@ class NetworkRepositoryImpl(
         networkLocalDataSource.clear()
     }
 
-    fun toDomainForResponse(decoded: FloconNetworkResponseDataModel, request: FloconNetworkCallDomainModel): FloconNetworkCallDomainModel? {
+    fun toDomainForResponse(
+        decoded: FloconNetworkResponseDataModel,
+        request: FloconNetworkCallDomainModel
+    ): FloconNetworkCallDomainModel? {
         try {
             val networkResponse = FloconNetworkResponseDomainModel(
                 contentType = decoded.responseContentType,
@@ -192,6 +202,7 @@ class NetworkRepositoryImpl(
                         response = response
                     )
                 }
+
                 is FloconNetworkCallDomainModel.Grpc -> {
                     val response = FloconNetworkCallDomainModel.Grpc.Response(
                         networkResponse = networkResponse,
@@ -201,6 +212,7 @@ class NetworkRepositoryImpl(
                         response = response
                     )
                 }
+
                 is FloconNetworkCallDomainModel.Http -> {
                     val response = FloconNetworkCallDomainModel.Http.Response(
                         networkResponse = networkResponse,
@@ -259,5 +271,57 @@ class NetworkRepositoryImpl(
     } catch (t: Throwable) {
         t.printStackTrace()
         null
+    }
+
+    override suspend fun setupMocks(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        mocks: List<MockNetworkResponseDomainModel>
+    ) {
+        withContext(dispatcherProvider.data) {
+            networkRemoteDataSource.setupMocks(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                mocks = mocks,
+            )
+        }
+    }
+
+    override suspend fun getAllMocks(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): List<MockNetworkResponseDomainModel> {
+        return withContext(dispatcherProvider.data) {
+            networkMocksLocalDataSource.getAllMocks(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+            )
+        }
+    }
+
+    override suspend fun addMock(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        mock: MockNetworkResponseDomainModel
+    ) {
+        return withContext(dispatcherProvider.data) {
+            networkMocksLocalDataSource.addMock(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                mock = mock,
+            )
+        }
+    }
+
+    override suspend fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<MockNetworkResponseDomainModel>> {
+        return networkMocksLocalDataSource.observeAll(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        ).flowOn(dispatcherProvider.data)
+    }
+
+    override suspend fun deleteMock(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        id: String
+    ) {
+        return withContext(dispatcherProvider.data) {
+            networkMocksLocalDataSource.deleteMock(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                id = id,
+            )
+        }
     }
 }
