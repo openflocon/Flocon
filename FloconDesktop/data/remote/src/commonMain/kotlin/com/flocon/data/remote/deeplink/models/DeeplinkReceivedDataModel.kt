@@ -1,9 +1,9 @@
-package io.github.openflocon.flocondesktop.features.deeplinks.data.model.incoming
+package com.flocon.data.remote.deeplink.models
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DeeplinkReceivedDataModel(
+internal data class DeeplinkReceivedDataModel(
     val label: String? = null,
     val link: String,
     val description: String? = null,

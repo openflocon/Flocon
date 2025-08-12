@@ -3,6 +3,7 @@ package com.flocon.data.remote
 import com.flocon.data.remote.analytics.analyticsModule
 import com.flocon.data.remote.dashboard.dashboardModule
 import com.flocon.data.remote.database.databaseModule
+import com.flocon.data.remote.deeplink.deeplinkModule
 import com.flocon.data.remote.files.filesModule
 import com.flocon.data.remote.messages.messagesModule
 import com.flocon.data.remote.sharedpreference.sharedPreferencesModule
@@ -15,6 +16,7 @@ val dataRemoteModule = module {
         analyticsModule,
         dashboardModule,
         databaseModule,
+        deeplinkModule,
         filesModule,
         messagesModule,
         sharedPreferencesModule,
