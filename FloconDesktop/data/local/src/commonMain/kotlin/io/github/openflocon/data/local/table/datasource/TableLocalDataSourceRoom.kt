@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-class TableLocalDataSourceRoom(
+internal class TableLocalDataSourceRoom(
     private val tableDao: FloconTableDao,
     private val dispatcherProvider: DispatcherProvider,
 ) : TableLocalDataSource {

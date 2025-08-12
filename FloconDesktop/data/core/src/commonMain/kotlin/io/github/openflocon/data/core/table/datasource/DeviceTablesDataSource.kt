@@ -1,8 +1,8 @@
-package io.github.openflocon.flocondesktop.features.table.data.datasource.device
+package io.github.openflocon.data.core.table.datasource
 
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.table.models.TableId
 import io.github.openflocon.domain.table.models.TableIdentifierDomainModel
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DeviceTablesDataSource {
