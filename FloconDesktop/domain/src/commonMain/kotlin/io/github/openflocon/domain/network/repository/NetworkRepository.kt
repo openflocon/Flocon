@@ -1,29 +1,32 @@
 package io.github.openflocon.domain.network.repository
 
 import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.domain.network.models.FloconHttpRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkRepository {
     // lite : exclude headers, sizes, body
-    fun observeRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, lite: Boolean): Flow<List<FloconHttpRequestDomainModel>>
+    fun observeRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        lite: Boolean,
+    ): Flow<List<FloconNetworkCallDomainModel>>
 
     fun observeRequest(
-        deviceId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         requestId: String,
-    ): Flow<FloconHttpRequestDomainModel?>
+    ): Flow<FloconNetworkCallDomainModel?>
 
     suspend fun clear()
     suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     suspend fun deleteRequest(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         requestId: String,
     )
 
     suspend fun deleteRequestsBefore(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         requestId: String,
     )
 }

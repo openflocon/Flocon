@@ -8,7 +8,7 @@ val roomModule =
             getRoomDatabase()
         }
         single {
-            get<AppDatabase>().httpRequestDao
+            get<AppDatabase>().networkDao
         }
         single {
             get<AppDatabase>().fileDao

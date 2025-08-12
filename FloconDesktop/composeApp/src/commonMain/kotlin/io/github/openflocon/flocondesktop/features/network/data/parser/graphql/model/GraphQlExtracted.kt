@@ -2,7 +2,6 @@ package io.github.openflocon.flocondesktop.features.network.data.parser.graphql.
 
 data class GraphQlExtracted(
     val request: Request,
-    val response: GraphQlResponseBody?,
 ) {
     data class Request(
         val requestBody: GraphQlRequestBody,

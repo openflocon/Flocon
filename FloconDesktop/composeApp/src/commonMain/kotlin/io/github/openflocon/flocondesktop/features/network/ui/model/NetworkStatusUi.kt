@@ -5,5 +5,11 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class NetworkStatusUi(
     val text: String,
-    val isSuccess: Boolean,
-)
+    val status: Status,
+) {
+    enum class Status {
+        SUCCESS,
+        ERROR,
+        LOADING,
+    }
+}

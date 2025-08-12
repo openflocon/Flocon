@@ -6,9 +6,9 @@ import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
-import io.github.openflocon.data.local.network.dao.FloconHttpRequestDao
+import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.dao.NetworkFilterDao
-import io.github.openflocon.data.local.network.models.FloconHttpRequestEntity
+import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.data.local.network.models.NetworkFilterEntity
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters
@@ -30,9 +30,9 @@ import io.github.openflocon.flocondesktop.features.table.data.datasource.local.m
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 32,
+    version = 33,
     entities = [
-        FloconHttpRequestEntity::class,
+        FloconNetworkCallEntity::class,
         FileEntity::class,
         DashboardEntity::class,
         DashboardSectionEntity::class,
@@ -51,7 +51,7 @@ import kotlinx.coroutines.Dispatchers
     ListStringsConverters::class,
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract val httpRequestDao: FloconHttpRequestDao
+    abstract val networkDao: FloconNetworkDao
     abstract val fileDao: FloconFileDao
     abstract val dashboardDao: FloconDashboardDao
     abstract val tableDao: FloconTableDao
