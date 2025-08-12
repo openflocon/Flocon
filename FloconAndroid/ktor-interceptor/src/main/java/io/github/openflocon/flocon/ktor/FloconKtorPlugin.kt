@@ -21,6 +21,7 @@ import kotlinx.coroutines.*
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.util.*
+import kotlin.coroutines.CoroutineContext
 
 val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
 
@@ -40,7 +41,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
         val requestedAt = System.currentTimeMillis()
 
         // Lecture du body sans le consommer
-        val requestBodyString = extractRequestBody(request.body)
+        val requestBodyString = extractAndReplaceRequestBody(request)
         val requestSize = requestBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
         val requestHeadersMap = request.headers.entries().associate { it.key to it.value.joinToString(",") }
 
@@ -94,9 +95,9 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
         val endTime = System.nanoTime()
         val durationMs = (endTime - startTime) / 1e6
 
-        val bodyBytes = response.bodyAsChannel().toByteArray()
-        val bodyString = bodyBytes.toString(StandardCharsets.UTF_8)
-        val responseSize = bodyBytes.size.toLong()
+        val originalBodyBytes = response.bodyAsChannel().toByteArray()
+        val bodyString = originalBodyBytes.toString(StandardCharsets.UTF_8)
+        val responseSize = originalBodyBytes.size.toLong()
 
         val responseHeadersMap = response.headers.entries().associate { it.key to it.value.joinToString(",") }
         val contentType = response.contentType()?.toString()
@@ -121,7 +122,9 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
             )
         )
 
-        proceed()
+        // as we consumed the body, we should inject a new one here
+        val newResponse = response.cloneWithBody(ByteReadChannel(originalBodyBytes))
+        proceedWith(newResponse)
     }
 }
 
@@ -183,4 +186,47 @@ private suspend fun extractRequestBody(body: Any?, charset: Charset = Charsets.U
 
 fun HttpClientConfig<*>.floconInterceptor() {
     install(FloconKtorPlugin)
+}
+
+// L'extension de la classe HttpResponse pourrait ressembler à ça :
+@OptIn(InternalAPI::class)
+fun HttpResponse.cloneWithBody(newBody: ByteReadChannel): HttpResponse {
+    return object : HttpResponse() {
+        override val call: HttpClientCall = this@cloneWithBody.call
+        //override val content: ByteReadChannel = newBody
+        override val coroutineContext: CoroutineContext = this@cloneWithBody.coroutineContext
+        override val headers: Headers = this@cloneWithBody.headers
+        override val requestTime: GMTDate = this@cloneWithBody.requestTime
+        override val responseTime: GMTDate = this@cloneWithBody.responseTime
+        override val status: HttpStatusCode = this@cloneWithBody.status
+        override val version: HttpProtocolVersion = this@cloneWithBody.version
+        override val rawContent: ByteReadChannel = newBody
+    }
+}
+
+private suspend fun extractAndReplaceRequestBody(request: HttpRequestBuilder): String? {
+    val originalBody = request.body
+
+    // Si c'est déjà un type qui peut être lu plusieurs fois (e.g. un String), pas de souci.
+    if (originalBody is OutgoingContent.ByteArrayContent) {
+        return originalBody.bytes().toString(StandardCharsets.UTF_8)
+    }
+
+    // Si c'est un flux de données, il faut le lire et le remplacer.
+    if (originalBody is OutgoingContent.ReadChannelContent) {
+        val bytes = originalBody.readFrom().toByteArray()
+        val bodyString = bytes.toString(StandardCharsets.UTF_8)
+
+        // On remplace le corps original par un nouveau qui contient les bytes lus.
+        // On crée un nouveau OutgoingContent qui peut être lu.
+        request.setBody(ByteArrayContent(bytes))
+
+        return bodyString
+    }
+
+    return when (originalBody) {
+        is OutgoingContent.WriteChannelContent -> null // Toujours complexe à gérer
+        is OutgoingContent.NoContent -> null
+        else -> originalBody?.toString()
+    }
 }
