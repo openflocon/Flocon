@@ -22,7 +22,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
 
     val theClient = client
 
-    // Interception des requêtes
+    // Intercept requests
     client.sendPipeline.intercept(HttpSendPipeline.Monitoring) {
         try {
             val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin
@@ -36,7 +36,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
             val floconNetworkType = "http"
             val requestedAt = System.currentTimeMillis()
 
-            // Lecture du body sans le consommer
+            // Reads the body without consuming it
             val requestBodyString = extractAndReplaceRequestBody(request)
             val requestSize = requestBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
             val requestHeadersMap =
@@ -70,7 +70,6 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
                 return@intercept
             }
 
-            // Stocker métadonnées pour phase réponse
             request.attributes.put(FLOCON_CALL_ID_KEY, floconCallId)
             request.attributes.put(FLOCON_START_TIME_KEY, System.nanoTime())
             request.attributes.put(FLOCON_IS_MOCKED_KEY, isMocked)
@@ -82,7 +81,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
         }
     }
 
-    // Interception des réponses
+    // Intercepts responses
     client.receivePipeline.intercept(HttpReceivePipeline.After) { response ->
         val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin ?: return@intercept
 

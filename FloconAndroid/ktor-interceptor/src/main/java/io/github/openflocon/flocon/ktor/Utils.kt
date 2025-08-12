@@ -22,7 +22,6 @@ internal fun HttpResponse.cloneWithBody(newBody: ByteReadChannel): HttpResponse 
     return object : HttpResponse() {
         override val call: HttpClientCall = this@cloneWithBody.call
 
-        //override val content: ByteReadChannel = newBody
         override val coroutineContext: CoroutineContext = this@cloneWithBody.coroutineContext
         override val headers: Headers = this@cloneWithBody.headers
         override val requestTime: GMTDate = this@cloneWithBody.requestTime
@@ -36,25 +35,25 @@ internal fun HttpResponse.cloneWithBody(newBody: ByteReadChannel): HttpResponse 
 internal suspend fun extractAndReplaceRequestBody(request: HttpRequestBuilder): String? {
     val originalBody = request.body
 
-    // Si c'est déjà un type qui peut être lu plusieurs fois (e.g. un String), pas de souci.
+    // If it's already a type that can be read multiple times (e.g., a String), no problem.
     if (originalBody is OutgoingContent.ByteArrayContent) {
         return originalBody.bytes().toString(StandardCharsets.UTF_8)
     }
 
-    // Si c'est un flux de données, il faut le lire et le remplacer.
+    // If it's a data stream, we need to read and replace it.
     if (originalBody is OutgoingContent.ReadChannelContent) {
         val bytes = originalBody.readFrom().toByteArray()
         val bodyString = bytes.toString(StandardCharsets.UTF_8)
 
-        // On remplace le corps original par un nouveau qui contient les bytes lus.
-        // On crée un nouveau OutgoingContent qui peut être lu.
+        // We replace the original body with a new one that contains the bytes we just read.
+        // We create a new OutgoingContent that can be read again.
         request.setBody(ByteArrayContent(bytes))
 
         return bodyString
     }
 
     return when (originalBody) {
-        is OutgoingContent.WriteChannelContent -> null // Toujours complexe à gérer
+        is OutgoingContent.WriteChannelContent -> null // Still complex to handle
         is OutgoingContent.NoContent -> null
         else -> originalBody?.toString()
     }
