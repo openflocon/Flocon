@@ -32,8 +32,6 @@ jobs:
       - name: Generate aboutlibraries
         working-directory: FloconDesktop
         run: ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.outputFile=src/commonMain/composeResources/files/aboutlibraries.json
-        env:
-          PROJECT_VERSION_NAME: ${{ github.ref_name }}
 
       - name: Build with Gradle
         working-directory: FloconDesktop
