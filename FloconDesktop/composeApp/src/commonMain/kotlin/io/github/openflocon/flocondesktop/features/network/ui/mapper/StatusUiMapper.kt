@@ -4,7 +4,7 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatusUi
 
 
-private fun loadingStatus() = NetworkStatusUi(
+fun loadingStatus() = NetworkStatusUi(
     text = "Loading",
     status = NetworkStatusUi.Status.LOADING,
 )

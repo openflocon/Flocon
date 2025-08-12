@@ -122,11 +122,11 @@ private fun Request(
             Column {
                 Column(
                     modifier =
-                    Modifier
-                        .background(
-                            color = FloconTheme.colorPalette.surfaceVariant,
-                            shape = RoundedCornerShape(12.dp),
-                        ).padding(horizontal = 8.dp, vertical = 4.dp),
+                        Modifier
+                            .background(
+                                color = FloconTheme.colorPalette.surfaceVariant,
+                                shape = RoundedCornerShape(12.dp),
+                            ).padding(horizontal = 8.dp, vertical = 4.dp),
                 ) {
                     DetailLineTextView(
                         modifier = Modifier.fillMaxWidth(),
@@ -169,12 +169,14 @@ private fun Request(
                         value = state.requestTimeFormatted,
                         labelWidth = linesLabelWidth,
                     )
-                    DetailLineTextView(
-                        modifier = Modifier.fillMaxWidth(),
-                        label = "Time",
-                        value = state.durationFormatted,
-                        labelWidth = linesLabelWidth,
-                    )
+                    state.durationFormatted?.let {
+                        DetailLineTextView(
+                            modifier = Modifier.fillMaxWidth(),
+                            label = "Time",
+                            value = it,
+                            labelWidth = linesLabelWidth,
+                        )
+                    }
                 }
 
                 state.graphQlSection?.let {
@@ -194,11 +196,11 @@ private fun Request(
                     ) {
                         Column(
                             modifier =
-                            Modifier
-                                .background(
-                                    color = FloconTheme.colorPalette.surfaceVariant,
-                                    shape = RoundedCornerShape(12.dp),
-                                ).padding(horizontal = 8.dp, vertical = 4.dp),
+                                Modifier
+                                    .background(
+                                        color = FloconTheme.colorPalette.surfaceVariant,
+                                        shape = RoundedCornerShape(12.dp),
+                                    ).padding(horizontal = 8.dp, vertical = 4.dp),
                         ) {
                             DetailLineTextView(
                                 modifier = Modifier.fillMaxWidth(),
@@ -245,7 +247,7 @@ private fun Request(
                     onDetail = {
                         onAction(
                             NetworkAction.JsonDetail(
-                                state.uuid + "request",
+                                state.callId + "request",
                                 state.requestBody,
                             ),
                         )
@@ -277,6 +279,8 @@ private fun Response(
     headersLabelWidth: Dp,
     modifier: Modifier = Modifier,
 ) {
+    val response = state.response ?: return
+
     var isResponseExpanded by remember { mutableStateOf(true) }
     var isResponseHeadersExpanded by remember { mutableStateOf(true) }
     var isResponseBodyExpanded by remember { mutableStateOf(true) }
@@ -313,7 +317,7 @@ private fun Response(
                     expanded = isResponseHeadersExpanded,
                 ) {
                     DetailHeadersView(
-                        headers = state.responseHeaders,
+                        headers = response.headers,
                         modifier = Modifier.fillMaxWidth(),
                         labelWidth = headersLabelWidth,
                     )
@@ -323,15 +327,15 @@ private fun Response(
                 DetailSectionTitleView(
                     isExpanded = isResponseBodyExpanded,
                     title = "Response Body",
-                    onCopy = { onAction(NetworkAction.CopyText(state.responseBody)) },
+                    onCopy = { onAction(NetworkAction.CopyText(response.body)) },
                     onToggle = {
                         isResponseBodyExpanded = it
                     },
                     onDetail = {
                         onAction(
                             NetworkAction.JsonDetail(
-                                state.uuid + "response",
-                                state.responseBody,
+                                state.callId + "response",
+                                response.body,
                             ),
                         )
                     },
@@ -342,7 +346,7 @@ private fun Response(
                     expanded = isResponseBodyExpanded,
                 ) {
                     CodeBlockView(
-                        code = state.responseBody,
+                        code = response.body,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
@@ -357,22 +361,22 @@ private fun NetworkDetailViewPreview() {
     FloconTheme {
         NetworkDetailView(
             state = NetworkDetailViewState(
-                uuid = "",
+                callId = "",
                 fullUrl = "http://www.google.com",
                 method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
                 status =
-                NetworkStatusUi(
-                    text = "200",
-                    status = NetworkStatusUi.Status.SUCCESS,
-                ),
+                    NetworkStatusUi(
+                        text = "200",
+                        status = NetworkStatusUi.Status.SUCCESS,
+                    ),
                 requestHeaders =
-                listOf(
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                ),
+                    listOf(
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                    ),
                 requestBody =
-                """
+                    """
                         {
                             "id": "123",
                             "name": "Flocon App",
@@ -385,18 +389,12 @@ private fun NetworkDetailViewPreview() {
                             }
                         }
                 """.trimIndent(),
-                responseHeaders =
-                listOf(
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                ),
                 requestTimeFormatted = "00:00:00.000",
                 durationFormatted = "300ms",
-                responseBody =
-                """
+                requestSize = "0kb",
+                response = NetworkDetailViewState.Response(
+                    body =
+                        """
                         {
                             "networkStatusUi": "success",
                             "message": "Data received and processed.",
@@ -406,8 +404,16 @@ private fun NetworkDetailViewPreview() {
                             }
                         }
                 """.trimIndent(),
-                requestSize = "0kb",
-                responseSize = "0kb",
+                    size = "0kb",
+                    headers =
+                        listOf(
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                        ),
+                ),
                 graphQlSection = null,
             ),
             modifier = Modifier.padding(16.dp), // Padding pour la preview

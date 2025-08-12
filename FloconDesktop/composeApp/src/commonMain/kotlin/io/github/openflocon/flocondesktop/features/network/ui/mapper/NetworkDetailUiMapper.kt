@@ -8,37 +8,44 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetai
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkStatusUi
 
 fun toDetailUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState = NetworkDetailViewState(
-    uuid = request.callId,
-    fullUrl = request.url,
+    callId = request.callId,
+    fullUrl = request.networkRequest.url,
     method = toDetailMethodUi(request),
-    status = toDetailNetworkStatusUi(request.type),
-    requestTimeFormatted = request.request.startTime.let { formatTimestamp(it) },
-    durationFormatted = formatDuration(request.durationMs),
+    status = toDetailHttpStatusUi(request),
+    requestTimeFormatted = request.networkRequest.startTime.let { formatTimestamp(it) },
+    durationFormatted = request.networkResponse?.durationMs?.let { formatDuration(it) },
     // request
-    requestBody = httpBodyToUi(request.request.body),
-    requestHeaders = toNetworkHeadersUi(request.request.headers),
-    requestSize = ByteFormatter.formatBytes(request.request.byteSize),
+    requestBody = httpBodyToUi(request.networkRequest.body),
+    requestHeaders = toNetworkHeadersUi(request.networkRequest.headers),
+    requestSize = ByteFormatter.formatBytes(request.networkRequest.byteSize),
     // response
-    responseBody = httpBodyToUi(request.response.body),
-    responseHeaders = toNetworkHeadersUi(request.response.headers),
-    responseSize = ByteFormatter.formatBytes(request.response.byteSize),
-
+    response = request.networkResponse?.let {
+        NetworkDetailViewState.Response(
+            body = httpBodyToUi(it.body),
+            size = ByteFormatter.formatBytes(it.byteSize),
+            headers = toNetworkHeadersUi(it.headers),
+        )
+    },
     graphQlSection = graphQlSection(request),
 )
 
-private fun toDetailNetworkStatusUi(type: FloconNetworkCallDomainModel.Type): NetworkStatusUi = when (type) {
-    is FloconNetworkCallDomainModel.Type.Grpc -> toGrpcNetworkStatusUi(type)
-    // here for grphql we want the http code, the graphql status will be displayed on the specific graphql section
-    is FloconNetworkCallDomainModel.Type.GraphQl -> toNetworkStatusUi(code = type.httpCode)
-    is FloconNetworkCallDomainModel.Type.Http -> toNetworkStatusUi(code = type.httpCode)
-}
+private fun toDetailHttpStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.networkResponse?.let { response ->
+    when (networkCall) {
+        is FloconNetworkCallDomainModel.Grpc -> toGrpcNetworkStatusUi(networkCall)
+        // here for grphql we want the http code, the graphql status will be displayed on the specific graphql section
+        is FloconNetworkCallDomainModel.GraphQl -> toNetworkStatusUi(code = networkCall.response!!.httpCode)
+        is FloconNetworkCallDomainModel.Http -> toNetworkStatusUi(code = networkCall.response!!.httpCode)
+    }
+} ?: loadingStatus()
 
-fun graphQlSection(request: FloconNetworkCallDomainModel): NetworkDetailViewState.GraphQlSection? =
-    (request.type as? FloconNetworkCallDomainModel.Type.GraphQl)?.let {
+fun graphQlSection(networkCall: FloconNetworkCallDomainModel): NetworkDetailViewState.GraphQlSection? =
+    (networkCall as? FloconNetworkCallDomainModel.GraphQl)?.let {
         NetworkDetailViewState.GraphQlSection(
-            queryName = it.query,
-            method = getMethodUi(request),
-            status = toGraphQlNetworkStatusUi(isSuccess = it.isSuccess),
+            queryName = it.request.query,
+            method = getMethodUi(networkCall),
+            status = it.response?.isSuccess?.let {
+                toGraphQlNetworkStatusUi(isSuccess = it)
+            } ?: loadingStatus(),
         )
     }
 
@@ -54,12 +61,12 @@ fun toNetworkHeadersUi(headers: Map<String, String>?): List<NetworkDetailHeaderU
         }.sortedBy { it.name }
 } ?: emptyList()
 
-fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState.Method = when (request.type) {
-    is FloconNetworkCallDomainModel.Type.Grpc -> NetworkDetailViewState.Method.MethodName(
-        name = request.request.method,
+fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState.Method = when (request) {
+    is FloconNetworkCallDomainModel.Grpc -> NetworkDetailViewState.Method.MethodName(
+        name = request.networkRequest.method,
     )
 
-    is FloconNetworkCallDomainModel.Type.GraphQl,
-    is FloconNetworkCallDomainModel.Type.Http,
-        -> NetworkDetailViewState.Method.Http(toHttpMethodUi(request.request.method))
+    is FloconNetworkCallDomainModel.GraphQl,
+    is FloconNetworkCallDomainModel.Http,
+        -> NetworkDetailViewState.Method.Http(toHttpMethodUi(request.networkRequest.method))
 }
