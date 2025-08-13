@@ -7,7 +7,7 @@ sealed interface FloconNetworkCallDomainModel {
 
     data class Http(
         override val callId: String,
-        override val networkRequest : FloconNetworkRequestDomainModel,
+        override val networkRequest: FloconNetworkRequestDomainModel,
         val response: Response?,
     ) : FloconNetworkCallDomainModel {
         data class Response(
@@ -20,7 +20,7 @@ sealed interface FloconNetworkCallDomainModel {
 
     data class GraphQl(
         override val callId: String,
-        val request : Request,
+        val request: Request,
         val response: Response?,
     ) : FloconNetworkCallDomainModel {
 
@@ -29,6 +29,7 @@ sealed interface FloconNetworkCallDomainModel {
             val query: String,
             val operationType: String,
         )
+
         data class Response(
             val httpCode: Int, // ex: 200
             val isSuccess: Boolean,
@@ -55,14 +56,21 @@ sealed interface FloconNetworkCallDomainModel {
 }
 
 fun FloconNetworkCallDomainModel.httpCode(): Int? {
-    return when(this) {
+    return when (this) {
         is FloconNetworkCallDomainModel.Http -> this.response?.httpCode
         is FloconNetworkCallDomainModel.GraphQl -> this.response?.httpCode
         else -> null
     }
 }
 
+data class FloconNetworkCallIdDomainModel(
+    val floconCallId: String? = null,
+)
+
 data class FloconNetworkRequestDomainModel(
+    val floconCallId: String? = null,
+    val floconNetworkType: String? = null,
+
     val url: String,
     val startTime: Long,
     val method: String,
@@ -73,9 +81,15 @@ data class FloconNetworkRequestDomainModel(
 )
 
 data class FloconNetworkResponseDomainModel(
+    val floconCallId: String? = null,
+    val floconNetworkType: String? = null,
+
+    val httpCode: Int? = null, // ex: 200
     val contentType: String? = null,
     val body: String? = null,
     val headers: Map<String, String>,
     val byteSize: Long,
     val durationMs: Double,
+    val grpcStatus: String? = null,
 )
+

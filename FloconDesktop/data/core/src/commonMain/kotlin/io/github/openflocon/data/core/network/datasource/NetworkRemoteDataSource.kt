@@ -1,6 +1,11 @@
 package io.github.openflocon.data.core.network.datasource
 
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 
 interface NetworkRemoteDataSource {
@@ -9,5 +14,11 @@ interface NetworkRemoteDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         mocks: List<MockNetworkDomainModel>,
     )
+
+    fun getRequestData(message: FloconIncomingMessageDomainModel): FloconNetworkRequestDomainModel?
+
+    fun getCallId(message: FloconIncomingMessageDomainModel): FloconNetworkCallIdDomainModel?
+
+    fun getResponseData(message: FloconIncomingMessageDomainModel): FloconNetworkResponseDomainModel?
 
 }

@@ -1,17 +1,27 @@
 package com.flocon.data.remote.network.datasource
 
+import com.flocon.data.remote.common.safeDecodeFromString
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.network.mapper.listToRemote
+import com.flocon.data.remote.network.models.FloconNetworkCallIdDataModel
+import com.flocon.data.remote.network.models.FloconNetworkRequestDataModel
+import com.flocon.data.remote.network.models.FloconNetworkResponseDataModel
+import com.flocon.data.remote.network.models.toDomain
 import com.flocon.data.remote.server.Server
 import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.serialization.json.Json
 
 class NetworkRemoteDataSourceImpl(
     private val server: Server,
+    private val json: Json
 ) : NetworkRemoteDataSource {
 
     override suspend fun setupMocks(
@@ -28,5 +38,20 @@ class NetworkRemoteDataSourceImpl(
                 ),
             ),
         )
+    }
+
+    override fun getRequestData(message: FloconIncomingMessageDomainModel): FloconNetworkRequestDomainModel? {
+        return json.safeDecodeFromString<FloconNetworkRequestDataModel>(message.body)
+            ?.let { it.toDomain() }
+    }
+
+    override fun getCallId(message: FloconIncomingMessageDomainModel): FloconNetworkCallIdDomainModel? {
+        return json.safeDecodeFromString<FloconNetworkCallIdDataModel>(message.body)
+            ?.let(FloconNetworkCallIdDataModel::toDomain)
+    }
+
+    override fun getResponseData(message: FloconIncomingMessageDomainModel): FloconNetworkResponseDomainModel? {
+        return json.safeDecodeFromString<FloconNetworkResponseDataModel>(message.body)
+            ?.let(FloconNetworkResponseDataModel::toDomain)
     }
 }

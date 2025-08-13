@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.network.data.parser.graphql.model
+package io.github.openflocon.data.core.network.graphql.model
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
