@@ -28,9 +28,9 @@ jobs:
         with:
           gradle-version: '8.12'
 
-      - name: Generate aboutlibraries
-        working-directory: FloconDesktop
-        run: ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.outputFile=src/commonMain/composeResources/files/aboutlibraries.json
+      # - name: Generate aboutlibraries
+      #   working-directory: FloconDesktop
+      #   run: ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.outputFile=src/commonMain/composeResources/files/aboutlibraries.json
 
       - name: Build with Gradle
         working-directory: FloconDesktop
