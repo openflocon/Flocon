@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.images.ui.model
+package io.github.openflocon.flocondesktop.features.images.model
 
 data class ImagesUiModel(
     val url: String,

@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.images.ui.model
+package io.github.openflocon.flocondesktop.features.images.model
 
 sealed interface ImagesStateUiModel {
     data object Idle : ImagesStateUiModel

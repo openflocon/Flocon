@@ -37,7 +37,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.view.DashboardScree
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseScreen
 import io.github.openflocon.flocondesktop.features.deeplinks.view.DeeplinkScreen
 import io.github.openflocon.flocondesktop.features.files.view.FilesScreen
-import io.github.openflocon.flocondesktop.features.images.ui.view.ImagesScreen
+import io.github.openflocon.flocondesktop.features.images.view.ImagesScreen
 import io.github.openflocon.flocondesktop.features.network.ui.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.view.SharedPreferencesScreen
 import io.github.openflocon.flocondesktop.features.table.ui.view.TableScreen

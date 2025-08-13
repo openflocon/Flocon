@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.images.ui.view
+package io.github.openflocon.flocondesktop.features.images.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,10 +30,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import io.github.openflocon.flocondesktop.features.images.ui.ImagesViewModel
-import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesStateUiModel
-import io.github.openflocon.flocondesktop.features.images.ui.model.ImagesUiModel
-import io.github.openflocon.flocondesktop.features.images.ui.model.previewImagesStateUiModel
+import io.github.openflocon.flocondesktop.features.images.ImagesViewModel
+import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
+import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
+import io.github.openflocon.flocondesktop.features.images.model.previewImagesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSurface
