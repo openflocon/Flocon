@@ -182,7 +182,7 @@ class FilesRemoteDataSourceImpl(
             isDirectory = it.isDirectory,
             path = FilePathDomainModel.Real(it.path),
             size = it.size,
-            lastModified = Instant.Companion.fromEpochMilliseconds(it.lastModified),
+            lastModified = Instant.fromEpochMilliseconds(it.lastModified),
         )
     }
 }

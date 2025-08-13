@@ -40,7 +40,7 @@ class DashboardRepositoryImpl(
     }
 
     override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
-
+        // no op
     }
 
     override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> =

@@ -21,7 +21,7 @@ data class MethodFilterState(
 
 fun previewMethodFilterState() = MethodFilterState(
     isEnabled = true,
-    items = NetworkMethodUi.Companion.all().mapIndexed { index, method ->
+    items = NetworkMethodUi.all().mapIndexed { index, method ->
         MethodFilterState.Item(
             method = method,
             isSelected = index < 3,

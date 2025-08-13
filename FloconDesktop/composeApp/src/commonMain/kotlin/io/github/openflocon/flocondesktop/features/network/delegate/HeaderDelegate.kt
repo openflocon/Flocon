@@ -30,8 +30,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.collections.minus
-import kotlin.collections.plus
 
 class HeaderDelegate(
     private val closeableDelegate: CloseableDelegate,
@@ -51,9 +49,9 @@ class HeaderDelegate(
         .stateIn(coroutineScope, started = SharingStarted.WhileSubscribed(5_000), emptyMap())
 
     val sorted = MutableStateFlow<Sorted?>(null)
-    private val methodFilterState = MutableStateFlow<MethodFilterState>(
+    private val methodFilterState = MutableStateFlow(
         MethodFilterState(
-            items = NetworkMethodUi.Companion.all().map {
+            items = NetworkMethodUi.all().map {
                 MethodFilterState.Item(
                     method = it,
                     isSelected = true,
@@ -96,7 +94,7 @@ class HeaderDelegate(
             sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.RequestTime }?.sort
                 ?: SortedByUiModel.None,
             filter = textFiltersState[NetworkTextFilterColumns.RequestTime]
-                ?: TextFilterStateUiModel.Companion.EMPTY,
+                ?: TextFilterStateUiModel.EMPTY,
         ),
         method = NetworkMethodColumnUiModel(
             sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Method }?.sort
@@ -106,32 +104,32 @@ class HeaderDelegate(
         domain = NetworkTextColumnUiModel(
             sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Domain }?.sort
                 ?: SortedByUiModel.None,
-            filter = textFiltersState[NetworkTextFilterColumns.Domain] ?: TextFilterStateUiModel.Companion.EMPTY,
+            filter = textFiltersState[NetworkTextFilterColumns.Domain] ?: TextFilterStateUiModel.EMPTY,
         ),
         query = NetworkTextColumnUiModel(
             sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Query }?.sort
                 ?: SortedByUiModel.None,
-            filter = textFiltersState[NetworkTextFilterColumns.Query] ?: TextFilterStateUiModel.Companion.EMPTY,
+            filter = textFiltersState[NetworkTextFilterColumns.Query] ?: TextFilterStateUiModel.EMPTY,
         ),
         status = NetworkStatusColumnUiModel(
             sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Status }?.sort
                 ?: SortedByUiModel.None,
-            filter = textFiltersState[NetworkTextFilterColumns.Status] ?: TextFilterStateUiModel.Companion.EMPTY,
+            filter = textFiltersState[NetworkTextFilterColumns.Status] ?: TextFilterStateUiModel.EMPTY,
         ),
         time = NetworkTextColumnUiModel(
             sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Time }?.sort
                 ?: SortedByUiModel.None,
-            filter = textFiltersState[NetworkTextFilterColumns.Time] ?: TextFilterStateUiModel.Companion.EMPTY,
+            filter = textFiltersState[NetworkTextFilterColumns.Time] ?: TextFilterStateUiModel.EMPTY,
         ),
     )
 
     fun defaultHeaderValue(): NetworkHeaderUiState = NetworkHeaderUiState(
-        requestTime = NetworkTextColumnUiModel.Companion.EMPTY,
-        method = NetworkMethodColumnUiModel.Companion.EMPTY,
-        domain = NetworkTextColumnUiModel.Companion.EMPTY,
-        query = NetworkTextColumnUiModel.Companion.EMPTY,
-        status = NetworkStatusColumnUiModel.Companion.EMPTY,
-        time = NetworkTextColumnUiModel.Companion.EMPTY,
+        requestTime = NetworkTextColumnUiModel.EMPTY,
+        method = NetworkMethodColumnUiModel.EMPTY,
+        domain = NetworkTextColumnUiModel.EMPTY,
+        query = NetworkTextColumnUiModel.EMPTY,
+        status = NetworkStatusColumnUiModel.EMPTY,
+        time = NetworkTextColumnUiModel.EMPTY,
     )
 
     fun onClickSort(type: NetworkColumnsTypeUiModel, sort: SortedByUiModel.Enabled) {

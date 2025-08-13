@@ -5,7 +5,7 @@ import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainMo
 import io.github.openflocon.domain.messages.repository.MessagesRepository
 import kotlinx.coroutines.flow.Flow
 
-class MessagesRepositoryImpl(
+internal class MessagesRepositoryImpl(
     private val remote: MessageRemoteDataSource,
 ) : MessagesRepository {
 

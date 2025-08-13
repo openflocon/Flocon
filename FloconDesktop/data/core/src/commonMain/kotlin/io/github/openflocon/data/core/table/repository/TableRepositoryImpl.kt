@@ -49,7 +49,7 @@ class TableRepositoryImpl(
     }
 
     override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
-
+        // no op
     }
 
     override fun observeTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> =

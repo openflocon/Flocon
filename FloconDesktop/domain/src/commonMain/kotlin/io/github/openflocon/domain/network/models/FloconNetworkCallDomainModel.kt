@@ -64,12 +64,12 @@ fun FloconNetworkCallDomainModel.httpCode(): Int? {
 }
 
 data class FloconNetworkCallIdDomainModel(
-    val floconCallId: String? = null,
+    val floconCallId: String,
 )
 
 data class FloconNetworkRequestDomainModel(
-    val floconCallId: String? = null,
-    val floconNetworkType: String? = null,
+    val floconCallId: String,
+    val floconNetworkType: String,
 
     val url: String,
     val startTime: Long,
@@ -81,8 +81,8 @@ data class FloconNetworkRequestDomainModel(
 )
 
 data class FloconNetworkResponseDomainModel(
-    val floconCallId: String? = null,
-    val floconNetworkType: String? = null,
+    val floconCallId: String,
+    val floconNetworkType: String,
 
     val httpCode: Int? = null, // ex: 200
     val contentType: String? = null,

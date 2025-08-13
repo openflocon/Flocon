@@ -52,7 +52,7 @@ class AnalyticsRepositoryImpl(
     }
 
     override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
-
+        // no op
     }
 
     override fun observeAnalytics(

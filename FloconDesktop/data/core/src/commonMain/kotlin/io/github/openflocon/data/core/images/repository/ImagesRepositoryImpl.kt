@@ -31,7 +31,7 @@ class ImagesRepositoryImpl(
     }
 
     override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
-
+        // no op
     }
 
     override suspend fun onImageReceived(

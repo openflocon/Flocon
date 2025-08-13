@@ -8,27 +8,22 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 
-fun toDomainModel(request: FloconNetworkRequestEmbedded): FloconNetworkRequestDomainModel {
-    return with(request) {
-        FloconNetworkRequestDomainModel(
-            url = this.url,
-            method = this.method,
-            startTime = this.startTime,
-            headers = this.requestHeaders,
-            body = this.requestBody,
-            byteSize = this.requestByteSize,
-            isMocked = this.isMocked,
-        )
-    }
-}
-
 fun FloconNetworkCallEntity.toDomainModel(): FloconNetworkCallDomainModel? {
     return try {
-        val networkRequest = toDomainModel(request)
         when (type) {
             FloconNetworkCallType.HTTP -> FloconNetworkCallDomainModel.Http(
                 callId = callId,
-                networkRequest = networkRequest,
+                networkRequest = FloconNetworkRequestDomainModel(
+                    floconCallId = callId,
+                    floconNetworkType = "http", // ?
+                    byteSize = request.requestByteSize,
+                    method = request.method,
+                    headers = request.requestHeaders,
+                    url = request.url,
+                    isMocked = request.isMocked,
+                    startTime = request.startTime,
+                    body = request.requestBody
+                ),
                 response = response?.let {
                     FloconNetworkCallDomainModel.Http.Response(
                         httpCode = response.http!!.responseHttpCode,

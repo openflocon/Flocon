@@ -46,7 +46,7 @@ class ToDeviceDashboardDataSourceImpl(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Dashboard.Plugin,
                 method = Protocol.ToDevice.Dashboard.Method.OnTextFieldSubmitted,
-                body = Json.Default.encodeToString(
+                body = json.encodeToString(
                     ToDeviceSubmittedTextFieldMessage(
                         id = textFieldId,
                         value = value,
@@ -67,7 +67,7 @@ class ToDeviceDashboardDataSourceImpl(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Dashboard.Plugin,
                 method = Protocol.ToDevice.Dashboard.Method.OnCheckBoxValueChanged,
-                body = Json.Default.encodeToString(
+                body = json.encodeToString(
                     ToDeviceCheckBoxValueChangedMessage(
                         id = checkBoxId,
                         value = value,

@@ -47,7 +47,7 @@ class SharedPreferencesViewModel(
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(
                 viewModelScope,
-                SharingStarted.Companion.WhileSubscribed(5_000),
+                SharingStarted.WhileSubscribed(5_000),
                 SharedPreferencesRowsStateUiModel.Loading,
             )
 

@@ -47,7 +47,7 @@ class TableSelectorDelegate(
         }.flowOn(dispatcherProvider.viewModel)
             .stateIn(
                 coroutineScope,
-                SharingStarted.Companion.WhileSubscribed(5_000),
+                SharingStarted.WhileSubscribed(5_000),
                 TablesStateUiModel.Loading,
             )
 
