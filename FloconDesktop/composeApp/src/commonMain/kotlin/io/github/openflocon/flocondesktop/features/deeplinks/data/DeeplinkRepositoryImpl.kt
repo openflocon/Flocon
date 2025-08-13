@@ -2,12 +2,12 @@ package io.github.openflocon.flocondesktop.features.deeplinks.data
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
+import io.github.openflocon.data.core.deeplink.datasource.DeeplinkLocalDataSource
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.domain.deeplink.repository.DeeplinkRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.data.core.deeplink.datasource.DeeplinkLocalDataSource
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 class DeeplinkRepositoryImpl(
     private val localDeeplinkDataSource: DeeplinkLocalDataSource,
     private val dispatcherProvider: DispatcherProvider,
-    private val adbRepository: AdbRepository
+    private val adbRepository: AdbRepository,
 ) : DeeplinkRepository,
     MessagesReceiverRepository {
 
@@ -44,9 +44,8 @@ class DeeplinkRepositoryImpl(
         }
     }
 
-    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
-        localDeeplinkDataSource.observe(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observe(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override fun executeDeeplink(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, adbPath: String, deeplink: String) {
         adbRepository.executeAdbCommand(

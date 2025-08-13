@@ -71,7 +71,6 @@ fun NetworkMocksWindow(
     }
 }
 
-
 @Composable
 private fun NetworkMocksContent(
     mocks: List<MockNetworkLineUiModel>,
@@ -89,7 +88,7 @@ private fun NetworkMocksContent(
                 Modifier
                     .fillMaxWidth()
                     .background(FloconTheme.colorPalette.panel)
-                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
             ) {
                 Text(
                     text = "Mocks",
@@ -104,7 +103,7 @@ private fun NetworkMocksContent(
                         .clip(RoundedCornerShape(12.dp))
                         .background(FloconTheme.colorPalette.onSurface)
                         .clickable(onClick = onAddItemClicked)
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
                 ) {
                     Text(
                         "Create",
@@ -129,7 +128,6 @@ private fun NetworkMocksContent(
         }
     }
 }
-
 
 @Composable
 @Preview

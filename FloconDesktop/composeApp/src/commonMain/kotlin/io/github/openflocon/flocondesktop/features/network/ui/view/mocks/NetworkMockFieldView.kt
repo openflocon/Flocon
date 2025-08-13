@@ -22,10 +22,10 @@ fun NetworkMockFieldView(
     label: String,
     placeHolder: String?,
     value: String,
-    minLines: Int = 1,
-    maxLines: Int = Int.MAX_VALUE,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    minLines: Int = 1,
+    maxLines: Int = Int.MAX_VALUE,
 ) {
     Column(
         modifier = modifier,
@@ -69,4 +69,3 @@ fun NetworkMockFieldView(
         }
     }
 }
-

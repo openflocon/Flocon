@@ -5,6 +5,7 @@ import com.flocon.data.remote.database.datasource.toDomain
 import com.flocon.data.remote.database.models.toDeviceDatabasesDomain
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.data.core.database.datasource.DeviceDatabasesRemoteDataSource
+import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
 import io.github.openflocon.data.core.database.datasource.QueryDatabaseRemoteDataSource
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.Either
@@ -14,7 +15,6 @@ import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.repository.DatabaseRepository
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -35,10 +35,9 @@ class DatabaseRepositoryImpl(
         // no op
     }
 
-    override fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?> =
-        deviceDatabasesDataSource
-            .observeSelectedDeviceDatabase(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?> = deviceDatabasesDataSource
+        .observeSelectedDeviceDatabase(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override fun selectDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId) {
         deviceDatabasesDataSource.selectDeviceDatabase(
@@ -47,14 +46,13 @@ class DatabaseRepositoryImpl(
         )
     }
 
-    override fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>> =
-        deviceDatabasesDataSource
-            .observeDeviceDatabases(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>> = deviceDatabasesDataSource
+        .observeDeviceDatabases(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun registerDeviceDatabases(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        databases: List<DeviceDataBaseDomainModel>
+        databases: List<DeviceDataBaseDomainModel>,
     ) = withContext(dispatcherProvider.data) {
         deviceDatabasesDataSource.registerDeviceDatabases(
             deviceIdAndPackageName = deviceIdAndPackageName,
@@ -121,7 +119,7 @@ class DatabaseRepositoryImpl(
 
     override fun observeLastSuccessQuery(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        databaseId: DeviceDataBaseId
+        databaseId: DeviceDataBaseId,
     ): Flow<List<String>> = localDatabaseDataSource.observeLastSuccessQuery(
         deviceIdAndPackageName = deviceIdAndPackageName,
         databaseId = databaseId,

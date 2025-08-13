@@ -2,17 +2,17 @@ package io.github.openflocon.flocondesktop.features.table.data
 
 import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.data.core.table.datasource.TableRemoteDataSource
 import io.github.openflocon.data.core.table.datasource.DeviceTablesDataSource
 import io.github.openflocon.data.core.table.datasource.TableLocalDataSource
-import io.github.openflocon.flocondesktop.features.table.data.mapper.toDomain
-import io.github.openflocon.flocondesktop.features.table.data.model.TableItemDataModel
+import io.github.openflocon.data.core.table.datasource.TableRemoteDataSource
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.table.models.TableDomainModel
 import io.github.openflocon.domain.table.models.TableId
 import io.github.openflocon.domain.table.models.TableIdentifierDomainModel
 import io.github.openflocon.domain.table.repository.TableRepository
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.flocondesktop.features.table.data.mapper.toDomain
+import io.github.openflocon.flocondesktop.features.table.data.model.TableItemDataModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -76,9 +76,8 @@ class TableRepositoryImpl(
         emptyList()
     }
 
-    override fun observeTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> =
-        tableLocalDataSource.observe(deviceIdAndPackageName = deviceIdAndPackageName, tableId = tableId)
-            .flowOn(dispatcherProvider.data)
+    override fun observeTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> = tableLocalDataSource.observe(deviceIdAndPackageName = deviceIdAndPackageName, tableId = tableId)
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun deleteTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableIdentifierDomainModel) {
         withContext(dispatcherProvider.data) {
@@ -94,11 +93,9 @@ class TableRepositoryImpl(
         )
     }
 
-    override fun observeSelectedDeviceTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<TableIdentifierDomainModel?> =
-        deviceTablesDataSource.observeSelectedDeviceTable(deviceIdAndPackageName = deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeSelectedDeviceTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<TableIdentifierDomainModel?> = deviceTablesDataSource.observeSelectedDeviceTable(deviceIdAndPackageName = deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> =
-        tableLocalDataSource.observeDeviceTables(deviceIdAndPackageName = deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> = tableLocalDataSource.observeDeviceTables(deviceIdAndPackageName = deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 }

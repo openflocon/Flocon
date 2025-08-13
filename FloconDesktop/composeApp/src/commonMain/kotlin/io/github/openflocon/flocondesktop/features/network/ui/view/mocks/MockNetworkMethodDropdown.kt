@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view.mocks
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +31,7 @@ fun MockNetworkMethodDropdown(
                 method = value,
                 onClick = {
                     expanded = true
-                }
+                },
             )
             DropdownMenu(
                 expanded = expanded,
@@ -45,7 +44,7 @@ fun MockNetworkMethodDropdown(
                         onClick = {
                             onValueChange(method)
                             expanded = false
-                        }
+                        },
                     )
                 }
             }

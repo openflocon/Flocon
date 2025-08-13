@@ -2,20 +2,20 @@ package io.github.openflocon.flocondesktop.features.network.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.network.ui.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class NetworkViewModel(
     observeHttpRequestsUseCase: ObserveHttpRequestsUseCase,
@@ -49,7 +48,7 @@ class NetworkViewModel(
             selectedRequestId = null,
             detailJsons = emptySet(),
             mocksDisplayed = null,
-        )
+        ),
     )
 
     private val filterUiState = MutableStateFlow(FilterUiState(query = ""))
@@ -165,7 +164,7 @@ class NetworkViewModel(
             state.copy(
                 mocksDisplayed = MockDisplayed(
                     fromNetworkCallId = callId,
-                )
+                ),
             )
         }
     }
@@ -173,7 +172,7 @@ class NetworkViewModel(
     private fun closeMocks() {
         contentState.update { state ->
             state.copy(
-                mocksDisplayed = null
+                mocksDisplayed = null,
             )
         }
     }

@@ -1,12 +1,12 @@
 package io.github.openflocon.flocondesktop.features.dashboard.ui.delegate
 
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.dashboard.usecase.ObserveCurrentDeviceSelectedDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.ObserveDeviceDashboardsUseCase
 import io.github.openflocon.domain.dashboard.usecase.SelectCurrentDeviceDashboardUseCase
-import io.github.openflocon.domain.dashboard.models.DashboardId
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DeviceDashboardUiModel
 import kotlinx.coroutines.flow.SharingStarted

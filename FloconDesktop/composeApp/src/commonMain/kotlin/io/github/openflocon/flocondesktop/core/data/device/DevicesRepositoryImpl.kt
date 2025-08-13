@@ -32,34 +32,32 @@ class DevicesRepositoryImpl(
     private val devicesMutex = Mutex()
 
     // returns new if new device
-    override suspend fun register(device: DeviceDomainModel) : Boolean {
-        return withContext(dispatcherProvider.data) {
-            devicesMutex.withLock {
-                val existingDevice = _devices.value.find { it.deviceId == device.deviceId }
-                val isNewDevice = existingDevice == null
+    override suspend fun register(device: DeviceDomainModel): Boolean = withContext(dispatcherProvider.data) {
+        devicesMutex.withLock {
+            val existingDevice = _devices.value.find { it.deviceId == device.deviceId }
+            val isNewDevice = existingDevice == null
 
-                _devices.update { currentDevices ->
-                    val updatedDevice = device.copy(
-                        apps = device.apps.plus(existingDevice?.apps.orEmpty())
-                            .distinctBy(DeviceAppDomainModel::packageName),
-                    )
+            _devices.update { currentDevices ->
+                val updatedDevice = device.copy(
+                    apps = device.apps.plus(existingDevice?.apps.orEmpty())
+                        .distinctBy(DeviceAppDomainModel::packageName),
+                )
 
-                    if (_currentDevice.value?.deviceId == device.deviceId) {
-                        _currentDevice.update { updatedDevice }
-                    }
-
-                    val newDevicesList = if (isNewDevice) {
-                        currentDevices + updatedDevice
-                    } else {
-                        currentDevices.map {
-                            if (it.deviceId == device.deviceId) updatedDevice else it
-                        }
-                    }
-                    newDevicesList.distinct()
+                if (_currentDevice.value?.deviceId == device.deviceId) {
+                    _currentDevice.update { updatedDevice }
                 }
 
-                isNewDevice
+                val newDevicesList = if (isNewDevice) {
+                    currentDevices + updatedDevice
+                } else {
+                    currentDevices.map {
+                        if (it.deviceId == device.deviceId) updatedDevice else it
+                    }
+                }
+                newDevicesList.distinct()
             }
+
+            isNewDevice
         }
     }
 

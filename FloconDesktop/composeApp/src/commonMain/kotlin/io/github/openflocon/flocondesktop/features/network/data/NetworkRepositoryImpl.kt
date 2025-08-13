@@ -51,11 +51,10 @@ class NetworkRepositoryImpl(
 
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        lite: Boolean
-    ): Flow<List<FloconNetworkCallDomainModel>> =
-        networkLocalDataSource
-            .observeRequests(deviceIdAndPackageName = deviceIdAndPackageName, lite = lite)
-            .flowOn(dispatcherProvider.data)
+        lite: Boolean,
+    ): Flow<List<FloconNetworkCallDomainModel>> = networkLocalDataSource
+        .observeRequests(deviceIdAndPackageName = deviceIdAndPackageName, lite = lite)
+        .flowOn(dispatcherProvider.data)
 
     override fun observeRequest(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -79,7 +78,7 @@ class NetworkRepositoryImpl(
                                 deviceId = deviceId,
                                 packageName = message.appPackageName,
                             ),
-                            call = call
+                            call = call,
                         )
                     }
                 }
@@ -115,44 +114,41 @@ class NetworkRepositoryImpl(
                                 deviceId = deviceId,
                                 packageName = message.appPackageName,
                             ),
-                            call = call
+                            call = call,
                         )
                     }
                 }
             }
-            //decode(message)?.let { toDomain(it) }?.let { request ->
+            // decode(message)?.let { toDomain(it) }?.let { request ->
             //    val responseContentType = request.response.contentType
             //    if (request.response.contentType != null && responseContentType?.startsWith("image/") == true) {
             //        networkImageRepository.onImageReceived(deviceId = deviceId, request = request)
             //    }
             //    networkLocalDataSource.save(deviceId = deviceId, packageName = message.appPackageName, request = request)
-            //}
+            // }
         }
     }
 
-    private fun decodeRequest(message: FloconIncomingMessageDataModel): FloconNetworkRequestDataModel? =
-        try {
-            httpParser.decodeFromString<FloconNetworkRequestDataModel>(message.body)
-        } catch (t: Throwable) {
-            t.printStackTrace()
-            null
-        }
+    private fun decodeRequest(message: FloconIncomingMessageDataModel): FloconNetworkRequestDataModel? = try {
+        httpParser.decodeFromString<FloconNetworkRequestDataModel>(message.body)
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        null
+    }
 
-    private fun decodeResponseCallId(message: FloconIncomingMessageDataModel): FloconNetworkCallIdDataModel? =
-        try {
-            httpParser.decodeFromString<FloconNetworkCallIdDataModel>(message.body)
-        } catch (t: Throwable) {
-            t.printStackTrace()
-            null
-        }
+    private fun decodeResponseCallId(message: FloconIncomingMessageDataModel): FloconNetworkCallIdDataModel? = try {
+        httpParser.decodeFromString<FloconNetworkCallIdDataModel>(message.body)
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        null
+    }
 
-    private fun decodeResponse(message: FloconIncomingMessageDataModel): FloconNetworkResponseDataModel? =
-        try {
-            httpParser.decodeFromString<FloconNetworkResponseDataModel>(message.body)
-        } catch (t: Throwable) {
-            t.printStackTrace()
-            null
-        }
+    private fun decodeResponse(message: FloconIncomingMessageDataModel): FloconNetworkResponseDataModel? = try {
+        httpParser.decodeFromString<FloconNetworkResponseDataModel>(message.body)
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        null
+    }
 
     override suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         networkLocalDataSource.clearDeviceCalls(deviceIdAndPackageName = deviceIdAndPackageName)
@@ -172,7 +168,7 @@ class NetworkRepositoryImpl(
 
     override suspend fun deleteRequestsBefore(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        requestId: String
+        requestId: String,
     ) {
         withContext(dispatcherProvider.data) {
             networkLocalDataSource.deleteRequestsBefore(
@@ -188,7 +184,7 @@ class NetworkRepositoryImpl(
 
     fun toDomainForResponse(
         decoded: FloconNetworkResponseDataModel,
-        request: FloconNetworkCallDomainModel
+        request: FloconNetworkCallDomainModel,
     ): FloconNetworkCallDomainModel? {
         try {
             val networkResponse = FloconNetworkResponseDomainModel(
@@ -207,7 +203,7 @@ class NetworkRepositoryImpl(
                         isSuccess = decoded.responseGrpcStatus == "OK",
                     )
                     request.copy(
-                        response = response
+                        response = response,
                     )
                 }
 
@@ -217,7 +213,7 @@ class NetworkRepositoryImpl(
                         responseStatus = decoded.responseGrpcStatus!!,
                     )
                     request.copy(
-                        response = response
+                        response = response,
                     )
                 }
 
@@ -227,7 +223,7 @@ class NetworkRepositoryImpl(
                         httpCode = decoded.responseHttpCode!!,
                     )
                     request.copy(
-                        response = response
+                        response = response,
                     )
                 }
             }
@@ -284,7 +280,7 @@ class NetworkRepositoryImpl(
 
     override suspend fun setupMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        mocks: List<MockNetworkDomainModel>
+        mocks: List<MockNetworkDomainModel>,
     ) {
         withContext(dispatcherProvider.data) {
             networkRemoteDataSource.setupMocks(
@@ -296,67 +292,55 @@ class NetworkRepositoryImpl(
 
     override suspend fun getMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        id: String
-    ): MockNetworkDomainModel? {
-        return withContext(dispatcherProvider.data) {
-            networkMocksLocalDataSource.getMock(
-                deviceIdAndPackageName = deviceIdAndPackageName,
-                id = id,
-            )
-        }
+        id: String,
+    ): MockNetworkDomainModel? = withContext(dispatcherProvider.data) {
+        networkMocksLocalDataSource.getMock(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            id = id,
+        )
     }
 
     override suspend fun getAllEnabledMocks(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): List<MockNetworkDomainModel> {
-        return withContext(dispatcherProvider.data) {
-            networkMocksLocalDataSource.getAllEnabledMocks(
-                deviceIdAndPackageName = deviceIdAndPackageName,
-            )
-        }
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): List<MockNetworkDomainModel> = withContext(dispatcherProvider.data) {
+        networkMocksLocalDataSource.getAllEnabledMocks(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        )
     }
 
     override suspend fun addMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        mock: MockNetworkDomainModel
-    ) {
-        return withContext(dispatcherProvider.data) {
-            networkMocksLocalDataSource.addMock(
-                deviceIdAndPackageName = deviceIdAndPackageName,
-                mock = mock,
-            )
-        }
+        mock: MockNetworkDomainModel,
+    ) = withContext(dispatcherProvider.data) {
+        networkMocksLocalDataSource.addMock(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            mock = mock,
+        )
     }
 
-    override suspend fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<MockNetworkDomainModel>> {
-        return networkMocksLocalDataSource.observeAll(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        ).flowOn(dispatcherProvider.data)
-    }
+    override suspend fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<MockNetworkDomainModel>> = networkMocksLocalDataSource.observeAll(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    ).flowOn(dispatcherProvider.data)
 
     override suspend fun deleteMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        id: String
-    ) {
-        return withContext(dispatcherProvider.data) {
-            networkMocksLocalDataSource.deleteMock(
-                deviceIdAndPackageName = deviceIdAndPackageName,
-                id = id,
-            )
-        }
+        id: String,
+    ) = withContext(dispatcherProvider.data) {
+        networkMocksLocalDataSource.deleteMock(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            id = id,
+        )
     }
 
     override suspend fun updateMockIsEnabled(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         id: String,
-        isEnabled: Boolean
-    ) {
-        return withContext(dispatcherProvider.data) {
-            networkMocksLocalDataSource.updateMockIsEnabled(
-                deviceIdAndPackageName = deviceIdAndPackageName,
-                id = id,
-                isEnabled = isEnabled,
-            )
-        }
+        isEnabled: Boolean,
+    ) = withContext(dispatcherProvider.data) {
+        networkMocksLocalDataSource.updateMockIsEnabled(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            id = id,
+            isEnabled = isEnabled,
+        )
     }
 }

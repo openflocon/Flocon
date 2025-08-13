@@ -17,7 +17,6 @@ sealed interface DevicesStateUiModel {
         val deviceSelected: DeviceItemUiModel,
         val appSelected: DeviceAppUiModel?,
     ) : DevicesStateUiModel
-
 }
 
 fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.WithDevices(

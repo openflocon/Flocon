@@ -16,7 +16,7 @@ class NetworkRemoteDataSourceImpl(
 
     override suspend fun setupMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        mocks: List<MockNetworkDomainModel>
+        mocks: List<MockNetworkDomainModel>,
     ) {
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
@@ -24,7 +24,7 @@ class NetworkRemoteDataSourceImpl(
                 plugin = Protocol.ToDevice.Network.Plugin,
                 method = Protocol.ToDevice.Network.Method.SetupMocks,
                 body = Json.Default.encodeToString(
-                    listToRemote(mocks)
+                    listToRemote(mocks),
                 ),
             ),
         )

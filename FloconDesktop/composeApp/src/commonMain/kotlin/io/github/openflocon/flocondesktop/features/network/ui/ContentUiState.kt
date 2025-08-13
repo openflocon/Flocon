@@ -17,7 +17,6 @@ data class MockDisplayed(
     val windowInstanceId: String = UUID.randomUUID().toString(),
 )
 
-
 fun previewContentUiState() = ContentUiState(
     selectedRequestId = null,
     detailJsons = emptySet(),

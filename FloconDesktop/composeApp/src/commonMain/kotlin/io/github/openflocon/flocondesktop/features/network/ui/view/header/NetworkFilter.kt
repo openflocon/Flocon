@@ -49,14 +49,15 @@ fun NetworkFilter(
                     .clickable(
                         onClick = {
                             onAction(NetworkAction.OpenMocks)
-                        })
+                        },
+                    )
                     .padding(horizontal = 16.dp, vertical = 12.dp),
             ) {
                 Text(
                     text = "Mocks",
                     style = FloconTheme.typography.bodyMedium.copy(
                         color = Color.Black,
-                    )
+                    ),
                 )
             }
         }

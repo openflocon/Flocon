@@ -22,7 +22,6 @@ data class MockNetworkUiModel(
     )
 }
 
-
 data class EditableMockNetworkUiModel(
     val id: String?,
     val isEnabled: Boolean, // not visible

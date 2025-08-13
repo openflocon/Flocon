@@ -123,7 +123,7 @@ fun NetworkScreen(
             }
             FloconPanel(
                 contentState = uiState.detailState,
-                modifier = Modifier.align(Alignment.CenterEnd)
+                modifier = Modifier.align(Alignment.CenterEnd),
             ) {
                 NetworkDetailView(
                     modifier = Modifier.fillMaxSize(),
@@ -170,7 +170,7 @@ fun NetworkScreen(
             fromNetworkCallId = it.fromNetworkCallId,
             onCloseRequest = {
                 onAction(NetworkAction.CloseMocks)
-            }
+            },
         )
     }
 }

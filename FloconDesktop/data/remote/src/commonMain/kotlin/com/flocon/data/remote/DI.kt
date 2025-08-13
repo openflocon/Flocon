@@ -15,6 +15,6 @@ val dataRemoteModule = module {
         filesModule,
         networkModule,
         sharedPreferencesModule,
-        tableModule
+        tableModule,
     )
 }

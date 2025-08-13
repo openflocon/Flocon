@@ -47,7 +47,6 @@ class NetworkMocksViewModel(
             initialValue = emptyList(),
         )
 
-
     val editionWindow = MutableStateFlow<MockEditionWindowUiModel?>(null)
 
     fun initWith(fromNetworkCallId: String?) {
@@ -75,7 +74,7 @@ class NetworkMocksViewModel(
         val mock = toUi(item)
         editionWindow.update {
             MockEditionWindowUiModel(
-                SelectedMockUiModel.Edition(mock)
+                SelectedMockUiModel.Edition(mock),
             )
         }
     }
@@ -89,7 +88,7 @@ class NetworkMocksViewModel(
     fun createNewMock() {
         editionWindow.update {
             MockEditionWindowUiModel(
-                SelectedMockUiModel.Creation
+                SelectedMockUiModel.Creation,
             )
         }
     }
@@ -110,5 +109,4 @@ class NetworkMocksViewModel(
             feedbackDisplayer.displayMessage("Saved")
         }
     }
-
 }

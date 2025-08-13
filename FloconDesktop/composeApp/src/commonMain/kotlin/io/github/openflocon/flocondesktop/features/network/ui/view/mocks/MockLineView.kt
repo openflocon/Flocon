@@ -2,10 +2,8 @@ package io.github.openflocon.flocondesktop.features.network.ui.view.mocks
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,7 +33,7 @@ fun MockLineView(
     onClicked: (id: String) -> Unit,
     onDeleteClicked: (id: String) -> Unit,
     changeIsEnabled: (id: String, enabled: Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.padding(vertical = 2.dp),
@@ -88,7 +86,7 @@ fun MockLineView(
 
 @Preview
 @Composable
-fun MockLineViewPreview() {
+private fun MockLineViewPreview() {
     FloconTheme {
         FloconSurface {
             MockLineView(
@@ -108,7 +106,7 @@ fun MockLineViewPreview() {
 
 @Preview
 @Composable
-fun MockLineViewPreview_url() {
+private fun MockLineViewPreview_url() {
     FloconTheme {
         FloconSurface {
             MockLineView(
@@ -126,10 +124,9 @@ fun MockLineViewPreview_url() {
     }
 }
 
-
 @Preview
 @Composable
-fun MockLineViewPreview_url_patch() {
+private fun MockLineViewPreview_url_patch() {
     FloconTheme {
         FloconSurface {
             MockLineView(

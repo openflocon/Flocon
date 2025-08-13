@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.data
 
-import io.github.openflocon.flocondesktop.features.deeplinks.data.model.incoming.DeeplinksReceivedDataModel
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
+import io.github.openflocon.flocondesktop.features.deeplinks.data.model.incoming.DeeplinksReceivedDataModel
 import kotlinx.serialization.json.Json
 
 // maybe inject

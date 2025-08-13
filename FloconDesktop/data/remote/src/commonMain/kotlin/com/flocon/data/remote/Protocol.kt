@@ -1,3 +1,4 @@
+@file:Suppress("ktlint")
 package com.flocon.data.remote
 
 object Protocol {
@@ -18,7 +19,6 @@ object Protocol {
                 const val Update = "update"
             }
         }
-
 
         object Database {
             const val Plugin = "database"
@@ -79,8 +79,6 @@ object Protocol {
                 const val AddItems = "AddItems"
             }
         }
-
-
     }
 
     object ToDevice {

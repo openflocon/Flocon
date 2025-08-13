@@ -79,7 +79,7 @@ fun NetworkEditionWindow(
 fun NetworkEditionContent(
     onCancel: () -> Unit,
     onSave: (MockNetworkUiModel) -> Unit,
-    state: SelectedMockUiModel
+    state: SelectedMockUiModel,
 ) {
     MockEditorScreen(
         initialMock = state,
@@ -88,12 +88,11 @@ fun NetworkEditionContent(
     )
 }
 
-
 @Composable
 fun MockEditorScreen(
     initialMock: SelectedMockUiModel,
     onSave: (MockNetworkUiModel) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
 ) {
     var mock by remember { mutableStateOf(createEditable(initialMock)) }
     val scrollState = rememberScrollState()
@@ -103,20 +102,20 @@ fun MockEditorScreen(
 
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Box(
             Modifier
                 .fillMaxWidth()
                 .background(FloconTheme.colorPalette.panel)
-                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
         ) {
             Box(
                 modifier = Modifier.align(Alignment.CenterStart)
                     .clip(RoundedCornerShape(12.dp))
                     .background(FloconTheme.colorPalette.onSurface)
                     .clickable(onClick = onCancel)
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
                 Text(
                     "Cancel",
@@ -136,10 +135,10 @@ fun MockEditorScreen(
                             doOnSuccess = {
                                 onSave(it)
                                 error = null
-                            }
+                            },
                         )
                     })
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
                 Text(
                     "Save",
@@ -152,25 +151,25 @@ fun MockEditorScreen(
         error?.let {
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                text = it, color = MaterialTheme.colorScheme.error
+                text = it, color = MaterialTheme.colorScheme.error,
             )
         }
 
         Row(
             modifier = Modifier.fillMaxSize()
-                .verticalScroll(scrollState)
+                .verticalScroll(scrollState),
         ) {
             Column(
                 modifier = Modifier
                     .weight(2f)
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 // Section Expectation
                 Text(
                     text = "Expectation",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 NetworkMockFieldView(
                     value = mock.expectation.urlPattern ?: "",
@@ -179,7 +178,7 @@ fun MockEditorScreen(
                     },
                     label = "URL Pattern",
                     placeHolder = "https://www.myDomain.*",
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 MockNetworkMethodDropdown(
                     // TODO should be a dropdown
@@ -195,18 +194,18 @@ fun MockEditorScreen(
                 modifier = Modifier
                     .weight(3f)
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 // Section Response
                 Text(
                     text = "Response",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     NetworkMockFieldView(
                         label = "HTTP Code",
@@ -217,12 +216,12 @@ fun MockEditorScreen(
                             if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
                                 mock = mock.copy(
                                     response = mock.response.copy(
-                                        httpCode = newValue.toIntOrNull() ?: 0
-                                    )
+                                        httpCode = newValue.toIntOrNull() ?: 0,
+                                    ),
                                 )
                             }
                         },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                     NetworkMockFieldView(
                         label = "Additional Delay (ms)",
@@ -237,7 +236,7 @@ fun MockEditorScreen(
                                 mock = mock.copy(response = mock.response.copy(delay = newDelay))
                             }
                         },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                 }
 
@@ -249,24 +248,24 @@ fun MockEditorScreen(
                     onValueChange = { newValue ->
                         mock = mock.copy(response = mock.response.copy(mediaType = newValue))
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     NetworkMockMediaType(
                         text = "application/json",
                         onClicked = {
                             mock = mock.copy(response = mock.response.copy(mediaType = it))
-                        }
+                        },
                     )
                     NetworkMockMediaType(
                         text = "text/plain",
                         onClicked = {
                             mock = mock.copy(response = mock.response.copy(mediaType = it))
-                        }
+                        },
                     )
                 }
 
@@ -274,13 +273,13 @@ fun MockEditorScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     MockNetworkLabelView("Headers")
                     Box(
                         modifier = Modifier.size(28.dp)
                             .clip(
-                                RoundedCornerShape(4.dp)
+                                RoundedCornerShape(4.dp),
                             ).clickable {
                                 val newHeaders = mock.response.headers + HeaderUiModel(
                                     key = "",
@@ -334,7 +333,7 @@ fun MockEditorScreen(
                                     mock.response.headers.filterNot { it.id == header.id }
                                 mock =
                                     mock.copy(response = mock.response.copy(headers = newHeaders))
-                            }
+                            },
                         )
                     }
                 }
@@ -347,11 +346,10 @@ fun MockEditorScreen(
                     onValueChange = { newValue ->
                         mock = mock.copy(response = mock.response.copy(body = newValue))
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
-
     }
 }
 
@@ -367,10 +365,9 @@ fun NetworkMockMediaType(text: String, onClicked: (text: String) -> Unit) {
             .clickable {
                 onClicked(text)
             }
-            .padding(horizontal = 12.dp, vertical = 2.dp)
+            .padding(horizontal = 12.dp, vertical = 2.dp),
     )
 }
-
 
 @Composable
 private fun HeaderInputField(
@@ -378,19 +375,19 @@ private fun HeaderInputField(
     value: String,
     onKeyChange: (String) -> Unit,
     onValueChange: (String) -> Unit,
-    onRemove: () -> Unit
+    onRemove: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Box(
             Modifier.weight(1f)
                 .background(
                     color = Color.White.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp),
-                ).padding(horizontal = 12.dp, vertical = 8.dp)
+                ).padding(horizontal = 12.dp, vertical = 8.dp),
         ) {
             if (key.isEmpty()) {
                 Text(
@@ -416,7 +413,7 @@ private fun HeaderInputField(
                 .background(
                     color = Color.White.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp),
-                ).padding(horizontal = 12.dp, vertical = 8.dp)
+                ).padding(horizontal = 12.dp, vertical = 8.dp),
         ) {
             if (value.isEmpty()) {
                 Text(

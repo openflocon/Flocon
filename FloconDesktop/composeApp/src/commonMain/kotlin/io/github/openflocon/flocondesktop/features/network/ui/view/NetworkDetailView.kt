@@ -122,11 +122,11 @@ private fun Request(
             Column {
                 Column(
                     modifier =
-                        Modifier
-                            .background(
-                                color = FloconTheme.colorPalette.surfaceVariant,
-                                shape = RoundedCornerShape(12.dp),
-                            ).padding(horizontal = 8.dp, vertical = 4.dp),
+                    Modifier
+                        .background(
+                            color = FloconTheme.colorPalette.surfaceVariant,
+                            shape = RoundedCornerShape(12.dp),
+                        ).padding(horizontal = 8.dp, vertical = 4.dp),
                 ) {
                     DetailLineTextView(
                         modifier = Modifier.fillMaxWidth(),
@@ -196,11 +196,11 @@ private fun Request(
                     ) {
                         Column(
                             modifier =
-                                Modifier
-                                    .background(
-                                        color = FloconTheme.colorPalette.surfaceVariant,
-                                        shape = RoundedCornerShape(12.dp),
-                                    ).padding(horizontal = 8.dp, vertical = 4.dp),
+                            Modifier
+                                .background(
+                                    color = FloconTheme.colorPalette.surfaceVariant,
+                                    shape = RoundedCornerShape(12.dp),
+                                ).padding(horizontal = 8.dp, vertical = 4.dp),
                         ) {
                             DetailLineTextView(
                                 modifier = Modifier.fillMaxWidth(),
@@ -365,18 +365,18 @@ private fun NetworkDetailViewPreview() {
                 fullUrl = "http://www.google.com",
                 method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
                 status =
-                    NetworkStatusUi(
-                        text = "200",
-                        status = NetworkStatusUi.Status.SUCCESS,
-                    ),
+                NetworkStatusUi(
+                    text = "200",
+                    status = NetworkStatusUi.Status.SUCCESS,
+                ),
                 requestHeaders =
-                    listOf(
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                    ),
+                listOf(
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                ),
                 requestBody =
-                    """
+                """
                         {
                             "id": "123",
                             "name": "Flocon App",
@@ -394,7 +394,7 @@ private fun NetworkDetailViewPreview() {
                 requestSize = "0kb",
                 response = NetworkDetailViewState.Response(
                     body =
-                        """
+                    """
                         {
                             "networkStatusUi": "success",
                             "message": "Data received and processed.",
@@ -403,16 +403,16 @@ private fun NetworkDetailViewPreview() {
                                 "processed_count": 2
                             }
                         }
-                """.trimIndent(),
+                    """.trimIndent(),
                     size = "0kb",
                     headers =
-                        listOf(
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                        ),
+                    listOf(
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                    ),
                 ),
                 graphQlSection = null,
             ),
