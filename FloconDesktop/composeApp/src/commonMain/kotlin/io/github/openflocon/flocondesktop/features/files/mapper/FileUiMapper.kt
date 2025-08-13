@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.files.ui.mapper
+package io.github.openflocon.flocondesktop.features.files.mapper
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Drafts
@@ -6,10 +6,9 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel.ContextualAction
+import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import kotlin.time.Instant
 
 fun FileUiModel.icon(): ImageVector = if (this.isDirectory) Icons.Outlined.Folder else Icons.Outlined.Drafts
@@ -57,34 +56,34 @@ fun FilePathDomainModel.toUi(): FilePathUiModel = when (this) {
 fun buildContextualActions(
     isFolder: Boolean,
     isConstant: Boolean,
-): List<ContextualAction> {
-    val contextualActions = mutableListOf<ContextualAction>()
+): List<FileUiModel.ContextualAction> {
+    val contextualActions = mutableListOf<FileUiModel.ContextualAction>()
     contextualActions.add(
-        ContextualAction(
-            id = ContextualAction.Action.Open,
+        FileUiModel.ContextualAction(
+            id = FileUiModel.ContextualAction.Action.Open,
             text = "Open",
         ),
     )
     if (!isConstant) {
         contextualActions.add(
-            ContextualAction(
-                id = ContextualAction.Action.CopyPath,
+            FileUiModel.ContextualAction(
+                id = FileUiModel.ContextualAction.Action.CopyPath,
                 text = "Copy Path",
             ),
         )
     }
     if (isFolder) {
         contextualActions.add(
-            ContextualAction(
-                id = ContextualAction.Action.DeleteContent,
+            FileUiModel.ContextualAction(
+                id = FileUiModel.ContextualAction.Action.DeleteContent,
                 text = "Delete Content",
             ),
         )
     }
     if (!isConstant) {
         contextualActions.add(
-            ContextualAction(
-                id = ContextualAction.Action.Delete,
+            FileUiModel.ContextualAction(
+                id = FileUiModel.ContextualAction.Action.Delete,
                 text = "Delete",
             ),
         )

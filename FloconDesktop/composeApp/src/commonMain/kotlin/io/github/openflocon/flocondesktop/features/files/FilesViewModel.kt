@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.files.ui
+package io.github.openflocon.flocondesktop.features.files
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Folder
@@ -12,14 +12,13 @@ import io.github.openflocon.domain.files.usecase.DeleteFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.ObserveFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.RefreshFolderContentUseCase
 import io.github.openflocon.domain.files.models.FileDomainModel
-import io.github.openflocon.flocondesktop.features.files.ui.mapper.buildContextualActions
-import io.github.openflocon.flocondesktop.features.files.ui.mapper.toDomain
-import io.github.openflocon.flocondesktop.features.files.ui.mapper.toUi
-import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel.ContextualAction
-import io.github.openflocon.flocondesktop.features.files.ui.model.FilesStateUiModel
+import io.github.openflocon.flocondesktop.features.files.mapper.buildContextualActions
+import io.github.openflocon.flocondesktop.features.files.mapper.toDomain
+import io.github.openflocon.flocondesktop.features.files.mapper.toUi
+import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -156,20 +155,20 @@ class FilesViewModel(
         }
     }
 
-    fun onContextualAction(file: FileUiModel, action: ContextualAction.Action) {
+    fun onContextualAction(file: FileUiModel, action: FileUiModel.ContextualAction.Action) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
-                ContextualAction.Action.Open -> onFileClicked(file)
-                ContextualAction.Action.Delete -> {
+                FileUiModel.ContextualAction.Action.Open -> onFileClicked(file)
+                FileUiModel.ContextualAction.Action.Delete -> {
                     val parent = selectedFile.value?.current?.path ?: return@launch
                     deleteFileUseCase(path = file.path.toDomain(), parentPath = parent)
                 }
 
-                ContextualAction.Action.DeleteContent -> {
+                FileUiModel.ContextualAction.Action.DeleteContent -> {
                     deleteFolderContentUseCase(path = file.path.toDomain())
                 }
 
-                ContextualAction.Action.CopyPath -> {
+                FileUiModel.ContextualAction.Action.CopyPath -> {
                     (file.path as? FilePathUiModel.Real)?.let {
                         copyToClipboard(it.absolutePath)
                     }

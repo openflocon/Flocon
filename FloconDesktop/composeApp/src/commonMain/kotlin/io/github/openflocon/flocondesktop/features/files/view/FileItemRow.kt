@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.files.ui.view
+package io.github.openflocon.flocondesktop.features.files.view
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -20,9 +20,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
-import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

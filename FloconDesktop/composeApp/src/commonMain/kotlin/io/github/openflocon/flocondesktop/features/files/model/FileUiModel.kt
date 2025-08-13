@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.files.ui.model
+package io.github.openflocon.flocondesktop.features.files.model
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Folder

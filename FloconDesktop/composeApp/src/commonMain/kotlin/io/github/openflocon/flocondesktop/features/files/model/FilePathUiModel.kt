@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.files.ui.model
+package io.github.openflocon.flocondesktop.features.files.model
 
 sealed interface FilePathUiModel {
     sealed interface Constants : FilePathUiModel {

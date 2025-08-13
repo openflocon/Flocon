@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.files.ui.view
+package io.github.openflocon.flocondesktop.features.files.view
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,10 +13,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.features.files.ui.FilesViewModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FilesStateUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.previewFilesStateUiModel
+import io.github.openflocon.flocondesktop.features.files.FilesViewModel
+import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
+import io.github.openflocon.flocondesktop.features.files.model.previewFilesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview

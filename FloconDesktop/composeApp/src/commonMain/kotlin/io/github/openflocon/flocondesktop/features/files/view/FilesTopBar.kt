@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.files.ui.view
+package io.github.openflocon.flocondesktop.features.files.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,9 +25,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.files.ui.model.FilePathUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FileTypeUiModel
-import io.github.openflocon.flocondesktop.features.files.ui.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.ui.tooling.preview.Preview

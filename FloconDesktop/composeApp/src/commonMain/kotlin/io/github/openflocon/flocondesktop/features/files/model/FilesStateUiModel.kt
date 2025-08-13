@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.files.ui.model
+package io.github.openflocon.flocondesktop.features.files.model
 
 data class FilesStateUiModel(
     val backStack: List<FileUiModel>,
