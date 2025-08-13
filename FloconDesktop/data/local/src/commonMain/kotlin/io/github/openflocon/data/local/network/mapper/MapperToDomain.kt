@@ -25,11 +25,20 @@ private fun toDomainModel(request: FloconNetworkRequestEmbedded): FloconNetworkR
 
 fun FloconNetworkCallEntity.toDomainModel(): FloconNetworkCallDomainModel? {
     return try {
-        val networkRequest = toDomainModel(request)
         when (type) {
             FloconNetworkCallType.HTTP -> FloconNetworkCallDomainModel.Http(
                 callId = callId,
-                networkRequest = networkRequest,
+                networkRequest = FloconNetworkRequestDomainModel(
+                    floconCallId = callId,
+                    floconNetworkType = "http", // ?
+                    byteSize = request.requestByteSize,
+                    method = request.method,
+                    headers = request.requestHeaders,
+                    url = request.url,
+                    isMocked = request.isMocked,
+                    startTime = request.startTime,
+                    body = request.requestBody
+                ),
                 response = response?.let {
                     FloconNetworkCallDomainModel.Http.Response(
                         httpCode = response.http!!.responseHttpCode,

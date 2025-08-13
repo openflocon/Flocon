@@ -13,7 +13,7 @@ data class NetworkTextColumnUiModel(
     companion object {
         val EMPTY = NetworkTextColumnUiModel(
             sortedBy = SortedByUiModel.None,
-            filter = TextFilterStateUiModel.Companion.EMPTY,
+            filter = TextFilterStateUiModel.EMPTY,
         )
     }
 }
