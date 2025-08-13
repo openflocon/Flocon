@@ -49,7 +49,12 @@ fun main() {
                         Notification(
                             title = notification.title,
                             message = notification.message,
-                            type = Notification.Type.Info // TODO Pass it
+                            type = when (notification.type) {
+                                FeedbackDisplayer.NotificationType.None -> Notification.Type.None
+                                FeedbackDisplayer.NotificationType.Info -> Notification.Type.Info
+                                FeedbackDisplayer.NotificationType.Warning -> Notification.Type.Warning
+                                FeedbackDisplayer.NotificationType.Error -> Notification.Type.Error
+                            }
                         )
                     )
                 }
