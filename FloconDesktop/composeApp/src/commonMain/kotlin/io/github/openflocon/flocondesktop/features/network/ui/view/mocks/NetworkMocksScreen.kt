@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -34,12 +35,16 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun NetworkMocksWindow(
     instanceId: String,
+    fromNetworkCallId: String?,
     onCloseRequest: () -> Unit,
 ) {
     val windowState: FloconWindowState = remember(instanceId) {
         createFloconWindowState()
     }
     val viewModel: NetworkMocksViewModel = koinViewModel()
+    LaunchedEffect(viewModel, fromNetworkCallId) {
+        viewModel.initWith(fromNetworkCallId)
+    }
     val mocks by viewModel.items.collectAsStateWithLifecycle()
     val editionWindow by viewModel.editionWindow.collectAsStateWithLifecycle()
     key(instanceId, windowState) {

@@ -48,7 +48,7 @@ class NetworkViewModel(
         ContentUiState(
             selectedRequestId = null,
             detailJsons = emptySet(),
-            mocksDisplayedInstance = null,
+            mocksDisplayed = null,
         )
     )
 
@@ -125,8 +125,11 @@ class NetworkViewModel(
             is NetworkAction.ClosePanel -> onClosePanel()
             is NetworkAction.CopyText -> onCopyText(action)
             is NetworkAction.Reset -> onReset()
-            is NetworkAction.OpenMocks -> openMocks(true)
-            is NetworkAction.CloseMocks -> openMocks(false)
+            is NetworkAction.OpenMocks -> openMocks(callId = null)
+            is NetworkAction.CreateMock -> {
+                openMocks(callId = action.item.uuid)
+            }
+            is NetworkAction.CloseMocks -> closeMocks()
             is NetworkAction.CopyCUrl -> onCopyCUrl(action)
             is NetworkAction.CopyUrl -> onCopyUrl(action)
             is NetworkAction.Remove -> onRemove(action)
@@ -157,10 +160,20 @@ class NetworkViewModel(
         }
     }
 
-    private fun openMocks(value: Boolean) {
+    private fun openMocks(callId: String?) {
         contentState.update { state ->
             state.copy(
-                mocksDisplayedInstance = if(value) UUID.randomUUID().toString() else null
+                mocksDisplayed = MockDisplayed(
+                    fromNetworkCallId = callId,
+                )
+            )
+        }
+    }
+
+    private fun closeMocks() {
+        contentState.update { state ->
+            state.copy(
+                mocksDisplayed = null
             )
         }
     }

@@ -164,9 +164,10 @@ fun NetworkScreen(
             }
         }
 
-    uiState.contentState.mocksDisplayedInstance?.let {
+    uiState.contentState.mocksDisplayed?.let {
         NetworkMocksWindow(
-            instanceId = it,
+            instanceId = it.windowInstanceId,
+            fromNetworkCallId = it.fromNetworkCallId,
             onCloseRequest = {
                 onAction(NetworkAction.CloseMocks)
             }

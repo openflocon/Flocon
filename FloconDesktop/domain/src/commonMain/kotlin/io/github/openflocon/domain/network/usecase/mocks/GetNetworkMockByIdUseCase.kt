@@ -7,7 +7,6 @@ import io.github.openflocon.domain.network.repository.NetworkMocksRepository
 class GetNetworkMockByIdUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val networkMocksRepository: NetworkMocksRepository,
-    private val setupNetworkMocksUseCase: SetupNetworkMocksUseCase,
 ) {
     suspend operator fun invoke(
         id: String

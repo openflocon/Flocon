@@ -11,6 +11,7 @@ import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequest
 import io.github.openflocon.domain.network.usecase.UpdateNetworkFilterUseCase
 import io.github.openflocon.domain.network.usecase.mocks.AddNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.DeleteNetworkMocksUseCase
+import io.github.openflocon.domain.network.usecase.mocks.GenerateNetworkMockFromNetworkCallUseCase
 import io.github.openflocon.domain.network.usecase.mocks.GetNetworkMockByIdUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.SetupNetworkMocksUseCase
@@ -34,4 +35,5 @@ internal val networkModule = module {
     factoryOf(::DeleteNetworkMocksUseCase)
     factoryOf(::SetupNetworkMocksUseCase)
     factoryOf(::GetNetworkMockByIdUseCase)
+    factoryOf(::GenerateNetworkMockFromNetworkCallUseCase)
 }
