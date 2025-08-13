@@ -13,6 +13,7 @@ data class NetworkItemViewState(
     val domain: String,
     val status: NetworkStatusUi,
     val method: NetworkMethodUi,
+    val isMocked: Boolean,
 ) {
 
     fun contains(text: String): Boolean = type.contains(text) ||
@@ -68,6 +69,7 @@ fun previewNetworkItemViewState(): NetworkItemViewState = NetworkItemViewState(
         query = "/search?q=test",
         method = "get",
     ),
+    isMocked = false,
 )
 
 fun previewGraphQlItemViewState(): NetworkItemViewState = NetworkItemViewState(
@@ -82,4 +84,5 @@ fun previewGraphQlItemViewState(): NetworkItemViewState = NetworkItemViewState(
     type = NetworkItemViewState.NetworkTypeUi.GraphQl(
         queryName = "GetUserInfoQuery",
     ),
+    isMocked = false,
 )

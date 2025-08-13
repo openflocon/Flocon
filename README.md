@@ -8,6 +8,7 @@ It allows developers to connect an Android device to their computer and launch a
 
 With Flocon, you gain deep access to critical app internals — such as
 - network requests (http, images, grpc, graphql)
+- mock network calls
 - local storage (sharedpref, databases, app files)
 - analytics events (and custom events)
 - debug menu displayed on the desktop
@@ -33,8 +34,8 @@ in your module .kts
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon)
 ```
-// use only on a debug buildType, do not distribute on the playstore build !
 debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
+releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
 ```
 
 in your `Application.kt`
@@ -65,6 +66,19 @@ For each request, you can inspect:
 
 This feature is invaluable for diagnosing backend issues, debugging unexpected API failures, and verifying request payloads and authentication headers.
 
+#### 🎭 HTTP Request Mocking
+
+Beyond simple inspection, Flocon now allows you to mock HTTP requests. This powerful feature gives you full control over your app's network layer without needing to change any code. You can intercept specific network calls and provide custom responses, making it easy to test various scenarios.
+
+With this feature, you can:
+
+- Simulate network errors: Test how your app handles different HTTP status codes (e.g., 404 Not Found, 500 Server Error).
+- Create test data: Mock responses with specific data to test different UI states, even if your backend isn't ready yet.
+- Create a new mock from an existing request, then test your app with some differences inside the prefious body
+- Reduce dependencies: Develop and test features without needing a stable internet connection or a complete backend environment.
+
+#### With OkHttp
+
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-okhttp-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-okhttp-interceptor)
 
 ```
@@ -76,6 +90,23 @@ val okHttpClient = OkHttpClient()
             .newBuilder()
             .addInterceptor(FloconOkhttpInterceptor())
             .build()
+```
+
+#### With Ktor 
+
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-ktor-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-ktor-interceptor)
+
+tested with ktor `3.2.3`
+
+```
+debugImplementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
+```
+
+```kotlin
+val httpClient = HttpClient(OkHttp) { // works with all clients, not only OkHttp
+    install(FloconKtorPlugin)
+    ...
+}
 ```
 
 ### 🛰️ GraphQL Request Inspector
@@ -359,7 +390,6 @@ ManagedChannelBuilder
 
 Flocon is still evolving, next features : 
 
-- GraphQl Network interceptor
 - Preview & Dowload files 
 
 ## 🧰 Requirements
@@ -369,7 +399,8 @@ Flocon is still evolving, next features :
 - ADB (Android Debug Bridge) accessible from your system path
 - Flocon Desktop app (JVM-based)
 - Flocon SDK integrated into your Android app
-- At least `kotlin 2.0.0`
+- At least `kotlin 2.0.0` in your Android app
+- Be aligned between the mobile library version & the desktop app version
 
 ---
 

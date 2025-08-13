@@ -82,7 +82,7 @@ private fun TextFilterStateUiModel.filter(
 }
 
 private fun TextFilterStateUiModel.filterByText(text: String?): Boolean {
-    if(text == null)
+    if (text == null)
         return true // accepts if text is null
 
     for (filter in this.allFilters) {

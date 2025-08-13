@@ -23,7 +23,7 @@ kotlin {
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
-            
+
             implementation(projects.domain)
             implementation(projects.data.core)
         }
@@ -43,5 +43,4 @@ kotlin {
             implementation(libs.kotlinx.serializationJson)
         }
     }
-
 }

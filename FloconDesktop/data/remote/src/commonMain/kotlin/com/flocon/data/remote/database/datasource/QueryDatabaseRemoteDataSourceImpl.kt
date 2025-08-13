@@ -4,11 +4,11 @@ import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.database.models.DatabaseExecuteSqlResponseDataModel
 import com.flocon.data.remote.database.models.DatabaseOutgoingQueryMessage
 import com.flocon.data.remote.database.models.ResponseAndRequestIdDataModel
-import io.github.openflocon.data.core.database.datasource.QueryDatabaseRemoteDataSource
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
+import io.github.openflocon.data.core.database.datasource.QueryDatabaseRemoteDataSource
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
@@ -47,13 +47,13 @@ class QueryDatabaseRemoteDataSourceImpl(
                 plugin = Protocol.ToDevice.Database.Plugin,
                 method = Protocol.ToDevice.Database.Method.Query,
                 body =
-                    Json.encodeToString<DatabaseOutgoingQueryMessage>(
-                        DatabaseOutgoingQueryMessage(
-                            requestId = requestId,
-                            query = query,
-                            database = databaseId,
-                        ),
+                Json.encodeToString<DatabaseOutgoingQueryMessage>(
+                    DatabaseOutgoingQueryMessage(
+                        requestId = requestId,
+                        query = query,
+                        database = databaseId,
                     ),
+                ),
             ),
         )
         // wait for result
@@ -82,7 +82,7 @@ class QueryDatabaseRemoteDataSourceImpl(
 // TODO Move
 fun ResponseAndRequestIdDataModel.toDomain() = ResponseAndRequestIdDomainModel(
     requestId = requestId,
-    response = response.toDomain()
+    response = response.toDomain(),
 )
 
 fun DatabaseExecuteSqlResponseDataModel.toDomain(): DatabaseExecuteSqlResponseDomainModel = when (this) {

@@ -29,7 +29,7 @@ fun startKoinApp() {
             // Temporary
             module {
                 singleOf(::AdbRepositoryImpl) bind AdbRepository::class
-            }
+            },
         )
     }
 }

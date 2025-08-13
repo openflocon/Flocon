@@ -54,6 +54,14 @@ sealed interface FloconNetworkCallDomainModel {
 
 }
 
+fun FloconNetworkCallDomainModel.httpCode(): Int? {
+    return when(this) {
+        is FloconNetworkCallDomainModel.Http -> this.response?.httpCode
+        is FloconNetworkCallDomainModel.GraphQl -> this.response?.httpCode
+        else -> null
+    }
+}
+
 data class FloconNetworkRequestDomainModel(
     val url: String,
     val startTime: Long,
@@ -61,6 +69,7 @@ data class FloconNetworkRequestDomainModel(
     val headers: Map<String, String>,
     val body: String?,
     val byteSize: Long,
+    val isMocked: Boolean,
 )
 
 data class FloconNetworkResponseDomainModel(

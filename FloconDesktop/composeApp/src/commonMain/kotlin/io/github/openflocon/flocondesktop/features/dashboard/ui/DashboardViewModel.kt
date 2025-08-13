@@ -3,11 +3,11 @@ package io.github.openflocon.flocondesktop.features.dashboard.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.dashboard.usecase.ObserveCurrentDeviceDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.SendCheckBoxUpdateDeviceDeviceUseCase
 import io.github.openflocon.domain.dashboard.usecase.SendClickEventToDeviceDeviceUseCase
 import io.github.openflocon.domain.dashboard.usecase.SubmitTextFieldToDeviceDeviceUseCase
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.dashboard.ui.delegate.DashboardSelectorDelegate
 import io.github.openflocon.flocondesktop.features.dashboard.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.dashboard.ui.model.DashboardViewState

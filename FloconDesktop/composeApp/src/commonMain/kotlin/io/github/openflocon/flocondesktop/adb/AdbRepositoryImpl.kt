@@ -10,12 +10,8 @@ class AdbRepositoryImpl : AdbRepository {
 
     override fun executeAdbCommand(
         adbPath: String,
-        command: String
-    ): Either<Throwable, String> {
-        return localExecuteAdbCommand(adbPath = adbPath, command = command)
-    }
+        command: String,
+    ): Either<Throwable, String> = localExecuteAdbCommand(adbPath = adbPath, command = command)
 
-    override fun findAdbPath(): String? {
-        return localFindAdbPath()
-    }
+    override fun findAdbPath(): String? = localFindAdbPath()
 }

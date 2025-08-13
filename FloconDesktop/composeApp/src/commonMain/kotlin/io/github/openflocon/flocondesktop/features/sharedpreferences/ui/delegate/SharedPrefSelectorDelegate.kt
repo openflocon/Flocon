@@ -1,15 +1,15 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.ui.delegate
 
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceUseCase
+import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.domain.sharedpreference.usecase.AskForDeviceSharedPreferencesUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.GetCurrentDeviceSharedPreferenceValuesUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSelectedSharedPreferenceUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveDeviceSharedPreferencesUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.SelectCurrentDeviceSharedPreferenceUseCase
-import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPrefsStateUiModel
 import kotlinx.coroutines.Job

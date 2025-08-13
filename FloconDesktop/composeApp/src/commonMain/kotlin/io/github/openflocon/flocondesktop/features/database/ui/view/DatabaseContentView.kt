@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.database.ui.view
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.openflocon.flocondesktop.features.database.ui.model.DatabaseScreenState
