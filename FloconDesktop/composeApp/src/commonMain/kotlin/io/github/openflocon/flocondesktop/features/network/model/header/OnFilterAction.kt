@@ -1,0 +1,9 @@
+package io.github.openflocon.flocondesktop.features.network.model.header
+
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
+import io.github.openflocon.flocondesktop.features.network.model.NetworkMethodUi
+
+sealed interface OnFilterAction {
+    data class ClickOnMethod(val methodUi: NetworkMethodUi) : OnFilterAction
+    data class TextFilter(val column: NetworkTextFilterColumns, val action: TextFilterAction) : OnFilterAction
+}

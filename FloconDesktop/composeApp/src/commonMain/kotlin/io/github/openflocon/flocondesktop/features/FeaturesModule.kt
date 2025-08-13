@@ -6,7 +6,7 @@ import io.github.openflocon.flocondesktop.features.database.databaseModule
 import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkModule
 import io.github.openflocon.flocondesktop.features.files.filesModule
 import io.github.openflocon.flocondesktop.features.images.imagesModule
-import io.github.openflocon.flocondesktop.features.network.di.networkModule
+import io.github.openflocon.flocondesktop.features.network.networkModule
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesModule
 import io.github.openflocon.flocondesktop.features.table.di.tableModule
 import io.github.openflocon.flocondesktop.messages.di.messagesModule

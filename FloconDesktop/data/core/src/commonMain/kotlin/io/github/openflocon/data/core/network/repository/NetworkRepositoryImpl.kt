@@ -266,5 +266,5 @@ class NetworkRepositoryImpl(
             isEnabled = isEnabled,
         )
     }
-    
+
 }

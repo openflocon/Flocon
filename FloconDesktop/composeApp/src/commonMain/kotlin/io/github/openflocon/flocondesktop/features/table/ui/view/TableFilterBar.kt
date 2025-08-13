@@ -14,7 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.network.ui.view.components.FilterBar
+import io.github.openflocon.flocondesktop.features.network.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.table.ui.model.TableRowUiModel
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 
