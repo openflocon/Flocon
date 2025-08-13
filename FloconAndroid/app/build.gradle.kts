@@ -25,11 +25,33 @@ android {
 
     val githubToken = System.getenv("GITHUB_TOKEN_GRPC") ?: ""
 
+    signingConfigs {
+        named("debug")  {
+            keyAlias = "debug"
+            keyPassword = "android"
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+        }
+        register("release")  {
+            keyAlias = "release"
+            keyPassword = "release"
+            storeFile = file("release.jks")
+            storePassword = "release"
+        }
+    }
+
     buildTypes {
         debug {
             buildConfigField("String", "GITHUB_TOKEN", "\"$githubToken\"")
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        release {
+            isMinifyEnabled = true
+            buildConfigField("String", "GITHUB_TOKEN", "\"$githubToken\"")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -52,8 +74,8 @@ dependencies {
         implementation("io.github.openflocon:flocon-grpc-interceptor:$floconVersion")
         implementation("io.github.openflocon:flocon-okhttp-interceptor:$floconVersion")
     } else {
-        implementation(project(":flocon"))
-        //implementation(project(":flocon-no-op"))
+        debugImplementation(project(":flocon"))
+        releaseImplementation(project(":flocon-no-op"))
         implementation(project(":okhttp-interceptor"))
         implementation(project(":grpc-interceptor"))
         implementation(project(":ktor-interceptor"))
