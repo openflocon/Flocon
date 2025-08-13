@@ -165,25 +165,24 @@ private fun MainScreen(
 
                     SubScreen.Settings -> {
                         SettingsScreen(
-                            modifier =
-                            Modifier
-                                .fillMaxSize(),
+                            onCloseRequest = {},
+                            modifier = Modifier.fillMaxSize(),
                         )
                     }
 
                     SubScreen.Deeplinks -> {
                         DeeplinkScreen(
                             modifier =
-                            Modifier
-                                .fillMaxSize(),
+                                Modifier
+                                    .fillMaxSize(),
                         )
                     }
 
                     SubScreen.Analytics -> {
                         AnalyticsScreen(
                             modifier =
-                            Modifier
-                                .fillMaxSize(),
+                                Modifier
+                                    .fillMaxSize(),
                         )
                     }
                 }

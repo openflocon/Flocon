@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberTrayState
 import androidx.compose.ui.window.rememberWindowState
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
@@ -41,15 +42,20 @@ fun main() {
                 }.build()
         }
 
-        val savedState = remember {
-            WindowStateSaver.load()
+        LaunchedEffect(Unit) {
+            feedbackDisplayerHandler.notificationsToDisplay
+                .collect { notification ->
+                    trayState.sendNotification(
+                        Notification(
+                            title = notification.title,
+                            message = notification.message,
+                            type = Notification.Type.Info // TODO Pass it
+                        )
+                    )
+                }
         }
 
-        val windowState = rememberWindowState(
-            size = savedState.size(),
-            position = savedState.windowPosition(),
-        )
-
+        FloconTray(trayState)
         Window(
             state = windowState,
             onCloseRequest = {
@@ -70,6 +76,9 @@ fun main() {
             icon = painterResource(Res.drawable.app_icon_small), // Remove black behind icon
         ) {
             window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
+            // TODO later
+//            FloconMenu()
+            App()
 
             App()
 
@@ -80,4 +89,36 @@ fun main() {
             }
         }
     }
+}
+
+@Composable
+private fun FrameWindowScope.FloconMenu() {
+    var openSettings by remember { mutableStateOf(false) }
+
+    MenuBar {
+        Menu(
+            text = "Settings"
+        ) {
+            Item(
+                text = "Open",
+                onClick = {
+                    openSettings = true
+                }
+            )
+        }
+    }
+
+    if (openSettings) {
+        SettingsScreen(
+            onCloseRequest = { openSettings = false }
+        )
+    }
+}
+
+@Composable
+private fun ApplicationScope.FloconTray(trayState: TrayState) {
+    Tray(
+        state = trayState,
+        icon = painterResource(Res.drawable.app_icon_small)
+    )
 }

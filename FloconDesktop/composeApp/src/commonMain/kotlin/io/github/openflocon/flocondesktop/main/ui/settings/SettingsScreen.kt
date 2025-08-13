@@ -26,6 +26,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
+import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -33,6 +35,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SettingsScreen(
+    onCloseRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: SettingsViewModel = koinViewModel()
@@ -41,27 +44,33 @@ fun SettingsScreen(
     val adbPathText by viewModel.adbPathInput.collectAsState()
     val displayAboutScreen by viewModel.displayAboutScreen.collectAsState()
 
-    Box(modifier = modifier) {
-        SettingsScreen(
-            modifier = Modifier.fillMaxSize(),
-            adbPathText = adbPathText,
-            onAdbPathChanged = viewModel::onAdbPathChanged,
-            saveAdbPath = viewModel::saveAdbPath,
-            testAdbPath = viewModel::testAdbPath,
-            onClickLicenses = viewModel::displayAboutScreen,
-            needsAdbSetup = needsAdbSetup,
-        )
-        if (displayAboutScreen) {
-            Dialog(
-                onDismissRequest = {
-                    viewModel.hideAboutScreen()
-                },
-            ) {
-                AboutScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(FloconTheme.colorPalette.background),
-                )
+    FloconWindow(
+        title = "Settings",
+        state = createFloconWindowState(),
+        onCloseRequest = onCloseRequest
+    ) {
+        Box(modifier = modifier) {
+            SettingsScreen(
+                modifier = Modifier.fillMaxSize(),
+                adbPathText = adbPathText,
+                onAdbPathChanged = viewModel::onAdbPathChanged,
+                saveAdbPath = viewModel::saveAdbPath,
+                testAdbPath = viewModel::testAdbPath,
+                onClickLicenses = viewModel::displayAboutScreen,
+                needsAdbSetup = needsAdbSetup,
+            )
+            if (displayAboutScreen) {
+                Dialog(
+                    onDismissRequest = {
+                        viewModel.hideAboutScreen()
+                    },
+                ) {
+                    AboutScreen(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(FloconTheme.colorPalette.background),
+                    )
+                }
             }
         }
     }
