@@ -134,7 +134,7 @@ private fun SearchBar(
             .background(FloconTheme.colorPalette.panel)
             .padding(horizontal = 12.dp, vertical = 8.dp),
     ) {
-        FloconSmallTextField(
+        FloconTextField(
             value = query,
             onValueChange = { queryChanged(it) },
             placeHolderText = "Search",
