@@ -4,6 +4,7 @@ import io.github.openflocon.data.core.images.datasource.ImagesLocalDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import io.github.openflocon.domain.images.repository.ImagesRepository
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
@@ -27,6 +28,10 @@ class ImagesRepositoryImpl(
 
     override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         // no op for now
+    }
+
+    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+
     }
 
     override suspend fun onImageReceived(

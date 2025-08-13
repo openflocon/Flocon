@@ -1,11 +1,11 @@
 package com.flocon.data.remote.network.datasource
 
-import com.flocon.data.remote.Protocol
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.network.mapper.listToRemote
 import com.flocon.data.remote.server.Server
 import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
+import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.serialization.json.Json

@@ -51,6 +51,10 @@ class AnalyticsRepositoryImpl(
         }
     }
 
+    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+
+    }
+
     override fun observeAnalytics(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId,

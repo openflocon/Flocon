@@ -39,6 +39,10 @@ class DeeplinkRepositoryImpl(
         }
     }
 
+    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+
+    }
+
     override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observe(deviceIdAndPackageName)
         .flowOn(dispatcherProvider.data)
 

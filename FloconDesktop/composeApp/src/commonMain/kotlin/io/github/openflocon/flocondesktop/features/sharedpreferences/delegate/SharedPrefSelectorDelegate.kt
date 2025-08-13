@@ -8,7 +8,8 @@ import io.github.openflocon.domain.sharedpreference.usecase.GetCurrentDeviceShar
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSelectedSharedPreferenceUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveDeviceSharedPreferencesUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.SelectCurrentDeviceSharedPreferenceUseCase
-import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
 import kotlinx.coroutines.Job
@@ -41,13 +42,13 @@ class SharedPrefSelectorDelegate(
                 SharedPrefsStateUiModel.WithContent(
                     sharedPrefs = sharedPrefs.map { toUi(it) },
                     selected =
-                    toUi(
-                        selected ?: run {
-                            sharedPrefs.first().also {
-                                selectCurrentDeviceSharedPrefUseCase(it.id)
-                            }
-                        },
-                    ),
+                        toUi(
+                            selected ?: run {
+                                sharedPrefs.first().also {
+                                    selectCurrentDeviceSharedPrefUseCase(it.id)
+                                }
+                            },
+                        ),
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)

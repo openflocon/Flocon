@@ -39,6 +39,10 @@ class DashboardRepositoryImpl(
         }
     }
 
+    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+
+    }
+
     override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> =
         dashboardLocalDataSource.observeDashboard(
             deviceIdAndPackageName = deviceIdAndPackageName,

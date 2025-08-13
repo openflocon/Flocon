@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.data
 
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
+import io.github.openflocon.data.core.network.datasource.NetworkMocksLocalDataSource
+import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -316,9 +318,10 @@ class NetworkRepositoryImpl(
         )
     }
 
-    override suspend fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<MockNetworkDomainModel>> = networkMocksLocalDataSource.observeAll(
-        deviceIdAndPackageName = deviceIdAndPackageName,
-    ).flowOn(dispatcherProvider.data)
+    override suspend fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<MockNetworkDomainModel>> =
+        networkMocksLocalDataSource.observeAll(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        ).flowOn(dispatcherProvider.data)
 
     override suspend fun deleteMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

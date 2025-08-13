@@ -6,6 +6,7 @@ import com.flocon.data.remote.database.databaseModule
 import com.flocon.data.remote.deeplink.deeplinkModule
 import com.flocon.data.remote.files.filesModule
 import com.flocon.data.remote.messages.messagesModule
+import com.flocon.data.remote.network.networkModule
 import com.flocon.data.remote.sharedpreference.sharedPreferencesModule
 import com.flocon.data.remote.table.tableModule
 import kotlinx.serialization.json.Json
@@ -19,8 +20,9 @@ val dataRemoteModule = module {
         deeplinkModule,
         filesModule,
         messagesModule,
+        networkModule,
         sharedPreferencesModule,
-        tableModule,
+        tableModule
     )
 
     single {

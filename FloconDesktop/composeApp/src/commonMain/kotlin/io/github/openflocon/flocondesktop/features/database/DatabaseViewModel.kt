@@ -6,7 +6,7 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
 import io.github.openflocon.domain.database.usecase.ObserveLastSuccessQueriesUseCase
-import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.delegate.DatabaseSelectorDelegate
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
@@ -78,9 +78,9 @@ class DatabaseViewModel(
             QueryResultUiModel.Values(
                 columns = this.columns,
                 rows =
-                values.map {
-                    DatabaseRowUiModel(it)
-                },
+                    values.map {
+                        DatabaseRowUiModel(it)
+                    },
             )
 
         is DatabaseExecuteSqlResponseDomainModel.UpdateDelete -> QueryResultUiModel.Text("Done, affected=$affectedCount")

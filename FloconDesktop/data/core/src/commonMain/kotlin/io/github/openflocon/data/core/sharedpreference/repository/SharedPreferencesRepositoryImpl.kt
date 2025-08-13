@@ -57,6 +57,10 @@ class SharedPreferencesRepositoryImpl(
         }
     }
 
+    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+
+    }
+
     override fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> = deviceSharedPreferencesDataSource
         .observeSelectedDeviceSharedPreference(deviceIdAndPackageName)
         .flowOn(dispatcherProvider.data)

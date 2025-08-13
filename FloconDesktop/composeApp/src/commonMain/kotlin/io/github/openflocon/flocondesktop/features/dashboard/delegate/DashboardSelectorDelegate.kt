@@ -5,9 +5,11 @@ import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.dashboard.usecase.ObserveCurrentDeviceSelectedDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.ObserveDeviceDashboardsUseCase
 import io.github.openflocon.domain.dashboard.usecase.SelectCurrentDeviceDashboardUseCase
-import io.github.openflocon.domain.dashboard.models.DashboardId
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -34,13 +36,13 @@ class DashboardSelectorDelegate(
                 DashboardsStateUiModel.WithContent(
                     dashboards = dashboards.map { toUi(it) },
                     selected =
-                    toUi(
-                        selected ?: run {
-                            dashboards.first().also {
-                                selectCurrentDeviceDashboardUseCase(it)
-                            }
-                        },
-                    ),
+                        toUi(
+                            selected ?: run {
+                                dashboards.first().also {
+                                    selectCurrentDeviceDashboardUseCase(it)
+                                }
+                            },
+                        ),
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)

@@ -33,6 +33,10 @@ class FilesRepositoryImpl(
         }
     }
 
+    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+
+    }
+
     override fun observeFolderContent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,

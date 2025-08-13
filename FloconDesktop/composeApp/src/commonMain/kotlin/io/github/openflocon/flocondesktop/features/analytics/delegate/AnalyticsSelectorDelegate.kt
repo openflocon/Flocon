@@ -4,7 +4,9 @@ import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainMod
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceSelectedAnalyticsUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveDeviceAnalyticsUseCase
 import io.github.openflocon.domain.analytics.usecase.SelectCurrentDeviceAnalyticsUseCase
-import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
+import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -33,13 +35,13 @@ class AnalyticsSelectorDelegate(
                 AnalyticsStateUiModel.WithContent(
                     analytics = analyticss.map { toUi(it) },
                     selected =
-                    toUi(
-                        selected ?: run {
-                            analyticss.first().also {
-                                selectCurrentDeviceAnalyticsUseCase(it.id)
-                            }
-                        },
-                    ),
+                        toUi(
+                            selected ?: run {
+                                analyticss.first().also {
+                                    selectCurrentDeviceAnalyticsUseCase(it.id)
+                                }
+                            },
+                        ),
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)
