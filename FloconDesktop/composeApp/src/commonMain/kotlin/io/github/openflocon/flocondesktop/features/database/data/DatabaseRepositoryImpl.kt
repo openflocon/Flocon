@@ -31,6 +31,10 @@ class DatabaseRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Database.Plugin)
 
+    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        // no op
+    }
+
     override fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?> =
         deviceDatabasesDataSource
             .observeSelectedDeviceDatabase(deviceIdAndPackageName)

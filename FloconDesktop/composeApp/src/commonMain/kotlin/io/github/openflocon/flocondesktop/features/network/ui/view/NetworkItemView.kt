@@ -86,7 +86,7 @@ fun NetworkItemView(
                 .padding(vertical = 4.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
                 .then(if(state.isMocked) {
-                    Modifier.background(Color.Yellow.copy(alpha = 0.2f))
+                    Modifier.background(Color.Yellow.copy(alpha = 0.05f))
                 } else Modifier)
                 .clickable(onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) })
                 .padding(horizontal = 8.dp, vertical = 6.dp),

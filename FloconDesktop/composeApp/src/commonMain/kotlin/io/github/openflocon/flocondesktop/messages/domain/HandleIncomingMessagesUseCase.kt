@@ -4,6 +4,7 @@ import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import io.github.openflocon.domain.device.usecase.HandleDeviceUseCase
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.messages.domain.repository.MessagesRepository
 import io.github.openflocon.flocondesktop.messages.domain.repository.sub.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
@@ -19,10 +20,18 @@ class HandleIncomingMessagesUseCase(
     operator fun invoke(): Flow<Unit> = messagesRepository
         .listenMessages()
         .onEach {
-            val deviceId = handleDeviceUseCase(device = getDevice(it))
+            val handleDeviceResult = handleDeviceUseCase(device = getDevice(it))
             plugins.forEach { plugin ->
+                if (handleDeviceResult.isNewDevice) {
+                    plugin.onNewDevice(
+                        deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                            deviceId = handleDeviceResult.deviceId,
+                            packageName = it.appPackageName,
+                        )
+                    )
+                }
                 if (plugin.pluginName.contains(it.plugin)) {
-                    plugin.onMessageReceived(deviceId = deviceId, message = it)
+                    plugin.onMessageReceived(deviceId = handleDeviceResult.deviceId, message = it)
                 }
             }
         }

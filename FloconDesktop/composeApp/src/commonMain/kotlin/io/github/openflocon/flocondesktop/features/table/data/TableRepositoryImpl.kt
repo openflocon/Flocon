@@ -35,6 +35,10 @@ class TableRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Table.Plugin)
 
+    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        // no op
+    }
+
     override suspend fun onMessageReceived(
         deviceId: String,
         message: FloconIncomingMessageDataModel,
