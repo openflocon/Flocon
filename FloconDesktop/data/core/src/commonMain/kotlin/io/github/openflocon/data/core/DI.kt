@@ -8,6 +8,7 @@ import io.github.openflocon.data.core.files.filesModule
 import io.github.openflocon.data.core.images.imagesModule
 import io.github.openflocon.data.core.network.networkModule
 import io.github.openflocon.data.core.sharedpreference.sharedPreferenceModule
+import io.github.openflocon.data.core.table.tableModule
 import org.koin.dsl.module
 
 val dataCoreModule = module {
@@ -19,6 +20,7 @@ val dataCoreModule = module {
         filesModule,
         imagesModule,
         networkModule,
-        sharedPreferenceModule
+        sharedPreferenceModule,
+        tableModule
     )
 }

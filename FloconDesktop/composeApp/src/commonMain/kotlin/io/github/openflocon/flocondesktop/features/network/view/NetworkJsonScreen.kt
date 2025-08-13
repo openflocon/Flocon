@@ -43,6 +43,7 @@ import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconSmallIconButton
 import io.github.openflocon.library.designsystem.components.FloconSmallTextField
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconTextField
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -133,10 +134,10 @@ private fun SearchBar(
             .background(FloconTheme.colorPalette.panel)
             .padding(horizontal = 12.dp, vertical = 8.dp),
     ) {
-        FloconSmallTextField(
+        FloconTextField(
             value = query,
             onValueChange = { queryChanged(it) },
-            placeHolder = "Search",
+            placeholderText = "Search",
             modifier = Modifier
                 .weight(1f)
                 .clip(RoundedCornerShape(16.dp))
