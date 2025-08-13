@@ -9,11 +9,19 @@ interface FeedbackDisplayer {
 
     fun displayNotification(
         title: String,
-        message: String
+        message: String,
+        type: NotificationType = NotificationType.None
     )
 
     enum class MessageType {
         Success,
         Error,
+    }
+
+    enum class NotificationType {
+        None,
+        Info,
+        Warning,
+        Error
     }
 }

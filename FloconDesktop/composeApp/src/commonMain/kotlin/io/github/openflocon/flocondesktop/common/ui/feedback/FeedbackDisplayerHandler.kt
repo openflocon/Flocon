@@ -15,5 +15,6 @@ interface FeedbackDisplayerHandler {
     data class NotificationToDisplayUi(
         val title: String,
         val message: String,
+        val type: FeedbackDisplayer.NotificationType
     )
 }

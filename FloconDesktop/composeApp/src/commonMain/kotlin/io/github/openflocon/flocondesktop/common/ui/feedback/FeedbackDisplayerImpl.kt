@@ -37,12 +37,13 @@ class FeedbackDisplayerImpl(
         }
     }
 
-    override fun displayNotification(title: String, message: String) {
+    override fun displayNotification(title: String, message: String, type: FeedbackDisplayer.NotificationType) {
         scope.launch {
             _notificationsToDisplay.send(
                 NotificationToDisplayUi(
                     title = title,
-                    message = message
+                    message = message,
+                    type = type
                 )
             )
         }
