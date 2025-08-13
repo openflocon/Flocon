@@ -45,7 +45,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SettingsScreen(
-    onCloseRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: SettingsViewModel = koinViewModel()
