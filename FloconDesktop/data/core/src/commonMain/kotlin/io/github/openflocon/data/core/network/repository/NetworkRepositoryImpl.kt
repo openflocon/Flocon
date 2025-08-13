@@ -3,6 +3,7 @@ package io.github.openflocon.data.core.network.repository
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkMocksLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
+import io.github.openflocon.data.core.network.graphql.extractGraphQl
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
