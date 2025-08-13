@@ -133,11 +133,12 @@ private fun FrameWindowScope.FloconMenu() {
         }
     }
 
-    if (openSettings) {
-        SettingsScreen(
-            onCloseRequest = { openSettings = false }
-        )
-    }
+    // TODO Later
+//    if (openSettings) {
+//        SettingsScreen(
+//            onCloseRequest = { openSettings = false }
+//        )
+//    }
 }
 
 @Composable
