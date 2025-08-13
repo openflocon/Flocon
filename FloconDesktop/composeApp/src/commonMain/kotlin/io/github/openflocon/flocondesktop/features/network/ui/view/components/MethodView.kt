@@ -97,7 +97,11 @@ fun NetworkTag(
             .background(
                 color = backgroundColor,
             )
-            .clickable(onClick = { onClick?.invoke() }, enabled = onClick != null)
+            .then(if(onClick != null) {
+                Modifier.clickable(onClick = onClick)
+            } else {
+                Modifier
+            })
             .padding(horizontal = 4.dp, vertical = 2.dp)
             .padding(contentPadding),
         // Padding inside the tag

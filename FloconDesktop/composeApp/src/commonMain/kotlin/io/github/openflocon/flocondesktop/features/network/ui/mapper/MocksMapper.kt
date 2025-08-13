@@ -16,7 +16,7 @@ fun toLineUi(mockDomain: MockNetworkDomainModel): MockNetworkLineUiModel {
     return MockNetworkLineUiModel(
         id = mockDomain.id,
         urlPattern = mockDomain.expectation.urlPattern,
-        method = mockDomain.expectation.method,
+        method = toMockMethodUi(mockDomain.expectation.method),
     )
 }
 
@@ -37,7 +37,7 @@ fun toDomain(uiModel: MockNetworkUiModel): MockNetworkDomainModel {
     )
 }
 
-fun toMethodUi(text: String): MockNetworkMethodUi {
+fun toMockMethodUi(text: String): MockNetworkMethodUi {
     return when (text.lowercase()) {
         "get" -> MockNetworkMethodUi.GET
         "post" -> MockNetworkMethodUi.POST
@@ -53,7 +53,7 @@ fun toUi(domainModel: MockNetworkDomainModel): MockNetworkUiModel {
         id = domainModel.id,
         expectation = MockNetworkUiModel.Expectation(
             urlPattern = domainModel.expectation.urlPattern,
-            method = toMethodUi(domainModel.expectation.method),
+            method = toMockMethodUi(domainModel.expectation.method),
         ),
         response = MockNetworkUiModel.Response(
             httpCode = domainModel.response.httpCode,

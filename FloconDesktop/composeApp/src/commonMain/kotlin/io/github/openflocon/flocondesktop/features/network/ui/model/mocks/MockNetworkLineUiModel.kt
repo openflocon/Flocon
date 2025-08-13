@@ -6,5 +6,11 @@ import androidx.compose.runtime.Immutable
 data class MockNetworkLineUiModel(
     val id: String,
     val urlPattern: String,
-    val method: String,
+    val method: MockNetworkMethodUi,
+)
+
+fun previewMockNetworkLineUiModel(method: MockNetworkMethodUi = MockNetworkMethodUi.GET) = MockNetworkLineUiModel(
+    id = "1",
+    urlPattern = "http://.*youtube.*v=.*",
+    method = method,
 )
