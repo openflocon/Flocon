@@ -4,6 +4,7 @@ import io.github.openflocon.data.core.analytics.analyticsModule
 import io.github.openflocon.data.core.dashboard.dashboardModule
 import io.github.openflocon.data.core.database.databaseModule
 import io.github.openflocon.data.core.deeplink.deeplinkModule
+import io.github.openflocon.data.core.files.filesModule
 import org.koin.dsl.module
 
 val dataCoreModule = module {
@@ -11,6 +12,7 @@ val dataCoreModule = module {
         analyticsModule,
         dashboardModule,
         databaseModule,
-        deeplinkModule
+        deeplinkModule,
+        filesModule
     )
 }

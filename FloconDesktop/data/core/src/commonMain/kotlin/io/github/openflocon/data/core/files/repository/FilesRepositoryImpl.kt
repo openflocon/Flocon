@@ -1,18 +1,15 @@
-package io.github.openflocon.flocondesktop.features.files.data
+package io.github.openflocon.data.core.files.repository
 
-import io.github.openflocon.domain.Protocol
-import com.flocon.data.remote.files.mapper.toDomain
-import com.flocon.data.remote.models.FloconIncomingMessageDataModel
+import io.github.openflocon.data.core.files.datasource.FilesLocalDataSource
 import io.github.openflocon.data.core.files.datasource.FilesRemoteDataSource
+import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.repository.FilesRepository
-import io.github.openflocon.data.core.files.datasource.FilesLocalDataSource
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
-import io.github.openflocon.flocondesktop.features.files.data.mapper.decodeListFilesResult
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -30,13 +27,8 @@ class FilesRepositoryImpl(
     override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
-                Protocol.FromDevice.Files.Method.ListFiles ->
-                    decodeListFilesResult(message.body)
-                        ?.let { received ->
-                            remoteFilesDataSource.onGetFilesResultReceived(
-                                received = received.toDomain(),
-                            )
-                        }
+                Protocol.FromDevice.Files.Method.ListFiles -> remoteFilesDataSource.getItems(message)
+                    ?.let(remoteFilesDataSource::onGetFilesResultReceived)
             }
         }
     }
