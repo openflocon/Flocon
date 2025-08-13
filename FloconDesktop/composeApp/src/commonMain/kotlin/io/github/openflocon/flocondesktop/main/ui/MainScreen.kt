@@ -165,7 +165,6 @@ private fun MainScreen(
 
                     SubScreen.Settings -> {
                         SettingsScreen(
-                            onCloseRequest = {},
                             modifier = Modifier.fillMaxSize(),
                         )
                     }
