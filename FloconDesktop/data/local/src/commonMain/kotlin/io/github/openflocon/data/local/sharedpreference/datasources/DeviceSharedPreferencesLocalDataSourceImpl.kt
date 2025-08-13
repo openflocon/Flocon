@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.sharedpreference.datasources
 
+import io.github.openflocon.data.core.sharedpreference.datasource.DeviceSharedPreferencesLocalDataSource
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceId
@@ -9,19 +10,19 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
-class DeviceSharedPreferencesDataSource {
+internal class DeviceSharedPreferencesLocalDataSourceImpl : DeviceSharedPreferencesLocalDataSource {
     private val deviceSharedPreferences =
         MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, List<DeviceSharedPreferenceDomainModel>>>(emptyMap())
 
     private val selectedDeviceSharedPreferences =
         MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DeviceSharedPreferenceDomainModel?>>(emptyMap())
 
-    fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> =
+    override fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> =
         selectedDeviceSharedPreferences
             .map { it[deviceIdAndPackageName] }
             .distinctUntilChanged()
 
-    fun selectDeviceSharedPreference(
+    override fun selectDeviceSharedPreference(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreferenceId: DeviceSharedPreferenceId,
     ) {
@@ -34,10 +35,10 @@ class DeviceSharedPreferencesDataSource {
         }
     }
 
-    fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> =
+    override fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> =
         deviceSharedPreferences.map { it[deviceIdAndPackageName] ?: emptyList() }
 
-    fun registerDeviceSharedPreferences(
+    override fun registerDeviceSharedPreferences(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreferences: List<DeviceSharedPreferenceDomainModel>,
     ) {

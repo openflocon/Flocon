@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model
+package io.github.openflocon.flocondesktop.features.sharedpreferences.model
 
 sealed interface SharedPreferencesRowsStateUiModel {
     data object Loading : SharedPreferencesRowsStateUiModel

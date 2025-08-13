@@ -1,22 +1,32 @@
 package com.flocon.data.remote.sharedpreference.datasource
 
-import io.github.openflocon.domain.Protocol
+import com.flocon.data.remote.common.safeDecodeFromString
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
+import com.flocon.data.remote.sharedpreference.mapper.SharedPreferenceValuesResponse
+import com.flocon.data.remote.sharedpreference.mapper.toSharedPreferenceValuesResponseDomain
+import com.flocon.data.remote.sharedpreference.models.DeviceSharedPreferenceDataModel
 import com.flocon.data.remote.sharedpreference.models.ToDeviceEditSharedPreferenceValueMessage
 import com.flocon.data.remote.sharedpreference.models.ToDeviceGetSharedPreferenceValueMessage
+import com.flocon.data.remote.sharedpreference.models.toDeviceSharedPreferenceDomain
+import io.github.openflocon.data.core.sharedpreference.datasource.DeviceSharedPreferencesRemoteDataSource
+import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceId
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
+import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceValuesResponseDomainModel
 import kotlinx.serialization.json.Json
 
-class DeviceSharedPreferencesRemoteDataSource(
+class DeviceSharedPreferencesRemoteDataSourceImpl(
     private val server: Server,
-) {
-    suspend fun askForDeviceSharedPreferences(
+    private val json: Json
+) : DeviceSharedPreferencesRemoteDataSource {
+
+    override suspend fun askForDeviceSharedPreferences(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ) {
         server.sendMessageToClient(
@@ -29,7 +39,7 @@ class DeviceSharedPreferencesRemoteDataSource(
         )
     }
 
-    suspend fun getDeviceSharedPreferencesValues(
+    override suspend fun getDeviceSharedPreferencesValues(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreferenceId: DeviceSharedPreferenceId,
     ) {
@@ -49,7 +59,7 @@ class DeviceSharedPreferencesRemoteDataSource(
         )
     }
 
-    suspend fun editSharedPrefField(
+    override suspend fun editSharedPrefField(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreference: DeviceSharedPreferenceDomainModel,
         key: String,
@@ -77,4 +87,16 @@ class DeviceSharedPreferencesRemoteDataSource(
             ),
         )
     }
+
+    override fun getPreferences(message: FloconIncomingMessageDomainModel): List<DeviceSharedPreferenceDomainModel> {
+        return json.safeDecodeFromString<List<DeviceSharedPreferenceDataModel>>(message.body)
+            ?.let { toDeviceSharedPreferenceDomain(it) }
+            .orEmpty()
+    }
+
+    override fun getValues(message: FloconIncomingMessageDomainModel): SharedPreferenceValuesResponseDomainModel? {
+        return json.safeDecodeFromString<SharedPreferenceValuesResponse>(message.body)
+            ?.let { toSharedPreferenceValuesResponseDomain(it) }
+    }
+
 }

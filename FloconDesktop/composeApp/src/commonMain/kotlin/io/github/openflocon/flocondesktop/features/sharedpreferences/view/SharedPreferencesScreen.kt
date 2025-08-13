@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.sharedpreferences.ui.view
+package io.github.openflocon.flocondesktop.features.sharedpreferences.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -17,13 +17,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.SharedPreferencesViewModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.DeviceSharedPrefUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowsStateUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPrefsStateUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesRowsStateUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPrefsStateUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesViewModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowsStateUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesRowsStateUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPrefsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview

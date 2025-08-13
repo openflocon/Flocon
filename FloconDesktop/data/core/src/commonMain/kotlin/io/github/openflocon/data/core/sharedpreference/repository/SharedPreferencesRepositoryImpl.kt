@@ -1,29 +1,24 @@
-package io.github.openflocon.flocondesktop.features.sharedpreferences.data
+package io.github.openflocon.data.core.sharedpreference.repository
 
-import io.github.openflocon.domain.Protocol
-import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import com.flocon.data.remote.sharedpreference.datasource.DeviceSharedPreferencesRemoteDataSource
+import io.github.openflocon.data.core.sharedpreference.datasource.DeviceSharedPreferencesLocalDataSource
+import io.github.openflocon.data.core.sharedpreference.datasource.DeviceSharedPreferencesRemoteDataSource
 import io.github.openflocon.data.core.sharedpreference.datasource.DeviceSharedPreferencesValuesDataSource
-import io.github.openflocon.data.local.sharedpreference.datasources.DeviceSharedPreferencesDataSource
-import com.flocon.data.remote.sharedpreference.mapper.decodeDeviceSharedPreferences
-import com.flocon.data.remote.sharedpreference.mapper.decodeSharedPreferenceValuesResponse
-import com.flocon.data.remote.sharedpreference.models.toDeviceSharedPreferenceDomain
-import com.flocon.data.remote.sharedpreference.mapper.toSharedPreferenceValuesResponseDomain
+import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceId
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.domain.sharedpreference.repository.SharedPreferencesRepository
-import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
 class SharedPreferencesRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
-    private val deviceSharedPreferencesDataSource: DeviceSharedPreferencesDataSource,
+    private val deviceSharedPreferencesDataSource: DeviceSharedPreferencesLocalDataSource,
     private val remote: DeviceSharedPreferencesRemoteDataSource,
     private val deviceSharedPreferencesValuesDataSource: DeviceSharedPreferencesValuesDataSource,
 ) : SharedPreferencesRepository,
@@ -34,23 +29,20 @@ class SharedPreferencesRepositoryImpl(
     override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
-                Protocol.FromDevice.SharedPreferences.Method.GetSharedPreferences ->
-                    decodeDeviceSharedPreferences(message.body)
-                        ?.let { toDeviceSharedPreferenceDomain(it) }
-                        ?.let {
-                            deviceSharedPreferencesDataSource.registerDeviceSharedPreferences(
-                                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                                    deviceId = deviceId,
-                                    packageName = message.appPackageName,
-                                ),
-                                sharedPreferences = it,
-                            )
-                        }
+                Protocol.FromDevice.SharedPreferences.Method.GetSharedPreferences -> {
+                    val items = remote.getPreferences(message)
 
-                Protocol.FromDevice.SharedPreferences.Method.GetSharedPreferenceValue ->
-                    decodeSharedPreferenceValuesResponse(
-                        message.body,
-                    )?.let { toSharedPreferenceValuesResponseDomain(it) }
+                    deviceSharedPreferencesDataSource.registerDeviceSharedPreferences(
+                        deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                            deviceId = deviceId,
+                            packageName = message.appPackageName,
+                        ),
+                        sharedPreferences = items,
+                    )
+                }
+
+                Protocol.FromDevice.SharedPreferences.Method.GetSharedPreferenceValue -> {
+                    remote.getValues(message)
                         ?.let {
                             deviceSharedPreferencesValuesDataSource.onSharedPreferencesValuesReceived(
                                 deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
@@ -60,6 +52,7 @@ class SharedPreferencesRepositoryImpl(
                                 received = it,
                             )
                         }
+                }
             }
         }
     }

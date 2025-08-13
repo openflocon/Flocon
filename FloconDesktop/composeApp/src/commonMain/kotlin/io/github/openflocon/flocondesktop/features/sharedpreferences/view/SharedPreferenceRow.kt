@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.sharedpreferences.ui.view
+package io.github.openflocon.flocondesktop.features.sharedpreferences.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,12 +31,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.SharedPreferencesRowUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesBooleanRowUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesFloatRowUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesIntRowUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesLongRowUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.ui.model.previewSharedPreferencesStringRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesBooleanRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesFloatRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesIntRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesLongRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesStringRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
