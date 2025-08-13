@@ -1,5 +1,4 @@
 import com.google.protobuf.gradle.id
-import kotlin.math.sign
 
 plugins {
     alias(libs.plugins.android.application)

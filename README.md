@@ -77,6 +77,8 @@ With this feature, you can:
 - Create a new mock from an existing request, then test your app with some differences inside the prefious body
 - Reduce dependencies: Develop and test features without needing a stable internet connection or a complete backend environment.
 
+#### With OkHttp
+
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-okhttp-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-okhttp-interceptor)
 
 ```
@@ -90,7 +92,7 @@ val okHttpClient = OkHttpClient()
             .build()
 ```
 
-if you prefer using ktor
+#### With Ktor 
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-ktor-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-ktor-interceptor)
 
