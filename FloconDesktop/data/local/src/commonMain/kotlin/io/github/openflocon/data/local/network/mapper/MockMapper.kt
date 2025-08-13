@@ -15,6 +15,7 @@ fun toEntity(
         deviceId = deviceInfo.deviceId,
         packageName = deviceInfo.packageName,
         mockId = domainModel.id,
+        isEnabled = domainModel.isEnabled,
         expectation = MockNetworkExpectationEmbedded(
             urlPattern = domainModel.expectation.urlPattern,
             method = domainModel.expectation.method,
@@ -32,6 +33,7 @@ fun toEntity(
 fun toDomain(entity: MockNetworkEntity): MockNetworkDomainModel {
     return MockNetworkDomainModel(
         id = entity.mockId,
+        isEnabled = entity.isEnabled,
         expectation = MockNetworkDomainModel.Expectation(
             urlPattern = entity.expectation.urlPattern,
             method = entity.expectation.method,

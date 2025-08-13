@@ -15,6 +15,7 @@ data class MockNetworkEntity(
     val mockId: String,
     val deviceId: String,
     val packageName: String,
+    val isEnabled: Boolean,
     @Embedded(prefix = "expectation_")
     val expectation: MockNetworkExpectationEmbedded,
     @Embedded(prefix = "response_")

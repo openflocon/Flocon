@@ -29,9 +29,10 @@ interface NetworkMocksDao {
         SELECT * FROM MockNetworkEntity 
         WHERE deviceId = :deviceId 
         AND packageName = :packageName
+        AND isEnabled = 1
     """
     )
-    suspend fun getAllMocks(deviceId: String, packageName: String): List<MockNetworkEntity>
+    suspend fun getAllEnabledMocks(deviceId: String, packageName: String): List<MockNetworkEntity>
 
     @Query(
         """
@@ -51,4 +52,20 @@ interface NetworkMocksDao {
     """
     )
     suspend fun deleteMock(deviceId: String, packageName: String, mockId: String)
+
+    @Query(
+        """
+        UPDATE MockNetworkEntity 
+        SET isEnabled = :isEnabled
+        WHERE deviceId = :deviceId 
+        AND packageName = :packageName 
+        AND mockId = :mockId
+    """
+    )
+    suspend fun updateMockIsEnabled(
+        deviceId: DeviceId,
+        packageName: String,
+        mockId: String,
+        isEnabled: Boolean
+    )
 }

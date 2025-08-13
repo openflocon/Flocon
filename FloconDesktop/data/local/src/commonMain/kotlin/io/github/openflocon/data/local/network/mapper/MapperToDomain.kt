@@ -17,6 +17,7 @@ fun toDomainModel(request: FloconNetworkRequestEmbedded): FloconNetworkRequestDo
             headers = this.requestHeaders,
             body = this.requestBody,
             byteSize = this.requestByteSize,
+            isMocked = this.isMocked,
         )
     }
 }

@@ -34,10 +34,10 @@ class NetworkMocksLocalDataSourceImpl(
         }
     }
 
-    override suspend fun getAllMocks(
+    override suspend fun getAllEnabledMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): List<MockNetworkDomainModel> {
-        return dao.getAllMocks(
+        return dao.getAllEnabledMocks(
             deviceIdAndPackageName.deviceId,
             deviceIdAndPackageName.packageName
         ).map {
@@ -63,9 +63,22 @@ class NetworkMocksLocalDataSourceImpl(
         id: String,
     ) {
         dao.deleteMock(
-            deviceIdAndPackageName.deviceId,
-            deviceIdAndPackageName.packageName,
-            id
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            mockId = id,
+        )
+    }
+
+    override suspend fun updateMockIsEnabled(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        id: String,
+        isEnabled: Boolean
+    ) {
+        dao.updateMockIsEnabled(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            mockId = id,
+            isEnabled = isEnabled,
         )
     }
 }

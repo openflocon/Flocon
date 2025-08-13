@@ -69,6 +69,7 @@ data class FloconNetworkRequestDomainModel(
     val headers: Map<String, String>,
     val body: String?,
     val byteSize: Long,
+    val isMocked: Boolean,
 )
 
 data class FloconNetworkResponseDomainModel(

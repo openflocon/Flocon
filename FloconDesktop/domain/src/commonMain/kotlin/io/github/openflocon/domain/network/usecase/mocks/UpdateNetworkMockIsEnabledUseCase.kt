@@ -3,16 +3,23 @@ package io.github.openflocon.domain.network.usecase.mocks
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.repository.NetworkMocksRepository
 
-class SetupNetworkMocksUseCase(
+class UpdateNetworkMockIsEnabledUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val networkMocksRepository: NetworkMocksRepository,
+    private val setupNetworkMocksUseCase: SetupNetworkMocksUseCase,
 ) {
-    suspend operator fun invoke() {
+    suspend operator fun invoke(
+        id: String,
+        isEnabled: Boolean,
+    ) {
         getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
-            networkMocksRepository.setupMocks(
-                mocks = networkMocksRepository.getAllEnabledMocks(deviceIdAndPackageName),
+            networkMocksRepository.updateMockIsEnabled(
                 deviceIdAndPackageName = deviceIdAndPackageName,
+                id = id,
+                isEnabled = isEnabled,
             )
+            // after a change, update the device mocks
+            setupNetworkMocksUseCase()
         }
     }
 }

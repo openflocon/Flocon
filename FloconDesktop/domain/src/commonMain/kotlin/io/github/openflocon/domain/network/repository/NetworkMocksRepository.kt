@@ -15,7 +15,7 @@ interface NetworkMocksRepository {
         id: String
     ): MockNetworkDomainModel?
 
-    suspend fun getAllMocks(
+    suspend fun getAllEnabledMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ) : List<MockNetworkDomainModel>
 
@@ -31,5 +31,11 @@ interface NetworkMocksRepository {
     suspend fun deleteMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         id: String,
+    )
+
+    suspend fun updateMockIsEnabled(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        id: String,
+        isEnabled: Boolean,
     )
 }

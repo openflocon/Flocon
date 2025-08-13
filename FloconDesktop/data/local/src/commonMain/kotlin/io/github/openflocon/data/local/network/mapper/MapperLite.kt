@@ -7,6 +7,7 @@ import io.github.openflocon.data.local.network.models.FloconNetworkResponseLiteE
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
+import kotlin.Boolean
 
 fun toDomainModel(request: FloconNetworkRequestLiteEmbedded): FloconNetworkRequestDomainModel {
     return with(request) {
@@ -17,6 +18,7 @@ fun toDomainModel(request: FloconNetworkRequestLiteEmbedded): FloconNetworkReque
             headers = this.requestHeaders,
             body = null, // null on lite
             byteSize = this.requestByteSize,
+            isMocked = this.isMocked,
         )
     }
 }

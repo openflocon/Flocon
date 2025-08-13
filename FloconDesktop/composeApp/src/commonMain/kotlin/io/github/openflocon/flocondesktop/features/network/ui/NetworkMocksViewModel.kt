@@ -9,6 +9,7 @@ import io.github.openflocon.domain.network.usecase.mocks.DeleteNetworkMocksUseCa
 import io.github.openflocon.domain.network.usecase.mocks.GenerateNetworkMockFromNetworkCallUseCase
 import io.github.openflocon.domain.network.usecase.mocks.GetNetworkMockByIdUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
+import io.github.openflocon.domain.network.usecase.mocks.UpdateNetworkMockIsEnabledUseCase
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toLineUi
@@ -29,6 +30,7 @@ class NetworkMocksViewModel(
     private val observeNetworkMocksUseCase: ObserveNetworkMocksUseCase,
     private val getNetworkMock: GetNetworkMockByIdUseCase,
     private val generateNetworkMockFromNetworkCall: GenerateNetworkMockFromNetworkCallUseCase,
+    private val updateNetworkMockIsEnabledUseCase: UpdateNetworkMockIsEnabledUseCase,
     private val addNetworkMocksUseCase: AddNetworkMocksUseCase,
     private val deleteNetworkMocksUseCase: DeleteNetworkMocksUseCase,
     private val dispatcherProvider: DispatcherProvider,
@@ -60,6 +62,12 @@ class NetworkMocksViewModel(
     fun deleteMock(id: String) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             deleteNetworkMocksUseCase(id)
+        }
+    }
+
+    fun changeIsEnabled(id: String, enabled: Boolean) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            updateNetworkMockIsEnabledUseCase(id = id, isEnabled = enabled)
         }
     }
 

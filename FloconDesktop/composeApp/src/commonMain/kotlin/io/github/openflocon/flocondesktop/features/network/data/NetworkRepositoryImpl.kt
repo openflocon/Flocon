@@ -241,6 +241,7 @@ class NetworkRepositoryImpl(
             headers = decoded.requestHeaders!!,
             body = decoded.requestBody,
             byteSize = decoded.requestSize ?: 0L,
+            isMocked = decoded.isMocked ?: false,
         )
 
         when {
@@ -297,11 +298,11 @@ class NetworkRepositoryImpl(
         }
     }
 
-    override suspend fun getAllMocks(
+    override suspend fun getAllEnabledMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     ): List<MockNetworkDomainModel> {
         return withContext(dispatcherProvider.data) {
-            networkMocksLocalDataSource.getAllMocks(
+            networkMocksLocalDataSource.getAllEnabledMocks(
                 deviceIdAndPackageName = deviceIdAndPackageName,
             )
         }
@@ -333,6 +334,20 @@ class NetworkRepositoryImpl(
             networkMocksLocalDataSource.deleteMock(
                 deviceIdAndPackageName = deviceIdAndPackageName,
                 id = id,
+            )
+        }
+    }
+
+    override suspend fun updateMockIsEnabled(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        id: String,
+        isEnabled: Boolean
+    ) {
+        return withContext(dispatcherProvider.data) {
+            networkMocksLocalDataSource.updateMockIsEnabled(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                id = id,
+                isEnabled = isEnabled,
             )
         }
     }

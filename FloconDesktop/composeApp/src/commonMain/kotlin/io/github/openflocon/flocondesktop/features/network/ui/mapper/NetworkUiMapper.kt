@@ -51,6 +51,7 @@ fun toUi(networkCall: FloconNetworkCallDomainModel): NetworkItemViewState = Netw
     type = toTypeUi(networkCall),
     method = getMethodUi(networkCall),
     status = getStatusUi(networkCall),
+    isMocked = networkCall.networkRequest.isMocked,
 )
 
 fun getDomainUi(networkRequest: FloconNetworkCallDomainModel): String = when (networkRequest) {

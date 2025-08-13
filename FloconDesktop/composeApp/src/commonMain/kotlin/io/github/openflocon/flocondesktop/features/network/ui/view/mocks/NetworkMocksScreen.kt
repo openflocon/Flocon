@@ -59,6 +59,7 @@ fun NetworkMocksWindow(
                 onItemClicked = viewModel::clickOnMock,
                 onAddItemClicked = viewModel::createNewMock,
                 onDeleteClicked = viewModel::deleteMock,
+                changeIsEnabled = viewModel::changeIsEnabled,
             )
         }
 
@@ -80,6 +81,7 @@ private fun NetworkMocksContent(
     mocks: List<MockNetworkLineUiModel>,
     onItemClicked: (id: String) -> Unit,
     onDeleteClicked: (id: String) -> Unit,
+    changeIsEnabled: (id: String, enabled: Boolean) -> Unit,
     onAddItemClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -123,6 +125,7 @@ private fun NetworkMocksContent(
                         item = it,
                         onClicked = onItemClicked,
                         onDeleteClicked = onDeleteClicked,
+                        changeIsEnabled = changeIsEnabled,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
@@ -143,6 +146,7 @@ private fun NetworkMocksContentPreview() {
             onItemClicked = {},
             onDeleteClicked = {},
             onAddItemClicked = {},
+            changeIsEnabled = { _, _ -> },
         )
     }
 }

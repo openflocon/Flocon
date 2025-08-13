@@ -42,6 +42,7 @@ data class FloconNetworkRequestEmbedded(
     val requestHeaders: Map<String, String>,
     val requestBody: String?,
     val requestByteSize: Long,
+    val isMocked: Boolean,
 
     @Embedded(prefix = "graphql_")
     val graphql: NetworkCallGraphQlRequestEmbedded?,

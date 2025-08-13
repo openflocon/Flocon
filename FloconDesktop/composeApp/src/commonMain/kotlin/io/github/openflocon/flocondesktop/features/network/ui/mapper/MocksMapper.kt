@@ -15,6 +15,7 @@ import java.util.UUID
 fun toLineUi(mockDomain: MockNetworkDomainModel): MockNetworkLineUiModel {
     return MockNetworkLineUiModel(
         id = mockDomain.id,
+        isEnabled = mockDomain.isEnabled,
         urlPattern = mockDomain.expectation.urlPattern,
         method = toMockMethodUi(mockDomain.expectation.method),
     )
@@ -23,6 +24,7 @@ fun toLineUi(mockDomain: MockNetworkDomainModel): MockNetworkLineUiModel {
 fun toDomain(uiModel: MockNetworkUiModel): MockNetworkDomainModel {
     return MockNetworkDomainModel(
         id = uiModel.id ?: UUID.randomUUID().toString(),
+        isEnabled = uiModel.isEnabled,
         expectation = MockNetworkDomainModel.Expectation(
             urlPattern = uiModel.expectation.urlPattern,
             method = uiModel.expectation.method.text,
@@ -55,6 +57,7 @@ fun toUi(domainModel: MockNetworkDomainModel): MockNetworkUiModel {
             urlPattern = domainModel.expectation.urlPattern,
             method = toMockMethodUi(domainModel.expectation.method),
         ),
+        isEnabled = domainModel.isEnabled,
         response = MockNetworkUiModel.Response(
             httpCode = domainModel.response.httpCode,
             body = domainModel.response.body,
@@ -74,6 +77,7 @@ fun createEditable(initialMock: SelectedMockUiModel): EditableMockNetworkUiModel
 fun createEditable(initialMock: MockNetworkUiModel?): EditableMockNetworkUiModel {
     return EditableMockNetworkUiModel(
         id = initialMock?.id,
+        isEnabled = initialMock?.isEnabled ?: true, // true by default
         expectation = EditableMockNetworkUiModel.Expectation(
             urlPattern = initialMock?.expectation?.urlPattern,
             method = initialMock?.expectation?.method ?: MockNetworkMethodUi.GET,
@@ -101,6 +105,7 @@ fun editableToUi(editable: EditableMockNetworkUiModel): Either<Throwable, MockNe
                 urlPattern = editable.expectation.urlPattern!!,
                 method = editable.expectation.method,
             ),
+            isEnabled = editable.isEnabled,
             response = MockNetworkUiModel.Response(
                 httpCode = editable.response.httpCode,
                 body = editable.response.body!!,

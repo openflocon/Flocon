@@ -26,6 +26,7 @@ class GenerateNetworkMockFromNetworkCallUseCase(
                     urlPattern = request.networkRequest.url,
                     method = request.networkRequest.method,
                 ),
+                isEnabled = true, // enabled by default
                 response = request.networkResponse?.let {
                     MockNetworkDomainModel.Response(
                         httpCode = request.httpCode() ?: 200,

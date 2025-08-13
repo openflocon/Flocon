@@ -2,6 +2,7 @@ package io.github.openflocon.domain.network.models
 
 data class MockNetworkDomainModel(
     val id: String,
+    val isEnabled: Boolean,
     val expectation: Expectation,
     val response: Response,
 ) {
