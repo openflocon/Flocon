@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,29 +41,46 @@ fun NetworkItemView(
     FloconTheme.typography.labelSmall // Even smaller, good for labels/tags
 
     ContextualView(
-        listOf(
-            ContextualItem(
-                id = "copy_url",
-                text = "Copy url",
-            ),
-            ContextualItem(
-                id = "copy_curl",
-                text = "Copy cUrl",
-            ),
-            ContextualItem(
-                id = "remove",
-                text = "Remove",
-            ),
-            ContextualItem(
-                id = "remove_lines_above",
-                text = "Remove lines above ",
-            ),
-        ),
+        buildList {
+            add(
+                ContextualItem(
+                    id = "copy_url",
+                    text = "Copy url",
+                ),
+            )
+            if (state.type !is NetworkItemViewState.NetworkTypeUi.Grpc) {
+                add(
+                    ContextualItem(
+                        id = "copy_curl",
+                        text = "Copy cUrl",
+                    ),
+                )
+                add(
+                    ContextualItem(
+                        id = "create_mock",
+                        text = "Create Mock",
+                    ),
+                )
+            }
+            add(
+                ContextualItem(
+                    id = "remove",
+                    text = "Remove",
+                ),
+            )
+            add(
+                ContextualItem(
+                    id = "remove_lines_above",
+                    text = "Remove lines above ",
+                ),
+            )
+        },
         onSelect = {
             when (it.id) {
                 "copy_url" -> onAction(NetworkAction.CopyUrl(state))
                 "copy_curl" -> onAction(NetworkAction.CopyCUrl(state))
                 "remove" -> onAction(NetworkAction.Remove(state))
+                "create_mock" -> onAction(NetworkAction.CreateMock(state))
                 "remove_lines_above" -> onAction(NetworkAction.RemoveLinesAbove(state))
             }
         },
@@ -71,6 +89,11 @@ fun NetworkItemView(
             modifier = modifier
                 .padding(vertical = 4.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
+                .then(
+                    if (state.isMocked) {
+                        Modifier.background(Color.Yellow.copy(alpha = 0.05f))
+                    } else Modifier,
+                )
                 .clickable(onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) })
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             // Inner padding for content

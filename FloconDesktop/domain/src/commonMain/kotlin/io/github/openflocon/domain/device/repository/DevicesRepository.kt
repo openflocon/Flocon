@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.Flow
 interface DevicesRepository {
     val devices: Flow<List<DeviceDomainModel>>
 
-    suspend fun register(device: DeviceDomainModel)
+    // returns new if new device
+    suspend fun register(device: DeviceDomainModel) : Boolean
 
     suspend fun unregister(device: DeviceDomainModel)
 

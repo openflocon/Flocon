@@ -34,4 +34,7 @@ val roomModule =
         single {
             get<AppDatabase>().networkFilterDao
         }
+        single {
+            get<AppDatabase>().networkMocksDao
+        }
     }

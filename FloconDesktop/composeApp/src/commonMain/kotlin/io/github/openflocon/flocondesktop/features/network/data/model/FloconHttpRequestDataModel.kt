@@ -14,6 +14,7 @@ data class FloconNetworkRequestDataModel(
     val requestHeaders: Map<String, String>? = null,
     val requestBody: String? = null,
     val requestSize: Long? = null,
+    val isMocked: Boolean? = null,
 )
 
 @Serializable

@@ -1,7 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.mapper
 
 import androidx.compose.ui.graphics.Color
-import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState

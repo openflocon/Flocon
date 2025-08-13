@@ -17,7 +17,7 @@ class DeeplinkRepositoryImpl(
     private val localDeeplinkDataSource: DeeplinkLocalDataSource,
     private val remote: DeeplinkRemoteDataSource,
     private val dispatcherProvider: DispatcherProvider,
-    private val adbRepository: AdbRepository
+    private val adbRepository: AdbRepository,
 ) : DeeplinkRepository,
     MessagesReceiverRepository {
 
@@ -39,9 +39,8 @@ class DeeplinkRepositoryImpl(
         }
     }
 
-    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
-        localDeeplinkDataSource.observe(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observe(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override fun executeDeeplink(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, adbPath: String, deeplink: String) {
         adbRepository.executeAdbCommand(

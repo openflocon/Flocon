@@ -20,7 +20,7 @@ val dataRemoteModule = module {
         filesModule,
         messagesModule,
         sharedPreferencesModule,
-        tableModule
+        tableModule,
     )
 
     single {

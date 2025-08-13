@@ -137,11 +137,11 @@ fun AnalyticsScreen(
 
             FloconPanel(
                 contentState = selectedItem,
-                modifier = Modifier.align(Alignment.CenterEnd)
+                modifier = Modifier.align(Alignment.CenterEnd),
             ) {
                 AnalyticsDetailView(
                     modifier = Modifier.fillMaxSize(),
-                    state = it
+                    state = it,
                 )
             }
         }

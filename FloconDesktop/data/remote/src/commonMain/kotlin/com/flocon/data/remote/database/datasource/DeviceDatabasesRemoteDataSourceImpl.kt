@@ -20,10 +20,9 @@ class DeviceDatabasesRemoteDataSourceImpl(
     private val deviceDatabases = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, List<DeviceDataBaseDomainModel>>>(emptyMap())
     private val selectedDeviceDatabases = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DeviceDataBaseDomainModel?>>(emptyMap())
 
-    override fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?> =
-        selectedDeviceDatabases
-            .map { it[deviceIdAndPackageName] }
-            .distinctUntilChanged()
+    override fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?> = selectedDeviceDatabases
+        .map { it[deviceIdAndPackageName] }
+        .distinctUntilChanged()
 
     override fun selectDeviceDatabase(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -35,8 +34,7 @@ class DeviceDatabasesRemoteDataSourceImpl(
         selectedDeviceDatabases.update { it + (deviceIdAndPackageName to database) }
     }
 
-    override fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>> =
-        deviceDatabases.map { it[deviceIdAndPackageName] ?: emptyList() }
+    override fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>> = deviceDatabases.map { it[deviceIdAndPackageName] ?: emptyList() }
 
     override fun registerDeviceDatabases(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

@@ -15,11 +15,11 @@ class TableRemoteDataSourceImpl(
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
             message =
-                FloconOutgoingMessageDataModel(
-                    plugin = Protocol.ToDevice.Table.Plugin,
-                    method = Protocol.ToDevice.Table.Method.ClearItems,
-                    body = Json.Default.encodeToString(items),
-                ),
+            FloconOutgoingMessageDataModel(
+                plugin = Protocol.ToDevice.Table.Plugin,
+                method = Protocol.ToDevice.Table.Method.ClearItems,
+                body = Json.Default.encodeToString(items),
+            ),
         )
     }
 }

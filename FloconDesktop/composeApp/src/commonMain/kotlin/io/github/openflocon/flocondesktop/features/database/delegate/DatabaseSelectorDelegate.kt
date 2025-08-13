@@ -1,9 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.delegate
 
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceUseCase
+import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.usecase.AskForDeviceDatabasesUseCase
 import io.github.openflocon.domain.database.usecase.ObserveCurrentDeviceSelectedDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDeviceDatabaseUseCase

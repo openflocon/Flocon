@@ -80,11 +80,9 @@ class AnalyticsRepositoryImpl(
         )
     }
 
-    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> =
-        deviceAnalyticsDataSource.observeSelectedDeviceAnalytics(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> = deviceAnalyticsDataSource.observeSelectedDeviceAnalytics(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
-        analyticsLocalDataSource.observeDeviceAnalytics(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> = analyticsLocalDataSource.observeDeviceAnalytics(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 }

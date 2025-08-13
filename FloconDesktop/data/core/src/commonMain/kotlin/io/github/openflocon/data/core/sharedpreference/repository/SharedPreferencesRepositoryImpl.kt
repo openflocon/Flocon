@@ -57,14 +57,13 @@ class SharedPreferencesRepositoryImpl(
         }
     }
 
-    override fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> =
-        deviceSharedPreferencesDataSource
-            .observeSelectedDeviceSharedPreference(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> = deviceSharedPreferencesDataSource
+        .observeSelectedDeviceSharedPreference(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override fun selectDeviceSharedPreference(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        sharedPreferenceId: DeviceSharedPreferenceId
+        sharedPreferenceId: DeviceSharedPreferenceId,
     ) {
         deviceSharedPreferencesDataSource.selectDeviceSharedPreference(
             deviceIdAndPackageName = deviceIdAndPackageName,
@@ -72,10 +71,9 @@ class SharedPreferencesRepositoryImpl(
         )
     }
 
-    override fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> =
-        deviceSharedPreferencesDataSource
-            .observeDeviceSharedPreferences(deviceIdAndPackageName = deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> = deviceSharedPreferencesDataSource
+        .observeDeviceSharedPreferences(deviceIdAndPackageName = deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun registerDeviceSharedPreferences(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -87,10 +85,9 @@ class SharedPreferencesRepositoryImpl(
         )
     }
 
-    override suspend fun askForDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) =
-        withContext(dispatcherProvider.data) {
-            remote.askForDeviceSharedPreferences(deviceIdAndPackageName = deviceIdAndPackageName)
-        }
+    override suspend fun askForDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = withContext(dispatcherProvider.data) {
+        remote.askForDeviceSharedPreferences(deviceIdAndPackageName = deviceIdAndPackageName)
+    }
 
     override suspend fun getDeviceSharedPreferencesValues(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -116,7 +113,7 @@ class SharedPreferencesRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreference: DeviceSharedPreferenceDomainModel,
         key: String,
-        value: SharedPreferenceRowDomainModel.Value
+        value: SharedPreferenceRowDomainModel.Value,
     ) {
         withContext(dispatcherProvider.data) {
             remote.editSharedPrefField(

@@ -19,10 +19,18 @@ class HandleIncomingMessagesUseCase(
     operator fun invoke(): Flow<Unit> = messagesRepository
         .listenMessages()
         .onEach {
-            val deviceId = handleDeviceUseCase(device = getDevice(it))
+            val handleDeviceResult = handleDeviceUseCase(device = getDevice(it))
             plugins.forEach { plugin ->
+                if (handleDeviceResult.isNewDevice) {
+                    plugin.onNewDevice(
+                        deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                            deviceId = handleDeviceResult.deviceId,
+                            packageName = it.appPackageName,
+                        ),
+                    )
+                }
                 if (plugin.pluginName.contains(it.plugin)) {
-                    plugin.onMessageReceived(deviceId = deviceId, message = it)
+                    plugin.onMessageReceived(deviceId = handleDeviceResult.deviceId, message = it)
                 }
             }
         }

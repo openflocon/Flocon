@@ -59,7 +59,7 @@ class DashboardRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId,
         textFieldId: String,
-        value: String
+        value: String,
     ) {
         withContext(dispatcherProvider.data) {
             toDeviceDashboardDataSource.submitTextFieldEvent(
@@ -74,7 +74,7 @@ class DashboardRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId,
         checkBoxId: String,
-        value: Boolean
+        value: Boolean,
     ) {
         withContext(dispatcherProvider.data) {
             toDeviceDashboardDataSource.sendUpdateCheckBoxEvent(
@@ -94,13 +94,11 @@ class DashboardRepositoryImpl(
         }
     }
 
-    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> =
-        deviceDashboardsDataSource.observeSelectedDeviceDashboard(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        )
+    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> = deviceDashboardsDataSource.observeSelectedDeviceDashboard(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    )
 
-    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> =
-        dashboardLocalDataSource.observeDeviceDashboards(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        )
+    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> = dashboardLocalDataSource.observeDeviceDashboards(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    )
 }

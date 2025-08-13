@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 class DevicesRepositoryImpl(
@@ -27,33 +29,51 @@ class DevicesRepositoryImpl(
 
     override fun getCurrentDeviceApp(): DeviceAppDomainModel? = _currentDeviceApp.value
 
-    override suspend fun register(device: DeviceDomainModel) {
-        withContext(dispatcherProvider.data) {
+    private val devicesMutex = Mutex()
+
+    // returns new if new device
+    override suspend fun register(device: DeviceDomainModel): Boolean = withContext(dispatcherProvider.data) {
+        devicesMutex.withLock {
+            val existingDevice = _devices.value.find { it.deviceId == device.deviceId }
+            val isNewDevice = existingDevice == null
+
             _devices.update { currentDevices ->
                 val updatedDevice = device.copy(
-                    apps = device.apps.plus(
-                        _devices.value
-                            .find { it.deviceId == device.deviceId }
-                            ?.apps.orEmpty(),
-                    )
+                    apps = device.apps.plus(existingDevice?.apps.orEmpty())
                         .distinctBy(DeviceAppDomainModel::packageName),
                 )
-                if (_currentDevice.value?.deviceId == device.deviceId)
+
+                if (_currentDevice.value?.deviceId == device.deviceId) {
                     _currentDevice.update { updatedDevice }
-                (currentDevices + updatedDevice).distinct()
+                }
+
+                val newDevicesList = if (isNewDevice) {
+                    currentDevices + updatedDevice
+                } else {
+                    currentDevices.map {
+                        if (it.deviceId == device.deviceId) updatedDevice else it
+                    }
+                }
+                newDevicesList.distinct()
             }
+
+            isNewDevice
         }
     }
 
     override suspend fun unregister(device: DeviceDomainModel) {
         withContext(dispatcherProvider.data) {
-            _devices.update { it - device }
+            devicesMutex.withLock {
+                _devices.update { it - device }
+            }
         }
     }
 
     override suspend fun clear() {
         withContext(dispatcherProvider.data) {
-            _devices.update { emptyList() }
+            devicesMutex.withLock {
+                _devices.update { emptyList() }
+            }
             _currentDevice.update { null }
             _currentDeviceApp.update { null }
         }

@@ -19,7 +19,6 @@ object Protocol {
             }
         }
 
-
         object Database {
             const val Plugin = "database"
 
@@ -79,8 +78,6 @@ object Protocol {
                 const val AddItems = "AddItems"
             }
         }
-
-
     }
 
     object ToDevice {
@@ -119,6 +116,14 @@ object Protocol {
                 const val ListFiles = "listFiles"
                 const val DeleteFile = "deleteFile"
                 const val DeleteFolderContent = "deleteFolderContent"
+            }
+        }
+
+        object Network {
+            const val Plugin = "network"
+
+            object Method {
+                const val SetupMocks = "setupMocks"
             }
         }
 

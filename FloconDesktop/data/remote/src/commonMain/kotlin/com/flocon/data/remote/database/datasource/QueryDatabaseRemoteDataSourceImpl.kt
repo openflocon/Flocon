@@ -53,13 +53,13 @@ class QueryDatabaseRemoteDataSourceImpl(
                 plugin = Protocol.ToDevice.Database.Plugin,
                 method = Protocol.ToDevice.Database.Method.Query,
                 body =
-                    Json.encodeToString<DatabaseOutgoingQueryMessage>(
-                        DatabaseOutgoingQueryMessage(
-                            requestId = requestId,
-                            query = query,
-                            database = databaseId,
-                        ),
+                Json.encodeToString<DatabaseOutgoingQueryMessage>(
+                    DatabaseOutgoingQueryMessage(
+                        requestId = requestId,
+                        query = query,
+                        database = databaseId,
                     ),
+                ),
             ),
         )
         // wait for result
@@ -96,7 +96,7 @@ class QueryDatabaseRemoteDataSourceImpl(
 // TODO internal
 fun ResponseAndRequestIdDataModel.toDomain() = ResponseAndRequestIdDomainModel(
     requestId = requestId,
-    response = response.toDomain()
+    response = response.toDomain(),
 )
 
 fun DatabaseExecuteSqlResponseDataModel.toDomain(): DatabaseExecuteSqlResponseDomainModel = when (this) {

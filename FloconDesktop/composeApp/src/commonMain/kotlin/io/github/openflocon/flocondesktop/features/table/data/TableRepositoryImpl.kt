@@ -69,9 +69,8 @@ class TableRepositoryImpl(
         emptyList()
     }
 
-    override fun observeTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> =
-        tableLocalDataSource.observe(deviceIdAndPackageName = deviceIdAndPackageName, tableId = tableId)
-            .flowOn(dispatcherProvider.data)
+    override fun observeTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> = tableLocalDataSource.observe(deviceIdAndPackageName = deviceIdAndPackageName, tableId = tableId)
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun deleteTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableIdentifierDomainModel) {
         withContext(dispatcherProvider.data) {
@@ -87,11 +86,9 @@ class TableRepositoryImpl(
         )
     }
 
-    override fun observeSelectedDeviceTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<TableIdentifierDomainModel?> =
-        deviceTablesDataSource.observeSelectedDeviceTable(deviceIdAndPackageName = deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeSelectedDeviceTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<TableIdentifierDomainModel?> = deviceTablesDataSource.observeSelectedDeviceTable(deviceIdAndPackageName = deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> =
-        tableLocalDataSource.observeDeviceTables(deviceIdAndPackageName = deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> = tableLocalDataSource.observeDeviceTables(deviceIdAndPackageName = deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 }

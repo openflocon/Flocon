@@ -1,8 +1,6 @@
 package io.github.openflocon.flocondesktop.features.analytics.delegate
 
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
-import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
-import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceSelectedAnalyticsUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveDeviceAnalyticsUseCase
 import io.github.openflocon.domain.analytics.usecase.SelectCurrentDeviceAnalyticsUseCase

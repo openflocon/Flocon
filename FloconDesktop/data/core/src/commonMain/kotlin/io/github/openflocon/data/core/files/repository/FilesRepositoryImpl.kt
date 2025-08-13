@@ -35,7 +35,7 @@ class FilesRepositoryImpl(
 
     override fun observeFolderContent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        path: FilePathDomainModel
+        path: FilePathDomainModel,
     ): Flow<List<FileDomainModel>> = localFilesDataSource
         .observeFolderContentUseCase(
             deviceIdAndPackageName = deviceIdAndPackageName,
@@ -44,7 +44,7 @@ class FilesRepositoryImpl(
 
     override suspend fun refreshFolderContent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        path: FilePathDomainModel
+        path: FilePathDomainModel,
     ): Either<Throwable, Unit> = withContext(dispatcherProvider.data) {
         remoteFilesDataSource
             .executeGetFile(
@@ -62,7 +62,7 @@ class FilesRepositoryImpl(
 
     override suspend fun deleteFolderContent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        path: FilePathDomainModel
+        path: FilePathDomainModel,
     ): Either<Throwable, Unit> = withContext(dispatcherProvider.data) {
         remoteFilesDataSource
             .executeDeleteFolderContent(
