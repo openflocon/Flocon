@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,25 +49,28 @@ import io.github.openflocon.library.designsystem.components.FloconSurface
 
 @Composable
 fun NetworkEditionWindow(
+    instanceId: String,
     state: SelectedMockUiModel,
     onCloseRequest: () -> Unit,
     onCancel: () -> Unit,
     onSave: (MockNetworkUiModel) -> Unit,
 ) {
-    val windowState: FloconWindowState = remember {
+    val windowState: FloconWindowState = remember(instanceId) {
         createFloconWindowState()
     }
-    FloconWindow(
-        title = "Mock Edition",
-        state = windowState,
-        onCloseRequest = onCloseRequest,
-    ) {
-        FloconSurface {
-            NetworkEditionContent(
-                state = state,
-                onCancel = onCancel,
-                onSave = onSave,
-            )
+    key(windowState, instanceId) {
+        FloconWindow(
+            title = "Mock Edition",
+            state = windowState,
+            onCloseRequest = onCloseRequest,
+        ) {
+            FloconSurface {
+                NetworkEditionContent(
+                    state = state,
+                    onCancel = onCancel,
+                    onSave = onSave,
+                )
+            }
         }
     }
 }
@@ -126,7 +131,7 @@ fun MockEditorScreen(
                     .clickable(onClick = {
                         editableToUi(mock).fold(
                             doOnFailure = {
-                                error = "All fields are required"
+                                error = "Some fields are required"
                             },
                             doOnSuccess = {
                                 onSave(it)
@@ -145,7 +150,10 @@ fun MockEditorScreen(
         }
 
         error?.let {
-            Text(it, color = MaterialTheme.colorScheme.error)
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = it, color = MaterialTheme.colorScheme.error
+            )
         }
 
         Row(
@@ -195,22 +203,44 @@ fun MockEditorScreen(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                NetworkMockFieldView(
-                    label = "HTTP Code",
-                    maxLines = 1,
-                    placeHolder = "eg: 200",
-                    value = mock.response.httpCode.toString(),
-                    onValueChange = { newValue ->
-                        if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                            mock = mock.copy(
-                                response = mock.response.copy(
-                                    httpCode = newValue.toIntOrNull() ?: 0
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    NetworkMockFieldView(
+                        label = "HTTP Code",
+                        maxLines = 1,
+                        placeHolder = "eg: 200",
+                        value = mock.response.httpCode.toString(),
+                        onValueChange = { newValue ->
+                            if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                                mock = mock.copy(
+                                    response = mock.response.copy(
+                                        httpCode = newValue.toIntOrNull() ?: 0
+                                    )
                                 )
-                            )
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                    NetworkMockFieldView(
+                        label = "Additional Delay (ms)",
+                        maxLines = 1,
+                        value = mock.response.delay.toString(),
+                        placeHolder = "0",
+                        onValueChange = { newValue ->
+                            // On vérifie si la nouvelle valeur est vide ou si elle contient uniquement des chiffres
+                            if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                                // Si c'est le cas, on met à jour l'état
+                                val newDelay = newValue.toLongOrNull() ?: 0L
+                                mock = mock.copy(response = mock.response.copy(delay = newDelay))
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
                 NetworkMockFieldView(
                     label = "Media Type",
                     maxLines = 1,
@@ -221,21 +251,24 @@ fun MockEditorScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
-                NetworkMockFieldView(
-                    label = "Delay (ms)",
-                    maxLines = 1,
-                    value = mock.response.delay.toString(),
-                    placeHolder = "0",
-                    onValueChange = { newValue ->
-                        // On vérifie si la nouvelle valeur est vide ou si elle contient uniquement des chiffres
-                        if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                            // Si c'est le cas, on met à jour l'état
-                            val newDelay = newValue.toLongOrNull() ?: 0L
-                            mock = mock.copy(response = mock.response.copy(delay = newDelay))
+
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    NetworkMockMediaType(
+                        text = "application/json",
+                        onClicked = {
+                            mock = mock.copy(response = mock.response.copy(mediaType = it))
                         }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    )
+                    NetworkMockMediaType(
+                        text = "text/plain",
+                        onClicked = {
+                            mock = mock.copy(response = mock.response.copy(mediaType = it))
+                        }
+                    )
+                }
 
                 // Section Headers
                 Row(
@@ -320,6 +353,22 @@ fun MockEditorScreen(
         }
 
     }
+}
+
+@Composable
+fun NetworkMockMediaType(text: String, onClicked: (text: String) -> Unit) {
+    Text(
+        text = text,
+        color = FloconTheme.colorPalette.onPanel,
+        style = FloconTheme.typography.bodySmall,
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(FloconTheme.colorPalette.panel.copy(alpha = 0.8f))
+            .clickable {
+                onClicked(text)
+            }
+            .padding(horizontal = 12.dp, vertical = 2.dp)
+    )
 }
 
 

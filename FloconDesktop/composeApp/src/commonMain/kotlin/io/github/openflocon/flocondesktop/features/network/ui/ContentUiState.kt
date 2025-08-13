@@ -7,11 +7,11 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkBodyD
 data class ContentUiState(
     val selectedRequestId: String?,
     val detailJsons: Set<NetworkBodyDetailUi>,
-    val mocksDisplayed: Boolean,
+    val mocksDisplayedInstance: String?,
 )
 
 fun previewContentUiState() = ContentUiState(
     selectedRequestId = null,
     detailJsons = emptySet(),
-    mocksDisplayed = false,
+    mocksDisplayedInstance = null,
 )

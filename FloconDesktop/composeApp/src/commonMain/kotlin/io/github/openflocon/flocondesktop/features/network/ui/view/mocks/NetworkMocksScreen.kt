@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.network.ui.view
+package io.github.openflocon.flocondesktop.features.network.ui.view.mocks
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,8 +26,6 @@ import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowSta
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkMocksViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.MockNetworkLineUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.previewMockNetworkLineUiModel
-import io.github.openflocon.flocondesktop.features.network.ui.view.mocks.MockLineView
-import io.github.openflocon.flocondesktop.features.network.ui.view.mocks.NetworkEditionWindow
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -34,35 +33,39 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NetworkMocksWindow(
+    instanceId: String,
     onCloseRequest: () -> Unit,
 ) {
-    val windowState: FloconWindowState = remember {
+    val windowState: FloconWindowState = remember(instanceId) {
         createFloconWindowState()
     }
     val viewModel: NetworkMocksViewModel = koinViewModel()
     val mocks by viewModel.items.collectAsStateWithLifecycle()
-    val selectedItem by viewModel.selectedItem.collectAsStateWithLifecycle()
-    FloconWindow(
-        title = "Mocks",
-        state = windowState,
-        onCloseRequest = onCloseRequest,
-    ) {
-        NetworkMocksContent(
-            mocks = mocks,
-            modifier = Modifier.fillMaxSize(),
-            onItemClicked = viewModel::clickOnMock,
-            onAddItemClicked = viewModel::createNewMock,
-            onDeleteClicked = viewModel::deleteMock,
-        )
-    }
+    val editionWindow by viewModel.editionWindow.collectAsStateWithLifecycle()
+    key(instanceId, windowState) {
+        FloconWindow(
+            title = "Mocks",
+            state = windowState,
+            onCloseRequest = onCloseRequest,
+        ) {
+            NetworkMocksContent(
+                mocks = mocks,
+                modifier = Modifier.fillMaxSize(),
+                onItemClicked = viewModel::clickOnMock,
+                onAddItemClicked = viewModel::createNewMock,
+                onDeleteClicked = viewModel::deleteMock,
+            )
+        }
 
-    selectedItem?.let {
-        NetworkEditionWindow(
-            state = it,
-            onCloseRequest = viewModel::cancelMockCreation,
-            onCancel = viewModel::cancelMockCreation,
-            onSave = viewModel::addMock,
-        )
+        editionWindow?.let {
+            NetworkEditionWindow(
+                instanceId = it.windowInstanceId,
+                state = it.selectedMockUiModel,
+                onCloseRequest = viewModel::cancelMockCreation,
+                onCancel = viewModel::cancelMockCreation,
+                onSave = viewModel::addMock,
+            )
+        }
     }
 }
 

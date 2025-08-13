@@ -11,6 +11,7 @@ import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toLineUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
+import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.MockEditionWindowUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.MockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.ui.model.mocks.SelectedMockUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +42,8 @@ class NetworkMocksViewModel(
             initialValue = emptyList(),
         )
 
-    val selectedItem = MutableStateFlow<SelectedMockUiModel?>(null)
+
+    val editionWindow = MutableStateFlow<MockEditionWindowUiModel?>(null)
 
     fun deleteMock(id: String) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
@@ -52,21 +54,25 @@ class NetworkMocksViewModel(
     fun clickOnMock(id: String) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             getNetworkMock(id)?.let { toUi(it) }?.let { mock ->
-                selectedItem.update {
-                    SelectedMockUiModel.Edition(mock)
+                editionWindow.update {
+                    MockEditionWindowUiModel(
+                        SelectedMockUiModel.Edition(mock)
+                    )
                 }
             }
         }
     }
 
     fun createNewMock() {
-        selectedItem.update {
-            SelectedMockUiModel.Creation
+        editionWindow.update {
+            MockEditionWindowUiModel(
+                SelectedMockUiModel.Creation
+            )
         }
     }
 
     fun cancelMockCreation() {
-        selectedItem.update {
+        editionWindow.update {
             null
         }
     }
@@ -75,7 +81,7 @@ class NetworkMocksViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             addNetworkMocksUseCase(toDomain(uiModel))
             // close
-            selectedItem.update {
+            editionWindow.update {
                 null
             }
         }

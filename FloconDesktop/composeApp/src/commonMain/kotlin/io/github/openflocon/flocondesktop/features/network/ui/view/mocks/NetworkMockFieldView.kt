@@ -49,7 +49,7 @@ fun NetworkMockFieldView(
                     Text(
                         text = it,
                         style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
+                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.35f),
                     )
                 }
                 BasicTextField(

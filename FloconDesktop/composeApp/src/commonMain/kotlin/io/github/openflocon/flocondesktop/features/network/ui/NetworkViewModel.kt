@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class NetworkViewModel(
     observeHttpRequestsUseCase: ObserveHttpRequestsUseCase,
@@ -47,7 +48,7 @@ class NetworkViewModel(
         ContentUiState(
             selectedRequestId = null,
             detailJsons = emptySet(),
-            mocksDisplayed = false,
+            mocksDisplayedInstance = null,
         )
     )
 
@@ -159,7 +160,7 @@ class NetworkViewModel(
     private fun openMocks(value: Boolean) {
         contentState.update { state ->
             state.copy(
-                mocksDisplayed = value
+                mocksDisplayedInstance = if(value) UUID.randomUUID().toString() else null
             )
         }
     }

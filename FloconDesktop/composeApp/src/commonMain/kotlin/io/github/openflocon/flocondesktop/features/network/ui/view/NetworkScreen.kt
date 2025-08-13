@@ -31,6 +31,7 @@ import io.github.openflocon.flocondesktop.features.network.ui.model.previewNetwo
 import io.github.openflocon.flocondesktop.features.network.ui.previewNetworkUiState
 import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkFilter
 import io.github.openflocon.flocondesktop.features.network.ui.view.header.NetworkItemHeaderView
+import io.github.openflocon.flocondesktop.features.network.ui.view.mocks.NetworkMocksWindow
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface
@@ -163,8 +164,9 @@ fun NetworkScreen(
             }
         }
 
-    if(uiState.contentState.mocksDisplayed) {
+    uiState.contentState.mocksDisplayedInstance?.let {
         NetworkMocksWindow(
+            instanceId = it,
             onCloseRequest = {
                 onAction(NetworkAction.CloseMocks)
             }

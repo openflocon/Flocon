@@ -80,7 +80,7 @@ fun createEditable(initialMock: MockNetworkUiModel?): EditableMockNetworkUiModel
         ),
         response = EditableMockNetworkUiModel.Response(
             httpCode = initialMock?.response?.httpCode ?: 200,
-            body = initialMock?.response?.body,
+            body = initialMock?.response?.body ?: "",
             mediaType = initialMock?.response?.mediaType ?: "application/json",
             delay = initialMock?.response?.delay ?: 0,
             headers = initialMock?.response?.headers?.map {
