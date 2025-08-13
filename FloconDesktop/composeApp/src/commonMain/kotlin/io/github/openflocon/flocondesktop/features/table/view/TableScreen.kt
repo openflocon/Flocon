@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.table.ui.view
+package io.github.openflocon.flocondesktop.features.table.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,14 +31,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.features.table.ui.TableViewModel
-import io.github.openflocon.flocondesktop.features.table.ui.model.DeviceTableUiModel
-import io.github.openflocon.flocondesktop.features.table.ui.model.TableContentStateUiModel
-import io.github.openflocon.flocondesktop.features.table.ui.model.TableRowUiModel
-import io.github.openflocon.flocondesktop.features.table.ui.model.TablesStateUiModel
-import io.github.openflocon.flocondesktop.features.table.ui.model.items
-import io.github.openflocon.flocondesktop.features.table.ui.model.previewTableContentStateUiModel
-import io.github.openflocon.flocondesktop.features.table.ui.model.previewTablesStateUiModel
+import io.github.openflocon.flocondesktop.features.table.TableViewModel
+import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
+import io.github.openflocon.flocondesktop.features.table.model.TableContentStateUiModel
+import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
+import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
+import io.github.openflocon.flocondesktop.features.table.model.items
+import io.github.openflocon.flocondesktop.features.table.model.previewTableContentStateUiModel
+import io.github.openflocon.flocondesktop.features.table.model.previewTablesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface

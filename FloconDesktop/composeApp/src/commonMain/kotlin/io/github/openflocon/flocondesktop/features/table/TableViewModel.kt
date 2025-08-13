@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.table.ui
+package io.github.openflocon.flocondesktop.features.table
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,11 +7,11 @@ import io.github.openflocon.domain.table.usecase.ObserveCurrentDeviceTableConten
 import io.github.openflocon.domain.table.usecase.ResetCurrentDeviceSelectedTableUseCase
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.network.mapper.formatTimestamp
-import io.github.openflocon.flocondesktop.features.table.ui.delegate.TableSelectorDelegate
-import io.github.openflocon.flocondesktop.features.table.ui.model.DeviceTableUiModel
-import io.github.openflocon.flocondesktop.features.table.ui.model.TableContentStateUiModel
-import io.github.openflocon.flocondesktop.features.table.ui.model.TableRowUiModel
-import io.github.openflocon.flocondesktop.features.table.ui.model.TablesStateUiModel
+import io.github.openflocon.flocondesktop.features.table.delegate.TableSelectorDelegate
+import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
+import io.github.openflocon.flocondesktop.features.table.model.TableContentStateUiModel
+import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
+import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

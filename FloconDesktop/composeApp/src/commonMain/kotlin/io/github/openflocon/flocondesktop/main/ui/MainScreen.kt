@@ -40,7 +40,7 @@ import io.github.openflocon.flocondesktop.features.files.view.FilesScreen
 import io.github.openflocon.flocondesktop.features.images.view.ImagesScreen
 import io.github.openflocon.flocondesktop.features.network.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.sharedpreferences.view.SharedPreferencesScreen
-import io.github.openflocon.flocondesktop.features.table.ui.view.TableScreen
+import io.github.openflocon.flocondesktop.features.table.view.TableScreen
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel

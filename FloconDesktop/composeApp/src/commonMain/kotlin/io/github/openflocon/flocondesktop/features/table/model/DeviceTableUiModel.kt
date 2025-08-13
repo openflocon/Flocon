@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.table.ui.model
+package io.github.openflocon.flocondesktop.features.table.model
 
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.table.models.TableId

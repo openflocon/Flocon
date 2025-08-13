@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.table.ui.view
+package io.github.openflocon.flocondesktop.features.table.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.view.components.FilterBar
-import io.github.openflocon.flocondesktop.features.table.ui.model.TableRowUiModel
+import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 
 @Composable

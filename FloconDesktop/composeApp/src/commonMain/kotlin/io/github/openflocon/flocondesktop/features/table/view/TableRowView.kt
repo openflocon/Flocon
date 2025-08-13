@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.table.ui.view
+package io.github.openflocon.flocondesktop.features.table.view
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -12,8 +12,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.features.table.ui.model.TableRowUiModel
-import io.github.openflocon.flocondesktop.features.table.ui.model.previewTableRowUiModel
+import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
+import io.github.openflocon.flocondesktop.features.table.model.previewTableRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
