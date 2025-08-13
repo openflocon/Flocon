@@ -3,9 +3,9 @@ package io.github.openflocon.flocondesktop.features.deeplinks.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.deeplink.usecase.ExecuteDeeplinkUseCase
 import io.github.openflocon.domain.deeplink.usecase.ObserveCurrentDeviceDeeplinkUseCase
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.ui.model.DeeplinkViewState

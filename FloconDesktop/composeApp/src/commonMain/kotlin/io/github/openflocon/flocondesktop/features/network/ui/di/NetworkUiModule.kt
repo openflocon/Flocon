@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.ui.di
 
+import io.github.openflocon.flocondesktop.features.network.ui.NetworkMocksViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.ui.SortAndFilterNetworkItemsProcessor
 import io.github.openflocon.flocondesktop.features.network.ui.delegate.HeaderDelegate
@@ -14,4 +15,6 @@ val networkUiModule =
         factoryOf(::MessagesServerDelegate)
         factoryOf(::HeaderDelegate)
         factoryOf(::SortAndFilterNetworkItemsProcessor)
+
+        viewModelOf(::NetworkMocksViewModel)
     }

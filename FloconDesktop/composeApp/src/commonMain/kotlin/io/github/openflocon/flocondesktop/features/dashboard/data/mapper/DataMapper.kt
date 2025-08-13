@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.dashboard.data.mapper
 
+import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
+import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
+import io.github.openflocon.domain.dashboard.models.DashboardSectionDomainModel
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.ButtonConfigDataModel
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.CheckBoxConfigDataModel
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.DashboardConfigDataModel
@@ -7,9 +10,6 @@ import io.github.openflocon.flocondesktop.features.dashboard.data.model.Dashboar
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.SectionConfigDataModel
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.TextConfigDataModel
 import io.github.openflocon.flocondesktop.features.dashboard.data.model.TextFieldConfigDataModel
-import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
-import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
-import io.github.openflocon.domain.dashboard.models.DashboardSectionDomainModel
 
 fun toDomain(model: DashboardConfigDataModel): DashboardDomainModel = DashboardDomainModel(
     dashboardId = model.dashboardId,

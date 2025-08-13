@@ -31,6 +31,7 @@ fun FloconNetworkCallDomainModel.toEntity(
             requestHeaders = networkRequest.headers,
             requestBody = networkRequest.body,
             requestByteSize = networkRequest.byteSize,
+            isMocked = networkRequest.isMocked,
             graphql = when (this) {
                 is FloconNetworkCallDomainModel.GraphQl -> NetworkCallGraphQlRequestEmbedded(
                     query = this.request.query,

@@ -2,20 +2,20 @@ package io.github.openflocon.flocondesktop.features.network.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.network.ui.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkDetailViewState
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,8 +43,13 @@ class NetworkViewModel(
     private val sortAndFilterNetworkItemsProcessor: SortAndFilterNetworkItemsProcessor,
 ) : ViewModel(headerDelegate) {
 
-    private val contentState =
-        MutableStateFlow(ContentUiState(selectedRequestId = null, detailJsons = emptySet()))
+    private val contentState = MutableStateFlow(
+        ContentUiState(
+            selectedRequestId = null,
+            detailJsons = emptySet(),
+            mocksDisplayed = null,
+        ),
+    )
 
     private val filterUiState = MutableStateFlow(FilterUiState(query = ""))
 
@@ -116,9 +121,14 @@ class NetworkViewModel(
     fun onAction(action: NetworkAction) {
         when (action) {
             is NetworkAction.SelectRequest -> onSelectRequest(action)
-            NetworkAction.ClosePanel -> onClosePanel()
+            is NetworkAction.ClosePanel -> onClosePanel()
             is NetworkAction.CopyText -> onCopyText(action)
-            NetworkAction.Reset -> onReset()
+            is NetworkAction.Reset -> onReset()
+            is NetworkAction.OpenMocks -> openMocks(callId = null)
+            is NetworkAction.CreateMock -> {
+                openMocks(callId = action.item.uuid)
+            }
+            is NetworkAction.CloseMocks -> closeMocks()
             is NetworkAction.CopyCUrl -> onCopyCUrl(action)
             is NetworkAction.CopyUrl -> onCopyUrl(action)
             is NetworkAction.Remove -> onRemove(action)
@@ -145,6 +155,24 @@ class NetworkViewModel(
                 } else {
                     action.id
                 },
+            )
+        }
+    }
+
+    private fun openMocks(callId: String?) {
+        contentState.update { state ->
+            state.copy(
+                mocksDisplayed = MockDisplayed(
+                    fromNetworkCallId = callId,
+                ),
+            )
+        }
+    }
+
+    private fun closeMocks() {
+        contentState.update { state ->
+            state.copy(
+                mocksDisplayed = null,
             )
         }
     }

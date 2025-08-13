@@ -8,7 +8,7 @@ import io.github.openflocon.domain.files.models.FromDeviceFilesResultDomainModel
 // TODO INTERNAL
 fun FromDeviceFilesResultDataModel.toDomain() = FromDeviceFilesResultDomainModel(
     requestId = requestId,
-    files = files.map(FromDeviceFilesDataModel::toDomain)
+    files = files.map(FromDeviceFilesDataModel::toDomain),
 )
 
 fun FromDeviceFilesDataModel.toDomain() = FromDeviceFilesDomainModel(
@@ -16,5 +16,5 @@ fun FromDeviceFilesDataModel.toDomain() = FromDeviceFilesDomainModel(
     lastModified = lastModified,
     name = name,
     size = size,
-    path = path
+    path = path,
 )

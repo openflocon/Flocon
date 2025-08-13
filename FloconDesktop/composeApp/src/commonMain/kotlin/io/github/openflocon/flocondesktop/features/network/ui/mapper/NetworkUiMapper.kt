@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.ui.mapper
 
-import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
 import io.github.openflocon.flocondesktop.features.network.ui.model.NetworkItemViewState
 import io.ktor.http.Url
 import kotlinx.datetime.TimeZone
@@ -51,6 +51,7 @@ fun toUi(networkCall: FloconNetworkCallDomainModel): NetworkItemViewState = Netw
     type = toTypeUi(networkCall),
     method = getMethodUi(networkCall),
     status = getStatusUi(networkCall),
+    isMocked = networkCall.networkRequest.isMocked,
 )
 
 fun getDomainUi(networkRequest: FloconNetworkCallDomainModel): String = when (networkRequest) {
