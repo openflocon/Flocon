@@ -3,14 +3,12 @@ package io.github.openflocon.data.core.network.repository
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkMocksLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
-import io.github.openflocon.data.core.network.graphql.extractGraphQl
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
@@ -19,7 +17,6 @@ import io.github.openflocon.domain.network.repository.NetworkRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import kotlin.uuid.ExperimentalUuidApi
 
 class NetworkRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
@@ -63,13 +60,13 @@ class NetworkRepositoryImpl(
                 Protocol.FromDevice.Network.Method.LogNetworkCallRequest -> {
                     networkRemoteDataSource.getRequestData(message)
                         ?.let { call ->
-//                            networkLocalDataSource.save(
-//                                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-//                                    deviceId = deviceId,
-//                                    packageName = message.appPackageName,
-//                                ),
-//                                call = call,
-//                            )
+                            networkLocalDataSource.save(
+                                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                                    deviceId = deviceId,
+                                    packageName = message.appPackageName,
+                                ),
+                                call = call,
+                            )
                         }
                 }
 
@@ -203,51 +200,6 @@ class NetworkRepositoryImpl(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    fun toDomain(decoded: FloconNetworkRequestDomainModel): FloconNetworkCallDomainModel? = try {
-        val graphQl = extractGraphQl(decoded)
-
-        val callId = decoded.floconCallId!!
-        val networkRequest = FloconNetworkRequestDomainModel(
-            url = decoded.url,
-            startTime = decoded.startTime,
-            method = decoded.method,
-            headers = decoded.headers,
-            body = decoded.body,
-            byteSize = decoded.byteSize,
-            isMocked = decoded.isMocked,
-        )
-
-        when {
-            graphQl != null -> FloconNetworkCallDomainModel.GraphQl(
-                callId = callId,
-                request = FloconNetworkCallDomainModel.GraphQl.Request(
-                    query = graphQl.request.queryName ?: "anonymous",
-                    operationType = graphQl.request.operationType,
-                    networkRequest = networkRequest,
-                ),
-                response = null,
-            )
-
-            decoded.floconNetworkType == "grpc" -> FloconNetworkCallDomainModel.Grpc(
-                callId = callId,
-                networkRequest = networkRequest,
-                response = null,
-            )
-            // decoded.floconNetworkType == "http"
-            else -> {
-                FloconNetworkCallDomainModel.Http(
-                    callId = callId,
-                    networkRequest = networkRequest,
-                    response = null,
-                )
-            }
-        }
-    } catch (t: Throwable) {
-        t.printStackTrace()
-        null
-    }
-
     override suspend fun setupMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         mocks: List<MockNetworkDomainModel>,
@@ -314,4 +266,5 @@ class NetworkRepositoryImpl(
             isEnabled = isEnabled,
         )
     }
+    
 }

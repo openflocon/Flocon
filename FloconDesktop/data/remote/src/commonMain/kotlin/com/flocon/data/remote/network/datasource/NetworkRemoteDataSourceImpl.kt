@@ -13,8 +13,8 @@ import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.serialization.json.Json
@@ -40,9 +40,9 @@ class NetworkRemoteDataSourceImpl(
         )
     }
 
-    override fun getRequestData(message: FloconIncomingMessageDomainModel): FloconNetworkRequestDomainModel? {
+    override fun getRequestData(message: FloconIncomingMessageDomainModel): FloconNetworkCallDomainModel? {
         return json.safeDecodeFromString<FloconNetworkRequestDataModel>(message.body)
-            ?.let { it.toDomain() }
+            ?.let { com.flocon.data.remote.network.mapper.toDomain(it) }
     }
 
     override fun getCallId(message: FloconIncomingMessageDomainModel): FloconNetworkCallIdDomainModel? {
