@@ -1,10 +1,11 @@
 package io.github.openflocon.flocondesktop.features.images.data
 
 import com.flocon.data.remote.Protocol
-import io.github.openflocon.domain.device.models.DeviceId
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
-import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.data.core.images.datasource.ImagesLocalDataSource
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import io.github.openflocon.domain.images.repository.ImagesRepository
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
@@ -24,6 +25,10 @@ class ImagesRepositoryImpl(
     NetworkImageRepository {
 
     override val pluginName = listOf(Protocol.FromDevice.Images.Plugin)
+
+    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        // no op
+    }
 
     override suspend fun onMessageReceived(
         deviceId: String,

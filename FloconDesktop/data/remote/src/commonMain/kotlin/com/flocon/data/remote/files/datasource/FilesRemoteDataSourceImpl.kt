@@ -56,13 +56,13 @@ class FilesRemoteDataSourceImpl(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.ListFiles,
                 body =
-                    Json.Default.encodeToString(
-                        ToDeviceGetFilesMessage(
-                            requestId = requestId,
-                            path = filePath,
-                            isConstantPath = isConstantPath,
-                        ),
+                Json.Default.encodeToString(
+                    ToDeviceGetFilesMessage(
+                        requestId = requestId,
+                        path = filePath,
+                        isConstantPath = isConstantPath,
                     ),
+                ),
             ),
         )
         // wait for result
@@ -88,13 +88,13 @@ class FilesRemoteDataSourceImpl(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFolderContent,
                 body =
-                    Json.Default.encodeToString(
-                        ToDeviceDeleteFolderContentMessage(
-                            requestId = requestId,
-                            path = realPath,
-                            isConstantPath = isConstantPath,
-                        ),
+                Json.Default.encodeToString(
+                    ToDeviceDeleteFolderContentMessage(
+                        requestId = requestId,
+                        path = realPath,
+                        isConstantPath = isConstantPath,
                     ),
+                ),
             ),
         )
 
@@ -129,14 +129,14 @@ class FilesRemoteDataSourceImpl(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFile,
                 body =
-                    Json.Default.encodeToString(
-                        ToDeviceDeleteFileMessage(
-                            requestId = requestId,
-                            parentPath = parentPath,
-                            filePath = filePathValue,
-                            isConstantParentPath = isConstantParentPath,
-                        ),
+                Json.Default.encodeToString(
+                    ToDeviceDeleteFileMessage(
+                        requestId = requestId,
+                        parentPath = parentPath,
+                        filePath = filePathValue,
+                        isConstantParentPath = isConstantParentPath,
                     ),
+                ),
             ),
         )
 

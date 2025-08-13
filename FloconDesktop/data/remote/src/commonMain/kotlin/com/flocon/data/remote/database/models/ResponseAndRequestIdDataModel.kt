@@ -4,5 +4,3 @@ data class ResponseAndRequestIdDataModel(
     val requestId: String,
     val response: DatabaseExecuteSqlResponseDataModel,
 )
-
-

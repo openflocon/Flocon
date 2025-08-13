@@ -38,16 +38,15 @@ private fun toDetailHttpStatusUi(networkCall: FloconNetworkCallDomainModel): Net
     }
 } ?: loadingStatus()
 
-fun graphQlSection(networkCall: FloconNetworkCallDomainModel): NetworkDetailViewState.GraphQlSection? =
-    (networkCall as? FloconNetworkCallDomainModel.GraphQl)?.let {
-        NetworkDetailViewState.GraphQlSection(
-            queryName = it.request.query,
-            method = getMethodUi(networkCall),
-            status = it.response?.isSuccess?.let {
-                toGraphQlNetworkStatusUi(isSuccess = it)
-            } ?: loadingStatus(),
-        )
-    }
+fun graphQlSection(networkCall: FloconNetworkCallDomainModel): NetworkDetailViewState.GraphQlSection? = (networkCall as? FloconNetworkCallDomainModel.GraphQl)?.let {
+    NetworkDetailViewState.GraphQlSection(
+        queryName = it.request.query,
+        method = getMethodUi(networkCall),
+        status = it.response?.isSuccess?.let {
+            toGraphQlNetworkStatusUi(isSuccess = it)
+        } ?: loadingStatus(),
+    )
+}
 
 fun httpBodyToUi(body: String?): String = body?.let { JsonPrettyPrinter.prettyPrint(body) } ?: ""
 
@@ -68,5 +67,5 @@ fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewSt
 
     is FloconNetworkCallDomainModel.GraphQl,
     is FloconNetworkCallDomainModel.Http,
-        -> NetworkDetailViewState.Method.Http(toHttpMethodUi(request.networkRequest.method))
+    -> NetworkDetailViewState.Method.Http(toHttpMethodUi(request.networkRequest.method))
 }

@@ -155,7 +155,7 @@ fun TableScreen(
 
             FloconPanel(
                 contentState = selectedItem,
-                modifier = Modifier.align(Alignment.CenterEnd)
+                modifier = Modifier.align(Alignment.CenterEnd),
             ) {
                 TableDetailView(
                     modifier =

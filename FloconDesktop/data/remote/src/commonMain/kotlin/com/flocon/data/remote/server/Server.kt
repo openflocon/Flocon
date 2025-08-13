@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-
 interface Server {
     fun start(port: Int = Constant.SERVER_PORT)
 
