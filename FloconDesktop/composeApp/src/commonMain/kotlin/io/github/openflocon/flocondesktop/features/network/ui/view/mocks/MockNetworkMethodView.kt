@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.ui.view.mocks
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -40,7 +41,7 @@ fun MockNetworkMethodView(
         backgroundColor = backgroundColor,
         textColor = textColor,
         textSize = 14.sp,
-        modifier = modifier,
+        modifier = modifier.widthIn(min = 50.dp),
         icon = null,
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
         onClick = onClick,
