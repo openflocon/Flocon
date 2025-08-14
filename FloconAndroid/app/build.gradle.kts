@@ -27,10 +27,11 @@ android {
 
     signingConfigs {
         named("debug")  {
-            keyAlias = "debug"
-            keyPassword = "android"
-            storeFile = file("debug.keystore")
-            storePassword = "android"
+            // just a dummy keystore to be able to test the release build
+            keyAlias = "release"
+            keyPassword = "release"
+            storeFile = file("release.jks")
+            storePassword = "release"
         }
         register("release")  {
             keyAlias = "release"
