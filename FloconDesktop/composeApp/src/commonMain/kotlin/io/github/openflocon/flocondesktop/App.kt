@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.flocon.data.remote.dataRemoteModule
+import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.domainModule
@@ -37,6 +38,7 @@ fun App() {
                 mainModule,
                 featuresModule,
                 domainModule,
+                dataCoreModule,
                 dataLocalModule,
                 dataRemoteModule,
                 // Temporary

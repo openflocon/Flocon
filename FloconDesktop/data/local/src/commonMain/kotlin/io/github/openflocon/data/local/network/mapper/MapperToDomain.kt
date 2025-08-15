@@ -8,7 +8,7 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 
-fun toDomainModel(request: FloconNetworkRequestEmbedded): FloconNetworkRequestDomainModel {
+private fun toDomainModel(request: FloconNetworkRequestEmbedded): FloconNetworkRequestDomainModel {
     return with(request) {
         FloconNetworkRequestDomainModel(
             url = this.url,
@@ -21,6 +21,7 @@ fun toDomainModel(request: FloconNetworkRequestEmbedded): FloconNetworkRequestDo
         )
     }
 }
+
 
 fun FloconNetworkCallEntity.toDomainModel(): FloconNetworkCallDomainModel? {
     return try {

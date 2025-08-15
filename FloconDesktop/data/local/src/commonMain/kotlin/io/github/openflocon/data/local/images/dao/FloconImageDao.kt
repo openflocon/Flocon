@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FloconImageDao {
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertImage(image: DeviceImageEntity)
 
     @Query("SELECT * FROM DeviceImageEntity WHERE deviceId = :deviceId ORDER BY time DESC")

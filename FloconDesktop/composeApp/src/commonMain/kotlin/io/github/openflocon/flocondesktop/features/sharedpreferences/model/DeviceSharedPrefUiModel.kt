@@ -1,0 +1,13 @@
+package io.github.openflocon.flocondesktop.features.sharedpreferences.model
+
+import io.github.openflocon.domain.database.models.DeviceDataBaseId
+
+data class DeviceSharedPrefUiModel(
+    val id: DeviceDataBaseId,
+    val name: String,
+)
+
+fun previewDeviceSharedPrefUiModel(id: String = "id") = DeviceSharedPrefUiModel(
+    id = id,
+    name = "sharedPref_$id",
+)
