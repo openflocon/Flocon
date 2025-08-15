@@ -9,7 +9,7 @@ import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.network.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.mapper.toUi
