@@ -107,7 +107,7 @@ fun FloconTextField(
 fun FloconSmallTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    placeHolder: String,
+    placeHolderText: String,
     modifier: Modifier = Modifier,
     singleLine: Boolean = true,
     textStyle: TextStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
@@ -118,7 +118,7 @@ fun FloconSmallTextField(
     Box(modifier = modifier, contentAlignment = Alignment.CenterStart) {
         if (value.isEmpty()) {
             Text(
-                text = placeHolder,
+                text = placeHolderText,
                 style = placeHolderStyle,
             )
         }
