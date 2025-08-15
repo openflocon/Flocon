@@ -1,8 +1,10 @@
 package io.github.openflocon.flocondesktop.common.ui.feedback
 
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerHandler.MessageToDisplayUi
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerHandler.NotificationToDisplayUi
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
+import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler.MessageToDisplayUi
+import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler.NotificationToDisplayUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel

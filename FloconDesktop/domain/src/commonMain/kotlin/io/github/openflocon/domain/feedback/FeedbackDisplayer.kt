@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.common.ui.feedback
+package io.github.openflocon.domain.feedback
 
 interface FeedbackDisplayer {
 
