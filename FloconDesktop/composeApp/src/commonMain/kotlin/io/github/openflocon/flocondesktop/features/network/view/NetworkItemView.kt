@@ -132,57 +132,20 @@ fun NetworkItemView(
                         .weight(columnWidths.domainWeight)
                         .padding(horizontal = 4.dp),
                 )
-                when (val type = state.type) {
-                    is NetworkItemViewState.NetworkTypeUi.GraphQl -> {
-                        Text(
-                            text = type.queryName,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            style = bodySmall,
-                            color = FloconTheme.colorPalette.onSurface,
-                            modifier = Modifier
-                                .weight(2f)
-                                .background(
-                                    color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .padding(horizontal = 8.dp, vertical = 6.dp),
+                Text(
+                    text = state.type.query,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    style = bodySmall,
+                    color = FloconTheme.colorPalette.onSurface,
+                    modifier = Modifier
+                        .weight(2f)
+                        .background(
+                            color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
+                            shape = RoundedCornerShape(4.dp),
                         )
-                    }
-
-                    is NetworkItemViewState.NetworkTypeUi.Url -> {
-                        Text(
-                            text = type.query,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            style = bodySmall,
-                            color = FloconTheme.colorPalette.onSurface,
-                            modifier = Modifier
-                                .weight(2f)
-                                .background(
-                                    color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .padding(horizontal = 8.dp, vertical = 6.dp),
-                        )
-                    }
-
-                    is NetworkItemViewState.NetworkTypeUi.Grpc -> {
-                        Text(
-                            text = type.method,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            style = bodySmall,
-                            color = FloconTheme.colorPalette.onSurface,
-                            modifier = Modifier.weight(2f)
-                                .background(
-                                    color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .padding(horizontal = 8.dp, vertical = 6.dp),
-                        )
-                    }
-                }
+                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                )
             }
 
             // NetworkStatusUi - Fixed width for the tag from data class
@@ -205,6 +168,13 @@ fun NetworkItemView(
         }
     }
 }
+
+private val NetworkItemViewState.NetworkTypeUi.query: String
+    get() = when (this) {
+        is NetworkItemViewState.NetworkTypeUi.GraphQl -> queryName
+        is NetworkItemViewState.NetworkTypeUi.Grpc -> method
+        is NetworkItemViewState.NetworkTypeUi.Url -> query
+    }
 
 @Composable
 @Preview
