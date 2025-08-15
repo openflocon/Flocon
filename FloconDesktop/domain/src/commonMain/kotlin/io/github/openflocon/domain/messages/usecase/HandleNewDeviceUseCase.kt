@@ -8,7 +8,7 @@ class HandleNewDeviceUseCase(
     private val adbRepository: AdbRepository,
     private val settingsRepository: SettingsRepository,
 ) {
-    operator fun invoke(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+    suspend operator fun invoke(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         // check if we have a match for serial + app/package
         val serial = adbRepository.getAdbSerial(deviceIdAndPackageName.deviceId)
         if (serial == null) {

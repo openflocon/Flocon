@@ -5,12 +5,5 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import kotlinx.coroutines.flow.Flow
 
 interface DeeplinkRepository {
-
-    fun executeDeeplink(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        adbPath: String,
-        deeplink: String,
-    )
-
     fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>>
 }
