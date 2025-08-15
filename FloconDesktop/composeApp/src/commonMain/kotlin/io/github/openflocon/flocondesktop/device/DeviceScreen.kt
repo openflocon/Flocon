@@ -1,0 +1,89 @@
+package io.github.openflocon.flocondesktop.device
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
+import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
+import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
+
+@Composable
+internal fun DeviceScreen(
+    deviceId: DeviceId,
+    onCloseRequest: () -> Unit
+) {
+    val viewModel = koinViewModel<DeviceViewModel> {
+        parametersOf(deviceId)
+    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Content(
+        uiState = uiState,
+        onCloseRequest = onCloseRequest,
+        onAction = viewModel::onAction
+    )
+}
+
+@Composable
+private fun Content(
+    uiState: DeviceUiState,
+    onCloseRequest: () -> Unit,
+    onAction: (DeviceAction) -> Unit
+) {
+    FloconWindow(
+        title = "Device",
+        onCloseRequest = onCloseRequest,
+        state = createFloconWindowState()
+    ) {
+        Column {
+            TextValue("Model:", uiState.model)
+            TextValue("Brand:", uiState.brand)
+            TextValue("CPU:", uiState.cpu)
+            TextValue("MEM:", uiState.mem)
+            TextValue("Battery:", uiState.battery)
+            TextValue("SerialNumber:", uiState.serialNumber)
+            TextValue("VersionRelease:", uiState.versionRelease)
+            TextValue("VersionSdk:", uiState.versionSdk)
+        }
+    }
+}
+
+@Composable
+private fun TextValue(
+    label: String,
+    value: String
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label
+        )
+        Text(
+            text = value
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun Preview() {
+    FloconTheme {
+        Content(
+            uiState = previewDeviceUiState(),
+            onCloseRequest = {},
+            onAction = {}
+        )
+    }
+}
