@@ -55,8 +55,7 @@ internal fun FloconNetworkResponseDataModel.toDomain() = FloconNetworkResponseDo
     durationMs = durationMs ?: 0.0,
     body = responseBody,
     byteSize = responseSize ?: 0L,
-    headers = responseHeaders.orEmpty(),
-    grpcStatus = responseGrpcStatus
+    headers = responseHeaders.orEmpty()
 )
 
 internal fun FloconNetworkCallIdDataModel.toDomain(): FloconNetworkCallIdDomainModel? {
