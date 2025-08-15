@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.core.data.di
 
 import io.github.openflocon.domain.device.repository.DevicesRepository
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.core.data.device.DevicesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.SettingsRepositoryImpl
@@ -21,5 +22,6 @@ val coreDataModule =
         }
         singleOf(::DevicesRepositoryImpl) {
             bind<DevicesRepository>()
+            bind<MessagesReceiverRepository>()
         }
     }

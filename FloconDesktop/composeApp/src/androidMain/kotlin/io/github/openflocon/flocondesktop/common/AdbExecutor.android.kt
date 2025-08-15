@@ -9,3 +9,11 @@ actual fun localExecuteAdbCommand(adbPath: String, command: String): Either<Thro
 actual fun localFindAdbPath(): String? {
     TODO("Not yet implemented")
 }
+
+actual fun askSerialToAllDevices(
+    adbPath: String,
+    command: String,
+    serialVariableName: String
+): Either<Throwable, String> {
+    TODO("Not yet implemented")
+}

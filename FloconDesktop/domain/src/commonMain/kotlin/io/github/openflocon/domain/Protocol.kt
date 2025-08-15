@@ -19,6 +19,15 @@ object Protocol {
             }
         }
 
+
+        object Device {
+            const val Plugin = "device"
+
+            object Method {
+                const val RegisterDevice = "registerDevice"
+            }
+        }
+
         object Database {
             const val Plugin = "database"
 
