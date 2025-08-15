@@ -11,6 +11,19 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon
 import org.jetbrains.compose.resources.painterResource
 
+actual fun rememberFloconWindowState(
+    placement: WindowPlacement,
+    position: WindowPosition,
+    size: DpSize
+): FloconWindowState {
+    return FloconWindowStateDesktop(
+        WindowState(
+            placement = WindowPlacement.Floating,
+            position = WindowPosition(Alignment.Center),
+        )
+    )
+}
+
 data class FloconWindowStateDesktop(
     val windowState: WindowState,
 ) : FloconWindowState
@@ -39,7 +52,6 @@ actual fun FloconWindow(
         state = (state as FloconWindowStateDesktop).windowState,
         alwaysOnTop = alwaysOnTop,
         onCloseRequest = onCloseRequest,
-    ) {
-        content()
-    }
+        content = content
+    )
 }
