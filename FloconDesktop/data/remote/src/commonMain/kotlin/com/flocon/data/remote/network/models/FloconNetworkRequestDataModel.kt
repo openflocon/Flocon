@@ -40,8 +40,6 @@ data class FloconNetworkResponseDataModel(
 )
 
 internal fun FloconNetworkRequestDataModel.toDomain() = FloconNetworkRequestDomainModel(
-    floconCallId = floconCallId,
-    floconNetworkType = floconNetworkType,
     body = requestBody,
     headers = requestHeaders.orEmpty(),
     byteSize = requestSize ?: 0L,
@@ -52,8 +50,6 @@ internal fun FloconNetworkRequestDataModel.toDomain() = FloconNetworkRequestDoma
 )
 
 internal fun FloconNetworkResponseDataModel.toDomain() = FloconNetworkResponseDomainModel(
-    floconCallId = floconCallId,
-    floconNetworkType = floconNetworkType,
     durationMs = durationMs ?: 0.0,
     body = responseBody,
     byteSize = responseSize ?: 0L,
@@ -61,6 +57,8 @@ internal fun FloconNetworkResponseDataModel.toDomain() = FloconNetworkResponseDo
     grpcStatus = responseGrpcStatus
 )
 
-internal fun FloconNetworkCallIdDataModel.toDomain() = FloconNetworkCallIdDomainModel(
-    floconCallId = floconCallId
-)
+internal fun FloconNetworkCallIdDataModel.toDomain(): FloconNetworkCallIdDomainModel? {
+    return FloconNetworkCallIdDomainModel(
+        floconCallId = floconCallId ?: return null
+    )
+}

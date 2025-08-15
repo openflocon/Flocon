@@ -155,8 +155,6 @@ class NetworkRepositoryImpl(
     ): FloconNetworkCallDomainModel? {
         try {
             val networkResponse = FloconNetworkResponseDomainModel(
-                floconCallId = decoded.floconCallId,
-                floconNetworkType = decoded.floconNetworkType,
                 contentType = decoded.contentType,
                 body = decoded.body,
                 headers = decoded.headers,

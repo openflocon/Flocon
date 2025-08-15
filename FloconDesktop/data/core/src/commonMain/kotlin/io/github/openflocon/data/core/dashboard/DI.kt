@@ -4,11 +4,11 @@ import io.github.openflocon.data.core.dashboard.repository.DashboardRepositoryIm
 import io.github.openflocon.domain.dashboard.repository.DashboardRepository
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import org.koin.core.module.dsl.bind
-import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 internal val dashboardModule = module {
-    factoryOf(::DashboardRepositoryImpl) {
+    singleOf(::DashboardRepositoryImpl) {
         bind<DashboardRepository>()
         bind<MessagesReceiverRepository>()
     }

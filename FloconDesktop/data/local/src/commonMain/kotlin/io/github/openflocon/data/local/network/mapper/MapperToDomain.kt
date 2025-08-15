@@ -14,8 +14,6 @@ fun FloconNetworkCallEntity.toDomainModel(): FloconNetworkCallDomainModel? {
             FloconNetworkCallType.HTTP -> FloconNetworkCallDomainModel.Http(
                 callId = callId,
                 networkRequest = FloconNetworkRequestDomainModel(
-                    floconCallId = callId,
-                    floconNetworkType = "http", // ?
                     byteSize = request.requestByteSize,
                     method = request.method,
                     headers = request.requestHeaders,
@@ -35,7 +33,15 @@ fun FloconNetworkCallEntity.toDomainModel(): FloconNetworkCallDomainModel? {
             FloconNetworkCallType.GRAPHQL -> FloconNetworkCallDomainModel.GraphQl(
                 callId = callId,
                 request = FloconNetworkCallDomainModel.GraphQl.Request(
-                    networkRequest = networkRequest,
+                    networkRequest = FloconNetworkRequestDomainModel(
+                        byteSize = request.requestByteSize,
+                        method = request.method,
+                        headers = request.requestHeaders,
+                        url = request.url,
+                        isMocked = request.isMocked,
+                        startTime = request.startTime,
+                        body = request.requestBody
+                    ),
                     query = request.graphql!!.query,
                     operationType = request.graphql.operationType,
                 ),
@@ -50,7 +56,15 @@ fun FloconNetworkCallEntity.toDomainModel(): FloconNetworkCallDomainModel? {
 
             FloconNetworkCallType.GRPC -> FloconNetworkCallDomainModel.Grpc(
                 callId = callId,
-                networkRequest = networkRequest,
+                networkRequest = FloconNetworkRequestDomainModel(
+                    byteSize = request.requestByteSize,
+                    method = request.method,
+                    headers = request.requestHeaders,
+                    url = request.url,
+                    isMocked = request.isMocked,
+                    startTime = request.startTime,
+                    body = request.requestBody
+                ),
                 response = response?.let {
                     FloconNetworkCallDomainModel.Grpc.Response(
                         networkResponse = toDomainModel(response),

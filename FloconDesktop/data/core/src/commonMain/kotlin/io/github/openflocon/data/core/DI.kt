@@ -6,6 +6,7 @@ import io.github.openflocon.data.core.database.databaseModule
 import io.github.openflocon.data.core.deeplink.deeplinkModule
 import io.github.openflocon.data.core.files.filesModule
 import io.github.openflocon.data.core.images.imagesModule
+import io.github.openflocon.data.core.messages.messageModule
 import io.github.openflocon.data.core.network.networkModule
 import io.github.openflocon.data.core.sharedpreference.sharedPreferenceModule
 import io.github.openflocon.data.core.table.tableModule
@@ -21,6 +22,7 @@ val dataCoreModule = module {
         imagesModule,
         networkModule,
         sharedPreferenceModule,
-        tableModule
+        tableModule,
+        messageModule
     )
 }
