@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
-import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
+import io.github.openflocon.flocondesktop.common.ui.window.rememberFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.mapper.createEditable
 import io.github.openflocon.flocondesktop.features.network.mapper.editableToUi
 import io.github.openflocon.flocondesktop.features.network.model.mocks.HeaderUiModel
@@ -57,7 +57,7 @@ fun NetworkEditionWindow(
     onSave: (MockNetworkUiModel) -> Unit,
 ) {
     val windowState: FloconWindowState = remember(instanceId) {
-        createFloconWindowState()
+        rememberFloconWindowState()
     }
     key(windowState, instanceId) {
         FloconWindow(

@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
-import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
+import io.github.openflocon.flocondesktop.common.ui.window.rememberFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.NetworkViewModel
@@ -155,7 +155,7 @@ fun NetworkScreen(
         deletedJson.forEach { states.remove(it) }
         addedJson.forEach {
             states.put(
-                it, createFloconWindowState(),
+                it, rememberFloconWindowState(),
             )
         }
     }

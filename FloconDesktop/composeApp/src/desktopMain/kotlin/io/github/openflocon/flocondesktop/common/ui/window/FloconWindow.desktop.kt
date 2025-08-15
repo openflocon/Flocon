@@ -2,6 +2,8 @@ package io.github.openflocon.flocondesktop.common.ui.window
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
@@ -10,30 +12,35 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon
 import org.jetbrains.compose.resources.painterResource
 
+actual fun rememberFloconWindowState(
+    placement: WindowPlacement,
+    position: WindowPosition,
+    size: DpSize
+): FloconWindowState {
+    return FloconWindowStateDesktop(
+        WindowState(
+            placement = WindowPlacement.Floating,
+            position = WindowPosition(Alignment.Center),
+        )
+    )
+}
+
 data class FloconWindowStateDesktop(
     val windowState: WindowState,
 ) : FloconWindowState
-
-actual fun createFloconWindowState(): FloconWindowState = FloconWindowStateDesktop(
-    WindowState(
-        placement = WindowPlacement.Floating,
-        position = WindowPosition(Alignment.Center),
-    ),
-)
 
 @Composable
 actual fun FloconWindow(
     title: String,
     state: FloconWindowState,
     onCloseRequest: () -> Unit,
-    content: @Composable () -> Unit,
+    content: @Composable FrameWindowScope.() -> Unit
 ) {
     Window(
         title = title,
         icon = painterResource(Res.drawable.app_icon),
         state = (state as FloconWindowStateDesktop).windowState,
         onCloseRequest = onCloseRequest,
-    ) {
-        content()
-    }
+        content = content
+    )
 }
