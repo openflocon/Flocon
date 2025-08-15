@@ -18,46 +18,50 @@ import io.github.openflocon.flocondesktop.window.windowPosition
 import org.jetbrains.compose.resources.painterResource
 import java.awt.Dimension
 
-fun main() = application {
-    startKoinApp()
-    setSingletonImageLoaderFactory { context ->
-        ImageLoader
-            .Builder(context)
-            .components {
-                add(KtorNetworkFetcherFactory())
-            }.build()
-    }
+fun main() {
+    System.setProperty("apple.awt.application.name", "Flocon")
 
-    val savedState = remember {
-        WindowStateSaver.load()
-    }
+    return application {
+        startKoinApp()
+        setSingletonImageLoaderFactory { context ->
+            ImageLoader
+                .Builder(context)
+                .components {
+                    add(KtorNetworkFetcherFactory())
+                }.build()
+        }
 
-    val windowState = rememberWindowState(
-        size = savedState.size(),
-        position = savedState.windowPosition(),
-    )
+        val savedState = remember {
+            WindowStateSaver.load()
+        }
 
-    Window(
-        state = windowState,
-        onCloseRequest = {
-            val currentSize = windowState.size
-            val currentPosition = windowState.position
-            WindowStateSaver.save(
-                WindowStateData(
-                    width = currentSize.width.value.toInt(),
-                    height = currentSize.height.value.toInt(),
-                    x = currentPosition.x.value.toInt(),
-                    y = currentPosition.y.value.toInt(),
-                ),
-            )
+        val windowState = rememberWindowState(
+            size = savedState.size(),
+            position = savedState.windowPosition(),
+        )
 
-            exitApplication()
-        },
-        title = "Flocon",
-        icon = painterResource(Res.drawable.app_icon_small), // Remove black behind icon
-    ) {
-        window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
+        Window(
+            state = windowState,
+            onCloseRequest = {
+                val currentSize = windowState.size
+                val currentPosition = windowState.position
+                WindowStateSaver.save(
+                    WindowStateData(
+                        width = currentSize.width.value.toInt(),
+                        height = currentSize.height.value.toInt(),
+                        x = currentPosition.x.value.toInt(),
+                        y = currentPosition.y.value.toInt(),
+                    ),
+                )
 
-        App()
+                exitApplication()
+            },
+            title = "Flocon",
+            icon = painterResource(Res.drawable.app_icon_small), // Remove black behind icon
+        ) {
+            window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
+
+            App()
+        }
     }
 }

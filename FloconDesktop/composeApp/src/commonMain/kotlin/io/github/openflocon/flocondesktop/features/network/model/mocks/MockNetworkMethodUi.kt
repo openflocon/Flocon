@@ -6,5 +6,5 @@ enum class MockNetworkMethodUi(val text: String) {
     PUT("PUT"),
     DELETE("DELETE"),
     PATCH("PATCH"),
-    ALL("  *  "),
+    ALL("*"),
 }

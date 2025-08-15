@@ -64,15 +64,15 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
                 )
             )
 
+            request.attributes.put(FLOCON_CALL_ID_KEY, floconCallId)
+            request.attributes.put(FLOCON_START_TIME_KEY, System.nanoTime())
+            request.attributes.put(FLOCON_IS_MOCKED_KEY, isMocked)
+
             if (isMocked) {
                 val fakeCall = executeMock(client = theClient, request = request, mock = mockConfig)
                 proceedWith(fakeCall)
                 return@intercept
             }
-
-            request.attributes.put(FLOCON_CALL_ID_KEY, floconCallId)
-            request.attributes.put(FLOCON_START_TIME_KEY, System.nanoTime())
-            request.attributes.put(FLOCON_IS_MOCKED_KEY, isMocked)
 
             proceed()
         } catch (t: Throwable) {
