@@ -22,7 +22,6 @@ fun main() {
     System.setProperty("apple.awt.application.name", "Flocon")
 
     return application {
-        startKoinApp()
         setSingletonImageLoaderFactory { context ->
             ImageLoader
                 .Builder(context)
