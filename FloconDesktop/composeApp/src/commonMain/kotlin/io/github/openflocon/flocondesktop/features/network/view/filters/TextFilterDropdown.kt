@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -22,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.RemoveCircle
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -51,26 +49,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun TextFilterDropdown(
-    expanded: Boolean,
-    onDismissRequest: () -> Unit,
-    filterState: TextFilterStateUiModel,
-    textFilterAction: (TextFilterAction) -> Unit,
-) {
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismissRequest,
-    ) {
-        TextFilterDropdownContent(
-            modifier = Modifier.width(300.dp),
-            filterState = filterState,
-            textFilterAction = textFilterAction,
-        )
-    }
-}
-
-@Composable
-private fun TextFilterDropdownContent(
+fun TextFilterDropdownContent(
     modifier: Modifier = Modifier,
     filterState: TextFilterStateUiModel,
     textFilterAction: (TextFilterAction) -> Unit,
@@ -218,9 +197,7 @@ private fun TextFilterFieldView(
     submitTextField: (value: String, toInclude: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var value by remember {
-        mutableStateOf("")
-    }
+    var value by remember { mutableStateOf("") }
 
     Row(
         modifier = modifier,
@@ -265,6 +242,7 @@ private fun TextFilterFieldView(
         }
         TextFilterButton(
             icon = Icons.Outlined.AddCircle,
+            enabled = value.isNotEmpty(),
             onClick = {
                 submitTextField(value, true)
                 value = "" // reset
@@ -272,6 +250,7 @@ private fun TextFilterFieldView(
         )
         TextFilterButton(
             icon = Icons.Outlined.RemoveCircle,
+            enabled = value.isNotEmpty(),
             onClick = {
                 submitTextField(value, false)
                 value = "" // reset
@@ -285,13 +264,15 @@ private fun TextFilterButton(
     onClick: () -> Unit,
     icon: ImageVector,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(6.dp))
             .size(32.dp)
+            .graphicsLayer { alpha = if (enabled) 1f else 0.5f }
             .background(Color.White)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick, enabled = enabled)
             .padding(all = 8.dp),
     ) {
         Icon(
