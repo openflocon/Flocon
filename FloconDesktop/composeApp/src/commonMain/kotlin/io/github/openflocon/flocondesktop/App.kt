@@ -1,3 +1,5 @@
+@file:Suppress("unused", "UnusedVariable")
+
 package io.github.openflocon.flocondesktop
 
 import androidx.compose.foundation.background
@@ -5,6 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.flocon.data.remote.dataRemoteModule
 import io.github.openflocon.data.core.dataCoreModule
@@ -17,10 +24,13 @@ import io.github.openflocon.flocondesktop.app.di.appModule
 import io.github.openflocon.flocondesktop.common.di.commonModule
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
 import io.github.openflocon.flocondesktop.core.di.coreModule
+import io.github.openflocon.flocondesktop.device.DeviceScreen
+import io.github.openflocon.flocondesktop.device.deviceModule
 import io.github.openflocon.flocondesktop.features.featuresModule
 import io.github.openflocon.flocondesktop.main.di.mainModule
 import io.github.openflocon.flocondesktop.main.ui.MainScreen
 import io.github.openflocon.library.designsystem.FloconTheme
+import kotlinx.coroutines.delay
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.module.dsl.singleOf
@@ -35,6 +45,7 @@ fun App() {
                 commonModule,
                 appModule,
                 coreModule,
+                deviceModule,
                 mainModule,
                 featuresModule,
                 domainModule,
@@ -49,7 +60,7 @@ fun App() {
         }
     ) {
         FloconTheme {
-            val appViewModel: AppViewModel = koinViewModel()
+            val appViewModel = koinViewModel<AppViewModel>()
 
             Box(
                 Modifier
@@ -62,6 +73,20 @@ fun App() {
                         .fillMaxSize(),
                 )
                 FeedbackDisplayerView()
+            }
+
+            var openDevice by remember { mutableStateOf(false) }
+
+            LaunchedEffect(Unit) {
+                delay(5000)
+                openDevice = true
+            }
+
+            if (openDevice) {
+                DeviceScreen(
+                    deviceId = "",
+                    onCloseRequest = { openDevice = false }
+                )
             }
         }
     }
