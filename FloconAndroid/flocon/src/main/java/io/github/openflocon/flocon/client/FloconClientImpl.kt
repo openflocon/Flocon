@@ -14,6 +14,7 @@ import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPluginImpl
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPluginImpl
 import io.github.openflocon.flocon.plugins.database.FloconDatabasePluginImpl
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPluginImpl
+import io.github.openflocon.flocon.plugins.device.FloconDevicePluginImpl
 import io.github.openflocon.flocon.plugins.files.FloconFilesPluginImpl
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPluginImpl
 import io.github.openflocon.flocon.plugins.tables.FloconTablePluginImpl
@@ -49,6 +50,7 @@ internal class FloconClientImpl(
     override val tablePlugin = FloconTablePluginImpl(sender = this)
     override val deeplinksPlugin = FloconDeeplinksPluginImpl(sender = this)
     override val analyticsPlugin = FloconAnalyticsPluginImpl(sender = this)
+    override val devicePlugin = FloconDevicePluginImpl(sender = this)
     override val networkPlugin = FloconNetworkPluginImpl(
         context = appContext,
         sender = this,
@@ -64,6 +66,7 @@ internal class FloconClientImpl(
         deeplinksPlugin,
         analyticsPlugin,
         networkPlugin,
+        devicePlugin,
     )
 
     @Throws(Throwable::class)

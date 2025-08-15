@@ -5,6 +5,7 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPlugin
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPlugin
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPlugin
+import io.github.openflocon.flocon.plugins.device.FloconDevicePlugin
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
 import io.github.openflocon.flocon.plugins.tables.FloconTablePlugin
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +29,7 @@ abstract class FloconApp {
         val deeplinksPlugin: FloconDeeplinksPlugin
         val analyticsPlugin: FloconAnalyticsPlugin
         val networkPlugin: FloconNetworkPlugin
+        val devicePlugin: FloconDevicePlugin
     }
 
     open val client: FloconApp.Client? = null
