@@ -55,20 +55,28 @@ actual fun localFindAdbPath(): String? {
     return null
 }
 
-actual fun localExecuteAdbCommand(adbPath: String, command: String): Either<Throwable, String> = try {
-    val devices = listConnectedDevices(adbPath)
-    if (devices.isEmpty() || devices.size == 1) {
-        singleDeviceExecuteSystemCommand(adbPath = adbPath, command = command)
+actual fun localExecuteAdbCommand(
+    adbPath: String,
+    command: String,
+    deviceSerial: String?,
+): Either<Throwable, String> = try {
+    if(deviceSerial != null) {
+        singleDeviceExecuteSystemCommand(adbPath = "$adbPath -s $deviceSerial", command = command)
     } else {
-        devices.map { serial ->
-            singleDeviceExecuteSystemCommand(adbPath = "$adbPath -s $serial", command = command)
-        }.let {
-            it.forEach {
-                // return a failure if there's on in the list
-                if (it is Failure)
-                    return it
+        val devices = listConnectedDevices(adbPath)
+        if (devices.isEmpty() || devices.size == 1) {
+            singleDeviceExecuteSystemCommand(adbPath = adbPath, command = command)
+        } else {
+            devices.map { serial ->
+                singleDeviceExecuteSystemCommand(adbPath = "$adbPath -s $serial", command = command)
+            }.let {
+                it.forEach {
+                    // return a failure if there's on in the list
+                    if (it is Failure)
+                        return it
+                }
+                return it.firstOrNull() ?: Success("")
             }
-            return it.firstOrNull() ?: Success("")
         }
     }
 } catch (t: Throwable) {
