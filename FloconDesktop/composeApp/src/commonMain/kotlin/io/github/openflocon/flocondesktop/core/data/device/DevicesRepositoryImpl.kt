@@ -1,10 +1,16 @@
 package io.github.openflocon.flocondesktop.core.data.device
 
+import io.github.openflocon.domain.Protocol
+import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.repository.DevicesRepository
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.flocondesktop.common.Fakes
+import io.github.openflocon.data.core.device.datasource.remote.RemoteDeviceDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +21,9 @@ import kotlinx.coroutines.withContext
 
 class DevicesRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
-) : DevicesRepository {
+    private val adbRepository: AdbRepository,
+    private val remoteDeviceDataSource : RemoteDeviceDataSource,
+) : DevicesRepository, MessagesReceiverRepository {
     private val _devices = MutableStateFlow(defaultDevicesValue())
     override val devices = _devices.asStateFlow()
 
@@ -106,5 +114,27 @@ class DevicesRepositoryImpl(
         listOf(defaultCurrentDeviceValue())
     } else {
         emptyList()
+    }
+
+    override val pluginName = listOf(Protocol.FromDevice.Device.Plugin)
+
+    override suspend fun onMessageReceived(
+        deviceId: String,
+        message: FloconIncomingMessageDomainModel
+    ) {
+        when(message.method) {
+            Protocol.FromDevice.Device.Method.RegisterDevice -> {
+                remoteDeviceDataSource.getDeviceSerial(message)?.let { serial ->
+                    adbRepository.saveAdbSerial(
+                        deviceId = message.deviceId,
+                        serial = serial,
+                    )
+                }
+            }
+        }
+    }
+
+    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        // no op
     }
 }

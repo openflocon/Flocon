@@ -75,6 +75,21 @@ actual fun localExecuteAdbCommand(adbPath: String, command: String): Either<Thro
     Failure(t)
 }
 
+actual fun askSerialToAllDevices(adbPath: String, command: String, serialVariableName: String): Either<Throwable, String> = try {
+    listConnectedDevices(adbPath).map { serial ->
+        singleDeviceExecuteSystemCommand(adbPath = "$adbPath -s $serial", command = command.replace(serialVariableName, serial))
+    }.let {
+        it.forEach {
+            // return a failure if there's on in the list
+            if (it is Failure)
+                return it
+        }
+        return it.firstOrNull() ?: Success("")
+    }
+} catch (t: Throwable) {
+    Failure(t)
+}
+
 private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): Either<Throwable, String> = try {
     val process = Runtime.getRuntime().exec("$adbPath $command")
     val output = process.inputStream.bufferedReader().use { it.readText() }

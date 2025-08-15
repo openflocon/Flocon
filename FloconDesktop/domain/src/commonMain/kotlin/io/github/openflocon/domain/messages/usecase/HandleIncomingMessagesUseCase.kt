@@ -15,12 +15,21 @@ class HandleIncomingMessagesUseCase(
     private val messagesRepository: MessagesRepository,
     private val plugins: List<MessagesReceiverRepository>,
     private val handleDeviceUseCase: HandleDeviceUseCase,
+    private val handleNewDeviceUseCase: HandleNewDeviceUseCase,
 ) {
 
     operator fun invoke(): Flow<Unit> = messagesRepository
         .listenMessages()
         .onEach {
             val handleDeviceResult = handleDeviceUseCase(device = getDevice(it))
+            if(handleDeviceResult.isNewDevice) {
+                handleNewDeviceUseCase(
+                    deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                        deviceId = handleDeviceResult.deviceId,
+                        packageName = it.appPackageName,
+                    )
+                )
+            }
             plugins.forEach { plugin ->
                 if (handleDeviceResult.isNewDevice) {
                     plugin.onNewDevice(

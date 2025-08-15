@@ -12,6 +12,7 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceUseCase
 import io.github.openflocon.domain.device.usecase.ObserveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
+import io.github.openflocon.domain.messages.usecase.HandleNewDeviceUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -21,6 +22,7 @@ internal val deviceModule = module {
     factoryOf(::GetCurrentDeviceIdUseCase)
     factoryOf(::GetCurrentDeviceUseCase)
     factoryOf(::HandleDeviceUseCase)
+    factoryOf(::HandleNewDeviceUseCase)
     factoryOf(::ObserveCurrentDeviceIdUseCase)
     factoryOf(::ObserveCurrentDeviceAppUseCase)
     factoryOf(::ObserveCurrentDeviceIdAndPackageNameUseCase)

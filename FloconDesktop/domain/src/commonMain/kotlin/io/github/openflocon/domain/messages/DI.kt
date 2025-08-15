@@ -11,6 +11,7 @@ internal val messagesModule = module {
             messagesRepository = get(),
             plugins = getAll(),
             handleDeviceUseCase = get(),
+            handleNewDeviceUseCase = get(),
         )
     }
     factoryOf(::StartServerUseCase)
