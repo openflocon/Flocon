@@ -74,7 +74,6 @@ fun main() {
             openAbout = true
         }
 
-        startKoinApp()
         setSingletonImageLoaderFactory { context ->
             ImageLoader
                 .Builder(context)
@@ -114,7 +113,6 @@ fun main() {
             window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
 
             App()
-
 
             if (openAbout) {
                 AboutScreen(
