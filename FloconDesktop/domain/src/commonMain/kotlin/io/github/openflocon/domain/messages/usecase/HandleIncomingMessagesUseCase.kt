@@ -4,6 +4,7 @@ import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.HandleDeviceUseCase
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.messages.repository.MessagesRepository
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.onEach
 class HandleIncomingMessagesUseCase(
     private val messagesRepository: MessagesRepository,
     private val plugins: List<MessagesReceiverRepository>,
+    private val feedback: FeedbackDisplayer,
     private val handleDeviceUseCase: HandleDeviceUseCase,
 ) {
 
@@ -23,6 +25,11 @@ class HandleIncomingMessagesUseCase(
             val handleDeviceResult = handleDeviceUseCase(device = getDevice(it))
             plugins.forEach { plugin ->
                 if (handleDeviceResult.isNewDevice) {
+                    feedback.displayNotification(
+                        title = "New device detected",
+                        message = handleDeviceResult.deviceId, // TODO Name ?
+                        type = FeedbackDisplayer.NotificationType.Info
+                    )
                     plugin.onNewDevice(
                         deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                             deviceId = handleDeviceResult.deviceId,
