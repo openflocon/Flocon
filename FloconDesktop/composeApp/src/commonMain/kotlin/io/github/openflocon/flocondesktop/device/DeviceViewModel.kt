@@ -30,12 +30,14 @@ internal class DeviceViewModel(
     val uiState = _uiState.asStateFlow()
 
     init {
-        sendCommand()
+        onRefresh()
+        deviceInfo()
     }
 
     fun onAction(action: DeviceAction) {
         when (action) {
             is DeviceAction.SelectTab -> onSelect(action)
+            DeviceAction.Refresh -> onRefresh()
         }
     }
 
@@ -43,7 +45,19 @@ internal class DeviceViewModel(
         _uiState.update { it.copy(selectedIndex = action.index) }
     }
 
-    private fun sendCommand() {
+    private fun onRefresh() {
+        viewModelScope.launch {
+            _uiState.update { state ->
+                state.copy(
+                    cpu = sendCommandUseCase("shell", "dumpsys", "cpuinfo").getOrNull().orEmpty(),
+                    battery = sendCommandUseCase("shell", "dumpsys", "battery").getOrNull().orEmpty(),
+                    mem = sendCommandUseCase("shell", "dumpsys", "meminfo").getOrNull().orEmpty(),
+                )
+            }
+        }
+    }
+
+    private fun deviceInfo() {
         viewModelScope.launch {
             _uiState.update { state ->
                 state.copy(
