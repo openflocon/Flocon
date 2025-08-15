@@ -5,6 +5,7 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.models.FromDeviceFilesResultDomainModel
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import kotlin.uuid.ExperimentalUuidApi
 
 interface FilesRemoteDataSource {
@@ -27,5 +28,7 @@ interface FilesRemoteDataSource {
         folderPath: FilePathDomainModel,
         filePath: FilePathDomainModel,
     ): Either<Exception, List<FileDomainModel>>
+
+    fun getItems(message: FloconIncomingMessageDomainModel): FromDeviceFilesResultDomainModel?
 
 }

@@ -21,7 +21,7 @@ class GenerateNetworkMockFromNetworkCallUseCase(
             observeHttpRequestsByIdUseCase(requestId = requestId).firstOrNull()
         }?.let { request ->
             MockNetworkDomainModel(
-                id = Uuid.Companion.random().toString(), // generate
+                id = Uuid.random().toString(), // generate
                 expectation = MockNetworkDomainModel.Expectation(
                     urlPattern = request.networkRequest.url,
                     method = request.networkRequest.method,

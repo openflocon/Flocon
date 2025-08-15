@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface FloconAnalyticsDao {
 
     @Transaction
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAnalyticsItems(
         analyticsItemEntities: List<AnalyticsItemEntity>,
     )

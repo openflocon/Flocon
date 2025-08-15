@@ -1,21 +1,26 @@
 package com.flocon.data.remote.database.datasource
 
-import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.database.mapper.decodeDeviceDatabases
+import com.flocon.data.remote.database.mapper.decodeReceivedQuery
 import com.flocon.data.remote.database.models.DatabaseExecuteSqlResponseDataModel
 import com.flocon.data.remote.database.models.DatabaseOutgoingQueryMessage
 import com.flocon.data.remote.database.models.ResponseAndRequestIdDataModel
+import com.flocon.data.remote.database.models.toDeviceDatabasesDomain
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
 import io.github.openflocon.data.core.database.datasource.QueryDatabaseRemoteDataSource
+import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.models.ResponseAndRequestIdDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -27,6 +32,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class QueryDatabaseRemoteDataSourceImpl(
     private val server: Server,
+    private val json: Json
 ) : QueryDatabaseRemoteDataSource {
     private val queryResultReceived = MutableStateFlow<Set<ResponseAndRequestIdDomainModel>>(emptySet())
 
@@ -77,9 +83,17 @@ class QueryDatabaseRemoteDataSourceImpl(
             return Failure(e)
         }
     }
+
+    override fun getDeviceDatabases(message: FloconIncomingMessageDomainModel): List<DeviceDataBaseDomainModel> {
+        return toDeviceDatabasesDomain(json.decodeDeviceDatabases(message.body).orEmpty())
+    }
+
+    override fun getReceiveQuery(message: FloconIncomingMessageDomainModel): ResponseAndRequestIdDomainModel? {
+        return json.decodeReceivedQuery(message.body)?.toDomain()
+    }
 }
 
-// TODO Move
+// TODO internal
 fun ResponseAndRequestIdDataModel.toDomain() = ResponseAndRequestIdDomainModel(
     requestId = requestId,
     response = response.toDomain(),

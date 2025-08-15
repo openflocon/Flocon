@@ -24,7 +24,7 @@ interface FloconFileDao {
         parentFilePath: String,
     ): Flow<List<FileEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFiles(files: List<FileEntity>)
 
     @Query(

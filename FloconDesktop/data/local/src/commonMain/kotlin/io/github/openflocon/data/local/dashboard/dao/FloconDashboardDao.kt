@@ -46,13 +46,13 @@ interface FloconDashboardDao {
         packageName: String,
     ): Flow<List<String>>
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDashboard(dashboard: DashboardEntity): Long // Returns generated ID
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSections(sections: List<DashboardSectionEntity>): List<Long> // Returns generated IDs
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDashboardElements(elements: List<DashboardElementEntity>)
 
     @Query(

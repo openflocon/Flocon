@@ -1,0 +1,62 @@
+package io.github.openflocon.data.core.images.repository
+
+import io.github.openflocon.data.core.images.datasource.ImagesLocalDataSource
+import io.github.openflocon.domain.Protocol
+import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.images.models.DeviceImageDomainModel
+import io.github.openflocon.domain.images.repository.ImagesRepository
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.repository.NetworkImageRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+
+class ImagesRepositoryImpl(
+    private val dispatcherProvider: DispatcherProvider,
+    private val imagesLocalDataSource: ImagesLocalDataSource,
+) : ImagesRepository,
+    MessagesReceiverRepository,
+    NetworkImageRepository {
+
+    override val pluginName = listOf(Protocol.FromDevice.Images.Plugin)
+
+    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
+        // no op for now
+    }
+
+    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        // no op
+    }
+
+    override suspend fun onImageReceived(
+        deviceId: String,
+        call: FloconNetworkCallDomainModel,
+    ) {
+        val duration = call.networkResponse?.durationMs ?: return
+        imagesLocalDataSource.addImage(
+            deviceId = deviceId,
+            image = DeviceImageDomainModel(
+                url = call.networkRequest.url,
+                time = (call.networkRequest.startTime + duration).toLong(),
+            ),
+        )
+    }
+
+    override fun observeImages(deviceId: DeviceId): Flow<List<DeviceImageDomainModel>> = imagesLocalDataSource
+        .observeImages(deviceId = deviceId)
+        .map { it.sortedBy { it.time } }
+        .distinctUntilChanged()
+        .flowOn(dispatcherProvider.data)
+
+    override suspend fun clearImages(deviceId: DeviceId) {
+        withContext(dispatcherProvider.data) {
+            imagesLocalDataSource.clearImages(deviceId = deviceId)
+        }
+    }
+}

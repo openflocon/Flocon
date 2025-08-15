@@ -1,14 +1,17 @@
 package com.flocon.data.remote.files.datasource
 
-import com.flocon.data.remote.Protocol
+import com.flocon.data.remote.common.safeDecodeFromString
+import com.flocon.data.remote.files.models.FromDeviceFilesResultDataModel
 import com.flocon.data.remote.files.models.ToDeviceDeleteFileMessage
 import com.flocon.data.remote.files.models.ToDeviceDeleteFolderContentMessage
 import com.flocon.data.remote.files.models.ToDeviceGetFilesMessage
+import com.flocon.data.remote.files.models.toDomain
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import com.flocon.data.remote.server.newRequestId
 import io.github.openflocon.data.core.files.datasource.FilesRemoteDataSource
+import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
@@ -16,6 +19,7 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.models.FromDeviceFilesResultDomainModel
+import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -28,6 +32,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class FilesRemoteDataSourceImpl(
     private val server: Server,
+    private val json: Json
 ) : FilesRemoteDataSource {
     private val getFilesResultReceived =
         MutableStateFlow<Set<FromDeviceFilesResultDomainModel>>(emptySet())
@@ -144,6 +149,11 @@ class FilesRemoteDataSourceImpl(
         return waitForResult(requestId)
     }
 
+    override fun getItems(message: FloconIncomingMessageDomainModel): FromDeviceFilesResultDomainModel? {
+        return json.safeDecodeFromString<FromDeviceFilesResultDataModel>(message.body)
+            ?.toDomain()
+    }
+
     private suspend fun waitForResult(requestId: String): Either<Exception, List<FileDomainModel>> {
         try {
             val result = withTimeout(3_000) {
@@ -172,7 +182,7 @@ class FilesRemoteDataSourceImpl(
             isDirectory = it.isDirectory,
             path = FilePathDomainModel.Real(it.path),
             size = it.size,
-            lastModified = Instant.Companion.fromEpochMilliseconds(it.lastModified),
+            lastModified = Instant.fromEpochMilliseconds(it.lastModified),
         )
     }
 }

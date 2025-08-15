@@ -5,7 +5,7 @@ import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceValue
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SharedPreferenceValuesResponse(
+internal data class SharedPreferenceValuesResponse(
     val requestId: String,
     val sharedPreferenceName: String,
     val rows: List<Row>,
@@ -22,48 +22,49 @@ data class SharedPreferenceValuesResponse(
     )
 }
 
-fun toSharedPreferenceValuesResponseDomain(data: SharedPreferenceValuesResponse): SharedPreferenceValuesResponseDomainModel = SharedPreferenceValuesResponseDomainModel(
-    requestId = data.requestId,
-    sharedPreferenceName = data.sharedPreferenceName,
-    rows = data.rows.mapNotNull { row ->
-        row.stringValue?.let { value ->
-            return@mapNotNull SharedPreferenceRowDomainModel(
-                key = row.key,
-                value = SharedPreferenceRowDomainModel.Value.StringValue(value = value),
-            )
-        }
-        row.intValue?.let { value ->
-            return@mapNotNull SharedPreferenceRowDomainModel(
-                key = row.key,
-                value = SharedPreferenceRowDomainModel.Value.IntValue(value),
-            )
-        }
-        row.floatValue?.let { value ->
-            return@mapNotNull SharedPreferenceRowDomainModel(
-                key = row.key,
-                value = SharedPreferenceRowDomainModel.Value.FloatValue(value),
-            )
-        }
-        row.booleanValue?.let { value ->
-            return@mapNotNull SharedPreferenceRowDomainModel(
-                key = row.key,
-                value = SharedPreferenceRowDomainModel.Value.BooleanValue(value),
-            )
-        }
-        row.longValue?.let { value ->
-            return@mapNotNull SharedPreferenceRowDomainModel(
-                key = row.key,
-                value = SharedPreferenceRowDomainModel.Value.LongValue(value),
-            )
-        }
-        row.setStringValue?.let { value ->
-            return@mapNotNull SharedPreferenceRowDomainModel(
-                key = row.key,
-                value = SharedPreferenceRowDomainModel.Value.StringSetValue(value.toSet()),
-            )
-        }
-    },
-)
+internal fun toSharedPreferenceValuesResponseDomain(data: SharedPreferenceValuesResponse): SharedPreferenceValuesResponseDomainModel =
+    SharedPreferenceValuesResponseDomainModel(
+        requestId = data.requestId,
+        sharedPreferenceName = data.sharedPreferenceName,
+        rows = data.rows.mapNotNull { row ->
+            row.stringValue?.let { value ->
+                return@mapNotNull SharedPreferenceRowDomainModel(
+                    key = row.key,
+                    value = SharedPreferenceRowDomainModel.Value.StringValue(value = value),
+                )
+            }
+            row.intValue?.let { value ->
+                return@mapNotNull SharedPreferenceRowDomainModel(
+                    key = row.key,
+                    value = SharedPreferenceRowDomainModel.Value.IntValue(value),
+                )
+            }
+            row.floatValue?.let { value ->
+                return@mapNotNull SharedPreferenceRowDomainModel(
+                    key = row.key,
+                    value = SharedPreferenceRowDomainModel.Value.FloatValue(value),
+                )
+            }
+            row.booleanValue?.let { value ->
+                return@mapNotNull SharedPreferenceRowDomainModel(
+                    key = row.key,
+                    value = SharedPreferenceRowDomainModel.Value.BooleanValue(value),
+                )
+            }
+            row.longValue?.let { value ->
+                return@mapNotNull SharedPreferenceRowDomainModel(
+                    key = row.key,
+                    value = SharedPreferenceRowDomainModel.Value.LongValue(value),
+                )
+            }
+            row.setStringValue?.let { value ->
+                return@mapNotNull SharedPreferenceRowDomainModel(
+                    key = row.key,
+                    value = SharedPreferenceRowDomainModel.Value.StringSetValue(value.toSet()),
+                )
+            }
+        },
+    )
 
 private fun decodeStringToSet(encodedString: String): Set<String> {
     // Si la chaîne est vide, cela signifie que le set original était vide.

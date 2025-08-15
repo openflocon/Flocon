@@ -7,7 +7,7 @@ sealed interface FloconNetworkCallDomainModel {
 
     data class Http(
         override val callId: String,
-        override val networkRequest : FloconNetworkRequestDomainModel,
+        override val networkRequest: FloconNetworkRequestDomainModel,
         val response: Response?,
     ) : FloconNetworkCallDomainModel {
         data class Response(
@@ -20,7 +20,7 @@ sealed interface FloconNetworkCallDomainModel {
 
     data class GraphQl(
         override val callId: String,
-        val request : Request,
+        val request: Request,
         val response: Response?,
     ) : FloconNetworkCallDomainModel {
 
@@ -29,6 +29,7 @@ sealed interface FloconNetworkCallDomainModel {
             val query: String,
             val operationType: String,
         )
+
         data class Response(
             val httpCode: Int, // ex: 200
             val isSuccess: Boolean,
@@ -55,12 +56,16 @@ sealed interface FloconNetworkCallDomainModel {
 }
 
 fun FloconNetworkCallDomainModel.httpCode(): Int? {
-    return when(this) {
+    return when (this) {
         is FloconNetworkCallDomainModel.Http -> this.response?.httpCode
         is FloconNetworkCallDomainModel.GraphQl -> this.response?.httpCode
         else -> null
     }
 }
+
+data class FloconNetworkCallIdDomainModel(
+    val floconCallId: String,
+)
 
 data class FloconNetworkRequestDomainModel(
     val url: String,
@@ -72,10 +77,28 @@ data class FloconNetworkRequestDomainModel(
     val isMocked: Boolean,
 )
 
+sealed interface FloconNetworkResponseOnlyDomainModel {
+    val floconCallId: String
+    val networkResponse: FloconNetworkResponseDomainModel
+
+    data class Http(
+        override val floconCallId: String,
+        override val networkResponse: FloconNetworkResponseDomainModel,
+        val httpCode: Int, // ex: 200
+    ) : FloconNetworkResponseOnlyDomainModel
+
+    data class Grpc(
+        override val floconCallId: String,
+        override val networkResponse: FloconNetworkResponseDomainModel,
+        val grpcStatus: String,
+    ) : FloconNetworkResponseOnlyDomainModel
+}
+
 data class FloconNetworkResponseDomainModel(
     val contentType: String? = null,
     val body: String? = null,
     val headers: Map<String, String>,
     val byteSize: Long,
-    val durationMs: Double,
+    val durationMs: Double
 )
+
