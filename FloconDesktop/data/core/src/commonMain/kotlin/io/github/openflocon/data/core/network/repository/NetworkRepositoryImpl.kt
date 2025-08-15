@@ -10,6 +10,7 @@ import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainMo
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
 import io.github.openflocon.domain.network.repository.NetworkMocksRepository
@@ -155,6 +156,8 @@ class NetworkRepositoryImpl(
 
             return when (request) {
                 is FloconNetworkCallDomainModel.GraphQl -> {
+                    // throw an exception if not http
+                    val responseHttp = response as FloconNetworkResponseOnlyDomainModel.Http
                     val response = FloconNetworkCallDomainModel.GraphQl.Response(
                         networkResponse = networkResponse,
                         httpCode = decoded.httpCode!!,
@@ -166,6 +169,7 @@ class NetworkRepositoryImpl(
                 }
 
                 is FloconNetworkCallDomainModel.Grpc -> {
+                    val responseHttp = response as FloconNetworkResponseOnlyDomainModel.Grpc
                     val response = FloconNetworkCallDomainModel.Grpc.Response(
                         networkResponse = networkResponse,
                         responseStatus = request.response?.responseStatus!!,
@@ -176,6 +180,7 @@ class NetworkRepositoryImpl(
                 }
 
                 is FloconNetworkCallDomainModel.Http -> {
+                    val responseHttp = response as FloconNetworkResponseOnlyDomainModel.Http
                     val response = FloconNetworkCallDomainModel.Http.Response(
                         networkResponse = networkResponse,
                         httpCode = networkResponse.httpCode!!,
