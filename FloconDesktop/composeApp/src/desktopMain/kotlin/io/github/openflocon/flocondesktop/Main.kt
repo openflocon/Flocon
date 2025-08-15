@@ -1,6 +1,9 @@
 package io.github.openflocon.flocondesktop
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -9,6 +12,7 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
+import io.github.openflocon.flocondesktop.about.AboutScreen
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_HEIGHT
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_WIDTH
 import io.github.openflocon.flocondesktop.window.WindowStateData
@@ -16,12 +20,19 @@ import io.github.openflocon.flocondesktop.window.WindowStateSaver
 import io.github.openflocon.flocondesktop.window.size
 import io.github.openflocon.flocondesktop.window.windowPosition
 import org.jetbrains.compose.resources.painterResource
+import java.awt.Desktop
 import java.awt.Dimension
 
 fun main() {
     System.setProperty("apple.awt.application.name", "Flocon")
 
     return application {
+        var openAbout by remember { mutableStateOf(false) }
+
+        Desktop.getDesktop().setAboutHandler {
+            openAbout = true
+        }
+
         setSingletonImageLoaderFactory { context ->
             ImageLoader
                 .Builder(context)
@@ -61,6 +72,12 @@ fun main() {
             window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
 
             App()
+
+            if (openAbout) {
+                AboutScreen(
+                    onCloseRequest = { openAbout = false }
+                )
+            }
         }
     }
 }
