@@ -7,7 +7,7 @@ import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.messages.usecase.HandleIncomingMessagesUseCase
 import io.github.openflocon.domain.messages.usecase.StartServerUseCase
 import kotlinx.coroutines.delay

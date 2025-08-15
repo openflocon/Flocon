@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.images.usecase.ObserveImagesUseCase
 import io.github.openflocon.domain.images.usecase.ResetCurrentDeviceImagesUseCase
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.network.mapper.formatTimestamp

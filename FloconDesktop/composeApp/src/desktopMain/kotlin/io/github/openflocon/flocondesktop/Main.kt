@@ -24,8 +24,8 @@ import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerHandler
 import io.github.openflocon.flocondesktop.main.ui.settings.SettingsScreen
 import io.github.openflocon.flocondesktop.about.AboutScreen
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerHandler
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_HEIGHT
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_WIDTH
 import io.github.openflocon.flocondesktop.window.WindowStateData
