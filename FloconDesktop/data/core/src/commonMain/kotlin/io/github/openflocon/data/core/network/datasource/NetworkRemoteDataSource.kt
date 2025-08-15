@@ -5,7 +5,6 @@ import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainMo
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 
 interface NetworkRemoteDataSource {
@@ -19,6 +18,6 @@ interface NetworkRemoteDataSource {
 
     fun getCallId(message: FloconIncomingMessageDomainModel): FloconNetworkCallIdDomainModel?
 
-    fun getResponseData(message: FloconIncomingMessageDomainModel): FloconNetworkResponseOnlyDomainModel?
+    fun getResponseData(message: FloconIncomingMessageDomainModel): FloconNetworkResponseDomainModel?
 
 }

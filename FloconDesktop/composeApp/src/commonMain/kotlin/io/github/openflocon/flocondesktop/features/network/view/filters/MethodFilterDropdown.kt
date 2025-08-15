@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,22 +18,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun MethodFilterDropdown(
-    expanded: Boolean,
-    onDismissRequest: () -> Unit,
-    onItemClicked: (NetworkMethodUi) -> Unit,
-    filterState: MethodFilterState,
-) {
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismissRequest,
-    ) {
-        MethodFilterDropdownContent(filterState = filterState, onItemClicked = onItemClicked)
-    }
-}
-
-@Composable
-private fun MethodFilterDropdownContent(
+fun MethodFilterDropdownContent(
     filterState: MethodFilterState,
     onItemClicked: (NetworkMethodUi) -> Unit,
 ) {

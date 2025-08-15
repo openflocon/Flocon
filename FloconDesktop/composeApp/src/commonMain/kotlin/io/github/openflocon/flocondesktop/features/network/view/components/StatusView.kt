@@ -1,6 +1,10 @@
 package io.github.openflocon.flocondesktop.features.network.view.components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
@@ -8,9 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.features.network.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // Custom colors for networkStatusUi/method views to integrate better with the theme
@@ -29,22 +35,47 @@ fun StatusView(
     textSize: TextUnit = 12.sp,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        BasicText(
-            text = status.text,
-            autoSize = TextAutoSize.StepBased(
-                maxFontSize = textSize,
-                minFontSize = 8.sp,
-            ),
-            maxLines = 1,
-            style = FloconTheme.typography.labelSmall.copy(
-                color = when (status.status) {
-                    NetworkStatusUi.Status.SUCCESS -> successTagText
-                    NetworkStatusUi.Status.ERROR -> errorTagText
-                    NetworkStatusUi.Status.LOADING -> loadingTagText
-                },
-            ),
-        )
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Crossfade(
+            targetState = status.status,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            when (it) {
+                NetworkStatusUi.Status.SUCCESS,
+                NetworkStatusUi.Status.ERROR -> BasicText(
+                    text = status.text,
+                    autoSize = TextAutoSize.StepBased(
+                        maxFontSize = textSize,
+                        minFontSize = 8.sp,
+                    ),
+                    maxLines = 1,
+                    style = FloconTheme.typography.labelSmall.copy(
+                        color = when (status.status) {
+                            NetworkStatusUi.Status.SUCCESS -> successTagText
+                            NetworkStatusUi.Status.ERROR -> errorTagText
+                            NetworkStatusUi.Status.LOADING -> loadingTagText
+                        },
+                    ),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize()
+                )
+
+                NetworkStatusUi.Status.LOADING -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    FloconLinearProgressIndicator(
+                        modifier = Modifier
+                            .width(50.dp)
+                    )
+                }
+            }
+        }
+
     }
 }
 

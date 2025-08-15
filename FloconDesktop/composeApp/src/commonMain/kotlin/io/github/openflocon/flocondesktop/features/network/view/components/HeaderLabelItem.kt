@@ -2,39 +2,45 @@
 
 package io.github.openflocon.flocondesktop.features.network.view.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.FilterAlt
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material.icons.outlined.ArrowDropUp
+import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.arrow_up_cropped
-import io.github.openflocon.flocondesktop.common.ui.interactions.hover
 import io.github.openflocon.flocondesktop.features.network.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.resources.painterResource
 
-private val iconsSize = 8.dp
+private val Height = 32.dp
+private val Spacing = 2.dp
+private val FilterIcon = (Height - Spacing) / 2
 
 private const val NOT_ENABLED_OPACITY = 0.3f
 
@@ -48,101 +54,107 @@ fun HeaderLabelItem(
     clickOnFilter: () -> Unit,
     labelAlignment: Alignment = Alignment.Center,
 ) {
-    var isHover by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val hovered by interactionSource.collectIsHoveredAsState()
+    val shape = RoundedCornerShape(4.dp)
     val typo = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
     val textColor = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f)
 
     Row(
         modifier = modifier
-            .hover { isHover = it }
-            .padding(horizontal = 4.dp),
+            .height(Height)
+            .padding(horizontal = 4.dp)
+            .hoverable(interactionSource),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(Spacing),
     ) {
-        Image(
-            imageVector = Icons.Rounded.FilterAlt,
-            contentDescription = "Filter",
-            colorFilter = ColorFilter.tint(
-                if (isFiltered) textColor else textColor.copy(alpha = NOT_ENABLED_OPACITY),
-            ),
-            modifier = Modifier.size(14.dp)
-                .graphicsLayer {
-                    alpha = if (isFiltered || isHover) 1f else 0f
-                }
-                .clickable(
-                    onClick = clickOnFilter,
-                ),
-        )
         Box(
-            modifier = Modifier.weight(1f),
             contentAlignment = labelAlignment,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .clip(shape)
+                .clickable(onClick = clickOnFilter)
         ) {
             Text(
                 text = text,
                 style = typo,
                 textAlign = TextAlign.Center,
                 color = textColor,
+                modifier = Modifier.padding(horizontal = 4.dp)
             )
+            if (isFiltered) {
+                Icon(
+                    imageVector = Icons.Outlined.FilterAlt,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(12.dp)
+                        .align(Alignment.TopEnd)
+                        .padding(1.dp)
+                )
+            }
         }
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(Spacing),
         ) {
-            // image to not have paddings
-            Box(
-                modifier = Modifier
-                    .size(14.dp)
-                    .graphicsLayer {
-                        alpha =
-                            if (isHover || sortedBy is SortedByUiModel.Enabled.Ascending) 1f else 0f
-                    }
-                    .clickable(onClick = {
-                        clickOnSort(SortedByUiModel.Enabled.Ascending)
-                    }),
-                contentAlignment = Alignment.BottomCenter,
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.arrow_up_cropped),
-                    contentDescription = "Sort ascending",
-                    colorFilter = ColorFilter.tint(
-                        when (sortedBy) {
-                            SortedByUiModel.Enabled.Ascending -> textColor
-                            SortedByUiModel.Enabled.Descending,
-                            SortedByUiModel.None,
-                            -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
-                        },
-                    ),
-                    modifier = Modifier.size(iconsSize),
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .size(14.dp)
-                    .graphicsLayer {
-                        alpha = if (isHover || sortedBy is SortedByUiModel.Enabled.Descending) 1f else 0f
-                    }
-                    .clickable(
-                        onClick = {
-                            clickOnSort(SortedByUiModel.Enabled.Descending)
-                        },
-                    ),
-                contentAlignment = Alignment.TopCenter,
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.arrow_up_cropped),
-                    contentDescription = "Sort descending",
-                    colorFilter = ColorFilter.tint(
-                        when (sortedBy) {
-                            SortedByUiModel.Enabled.Ascending -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
-                            SortedByUiModel.Enabled.Descending -> textColor
-                            SortedByUiModel.None -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
-                        },
-                    ),
-                    modifier = Modifier.size(iconsSize)
-                        .rotate(180f),
-                )
-            }
+            FilterIcon(
+                icon = Icons.Outlined.ArrowDropUp,
+                hovered = hovered,
+                sorted = sortedBy is SortedByUiModel.Enabled.Ascending,
+                onClick = { clickOnSort(SortedByUiModel.Enabled.Ascending) },
+                shape = shape,
+                alignment = Alignment.BottomCenter,
+                textColor = when (sortedBy) {
+                    SortedByUiModel.Enabled.Ascending -> textColor
+                    SortedByUiModel.Enabled.Descending,
+                    SortedByUiModel.None,
+                        -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
+                }
+            )
+            FilterIcon(
+                icon = Icons.Outlined.ArrowDropDown,
+                hovered = hovered,
+                sorted = sortedBy is SortedByUiModel.Enabled.Descending,
+                onClick = { clickOnSort(SortedByUiModel.Enabled.Descending) },
+                shape = shape,
+                alignment = Alignment.TopCenter,
+                textColor = when (sortedBy) {
+                    SortedByUiModel.Enabled.Ascending -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
+                    SortedByUiModel.Enabled.Descending -> textColor
+                    SortedByUiModel.None -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
+                }
+            )
         }
+    }
+}
+
+@Composable
+private fun FilterIcon(
+    icon: ImageVector,
+    hovered: Boolean,
+    sorted: Boolean,
+    onClick: () -> Unit,
+    shape: Shape,
+    textColor: Color,
+    alignment: Alignment,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(FilterIcon)
+            .graphicsLayer {
+                alpha = if (hovered || sorted) 1f else 0f
+            }
+            .clip(shape)
+            .clickable(onClick = onClick),
+        contentAlignment = alignment,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = textColor,
+            modifier = Modifier.size(FilterIcon)
+        )
     }
 }
