@@ -77,8 +77,24 @@ data class FloconNetworkRequestDomainModel(
     val isMocked: Boolean,
 )
 
+sealed interface FloconNetworkResponseOnlyDomainModel {
+    val floconCallId: String
+    val networkResponse: FloconNetworkResponseDomainModel
+
+    data class Http(
+        override val floconCallId: String,
+        override val networkResponse: FloconNetworkResponseDomainModel,
+        val httpCode: Int, // ex: 200
+    ) : FloconNetworkResponseOnlyDomainModel
+
+    data class Grpc(
+        override val floconCallId: String,
+        override val networkResponse: FloconNetworkResponseDomainModel,
+        val grpcStatus: String,
+    ) : FloconNetworkResponseOnlyDomainModel
+}
+
 data class FloconNetworkResponseDomainModel(
-    val httpCode: Int? = null, // ex: 200
     val contentType: String? = null,
     val body: String? = null,
     val headers: Map<String, String>,

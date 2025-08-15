@@ -16,6 +16,7 @@ import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainMo
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.serialization.json.Json
 
@@ -50,7 +51,7 @@ class NetworkRemoteDataSourceImpl(
             ?.let(FloconNetworkCallIdDataModel::toDomain)
     }
 
-    override fun getResponseData(message: FloconIncomingMessageDomainModel): FloconNetworkResponseDomainModel? {
+    override fun getResponseData(message: FloconIncomingMessageDomainModel): FloconNetworkResponseOnlyDomainModel? {
         return json.safeDecodeFromString<FloconNetworkResponseDataModel>(message.body)
             ?.let(FloconNetworkResponseDataModel::toDomain)
     }
