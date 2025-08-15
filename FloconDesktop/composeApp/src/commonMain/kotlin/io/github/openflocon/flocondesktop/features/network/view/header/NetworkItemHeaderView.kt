@@ -40,21 +40,20 @@ fun NetworkItemHeaderView(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     Row(
-        modifier =
-        modifier
+        modifier = modifier
             .background(FloconTheme.colorPalette.panel)
-            .padding(horizontal = 8.dp, vertical = 6.dp)
+            .padding(horizontal = 4.dp, vertical = 6.dp)
             .padding(contentPadding),
-
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
-        Column(modifier = Modifier.width(columnWidths.dateWidth)) {
+        Column(
+            modifier = Modifier.width(columnWidths.dateWidth)
+        ) {
             var isDropdownExpanded by remember { mutableStateOf(false) }
             HeaderLabelItem(
                 modifier = Modifier.fillMaxWidth(),
                 text = "Request Time",
-                isFiltered = state.requestTime.isFiltered(),
                 sortedBy = state.requestTime.sortedBy,
                 clickOnSort = {
                     clickOnSort(NetworkColumnsTypeUiModel.RequestTime, it)
@@ -74,8 +73,9 @@ fun NetworkItemHeaderView(
                 },
             )
         }
-
-        Column(modifier = Modifier.width(columnWidths.methodWidth)) {
+        Column(
+            modifier = Modifier.width(columnWidths.methodWidth)
+        ) {
             var isDropdownExpanded by remember { mutableStateOf(false) }
             HeaderLabelItem(
                 modifier = Modifier.fillMaxWidth(),
@@ -100,10 +100,13 @@ fun NetworkItemHeaderView(
                 },
             )
         }
-
-        // route & method, don't display the label
-        Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-            Column(modifier = Modifier.weight(columnWidths.domainWeight)) {
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(columnWidths.domainWeight)
+            ) {
                 var isDropdownExpanded by remember { mutableStateOf(false) }
                 HeaderLabelItem(
                     modifier = Modifier.fillMaxWidth(),
@@ -129,7 +132,9 @@ fun NetworkItemHeaderView(
                     },
                 )
             }
-            Column(modifier = Modifier.weight(columnWidths.queryWeight)) {
+            Column(
+                modifier = Modifier.weight(columnWidths.queryWeight)
+            ) {
                 var isDropdownExpanded by remember { mutableStateOf(false) }
                 HeaderLabelItem(
                     modifier = Modifier.fillMaxWidth(),
@@ -156,8 +161,9 @@ fun NetworkItemHeaderView(
                 )
             }
         }
-
-        Column(modifier = Modifier.width(columnWidths.statusCodeWidth)) {
+        Column(
+            modifier = Modifier.width(columnWidths.statusCodeWidth)
+        ) {
             var isDropdownExpanded by remember { mutableStateOf(false) }
             HeaderLabelItem(
                 modifier = Modifier.fillMaxWidth(),
@@ -182,8 +188,9 @@ fun NetworkItemHeaderView(
                 },
             )
         }
-
-        Column(modifier = Modifier.width(columnWidths.timeWidth)) {
+        Column(
+            modifier = Modifier.width(columnWidths.timeWidth)
+        ) {
             var isDropdownExpanded by remember { mutableStateOf(false) }
             HeaderLabelItem(
                 modifier = Modifier.fillMaxWidth(),
