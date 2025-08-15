@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.adb
 
+import io.github.openflocon.domain.adb.AdbCommandTargetDomainModel
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.flocondesktop.common.askSerialToAllDevices
@@ -24,8 +25,18 @@ class AdbRepositoryImpl : AdbRepository {
     // TODO be able to pass a serial
     override fun executeAdbCommand(
         adbPath: String,
+        target: AdbCommandTargetDomainModel,
         command: String,
-    ): Either<Throwable, String> = localExecuteAdbCommand(adbPath = adbPath, command = command)
+    ): Either<Throwable, String> {
+        return localExecuteAdbCommand(
+            adbPath = adbPath,
+            command = command,
+            deviceSerial = when(target) {
+                is AdbCommandTargetDomainModel.Device -> getAdbSerial(target.deviceId)
+                is AdbCommandTargetDomainModel.AllDevices -> null
+            },
+        )
+    }
 
     override fun executeAdbAskSerialToAllDevices(
         adbPath: String,

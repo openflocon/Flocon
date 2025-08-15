@@ -2,7 +2,11 @@ package io.github.openflocon.flocondesktop.common
 
 import io.github.openflocon.domain.common.Either
 
-actual fun localExecuteAdbCommand(adbPath: String, command: String): Either<Throwable, String> {
+actual fun localExecuteAdbCommand(
+    adbPath: String,
+    command: String,
+    deviceSerial: String?,
+): Either<Throwable, String> {
     TODO("Not yet implemented")
 }
 

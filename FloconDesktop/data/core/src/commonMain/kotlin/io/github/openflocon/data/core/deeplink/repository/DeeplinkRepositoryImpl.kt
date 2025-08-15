@@ -3,6 +3,7 @@ package io.github.openflocon.data.core.deeplink.repository
 import io.github.openflocon.data.core.deeplink.datasource.DeeplinkLocalDataSource
 import io.github.openflocon.data.core.deeplink.datasource.DeeplinkRemoteDataSource
 import io.github.openflocon.domain.Protocol
+import io.github.openflocon.domain.adb.AdbCommandTargetDomainModel
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
@@ -49,7 +50,7 @@ class DeeplinkRepositoryImpl(
     override fun executeDeeplink(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, adbPath: String, deeplink: String) {
         adbRepository.executeAdbCommand(
             adbPath = adbPath,
-            // TODO inject the device serial
+            target = AdbCommandTargetDomainModel.Device(deviceIdAndPackageName.deviceId),
             command = "shell am start -W -a android.intent.action.VIEW -d \"$deeplink\" ${deviceIdAndPackageName.packageName}",
         )
     }
