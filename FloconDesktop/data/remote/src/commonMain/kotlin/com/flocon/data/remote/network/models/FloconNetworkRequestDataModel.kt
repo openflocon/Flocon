@@ -39,15 +39,17 @@ data class FloconNetworkResponseDataModel(
     val responseGrpcStatus: String? = null,
 )
 
-internal fun FloconNetworkRequestDataModel.toDomain() = FloconNetworkRequestDomainModel(
-    body = requestBody,
-    headers = requestHeaders.orEmpty(),
-    byteSize = requestSize ?: 0L,
-    startTime = startTime ?: 0L,
-    isMocked = isMocked ?: false,
-    url = url.orEmpty(),
-    method = method.orEmpty()
-)
+internal fun FloconNetworkRequestDataModel.toDomain(): FloconNetworkRequestDomainModel? {
+    return FloconNetworkRequestDomainModel(
+        body = requestBody,
+        headers = requestHeaders.orEmpty(),
+        byteSize = requestSize ?: 0L,
+        startTime = startTime ?: return null,
+        isMocked = isMocked ?: false,
+        url = url.orEmpty(),
+        method = method.orEmpty()
+    )
+}
 
 internal fun FloconNetworkResponseDataModel.toDomain() = FloconNetworkResponseDomainModel(
     durationMs = durationMs ?: 0.0,
