@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.collections.plus
 
 class NetworkViewModel(
     observeHttpRequestsUseCase: ObserveHttpRequestsUseCase,
@@ -70,12 +69,8 @@ class NetworkViewModel(
 
     private val filteredItems = combine(
         observeHttpRequestsUseCase(lite = true).map { list ->
-            list.map {
-                Pair(
-                    it,
-                    toUi(it),
-                )
-            }
+            list.map { it to toUi(it) }
+                .reversed()
         }, // keep the domain for the filter
         filterUiState,
         headerDelegate.sorted,
@@ -129,6 +124,7 @@ class NetworkViewModel(
             is NetworkAction.CreateMock -> {
                 openMocks(callId = action.item.uuid)
             }
+
             is NetworkAction.CloseMocks -> closeMocks()
             is NetworkAction.CopyCUrl -> onCopyCUrl(action)
             is NetworkAction.CopyUrl -> onCopyUrl(action)
