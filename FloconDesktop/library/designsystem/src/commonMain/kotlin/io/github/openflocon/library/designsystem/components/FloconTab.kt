@@ -1,10 +1,12 @@
 package io.github.openflocon.library.designsystem.components
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun FloconTab(
@@ -33,6 +35,9 @@ fun FloconTab(
         onClick = onClick,
         modifier = modifier
     ) {
-        Text(text)
+        Text(
+            text = text,
+            modifier = Modifier.padding(4.dp)
+        )
     }
 }
