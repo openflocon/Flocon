@@ -73,10 +73,7 @@ class NetworkRepositoryImpl(
                 Protocol.FromDevice.Network.Method.LogNetworkCallResponse -> {
                     networkRemoteDataSource.getCallId(message)
                         ?.let {
-                            val callId = it.floconCallId ?: run {
-                                println("cannot find floconCallId in message")
-                                return@let null
-                            }
+                            val callId = it.floconCallId
                             val request = networkLocalDataSource.getCall(
                                 deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                                     deviceId = deviceId,
@@ -107,13 +104,6 @@ class NetworkRepositoryImpl(
                         }
                 }
             }
-            // decode(message)?.let { toDomain(it) }?.let { request ->
-            //    val responseContentType = request.response.contentType
-            //    if (request.response.contentType != null && responseContentType?.startsWith("image/") == true) {
-            //        networkImageRepository.onImageReceived(deviceId = deviceId, request = request)
-            //    }
-            //    networkLocalDataSource.save(deviceId = deviceId, packageName = message.appPackageName, request = request)
-            // }
         }
     }
 
@@ -160,6 +150,7 @@ class NetworkRepositoryImpl(
                 headers = decoded.headers,
                 byteSize = decoded.byteSize,
                 durationMs = decoded.durationMs,
+                httpCode = decoded.httpCode
             )
 
             return when (request) {

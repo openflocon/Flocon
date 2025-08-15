@@ -36,12 +36,10 @@ fun NetworkItemView(
     modifier: Modifier = Modifier,
     columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
 ) {
-    // Use FloconTheme.typography for consistent text sizes
     val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
-    FloconTheme.typography.labelSmall // Even smaller, good for labels/tags
 
     ContextualView(
-        buildList {
+        items = buildList {
             add(
                 ContextualItem(
                     id = "copy_url",
@@ -87,7 +85,6 @@ fun NetworkItemView(
     ) {
         Row(
             modifier = modifier
-                .padding(vertical = 4.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
                 .then(
                     if (state.isMocked) {
@@ -95,7 +92,7 @@ fun NetworkItemView(
                     } else Modifier,
                 )
                 .clickable(onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) })
-                .padding(horizontal = 8.dp, vertical = 6.dp),
+                .padding(horizontal = 4.dp, vertical = 4.dp),
             // Inner padding for content
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -121,14 +118,18 @@ fun NetworkItemView(
             )
 
             // Route - Takes remaining space (weight)
-            Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = state.domain,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = bodySmall,
                     color = FloconTheme.colorPalette.onSurface,
-                    modifier = Modifier.weight(columnWidths.domainWeight)
+                    modifier = Modifier
+                        .weight(columnWidths.domainWeight)
                         .padding(horizontal = 4.dp),
                 )
                 when (val type = state.type) {
@@ -139,7 +140,8 @@ fun NetworkItemView(
                             overflow = TextOverflow.Ellipsis,
                             style = bodySmall,
                             color = FloconTheme.colorPalette.onSurface,
-                            modifier = Modifier.weight(2f)
+                            modifier = Modifier
+                                .weight(2f)
                                 .background(
                                     color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp),
@@ -155,7 +157,8 @@ fun NetworkItemView(
                             overflow = TextOverflow.Ellipsis,
                             style = bodySmall,
                             color = FloconTheme.colorPalette.onSurface,
-                            modifier = Modifier.weight(2f)
+                            modifier = Modifier
+                                .weight(2f)
                                 .background(
                                     color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp),
@@ -184,7 +187,7 @@ fun NetworkItemView(
 
             // NetworkStatusUi - Fixed width for the tag from data class
             StatusView(
-                state.status,
+                status = state.status,
                 modifier = Modifier.width(columnWidths.statusCodeWidth), // Apply fixed width to the StatusView composable
             )
 
