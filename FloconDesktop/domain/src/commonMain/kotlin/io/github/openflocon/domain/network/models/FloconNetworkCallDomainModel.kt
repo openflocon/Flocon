@@ -83,7 +83,6 @@ data class FloconNetworkResponseDomainModel(
     val body: String? = null,
     val headers: Map<String, String>,
     val byteSize: Long,
-    val durationMs: Double,
-    val grpcStatus: String? = null,
+    val durationMs: Double
 )
 

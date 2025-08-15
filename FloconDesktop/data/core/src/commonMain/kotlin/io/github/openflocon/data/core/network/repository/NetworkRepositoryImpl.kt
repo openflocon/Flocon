@@ -167,7 +167,7 @@ class NetworkRepositoryImpl(
                     val response = FloconNetworkCallDomainModel.GraphQl.Response(
                         networkResponse = networkResponse,
                         httpCode = decoded.httpCode!!,
-                        isSuccess = decoded.grpcStatus == "OK",
+                        isSuccess = networkResponse.httpCode in 200..399,
                     )
                     request.copy(
                         response = response,
@@ -177,7 +177,7 @@ class NetworkRepositoryImpl(
                 is FloconNetworkCallDomainModel.Grpc -> {
                     val response = FloconNetworkCallDomainModel.Grpc.Response(
                         networkResponse = networkResponse,
-                        responseStatus = decoded.grpcStatus!!,
+                        responseStatus = request.response?.responseStatus!!,
                     )
                     request.copy(
                         response = response,
@@ -187,7 +187,7 @@ class NetworkRepositoryImpl(
                 is FloconNetworkCallDomainModel.Http -> {
                     val response = FloconNetworkCallDomainModel.Http.Response(
                         networkResponse = networkResponse,
-                        httpCode = decoded.httpCode!!,
+                        httpCode = networkResponse.httpCode!!,
                     )
                     request.copy(
                         response = response,
