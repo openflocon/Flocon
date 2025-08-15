@@ -1,13 +1,31 @@
 package io.github.openflocon.flocondesktop
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.app_icon
 import flocondesktop.composeapp.generated.resources.app_icon_small
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_HEIGHT
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_WIDTH
@@ -15,13 +33,22 @@ import io.github.openflocon.flocondesktop.window.WindowStateData
 import io.github.openflocon.flocondesktop.window.WindowStateSaver
 import io.github.openflocon.flocondesktop.window.size
 import io.github.openflocon.flocondesktop.window.windowPosition
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.resources.painterResource
+import java.awt.Desktop
 import java.awt.Dimension
 
 fun main() {
     System.setProperty("apple.awt.application.name", "Flocon")
 
     return application {
+        var openAbout by remember { mutableStateOf(false) }
+
+        Desktop.getDesktop().setAboutHandler {
+            openAbout = true
+        }
+
         startKoinApp()
         setSingletonImageLoaderFactory { context ->
             ImageLoader
@@ -62,6 +89,54 @@ fun main() {
             window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
 
             App()
+
+
+            if (openAbout) {
+                AboutScreen(
+                    onCloseRequest = { openAbout = false }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AboutScreen(
+    onCloseRequest: () -> Unit
+) {
+    Window(
+        title = "About",
+        onCloseRequest = onCloseRequest,
+        state = rememberWindowState(
+            placement = WindowPlacement.Floating,
+            position = WindowPosition(Alignment.Center),
+            size = DpSize(300.dp, 300.dp)
+        )
+    ) {
+        FloconSurface {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.app_icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(120.dp)
+                )
+                Text(
+                    text = "Flocon",
+                    style = FloconTheme.typography.titleSmall,
+                    color = FloconTheme.colorPalette.onSurface
+                )
+                Text(
+                    text = "made by Florent Champigny",
+                    style = FloconTheme.typography.labelSmall,
+                    color = FloconTheme.colorPalette.onSurface
+                )
+            }
         }
     }
 }
