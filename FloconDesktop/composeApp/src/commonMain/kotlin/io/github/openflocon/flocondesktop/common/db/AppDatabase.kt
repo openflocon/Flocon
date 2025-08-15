@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import io.github.openflocon.data.local.adb.dao.AdbDevicesDao
+import io.github.openflocon.data.local.adb.model.DeviceWithSerialEntity
 import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
 import io.github.openflocon.data.local.dashboard.dao.FloconDashboardDao
@@ -32,7 +34,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 37,
+    version = 38,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -47,6 +49,7 @@ import kotlinx.coroutines.Dispatchers
         AnalyticsItemEntity::class,
         NetworkFilterEntity::class,
         MockNetworkEntity::class,
+        DeviceWithSerialEntity::class,
     ],
 )
 @TypeConverters(
@@ -64,6 +67,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val analyticsDao: FloconAnalyticsDao
     abstract val networkFilterDao: NetworkFilterDao
     abstract val networkMocksDao: NetworkMocksDao
+    abstract val adbDevicesDao: AdbDevicesDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()

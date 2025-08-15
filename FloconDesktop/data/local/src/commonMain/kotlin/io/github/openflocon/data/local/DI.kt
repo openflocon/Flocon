@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local
 
+import io.github.openflocon.data.local.adb.adbModule
 import io.github.openflocon.data.local.analytics.analyticsModule
 import io.github.openflocon.data.local.dashboard.dashboardModule
 import io.github.openflocon.data.local.database.databaseModule
@@ -13,6 +14,7 @@ import org.koin.dsl.module
 
 val dataLocalModule = module {
     includes(
+        adbModule,
         analyticsModule,
         dashboardModule,
         databaseModule,

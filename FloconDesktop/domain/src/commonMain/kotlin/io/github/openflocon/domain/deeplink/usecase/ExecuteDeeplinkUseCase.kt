@@ -1,22 +1,19 @@
 package io.github.openflocon.domain.deeplink.usecase
 
+import io.github.openflocon.domain.adb.ExecuteAdbCommandUseCase
+import io.github.openflocon.domain.adb.model.AdbCommandTargetDomainModel
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
-import io.github.openflocon.domain.settings.repository.SettingsRepository
-import io.github.openflocon.domain.deeplink.repository.DeeplinkRepository
 
 class ExecuteDeeplinkUseCase(
-    private val deeplinkRepository: DeeplinkRepository,
-    private val settingsRepository: SettingsRepository,
+    private val executeAdbCommandUseCase: ExecuteAdbCommandUseCase,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(deeplink: String) {
+    suspend operator fun invoke(deeplink: String) {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return
-        val adbPath = settingsRepository.getAdbPath() ?: return
 
-        deeplinkRepository.executeDeeplink(
-            adbPath = adbPath,
-            deviceIdAndPackageName = current,
-            deeplink = deeplink,
+        executeAdbCommandUseCase(
+            target = AdbCommandTargetDomainModel.Device(current.deviceId),
+            command = "shell am start -W -a android.intent.action.VIEW -d \"$deeplink\" ${current.packageName}",
         )
     }
 }

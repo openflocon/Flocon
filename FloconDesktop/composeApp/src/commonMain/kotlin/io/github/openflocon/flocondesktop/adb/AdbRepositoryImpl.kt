@@ -1,40 +1,51 @@
 package io.github.openflocon.flocondesktop.adb
 
-import io.github.openflocon.domain.adb.AdbCommandTargetDomainModel
+import io.github.openflocon.domain.adb.model.DeviceWithSerialDomainModel
 import io.github.openflocon.domain.adb.repository.AdbRepository
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.Either
+import io.github.openflocon.data.core.adb.datasource.local.AdbLocalDataSource
 import io.github.openflocon.flocondesktop.common.askSerialToAllDevices
 import io.github.openflocon.flocondesktop.common.localExecuteAdbCommand
 import io.github.openflocon.flocondesktop.common.localFindAdbPath
-import io.ktor.util.collections.ConcurrentMap
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 
 // TODO Move
-class AdbRepositoryImpl : AdbRepository {
+class AdbRepositoryImpl(
+    private val adbLocalDataSource : AdbLocalDataSource,
+    private val dispatcherProvider: DispatcherProvider,
+) : AdbRepository {
 
-    // TODO persis it
-    val adbSerials = ConcurrentMap<String, String>()
+    override val devicesWithSerial = adbLocalDataSource.devicesWithSerial
+        .flowOn(dispatcherProvider.data)
 
-    override fun getAdbSerial(deviceId: String): String? {
-        return adbSerials[deviceId]
+    override suspend fun getAdbSerial(deviceId: String): String? {
+        return withContext(dispatcherProvider.data) {
+            adbLocalDataSource.getFromDeviceId(deviceId = deviceId)?.serial
+        }
     }
 
-    override fun saveAdbSerial(deviceId: String, serial: String) {
-        adbSerials[deviceId] = serial
+    override suspend fun saveAdbSerial(deviceId: String, serial: String) {
+        withContext(dispatcherProvider.data) {
+            adbLocalDataSource.add(
+                DeviceWithSerialDomainModel(
+                    deviceId = deviceId,
+                    serial = serial,
+                )
+            )
+        }
     }
 
-    // TODO be able to pass a serial
     override fun executeAdbCommand(
         adbPath: String,
-        target: AdbCommandTargetDomainModel,
+        deviceSerial: String?,
         command: String,
     ): Either<Throwable, String> {
         return localExecuteAdbCommand(
             adbPath = adbPath,
             command = command,
-            deviceSerial = when(target) {
-                is AdbCommandTargetDomainModel.Device -> getAdbSerial(target.deviceId)
-                is AdbCommandTargetDomainModel.AllDevices -> null
-            },
+            deviceSerial = deviceSerial,
         )
     }
 

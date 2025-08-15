@@ -37,4 +37,7 @@ val roomModule =
         single {
             get<AppDatabase>().networkMocksDao
         }
+        single {
+            get<AppDatabase>().adbDevicesDao
+        }
     }
