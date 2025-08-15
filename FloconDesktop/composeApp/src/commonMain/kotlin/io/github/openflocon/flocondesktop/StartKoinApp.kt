@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop
 
 import com.flocon.data.remote.dataRemoteModule
+import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.domainModule
@@ -24,6 +25,7 @@ fun startKoinApp() {
             mainModule,
             featuresModule,
             domainModule,
+            dataCoreModule,
             dataLocalModule,
             dataRemoteModule,
             // Temporary
