@@ -13,6 +13,19 @@ import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 import io.github.openflocon.library.designsystem.components.escape.EscapeHandlerProvider
 import org.jetbrains.compose.resources.painterResource
 
+actual fun rememberFloconWindowState(
+    placement: WindowPlacement,
+    position: WindowPosition,
+    size: DpSize
+): FloconWindowState {
+    return FloconWindowStateDesktop(
+        WindowState(
+            placement = WindowPlacement.Floating,
+            position = WindowPosition(Alignment.Center),
+        )
+    )
+}
+
 data class FloconWindowStateDesktop(
     val windowState: WindowState,
 ) : FloconWindowState
