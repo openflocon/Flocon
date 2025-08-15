@@ -4,6 +4,8 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class DeviceUiState(
+    val selectedIndex: Int,
+
     val model: String,
     val brand: String,
     val versionRelease: String,
@@ -15,6 +17,8 @@ data class DeviceUiState(
 )
 
 internal fun previewDeviceUiState() = DeviceUiState(
+    selectedIndex = 0,
+
     model = "",
     brand = "",
     versionRelease = "",

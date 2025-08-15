@@ -1,4 +1,7 @@
 package io.github.openflocon.flocondesktop.device
 
-internal interface DeviceAction {
+internal sealed interface DeviceAction {
+
+    data class SelectTab(val index: Int) : DeviceAction
+
 }

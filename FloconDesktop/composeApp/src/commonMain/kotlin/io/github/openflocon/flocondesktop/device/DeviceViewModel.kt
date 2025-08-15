@@ -16,6 +16,7 @@ internal class DeviceViewModel(
 
     private val _uiState = MutableStateFlow(
         DeviceUiState(
+            selectedIndex = 0,
             model = "",
             brand = "",
             versionRelease = "",
@@ -33,7 +34,13 @@ internal class DeviceViewModel(
     }
 
     fun onAction(action: DeviceAction) {
+        when (action) {
+            is DeviceAction.SelectTab -> onSelect(action)
+        }
+    }
 
+    private fun onSelect(action: DeviceAction.SelectTab) {
+        _uiState.update { it.copy(selectedIndex = action.index) }
     }
 
     private fun sendCommand() {
