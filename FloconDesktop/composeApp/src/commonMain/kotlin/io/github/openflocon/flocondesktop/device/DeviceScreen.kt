@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Refresh
@@ -20,7 +19,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.device.models.DeviceId
@@ -31,6 +29,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconScrollableTabRow
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTab
+import io.github.openflocon.library.designsystem.components.FloconTextValue
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -77,7 +76,7 @@ private fun Content(
             Scaffold(
                 topBar = {
                     Column(
-                        modifier = Modifier.background(FloconTheme.colorPalette.surfaceVariant)
+                        modifier = Modifier.background(FloconTheme.colorPalette.surfaceVariant.copy(alpha = 1f))
                     ) {
                         Header(
                             uiState = uiState,
@@ -134,7 +133,9 @@ private fun Header(
         Text(
             text = "${uiState.model} (${uiState.serialNumber})",
             style = FloconTheme.typography.headlineSmall,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .padding(16.dp)
         )
         FloconIconButton(
             imageVector = Icons.Outlined.Refresh,
@@ -147,46 +148,22 @@ private fun Header(
 private fun InfoPage(
     uiState: DeviceUiState
 ) {
-    Column {
-        TextValue("Brand", uiState.brand)
-        TextValue("CPU", uiState.cpu)
-        TextValue("MEM", uiState.mem)
-        TextValue("Battery", uiState.battery)
-        TextValue("SerialNumber", uiState.serialNumber)
-        TextValue("VersionRelease", uiState.versionRelease)
-        TextValue("VersionSdk", uiState.versionSdk)
+    Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloconTextValue("Brand", uiState.brand)
+        FloconTextValue("CPU", uiState.cpu)
+        FloconTextValue("Memory", uiState.mem)
+        FloconTextValue("Battery", uiState.battery)
+        FloconTextValue("Serial number", uiState.serialNumber)
+        FloconTextValue("Version - Release", uiState.versionRelease)
+        FloconTextValue("Version - Sdk", uiState.versionSdk)
     }
 }
 
 @Composable
 private fun PermissionPage() {
 
-}
-
-@Composable
-private fun TextValue(
-    label: String,
-    value: String
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(2.dp)
-    ) {
-        Text(
-            text = label,
-            style = FloconTheme.typography.labelSmall,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = value,
-            style = FloconTheme.typography.labelSmall,
-            modifier = Modifier.weight(1f)
-                .clip(RoundedCornerShape(4.dp))
-                .background(FloconTheme.colorPalette.surfaceVariant)
-                .padding(2.dp)
-        )
-    }
 }
 
 @Composable
