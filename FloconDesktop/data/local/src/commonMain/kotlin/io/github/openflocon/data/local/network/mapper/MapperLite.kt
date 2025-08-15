@@ -12,8 +12,6 @@ import kotlin.Boolean
 fun toDomainModel(request: FloconNetworkRequestLiteEmbedded): FloconNetworkRequestDomainModel {
     return with(request) {
         FloconNetworkRequestDomainModel(
-            floconCallId = ,
-            floconNetworkType = ,
             url = this.url,
             method = this.method,
             startTime = this.startTime,

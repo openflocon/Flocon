@@ -68,9 +68,6 @@ data class FloconNetworkCallIdDomainModel(
 )
 
 data class FloconNetworkRequestDomainModel(
-    val floconCallId: String,
-    val floconNetworkType: String,
-
     val url: String,
     val startTime: Long,
     val method: String,
@@ -98,9 +95,6 @@ sealed interface FloconNetworkResponseOnlyDomainModel {
 }
 
 data class FloconNetworkResponseDomainModel(
-    val floconCallId: String,
-    val floconNetworkType: String,
-
     val httpCode: Int? = null, // ex: 200
     val contentType: String? = null,
     val body: String? = null,
