@@ -10,6 +10,7 @@ import io.ktor.util.collections.ConcurrentMap
 // TODO Move
 class AdbRepositoryImpl : AdbRepository {
 
+    // TODO persis it
     val adbSerials = ConcurrentMap<String, String>()
 
     override fun getAdbSerial(deviceId: String): String? {
@@ -20,6 +21,7 @@ class AdbRepositoryImpl : AdbRepository {
         adbSerials[deviceId] = serial
     }
 
+    // TODO be able to pass a serial
     override fun executeAdbCommand(
         adbPath: String,
         command: String,
