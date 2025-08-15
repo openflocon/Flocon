@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 interface FloconTableDao {
 
     @Transaction
-    @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTable(table: TableEntity): Long
 
     @Query(
@@ -32,7 +32,7 @@ interface FloconTableDao {
     suspend fun getTableId(deviceId: DeviceId, packageName: String, tableName: String): Long?
 
     @Transaction
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTableItems(tableItemEntities: List<TableItemEntity>)
 
     @Query(
