@@ -45,14 +45,26 @@ class FloconNetworkPluginImpl(
             BadQualityConfig(
                 latency = BadQualityConfig.LatencyConfig(
                     latencyTriggerProbability = 1.0f,
-                    minLatencyMs = 4000,
-                    maxLatencyMs = 10000,
+                    minLatencyMs = 2000,
+                    maxLatencyMs = 5000,
                 ),
                 errorProbability = 0.8,
                 errors = listOf(
                     BadQualityConfig.Error(
                         weight = 1.5f,
                         errorCode = 500,
+                        errorBody = "{}",
+                        errorContentType = "application/json",
+                    ),
+                    BadQualityConfig.Error(
+                        weight = 1f,
+                        errorCode = 480,
+                        errorBody = "{}",
+                        errorContentType = "application/json",
+                    ),
+                    BadQualityConfig.Error(
+                        weight = 2f,
+                        errorCode = 504,
                         errorBody = "{}",
                         errorContentType = "application/json",
                     ),
