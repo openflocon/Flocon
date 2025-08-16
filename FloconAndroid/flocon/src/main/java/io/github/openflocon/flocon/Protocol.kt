@@ -133,6 +133,7 @@ object Protocol {
 
             object Method {
                 const val SetupMocks = "setupMocks"
+                const val SetupBadNetworkConfig = "setupBadNetworkConfig"
             }
         }
 

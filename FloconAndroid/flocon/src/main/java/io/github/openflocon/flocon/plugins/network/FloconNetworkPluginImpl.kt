@@ -7,8 +7,11 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallRequestToJson
 import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallResponseToJson
+import io.github.openflocon.flocon.plugins.network.mapper.parseBadQualityConfig
 import io.github.openflocon.flocon.plugins.network.mapper.parseMockResponses
+import io.github.openflocon.flocon.plugins.network.mapper.toJsonObject
 import io.github.openflocon.flocon.plugins.network.mapper.writeMockResponsesToJson
+import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
@@ -20,6 +23,10 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicReference
+
+private const val FLOCON_NETWORK_MOCKS_JSON = "flocon_network_mocks.json"
+private const val FLOCON_NETWORK_BAD_CONFIG_JSON = "flocon_network_bad_config.json"
 
 class FloconNetworkPluginImpl(
     private val context: Context,
@@ -28,6 +35,10 @@ class FloconNetworkPluginImpl(
 ) : FloconNetworkPlugin {
 
     override val mocks = CopyOnWriteArrayList<MockNetworkResponse>(loadMocksFromFile())
+    private val _badQualityConfig = AtomicReference<BadQualityConfig?>(null)
+
+    override val badQualityConfig: BadQualityConfig?
+        get() = _badQualityConfig.get()
 
     override fun logRequest(request: FloconNetworkCallRequest) {
         sender.send(
@@ -59,6 +70,12 @@ class FloconNetworkPluginImpl(
                 mocks.addAll(setup)
                 saveMocksToFile(mocks)
             }
+
+            Protocol.ToDevice.Network.Method.SetupBadNetworkConfig -> {
+                val config = parseBadQualityConfig(messageFromServer.body)
+                _badQualityConfig.set(config)
+                saveBadNetworkConfig(config)
+            }
         }
     }
 
@@ -68,7 +85,7 @@ class FloconNetworkPluginImpl(
 
     private fun saveMocksToFile(mocks: CopyOnWriteArrayList<MockNetworkResponse>) {
         try {
-            val file = File(context.filesDir, "flocon_network_mocks.json")
+            val file = File(context.filesDir, FLOCON_NETWORK_MOCKS_JSON)
             val jsonString = writeMockResponsesToJson(mocks).toString(2)
             FileOutputStream(file).use {
                 it.write(jsonString.toByteArray())
@@ -79,27 +96,8 @@ class FloconNetworkPluginImpl(
     }
 
     private fun loadMocksFromFile(): List<MockNetworkResponse> {
-        /*
-        return listOf(
-            MockNetworkResponse(
-                expectation = MockNetworkResponse.Expectation(
-                    method = "*",
-                    urlPattern = ".*todo.*",
-                    pattern = Pattern.compile(".*"),
-                ),
-                response = MockNetworkResponse.Response(
-                    httpCode = 201,
-                    mediaType = "application/json",
-                    body = "{ \"florent\" : \"champigny\" }",
-                    delay = 0L,
-                    headers = emptyMap(),
-                )
-            )
-        )
-         */
-
         return try {
-            val file = File(context.filesDir, "flocon_network_mocks.json")
+            val file = File(context.filesDir, FLOCON_NETWORK_MOCKS_JSON)
             if (!file.exists()) {
                 return emptyList()
             }
@@ -113,4 +111,38 @@ class FloconNetworkPluginImpl(
             emptyList()
         }
     }
+
+    private fun loadBadNetworkConfig(): BadQualityConfig? {
+        return try {
+            val file = File(context.filesDir, FLOCON_NETWORK_BAD_CONFIG_JSON)
+            if (!file.exists()) {
+                return null
+            }
+
+            val jsonString = FileInputStream(file).use {
+                it.readBytes().toString(Charsets.UTF_8)
+            }
+            parseBadQualityConfig(jsonString)
+        } catch (t: Throwable) {
+            FloconLogger.logError("issue in loadBadNetworkConfig", t)
+            null
+        }
+    }
+
+    private fun saveBadNetworkConfig(config: BadQualityConfig?) {
+        try {
+            val file = File(context.filesDir, FLOCON_NETWORK_BAD_CONFIG_JSON)
+            if (config == null) {
+                file.delete()
+            } else {
+                val jsonString = toJsonObject(config).toString(2)
+                FileOutputStream(file).use {
+                    it.write(jsonString.toByteArray())
+                }
+            }
+        } catch (t: Throwable) {
+            FloconLogger.logError("issue in saveBadNetworkConfig", t)
+        }
+    }
+
 }
