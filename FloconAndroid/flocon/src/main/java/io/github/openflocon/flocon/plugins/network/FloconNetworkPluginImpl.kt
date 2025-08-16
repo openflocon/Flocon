@@ -40,6 +40,27 @@ class FloconNetworkPluginImpl(
     override val badQualityConfig: BadQualityConfig?
         get() = _badQualityConfig.get()
 
+    init {
+        _badQualityConfig.set(
+            BadQualityConfig(
+                latency = BadQualityConfig.LatencyConfig(
+                    latencyTriggerProbability = 1.0f,
+                    minLatencyMs = 4000,
+                    maxLatencyMs = 10000,
+                ),
+                errorProbability = 0.8,
+                errors = listOf(
+                    BadQualityConfig.Error(
+                        weight = 1.5f,
+                        errorCode = 500,
+                        errorBody = "{}",
+                        errorContentType = "application/json",
+                    ),
+                ),
+            )
+        )
+    }
+
     override fun logRequest(request: FloconNetworkCallRequest) {
         sender.send(
             plugin = Protocol.FromDevice.Network.Plugin,
