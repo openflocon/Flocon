@@ -4,6 +4,7 @@ package io.github.openflocon.library.designsystem.components
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -33,13 +34,17 @@ fun FloconTextField(
     textStyle: TextStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
 ) {
     val colors = TextFieldDefaults.colors(
+        errorContainerColor = FloconTheme.colorPalette.surfaceVariant,
+        focusedContainerColor = FloconTheme.colorPalette.surfaceVariant,
+        disabledContainerColor = FloconTheme.colorPalette.surfaceVariant,
+        unfocusedContainerColor = FloconTheme.colorPalette.surfaceVariant,
         focusedIndicatorColor = Color.Transparent,
         errorIndicatorColor = Color.Transparent,
         disabledIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent
     )
     val interactionSource = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(12.dp)
+    val shape = RoundedCornerShape(10.dp)
 
     BasicTextField(
         value = value,
@@ -56,6 +61,7 @@ fun FloconTextField(
                 singleLine = singleLine,
                 colors = colors,
                 visualTransformation = VisualTransformation.None,
+                contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
                 container = {
                     TextFieldDefaults.Container(
                         enabled = enabled,
@@ -90,7 +96,8 @@ fun FloconTextField(
         placeholder = if (placeholderText != null) {
             {
                 Text(
-                    text = placeholderText
+                    text = placeholderText,
+                    style = textStyle
                 )
             }
         } else {

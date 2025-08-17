@@ -140,8 +140,6 @@ private fun SearchBar(
             placeholderText = "Search",
             modifier = Modifier
                 .weight(1f)
-                .clip(RoundedCornerShape(16.dp))
-                .background(FloconTheme.colorPalette.surfaceVariant)
                 .padding(vertical = 8.dp, horizontal = 12.dp)
                 .heightIn(min = 24.dp),
         )
