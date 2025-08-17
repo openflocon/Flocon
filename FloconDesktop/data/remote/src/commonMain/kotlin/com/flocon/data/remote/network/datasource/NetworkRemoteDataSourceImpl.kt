@@ -13,6 +13,7 @@ import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
@@ -37,6 +38,24 @@ class NetworkRemoteDataSourceImpl(
                 body = Json.Default.encodeToString(
                     listToRemote(mocks),
                 ),
+            ),
+        )
+    }
+
+    override suspend fun setupBadNetworkQuality(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        config: BadQualityConfigDomainModel?,
+    ) {
+        server.sendMessageToClient(
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
+            message = FloconOutgoingMessageDataModel(
+                plugin = Protocol.ToDevice.Network.Plugin,
+                method = Protocol.ToDevice.Network.Method.SetupBadNetworkConfig,
+                body = if(config == null) {
+                    "{}" // empty json to clear the config mobile side
+                } else {
+                    Json.Default.encodeToString(config,)
+                },
             ),
         )
     }

@@ -144,17 +144,6 @@ class FloconOkhttpInterceptor() : Interceptor {
             grpcStatus = null,
         )
 
-        /*
-        floconNetworkPlugin.log(
-            FloconNetworkCall(
-                durationMs = durationMs,
-                floconNetworkType = floconNetworkType,
-                request = floconNetworkRequest,
-                response = floconCallResponse,
-                isMocked = isMocked,
-            )
-        )
-         */
         floconNetworkPlugin.logResponse(
             FloconNetworkCallResponse(
                 floconCallId = floconCallId,

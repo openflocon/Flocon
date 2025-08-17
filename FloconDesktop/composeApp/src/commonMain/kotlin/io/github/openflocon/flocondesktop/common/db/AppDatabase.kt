@@ -20,11 +20,13 @@ import io.github.openflocon.data.local.files.dao.FloconFileDao
 import io.github.openflocon.data.local.files.models.FileEntity
 import io.github.openflocon.data.local.images.dao.FloconImageDao
 import io.github.openflocon.data.local.images.models.DeviceImageEntity
+import io.github.openflocon.data.local.network.dao.NetworkBadQualityConfigDao
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.dao.NetworkFilterDao
 import io.github.openflocon.data.local.network.dao.NetworkMocksDao
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.data.local.network.models.NetworkFilterEntity
+import io.github.openflocon.data.local.network.models.badquality.BadQualityConfigEntity
 import io.github.openflocon.data.local.network.models.mock.MockNetworkEntity
 import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.models.TableEntity
@@ -34,7 +36,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 38,
+    version = 39,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -50,6 +52,7 @@ import kotlinx.coroutines.Dispatchers
         NetworkFilterEntity::class,
         MockNetworkEntity::class,
         DeviceWithSerialEntity::class,
+        BadQualityConfigEntity::class,
     ],
 )
 @TypeConverters(
@@ -68,6 +71,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val networkFilterDao: NetworkFilterDao
     abstract val networkMocksDao: NetworkMocksDao
     abstract val adbDevicesDao: AdbDevicesDao
+    abstract val networkBadQualityConfigDao: NetworkBadQualityConfigDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()

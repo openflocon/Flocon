@@ -9,6 +9,10 @@ import io.github.openflocon.domain.network.usecase.RemoveHttpRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.UpdateNetworkFilterUseCase
+import io.github.openflocon.domain.network.usecase.badquality.ObserveNetworkBadQualityUseCase
+import io.github.openflocon.domain.network.usecase.badquality.SaveNetworkBadQualityUseCase
+import io.github.openflocon.domain.network.usecase.badquality.SetupNetworkBadQualityUseCase
+import io.github.openflocon.domain.network.usecase.badquality.UpdateNetworkBadQualityIsEnabledUseCase
 import io.github.openflocon.domain.network.usecase.mocks.AddNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.DeleteNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.GenerateNetworkMockFromNetworkCallUseCase
@@ -38,4 +42,9 @@ internal val networkModule = module {
     factoryOf(::GetNetworkMockByIdUseCase)
     factoryOf(::GenerateNetworkMockFromNetworkCallUseCase)
     factoryOf(::UpdateNetworkMockIsEnabledUseCase)
+    // bad quality
+    factoryOf(::ObserveNetworkBadQualityUseCase)
+    factoryOf(::SaveNetworkBadQualityUseCase)
+    factoryOf(::SetupNetworkBadQualityUseCase)
+    factoryOf(::UpdateNetworkBadQualityIsEnabledUseCase)
 }
