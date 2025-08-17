@@ -172,6 +172,9 @@ fun NetworkScreen(
                 onAction(NetworkAction.CloseMocks)
             },
         )
+        if(uiState.contentState.badNetworkQualityDisplayed) {
+            // TODO
+        }
     }
 }
 

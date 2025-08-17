@@ -9,6 +9,7 @@ data class ContentUiState(
     val selectedRequestId: String?,
     val detailJsons: Set<NetworkBodyDetailUi>,
     val mocksDisplayed: MockDisplayed?,
+    val badNetworkQualityDisplayed: Boolean,
 )
 
 @Immutable
@@ -21,4 +22,5 @@ fun previewContentUiState() = ContentUiState(
     selectedRequestId = null,
     detailJsons = emptySet(),
     mocksDisplayed = null,
+    badNetworkQualityDisplayed = false,
 )
