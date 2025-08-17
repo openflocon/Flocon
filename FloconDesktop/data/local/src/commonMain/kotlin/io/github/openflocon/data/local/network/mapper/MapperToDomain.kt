@@ -2,6 +2,7 @@ package io.github.openflocon.data.local.network.mapper
 
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.data.local.network.models.FloconNetworkCallType
+import io.github.openflocon.data.local.network.models.FloconNetworkRequestEmbedded
 import io.github.openflocon.data.local.network.models.FloconNetworkResponseEmbedded
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel

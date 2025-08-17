@@ -137,7 +137,7 @@ private fun SearchBar(
         FloconTextField(
             value = query,
             onValueChange = { queryChanged(it) },
-            placeHolderText = "Search",
+            placeholderText = "Search",
             modifier = Modifier
                 .weight(1f)
                 .clip(RoundedCornerShape(16.dp))

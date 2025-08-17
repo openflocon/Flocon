@@ -9,7 +9,7 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
 import io.github.openflocon.domain.network.repository.NetworkMocksRepository
@@ -150,8 +150,8 @@ class NetworkRepositoryImpl(
                 is FloconNetworkCallDomainModel.GraphQl -> {
                     val response = FloconNetworkCallDomainModel.GraphQl.Response(
                         networkResponse = networkResponse,
-                        httpCode = responseHttp.httpCode,
-                        isSuccess = responseHttp.httpCode in 200..299,
+                        httpCode = networkResponse.httpCode ?: return null,
+                        isSuccess = networkResponse.httpCode in 200..299,
                     )
                     request.copy(
                         response = response,
@@ -161,7 +161,7 @@ class NetworkRepositoryImpl(
                 is FloconNetworkCallDomainModel.Grpc -> {
                     val response = FloconNetworkCallDomainModel.Grpc.Response(
                         networkResponse = networkResponse,
-                        responseStatus = responseHttp.grpcStatus,
+                        responseStatus = request.response?.responseStatus ?: return null,
                     )
                     request.copy(
                         response = response,
@@ -171,7 +171,7 @@ class NetworkRepositoryImpl(
                 is FloconNetworkCallDomainModel.Http -> {
                     val response = FloconNetworkCallDomainModel.Http.Response(
                         networkResponse = networkResponse,
-                        httpCode = responseHttp.httpCode,
+                        httpCode = networkResponse.httpCode ?: return null
                     )
                     request.copy(
                         response = response,

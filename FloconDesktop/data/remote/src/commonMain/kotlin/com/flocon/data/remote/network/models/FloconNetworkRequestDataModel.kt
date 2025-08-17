@@ -49,6 +49,7 @@ internal fun FloconNetworkResponseDataModel.toDomain() : FloconNetworkResponseOn
             byteSize = responseSize ?: 0L,
             headers = responseHeaders.orEmpty(),
             contentType = responseContentType,
+            httpCode = responseHttpCode
         )
         when (floconNetworkType) {
             "grpc" -> FloconNetworkResponseOnlyDomainModel.Grpc(
