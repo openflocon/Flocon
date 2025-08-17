@@ -29,6 +29,7 @@ import io.github.openflocon.flocondesktop.features.network.model.NetworkItemView
 import io.github.openflocon.flocondesktop.features.network.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.previewNetworkUiState
+import io.github.openflocon.flocondesktop.features.network.view.badquality.BadNetworkQualityWindow
 import io.github.openflocon.flocondesktop.features.network.view.header.NetworkFilter
 import io.github.openflocon.flocondesktop.features.network.view.header.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.view.mocks.NetworkMocksWindow
@@ -172,9 +173,14 @@ fun NetworkScreen(
                 onAction(NetworkAction.CloseMocks)
             },
         )
-        if(uiState.contentState.badNetworkQualityDisplayed) {
-            // TODO
-        }
+    }
+
+    if(uiState.contentState.badNetworkQualityDisplayed) {
+        BadNetworkQualityWindow(
+            onCloseRequest = {
+                onAction(NetworkAction.CloseBadNetworkQuality)
+            },
+        )
     }
 }
 
