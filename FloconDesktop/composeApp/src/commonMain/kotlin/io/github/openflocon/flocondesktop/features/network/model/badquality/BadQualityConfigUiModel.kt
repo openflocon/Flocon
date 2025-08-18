@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.model.badquality
 
+import java.util.UUID
+
 data class BadQualityConfigUiModel(
     val isEnabled: Boolean,
     val latency: LatencyConfig,
@@ -12,6 +14,7 @@ data class BadQualityConfigUiModel(
         val maxLatencyMs: Long,
     )
     data class Error(
+        val uuid: String = UUID.randomUUID().toString(),
         val weight: Float, // increase the probability of being triggered vs all others errors
         val httpCode: Int,
         val body: String,
