@@ -1,7 +1,6 @@
 package com.flocon.data.remote.network.models
 
 import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import kotlinx.serialization.Serializable

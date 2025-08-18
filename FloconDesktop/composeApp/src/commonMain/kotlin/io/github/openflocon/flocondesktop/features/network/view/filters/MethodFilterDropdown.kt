@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,26 +18,14 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun MethodFilterDropdown(
-    expanded: Boolean,
-    onDismissRequest: () -> Unit,
-    onItemClicked: (NetworkMethodUi) -> Unit,
+fun MethodFilterDropdownContent(
     filterState: MethodFilterState,
+    onItemClicked: (NetworkMethodUi) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismissRequest,
+    Column(
+        modifier = modifier
     ) {
-        MethodFilterDropdownContent(filterState = filterState, onItemClicked = onItemClicked)
-    }
-}
-
-@Composable
-private fun MethodFilterDropdownContent(
-    filterState: MethodFilterState,
-    onItemClicked: (NetworkMethodUi) -> Unit,
-) {
-    Column {
         filterState.items.fastForEach { item ->
             val alpha by animateFloatAsState(if (item.isSelected) 1f else 0.3f)
             Box(modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)) {

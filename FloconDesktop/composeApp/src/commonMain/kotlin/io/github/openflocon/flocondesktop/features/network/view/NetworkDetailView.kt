@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -161,7 +162,9 @@ private fun Request(
                         label = "Status",
                         labelWidth = linesLabelWidth,
                     ) {
-                        StatusView(status = state.status)
+                        StatusView(
+                            status = state.status
+                        )
                     }
                     DetailLineTextView(
                         modifier = Modifier.fillMaxWidth(),
