@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.model.header.NetworkHeaderUiState
@@ -50,7 +52,8 @@ fun NetworkItemHeaderView(
         ) {
             TextFilterDropdownContent(
                 filterState = state.requestTime.filter,
-                textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.RequestTime, it)) }
+                textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.RequestTime, it)) },
+                modifier = Modifier.widthIn(min = 300.dp)
             )
         }
         HeaderDropdown(
@@ -75,7 +78,8 @@ fun NetworkItemHeaderView(
         ) {
             TextFilterDropdownContent(
                 filterState = state.domain.filter,
-                textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Domain, it)) }
+                textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Domain, it)) },
+                modifier = Modifier.widthIn(min = 300.dp)
             )
         }
         HeaderDropdown(
@@ -88,7 +92,8 @@ fun NetworkItemHeaderView(
         ) {
             TextFilterDropdownContent(
                 filterState = state.query.filter,
-                textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Query, it)) }
+                textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Query, it)) },
+                modifier = Modifier.widthIn(min = 300.dp)
             )
         }
         HeaderDropdown(
@@ -100,7 +105,8 @@ fun NetworkItemHeaderView(
         ) {
             TextFilterDropdownContent(
                 filterState = state.status.filter,
-                textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Status, it)) }
+                textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Status, it)) },
+                modifier = Modifier.widthIn(min = 300.dp)
             )
         }
         HeaderDropdown(
@@ -112,7 +118,8 @@ fun NetworkItemHeaderView(
         ) {
             TextFilterDropdownContent(
                 filterState = state.time.filter,
-                textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Time, it)) }
+                textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Time, it)) },
+                modifier = Modifier.widthIn(min = 300.dp)
             )
         }
     }

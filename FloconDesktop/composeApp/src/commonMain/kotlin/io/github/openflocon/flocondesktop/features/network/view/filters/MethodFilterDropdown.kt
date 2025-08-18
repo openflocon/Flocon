@@ -21,8 +21,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun MethodFilterDropdownContent(
     filterState: MethodFilterState,
     onItemClicked: (NetworkMethodUi) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         filterState.items.fastForEach { item ->
             val alpha by animateFloatAsState(if (item.isSelected) 1f else 0.3f)
             Box(modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)) {

@@ -54,7 +54,9 @@ fun TextFilterDropdownContent(
     filterState: TextFilterStateUiModel,
     textFilterAction: (TextFilterAction) -> Unit,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+    ) {
         TextFilterFieldView(
             modifier = Modifier.fillMaxWidth()
                 .background(FloconTheme.colorPalette.onSurface.copy(alpha = 0.05f))
