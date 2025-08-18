@@ -2,6 +2,9 @@
 
 package io.github.openflocon.flocondesktop.features.network.view.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.ArrowDropUp
-import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,7 +51,7 @@ fun HeaderLabelItem(
     text: String,
     modifier: Modifier = Modifier,
     sortedBy: SortedByUiModel = SortedByUiModel.None, // TODO remove
-    isFiltered: Boolean = false, // TODO remove
+    filtered: Boolean = false, // TODO remove
     clickOnSort: (SortedByUiModel.Enabled) -> Unit,
     clickOnFilter: () -> Unit,
     labelAlignment: Alignment = Alignment.Center,
@@ -74,6 +76,7 @@ fun HeaderLabelItem(
                 .weight(1f)
                 .fillMaxHeight()
                 .clip(shape)
+                .background(if (filtered) FloconTheme.colorPalette.surfaceVariant else Color.Transparent)
                 .clickable(onClick = clickOnFilter)
         ) {
             Text(
@@ -83,16 +86,6 @@ fun HeaderLabelItem(
                 color = textColor,
                 modifier = Modifier.padding(horizontal = 4.dp)
             )
-            if (isFiltered) {
-                Icon(
-                    imageVector = Icons.Outlined.FilterAlt,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(12.dp)
-                        .align(Alignment.TopEnd)
-                        .padding(1.dp)
-                )
-            }
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

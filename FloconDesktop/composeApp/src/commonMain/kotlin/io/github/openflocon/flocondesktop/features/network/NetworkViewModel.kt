@@ -70,7 +70,6 @@ class NetworkViewModel(
     private val filteredItems = combine(
         observeHttpRequestsUseCase(lite = true).map { list ->
             list.map { it to toUi(it) }
-                .reversed()
         }, // keep the domain for the filter
         filterUiState,
         headerDelegate.sorted,

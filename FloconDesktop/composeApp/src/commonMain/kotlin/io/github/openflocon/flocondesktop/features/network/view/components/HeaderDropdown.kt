@@ -35,7 +35,7 @@ fun HeaderDropdown(
             modifier = Modifier
                 .fillMaxWidth(),
             text = label,
-            isFiltered = filtered,
+            filtered = filtered,
             sortedBy = sortedBy,
             clickOnSort = onClickSort,
             clickOnFilter = { expanded = true },
