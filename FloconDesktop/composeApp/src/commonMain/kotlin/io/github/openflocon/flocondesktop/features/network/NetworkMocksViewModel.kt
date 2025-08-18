@@ -10,7 +10,7 @@ import io.github.openflocon.domain.network.usecase.mocks.GenerateNetworkMockFrom
 import io.github.openflocon.domain.network.usecase.mocks.GetNetworkMockByIdUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.UpdateNetworkMockIsEnabledUseCase
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.network.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.mapper.toLineUi
 import io.github.openflocon.flocondesktop.features.network.mapper.toUi
