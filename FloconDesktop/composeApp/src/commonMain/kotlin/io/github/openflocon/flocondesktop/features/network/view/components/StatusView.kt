@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.view.components
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.BasicText
@@ -39,43 +39,34 @@ fun StatusView(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Crossfade(
-            targetState = status.status,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            when (it) {
-                NetworkStatusUi.Status.SUCCESS,
-                NetworkStatusUi.Status.ERROR -> BasicText(
-                    text = status.text,
-                    autoSize = TextAutoSize.StepBased(
-                        maxFontSize = textSize,
-                        minFontSize = 8.sp,
-                    ),
-                    maxLines = 1,
-                    style = FloconTheme.typography.labelSmall.copy(
-                        color = when (status.status) {
-                            NetworkStatusUi.Status.SUCCESS -> successTagText
-                            NetworkStatusUi.Status.ERROR -> errorTagText
-                            NetworkStatusUi.Status.LOADING -> loadingTagText
-                        },
-                    ),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentSize()
+        when (status.status) {
+            NetworkStatusUi.Status.SUCCESS,
+            NetworkStatusUi.Status.ERROR -> BasicText(
+                text = status.text,
+                autoSize = TextAutoSize.StepBased(
+                    maxFontSize = textSize,
+                    minFontSize = 8.sp,
+                ),
+                maxLines = 1,
+                style = FloconTheme.typography.labelSmall.copy(
+                    color = when (status.status) {
+                        NetworkStatusUi.Status.SUCCESS -> successTagText
+                        NetworkStatusUi.Status.ERROR -> errorTagText
+                        NetworkStatusUi.Status.LOADING -> loadingTagText
+                    },
                 )
+            )
 
-                NetworkStatusUi.Status.LOADING -> Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    FloconLinearProgressIndicator(
-                        modifier = Modifier
-                            .width(50.dp)
-                    )
-                }
+            NetworkStatusUi.Status.LOADING -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                FloconLinearProgressIndicator(
+                    modifier = Modifier
+                        .width(50.dp)
+                )
             }
         }
-
     }
 }
 
