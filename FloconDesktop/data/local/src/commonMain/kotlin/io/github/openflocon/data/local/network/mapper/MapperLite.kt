@@ -78,6 +78,5 @@ private fun toDomainModel(response: FloconNetworkResponseLiteEmbedded): FloconNe
         headers = responseHeaders,
         byteSize = responseByteSize,
         durationMs = durationMs,
-        httpCode = http?.responseHttpCode
     )
 }

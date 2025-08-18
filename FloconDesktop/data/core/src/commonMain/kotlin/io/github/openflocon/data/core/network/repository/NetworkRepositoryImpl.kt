@@ -9,6 +9,7 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
@@ -73,7 +74,10 @@ class NetworkRepositoryImpl(
                 Protocol.FromDevice.Network.Method.LogNetworkCallResponse -> {
                     networkRemoteDataSource.getCallId(message)
                         ?.let {
-                            val callId = it.floconCallId
+                            val callId = it.floconCallId ?: run {
+                                println("cannot find floconCallId in message")
+                                return@let null
+                            }
                             val request = networkLocalDataSource.getCall(
                                 deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                                     deviceId = deviceId,
@@ -104,6 +108,13 @@ class NetworkRepositoryImpl(
                         }
                 }
             }
+            // decode(message)?.let { toDomain(it) }?.let { request ->
+            //    val responseContentType = request.response.contentType
+            //    if (request.response.contentType != null && responseContentType?.startsWith("image/") == true) {
+            //        networkImageRepository.onImageReceived(deviceId = deviceId, request = request)
+            //    }
+            //    networkLocalDataSource.save(deviceId = deviceId, packageName = message.appPackageName, request = request)
+            // }
         }
     }
 
@@ -148,10 +159,12 @@ class NetworkRepositoryImpl(
 
             return when (request) {
                 is FloconNetworkCallDomainModel.GraphQl -> {
+                    // throw an exception if not http
+                    val responseHttp = response as FloconNetworkResponseOnlyDomainModel.Http
                     val response = FloconNetworkCallDomainModel.GraphQl.Response(
                         networkResponse = networkResponse,
-                        httpCode = networkResponse.httpCode ?: return null,
-                        isSuccess = networkResponse.httpCode in 200..299,
+                        httpCode = responseHttp.httpCode,
+                        isSuccess = responseHttp.httpCode in 200..299,
                     )
                     request.copy(
                         response = response,
@@ -159,9 +172,10 @@ class NetworkRepositoryImpl(
                 }
 
                 is FloconNetworkCallDomainModel.Grpc -> {
+                    val responseHttp = response as FloconNetworkResponseOnlyDomainModel.Grpc
                     val response = FloconNetworkCallDomainModel.Grpc.Response(
                         networkResponse = networkResponse,
-                        responseStatus = request.response?.responseStatus ?: return null,
+                        responseStatus = responseHttp.grpcStatus,
                     )
                     request.copy(
                         response = response,
@@ -169,9 +183,10 @@ class NetworkRepositoryImpl(
                 }
 
                 is FloconNetworkCallDomainModel.Http -> {
+                    val responseHttp = response as FloconNetworkResponseOnlyDomainModel.Http
                     val response = FloconNetworkCallDomainModel.Http.Response(
                         networkResponse = networkResponse,
-                        httpCode = networkResponse.httpCode ?: return null
+                        httpCode = responseHttp.httpCode,
                     )
                     request.copy(
                         response = response,
