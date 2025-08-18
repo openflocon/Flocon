@@ -41,7 +41,11 @@ fun FloconTextField(
         focusedIndicatorColor = Color.Transparent,
         errorIndicatorColor = Color.Transparent,
         disabledIndicatorColor = Color.Transparent,
-        unfocusedIndicatorColor = Color.Transparent
+        unfocusedIndicatorColor = Color.Transparent,
+        errorPlaceholderColor = FloconTheme.colorPalette.surfaceVariant.copy(alpha = 0.8f),
+        disabledPlaceholderColor = FloconTheme.colorPalette.surfaceVariant.copy(alpha = 0.8f),
+        focusedPlaceholderColor = FloconTheme.colorPalette.surfaceVariant.copy(alpha = 0.8f),
+        unfocusedPlaceholderColor = FloconTheme.colorPalette.surfaceVariant.copy(alpha = 0.8f)
     )
     val interactionSource = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(10.dp)

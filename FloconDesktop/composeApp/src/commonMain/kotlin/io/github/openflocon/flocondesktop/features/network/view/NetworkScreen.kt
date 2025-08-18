@@ -65,15 +65,15 @@ fun NetworkScreen(
         remember { NetworkItemColumnWidths() } // Default widths provided
 
     LaunchedEffect(uiState.items) {
-        if (!lazyListState.isScrollInProgress && uiState.items.lastIndex != -1 && activateAutoScroll) {
-            lazyListState.animateScrollToItem(uiState.items.lastIndex)
+        if (!lazyListState.isScrollInProgress && uiState.items.isNotEmpty() && activateAutoScroll) {
+            lazyListState.animateScrollToItem(0)
         }
     }
 
     LaunchedEffect(lazyListState.isScrollInProgress) {
         activateAutoScroll = when {
             lazyListState.isScrollInProgress -> false
-            !lazyListState.isScrollInProgress && !lazyListState.canScrollForward -> true
+            !lazyListState.isScrollInProgress && !lazyListState.canScrollBackward -> true
             else -> false
         }
     }
@@ -123,7 +123,6 @@ fun NetworkScreen(
                 ) {
                     LazyColumn(
                         state = lazyListState,
-                        reverseLayout = true,
                         modifier = Modifier.matchParentSize(),
                     ) {
                         items(

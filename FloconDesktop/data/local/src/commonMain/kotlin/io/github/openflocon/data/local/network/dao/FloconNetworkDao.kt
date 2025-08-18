@@ -17,7 +17,7 @@ interface FloconNetworkDao {
         FROM FloconNetworkCallEntity 
         WHERE deviceId = :deviceId 
         AND packageName = :packageName
-        ORDER BY request_startTime ASC
+        ORDER BY request_startTime DESC
     """,
     )
     fun observeRequests(deviceId: String, packageName: String): Flow<List<FloconNetworkCallEntity>>
@@ -28,7 +28,7 @@ interface FloconNetworkDao {
         FROM FloconNetworkCallEntity 
         WHERE deviceId = :deviceId 
         AND packageName = :packageName
-        ORDER BY request_startTime ASC
+        ORDER BY request_startTime DESC
     """,
     )
     fun observeRequestsLite(
