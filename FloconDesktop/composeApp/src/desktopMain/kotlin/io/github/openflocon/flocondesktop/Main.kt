@@ -34,6 +34,8 @@ import org.koin.compose.koinInject
 import java.awt.Desktop
 import java.awt.Dimension
 
+private const val ACTIVATE_TRAY_NOTIFICATION = false
+
 fun main() {
     System.setProperty("apple.awt.application.name", "Flocon")
 
@@ -78,7 +80,9 @@ fun main() {
         ) {
             window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
             App()
-            FloconTray()
+            if (ACTIVATE_TRAY_NOTIFICATION) {
+                FloconTray()
+            }
             // TODO later
 //            FloconMenu()
 
