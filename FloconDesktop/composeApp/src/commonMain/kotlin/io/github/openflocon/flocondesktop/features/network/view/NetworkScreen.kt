@@ -18,9 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -63,25 +61,10 @@ fun NetworkScreen(
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var activateAutoScroll by remember { mutableStateOf(true) }
     val lazyListState = rememberLazyListState()
     val scrollAdapter = rememberScrollbarAdapter(lazyListState)
     val columnWidths: NetworkItemColumnWidths =
         remember { NetworkItemColumnWidths() } // Default widths provided
-
-    LaunchedEffect(uiState.items) {
-        if (!lazyListState.isScrollInProgress && uiState.items.isNotEmpty() && activateAutoScroll) {
-            lazyListState.animateScrollToItem(0)
-        }
-    }
-
-    LaunchedEffect(lazyListState.isScrollInProgress) {
-        activateAutoScroll = when {
-            lazyListState.isScrollInProgress -> false
-            !lazyListState.isScrollInProgress && !lazyListState.canScrollBackward -> true
-            else -> false
-        }
-    }
 
     FloconSurface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
