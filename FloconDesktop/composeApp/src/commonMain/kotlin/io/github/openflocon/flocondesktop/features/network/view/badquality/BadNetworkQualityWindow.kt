@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.network.BadQualityNetworkViewModel
+import io.github.openflocon.flocondesktop.features.network.mapper.editableToUi
 import io.github.openflocon.flocondesktop.features.network.model.badquality.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.model.badquality.previewBadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.view.mocks.MockEditorScreen
@@ -103,6 +104,42 @@ fun BadNetworkQualityContent(
     Column(
         modifier = modifier,
     ) {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .background(FloconTheme.colorPalette.panel)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+        ) {
+            Box(
+                modifier = Modifier.align(Alignment.CenterStart)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(FloconTheme.colorPalette.onSurface)
+                    .clickable(onClick = close)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+            ) {
+                Text(
+                    "Close",
+                    style = FloconTheme.typography.titleSmall,
+                    color = FloconTheme.colorPalette.panel,
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(FloconTheme.colorPalette.onSurface)
+                    .clickable(onClick = {
+                        save(editableState)
+                    })
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+            ) {
+                Text(
+                    "Save",
+                    style = FloconTheme.typography.titleSmall,
+                    color = FloconTheme.colorPalette.panel,
+                )
+            }
+        }
         Row(verticalAlignment = Alignment.CenterVertically) {
             MockNetworkLabelView("isEnabled")
             Switch(
@@ -129,7 +166,7 @@ fun BadNetworkQualityContent(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             NetworkMockFieldView(
                 modifier = Modifier.weight(1f),
-                label = "minLatencyMs",
+                label = "minLatency (ms)",
                 placeHolder = "0ms",
                 value = editableState.latency.minLatencyMs.toString(),
                 onValueChange = {
@@ -142,7 +179,7 @@ fun BadNetworkQualityContent(
             )
             NetworkMockFieldView(
                 modifier = Modifier.weight(1f),
-                label = "maxLatencyMs",
+                label = "maxLatency (ms)",
                 placeHolder = "0ms",
                 value = editableState.latency.maxLatencyMs.toString(),
                 onValueChange = {
@@ -161,39 +198,6 @@ fun BadNetworkQualityContent(
                 editableState = editableState.copy(errors = newErrors)
             }
         )
-
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier.align(Alignment.CenterStart)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(FloconTheme.colorPalette.onSurface)
-                    .clickable(onClick = close)
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-            ) {
-                Text(
-                    "Close",
-                    style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.panel,
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(FloconTheme.colorPalette.onSurface)
-                    .clickable(onClick = {
-                        save(editableState)
-                    })
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-            ) {
-                Text(
-                    "Save",
-                    style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.panel,
-                )
-            }
-        }
     }
 }
 
@@ -259,7 +263,7 @@ fun ErrorsListView(
 
                     Text("Weight : ${error.weight}", style = textStyle)
                     Text("HttpCode : ${error.httpCode}", style = textStyle) // or throwable ?
-                    Text("Cody : ${error.contentType}", style = textStyle)
+                    Text(error.contentType, style = textStyle)
                     Text("Body : ${error.body}", maxLines = 2, style = textStyle)
 
                     // bouton supprimer
