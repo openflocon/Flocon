@@ -8,10 +8,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -31,12 +35,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.network.BadQualityNetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.model.badquality.BadQualityConfigUiModel
+import io.github.openflocon.flocondesktop.features.network.model.badquality.previewBadQualityConfigUiModel
+import io.github.openflocon.flocondesktop.features.network.view.mocks.MockEditorScreen
+import io.github.openflocon.flocondesktop.features.network.view.mocks.MockNetworkLabelView
 import io.github.openflocon.flocondesktop.features.network.view.mocks.NetworkMockFieldView
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -66,6 +76,23 @@ fun BadNetworkQualityWindow(
 }
 
 @Composable
+@Preview
+private fun BadNetworkQualityContentPreview() {
+    FloconTheme {
+        FloconSurface {
+            BadNetworkQualityContent(
+                state = previewBadQualityConfigUiModel(
+                    errorCount = 5
+                ),
+                save = {},
+                close = {},
+            )
+        }
+    }
+}
+
+
+@Composable
 fun BadNetworkQualityContent(
     state: BadQualityConfigUiModel?,
     close: () -> Unit,
@@ -76,8 +103,8 @@ fun BadNetworkQualityContent(
     Column(
         modifier = modifier,
     ) {
-        Column {
-            Text("isEnabled")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            MockNetworkLabelView("isEnabled")
             Switch(
                 modifier = Modifier.scale(0.6f),
                 checked = editableState.isEnabled,
@@ -128,7 +155,7 @@ fun BadNetworkQualityContent(
             )
         }
 
-        ErrorsEditor(
+        ErrorsListView(
             errors = editableState.errors,
             onErrorsChange = { newErrors ->
                 editableState = editableState.copy(errors = newErrors)
@@ -185,18 +212,92 @@ fun toEditableState(state: BadQualityConfigUiModel?): BadQualityConfigUiModel {
 
 
 @Composable
+fun ErrorsListView(
+    errors: List<BadQualityConfigUiModel.Error>,
+    onErrorsChange: (List<BadQualityConfigUiModel.Error>) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text("Errors", style = FloconTheme.typography.titleMedium)
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(FloconTheme.colorPalette.onSurface)
+                    .clickable {
+                        onErrorsChange(
+                            errors + BadQualityConfigUiModel.Error(
+                                weight = 1f,
+                                httpCode = 500,
+                                body = "",
+                                contentType = "application/json"
+                            )
+                        )
+                    }
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+            ) {
+                Text(
+                    "Add",
+                    style = FloconTheme.typography.titleSmall,
+                    color = FloconTheme.colorPalette.panel,
+                )
+            }
+        }
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            items(errors) { error ->
+                Column(
+                    modifier = Modifier
+                        .width(230.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color(0xFFEFEFEF).copy(alpha = 0.2f))
+                        .padding(8.dp)
+                ) {
+
+                    val textStyle = FloconTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Thin,
+                        color = FloconTheme.colorPalette.onSurface,
+                    )
+
+                    Text("Weight : ${error.weight}", style = textStyle)
+                    Text("HttpCode : ${error.httpCode}", style = textStyle) // or throwable ?
+                    Text("Cody : ${error.contentType}", style = textStyle)
+                    Text("Body : ${error.body}", maxLines = 2, style = textStyle)
+
+                    // bouton supprimer
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Image(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete error",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    onErrorsChange(errors.toMutableList().filterNot { it.uuid == error.uuid })
+                                },
+                            colorFilter = ColorFilter.tint(Color.Red)
+                        )
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+
+@Composable
 fun ErrorsEditor(
     errors: List<BadQualityConfigUiModel.Error>,
     onErrorsChange: (List<BadQualityConfigUiModel.Error>) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Errors", style = FloconTheme.typography.titleMedium)
 
         errors.forEachIndexed { index, error ->
             Column(
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFEFEFEF))
+                    .background(Color(0xFFEFEFEF).copy(alpha = 0.2f))
                     .padding(8.dp)
             ) {
                 NetworkMockFieldView(

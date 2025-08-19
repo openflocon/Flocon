@@ -21,3 +21,21 @@ data class BadQualityConfigUiModel(
         val contentType: String, // "application/json"
     )
 }
+
+fun previewBadQualityConfigUiModel(errorCount: Int) = BadQualityConfigUiModel(
+    isEnabled = true,
+    latency = BadQualityConfigUiModel.LatencyConfig(
+        triggerProbability = 0.1f,
+        minLatencyMs = 100,
+        maxLatencyMs = 200,
+    ),
+    errorProbability = 0.8,
+    errors = List(errorCount) {
+        BadQualityConfigUiModel.Error(
+            weight = 1f,
+            httpCode = 500,
+            body = "{\"error\":\"...\"}",
+            contentType = "application/json"
+        )
+    }
+)
