@@ -40,4 +40,7 @@ val roomModule =
         single {
             get<AppDatabase>().adbDevicesDao
         }
+        single {
+            get<AppDatabase>().networkBadQualityConfigDao
+        }
     }

@@ -13,4 +13,6 @@ internal val networkModule = module {
     factoryOf(::SortAndFilterNetworkItemsProcessor)
 
     viewModelOf(::NetworkMocksViewModel)
+
+    viewModelOf(::BadQualityNetworkViewModel)
 }

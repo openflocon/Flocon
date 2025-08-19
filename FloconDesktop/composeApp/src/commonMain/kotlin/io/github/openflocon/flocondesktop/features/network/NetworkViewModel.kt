@@ -48,6 +48,7 @@ class NetworkViewModel(
             selectedRequestId = null,
             detailJsons = emptySet(),
             mocksDisplayed = null,
+            badNetworkQualityDisplayed = false,
         ),
     )
 
@@ -123,7 +124,8 @@ class NetworkViewModel(
             is NetworkAction.CreateMock -> {
                 openMocks(callId = action.item.uuid)
             }
-
+            is NetworkAction.OpenBadNetworkQuality -> openBadNetworkQuality()
+            is NetworkAction.CloseBadNetworkQuality -> closeBadNetworkQuality()
             is NetworkAction.CloseMocks -> closeMocks()
             is NetworkAction.CopyCUrl -> onCopyCUrl(action)
             is NetworkAction.CopyUrl -> onCopyUrl(action)
@@ -169,6 +171,22 @@ class NetworkViewModel(
         contentState.update { state ->
             state.copy(
                 mocksDisplayed = null,
+            )
+        }
+    }
+
+    private fun openBadNetworkQuality() {
+        contentState.update { state ->
+            state.copy(
+                badNetworkQualityDisplayed = true
+            )
+        }
+    }
+
+    private fun closeBadNetworkQuality() {
+        contentState.update { state ->
+            state.copy(
+                badNetworkQualityDisplayed = false,
             )
         }
     }

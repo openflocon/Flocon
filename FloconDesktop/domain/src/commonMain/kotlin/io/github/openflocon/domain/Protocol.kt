@@ -65,7 +65,6 @@ object Protocol {
             const val Plugin = "network"
 
             object Method {
-                const val LogNetworkCall = "logNetworkCall"
                 const val LogNetworkCallRequest = "logNetworkCallRequest"
                 const val LogNetworkCallResponse = "logNetworkCallResponse"
             }
@@ -133,6 +132,7 @@ object Protocol {
 
             object Method {
                 const val SetupMocks = "setupMocks"
+                const val SetupBadNetworkConfig = "setupBadNetworkConfig"
             }
         }
 

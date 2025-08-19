@@ -60,6 +60,23 @@ fun NetworkFilter(
                     ),
                 )
             }
+            Box(
+                modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                    .background(Color.White.copy(alpha = 0.9f))
+                    .clickable(
+                        onClick = {
+                            onAction(NetworkAction.OpenBadNetworkQuality)
+                        },
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+            ) {
+                Text(
+                    text = "Bad Network Quality",
+                    style = FloconTheme.typography.bodyMedium.copy(
+                        color = Color.Black,
+                    ),
+                )
+            }
         }
     }
 }

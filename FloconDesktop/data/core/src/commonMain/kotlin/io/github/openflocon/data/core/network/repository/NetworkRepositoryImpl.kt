@@ -2,16 +2,19 @@ package io.github.openflocon.data.core.network.repository
 
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkMocksLocalDataSource
+import io.github.openflocon.data.core.network.datasource.NetworkQualityLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
+import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
+import io.github.openflocon.domain.network.repository.NetworkBadQualityRepository
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
 import io.github.openflocon.domain.network.repository.NetworkMocksRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
@@ -23,11 +26,13 @@ class NetworkRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val networkLocalDataSource: NetworkLocalDataSource,
     private val networkMocksLocalDataSource: NetworkMocksLocalDataSource,
+    private val networkQualityLocalDataSource: NetworkQualityLocalDataSource,
     private val networkImageRepository: NetworkImageRepository,
     private val networkRemoteDataSource: NetworkRemoteDataSource,
 ) : NetworkRepository,
     NetworkMocksRepository,
-    MessagesReceiverRepository {
+    MessagesReceiverRepository,
+    NetworkBadQualityRepository {
 
     override val pluginName = listOf(Protocol.FromDevice.Network.Plugin)
 
@@ -264,6 +269,58 @@ class NetworkRepositoryImpl(
             id = id,
             isEnabled = isEnabled,
         )
+    }
+
+    override suspend fun setupBadNetworkQuality(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        config: BadQualityConfigDomainModel?
+    ) {
+        withContext(dispatcherProvider.data) {
+            networkRemoteDataSource.setupBadNetworkQuality(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                config = config,
+            )
+        }
+    }
+
+    override suspend fun saveBadNetworkQuality(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        config: BadQualityConfigDomainModel
+    ) {
+        withContext(dispatcherProvider.data) {
+            networkQualityLocalDataSource.save(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                config = config,
+            )
+        }
+    }
+
+    override suspend fun getNetworkQuality(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): BadQualityConfigDomainModel? {
+        return withContext(dispatcherProvider.data) {
+            networkQualityLocalDataSource.getNetworkQuality(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+            )
+        }
+    }
+
+    override fun observeNetworkQuality(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<BadQualityConfigDomainModel?> {
+        return networkQualityLocalDataSource.observe(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        )
+    }
+
+    override suspend fun setNetworkQualityIsEnabled(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        isEnabled: Boolean,
+    ) {
+        withContext(dispatcherProvider.data) {
+            networkQualityLocalDataSource.updateIsEnabled(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                isEnabled = isEnabled,
+            )
+        }
     }
 
 }

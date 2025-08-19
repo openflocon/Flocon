@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.okhttp
 
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
+import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
@@ -18,6 +19,7 @@ import okio.Buffer
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.util.UUID
+import kotlin.random.Random
 
 class FloconOkhttpInterceptor() : Interceptor {
 
@@ -85,7 +87,27 @@ class FloconOkhttpInterceptor() : Interceptor {
         val response = if(isMocked) {
             executeMock(request = request, mock = mockConfig)
         } else {
-            chain.proceed(request)
+            val badQualityConfig = floconNetworkPlugin.badQualityConfig // Supposons que cette propriété existe
+
+            if (badQualityConfig != null) {
+                val latencyProbability = badQualityConfig.latency.latencyTriggerProbability
+                val shouldSimulateLatency = latencyProbability > 0f && (latencyProbability == 1f || Math.random() < latencyProbability)
+                if (shouldSimulateLatency) {
+                    try {
+                        val latencyMs =  Random.nextLong(badQualityConfig.latency.minLatencyMs, badQualityConfig.latency.maxLatencyMs + 1)
+                        Thread.sleep(latencyMs)
+                    } catch (e: InterruptedException) {
+                        Thread.currentThread().interrupt()
+                    }
+                }
+
+                failResponseIfNeeded(
+                    badQualityConfig = badQualityConfig,
+                    request = request,
+                ) ?: chain.proceed(request) // if no need to trigger an error
+            } else {
+                chain.proceed(request)
+            }
         }
 
         val endTime = System.nanoTime()
@@ -122,17 +144,6 @@ class FloconOkhttpInterceptor() : Interceptor {
             grpcStatus = null,
         )
 
-        /*
-        floconNetworkPlugin.log(
-            FloconNetworkCall(
-                durationMs = durationMs,
-                floconNetworkType = floconNetworkType,
-                request = floconNetworkRequest,
-                response = floconCallResponse,
-                isMocked = isMocked,
-            )
-        )
-         */
         floconNetworkPlugin.logResponse(
             FloconNetworkCallResponse(
                 floconCallId = floconCallId,
@@ -147,6 +158,28 @@ class FloconOkhttpInterceptor() : Interceptor {
         // The original response body is already consumed by peekBody, so no need to rebuild with it.
         // Just return the original response if you don't modify the body itself.
         return response
+    }
+
+    private fun failResponseIfNeeded(
+        badQualityConfig: BadQualityConfig,
+        request: Request,
+    ): Response? {
+        val shouldFail = badQualityConfig.errorProbability > 0 && Math.random() < badQualityConfig.errorProbability
+        if (shouldFail) {
+            val selectedError = selectRandomError(badQualityConfig.errors)
+            if (selectedError != null) {
+                val errorBody = selectedError.errorBody.toResponseBody(selectedError.errorContentType.toMediaTypeOrNull())
+
+                return Response.Builder()
+                    .request(request)
+                    .protocol(Protocol.HTTP_1_1)
+                    .code(selectedError.errorCode) // Utiliser le code d'erreur configuré
+                    .message(getHttpMessage(selectedError.errorCode))
+                    .body(errorBody)
+                    .build()
+            }
+        }
+        return null
     }
 
     private fun findMock(
@@ -197,4 +230,27 @@ class FloconOkhttpInterceptor() : Interceptor {
             }
             .build()
     }
+}
+
+private fun selectRandomError(errors: List<BadQualityConfig.Error>): BadQualityConfig.Error? {
+    if (errors.isEmpty()) {
+        return null
+    }
+
+    // Calculer la somme totale des poids
+    val totalWeight = errors.sumOf { it.weight.toDouble() }
+
+    // Générer un nombre aléatoire entre 0 et la somme totale des poids
+    var randomNumber = Random.nextDouble(0.0, totalWeight)
+
+    // Parcourir la liste pour trouver l'erreur sélectionnée
+    for (error in errors) {
+        randomNumber -= error.weight.toDouble()
+        if (randomNumber <= 0) {
+            return error
+        }
+    }
+
+    // Cas de secours (ne devrait pas arriver si les poids sont positifs)
+    return errors.first()
 }
