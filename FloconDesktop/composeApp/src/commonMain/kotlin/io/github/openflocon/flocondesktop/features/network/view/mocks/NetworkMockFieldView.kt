@@ -27,6 +27,7 @@ fun NetworkMockFieldView(
     modifier: Modifier = Modifier,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
+    trailingComponent: @Composable (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier,
@@ -34,17 +35,19 @@ fun NetworkMockFieldView(
     ) {
         MockNetworkLabelView(label)
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color.White.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(8.dp),
+                )
+                .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .background(
-                        color = Color.White.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(8.dp),
-                    ).padding(horizontal = 12.dp, vertical = 8.dp),
+                    .weight(1f),
             ) {
                 placeHolder?.takeIf { value.isEmpty() }?.let {
                     Text(
@@ -67,6 +70,7 @@ fun NetworkMockFieldView(
                     },
                 )
             }
+            trailingComponent?.invoke()
         }
     }
 }
