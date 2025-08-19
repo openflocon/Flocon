@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -39,10 +38,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.network.BadQualityNetworkViewModel
-import io.github.openflocon.flocondesktop.features.network.mapper.editableToUi
 import io.github.openflocon.flocondesktop.features.network.model.badquality.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.model.badquality.previewBadQualityConfigUiModel
-import io.github.openflocon.flocondesktop.features.network.view.mocks.MockEditorScreen
 import io.github.openflocon.flocondesktop.features.network.view.mocks.MockNetworkLabelView
 import io.github.openflocon.flocondesktop.features.network.view.mocks.NetworkMockFieldView
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -68,11 +65,13 @@ fun BadNetworkQualityWindow(
     BasicAlertDialog(
         onDismissRequest = onCloseRequest,
     ) {
-        BadNetworkQualityContent(
-            state = state,
-            save = viewModel::save,
-            close = { onCloseRequest() },
-        )
+        FloconSurface {
+            BadNetworkQualityContent(
+                state = state,
+                save = viewModel::save,
+                close = { onCloseRequest() },
+            )
+        }
     }
 }
 
@@ -100,7 +99,30 @@ fun BadNetworkQualityContent(
     save: (state: BadQualityConfigUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var editableState: BadQualityConfigUiModel by remember(state) { mutableStateOf(toEditableState(state)) }
+    var isEnabled by remember(state) { mutableStateOf<Boolean>(state?.isEnabled ?: true) }
+    var triggerProbability by remember(state) {
+        mutableStateOf<String>(
+            state?.latency?.triggerProbability?.let { it * 100.0 }?.toString() ?: "100"
+        )
+    }
+    var minLatencyMs by remember(state) {
+        mutableStateOf<String>(
+            state?.latency?.minLatencyMs?.toString() ?: "0"
+        )
+    }
+    var maxLatencyMs by remember(state) {
+        mutableStateOf<String>(
+            state?.latency?.maxLatencyMs?.toString() ?: "0"
+        )
+    }
+    var errorProbability by remember(state) {
+        mutableStateOf<String>(
+            state?.errorProbability?.let { it * 100.0 }?.toString() ?: "100"
+        )
+    }
+    var errors by remember(state) { mutableStateOf(state?.errors ?: emptyList()) }
+
+    var selectedErrorToEdit by remember { mutableStateOf<BadQualityConfigUiModel.Error?>(null) }
     Column(
         modifier = modifier,
     ) {
@@ -118,7 +140,7 @@ fun BadNetworkQualityContent(
                     .padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
                 Text(
-                    "Close",
+                    "Cancel",
                     style = FloconTheme.typography.titleSmall,
                     color = FloconTheme.colorPalette.panel,
                 )
@@ -129,7 +151,29 @@ fun BadNetworkQualityContent(
                     .clip(RoundedCornerShape(12.dp))
                     .background(FloconTheme.colorPalette.onSurface)
                     .clickable(onClick = {
-                        save(editableState)
+                        val minLatencyMsValue = minLatencyMs.toLong().coerceAtLeast(0)
+                        val maxLatencyMsValue =
+                            maxLatencyMs.toLong().coerceAtLeast(minLatencyMsValue)
+                        save(
+                            BadQualityConfigUiModel(
+                                isEnabled = isEnabled,
+                                latency = BadQualityConfigUiModel.LatencyConfig(
+                                    triggerProbability = triggerProbability
+                                        .toDoubleOrNull()
+                                        ?.let { it / 100.0 }
+                                        ?.coerceIn(0.0, 100.0)
+                                        ?: 1.0,
+                                    minLatencyMs = minLatencyMsValue,
+                                    maxLatencyMs = maxLatencyMsValue,
+                                ),
+                                errorProbability = errorProbability
+                                    .toDoubleOrNull()
+                                    ?.let { it / 100.0 }
+                                    ?.coerceIn(0.0, 100.0)
+                                    ?: 1.0,
+                                errors = errors,
+                            )
+                        )
                     })
                     .padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
@@ -140,96 +184,132 @@ fun BadNetworkQualityContent(
                 )
             }
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            MockNetworkLabelView("isEnabled")
-            Switch(
-                modifier = Modifier.scale(0.6f),
-                checked = editableState.isEnabled,
-                onCheckedChange = {
-                    editableState.copy(isEnabled = it)
-                },
+        Column(
+            modifier = Modifier.padding(
+                all = 8.dp
             )
-        }
-        NetworkMockFieldView(
-            label = "triggerProbability %",
-            placeHolder = "0.0",
-            value = editableState.latency.triggerProbability.toString(),
-            onValueChange = {
-                editableState = editableState.copy(
-                    latency = editableState.latency.copy(
-                        triggerProbability = it.toFloatOrNull() ?: 0f
-                    )
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                MockNetworkLabelView("isEnabled")
+                Switch(
+                    modifier = Modifier.scale(0.6f),
+                    checked = isEnabled,
+                    onCheckedChange = {
+                        isEnabled = it
+                    },
                 )
             }
-        )
-
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             NetworkMockFieldView(
-                modifier = Modifier.weight(1f),
-                label = "minLatency (ms)",
-                placeHolder = "0ms",
-                value = editableState.latency.minLatencyMs.toString(),
+                label = "triggerProbability 0-100 %",
+                placeHolder = "0",
+                value = triggerProbability,
                 onValueChange = {
-                    editableState = editableState.copy(
-                        latency = editableState.latency.copy(
-                            minLatencyMs = it.toLongOrNull() ?: 0
-                        )
-                    )
+                    if (it.isEmpty() || it.toDoubleOrNull() != null) {
+                        triggerProbability = it
+                    }
                 }
             )
-            NetworkMockFieldView(
-                modifier = Modifier.weight(1f),
-                label = "maxLatency (ms)",
-                placeHolder = "0ms",
-                value = editableState.latency.maxLatencyMs.toString(),
-                onValueChange = {
-                    editableState = editableState.copy(
-                        latency = editableState.latency.copy(
-                            maxLatencyMs = it.toLongOrNull() ?: 0
-                        )
-                    )
-                }
-            )
-        }
 
-        ErrorsListView(
-            errors = editableState.errors,
-            onErrorsChange = { newErrors ->
-                editableState = editableState.copy(errors = newErrors)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                NetworkMockFieldView(
+                    modifier = Modifier.weight(1f),
+                    label = "minLatency (ms)",
+                    placeHolder = "0ms",
+                    value = minLatencyMs,
+                    onValueChange = {
+                        if (it.isEmpty() || it.toLongOrNull()?.takeIf { it >= 0L } != null) {
+                            minLatencyMs = it
+                        }
+                    }
+                )
+                NetworkMockFieldView(
+                    modifier = Modifier.weight(1f),
+                    label = "maxLatency (ms)",
+                    placeHolder = "0ms",
+                    value = maxLatencyMs,
+                    onValueChange = {
+                        if (it.isEmpty() || it.toLongOrNull()?.takeIf { it >= 0L } != null) {
+                            maxLatencyMs = it
+                        }
+                    }
+                )
             }
-        )
+
+            NetworkMockFieldView(
+                label = "errorProbability 0-100 %",
+                placeHolder = "0",
+                value = errorProbability,
+                onValueChange = {
+                    if (it.isEmpty() || it.toDoubleOrNull() != null) {
+                        errorProbability = it
+                    }
+                }
+            )
+
+            ErrorsListView(
+                modifier = Modifier.padding(top = 16.dp),
+                errors = errors,
+                onErrorsClicked = { error ->
+                    selectedErrorToEdit = error
+                },
+                deleteError = { error ->
+                    errors = errors.filterNot { it == error }
+                }
+            )
+
+            selectedErrorToEdit?.let { selectedError ->
+                BasicAlertDialog(
+                    onDismissRequest = {
+                        selectedErrorToEdit = null
+                    }
+                ) {
+                    FloconSurface {
+                        ErrorsEditor(
+                            error = selectedError,
+                            onErrorsChange = { error ->
+                                errors = if (errors.any { it.uuid == selectedError.uuid }) {
+                                    errors.map {
+                                        if (it.uuid == selectedError.uuid) {
+                                            error
+                                        } else it
+                                    }
+                                } else {
+                                    errors + error
+                                }
+                                selectedErrorToEdit = null
+                            }
+                        )
+                    }
+                }
+            }
+        }
     }
 }
-
-fun toEditableState(state: BadQualityConfigUiModel?): BadQualityConfigUiModel {
-    return state ?: BadQualityConfigUiModel(
-        isEnabled = true,
-        latency = BadQualityConfigUiModel.LatencyConfig(
-            triggerProbability = 0f,
-            minLatencyMs = 0,
-            maxLatencyMs = 0,
-        ),
-        errorProbability = 0.0,
-        errors = emptyList(),
-    )
-}
-
 
 @Composable
 fun ErrorsListView(
     errors: List<BadQualityConfigUiModel.Error>,
-    onErrorsChange: (List<BadQualityConfigUiModel.Error>) -> Unit,
+    onErrorsClicked: (error: BadQualityConfigUiModel.Error) -> Unit,
+    deleteError: (error: BadQualityConfigUiModel.Error) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             Text("Errors", style = FloconTheme.typography.titleMedium)
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
                     .background(FloconTheme.colorPalette.onSurface)
                     .clickable {
-                        onErrorsChange(
-                            errors + BadQualityConfigUiModel.Error(
+                        onErrorsClicked(
+                            BadQualityConfigUiModel.Error(
+                                // new error
                                 weight = 1f,
                                 httpCode = 500,
                                 body = "",
@@ -246,13 +326,19 @@ fun ErrorsListView(
                 )
             }
         }
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             items(errors) { error ->
                 Column(
                     modifier = Modifier
                         .width(230.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .background(Color(0xFFEFEFEF).copy(alpha = 0.2f))
+                        .clickable {
+                            onErrorsClicked(error)
+                        }
                         .padding(8.dp)
                 ) {
 
@@ -277,9 +363,11 @@ fun ErrorsListView(
                             modifier = Modifier
                                 .size(24.dp)
                                 .clickable {
-                                    onErrorsChange(errors.toMutableList().filterNot { it.uuid == error.uuid })
+                                    deleteError(
+                                        error
+                                    )
                                 },
-                            colorFilter = ColorFilter.tint(Color.Red)
+                            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface)
                         )
                     }
                 }
@@ -292,92 +380,15 @@ fun ErrorsListView(
 
 @Composable
 fun ErrorsEditor(
-    errors: List<BadQualityConfigUiModel.Error>,
-    onErrorsChange: (List<BadQualityConfigUiModel.Error>) -> Unit,
+    error: BadQualityConfigUiModel.Error,
+    onErrorsChange: (BadQualityConfigUiModel.Error) -> Unit,
 ) {
+    var weight by remember(error) { mutableStateOf<String>(error.weight.toString()) }
+    var httpCode by remember(error) { mutableStateOf<String>(error.httpCode.toString()) }
+    var contentType by remember() { mutableStateOf<String>(error.contentType) }
+    var body by remember(error) { mutableStateOf<String>(error.body) }
+
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-
-        errors.forEachIndexed { index, error ->
-            Column(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFEFEFEF).copy(alpha = 0.2f))
-                    .padding(8.dp)
-            ) {
-                NetworkMockFieldView(
-                    label = "Weight",
-                    placeHolder = "1.0",
-                    value = error.weight.toString(),
-                    onValueChange = {
-                        onErrorsChange(
-                            errors.toMutableList().apply {
-                                this[index] = this[index].copy(
-                                    weight = it.toFloatOrNull() ?: 0f
-                                )
-                            }
-                        )
-                    }
-                )
-
-                NetworkMockFieldView(
-                    label = "HTTP Code",
-                    placeHolder = "500",
-                    value = error.httpCode.toString(),
-                    onValueChange = {
-                        onErrorsChange(
-                            errors.toMutableList().apply {
-                                this[index] = this[index].copy(
-                                    httpCode = it.toIntOrNull() ?: 500
-                                )
-                            }
-                        )
-                    }
-                )
-
-                NetworkMockFieldView(
-                    label = "Content-Type",
-                    placeHolder = "application/json",
-                    value = error.contentType,
-                    onValueChange = {
-                        onErrorsChange(
-                            errors.toMutableList().apply {
-                                this[index] = this[index].copy(contentType = it)
-                            }
-                        )
-                    }
-                )
-
-                NetworkMockFieldView(
-                    label = "Body",
-                    placeHolder = "{\"error\":\"...\"}",
-                    value = error.body,
-                    onValueChange = {
-                        onErrorsChange(
-                            errors.toMutableList().apply {
-                                this[index] = this[index].copy(body = it)
-                            }
-                        )
-                    }
-                )
-
-                // bouton supprimer
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Image(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete error",
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable {
-                                onErrorsChange(errors.toMutableList().apply { removeAt(index) })
-                            },
-                        colorFilter = ColorFilter.tint(Color.Red)
-                    )
-                }
-            }
-        }
 
         // bouton ajouter
         Box(
@@ -386,20 +397,66 @@ fun ErrorsEditor(
                 .background(FloconTheme.colorPalette.onSurface)
                 .clickable {
                     onErrorsChange(
-                        errors + BadQualityConfigUiModel.Error(
-                            weight = 1f,
-                            httpCode = 500,
-                            body = "",
-                            contentType = "application/json"
+                        error.copy(
+                            weight = weight.toFloatOrNull() ?: error.weight,
+                            httpCode = httpCode.toIntOrNull() ?: error.httpCode,
+                            contentType = contentType,
+                            body = body
                         )
                     )
                 }
                 .padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
             Text(
-                "Add Error",
+                "Save",
                 style = FloconTheme.typography.titleSmall,
                 color = FloconTheme.colorPalette.panel,
+            )
+        }
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(0xFFEFEFEF).copy(alpha = 0.2f))
+                .padding(8.dp)
+        ) {
+            NetworkMockFieldView(
+                label = "Weight",
+                placeHolder = "eg: 1.0",
+                value = weight,
+                onValueChange = {
+                    if (it.isEmpty() || it.toFloatOrNull() != null) {
+                        weight = it
+                    }
+                }
+            )
+
+            NetworkMockFieldView(
+                label = "HTTP Code",
+                placeHolder = "eg: 500",
+                value = httpCode,
+                onValueChange = {
+                    if (it.isEmpty() || it.toIntOrNull() != null) {
+                        httpCode = it
+                    }
+                }
+            )
+
+            NetworkMockFieldView(
+                label = "Content-Type",
+                placeHolder = "application/json",
+                value = contentType,
+                onValueChange = {
+                    contentType = it
+                }
+            )
+
+            NetworkMockFieldView(
+                label = "Body",
+                placeHolder = "{\"error\":\"...\"}",
+                value = body,
+                onValueChange = {
+                    body = it
+                }
             )
         }
     }

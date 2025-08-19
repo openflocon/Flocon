@@ -7,7 +7,7 @@ data class BadQualityConfigDomainModel(
     val errors: List<Error>, // list of errors
 ) {
     data class LatencyConfig(
-        val triggerProbability: Float,
+        val triggerProbability: Double,
         val minLatencyMs: Long,
         val maxLatencyMs: Long,
     )

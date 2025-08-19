@@ -9,7 +9,7 @@ data class BadQualityConfigUiModel(
     val errors: List<Error>, // list of errors
 ) {
     data class LatencyConfig(
-        val triggerProbability: Float,
+        val triggerProbability: Double,
         val minLatencyMs: Long,
         val maxLatencyMs: Long,
     )
@@ -25,7 +25,7 @@ data class BadQualityConfigUiModel(
 fun previewBadQualityConfigUiModel(errorCount: Int) = BadQualityConfigUiModel(
     isEnabled = true,
     latency = BadQualityConfigUiModel.LatencyConfig(
-        triggerProbability = 0.1f,
+        triggerProbability = 0.1,
         minLatencyMs = 100,
         maxLatencyMs = 200,
     ),

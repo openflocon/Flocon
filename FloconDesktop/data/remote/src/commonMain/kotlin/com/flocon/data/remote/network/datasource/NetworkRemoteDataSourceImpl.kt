@@ -4,6 +4,7 @@ import com.flocon.data.remote.common.safeDecodeFromString
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.network.mapper.listToRemote
+import com.flocon.data.remote.network.mapper.toRemote
 import com.flocon.data.remote.network.models.FloconNetworkCallIdDataModel
 import com.flocon.data.remote.network.models.FloconNetworkRequestDataModel
 import com.flocon.data.remote.network.models.FloconNetworkResponseDataModel
@@ -51,10 +52,10 @@ class NetworkRemoteDataSourceImpl(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Network.Plugin,
                 method = Protocol.ToDevice.Network.Method.SetupBadNetworkConfig,
-                body = if(config == null) {
+                body = if(config == null || config.isEnabled.not()) {
                     "{}" // empty json to clear the config mobile side
                 } else {
-                    Json.Default.encodeToString(config,)
+                    Json.Default.encodeToString(toRemote(config))
                 },
             ),
         )

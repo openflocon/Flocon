@@ -35,7 +35,7 @@ class FloconNetworkPluginImpl(
 ) : FloconNetworkPlugin {
 
     override val mocks = CopyOnWriteArrayList<MockNetworkResponse>(loadMocksFromFile())
-    private val _badQualityConfig = AtomicReference<BadQualityConfig?>(null)
+    private val _badQualityConfig = AtomicReference<BadQualityConfig?>(loadBadNetworkConfig())
 
     override val badQualityConfig: BadQualityConfig?
         get() = _badQualityConfig.get()

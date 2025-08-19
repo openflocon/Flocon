@@ -10,7 +10,7 @@ data class BadQualityConfigDataModel(
 ) {
     @Serializable
     data class LatencyConfig(
-        val latencyTriggerProbability: Float,
+        val latencyTriggerProbability: Double,
         val minLatencyMs: Long,
         val maxLatencyMs: Long,
     )

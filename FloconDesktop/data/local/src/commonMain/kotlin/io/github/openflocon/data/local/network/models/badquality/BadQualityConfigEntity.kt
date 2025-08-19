@@ -14,7 +14,7 @@ data class BadQualityConfigEntity(
 )
 
 data class LatencyConfigEmbedded(
-    val triggerProbability: Float,
+    val triggerProbability: Double,
     val minLatencyMs: Long,
     val maxLatencyMs: Long,
 )

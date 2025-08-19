@@ -12,7 +12,7 @@ class SaveNetworkBadQualityUseCase(
 ) {
     suspend operator fun invoke(config: BadQualityConfigDomainModel) {
         getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
-            networkBadQualityRepository.setupBadNetworkQuality(
+            networkBadQualityRepository.saveBadNetworkQuality(
                 config = config,
                 deviceIdAndPackageName = deviceIdAndPackageName,
             )

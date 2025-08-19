@@ -55,6 +55,7 @@ class BadQualityNetworkViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             saveNetworkBadQualityUseCase(toDomain(uiModel))
             // close
+            _events.send(Event.Close)
             feedbackDisplayer.displayMessage("Saved")
         }
     }
