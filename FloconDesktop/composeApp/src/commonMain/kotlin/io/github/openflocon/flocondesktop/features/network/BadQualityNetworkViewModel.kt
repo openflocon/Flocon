@@ -3,10 +3,10 @@ package io.github.openflocon.flocondesktop.features.network
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.usecase.badquality.ObserveNetworkBadQualityUseCase
 import io.github.openflocon.domain.network.usecase.badquality.SaveNetworkBadQualityUseCase
 import io.github.openflocon.domain.network.usecase.badquality.UpdateNetworkBadQualityIsEnabledUseCase
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.network.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.model.badquality.BadQualityConfigUiModel
