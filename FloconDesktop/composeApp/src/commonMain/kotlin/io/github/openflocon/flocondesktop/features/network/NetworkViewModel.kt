@@ -9,7 +9,7 @@ import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.network.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.mapper.toUi
@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.collections.plus
 
 class NetworkViewModel(
     observeHttpRequestsUseCase: ObserveHttpRequestsUseCase,
@@ -71,12 +70,7 @@ class NetworkViewModel(
 
     private val filteredItems = combine(
         observeHttpRequestsUseCase(lite = true).map { list ->
-            list.map {
-                Pair(
-                    it,
-                    toUi(it),
-                )
-            }
+            list.map { it to toUi(it) }
         }, // keep the domain for the filter
         filterUiState,
         headerDelegate.sorted,

@@ -22,7 +22,7 @@ class HandleIncomingMessagesUseCase(
         .listenMessages()
         .onEach {
             val handleDeviceResult = handleDeviceUseCase(device = getDevice(it))
-            if(handleDeviceResult.isNewDevice) {
+            if (handleDeviceResult.isNewDevice) {
                 handleNewDeviceUseCase(
                     deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                         deviceId = handleDeviceResult.deviceId,

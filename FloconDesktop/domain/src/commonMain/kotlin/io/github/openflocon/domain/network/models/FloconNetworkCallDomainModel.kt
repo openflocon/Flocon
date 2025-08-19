@@ -101,4 +101,3 @@ data class FloconNetworkResponseDomainModel(
     val byteSize: Long,
     val durationMs: Double
 )
-

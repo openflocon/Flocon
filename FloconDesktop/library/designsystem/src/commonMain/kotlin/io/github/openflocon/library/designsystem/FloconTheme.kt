@@ -2,6 +2,8 @@ package io.github.openflocon.library.designsystem
 
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
@@ -9,6 +11,7 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.graphics.Color
 import io.github.openflocon.library.designsystem.theme.FloconColorPalette
 import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
 import io.github.openflocon.library.designsystem.theme.darkPalette
@@ -39,6 +42,10 @@ fun FloconTheme(
         else -> lightPalette
     }
     val ripple = ripple()
+    val selectionTextColor = TextSelectionColors(
+        handleColor = Color.White,
+        backgroundColor = Color.White.copy(alpha = 0.5f)
+    )
 
     MaterialTheme(
         typography = MaterialTheme.typography,
@@ -51,6 +58,7 @@ fun FloconTheme(
         CompositionLocalProvider(
             LocalIndication provides ripple,
             LocalFloconColorPalette provides colorPalette,
+            LocalTextSelectionColors provides selectionTextColor,
             content = content
         )
     }

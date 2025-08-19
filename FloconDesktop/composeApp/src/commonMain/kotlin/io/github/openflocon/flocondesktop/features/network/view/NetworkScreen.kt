@@ -4,11 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +40,7 @@ import io.github.openflocon.flocondesktop.features.network.view.mocks.NetworkMoc
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -57,6 +62,8 @@ fun NetworkScreen(
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val lazyListState = rememberLazyListState()
+    val scrollAdapter = rememberScrollbarAdapter(lazyListState)
     val columnWidths: NetworkItemColumnWidths =
         remember { NetworkItemColumnWidths() } // Default widths provided
 
@@ -99,12 +106,13 @@ fun NetworkScreen(
                     },
                     state = uiState.headerState,
                 )
-                Box(
-                    Modifier
-                        .fillMaxSize(),
+                Row(
+                    Modifier.fillMaxSize()
                 ) {
                     LazyColumn(
-                        modifier = Modifier.matchParentSize(),
+                        state = lazyListState,
+                        modifier = Modifier.weight(1f)
+                            .fillMaxHeight(),
                     ) {
                         items(
                             items = uiState.items,
@@ -120,6 +128,10 @@ fun NetworkScreen(
                             )
                         }
                     }
+                    FloconVerticalScrollbar(
+                        adapter = scrollAdapter,
+                        modifier = Modifier.fillMaxHeight()
+                    )
                 }
             }
             FloconPanel(
