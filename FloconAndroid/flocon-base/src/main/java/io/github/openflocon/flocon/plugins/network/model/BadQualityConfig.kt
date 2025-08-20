@@ -12,8 +12,17 @@ data class BadQualityConfig(
     )
     class Error(
         val weight: Float, // increase the probability of being triggered vs all others errors
-        val errorCode: Int,
-        val errorBody: String,
-        val errorContentType: String, // "application/json"
-    )
+        val type: Type,
+    ) {
+        sealed interface Type {
+            data class Body(
+                val errorCode: Int,
+                val errorBody: String,
+                val errorContentType: String, // "application/json"
+            ) : Type
+            data class ErrorThrow(
+                val classPath: String,
+            ) : Type
+        }
+    }
 }

@@ -84,80 +84,112 @@ class FloconOkhttpInterceptor() : Interceptor {
             )
         )
 
-        val response = if(isMocked) {
-            executeMock(request = request, mock = mockConfig)
-        } else {
-            val badQualityConfig = floconNetworkPlugin.badQualityConfig // Supposons que cette propriété existe
-
-            if (badQualityConfig != null) {
-                val latencyProbability = badQualityConfig.latency.latencyTriggerProbability
-                val shouldSimulateLatency = latencyProbability > 0f && (latencyProbability == 1f || Math.random() < latencyProbability)
-                if (shouldSimulateLatency) {
-                    try {
-                        val latencyMs =  Random.nextLong(badQualityConfig.latency.minLatencyMs, badQualityConfig.latency.maxLatencyMs + 1)
-                        Thread.sleep(latencyMs)
-                    } catch (e: InterruptedException) {
-                        Thread.currentThread().interrupt()
-                    }
-                }
-
-                failResponseIfNeeded(
-                    badQualityConfig = badQualityConfig,
-                    request = request,
-                ) ?: chain.proceed(request) // if no need to trigger an error
+        try {
+            val response = if (isMocked) {
+                executeMock(request = request, mock = mockConfig)
             } else {
-                chain.proceed(request)
+                val badQualityConfig =
+                    floconNetworkPlugin.badQualityConfig // Supposons que cette propriété existe
+
+                if (badQualityConfig != null) {
+                    val latencyProbability = badQualityConfig.latency.latencyTriggerProbability
+                    val shouldSimulateLatency =
+                        latencyProbability > 0f && (latencyProbability == 1f || Math.random() < latencyProbability)
+                    if (shouldSimulateLatency) {
+                        try {
+                            val latencyMs = Random.nextLong(
+                                badQualityConfig.latency.minLatencyMs,
+                                badQualityConfig.latency.maxLatencyMs + 1
+                            )
+                            Thread.sleep(latencyMs)
+                        } catch (e: InterruptedException) {
+                            Thread.currentThread().interrupt()
+                        }
+                    }
+
+                    failResponseIfNeeded(
+                        badQualityConfig = badQualityConfig,
+                        request = request,
+                    ) ?: chain.proceed(request) // if no need to trigger an error
+                } else {
+                    chain.proceed(request)
+                }
             }
-        }
 
-        val endTime = System.nanoTime()
+            val endTime = System.nanoTime()
 
-        val durationMs: Double = (endTime - startTime) / 1e6
+            val durationMs: Double = (endTime - startTime) / 1e6
 
-        // To get the response body, be careful
-        // because the body can only be read once.
-        // It must be duplicated so that the chain can continue normally.
-        val responseBody = response.body
-        var responseBodyString: String? = null
-        var responseSize: Long? = null
-        val responseContentType: MediaType? = responseBody?.contentType()
+            // To get the response body, be careful
+            // because the body can only be read once.
+            // It must be duplicated so that the chain can continue normally.
+            val responseBody = response.body
+            var responseBodyString: String? = null
+            var responseSize: Long? = null
+            val responseContentType: MediaType? = responseBody?.contentType()
 
-        if (responseBody != null) {
-            // Use response.peekBody() to safely read the body without consuming it
-            // Note: peekBody has a max size, adjust as needed.
-            responseBodyString = response.peekBody(Long.MAX_VALUE).string() // Reads the body safely
-            responseSize = responseBody.contentLength().let {
-                if (it != -1L) it else responseBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
+            if (responseBody != null) {
+                // Use response.peekBody() to safely read the body without consuming it
+                // Note: peekBody has a max size, adjust as needed.
+                responseBodyString =
+                    response.peekBody(Long.MAX_VALUE).string() // Reads the body safely
+                responseSize = responseBody.contentLength().let {
+                    if (it != -1L) it else responseBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
+                }
             }
-        }
-        val responseHeadersMap =
-            response.headers.toMultimap().mapValues { it.value.joinToString(",") }
+            val responseHeadersMap =
+                response.headers.toMultimap().mapValues { it.value.joinToString(",") }
 
-        val isImage = responseContentType?.toString()?.startsWith("image/") == true
+            val isImage = responseContentType?.toString()?.startsWith("image/") == true
 
-        val floconCallResponse = FloconNetworkResponse(
-            httpCode = response.code,
-            contentType = responseContentType?.toString(),
-            body = responseBodyString.takeUnless { isImage }, // dont send images responses bytes
-            headers = responseHeadersMap,
-            size = responseSize,
-            grpcStatus = null,
-        )
-
-        floconNetworkPlugin.logResponse(
-            FloconNetworkCallResponse(
-                floconCallId = floconCallId,
-                durationMs = durationMs,
-                floconNetworkType = floconNetworkType,
-                isMocked = isMocked,
-                response = floconCallResponse,
+            val floconCallResponse = FloconNetworkResponse(
+                httpCode = response.code,
+                contentType = responseContentType?.toString(),
+                body = responseBodyString.takeUnless { isImage }, // dont send images responses bytes
+                headers = responseHeadersMap,
+                size = responseSize,
+                grpcStatus = null,
             )
-        )
 
-        // Rebuild the response with a new body so that the chain can continue
-        // The original response body is already consumed by peekBody, so no need to rebuild with it.
-        // Just return the original response if you don't modify the body itself.
-        return response
+            floconNetworkPlugin.logResponse(
+                FloconNetworkCallResponse(
+                    floconCallId = floconCallId,
+                    durationMs = durationMs,
+                    floconNetworkType = floconNetworkType,
+                    isMocked = isMocked,
+                    response = floconCallResponse,
+                )
+            )
+
+            // Rebuild the response with a new body so that the chain can continue
+            // The original response body is already consumed by peekBody, so no need to rebuild with it.
+            // Just return the original response if you don't modify the body itself.
+            return response
+        } catch (e: IOException) {
+            val endTime = System.nanoTime()
+
+            val durationMs: Double = (endTime - startTime) / 1e6
+
+            val floconCallResponse = FloconNetworkResponse(
+                httpCode = null,
+                contentType = null,
+                body = e.message, // TODO better handle of errors
+                headers = emptyMap(),
+                size = null,
+                grpcStatus = null,
+            )
+
+            floconNetworkPlugin.logResponse(
+                FloconNetworkCallResponse(
+                    floconCallId = floconCallId,
+                    durationMs = durationMs,
+                    floconNetworkType = floconNetworkType,
+                    isMocked = isMocked,
+                    response = floconCallResponse,
+                )
+            )
+            throw e
+        }
     }
 
     private fun failResponseIfNeeded(
@@ -168,15 +200,28 @@ class FloconOkhttpInterceptor() : Interceptor {
         if (shouldFail) {
             val selectedError = selectRandomError(badQualityConfig.errors)
             if (selectedError != null) {
-                val errorBody = selectedError.errorBody.toResponseBody(selectedError.errorContentType.toMediaTypeOrNull())
+                when(val t = selectedError.type) {
+                    is BadQualityConfig.Error.Type.Body -> {
+                        val errorBody = t.errorBody.toResponseBody(t.errorContentType.toMediaTypeOrNull())
 
-                return Response.Builder()
-                    .request(request)
-                    .protocol(Protocol.HTTP_1_1)
-                    .code(selectedError.errorCode) // Utiliser le code d'erreur configuré
-                    .message(getHttpMessage(selectedError.errorCode))
-                    .body(errorBody)
-                    .build()
+                        return Response.Builder()
+                            .request(request)
+                            .protocol(Protocol.HTTP_1_1)
+                            .code(t.errorCode) // Utiliser le code d'erreur configuré
+                            .message(getHttpMessage(t.errorCode))
+                            .body(errorBody)
+                            .build()
+                    }
+                    is BadQualityConfig.Error.Type.ErrorThrow -> {
+                        val errorClass = Class.forName(t.classPath)
+                        val error = errorClass.newInstance() as? Throwable
+                        if(error is IOException) {
+                            throw error //okhttp accepts only IOException
+                        } else if(error is Throwable){
+                            throw IOException(error)
+                        }
+                    }
+                }
             }
         }
         return null
