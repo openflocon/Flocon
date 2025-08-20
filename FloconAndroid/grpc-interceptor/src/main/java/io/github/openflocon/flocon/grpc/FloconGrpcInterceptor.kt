@@ -1,9 +1,7 @@
 package io.github.openflocon.flocon.grpc
 
-import com.google.gson.ExclusionStrategy
-import com.google.gson.FieldAttributes
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.google.protobuf.MessageOrBuilder
+import com.google.protobuf.util.JsonFormat
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.grpc.model.RequestHolder
@@ -17,37 +15,14 @@ import io.grpc.ClientCall
 import io.grpc.ClientInterceptor
 import io.grpc.ForwardingClientCall
 import io.grpc.ForwardingClientCallListener
-import io.grpc.Metadata
 import io.grpc.MethodDescriptor
 import io.grpc.Status
 import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
-private val excluded = setOf(
-    "unknownFields",
-    "memoizedHashCode",
-    "bitField",
-    "memoizedSerializedSize",
-    "bytes",
-)
-
-private val defaultFieldExcluder: (name: String) -> Boolean = { name ->
-    var isExcluded = false
-    excluded.forEach { toExclude ->
-        if (name.startsWith(prefix = toExclude)) {
-            isExcluded = true
-        }
-    }
-    isExcluded
-}
-
-class FloconGrpcInterceptor(
-    private val shouldExcludeField: (name: String) -> Boolean = defaultFieldExcluder,
-) : ClientInterceptor {
+class FloconGrpcInterceptor : ClientInterceptor {
 
     private val floconGrpcPlugin = FloconGrpcPlugin()
-
-    private val gson = buildGsonInstance(shouldExcludeField)
 
     override fun <ReqT : Any?, RespT : Any?> interceptCall(
         method: MethodDescriptor<ReqT, RespT>,
@@ -68,7 +43,6 @@ class FloconGrpcInterceptor(
             method = method,
             next = next,
             callOptions = callOptions,
-            gson = gson,
         )
     }
 }
@@ -80,7 +54,6 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
     private val method: MethodDescriptor<ReqT, RespT>,
     private val next: Channel,
     callOptions: CallOptions,
-    private val gson: Gson,
 ) : ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(
     next.newCall(
         method,
@@ -91,6 +64,7 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
     val requestHolder = RequestHolder()
 
     private var headers: Metadata? = null
+    private val printer = JsonFormat.printer().alwaysPrintFieldsWithNoPresence()
 
     override fun start(responseListener: Listener<RespT>, headers: Metadata) {
         this.headers = headers
@@ -100,17 +74,18 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
                 callId = callId,
                 requestHolder = requestHolder,
                 responseListener = responseListener,
-                gson = gson
+                printer = printer,
             ),
             headers,
         )
     }
 
     override fun sendMessage(message: ReqT) {
+        val body = (message as? MessageOrBuilder)?.let { printer.print(it) } ?: ""
         val request = FloconNetworkRequest(
             url = next.authority(),
             method = method.fullMethodName,
-            body = message?.toJson(gson = gson) ?: "",
+            body = body,
             startTime = System.currentTimeMillis(),
             headers = headers?.toHeaders().orEmpty(),
             size = 0, // TODO
@@ -132,7 +107,7 @@ private class LoggingClientCallListener<RespT>(
     private val floconGrpcPlugin: FloconGrpcPlugin,
     private val callId: String,
     responseListener: ClientCall.Listener<RespT>,
-    private val gson: Gson,
+    private val printer: JsonFormat.Printer,
     private val requestHolder: RequestHolder,
 ) : ForwardingClientCallListener.SimpleForwardingClientCallListener<RespT>(
     responseListener,
@@ -159,11 +134,12 @@ private class LoggingClientCallListener<RespT>(
                         ),
                     )
                 } ?: run {
+                    val body = (message as? MessageOrBuilder)?.let { printer.print(it) } ?: ""
                     floconGrpcPlugin.reportResponse(
                         callId = callId,
                         request = request,
                         response = FloconNetworkResponse(
-                            body = message?.toJson(gson),
+                            body = body,
                             headers = (this.headers ?: trailers).toHeaders(),
                             httpCode = null,
                             contentType = "grpc",
@@ -190,23 +166,3 @@ private class LoggingClientCallListener<RespT>(
         this.headers = headers
     }
 }
-
-private fun buildGsonInstance(
-    excluder: (name: String) -> Boolean,
-): Gson {
-    return GsonBuilder().setPrettyPrinting()
-        .setFieldNamingStrategy {
-            it.name.removeSuffix("_")
-        }
-        .setExclusionStrategies(object : ExclusionStrategy {
-            override fun shouldSkipField(f: FieldAttributes): Boolean {
-                return excluder(f.name)
-            }
-
-            override fun shouldSkipClass(clazz: Class<*>): Boolean {
-                return false
-            }
-        }).create()
-}
-
-private fun Any.toJson(gson: Gson): String = gson.toJson(this)

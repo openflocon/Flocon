@@ -1,0 +1,5 @@
+$dokka.format:javadoc-v1
+$dokka.linkExtension:html
+
+io.github.openflocon.flocon.grpc
+

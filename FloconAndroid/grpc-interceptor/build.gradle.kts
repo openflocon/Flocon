@@ -40,8 +40,8 @@ dependencies {
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutines.core)
 
-    implementation(libs.gson)
     implementation(libs.grpc.android)
+    implementation(libs.protobuf.util)
 }
 
 

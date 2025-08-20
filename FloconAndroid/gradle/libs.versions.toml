@@ -65,6 +65,7 @@ okhttp3-okhttp = { module = "com.squareup.okhttp3:okhttp" }
 org-jetbrains-kotlinx-kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android" }
 org-jetbrains-kotlinx-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf"}
+protobuf-util = { group = "com.google.protobuf", name = "protobuf-java-util", version.ref = "protobuf" }
 grpc-okhttp = { group = "io.grpc", name = "grpc-okhttp", version.ref = "grpc" }
 squareup-okhttp = { module = "com.squareup.okhttp3:okhttp" }
 
