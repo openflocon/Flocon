@@ -6,6 +6,7 @@ import io.github.openflocon.data.local.network.mapper.toDomain
 import io.github.openflocon.data.local.network.mapper.toEntity
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
+import io.github.openflocon.domain.network.models.BadQualityConfigId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -29,10 +30,14 @@ class BadQualityConfigLocalDataSourceImpl(
         )
     }
 
-    override suspend fun getNetworkQuality(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): BadQualityConfigDomainModel? {
+    override suspend fun getNetworkQuality(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        configId: BadQualityConfigId,
+    ): BadQualityConfigDomainModel? {
         return networkBadQualityConfigDao.get(
             deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName
+            packageName = deviceIdAndPackageName.packageName,
+            configId = configId
         )?.let {
             toDomain(
                 json = json,
@@ -42,11 +47,13 @@ class BadQualityConfigLocalDataSourceImpl(
     }
 
     override fun observe(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        configId: BadQualityConfigId,
     ): Flow<BadQualityConfigDomainModel?> {
         return networkBadQualityConfigDao.observe(
             deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName
+            packageName = deviceIdAndPackageName.packageName,
+            configId = configId,
         ).map {
             it?.let {
                 toDomain(
@@ -57,14 +64,56 @@ class BadQualityConfigLocalDataSourceImpl(
         }.distinctUntilChanged()
     }
 
-    override suspend fun updateIsEnabled(
+
+    override fun observeAll(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        isEnabled: Boolean,
-    ) {
-        networkBadQualityConfigDao.updateIsEnabled(
+    ): Flow<List<BadQualityConfigDomainModel>> {
+        return networkBadQualityConfigDao.observeAll(
             deviceId = deviceIdAndPackageName.deviceId,
             packageName = deviceIdAndPackageName.packageName,
-            isEnabled = isEnabled
+        ).map { list ->
+            list.map {
+                toDomain(
+                    json = json,
+                    entity = it
+                )
+            }
+        }.distinctUntilChanged()
+    }
+
+    override suspend fun setEnabledConfig(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        configId: BadQualityConfigId?,
+    ) {
+        networkBadQualityConfigDao.setEnabledConfig(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            configId = configId,
+        )
+    }
+
+    override suspend fun getTheOnlyEnabledNetworkQuality(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): BadQualityConfigDomainModel? {
+        return networkBadQualityConfigDao.getTheOnlyEnabledNetworkQuality(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+        )?.let {
+            toDomain(
+                json = json,
+                entity = it
+            )
+        }
+    }
+
+    override suspend fun delete(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        configId: BadQualityConfigId
+    ) {
+        networkBadQualityConfigDao.delete(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            configId = configId
         )
     }
 }

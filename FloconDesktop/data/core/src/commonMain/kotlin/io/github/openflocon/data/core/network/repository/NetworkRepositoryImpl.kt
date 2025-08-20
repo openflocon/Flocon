@@ -10,8 +10,8 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
+import io.github.openflocon.domain.network.models.BadQualityConfigId
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.repository.NetworkBadQualityRepository
@@ -295,30 +295,62 @@ class NetworkRepositoryImpl(
         }
     }
 
-    override suspend fun getNetworkQuality(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): BadQualityConfigDomainModel? {
+    override suspend fun getNetworkQuality(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        configId: BadQualityConfigId,
+    ): BadQualityConfigDomainModel? {
         return withContext(dispatcherProvider.data) {
             networkQualityLocalDataSource.getNetworkQuality(
                 deviceIdAndPackageName = deviceIdAndPackageName,
+                configId = configId,
+            )
+        }
+    }
+
+    override suspend fun getTheOnlyEnabledNetworkQuality(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): BadQualityConfigDomainModel? {
+        return withContext(dispatcherProvider.data) {
+            networkQualityLocalDataSource.getTheOnlyEnabledNetworkQuality(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+            )
+        }
+    }
+
+    override suspend fun deleteNetworkQuality(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        configId: BadQualityConfigId,
+    ) {
+        return withContext(dispatcherProvider.data) {
+            networkQualityLocalDataSource.delete(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                configId = configId,
             )
         }
     }
 
     override fun observeNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        configId: BadQualityConfigId,
     ): Flow<BadQualityConfigDomainModel?> {
         return networkQualityLocalDataSource.observe(
             deviceIdAndPackageName = deviceIdAndPackageName,
-        )
+            configId = configId,
+        ).flowOn(dispatcherProvider.data)
     }
 
-    override suspend fun setNetworkQualityIsEnabled(
+    override fun observeAllNetworkQualities(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<BadQualityConfigDomainModel>> {
+        return networkQualityLocalDataSource.observeAll(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        ).flowOn(dispatcherProvider.data)
+    }
+
+    override suspend fun setEnabledConfig(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        isEnabled: Boolean,
+        configId: BadQualityConfigId?,
     ) {
         withContext(dispatcherProvider.data) {
-            networkQualityLocalDataSource.updateIsEnabled(
+            networkQualityLocalDataSource.setEnabledConfig(
                 deviceIdAndPackageName = deviceIdAndPackageName,
-                isEnabled = isEnabled,
+                configId = configId,
             )
         }
     }

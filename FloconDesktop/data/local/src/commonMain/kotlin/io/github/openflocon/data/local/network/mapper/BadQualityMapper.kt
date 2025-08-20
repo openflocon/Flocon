@@ -6,6 +6,7 @@ import io.github.openflocon.data.local.network.models.badquality.LatencyConfigEm
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import kotlinx.serialization.json.Json
+import kotlin.time.Instant
 
 fun toDomain(json: Json, entity: BadQualityConfigEntity): BadQualityConfigDomainModel {
     val errors = try {
@@ -16,6 +17,9 @@ fun toDomain(json: Json, entity: BadQualityConfigEntity): BadQualityConfigDomain
         emptyList()
     }
     return BadQualityConfigDomainModel(
+        id = entity.id,
+        name = entity.name,
+        createdAt = Instant.fromEpochMilliseconds(entity.createdAt),
         isEnabled = entity.isEnabled,
         latency = BadQualityConfigDomainModel.LatencyConfig(
             triggerProbability = entity.latency.triggerProbability,
@@ -52,6 +56,9 @@ fun toEntity(
         "[]"
     }
     return BadQualityConfigEntity(
+        id = config.id,
+        name = config.name,
+        createdAt = config.createdAt.toEpochMilliseconds(),
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
         isEnabled = config.isEnabled,
