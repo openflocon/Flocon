@@ -25,19 +25,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
+import io.github.openflocon.flocondesktop.features.network.badquality.list.BadNetworkQualityWindow
+import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
-import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkUiState
-import io.github.openflocon.flocondesktop.features.network.badquality.list.BadNetworkQualityWindow
-import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkFilter
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
+import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.view.NetworkBodyWindow
 import io.github.openflocon.flocondesktop.features.network.view.NetworkDetailView
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -110,7 +110,7 @@ fun NetworkScreen(
                     state = uiState.headerState,
                 )
                 Row(
-                    Modifier.fillMaxSize()
+                    Modifier.fillMaxSize(),
                 ) {
                     LazyColumn(
                         state = lazyListState,
@@ -133,7 +133,7 @@ fun NetworkScreen(
                     }
                     FloconVerticalScrollbar(
                         adapter = scrollAdapter,
-                        modifier = Modifier.fillMaxHeight()
+                        modifier = Modifier.fillMaxHeight(),
                     )
                 }
             }
@@ -190,7 +190,7 @@ fun NetworkScreen(
         )
     }
 
-    if(uiState.contentState.badNetworkQualityDisplayed) {
+    if (uiState.contentState.badNetworkQualityDisplayed) {
         BadNetworkQualityWindow(
             onCloseRequest = {
                 onAction(NetworkAction.CloseBadNetworkQuality)

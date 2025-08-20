@@ -24,17 +24,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
-import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
-import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.CodeBlockView
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailHeadersView
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailLineTextView
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailLineView
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailSectionTitleView
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
+import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSectionExpandable
@@ -162,7 +162,7 @@ private fun Request(
                         labelWidth = linesLabelWidth,
                     ) {
                         StatusView(
-                            status = state.status
+                            status = state.status,
                         )
                     }
                     DetailLineTextView(
@@ -367,18 +367,18 @@ private fun NetworkDetailViewPreview() {
                 fullUrl = "http://www.google.com",
                 method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
                 status =
-                    NetworkStatusUi(
-                        text = "200",
-                        status = NetworkStatusUi.Status.SUCCESS,
-                    ),
+                NetworkStatusUi(
+                    text = "200",
+                    status = NetworkStatusUi.Status.SUCCESS,
+                ),
                 requestHeaders =
-                    listOf(
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                    ),
+                listOf(
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                ),
                 requestBody =
-                    """
+                """
                         {
                             "id": "123",
                             "name": "Flocon App",
@@ -396,7 +396,7 @@ private fun NetworkDetailViewPreview() {
                 requestSize = "0kb",
                 response = NetworkDetailViewState.Response(
                     body =
-                        """
+                    """
                         {
                             "networkStatusUi": "success",
                             "message": "Data received and processed.",
@@ -408,13 +408,13 @@ private fun NetworkDetailViewPreview() {
                     """.trimIndent(),
                     size = "0kb",
                     headers =
-                        listOf(
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                        ),
+                    listOf(
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                    ),
                 ),
                 graphQlSection = null,
             ),

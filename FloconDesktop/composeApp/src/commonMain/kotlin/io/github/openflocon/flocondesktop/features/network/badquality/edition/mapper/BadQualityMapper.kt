@@ -4,7 +4,6 @@ import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import kotlin.time.Instant
 
-
 fun BadQualityConfigDomainModel.toUi() = BadQualityConfigUiModel(
     id = id,
     name = name,
@@ -14,7 +13,7 @@ fun BadQualityConfigDomainModel.toUi() = BadQualityConfigUiModel(
     errorProbability = errorProbability,
     errors = errors.map { error ->
         error.toUi()
-    }
+    },
 )
 
 private fun BadQualityConfigDomainModel.Error.toUi() = BadQualityConfigUiModel.Error(
@@ -24,13 +23,11 @@ private fun BadQualityConfigDomainModel.Error.toUi() = BadQualityConfigUiModel.E
     contentType = contentType,
 )
 
-private fun BadQualityConfigDomainModel.LatencyConfig.toUi() =
-    BadQualityConfigUiModel.LatencyConfig(
-        triggerProbability = triggerProbability,
-        minLatencyMs = minLatencyMs,
-        maxLatencyMs = maxLatencyMs,
-    )
-
+private fun BadQualityConfigDomainModel.LatencyConfig.toUi() = BadQualityConfigUiModel.LatencyConfig(
+    triggerProbability = triggerProbability,
+    minLatencyMs = minLatencyMs,
+    maxLatencyMs = maxLatencyMs,
+)
 
 fun BadQualityConfigUiModel.toDomain() = BadQualityConfigDomainModel(
     id = id,
@@ -41,7 +38,7 @@ fun BadQualityConfigUiModel.toDomain() = BadQualityConfigDomainModel(
     errorProbability = errorProbability,
     errors = errors.map { error ->
         error.toDomain()
-    }
+    },
 )
 
 private fun BadQualityConfigUiModel.Error.toDomain() = BadQualityConfigDomainModel.Error(
@@ -51,9 +48,8 @@ private fun BadQualityConfigUiModel.Error.toDomain() = BadQualityConfigDomainMod
     contentType = contentType,
 )
 
-private fun BadQualityConfigUiModel.LatencyConfig.toDomain() =
-    BadQualityConfigDomainModel.LatencyConfig(
-        triggerProbability = triggerProbability,
-        minLatencyMs = minLatencyMs,
-        maxLatencyMs = maxLatencyMs,
-    )
+private fun BadQualityConfigUiModel.LatencyConfig.toDomain() = BadQualityConfigDomainModel.LatencyConfig(
+    triggerProbability = triggerProbability,
+    minLatencyMs = minLatencyMs,
+    maxLatencyMs = maxLatencyMs,
+)

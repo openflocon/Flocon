@@ -20,8 +20,8 @@ import io.github.openflocon.data.local.files.dao.FloconFileDao
 import io.github.openflocon.data.local.files.models.FileEntity
 import io.github.openflocon.data.local.images.dao.FloconImageDao
 import io.github.openflocon.data.local.images.models.DeviceImageEntity
-import io.github.openflocon.data.local.network.dao.NetworkBadQualityConfigDao
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
+import io.github.openflocon.data.local.network.dao.NetworkBadQualityConfigDao
 import io.github.openflocon.data.local.network.dao.NetworkFilterDao
 import io.github.openflocon.data.local.network.dao.NetworkMocksDao
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity

@@ -3,20 +3,13 @@
 package io.github.openflocon.flocondesktop.features.network.badquality.list
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.network.badquality.BadQualityNetworkViewModel
-import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
-import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.SelectedBadQualityUiModel
-import io.github.openflocon.flocondesktop.features.network.badquality.edition.view.BadNetworkQualityEditionContent
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.view.BadQualityEditionWindow
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.NetworkBadQualityContent
 import io.github.openflocon.library.designsystem.components.FloconDialog
@@ -27,7 +20,7 @@ fun BadNetworkQualityWindow(
     onCloseRequest: () -> Unit,
 ) {
     FloconDialog(
-        onDismissRequest = onCloseRequest
+        onDismissRequest = onCloseRequest,
     ) {
         BadNetworkQualityContent(
             onCloseRequest = onCloseRequest,

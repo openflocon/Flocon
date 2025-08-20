@@ -12,5 +12,5 @@ data class NetworkBadQualityLineUiModel(
 fun previewNetworkBadQualityLineUiModel() = NetworkBadQualityLineUiModel(
     id = "1",
     isEnabled = true,
-    name = "the name"
+    name = "the name",
 )

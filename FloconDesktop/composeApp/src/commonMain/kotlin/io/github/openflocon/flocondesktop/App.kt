@@ -46,7 +46,7 @@ fun App() {
                     singleOf(::AdbRepositoryImpl) bind AdbRepository::class
                 },
             )
-        }
+        },
     ) {
         FloconTheme {
             val appViewModel: AppViewModel = koinViewModel()

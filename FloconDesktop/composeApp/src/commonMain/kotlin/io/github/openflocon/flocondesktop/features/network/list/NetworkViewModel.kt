@@ -11,15 +11,15 @@ import io.github.openflocon.domain.network.usecase.RemoveHttpRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.flocondesktop.features.network.ContentUiState
-import io.github.openflocon.flocondesktop.features.network.list.model.FilterUiState
 import io.github.openflocon.flocondesktop.features.network.MockDisplayed
+import io.github.openflocon.flocondesktop.features.network.detail.mapper.toDetailUi
+import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
+import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
+import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
+import io.github.openflocon.flocondesktop.features.network.list.model.FilterUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.processor.SortAndFilterNetworkItemsProcessor
-import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
-import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
-import io.github.openflocon.flocondesktop.features.network.detail.mapper.toDetailUi
-import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -184,7 +184,7 @@ class NetworkViewModel(
     private fun openBadNetworkQuality() {
         contentState.update { state ->
             state.copy(
-                badNetworkQualityDisplayed = true
+                badNetworkQualityDisplayed = true,
             )
         }
     }

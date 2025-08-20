@@ -35,11 +35,12 @@ fun StatusView(
 ) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         when (status.status) {
             NetworkStatusUi.Status.SUCCESS,
-            NetworkStatusUi.Status.ERROR -> BasicText(
+            NetworkStatusUi.Status.ERROR,
+            -> BasicText(
                 text = status.text,
                 autoSize = TextAutoSize.StepBased(
                     maxFontSize = textSize,
@@ -52,16 +53,16 @@ fun StatusView(
                         NetworkStatusUi.Status.ERROR -> errorTagText
                         NetworkStatusUi.Status.LOADING -> loadingTagText
                     },
-                )
+                ),
             )
 
             NetworkStatusUi.Status.LOADING -> Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 FloconLinearProgressIndicator(
                     modifier = Modifier
-                        .width(50.dp)
+                        .width(50.dp),
                 )
             }
         }
@@ -74,10 +75,10 @@ private fun StatusView_Preview() {
     FloconTheme {
         StatusView(
             status =
-                NetworkStatusUi(
-                    text = "200",
-                    status = NetworkStatusUi.Status.SUCCESS,
-                ),
+            NetworkStatusUi(
+                text = "200",
+                status = NetworkStatusUi.Status.SUCCESS,
+            ),
         )
     }
 }

@@ -17,7 +17,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class ToDeviceDashboardDataSourceImpl(
     private val server: Server,
-    private val json: Json
+    private val json: Json,
 ) : ToDeviceDashboardDataSource {
 
     @OptIn(ExperimentalUuidApi::class)
@@ -77,9 +77,7 @@ class ToDeviceDashboardDataSourceImpl(
         )
     }
 
-    override fun getItem(message: FloconIncomingMessageDomainModel): DashboardDomainModel? {
-        return decode(message)?.let { toDomain(it) }
-    }
+    override fun getItem(message: FloconIncomingMessageDomainModel): DashboardDomainModel? = decode(message)?.let { toDomain(it) }
 
     private fun decode(message: FloconIncomingMessageDomainModel): DashboardConfigDataModel? = try {
         json.decodeFromString<DashboardConfigDataModel>(message.body)
@@ -87,5 +85,4 @@ class ToDeviceDashboardDataSourceImpl(
         t.printStackTrace()
         null
     }
-
 }

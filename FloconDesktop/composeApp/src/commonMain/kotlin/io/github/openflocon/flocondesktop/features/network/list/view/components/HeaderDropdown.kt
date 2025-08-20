@@ -24,12 +24,12 @@ fun HeaderDropdown(
     onClickSort: (SortedByUiModel.Enabled) -> Unit,
     modifier: Modifier = Modifier,
     labelAlignment: Alignment = Alignment.Center,
-    dropdownMenu: @Composable ColumnScope.() -> Unit
+    dropdownMenu: @Composable ColumnScope.() -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(
-        modifier = modifier
+        modifier = modifier,
     ) {
         HeaderLabelItem(
             modifier = Modifier
@@ -39,12 +39,12 @@ fun HeaderDropdown(
             sortedBy = sortedBy,
             clickOnSort = onClickSort,
             clickOnFilter = { expanded = true },
-            labelAlignment = labelAlignment
+            labelAlignment = labelAlignment,
         )
         FloconDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            content = dropdownMenu
+            content = dropdownMenu,
         )
     }
 }

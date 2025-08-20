@@ -47,12 +47,12 @@ fun NetworkItemHeaderView(
             filtered = state.requestTime.isFiltered(),
             sortedBy = state.requestTime.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.RequestTime, it) },
-            modifier = Modifier.width(columnWidths.dateWidth)
+            modifier = Modifier.width(columnWidths.dateWidth),
         ) {
             TextFilterDropdownContent(
                 filterState = state.requestTime.filter,
                 textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.RequestTime, it)) },
-                modifier = Modifier.widthIn(min = 300.dp)
+                modifier = Modifier.widthIn(min = 300.dp),
             )
         }
         HeaderDropdown(
@@ -60,11 +60,11 @@ fun NetworkItemHeaderView(
             filtered = state.method.isFiltered(),
             sortedBy = state.method.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Method, it) },
-            modifier = Modifier.width(columnWidths.methodWidth)
+            modifier = Modifier.width(columnWidths.methodWidth),
         ) {
             MethodFilterDropdownContent(
                 filterState = state.method.filter,
-                onItemClicked = { onFilterAction(OnFilterAction.ClickOnMethod(it)) }
+                onItemClicked = { onFilterAction(OnFilterAction.ClickOnMethod(it)) },
             )
         }
         HeaderDropdown(
@@ -73,12 +73,12 @@ fun NetworkItemHeaderView(
             sortedBy = state.domain.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Domain, it) },
             labelAlignment = Alignment.CenterStart,
-            modifier = Modifier.weight(columnWidths.domainWeight)
+            modifier = Modifier.weight(columnWidths.domainWeight),
         ) {
             TextFilterDropdownContent(
                 filterState = state.domain.filter,
                 textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Domain, it)) },
-                modifier = Modifier.widthIn(min = 300.dp)
+                modifier = Modifier.widthIn(min = 300.dp),
             )
         }
         HeaderDropdown(
@@ -87,12 +87,12 @@ fun NetworkItemHeaderView(
             sortedBy = state.query.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Query, it) },
             labelAlignment = Alignment.CenterStart,
-            modifier = Modifier.weight(columnWidths.queryWeight)
+            modifier = Modifier.weight(columnWidths.queryWeight),
         ) {
             TextFilterDropdownContent(
                 filterState = state.query.filter,
                 textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Query, it)) },
-                modifier = Modifier.widthIn(min = 300.dp)
+                modifier = Modifier.widthIn(min = 300.dp),
             )
         }
         HeaderDropdown(
@@ -100,12 +100,12 @@ fun NetworkItemHeaderView(
             filtered = state.status.isFiltered(),
             sortedBy = state.status.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Status, it) },
-            modifier = Modifier.width(columnWidths.statusCodeWidth)
+            modifier = Modifier.width(columnWidths.statusCodeWidth),
         ) {
             TextFilterDropdownContent(
                 filterState = state.status.filter,
                 textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Status, it)) },
-                modifier = Modifier.widthIn(min = 300.dp)
+                modifier = Modifier.widthIn(min = 300.dp),
             )
         }
         HeaderDropdown(
@@ -113,12 +113,12 @@ fun NetworkItemHeaderView(
             filtered = state.time.isFiltered(),
             sortedBy = state.time.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Time, it) },
-            modifier = Modifier.width(columnWidths.timeWidth)
+            modifier = Modifier.width(columnWidths.timeWidth),
         ) {
             TextFilterDropdownContent(
                 filterState = state.time.filter,
                 textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Time, it)) },
-                modifier = Modifier.widthIn(min = 300.dp)
+                modifier = Modifier.widthIn(min = 300.dp),
             )
         }
     }

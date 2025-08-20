@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
@@ -54,7 +52,7 @@ fun BadQualityEditionWindow(
     state: SelectedBadQualityUiModel,
 ) {
     FloconDialog(
-        onDismissRequest = onCloseRequest
+        onDismissRequest = onCloseRequest,
     ) {
         BadNetworkQualityEditionContent(
             state = state,
@@ -75,27 +73,27 @@ fun BadNetworkQualityEditionContent(
 
     var name by remember(state) {
         mutableStateOf<String>(
-            config?.name ?: ""
+            config?.name ?: "",
         )
     }
     var triggerProbability by remember(state) {
         mutableStateOf<String>(
-            config?.latency?.triggerProbability?.let { it * 100.0 }?.toString() ?: "100"
+            config?.latency?.triggerProbability?.let { it * 100.0 }?.toString() ?: "100",
         )
     }
     var minLatencyMs by remember(state) {
         mutableStateOf<String>(
-            config?.latency?.minLatencyMs?.toString() ?: "0"
+            config?.latency?.minLatencyMs?.toString() ?: "0",
         )
     }
     var maxLatencyMs by remember(state) {
         mutableStateOf<String>(
-            config?.latency?.maxLatencyMs?.toString() ?: "0"
+            config?.latency?.maxLatencyMs?.toString() ?: "0",
         )
     }
     var errorProbability by remember(state) {
         mutableStateOf<String>(
-            config?.errorProbability?.let { it * 100.0 }?.toString() ?: "100"
+            config?.errorProbability?.let { it * 100.0 }?.toString() ?: "100",
         )
     }
     var errors by remember(state) { mutableStateOf(config?.errors ?: emptyList()) }
@@ -105,7 +103,7 @@ fun BadNetworkQualityEditionContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
             .fillMaxSize()
-            .padding(8.dp)
+            .padding(8.dp),
     ) {
         NetworkMockFieldView(
             label = "Name",
@@ -114,7 +112,7 @@ fun BadNetworkQualityEditionContent(
             onValueChange = {
                 name = it
             },
-            trailingComponent = {  }
+            trailingComponent = { },
         )
         NetworkMockFieldView(
             label = "Trigger probability",
@@ -125,7 +123,7 @@ fun BadNetworkQualityEditionContent(
                     triggerProbability = it
                 }
             },
-            trailingComponent = { Text(text = "%") }
+            trailingComponent = { Text(text = "%") },
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             NetworkMockFieldView(
@@ -138,7 +136,7 @@ fun BadNetworkQualityEditionContent(
                         minLatencyMs = it
                     }
                 },
-                trailingComponent = { Text(text = "ms") }
+                trailingComponent = { Text(text = "ms") },
             )
             NetworkMockFieldView(
                 modifier = Modifier.weight(1f),
@@ -150,7 +148,7 @@ fun BadNetworkQualityEditionContent(
                         maxLatencyMs = it
                     }
                 },
-                trailingComponent = { Text(text = "ms") }
+                trailingComponent = { Text(text = "ms") },
             )
         }
         NetworkMockFieldView(
@@ -162,7 +160,7 @@ fun BadNetworkQualityEditionContent(
                     errorProbability = it
                 }
             },
-            trailingComponent = { Text(text = "%") }
+            trailingComponent = { Text(text = "%") },
         )
         ErrorsListView(
             modifier = Modifier.padding(top = 16.dp),
@@ -172,13 +170,13 @@ fun BadNetworkQualityEditionContent(
             },
             deleteError = { error ->
                 errors = errors.filterNot { it == error }
-            }
+            },
         )
         selectedErrorToEdit?.let { selectedError ->
             BasicAlertDialog(
                 onDismissRequest = {
                     selectedErrorToEdit = null
-                }
+                },
             ) {
                 FloconSurface {
                     ErrorsEditor(
@@ -194,7 +192,7 @@ fun BadNetworkQualityEditionContent(
                                 errors + error
                             }
                             selectedErrorToEdit = null
-                        }
+                        },
                     )
                 }
             }
@@ -227,12 +225,12 @@ fun BadNetworkQualityEditionContent(
                             ?.coerceIn(0.0, 100.0)
                             ?: 1.0,
                         errors = errors,
-                    )
+                    ),
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp)
+                .padding(horizontal = 4.dp),
         )
     }
 }
@@ -246,11 +244,11 @@ fun ErrorsListView(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text("Errors", style = FloconTheme.typography.titleMedium)
             FloconButton(
@@ -261,19 +259,19 @@ fun ErrorsListView(
                             weight = 1f,
                             httpCode = 500,
                             body = "",
-                            contentType = "application/json"
-                        )
+                            contentType = "application/json",
+                        ),
                     )
-                }
+                },
             ) {
                 Text(
-                    text = "Add"
+                    text = "Add",
                 )
             }
         }
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             items(errors) { error ->
                 Column(
@@ -284,9 +282,8 @@ fun ErrorsListView(
                         .clickable {
                             onErrorsClicked(error)
                         }
-                        .padding(8.dp)
+                        .padding(8.dp),
                 ) {
-
                     val textStyle = FloconTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Thin,
                         color = FloconTheme.colorPalette.onSurface,
@@ -300,7 +297,7 @@ fun ErrorsListView(
                     // bouton supprimer
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.End,
                     ) {
                         Image(
                             imageVector = Icons.Default.Delete,
@@ -309,19 +306,17 @@ fun ErrorsListView(
                                 .size(24.dp)
                                 .clickable {
                                     deleteError(
-                                        error
+                                        error,
                                     )
                                 },
-                            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface)
+                            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface),
                         )
                     }
                 }
             }
         }
-
     }
 }
-
 
 @Composable
 fun ErrorsEditor(
@@ -334,7 +329,6 @@ fun ErrorsEditor(
     var body by remember(error) { mutableStateOf<String>(error.body) }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-
         // bouton ajouter
         Box(
             modifier = Modifier
@@ -346,8 +340,8 @@ fun ErrorsEditor(
                             weight = weight.toFloatOrNull() ?: error.weight,
                             httpCode = httpCode.toIntOrNull() ?: error.httpCode,
                             contentType = contentType,
-                            body = body
-                        )
+                            body = body,
+                        ),
                     )
                 }
                 .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -362,7 +356,7 @@ fun ErrorsEditor(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color(0xFFEFEFEF).copy(alpha = 0.2f))
-                .padding(8.dp)
+                .padding(8.dp),
         ) {
             NetworkMockFieldView(
                 label = "Weight",
@@ -372,7 +366,7 @@ fun ErrorsEditor(
                     if (it.isEmpty() || it.toFloatOrNull() != null) {
                         weight = it
                     }
-                }
+                },
             )
 
             NetworkMockFieldView(
@@ -383,7 +377,7 @@ fun ErrorsEditor(
                     if (it.isEmpty() || it.toIntOrNull() != null) {
                         httpCode = it
                     }
-                }
+                },
             )
 
             NetworkMockFieldView(
@@ -392,7 +386,7 @@ fun ErrorsEditor(
                 value = contentType,
                 onValueChange = {
                     contentType = it
-                }
+                },
             )
 
             NetworkMockFieldView(
@@ -401,7 +395,7 @@ fun ErrorsEditor(
                 value = body,
                 onValueChange = {
                     body = it
-                }
+                },
             )
         }
     }

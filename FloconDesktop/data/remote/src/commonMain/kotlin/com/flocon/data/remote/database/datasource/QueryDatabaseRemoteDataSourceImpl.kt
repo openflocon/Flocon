@@ -32,7 +32,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class QueryDatabaseRemoteDataSourceImpl(
     private val server: Server,
-    private val json: Json
+    private val json: Json,
 ) : QueryDatabaseRemoteDataSource {
     private val queryResultReceived = MutableStateFlow<Set<ResponseAndRequestIdDomainModel>>(emptySet())
 
@@ -84,13 +84,9 @@ class QueryDatabaseRemoteDataSourceImpl(
         }
     }
 
-    override fun getDeviceDatabases(message: FloconIncomingMessageDomainModel): List<DeviceDataBaseDomainModel> {
-        return toDeviceDatabasesDomain(json.decodeDeviceDatabases(message.body).orEmpty())
-    }
+    override fun getDeviceDatabases(message: FloconIncomingMessageDomainModel): List<DeviceDataBaseDomainModel> = toDeviceDatabasesDomain(json.decodeDeviceDatabases(message.body).orEmpty())
 
-    override fun getReceiveQuery(message: FloconIncomingMessageDomainModel): ResponseAndRequestIdDomainModel? {
-        return json.decodeReceivedQuery(message.body)?.toDomain()
-    }
+    override fun getReceiveQuery(message: FloconIncomingMessageDomainModel): ResponseAndRequestIdDomainModel? = json.decodeReceivedQuery(message.body)?.toDomain()
 }
 
 // TODO internal

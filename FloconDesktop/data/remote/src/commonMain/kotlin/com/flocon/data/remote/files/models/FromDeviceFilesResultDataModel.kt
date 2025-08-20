@@ -11,5 +11,5 @@ internal data class FromDeviceFilesResultDataModel(
 
 internal fun FromDeviceFilesResultDataModel.toDomain() = FromDeviceFilesResultDomainModel(
     requestId = requestId,
-    files = files.map(FromDeviceFilesDataModel::toDomain)
+    files = files.map(FromDeviceFilesDataModel::toDomain),
 )

@@ -3,9 +3,9 @@ package io.github.openflocon.flocondesktop.features.images
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.images.usecase.ObserveImagesUseCase
 import io.github.openflocon.domain.images.usecase.ResetCurrentDeviceImagesUseCase
-import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.network.list.mapper.formatTimestamp
@@ -30,12 +30,12 @@ class ImagesViewModel(
                 } else {
                     ImagesStateUiModel.WithImages(
                         images =
-                            it.map { image ->
-                                ImagesUiModel(
-                                    url = image.url,
-                                    downloadedAt = formatTimestamp(image.time),
-                                )
-                            },
+                        it.map { image ->
+                            ImagesUiModel(
+                                url = image.url,
+                                downloadedAt = formatTimestamp(image.time),
+                            )
+                        },
                     )
                 }
             }.flowOn(dispatcherProvider.viewModel)

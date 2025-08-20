@@ -35,13 +35,13 @@ class AnalyticsSelectorDelegate(
                 AnalyticsStateUiModel.WithContent(
                     analytics = analyticss.map { toUi(it) },
                     selected =
-                        toUi(
-                            selected ?: run {
-                                analyticss.first().also {
-                                    selectCurrentDeviceAnalyticsUseCase(it.id)
-                                }
-                            },
-                        ),
+                    toUi(
+                        selected ?: run {
+                            analyticss.first().also {
+                                selectCurrentDeviceAnalyticsUseCase(it.id)
+                            }
+                        },
+                    ),
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)

@@ -55,7 +55,7 @@ fun TextFilterDropdownContent(
     textFilterAction: (TextFilterAction) -> Unit,
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier,
     ) {
         TextFilterFieldView(
             modifier = Modifier.fillMaxWidth()

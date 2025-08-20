@@ -41,7 +41,7 @@ fun previewBadQualityConfigUiModel(errorCount: Int) = BadQualityConfigUiModel(
             weight = 1f,
             httpCode = 500,
             body = "{\"error\":\"...\"}",
-            contentType = "application/json"
+            contentType = "application/json",
         )
-    }
+    },
 )

@@ -75,14 +75,14 @@ fun HeaderLabelItem(
                 .fillMaxHeight()
                 .clip(shape)
                 .background(if (filtered) FloconTheme.colorPalette.surfaceVariant else Color.Transparent)
-                .clickable(onClick = clickOnFilter)
+                .clickable(onClick = clickOnFilter),
         ) {
             Text(
                 text = text,
                 style = typo,
                 textAlign = TextAlign.Center,
                 color = textColor,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                modifier = Modifier.padding(horizontal = 4.dp),
             )
         }
         Column(
@@ -100,8 +100,8 @@ fun HeaderLabelItem(
                     SortedByUiModel.Enabled.Ascending -> textColor
                     SortedByUiModel.Enabled.Descending,
                     SortedByUiModel.None,
-                        -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
-                }
+                    -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
+                },
             )
             FilterIcon(
                 icon = Icons.Outlined.ArrowDropDown,
@@ -114,7 +114,7 @@ fun HeaderLabelItem(
                     SortedByUiModel.Enabled.Ascending -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
                     SortedByUiModel.Enabled.Descending -> textColor
                     SortedByUiModel.None -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
-                }
+                },
             )
         }
     }
@@ -129,7 +129,7 @@ private fun FilterIcon(
     shape: Shape,
     textColor: Color,
     alignment: Alignment,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
@@ -145,7 +145,7 @@ private fun FilterIcon(
             imageVector = icon,
             contentDescription = null,
             tint = textColor,
-            modifier = Modifier.size(FilterIcon)
+            modifier = Modifier.size(FilterIcon),
         )
     }
 }

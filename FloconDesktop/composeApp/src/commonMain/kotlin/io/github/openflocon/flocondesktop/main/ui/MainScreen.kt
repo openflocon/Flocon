@@ -172,16 +172,16 @@ private fun MainScreen(
                     SubScreen.Deeplinks -> {
                         DeeplinkScreen(
                             modifier =
-                                Modifier
-                                    .fillMaxSize(),
+                            Modifier
+                                .fillMaxSize(),
                         )
                     }
 
                     SubScreen.Analytics -> {
                         AnalyticsScreen(
                             modifier =
-                                Modifier
-                                    .fillMaxSize(),
+                            Modifier
+                                .fillMaxSize(),
                         )
                     }
                 }

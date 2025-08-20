@@ -23,7 +23,7 @@ import kotlinx.serialization.json.Json
 
 class DeviceSharedPreferencesRemoteDataSourceImpl(
     private val server: Server,
-    private val json: Json
+    private val json: Json,
 ) : DeviceSharedPreferencesRemoteDataSource {
 
     override suspend fun askForDeviceSharedPreferences(
@@ -88,15 +88,10 @@ class DeviceSharedPreferencesRemoteDataSourceImpl(
         )
     }
 
-    override fun getPreferences(message: FloconIncomingMessageDomainModel): List<DeviceSharedPreferenceDomainModel> {
-        return json.safeDecodeFromString<List<DeviceSharedPreferenceDataModel>>(message.body)
-            ?.let { toDeviceSharedPreferenceDomain(it) }
-            .orEmpty()
-    }
+    override fun getPreferences(message: FloconIncomingMessageDomainModel): List<DeviceSharedPreferenceDomainModel> = json.safeDecodeFromString<List<DeviceSharedPreferenceDataModel>>(message.body)
+        ?.let { toDeviceSharedPreferenceDomain(it) }
+        .orEmpty()
 
-    override fun getValues(message: FloconIncomingMessageDomainModel): SharedPreferenceValuesResponseDomainModel? {
-        return json.safeDecodeFromString<SharedPreferenceValuesResponse>(message.body)
-            ?.let { toSharedPreferenceValuesResponseDomain(it) }
-    }
-
+    override fun getValues(message: FloconIncomingMessageDomainModel): SharedPreferenceValuesResponseDomainModel? = json.safeDecodeFromString<SharedPreferenceValuesResponse>(message.body)
+        ?.let { toSharedPreferenceValuesResponseDomain(it) }
 }

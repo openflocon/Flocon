@@ -5,11 +5,9 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -50,7 +48,7 @@ fun FilterBar(
             },
             placeholderText = placeholderText,
             textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         // Animated visibility for Clear button
@@ -62,12 +60,12 @@ fun FilterBar(
             Text(
                 text = "Clear",
                 modifier =
-                    Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable {
-                            filterText = ""
-                            onTextChangedCallback("")
-                        }.padding(horizontal = 12.dp),
+                Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable {
+                        filterText = ""
+                        onTextChangedCallback("")
+                    }.padding(horizontal = 12.dp),
                 color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
                 style = FloconTheme.typography.titleMedium,
             )

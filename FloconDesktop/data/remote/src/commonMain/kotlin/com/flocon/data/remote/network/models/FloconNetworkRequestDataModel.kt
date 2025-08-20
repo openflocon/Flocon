@@ -39,7 +39,7 @@ data class FloconNetworkResponseDataModel(
     val responseGrpcStatus: String? = null,
 )
 
-internal fun FloconNetworkResponseDataModel.toDomain() : FloconNetworkResponseOnlyDomainModel? {
+internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnlyDomainModel? {
     return try {
         val callId = floconCallId!!
         val networkResponse = FloconNetworkResponseDomainModel(
@@ -70,6 +70,6 @@ internal fun FloconNetworkResponseDataModel.toDomain() : FloconNetworkResponseOn
 
 internal fun FloconNetworkCallIdDataModel.toDomain(): FloconNetworkCallIdDomainModel? {
     return FloconNetworkCallIdDomainModel(
-        floconCallId = floconCallId ?: return null
+        floconCallId = floconCallId ?: return null,
     )
 }

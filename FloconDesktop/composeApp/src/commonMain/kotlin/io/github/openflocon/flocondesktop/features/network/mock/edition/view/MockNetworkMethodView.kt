@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkTag
 import io.github.openflocon.flocondesktop.features.network.list.view.components.deleteMethodBackground
 import io.github.openflocon.flocondesktop.features.network.list.view.components.deleteMethodText
@@ -19,6 +18,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.flocondesktop.features.network.list.view.components.postMethodText
 import io.github.openflocon.flocondesktop.features.network.list.view.components.putMethodBackground
 import io.github.openflocon.flocondesktop.features.network.list.view.components.putMethodText
+import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkMethodUi
 
 @Composable
 fun MockNetworkMethodView(

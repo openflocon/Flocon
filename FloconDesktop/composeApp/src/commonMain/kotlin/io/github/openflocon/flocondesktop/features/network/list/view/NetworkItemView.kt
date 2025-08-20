@@ -119,7 +119,7 @@ fun NetworkItemView(
             // Route - Takes remaining space (weight)
             Row(
                 modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = state.domain,
@@ -143,7 +143,7 @@ fun NetworkItemView(
                             color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
                             shape = RoundedCornerShape(4.dp),
                         )
-                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                        .padding(horizontal = 8.dp, vertical = 6.dp),
                 )
             }
 
