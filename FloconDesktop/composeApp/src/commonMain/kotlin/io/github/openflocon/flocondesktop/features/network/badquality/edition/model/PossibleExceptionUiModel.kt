@@ -4,6 +4,8 @@ data class PossibleExceptionUiModel(
     val classPath : String,
     val description: String,
 )
+
+// warning : be sure it's only IOExceptions
 val possibleExceptions = listOf(
     PossibleExceptionUiModel(
         "java.net.SocketTimeoutException",
