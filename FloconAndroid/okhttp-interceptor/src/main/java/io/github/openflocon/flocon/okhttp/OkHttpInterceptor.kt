@@ -91,6 +91,8 @@ class FloconOkhttpInterceptor() : Interceptor {
                 val badQualityConfig =
                     floconNetworkPlugin.badQualityConfig // Supposons que cette propriété existe
 
+                println("FLOCON_FLOCON badQualityConfig = $badQualityConfig")
+
                 if (badQualityConfig != null) {
                     val latencyProbability = badQualityConfig.latency.latencyTriggerProbability
                     val shouldSimulateLatency =
@@ -171,13 +173,15 @@ class FloconOkhttpInterceptor() : Interceptor {
             val durationMs: Double = (endTime - startTime) / 1e6
 
             val floconCallResponse = FloconNetworkResponse(
-                httpCode = null,
-                contentType = null,
+                httpCode = 0,
+                contentType = "error",
                 body = e.message, // TODO better handle of errors
                 headers = emptyMap(),
                 size = null,
                 grpcStatus = null,
             )
+
+            println("FLOCON_FLOCON error = $e")
 
             floconNetworkPlugin.logResponse(
                 FloconNetworkCallResponse(
@@ -216,8 +220,10 @@ class FloconOkhttpInterceptor() : Interceptor {
                         val errorClass = Class.forName(t.classPath)
                         val error = errorClass.newInstance() as? Throwable
                         if(error is IOException) {
+                            println("FLOCON_FLOCON throw error")
                             throw error //okhttp accepts only IOException
                         } else if(error is Throwable){
+                            println("FLOCON_FLOCON throw IOException(error)")
                             throw IOException(error)
                         }
                     }
