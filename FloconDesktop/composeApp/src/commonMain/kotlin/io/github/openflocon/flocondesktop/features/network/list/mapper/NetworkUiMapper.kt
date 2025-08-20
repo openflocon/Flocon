@@ -54,13 +54,13 @@ fun toUi(networkCall: FloconNetworkCallDomainModel): NetworkItemViewState = Netw
     isMocked = networkCall.request.isMocked,
 )
 
-fun getDomainUi(networkRequest: FloconNetworkCallDomainModel): String = when (networkRequest) {
-    is FloconNetworkCallDomainModel.GraphQl -> extractDomainAndPath(networkRequest.request.url)
-    is FloconNetworkCallDomainModel.Http -> extractDomain(networkRequest.request.url)
-    is FloconNetworkCallDomainModel.Grpc -> networkRequest.request.url
+fun getDomainUi(networkRequest: FloconNetworkCallDomainModel): String = when (networkRequest.request.specificInfos) {
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> extractDomainAndPath(networkRequest.request.url)
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> extractDomain(networkRequest.request.url)
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> networkRequest.request.url
 }
 
-fun formatDuration(duration: Double): String = duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)
+fun formatDuration(duration: Long): String = duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)
 
 fun formatTimestamp(timestamp: Long): String {
     val instant = Instant.fromEpochMilliseconds(timestamp)
