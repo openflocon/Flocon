@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 41,
-    "identityHash": "d699dfc54e3dbaa0e3ae992b29140a1e",
+    "identityHash": "f1dea53a3a26fcc273eacc8cb3f47879",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`callId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `type` TEXT NOT NULL, `request_url` TEXT NOT NULL, `request_method` TEXT NOT NULL, `request_startTime` INTEGER NOT NULL, `request_requestHeaders` TEXT NOT NULL, `request_requestBody` TEXT, `request_requestByteSize` INTEGER NOT NULL, `request_isMocked` INTEGER NOT NULL, `request_graphql_query` TEXT, `request_graphql_operationType` TEXT, `response_durationMs` REAL, `response_responseContentType` TEXT, `response_responseBody` TEXT, `response_responseHeaders` TEXT, `response_responseByteSize` INTEGER, `response_graphql_isSuccess` INTEGER, `response_graphql_responseHttpCode` INTEGER, `response_http_responseHttpCode` INTEGER, `response_grpc_responseStatus` TEXT, PRIMARY KEY(`callId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`callId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `type` TEXT NOT NULL, `request_url` TEXT NOT NULL, `request_method` TEXT NOT NULL, `request_startTime` INTEGER NOT NULL, `request_requestHeaders` TEXT NOT NULL, `request_requestBody` TEXT, `request_requestByteSize` INTEGER NOT NULL, `request_isMocked` INTEGER NOT NULL, `request_graphql_query` TEXT, `request_graphql_operationType` TEXT, `response_durationMs` INTEGER, `response_responseContentType` TEXT, `response_responseBody` TEXT, `response_responseHeaders` TEXT, `response_responseByteSize` INTEGER, `response_responseError` TEXT, `response_graphql_isSuccess` INTEGER, `response_graphql_responseHttpCode` INTEGER, `response_http_responseHttpCode` INTEGER, `response_grpc_responseStatus` TEXT, PRIMARY KEY(`callId`))",
         "fields": [
           {
             "fieldPath": "callId",
@@ -86,7 +86,7 @@
           {
             "fieldPath": "response.durationMs",
             "columnName": "response_durationMs",
-            "affinity": "REAL"
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "response.responseContentType",
@@ -107,6 +107,11 @@
             "fieldPath": "response.responseByteSize",
             "columnName": "response_responseByteSize",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "response.responseError",
+            "columnName": "response_responseError",
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "response.graphql.isSuccess",
@@ -1089,7 +1094,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd699dfc54e3dbaa0e3ae992b29140a1e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f1dea53a3a26fcc273eacc8cb3f47879')"
     ]
   }
 }

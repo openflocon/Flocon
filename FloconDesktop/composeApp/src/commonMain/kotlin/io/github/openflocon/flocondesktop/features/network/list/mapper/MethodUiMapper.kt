@@ -9,7 +9,7 @@ fun getMethodUi(networkRequest: FloconNetworkCallDomainModel): NetworkMethodUi =
         "mutation" -> NetworkMethodUi.GraphQl.MUTATION
         else -> NetworkMethodUi.OTHER(networkRequest.request.operationType, icon = null)
     }
-    is FloconNetworkCallDomainModel.Http -> toHttpMethodUi(networkRequest.networkRequest.method)
+    is FloconNetworkCallDomainModel.Http -> toHttpMethodUi(networkRequest.request.method)
     is FloconNetworkCallDomainModel.Grpc -> NetworkMethodUi.Grpc
 }
 

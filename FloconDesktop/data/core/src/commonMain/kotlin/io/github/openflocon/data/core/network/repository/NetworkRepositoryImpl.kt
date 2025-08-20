@@ -14,6 +14,7 @@ import io.github.openflocon.domain.network.models.BadQualityConfigId
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
+import io.github.openflocon.domain.network.models.getContentType
 import io.github.openflocon.domain.network.repository.NetworkBadQualityRepository
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
 import io.github.openflocon.domain.network.repository.NetworkMocksRepository
@@ -100,7 +101,7 @@ class NetworkRepositoryImpl(
                             }
                             toDomainForResponse(response = response, request = request)
                         }?.let { call ->
-                            if (call.networkResponse?.contentType?.startsWith("image/") == true) {
+                            if (call.response?.getContentType()?.startsWith("image/") == true) {
                                 networkImageRepository.onImageReceived(deviceId = deviceId, call = call)
                             }
                             networkLocalDataSource.save(
@@ -159,48 +160,31 @@ class NetworkRepositoryImpl(
         response: FloconNetworkResponseOnlyDomainModel,
         request: FloconNetworkCallDomainModel,
     ): FloconNetworkCallDomainModel? {
-        try {
-            val networkResponse = response.networkResponse
-
-            return when (request) {
-                is FloconNetworkCallDomainModel.GraphQl -> {
-                    // throw an exception if not http
-                    val responseHttp = response as FloconNetworkResponseOnlyDomainModel.Http
-                    val response = FloconNetworkCallDomainModel.GraphQl.Response(
-                        networkResponse = networkResponse,
-                        httpCode = responseHttp.httpCode,
-                        isSuccess = responseHttp.httpCode in 200..299,
-                    )
-                    request.copy(
-                        response = response,
-                    )
+        return try {
+            val response = when (val r = response.response) {
+                is FloconNetworkCallDomainModel.Response.Success -> {
+                    // specific case : map to graphQl if needed
+                    when (val s = r.specificInfos) {
+                        is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> {
+                            r.copy(
+                                specificInfos = FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl(
+                                    httpCode = s.httpCode,
+                                    isSuccess = s.httpCode in 200..299
+                                )
+                            )
+                        }
+                        else -> r
+                    }
                 }
 
-                is FloconNetworkCallDomainModel.Grpc -> {
-                    val responseHttp = response as FloconNetworkResponseOnlyDomainModel.Grpc
-                    val response = FloconNetworkCallDomainModel.Grpc.Response(
-                        networkResponse = networkResponse,
-                        responseStatus = responseHttp.grpcStatus,
-                    )
-                    request.copy(
-                        response = response,
-                    )
-                }
-
-                is FloconNetworkCallDomainModel.Http -> {
-                    val responseHttp = response as FloconNetworkResponseOnlyDomainModel.Http
-                    val response = FloconNetworkCallDomainModel.Http.Response(
-                        networkResponse = networkResponse,
-                        httpCode = responseHttp.httpCode,
-                    )
-                    request.copy(
-                        response = response,
-                    )
-                }
+                is FloconNetworkCallDomainModel.Response.Failure -> response.response
             }
+            request.copy(
+                response = response,
+            )
         } catch (t: Throwable) {
             t.printStackTrace()
-            return null
+            null
         }
     }
 

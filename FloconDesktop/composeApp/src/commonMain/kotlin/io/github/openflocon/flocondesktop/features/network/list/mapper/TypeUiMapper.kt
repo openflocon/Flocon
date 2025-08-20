@@ -9,16 +9,16 @@ fun toTypeUi(call: FloconNetworkCallDomainModel): NetworkItemViewState.NetworkTy
     )
 
     is FloconNetworkCallDomainModel.Http -> {
-        val query = extractPath(call.networkRequest.url)
+        val query = extractPath(call.request.url)
         NetworkItemViewState.NetworkTypeUi.Url(
             query = query,
-            method = call.networkRequest.method,
+            method = call.request.method,
         )
     }
 
     is FloconNetworkCallDomainModel.Grpc -> {
         NetworkItemViewState.NetworkTypeUi.Grpc(
-            method = call.networkRequest.method,
+            method = call.request.method,
         )
     }
 }

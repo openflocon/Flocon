@@ -8,7 +8,6 @@ import io.github.openflocon.data.core.network.graphql.model.GraphQlRequestBody
 import io.github.openflocon.data.core.network.graphql.model.GraphQlResponseBody
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.serialization.json.Json
 import kotlin.uuid.ExperimentalUuidApi
@@ -34,7 +33,8 @@ fun toDomain(decoded: FloconNetworkRequestDataModel): FloconNetworkCallDomainMod
     val graphQl = extractGraphQl(decoded)
 
     val callId = decoded.floconCallId!!
-    val networkRequest = FloconNetworkRequestDomainModel(
+
+    val request = FloconNetworkCallDomainModel.Request(
         url = decoded.url!!,
         startTime = decoded.startTime!!,
         method = decoded.method!!,
@@ -42,33 +42,21 @@ fun toDomain(decoded: FloconNetworkRequestDataModel): FloconNetworkCallDomainMod
         body = decoded.requestBody,
         byteSize = decoded.requestSize ?: 0L,
         isMocked = decoded.isMocked ?: false,
+        specificInfos = when {
+            graphQl != null -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
+                query = graphQl.request.requestBody.query,
+                operationType = graphQl.request.operationType,
+            )
+            decoded.floconNetworkType == "grpc" -> FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc
+            else -> FloconNetworkCallDomainModel.Request.SpecificInfos.Http
+        }
     )
 
-    when {
-        graphQl != null -> FloconNetworkCallDomainModel.GraphQl(
-            callId = callId,
-            request = FloconNetworkCallDomainModel.GraphQl.Request(
-                query = graphQl.request.queryName ?: "anonymous",
-                operationType = graphQl.request.operationType,
-                networkRequest = networkRequest,
-            ),
-            response = null,
-        )
-
-        decoded.floconNetworkType == "grpc" -> FloconNetworkCallDomainModel.Grpc(
-            callId = callId,
-            networkRequest = networkRequest,
-            response = null,
-        )
-        // decoded.floconNetworkType == "http"
-        else -> {
-            FloconNetworkCallDomainModel.Http(
-                callId = callId,
-                networkRequest = networkRequest,
-                response = null,
-            )
-        }
-    }
+    FloconNetworkCallDomainModel(
+        callId = callId,
+        request = request,
+        response = null, // for now it's null
+    )
 } catch (t: Throwable) {
     t.printStackTrace()
     null

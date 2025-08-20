@@ -35,7 +35,8 @@ data class FloconNetworkRequestLiteEmbedded(
 )
 
 data class FloconNetworkResponseLiteEmbedded(
-    val durationMs: Double,
+    val durationMs: Long,
+    val responseError: String?,
     val responseContentType: String?,
     //val responseBody: String?,
     val responseHeaders: Map<String, String>,

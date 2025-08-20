@@ -17,17 +17,17 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkSta
 
 fun toDetailUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState = NetworkDetailViewState(
     callId = request.callId,
-    fullUrl = request.networkRequest.url,
+    fullUrl = request.request.url,
     method = toDetailMethodUi(request),
     status = toDetailHttpStatusUi(request),
-    requestTimeFormatted = request.networkRequest.startTime.let { formatTimestamp(it) },
-    durationFormatted = request.networkResponse?.durationMs?.let { formatDuration(it) },
+    requestTimeFormatted = request.request.startTime.let { formatTimestamp(it) },
+    durationFormatted = request.response?.durationMs?.let { formatDuration(it) },
     // request
-    requestBody = httpBodyToUi(request.networkRequest.body),
-    requestHeaders = toNetworkHeadersUi(request.networkRequest.headers),
-    requestSize = ByteFormatter.formatBytes(request.networkRequest.byteSize),
+    requestBody = httpBodyToUi(request.request.body),
+    requestHeaders = toNetworkHeadersUi(request.request.headers),
+    requestSize = ByteFormatter.formatBytes(request.request.byteSize),
     // response
-    response = request.networkResponse?.let {
+    response = request.response?.let {
         NetworkDetailViewState.Response(
             body = httpBodyToUi(it.body),
             size = ByteFormatter.formatBytes(it.byteSize),
@@ -37,7 +37,7 @@ fun toDetailUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState = 
     graphQlSection = graphQlSection(request),
 )
 
-private fun toDetailHttpStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.networkResponse?.let { response ->
+private fun toDetailHttpStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.response?.let { response ->
     when (networkCall) {
         is FloconNetworkCallDomainModel.Grpc -> toGrpcNetworkStatusUi(networkCall)
         // here for grphql we want the http code, the graphql status will be displayed on the specific graphql section
@@ -70,10 +70,10 @@ fun toNetworkHeadersUi(headers: Map<String, String>?): List<NetworkDetailHeaderU
 
 fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState.Method = when (request) {
     is FloconNetworkCallDomainModel.Grpc -> NetworkDetailViewState.Method.MethodName(
-        name = request.networkRequest.method,
+        name = request.request.method,
     )
 
     is FloconNetworkCallDomainModel.GraphQl,
     is FloconNetworkCallDomainModel.Http,
-    -> NetworkDetailViewState.Method.Http(toHttpMethodUi(request.networkRequest.method))
+    -> NetworkDetailViewState.Method.Http(toHttpMethodUi(request.request.method))
 }

@@ -43,21 +43,21 @@ fun extractPath(url: String): String {
 
 fun toUi(networkCall: FloconNetworkCallDomainModel): NetworkItemViewState = NetworkItemViewState(
     uuid = networkCall.callId,
-    dateFormatted = formatTimestamp(networkCall.networkRequest.startTime),
-    timeFormatted = networkCall.networkResponse?.durationMs?.let { formatDuration(it) },
-    requestSize = ByteFormatter.formatBytes(networkCall.networkRequest.byteSize),
-    responseSize = networkCall.networkResponse?.byteSize?.let { ByteFormatter.formatBytes(it) },
+    dateFormatted = formatTimestamp(networkCall.request.startTime),
+    timeFormatted = networkCall.response?.durationMs?.let { formatDuration(it) },
+    requestSize = ByteFormatter.formatBytes(networkCall.request.byteSize),
+    responseSize = networkCall.response?.byteSize?.let { ByteFormatter.formatBytes(it) },
     domain = getDomainUi(networkCall),
     type = toTypeUi(networkCall),
     method = getMethodUi(networkCall),
     status = getStatusUi(networkCall),
-    isMocked = networkCall.networkRequest.isMocked,
+    isMocked = networkCall.request.isMocked,
 )
 
 fun getDomainUi(networkRequest: FloconNetworkCallDomainModel): String = when (networkRequest) {
-    is FloconNetworkCallDomainModel.GraphQl -> extractDomainAndPath(networkRequest.networkRequest.url)
-    is FloconNetworkCallDomainModel.Http -> extractDomain(networkRequest.networkRequest.url)
-    is FloconNetworkCallDomainModel.Grpc -> networkRequest.networkRequest.url
+    is FloconNetworkCallDomainModel.GraphQl -> extractDomainAndPath(networkRequest.request.url)
+    is FloconNetworkCallDomainModel.Http -> extractDomain(networkRequest.request.url)
+    is FloconNetworkCallDomainModel.Grpc -> networkRequest.request.url
 }
 
 fun formatDuration(duration: Double): String = duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)

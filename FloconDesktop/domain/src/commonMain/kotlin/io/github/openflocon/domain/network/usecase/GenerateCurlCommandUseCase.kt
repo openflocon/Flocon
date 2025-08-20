@@ -4,21 +4,21 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 
 class GenerateCurlCommandUseCase {
     operator fun invoke(infos: FloconNetworkCallDomainModel): String {
-        val url = infos.networkRequest.url
+        val url = infos.request.url
         val commandBuilder = StringBuilder("curl")
 
         // 1. Add HTTP Method
-        commandBuilder.append(" -X ${infos.networkRequest.method}")
+        commandBuilder.append(" -X ${infos.request.method}")
 
         // 2. Add Request Headers
-        infos.networkRequest.headers.forEach { (key, value) ->
+        infos.request.headers.forEach { (key, value) ->
             // Escape double quotes within header values if they exist
             val escapedValue = value.replace("\"", "\\\"")
             commandBuilder.append(" -H \"$key: $escapedValue\"")
         }
 
         // 3. Add Request Body (if present)
-        infos.networkRequest.body?.let { body ->
+        infos.request.body?.let { body ->
             if (body.isNotEmpty()) {
                 // Escape single quotes within the body for shell compatibility
                 // ' -> '\'' (closes current single quote, adds escaped single quote, reopens single quote)

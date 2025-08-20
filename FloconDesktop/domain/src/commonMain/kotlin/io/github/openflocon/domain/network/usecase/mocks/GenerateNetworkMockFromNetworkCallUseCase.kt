@@ -23,18 +23,21 @@ class GenerateNetworkMockFromNetworkCallUseCase(
             MockNetworkDomainModel(
                 id = Uuid.random().toString(), // generate
                 expectation = MockNetworkDomainModel.Expectation(
-                    urlPattern = request.networkRequest.url,
-                    method = request.networkRequest.method,
+                    urlPattern = request.request.url,
+                    method = request.request.method,
                 ),
                 isEnabled = true, // enabled by default
-                response = request.networkResponse?.let {
-                    MockNetworkDomainModel.Response(
-                        httpCode = request.httpCode() ?: 200,
-                        body = it.body ?: "",
-                        mediaType = it.headers["Content-Type"] ?: "",
-                        delay = 0,
-                        headers = it.headers,
-                    )
+                response = request.response?.let {
+                    when(it) {
+                        is FloconNetworkCallDomainModel.Response.Failure -> null // maybe generate error response in this case
+                        is FloconNetworkCallDomainModel.Response.Success -> MockNetworkDomainModel.Response(
+                            httpCode = request.httpCode() ?: 200,
+                            body = it.body ?: "",
+                            mediaType = it.headers["Content-Type"] ?: "",
+                            delay = 0,
+                            headers = it.headers,
+                        )
+                    }
                 } ?: MockNetworkDomainModel.Response(
                     httpCode = 200,
                     body = "",

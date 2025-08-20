@@ -49,11 +49,12 @@ data class FloconNetworkRequestEmbedded(
 )
 
 data class FloconNetworkResponseEmbedded(
-    val durationMs: Double,
+    val durationMs: Long,
     val responseContentType: String?,
     val responseBody: String?,
     val responseHeaders: Map<String, String>,
     val responseByteSize: Long,
+    val responseError: String?,
 
     @Embedded(prefix = "graphql_")
     val graphql: NetworkCallGraphQlResponseEmbedded?,

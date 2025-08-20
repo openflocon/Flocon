@@ -8,7 +8,7 @@ fun loadingStatus() = NetworkStatusUi(
     status = NetworkStatusUi.Status.LOADING,
 )
 
-fun getStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.networkResponse?.let { response ->
+fun getStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.response?.let { response ->
     when (val t = networkCall) {
         is FloconNetworkCallDomainModel.GraphQl -> toGraphQlNetworkStatusUi(isSuccess = t.response!!.isSuccess)
         is FloconNetworkCallDomainModel.Http -> toNetworkStatusUi(networkCall.response!!.httpCode)
