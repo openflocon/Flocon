@@ -1,7 +1,14 @@
 package io.github.openflocon.domain.network.models
 
+import kotlin.time.Instant
+
+typealias BadQualityConfigId = String
+
 data class BadQualityConfigDomainModel(
+    val id: BadQualityConfigId,
     val isEnabled: Boolean,
+    val name: String,
+    val createdAt: Instant,
     val latency: LatencyConfig,
     val errorProbability: Double, // chance of triggering an error
     val errors: List<Error>, // list of errors
