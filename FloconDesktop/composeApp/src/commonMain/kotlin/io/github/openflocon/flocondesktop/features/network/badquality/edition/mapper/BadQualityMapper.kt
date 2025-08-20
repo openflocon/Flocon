@@ -18,9 +18,16 @@ fun BadQualityConfigDomainModel.toUi() = BadQualityConfigUiModel(
 
 private fun BadQualityConfigDomainModel.Error.toUi() = BadQualityConfigUiModel.Error(
     weight = weight,
-    httpCode = httpCode,
-    body = body,
-    contentType = contentType,
+    type = when(val t = type) {
+        is BadQualityConfigDomainModel.Error.Type.Body -> BadQualityConfigUiModel.Error.Type.Body(
+            httpCode = t.httpCode,
+            body = t.body,
+            contentType = t.contentType,
+        )
+        is BadQualityConfigDomainModel.Error.Type.Exception -> BadQualityConfigUiModel.Error.Type.Exception(
+            classPath = t.classPath,
+        )
+    }
 )
 
 private fun BadQualityConfigDomainModel.LatencyConfig.toUi() = BadQualityConfigUiModel.LatencyConfig(
@@ -43,9 +50,16 @@ fun BadQualityConfigUiModel.toDomain() = BadQualityConfigDomainModel(
 
 private fun BadQualityConfigUiModel.Error.toDomain() = BadQualityConfigDomainModel.Error(
     weight = weight,
-    httpCode = httpCode,
-    body = body,
-    contentType = contentType,
+    type = when(val t = type) {
+        is BadQualityConfigUiModel.Error.Type.Body -> BadQualityConfigDomainModel.Error.Type.Body(
+            httpCode = t.httpCode,
+            body = t.body,
+            contentType = t.contentType,
+        )
+        is BadQualityConfigUiModel.Error.Type.Exception -> BadQualityConfigDomainModel.Error.Type.Exception(
+            classPath = t.classPath,
+        )
+    }
 )
 
 private fun BadQualityConfigUiModel.LatencyConfig.toDomain() = BadQualityConfigDomainModel.LatencyConfig(

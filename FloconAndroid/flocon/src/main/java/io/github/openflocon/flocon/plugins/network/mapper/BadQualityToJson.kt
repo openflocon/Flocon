@@ -23,9 +23,16 @@ fun toJsonObject(config: BadQualityConfig): JSONObject {
     config.errors.forEach { error ->
         val errorObject = JSONObject()
         errorObject.put("weight", error.weight)
-        errorObject.put("errorCode", error.errorCode)
-        errorObject.put("errorBody", error.errorBody)
-        errorObject.put("errorContentType", error.errorContentType)
+        when(val t = error.type) {
+            is BadQualityConfig.Error.Type.Body -> {
+                errorObject.put("errorCode", t.errorCode)
+                errorObject.put("errorBody", t.errorBody)
+                errorObject.put("errorContentType", t.errorContentType)
+            }
+            is BadQualityConfig.Error.Type.ErrorThrow -> {
+                errorObject.put("errorException", t.classPath)
+            }
+        }
         errorsArray.put(errorObject)
     }
     jsonObject.put("errors", errorsArray)
@@ -54,13 +61,27 @@ fun parseBadQualityConfig(jsonString: String): BadQualityConfig? {
         val errorsList = mutableListOf<BadQualityConfig.Error>()
         for (i in 0 until errorsArray.length()) {
             val errorObject = errorsArray.getJSONObject(i)
-            val error = BadQualityConfig.Error(
-                weight = errorObject.getDouble("weight").toFloat(),
-                errorCode = errorObject.getInt("errorCode"),
-                errorBody = errorObject.getString("errorBody"),
-                errorContentType = errorObject.getString("errorContentType")
-            )
-            errorsList.add(error)
+            try {
+                val errorException = errorObject.optString("errorException")
+                val errorCode = errorObject.optInt("errorCode")
+                val errorBody = errorObject.optString("errorBody")
+                val errorContentType = errorObject.optString("errorContentType")
+                val error = BadQualityConfig.Error(
+                    weight = errorObject.getDouble("weight").toFloat(),
+                    type = if (errorException.isNotEmpty()) {
+                        BadQualityConfig.Error.Type.ErrorThrow(errorException)
+                    } else {
+                        BadQualityConfig.Error.Type.Body(
+                            errorCode = errorCode,
+                            errorBody = errorBody,
+                            errorContentType = errorContentType
+                        )
+                    }
+                )
+                errorsList.add(error)
+            } catch (t: Throwable) {
+                FloconLogger.logError(t.message ?: "bad connection network parsing issue", t)
+            }
         }
 
         BadQualityConfig(

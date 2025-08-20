@@ -35,8 +35,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.SelectedBadQualityUiModel
+import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.possibleExceptions
+import io.github.openflocon.flocondesktop.features.network.list.view.components.getMethodBackground
+import io.github.openflocon.flocondesktop.features.network.list.view.components.getMethodText
+import io.github.openflocon.flocondesktop.features.network.list.view.components.postMethodBackground
+import io.github.openflocon.flocondesktop.features.network.list.view.components.postMethodText
 import io.github.openflocon.flocondesktop.features.network.mock.edition.view.NetworkMockFieldView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
@@ -179,21 +185,45 @@ fun BadNetworkQualityEditionContent(
                 },
             ) {
                 FloconSurface {
-                    ErrorsEditor(
-                        error = selectedError,
-                        onErrorsChange = { error ->
-                            errors = if (errors.any { it.uuid == selectedError.uuid }) {
-                                errors.map {
-                                    if (it.uuid == selectedError.uuid) {
-                                        error
-                                    } else it
-                                }
-                            } else {
-                                errors + error
-                            }
-                            selectedErrorToEdit = null
-                        },
-                    )
+                    when (val t = selectedError.type) {
+                        is BadQualityConfigUiModel.Error.Type.Body -> {
+                            ErrorsEditor(
+                                error = selectedError,
+                                httpType = t,
+                                onErrorsChange = { error ->
+                                    errors = if (errors.any { it.uuid == selectedError.uuid }) {
+                                        errors.map {
+                                            if (it.uuid == selectedError.uuid) {
+                                                error
+                                            } else it
+                                        }
+                                    } else {
+                                        errors + error
+                                    }
+                                    selectedErrorToEdit = null
+                                },
+                            )
+                        }
+
+                        is BadQualityConfigUiModel.Error.Type.Exception -> {
+                            ErrorExceptionEditor(
+                                error = selectedError,
+                                errorException = t,
+                                onErrorsChange = { error ->
+                                    errors = if (errors.any { it.uuid == selectedError.uuid }) {
+                                        errors.map {
+                                            if (it.uuid == selectedError.uuid) {
+                                                error
+                                            } else it
+                                        }
+                                    } else {
+                                        errors + error
+                                    }
+                                    selectedErrorToEdit = null
+                                },
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -209,7 +239,8 @@ fun BadNetworkQualityEditionContent(
                         id = config?.id ?: UUID.randomUUID().toString(), // generate a new one
                         name = name,
                         isEnabled = config?.isEnabled ?: false, // disabled by default
-                        createdAt = config?.createdAt ?: System.currentTimeMillis(), // generate a new date
+                        createdAt = config?.createdAt
+                            ?: System.currentTimeMillis(), // generate a new date
                         latency = BadQualityConfigUiModel.LatencyConfig(
                             triggerProbability = triggerProbability
                                 .toDoubleOrNull()
@@ -257,15 +288,34 @@ fun ErrorsListView(
                         BadQualityConfigUiModel.Error(
                             // new error
                             weight = 1f,
-                            httpCode = 500,
-                            body = "",
-                            contentType = "application/json",
+                            type = BadQualityConfigUiModel.Error.Type.Body(
+                                httpCode = 500,
+                                body = "{\"error\":\"...\"}",
+                                contentType = "application/json",
+                            ),
                         ),
                     )
                 },
             ) {
                 Text(
-                    text = "Add",
+                    text = "Add http error",
+                )
+            }
+            FloconButton(
+                onClick = {
+                    onErrorsClicked(
+                        BadQualityConfigUiModel.Error(
+                            // new error
+                            weight = 1f,
+                            type = BadQualityConfigUiModel.Error.Type.Exception(
+                                classPath = possibleExceptions.first().classPath,
+                            ),
+                        ),
+                    )
+                },
+            ) {
+                Text(
+                    text = "Add Exception",
                 )
             }
         }
@@ -290,9 +340,24 @@ fun ErrorsListView(
                     )
 
                     Text("Weight : ${error.weight}", style = textStyle)
-                    Text("HttpCode : ${error.httpCode}", style = textStyle) // or throwable ?
-                    Text(error.contentType, style = textStyle)
-                    Text("Body : ${error.body}", maxLines = 2, style = textStyle)
+                    when (val t = error.type) {
+                        is BadQualityConfigUiModel.Error.Type.Body -> {
+                            Text("HttpCode : ${t.httpCode}", style = textStyle) // or throwable ?
+                            Text(t.contentType, style = textStyle)
+                            Text("Body : ${t.body}", maxLines = 2, style = textStyle)
+                        }
+
+                        is BadQualityConfigUiModel.Error.Type.Exception -> {
+                            Text(
+                                "Exception",
+                                style = textStyle
+                            )
+                            Text(
+                                t.classPath,
+                                style = textStyle
+                            )
+                        }
+                    }
 
                     // bouton supprimer
                     Row(
@@ -319,14 +384,69 @@ fun ErrorsListView(
 }
 
 @Composable
+fun ErrorExceptionEditor(
+    error: BadQualityConfigUiModel.Error,
+    errorException: BadQualityConfigUiModel.Error.Type.Exception,
+    onErrorsChange: (BadQualityConfigUiModel.Error) -> Unit,
+) {
+    Column(
+        modifier = Modifier.padding(all = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        possibleExceptions.fastForEach { exception ->
+            val (backgroundColor, textColor) = if (exception.classPath == errorException.classPath) {
+                FloconTheme.colorPalette.onSurface to FloconTheme.colorPalette.panel
+            } else {
+                FloconTheme.colorPalette.panel to FloconTheme.colorPalette.onSurface
+            }
+            Column(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        color = backgroundColor,
+                    )
+                    .then(
+                        Modifier.clickable(
+                            onClick = {
+                                onErrorsChange(
+                                    error.copy(
+                                        weight = 1f,
+                                        type = errorException.copy(
+                                            classPath = exception.classPath
+                                        )
+                                    )
+                                )
+                            },
+                        )
+                    ).padding(all = 8.dp)
+            ) {
+                Text(
+                    text = exception.description,
+                    style = FloconTheme.typography.bodySmall,
+                    color = textColor,
+                )
+                Text(
+                    text = exception.classPath,
+                    style = FloconTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
+                    color = textColor,
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun ErrorsEditor(
     error: BadQualityConfigUiModel.Error,
+    httpType: BadQualityConfigUiModel.Error.Type.Body,
     onErrorsChange: (BadQualityConfigUiModel.Error) -> Unit,
 ) {
     var weight by remember(error) { mutableStateOf<String>(error.weight.toString()) }
-    var httpCode by remember(error) { mutableStateOf<String>(error.httpCode.toString()) }
-    var contentType by remember { mutableStateOf<String>(error.contentType) }
-    var body by remember(error) { mutableStateOf<String>(error.body) }
+    var httpCode by remember(error) { mutableStateOf<String>(httpType.httpCode.toString()) }
+    var contentType by remember { mutableStateOf<String>(httpType.contentType) }
+    var body by remember(error) { mutableStateOf<String>(httpType.body) }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         // bouton ajouter
@@ -338,9 +458,11 @@ fun ErrorsEditor(
                     onErrorsChange(
                         error.copy(
                             weight = weight.toFloatOrNull() ?: error.weight,
-                            httpCode = httpCode.toIntOrNull() ?: error.httpCode,
-                            contentType = contentType,
-                            body = body,
+                            type = httpType.copy(
+                                httpCode = httpCode.toIntOrNull() ?: httpType.httpCode,
+                                contentType = contentType,
+                                body = body,
+                            )
                         ),
                     )
                 }

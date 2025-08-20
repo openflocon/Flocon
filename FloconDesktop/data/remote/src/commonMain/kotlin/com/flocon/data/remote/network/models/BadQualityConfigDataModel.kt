@@ -18,8 +18,9 @@ data class BadQualityConfigDataModel(
     @Serializable
     data class Error(
         val weight: Float, // increase the probability of being triggered vs all others errors
-        val errorCode: Int,
-        val errorBody: String,
-        val errorContentType: String, // "application/json"
+        val errorException: String?,
+        val errorCode: Int?,
+        val errorBody: String?,
+        val errorContentType: String?, // "application/json"
     )
 }

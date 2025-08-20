@@ -20,8 +20,17 @@ data class BadQualityConfigDomainModel(
     )
     data class Error(
         val weight: Float, // increase the probability of being triggered vs all others errors
-        val httpCode: Int,
-        val body: String,
-        val contentType: String, // "application/json"
-    )
+        val type: Type,
+    ) {
+        sealed interface Type {
+            data class Body(
+                val httpCode: Int,
+                val body: String,
+                val contentType: String,
+            ) : Type
+            data class Exception(
+                val classPath: String,
+            ) : Type
+        }
+    }
 }
