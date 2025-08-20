@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.SelectedBadQualityUiModel
+import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.possibleExceptions
 import io.github.openflocon.flocondesktop.features.network.list.view.components.getMethodBackground
 import io.github.openflocon.flocondesktop.features.network.list.view.components.getMethodText
 import io.github.openflocon.flocondesktop.features.network.list.view.components.postMethodBackground
@@ -49,15 +50,6 @@ import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import java.util.UUID
-
-// TODO move
-private val possibleErrors = listOf(
-    "java.io.IOException.UnknownHostException",
-    "java.net.ConnectException",
-    "java.util.concurrent.TimeoutException",
-    "java.net.SocketTimeoutException",
-    "java.net.SocketException",
-)
 
 @Composable
 fun BadQualityEditionWindow(
@@ -316,7 +308,7 @@ fun ErrorsListView(
                             // new error
                             weight = 1f,
                             type = BadQualityConfigUiModel.Error.Type.Exception(
-                                classPath = possibleErrors.first(),
+                                classPath = possibleExceptions.first().classPath,
                             ),
                         ),
                     )
@@ -397,16 +389,21 @@ fun ErrorExceptionEditor(
     errorException: BadQualityConfigUiModel.Error.Type.Exception,
     onErrorsChange: (BadQualityConfigUiModel.Error) -> Unit,
 ) {
-    Column(modifier = Modifier.padding(all = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        possibleErrors.fastForEach { exception ->
-            Text(
-                modifier = Modifier.clip(RoundedCornerShape(20.dp))
+    Column(
+        modifier = Modifier.padding(all = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        possibleExceptions.fastForEach { exception ->
+            val (backgroundColor, textColor) = if (exception.classPath == errorException.classPath) {
+                FloconTheme.colorPalette.onSurface to FloconTheme.colorPalette.panel
+            } else {
+                FloconTheme.colorPalette.panel to FloconTheme.colorPalette.onSurface
+            }
+            Column(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
                     .background(
-                        color = if (exception == errorException.classPath) {
-                            getMethodBackground
-                        } else {
-                            postMethodBackground
-                        },
+                        color = backgroundColor,
                     )
                     .then(
                         Modifier.clickable(
@@ -415,21 +412,27 @@ fun ErrorExceptionEditor(
                                     error.copy(
                                         weight = 1f,
                                         type = errorException.copy(
-                                            classPath = exception
+                                            classPath = exception.classPath
                                         )
                                     )
                                 )
                             },
                         )
-                    )
-                    .padding(horizontal = 4.dp, vertical = 2.dp),
-                text = exception,
-                color = if (exception == errorException.classPath) {
-                    getMethodText
-                } else {
-                    postMethodText
-                },
-            )
+                    ).padding(all = 8.dp)
+            ) {
+                Text(
+                    text = exception.description,
+                    style = FloconTheme.typography.bodySmall,
+                    color = textColor,
+                )
+                Text(
+                    text = exception.classPath,
+                    style = FloconTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
+                    color = textColor,
+                )
+            }
         }
     }
 }
