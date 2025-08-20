@@ -134,11 +134,21 @@ fun toRemote(domain: BadQualityConfigDomainModel): BadQualityConfigDataModel = B
     },
     errorProbability = domain.errorProbability,
     errors = domain.errors.map {
-        BadQualityConfigDataModel.Error(
-            weight = it.weight,
-            errorCode = it.httpCode,
-            errorBody = it.body,
-            errorContentType = it.contentType,
-        )
+        when(val t = it.type) {
+            is BadQualityConfigDomainModel.Error.Type.Body -> BadQualityConfigDataModel.Error(
+                weight = it.weight,
+                errorCode = t.httpCode,
+                errorBody = t.body,
+                errorContentType = t.contentType,
+                errorException = null,
+            )
+            is BadQualityConfigDomainModel.Error.Type.Exception -> BadQualityConfigDataModel.Error(
+                weight = it.weight,
+                errorException = t.classPath,
+                errorCode = null,
+                errorBody = null,
+                errorContentType = null,
+            )
+        }
     },
 )

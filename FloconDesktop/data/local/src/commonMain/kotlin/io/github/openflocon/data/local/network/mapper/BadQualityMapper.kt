@@ -8,46 +8,57 @@ import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import kotlinx.serialization.json.Json
 import kotlin.time.Instant
 
-fun toDomain(json: Json, entity: BadQualityConfigEntity): BadQualityConfigDomainModel {
+fun BadQualityConfigEntity.toDomain(json: Json): BadQualityConfigDomainModel {
     val errors = try {
-        json.decodeFromString<List<ErrorEmbedded>>(entity.errors)
-            .map { toDomain(it) }
+        json.decodeFromString<List<ErrorEmbedded>>(errors)
+            .map { it.toDomain() }
     } catch (t: Throwable) {
         t.printStackTrace()
         emptyList()
     }
     return BadQualityConfigDomainModel(
-        id = entity.id,
-        name = entity.name,
-        createdAt = Instant.fromEpochMilliseconds(entity.createdAt),
-        isEnabled = entity.isEnabled,
+        id = id,
+        name = name,
+        createdAt = Instant.fromEpochMilliseconds(createdAt),
+        isEnabled = isEnabled,
         latency = BadQualityConfigDomainModel.LatencyConfig(
-            triggerProbability = entity.latency.triggerProbability,
-            minLatencyMs = entity.latency.minLatencyMs,
-            maxLatencyMs = entity.latency.maxLatencyMs,
+            triggerProbability = latency.triggerProbability,
+            minLatencyMs = latency.minLatencyMs,
+            maxLatencyMs = latency.maxLatencyMs,
         ),
-        errorProbability = entity.errorProbability,
+        errorProbability = errorProbability,
         errors = errors,
     )
 }
 
-fun toDomain(error: ErrorEmbedded): BadQualityConfigDomainModel.Error {
+fun ErrorEmbedded.toDomain(): BadQualityConfigDomainModel.Error {
     return BadQualityConfigDomainModel.Error(
-        weight = error.weight,
-        httpCode = error.httpCode,
-        body = error.body,
-        contentType = error.contentType,
+        weight = weight,
+        type = type.toDomain(),
     )
 }
 
+private fun ErrorEmbedded.Type.toDomain(): BadQualityConfigDomainModel.Error.Type {
+    return when (this) {
+        is ErrorEmbedded.Type.Body -> BadQualityConfigDomainModel.Error.Type.Body(
+            httpCode = httpCode,
+            body = body,
+            contentType = contentType,
+        )
 
-fun toEntity(
+        is ErrorEmbedded.Type.Exception -> BadQualityConfigDomainModel.Error.Type.Exception(
+            classPath = classPath,
+        )
+    }
+}
+
+
+fun BadQualityConfigDomainModel.toEntity(
     json: Json,
-    config: BadQualityConfigDomainModel,
     deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
 ): BadQualityConfigEntity {
-    val errorsEmbedded = config.errors.map {
-        toEntity(it)
+    val errorsEmbedded = errors.map {
+        it.toEntity()
     }
     val errors = try {
         json.encodeToString<List<ErrorEmbedded>>(errorsEmbedded)
@@ -56,25 +67,35 @@ fun toEntity(
         "[]"
     }
     return BadQualityConfigEntity(
-        id = config.id,
-        name = config.name,
-        createdAt = config.createdAt.toEpochMilliseconds(),
+        id = id,
+        name = name,
+        createdAt = createdAt.toEpochMilliseconds(),
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
-        isEnabled = config.isEnabled,
+        isEnabled = isEnabled,
         latency = LatencyConfigEmbedded(
-            triggerProbability = config.latency.triggerProbability,
-            minLatencyMs = config.latency.minLatencyMs,
-            maxLatencyMs = config.latency.maxLatencyMs,
+            triggerProbability = latency.triggerProbability,
+            minLatencyMs = latency.minLatencyMs,
+            maxLatencyMs = latency.maxLatencyMs,
         ),
-        errorProbability = config.errorProbability,
+        errorProbability = errorProbability,
         errors = errors,
     )
 }
 
-private fun toEntity(error: BadQualityConfigDomainModel.Error): ErrorEmbedded = ErrorEmbedded(
-    weight = error.weight,
-    httpCode = error.httpCode,
-    body = error.body,
-    contentType = error.contentType,
+private fun BadQualityConfigDomainModel.Error.toEntity(): ErrorEmbedded = ErrorEmbedded(
+    weight = weight,
+    type = this.type.toEntity(),
 )
+
+private fun BadQualityConfigDomainModel.Error.Type.toEntity() = when (this) {
+    is BadQualityConfigDomainModel.Error.Type.Body -> ErrorEmbedded.Type.Body(
+        httpCode = httpCode,
+        body = body,
+        contentType = contentType,
+    )
+
+    is BadQualityConfigDomainModel.Error.Type.Exception -> ErrorEmbedded.Type.Exception(
+        classPath = classPath,
+    )
+}
