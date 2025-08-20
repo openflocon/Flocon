@@ -17,7 +17,6 @@ material = "1.12.0"
 okhttpBom = "4.12.0"
 roomRuntime = "2.7.1"
 # for grpc
-gson = "2.11.0"
 grpc = "1.70.0"
 protobufPlugin = "0.9.5"
 grpcKotlin = "1.4.3"
@@ -49,7 +48,6 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 # for grpc
-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 grpc-android = { group = "io.grpc", name = "grpc-android", version.ref = "grpc" }
 grpc-kotin-stub = { group = "io.grpc", name = "grpc-kotlin-stub", version.ref = "grpcKotlin" }
 grpc-protobuf-lite = { group = "io.grpc", name = "grpc-protobuf-lite", version.ref = "grpc" }
