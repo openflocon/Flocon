@@ -9,15 +9,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 internal class MessageRemoteDataSourceImpl(
-    private val server: Server
+    private val server: Server,
 ) : MessageRemoteDataSource {
 
     override fun startServer() {
         server.start()
     }
 
-    override fun listenMessages(): Flow<FloconIncomingMessageDomainModel> {
-        return server.receivedMessages
-            .map(FloconIncomingMessageDataModel::toDomain)
-    }
+    override fun listenMessages(): Flow<FloconIncomingMessageDomainModel> = server.receivedMessages
+        .map(FloconIncomingMessageDataModel::toDomain)
 }

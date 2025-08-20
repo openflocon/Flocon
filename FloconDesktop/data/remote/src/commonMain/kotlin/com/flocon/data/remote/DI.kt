@@ -24,7 +24,7 @@ val dataRemoteModule = module {
         networkModule,
         sharedPreferencesModule,
         tableModule,
-        deviceModule
+        deviceModule,
     )
 
     single {

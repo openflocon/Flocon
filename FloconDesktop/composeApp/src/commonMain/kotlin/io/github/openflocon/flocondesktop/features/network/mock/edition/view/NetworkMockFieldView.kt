@@ -27,7 +27,7 @@ fun NetworkMockFieldView(
     modifier: Modifier = Modifier,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
-    trailingComponent: @Composable (() -> Unit)? = null
+    trailingComponent: @Composable (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier,

@@ -1,7 +1,9 @@
 package io.github.openflocon.flocondesktop.features.network
 
 import io.github.openflocon.flocondesktop.features.network.badquality.BadQualityNetworkViewModel
-import io.github.openflocon.flocondesktop.features.network.delegate.HeaderDelegate
+import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
+import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
+import io.github.openflocon.flocondesktop.features.network.list.processor.SortAndFilterNetworkItemsProcessor
 import io.github.openflocon.flocondesktop.features.network.mock.NetworkMocksViewModel
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import org.koin.core.module.dsl.factoryOf

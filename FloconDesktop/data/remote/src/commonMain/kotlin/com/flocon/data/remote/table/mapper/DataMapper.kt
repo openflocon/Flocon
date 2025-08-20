@@ -1,7 +1,7 @@
 package com.flocon.data.remote.table.mapper
 
-import io.github.openflocon.domain.table.models.TableDomainModel
 import com.flocon.data.remote.table.model.TableItemDataModel
+import io.github.openflocon.domain.table.models.TableDomainModel
 
 internal fun toDomain(dataModel: TableItemDataModel): TableDomainModel = TableDomainModel(
     name = dataModel.name,

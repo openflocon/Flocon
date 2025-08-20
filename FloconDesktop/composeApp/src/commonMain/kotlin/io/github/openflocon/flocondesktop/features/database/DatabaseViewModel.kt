@@ -78,9 +78,9 @@ class DatabaseViewModel(
             QueryResultUiModel.Values(
                 columns = this.columns,
                 rows =
-                    values.map {
-                        DatabaseRowUiModel(it)
-                    },
+                values.map {
+                    DatabaseRowUiModel(it)
+                },
             )
 
         is DatabaseExecuteSqlResponseDomainModel.UpdateDelete -> QueryResultUiModel.Text("Done, affected=$affectedCount")

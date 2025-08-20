@@ -17,14 +17,13 @@ import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainMo
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.serialization.json.Json
 
 class NetworkRemoteDataSourceImpl(
     private val server: Server,
-    private val json: Json
+    private val json: Json,
 ) : NetworkRemoteDataSource {
 
     override suspend fun setupMocks(
@@ -52,7 +51,7 @@ class NetworkRemoteDataSourceImpl(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Network.Plugin,
                 method = Protocol.ToDevice.Network.Method.SetupBadNetworkConfig,
-                body = if(config == null || config.isEnabled.not()) {
+                body = if (config == null || config.isEnabled.not()) {
                     "{}" // empty json to clear the config mobile side
                 } else {
                     Json.Default.encodeToString(toRemote(config))
@@ -61,18 +60,12 @@ class NetworkRemoteDataSourceImpl(
         )
     }
 
-    override fun getRequestData(message: FloconIncomingMessageDomainModel): FloconNetworkCallDomainModel? {
-        return json.safeDecodeFromString<FloconNetworkRequestDataModel>(message.body)
-            ?.let { com.flocon.data.remote.network.mapper.toDomain(it) }
-    }
+    override fun getRequestData(message: FloconIncomingMessageDomainModel): FloconNetworkCallDomainModel? = json.safeDecodeFromString<FloconNetworkRequestDataModel>(message.body)
+        ?.let { com.flocon.data.remote.network.mapper.toDomain(it) }
 
-    override fun getCallId(message: FloconIncomingMessageDomainModel): FloconNetworkCallIdDomainModel? {
-        return json.safeDecodeFromString<FloconNetworkCallIdDataModel>(message.body)
-            ?.let(FloconNetworkCallIdDataModel::toDomain)
-    }
+    override fun getCallId(message: FloconIncomingMessageDomainModel): FloconNetworkCallIdDomainModel? = json.safeDecodeFromString<FloconNetworkCallIdDataModel>(message.body)
+        ?.let(FloconNetworkCallIdDataModel::toDomain)
 
-    override fun getResponseData(message: FloconIncomingMessageDomainModel): FloconNetworkResponseOnlyDomainModel? {
-        return json.safeDecodeFromString<FloconNetworkResponseDataModel>(message.body)
-            ?.let(FloconNetworkResponseDataModel::toDomain)
-    }
+    override fun getResponseData(message: FloconIncomingMessageDomainModel): FloconNetworkResponseOnlyDomainModel? = json.safeDecodeFromString<FloconNetworkResponseDataModel>(message.body)
+        ?.let(FloconNetworkResponseDataModel::toDomain)
 }

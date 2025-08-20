@@ -14,7 +14,7 @@ import kotlinx.serialization.json.Json
 
 class AnalyticsRemoteDataSourceImpl(
     private val server: Server,
-    private val json: Json
+    private val json: Json,
 ) : AnalyticsRemoteDataSource {
 
     override suspend fun clearReceivedItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, items: List<String>) {
@@ -28,12 +28,10 @@ class AnalyticsRemoteDataSourceImpl(
         )
     }
 
-    override fun getItems(message: FloconIncomingMessageDomainModel): List<AnalyticsItemDomainModel> {
-        return decodeAddItems(message).takeIf { it.isNotEmpty() }
-            ?.let { list -> list.map { toDomain(it) } }
-            ?.takeIf { it.isNotEmpty() }
-            .orEmpty()
-    }
+    override fun getItems(message: FloconIncomingMessageDomainModel): List<AnalyticsItemDomainModel> = decodeAddItems(message).takeIf { it.isNotEmpty() }
+        ?.let { list -> list.map { toDomain(it) } }
+        ?.takeIf { it.isNotEmpty() }
+        .orEmpty()
 
     private fun decodeAddItems(message: FloconIncomingMessageDomainModel): List<AnalyticsItemDataModel> = try {
         json.decodeFromString<List<AnalyticsItemDataModel>>(message.body)
@@ -41,6 +39,4 @@ class AnalyticsRemoteDataSourceImpl(
         t.printStackTrace()
         emptyList()
     }
-
-
 }

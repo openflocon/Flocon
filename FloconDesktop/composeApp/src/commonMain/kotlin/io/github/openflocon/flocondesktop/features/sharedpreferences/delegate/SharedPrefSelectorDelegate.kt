@@ -42,13 +42,13 @@ class SharedPrefSelectorDelegate(
                 SharedPrefsStateUiModel.WithContent(
                     sharedPrefs = sharedPrefs.map { toUi(it) },
                     selected =
-                        toUi(
-                            selected ?: run {
-                                sharedPrefs.first().also {
-                                    selectCurrentDeviceSharedPrefUseCase(it.id)
-                                }
-                            },
-                        ),
+                    toUi(
+                        selected ?: run {
+                            sharedPrefs.first().also {
+                                selectCurrentDeviceSharedPrefUseCase(it.id)
+                            }
+                        },
+                    ),
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)

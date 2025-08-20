@@ -5,20 +5,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkTag
+import io.github.openflocon.flocondesktop.features.network.list.view.components.deleteMethodBackground
+import io.github.openflocon.flocondesktop.features.network.list.view.components.deleteMethodText
+import io.github.openflocon.flocondesktop.features.network.list.view.components.getMethodBackground
+import io.github.openflocon.flocondesktop.features.network.list.view.components.getMethodText
+import io.github.openflocon.flocondesktop.features.network.list.view.components.grpcMethodBackground
+import io.github.openflocon.flocondesktop.features.network.list.view.components.grpcMethodText
+import io.github.openflocon.flocondesktop.features.network.list.view.components.otherMethodBackground
+import io.github.openflocon.flocondesktop.features.network.list.view.components.otherMethodText
+import io.github.openflocon.flocondesktop.features.network.list.view.components.postMethodBackground
+import io.github.openflocon.flocondesktop.features.network.list.view.components.postMethodText
+import io.github.openflocon.flocondesktop.features.network.list.view.components.putMethodBackground
+import io.github.openflocon.flocondesktop.features.network.list.view.components.putMethodText
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkMethodUi
-import io.github.openflocon.flocondesktop.features.network.view.components.NetworkTag
-import io.github.openflocon.flocondesktop.features.network.view.components.deleteMethodBackground
-import io.github.openflocon.flocondesktop.features.network.view.components.deleteMethodText
-import io.github.openflocon.flocondesktop.features.network.view.components.getMethodBackground
-import io.github.openflocon.flocondesktop.features.network.view.components.getMethodText
-import io.github.openflocon.flocondesktop.features.network.view.components.grpcMethodBackground
-import io.github.openflocon.flocondesktop.features.network.view.components.grpcMethodText
-import io.github.openflocon.flocondesktop.features.network.view.components.otherMethodBackground
-import io.github.openflocon.flocondesktop.features.network.view.components.otherMethodText
-import io.github.openflocon.flocondesktop.features.network.view.components.postMethodBackground
-import io.github.openflocon.flocondesktop.features.network.view.components.postMethodText
-import io.github.openflocon.flocondesktop.features.network.view.components.putMethodBackground
-import io.github.openflocon.flocondesktop.features.network.view.components.putMethodText
 
 @Composable
 fun MockNetworkMethodView(

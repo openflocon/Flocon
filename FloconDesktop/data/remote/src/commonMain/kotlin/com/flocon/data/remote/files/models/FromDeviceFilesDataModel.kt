@@ -17,5 +17,5 @@ internal fun FromDeviceFilesDataModel.toDomain() = FromDeviceFilesDomainModel(
     isDirectory = isDirectory,
     path = path,
     size = size,
-    lastModified = lastModified
+    lastModified = lastModified,
 )

@@ -11,7 +11,7 @@ import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsCont
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
-import io.github.openflocon.flocondesktop.features.network.mapper.formatTimestamp
+import io.github.openflocon.flocondesktop.features.network.list.mapper.formatTimestamp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

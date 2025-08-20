@@ -10,5 +10,5 @@ internal fun FloconIncomingMessageDataModel.toDomain() = FloconIncomingMessageDo
     appPackageName = appPackageName,
     method = method,
     body = body,
-    plugin = plugin
+    plugin = plugin,
 )

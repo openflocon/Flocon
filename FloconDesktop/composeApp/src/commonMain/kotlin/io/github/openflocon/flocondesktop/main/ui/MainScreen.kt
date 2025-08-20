@@ -38,7 +38,7 @@ import io.github.openflocon.flocondesktop.features.database.view.DatabaseScreen
 import io.github.openflocon.flocondesktop.features.deeplinks.view.DeeplinkScreen
 import io.github.openflocon.flocondesktop.features.files.view.FilesScreen
 import io.github.openflocon.flocondesktop.features.images.view.ImagesScreen
-import io.github.openflocon.flocondesktop.features.network.view.NetworkScreen
+import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.sharedpreferences.view.SharedPreferencesScreen
 import io.github.openflocon.flocondesktop.features.table.view.TableScreen
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
@@ -172,16 +172,16 @@ private fun MainScreen(
                     SubScreen.Deeplinks -> {
                         DeeplinkScreen(
                             modifier =
-                                Modifier
-                                    .fillMaxSize(),
+                            Modifier
+                                .fillMaxSize(),
                         )
                     }
 
                     SubScreen.Analytics -> {
                         AnalyticsScreen(
                             modifier =
-                                Modifier
-                                    .fillMaxSize(),
+                            Modifier
+                                .fillMaxSize(),
                         )
                     }
                 }

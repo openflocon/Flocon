@@ -15,7 +15,7 @@ import kotlinx.serialization.json.Json
 
 class TableRemoteDataSourceImpl(
     private val server: Server,
-    private val json: Json
+    private val json: Json,
 ) : TableRemoteDataSource {
 
     override suspend fun clearReceivedItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, items: List<String>) {
@@ -29,10 +29,7 @@ class TableRemoteDataSourceImpl(
         )
     }
 
-    override fun getItems(message: FloconIncomingMessageDomainModel): List<TableDomainModel> {
-        return json.safeDecodeFromString<List<TableItemDataModel>>(message.body)
-            ?.map { toDomain(it) }
-            .orEmpty()
-    }
-
+    override fun getItems(message: FloconIncomingMessageDomainModel): List<TableDomainModel> = json.safeDecodeFromString<List<TableItemDataModel>>(message.body)
+        ?.map { toDomain(it) }
+        .orEmpty()
 }

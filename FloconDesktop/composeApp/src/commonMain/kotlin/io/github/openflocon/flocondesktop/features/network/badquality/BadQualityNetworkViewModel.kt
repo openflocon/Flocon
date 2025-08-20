@@ -12,17 +12,15 @@ import io.github.openflocon.domain.network.usecase.badquality.SaveNetworkBadQual
 import io.github.openflocon.domain.network.usecase.badquality.SetNetworkBadQualityEnabledConfigUseCase
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.mapper.toUi
-import io.github.openflocon.flocondesktop.features.network.badquality.list.mapper.toLineUi
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.SelectedBadQualityUiModel
+import io.github.openflocon.flocondesktop.features.network.badquality.list.mapper.toLineUi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -40,7 +38,7 @@ class BadQualityNetworkViewModel(
 ) : ViewModel() {
 
     enum class Event {
-        Close
+        Close,
     }
 
     private val _events = Channel<BadQualityNetworkViewModel.Event?>()
@@ -76,7 +74,7 @@ class BadQualityNetworkViewModel(
             val existing = observeNetworkBadQualityUseCase(id).firstOrNull()?.toUi()
             selectedItem.value = existing?.let {
                 SelectedBadQualityUiModel.Edition(
-                    config = existing
+                    config = existing,
                 )
             } ?: SelectedBadQualityUiModel.Creation
         }

@@ -66,7 +66,7 @@ fun NetworkBadQualityContent(
                     onClicked = onItemClicked,
                     onDeleteClicked = onDeleteClicked,
                     enableClicked = { id, enabled ->
-                        if(enabled) {
+                        if (enabled) {
                             setEnabled(id)
                         } else {
                             setEnabled(null)

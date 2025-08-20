@@ -32,7 +32,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class FilesRemoteDataSourceImpl(
     private val server: Server,
-    private val json: Json
+    private val json: Json,
 ) : FilesRemoteDataSource {
     private val getFilesResultReceived =
         MutableStateFlow<Set<FromDeviceFilesResultDomainModel>>(emptySet())
@@ -149,10 +149,8 @@ class FilesRemoteDataSourceImpl(
         return waitForResult(requestId)
     }
 
-    override fun getItems(message: FloconIncomingMessageDomainModel): FromDeviceFilesResultDomainModel? {
-        return json.safeDecodeFromString<FromDeviceFilesResultDataModel>(message.body)
-            ?.toDomain()
-    }
+    override fun getItems(message: FloconIncomingMessageDomainModel): FromDeviceFilesResultDomainModel? = json.safeDecodeFromString<FromDeviceFilesResultDataModel>(message.body)
+        ?.toDomain()
 
     private suspend fun waitForResult(requestId: String): Either<Exception, List<FileDomainModel>> {
         try {

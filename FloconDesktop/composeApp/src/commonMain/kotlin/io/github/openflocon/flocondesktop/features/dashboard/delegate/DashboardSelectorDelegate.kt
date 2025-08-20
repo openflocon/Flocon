@@ -36,13 +36,13 @@ class DashboardSelectorDelegate(
                 DashboardsStateUiModel.WithContent(
                     dashboards = dashboards.map { toUi(it) },
                     selected =
-                        toUi(
-                            selected ?: run {
-                                dashboards.first().also {
-                                    selectCurrentDeviceDashboardUseCase(it)
-                                }
-                            },
-                        ),
+                    toUi(
+                        selected ?: run {
+                            dashboards.first().also {
+                                selectCurrentDeviceDashboardUseCase(it)
+                            }
+                        },
+                    ),
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)

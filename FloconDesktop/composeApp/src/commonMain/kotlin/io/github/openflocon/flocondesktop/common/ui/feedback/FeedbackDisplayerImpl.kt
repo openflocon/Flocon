@@ -45,10 +45,9 @@ class FeedbackDisplayerImpl(
                 NotificationToDisplayUi(
                     title = title,
                     message = message,
-                    type = type
-                )
+                    type = type,
+                ),
             )
         }
     }
-
 }

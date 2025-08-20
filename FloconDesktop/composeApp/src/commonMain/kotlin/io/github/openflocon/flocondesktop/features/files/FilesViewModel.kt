@@ -5,12 +5,12 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.usecase.DeleteFileUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.ObserveFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.RefreshFolderContentUseCase
-import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.files.mapper.buildContextualActions
 import io.github.openflocon.flocondesktop.features.files.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.files.mapper.toUi
@@ -43,30 +43,30 @@ class FilesViewModel(
         current = null,
         backStack = emptyList(),
         files =
-            listOf(
-                FileUiModel(
-                    name = "Caches",
-                    type = FileTypeUiModel.Folder,
-                    path = FilePathUiModel.Constants.CachesDir,
-                    size = 0L,
-                    icon = Icons.Outlined.Folder,
-                    contextualActions = buildContextualActions(
-                        isConstant = true,
-                        isFolder = true,
-                    ),
-                ),
-                FileUiModel(
-                    name = "Files",
-                    type = FileTypeUiModel.Folder,
-                    path = FilePathUiModel.Constants.FilesDir,
-                    size = 0L,
-                    icon = Icons.Outlined.Folder,
-                    contextualActions = buildContextualActions(
-                        isConstant = true,
-                        isFolder = true,
-                    ),
+        listOf(
+            FileUiModel(
+                name = "Caches",
+                type = FileTypeUiModel.Folder,
+                path = FilePathUiModel.Constants.CachesDir,
+                size = 0L,
+                icon = Icons.Outlined.Folder,
+                contextualActions = buildContextualActions(
+                    isConstant = true,
+                    isFolder = true,
                 ),
             ),
+            FileUiModel(
+                name = "Files",
+                type = FileTypeUiModel.Folder,
+                path = FilePathUiModel.Constants.FilesDir,
+                size = 0L,
+                icon = Icons.Outlined.Folder,
+                contextualActions = buildContextualActions(
+                    isConstant = true,
+                    isFolder = true,
+                ),
+            ),
+        ),
     )
 
     private data class SelectedFile(
@@ -135,7 +135,7 @@ class FilesViewModel(
             FileTypeUiModel.Video,
             FileTypeUiModel.Text,
             FileTypeUiModel.Other,
-                -> {
+            -> {
                 feedbackDisplayer.displayMessage("not implemented")
             }
         }
