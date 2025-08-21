@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.Checkbox
@@ -28,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
@@ -38,6 +36,7 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previ
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesLongRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesStringRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconTextField
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -96,24 +95,11 @@ fun SharedPreferenceRowView(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    BasicTextField(
+                    FloconTextField(
                         value = value,
-                        onValueChange = {
-                            value = it
-                        },
-                        textStyle = FloconTheme.typography.bodySmall.copy(
-                            color = FloconTheme.colorPalette.onSurface,
-                        ),
-                        cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(
-                                color = FloconTheme.colorPalette.panel,
-                                shape = RoundedCornerShape(4.dp),
-                            )
-                            .padding(all = 10.dp),
+                        onValueChange = { value = it },
+                        modifier = Modifier.weight(1f)
                     )
-
                     SharedPreferenceSendButton(
                         onClick = {
                             onValueChanged(model, value)
@@ -130,7 +116,7 @@ fun SharedPreferenceRowView(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    BasicTextField(
+                    FloconTextField(
                         value = value.toString(),
                         onValueChange = {
                             try {
@@ -139,17 +125,7 @@ fun SharedPreferenceRowView(
                                 t.printStackTrace()
                             }
                         },
-                        textStyle = FloconTheme.typography.bodySmall.copy(
-                            color = FloconTheme.colorPalette.onSurface,
-                        ),
-                        cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(
-                                color = FloconTheme.colorPalette.panel,
-                                shape = RoundedCornerShape(4.dp),
-                            )
-                            .padding(all = 10.dp),
+                        modifier = Modifier.weight(1f)
                     )
 
                     SharedPreferenceSendButton(
@@ -168,7 +144,7 @@ fun SharedPreferenceRowView(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    BasicTextField(
+                    FloconTextField(
                         value = value.toString(),
                         onValueChange = {
                             try {
@@ -176,18 +152,7 @@ fun SharedPreferenceRowView(
                             } catch (t: Throwable) {
                                 t.printStackTrace()
                             }
-                        },
-                        cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
-                        textStyle = FloconTheme.typography.bodySmall.copy(
-                            color = FloconTheme.colorPalette.onSurface,
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(
-                                color = FloconTheme.colorPalette.panel,
-                                shape = RoundedCornerShape(4.dp),
-                            )
-                            .padding(all = 10.dp),
+                        }
                     )
 
                     SharedPreferenceSendButton(
@@ -217,27 +182,14 @@ fun SharedPreferenceRowView(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    BasicTextField(
+                    FloconTextField(
                         value = value,
-                        onValueChange = {
-                            value = it
-                        },
-                        cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
-                        textStyle = FloconTheme.typography.bodySmall.copy(
-                            color = FloconTheme.colorPalette.onSurface,
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(
-                                color = FloconTheme.colorPalette.panel,
-                                shape = RoundedCornerShape(4.dp),
-                            )
-                            .padding(all = 10.dp),
+                        onValueChange = { value = it },
+                        textStyle = FloconTheme.typography.bodySmall,
+                        modifier = Modifier.weight(1f)
                     )
                     SharedPreferenceSendButton(
-                        onClick = {
-                            onValueChanged(model, value)
-                        },
+                        onClick = { onValueChanged(model, value) },
                     )
                 }
             }
