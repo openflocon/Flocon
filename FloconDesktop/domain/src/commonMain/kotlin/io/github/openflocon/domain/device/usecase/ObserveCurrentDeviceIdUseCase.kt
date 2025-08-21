@@ -9,5 +9,5 @@ import kotlinx.coroutines.flow.map
 class ObserveCurrentDeviceIdUseCase(
     private val devicesRepository: DevicesRepository,
 ) {
-    operator fun invoke(): Flow<DeviceId?> = devicesRepository.currentDevice.map { it?.deviceId }.distinctUntilChanged()
+    operator fun invoke(): Flow<DeviceId?> = devicesRepository.currentDeviceId
 }

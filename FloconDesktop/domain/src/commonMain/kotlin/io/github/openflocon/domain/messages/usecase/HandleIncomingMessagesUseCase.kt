@@ -3,6 +3,7 @@ package io.github.openflocon.domain.messages.usecase
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainModel
 import io.github.openflocon.domain.device.usecase.HandleDeviceUseCase
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
@@ -21,7 +22,7 @@ class HandleIncomingMessagesUseCase(
     operator fun invoke(): Flow<Unit> = messagesRepository
         .listenMessages()
         .onEach {
-            val handleDeviceResult = handleDeviceUseCase(device = getDevice(it))
+            val handleDeviceResult = handleDeviceUseCase(device = getDeviceAndApp(it))
             if (handleDeviceResult.isNewDevice) {
                 handleNewDeviceUseCase(
                     deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
@@ -31,13 +32,13 @@ class HandleIncomingMessagesUseCase(
                 )
             }
             plugins.forEach { plugin ->
-                if (handleDeviceResult.isNewDevice) {
+                if (handleDeviceResult.justConnectedForThisSession) {
                     plugin.onDeviceConnected(
                         deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                             deviceId = handleDeviceResult.deviceId,
                             packageName = it.appPackageName,
                         ),
-                        isNewDevice = true, // TODO on a next MR, for now handleDeviceResult.isNewDevice is always true the first time
+                        isNewDevice = handleDeviceResult.isNewDevice,
                     )
                 }
                 if (plugin.pluginName.contains(it.plugin)) {
@@ -47,14 +48,15 @@ class HandleIncomingMessagesUseCase(
         }
         .map { }
 
-    private fun getDevice(message: FloconIncomingMessageDomainModel): DeviceDomainModel = DeviceDomainModel(
-        deviceName = message.deviceName,
-        deviceId = message.deviceId,
-        apps = listOf(
-            DeviceAppDomainModel(
+    private fun getDeviceAndApp(message: FloconIncomingMessageDomainModel) =
+        RegisterDeviceWithAppDomainModel(
+            device = DeviceDomainModel(
+                deviceId = message.deviceId,
+                message.deviceName,
+            ),
+            app = DeviceAppDomainModel(
                 name = message.appName,
                 packageName = message.appPackageName,
             ),
-        ),
-    )
+        )
 }

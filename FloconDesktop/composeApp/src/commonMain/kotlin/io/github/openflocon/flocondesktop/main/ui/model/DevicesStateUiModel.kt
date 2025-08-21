@@ -15,8 +15,29 @@ sealed interface DevicesStateUiModel {
     data class WithDevices(
         val devices: List<DeviceItemUiModel>,
         val deviceSelected: DeviceItemUiModel,
-        val appSelected: DeviceAppUiModel?,
     ) : DevicesStateUiModel
+}
+
+@Immutable
+sealed interface AppsStateUiModel {
+
+    val appSelected: DeviceAppUiModel?
+
+    @Immutable
+    data object Loading : AppsStateUiModel {
+        override val appSelected: DeviceAppUiModel? = null
+    }
+
+    @Immutable
+    data object Empty : AppsStateUiModel {
+        override val appSelected: DeviceAppUiModel? = null
+    }
+
+    @Immutable
+    data class WithApps(
+        val apps: List<DeviceAppUiModel>,
+        override val appSelected: DeviceAppUiModel?,
+    ) : AppsStateUiModel
 }
 
 fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.WithDevices(
@@ -24,43 +45,18 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
         DeviceItemUiModel(
             deviceName = "deviceName1",
             id = "id1",
-            apps = listOf(
-                DeviceAppUiModel(
-                    name = "appName1",
-                    packageName = "packageName1",
-                ),
-            ),
         ),
         DeviceItemUiModel(
             deviceName = "deviceName2",
             id = "id2",
-            apps = listOf(
-                DeviceAppUiModel(
-                    name = "appName2",
-                    packageName = "packageName2",
-                ),
-            ),
         ),
         DeviceItemUiModel(
             deviceName = "deviceName",
             id = "id",
-            apps = listOf(
-                DeviceAppUiModel(
-                    name = "appName",
-                    packageName = "packageName",
-                ),
-            ),
         ),
     ),
-    appSelected = null,
     deviceSelected = DeviceItemUiModel(
         deviceName = "deviceName",
         id = "id",
-        apps = listOf(
-            DeviceAppUiModel(
-                name = "appName",
-                packageName = "packageName",
-            ),
-        ),
     ),
 )

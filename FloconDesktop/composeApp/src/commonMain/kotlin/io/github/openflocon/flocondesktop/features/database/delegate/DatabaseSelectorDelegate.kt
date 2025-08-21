@@ -6,7 +6,7 @@ import io.github.openflocon.domain.database.usecase.AskForDeviceDatabasesUseCase
 import io.github.openflocon.domain.database.usecase.ObserveCurrentDeviceSelectedDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDeviceDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.SelectCurrentDeviceDatabaseUseCase
-import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DatabaseSelectorDelegate(
-    private val observeCurrentDeviceUseCase: ObserveCurrentDeviceUseCase,
+    private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
     private val observeDeviceDatabaseUseCase: ObserveDeviceDatabaseUseCase,
     private val observeCurrentDeviceSelectedDatabaseUseCase: ObserveCurrentDeviceSelectedDatabaseUseCase,
     private val closeableDelegate: CloseableDelegate,
@@ -66,7 +66,7 @@ class DatabaseSelectorDelegate(
         askForDeviceDatabasesJob =
             coroutineScope.launch(dispatcherProvider.viewModel) {
                 // if we change the device, we should ask again
-                observeCurrentDeviceUseCase()
+                observeCurrentDeviceIdUseCase()
                     .distinctUntilChanged()
                     .collect {
                         askForDeviceDatabasesUseCase()

@@ -1,20 +1,33 @@
 package io.github.openflocon.flocondesktop.core.data.device
 
+import io.github.openflocon.data.core.device.datasource.local.LocalCurrentDeviceDataSource
+import io.github.openflocon.data.core.device.datasource.local.LocalDevicesDataSource
+import io.github.openflocon.data.core.device.datasource.local.model.InsertDeviceResult
 import io.github.openflocon.data.core.device.datasource.remote.RemoteDeviceDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
+import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.models.DeviceWithAppDomainModel
+import io.github.openflocon.domain.device.models.DeviceWithAppsDomainModel
+import io.github.openflocon.domain.device.models.HandleDeviceResultDomainModel
+import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainModel
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
-import io.github.openflocon.flocondesktop.common.Fakes
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -23,99 +36,114 @@ class DevicesRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val adbRepository: AdbRepository,
     private val remoteDeviceDataSource: RemoteDeviceDataSource,
+    private val localDevicesDataSource: LocalDevicesDataSource,
+    private val localCurrentDeviceDataSource: LocalCurrentDeviceDataSource,
+    applicationScope: CoroutineScope,
 ) : DevicesRepository,
     MessagesReceiverRepository {
-    private val _devices = MutableStateFlow(defaultDevicesValue())
-    override val devices = _devices.asStateFlow()
-
-    private val _currentDevice = MutableStateFlow<DeviceDomainModel?>(defaultCurrentDeviceValue())
-    override val currentDevice = _currentDevice.asStateFlow()
-
-    private val _currentDeviceApp = MutableStateFlow<DeviceAppDomainModel?>(null)
-    override val currentDeviceApp: Flow<DeviceAppDomainModel?> = _currentDeviceApp.asStateFlow()
-
-    override fun getCurrentDevice(): DeviceDomainModel? = _currentDevice.value
-
-    override fun getCurrentDeviceApp(): DeviceAppDomainModel? = _currentDeviceApp.value
 
     private val devicesMutex = Mutex()
 
-    // returns new if new device
-    override suspend fun register(device: DeviceDomainModel): Boolean = withContext(dispatcherProvider.data) {
-        devicesMutex.withLock {
-            val existingDevice = _devices.value.find { it.deviceId == device.deviceId }
-            val isNewDevice = existingDevice == null
+    override val devices = localDevicesDataSource.devices
+        .flowOn(dispatcherProvider.data)
 
-            _devices.update { currentDevices ->
-                val updatedDevice = device.copy(
-                    apps = device.apps.plus(existingDevice?.apps.orEmpty())
-                        .distinctBy(DeviceAppDomainModel::packageName),
-                )
+    override val currentDeviceId: Flow<DeviceId?> = localCurrentDeviceDataSource.currentDeviceId
 
-                if (_currentDevice.value?.deviceId == device.deviceId) {
-                    _currentDevice.update { updatedDevice }
-                }
-
-                val newDevicesList = if (isNewDevice) {
-                    currentDevices + updatedDevice
-                } else {
-                    currentDevices.map {
-                        if (it.deviceId == device.deviceId) updatedDevice else it
+    override val currentDeviceWithApp: StateFlow<DeviceWithAppDomainModel?> = combine(
+        localCurrentDeviceDataSource.currentDeviceId,
+        localCurrentDeviceDataSource.currentDeviceApp,
+    ) { device, app ->
+        Pair(device, app)
+    }.flatMapLatest { (deviceId, app) ->
+        if (deviceId == null || app == null) {
+            flowOf(null)
+        } else {
+            localDevicesDataSource.observeDeviceById(deviceId)
+                .map { device ->
+                    device?.let {
+                        DeviceWithAppDomainModel(
+                            device = it,
+                            app = app,
+                        )
                     }
                 }
-                newDevicesList.distinct()
-            }
-
-            isNewDevice
         }
     }
+        .flowOn(dispatcherProvider.data)
+        .stateIn(applicationScope, SharingStarted.Eagerly, null)
 
-    override suspend fun unregister(device: DeviceDomainModel) {
+    override suspend fun getCurrentDeviceId(): DeviceId? =
+        localCurrentDeviceDataSource.getCurrentDeviceId()
+
+    override suspend fun getCurrentDevice(): DeviceDomainModel? =
+        localCurrentDeviceDataSource.getCurrentDeviceId()?.let {
+            localDevicesDataSource.getDeviceById(it)
+        }
+
+    override suspend fun getCurrentDeviceApp(): DeviceAppDomainModel? =
+        localCurrentDeviceDataSource.getCurrentDeviceApp()
+
+    // returns new if new device
+    override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel =
         withContext(dispatcherProvider.data) {
             devicesMutex.withLock {
-                _devices.update { it - device }
+                val isKnownDevice =
+                    localCurrentDeviceDataSource.isKnownDeviceForThisSession(
+                        registerDeviceWithApp.device.deviceId
+                    )
+                if (!isKnownDevice) {
+                    HandleDeviceResultDomainModel(
+                        deviceId = registerDeviceWithApp.device.deviceId,
+                        justConnectedForThisSession = false,
+                        isNewDevice = false,
+                    )
+                } else {
+                    val isNewDevice = when (localDevicesDataSource.insertDevice(registerDeviceWithApp.device)) {
+                        InsertDeviceResult.New -> true
+                        InsertDeviceResult.Exists -> false
+                    }
+                    localCurrentDeviceDataSource.addNewDeviceConnectedForThisSession(registerDeviceWithApp.device.deviceId)
+                    HandleDeviceResultDomainModel(
+                        deviceId = registerDeviceWithApp.device.deviceId,
+                        justConnectedForThisSession = true,
+                        isNewDevice = isNewDevice,
+                    )
+                }
             }
         }
-    }
 
     override suspend fun clear() {
         withContext(dispatcherProvider.data) {
             devicesMutex.withLock {
-                _devices.update { emptyList() }
+                localDevicesDataSource.clear()
             }
-            _currentDevice.update { null }
-            _currentDeviceApp.update { null }
         }
     }
 
     override suspend fun selectApp(app: DeviceAppDomainModel) {
         withContext(dispatcherProvider.data) {
-            _currentDeviceApp.update { app }
+            localCurrentDeviceDataSource.selectApp(app)
         }
     }
 
-    override suspend fun selectDevice(device: DeviceDomainModel) {
+    override suspend fun selectDevice(deviceId: DeviceId) {
         withContext(dispatcherProvider.data) {
-            _currentDevice.update { device }
+            localCurrentDeviceDataSource.selectDevice(deviceId)
         }
     }
 
-    private fun defaultCurrentDeviceValue(): DeviceDomainModel = DeviceDomainModel(
-        deviceId = Fakes.FakeDeviceId,
-        deviceName = "deviceName",
-        apps = listOf(
-            DeviceAppDomainModel(
-                name = "name",
-                packageName = "com.package.name",
-            ),
-        ),
-    )
-
-    private fun defaultDevicesValue(): List<DeviceDomainModel> = if (Fakes.Enabled) {
-        listOf(defaultCurrentDeviceValue())
-    } else {
-        emptyList()
+    // region apps
+    override fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>> {
+        return localDevicesDataSource.observeDeviceApps(deviceId)
+            .flowOn(dispatcherProvider.data)
     }
+
+    override suspend fun getDeviceAppByPackage(deviceId: DeviceId, appPackageName: String) : DeviceAppDomainModel? {
+        return withContext(dispatcherProvider.data) {
+            localDevicesDataSource.getDeviceAppByPackage(deviceId, appPackageName)
+        }
+    }
+    // endregion
 
     override val pluginName = listOf(Protocol.FromDevice.Device.Plugin)
 

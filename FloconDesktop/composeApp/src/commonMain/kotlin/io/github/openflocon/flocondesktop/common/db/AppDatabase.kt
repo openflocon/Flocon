@@ -16,6 +16,9 @@ import io.github.openflocon.data.local.database.dao.QueryDao
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkDao
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
+import io.github.openflocon.data.local.device.datasource.dao.DevicesDao
+import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
+import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
 import io.github.openflocon.data.local.files.dao.FloconFileDao
 import io.github.openflocon.data.local.files.models.FileEntity
 import io.github.openflocon.data.local.images.dao.FloconImageDao
@@ -36,7 +39,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 44,
+    version = 45,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -53,6 +56,8 @@ import kotlinx.coroutines.Dispatchers
         MockNetworkEntity::class,
         DeviceWithSerialEntity::class,
         BadQualityConfigEntity::class,
+        DeviceEntity::class,
+        DeviceAppEntity::class,
     ],
 )
 @TypeConverters(
@@ -72,6 +77,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val networkMocksDao: NetworkMocksDao
     abstract val adbDevicesDao: AdbDevicesDao
     abstract val networkBadQualityConfigDao: NetworkBadQualityConfigDao
+    abstract val devicesDao: DevicesDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()

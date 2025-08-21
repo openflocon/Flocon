@@ -50,8 +50,10 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.smartphone
+import io.github.openflocon.flocondesktop.main.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
@@ -68,6 +70,7 @@ private val CelluleHeight = 64.dp
 internal fun ColumnScope.DeviceSelectorView(
     panelExpanded: Boolean,
     devicesState: DevicesStateUiModel,
+    appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
     modifier: Modifier = Modifier,
@@ -77,7 +80,8 @@ internal fun ColumnScope.DeviceSelectorView(
     ) {
         AnimatedVisibility(devicesState is DevicesStateUiModel.WithDevices) {
             DeviceAppSelector(
-                state = devicesState,
+                devicesState = devicesState,
+                appsState = appsState,
                 panelExpanded = panelExpanded,
                 onAppSelected = onAppSelected,
             )
@@ -95,7 +99,8 @@ internal fun ColumnScope.DeviceSelectorView(
 
 @Composable
 private fun DeviceAppSelector(
-    state: DevicesStateUiModel,
+    devicesState: DevicesStateUiModel,
+    appsState: AppsStateUiModel,
     panelExpanded: Boolean,
     onAppSelected: (DeviceAppUiModel) -> Unit,
 ) {
@@ -106,7 +111,7 @@ private fun DeviceAppSelector(
             expanded = false
     }
 
-    if (state is DevicesStateUiModel.WithDevices) {
+    if (devicesState is DevicesStateUiModel.WithDevices) {
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = false },
@@ -114,13 +119,13 @@ private fun DeviceAppSelector(
         ) {
             val modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
 
-            if (state.appSelected != null) {
+            appsState.appSelected?.let {
                 DeviceAppName(
-                    deviceApp = state.appSelected,
+                    deviceApp = it,
                     onClick = { expanded = true },
                     modifier = modifier,
                 )
-            } else {
+            } ?: run {
                 Selector(
                     onClick = { expanded = true },
                 ) {
@@ -130,22 +135,30 @@ private fun DeviceAppSelector(
                     )
                 }
             }
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.exposedDropdownSize(),
-            ) {
-                state.deviceSelected
-                    .apps
-                    .forEach { app ->
-                        DeviceAppName(
-                            deviceApp = app,
-                            onClick = {
-                                onAppSelected(app)
-                                expanded = false
-                            },
-                        )
+
+            when(appsState) {
+                AppsStateUiModel.Empty,
+                AppsStateUiModel.Loading -> {
+                    // no op
+                }
+                is AppsStateUiModel.WithApps -> {
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.exposedDropdownSize(),
+                    ) {
+                        appsState.apps
+                            .fastForEach { app ->
+                                DeviceAppName(
+                                    deviceApp = app,
+                                    onClick = {
+                                        onAppSelected(app)
+                                        expanded = false
+                                    },
+                                )
+                            }
                     }
+                }
             }
         }
     }

@@ -3,11 +3,11 @@ package io.github.openflocon.domain.device.usecase
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 
 class GetCurrentDeviceIdAndPackageNameUseCase(
-    private val getCurrentDeviceUseCase: GetCurrentDeviceUseCase,
+    private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,
     private val getCurrentDeviceAppUseCase: GetCurrentDeviceAppUseCase,
 ) {
-    operator fun invoke(): DeviceIdAndPackageNameDomainModel? {
-        val deviceId = getCurrentDeviceUseCase()?.deviceId ?: return null
+    suspend operator fun invoke(): DeviceIdAndPackageNameDomainModel? {
+        val deviceId = getCurrentDeviceIdUseCase() ?: return null
         val packageName = getCurrentDeviceAppUseCase()?.packageName ?: return null
 
         return DeviceIdAndPackageNameDomainModel(

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
 import io.github.openflocon.flocondesktop.main.ui.delegates.DevicesDelegate
+import io.github.openflocon.flocondesktop.main.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
@@ -54,6 +55,7 @@ class MainViewModel(
         )
 
     val devicesState: StateFlow<DevicesStateUiModel> = devicesDelegate.devicesState
+    val appsState: StateFlow<AppsStateUiModel> = devicesDelegate.appsState
 
     fun onDeviceSelected(device: DeviceItemUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {

@@ -5,13 +5,12 @@ import kotlinx.coroutines.flow.firstOrNull
 
 class SelectDeviceAppUseCase(
     private val devicesRepository: DevicesRepository,
+    private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,
 ) {
     suspend operator fun invoke(packageName: String) {
-        val app = devicesRepository.currentDevice
-            .firstOrNull()
-            ?.apps
-            ?.find { it.packageName == packageName }
-            ?: return
+        val deviceId = getCurrentDeviceIdUseCase() ?: return
+
+        val app = devicesRepository.getDeviceAppByPackage(deviceId = deviceId, appPackageName = packageName) ?: return
 
         devicesRepository.selectApp(app)
     }

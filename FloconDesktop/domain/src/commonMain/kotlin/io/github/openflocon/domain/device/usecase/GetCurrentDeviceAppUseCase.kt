@@ -6,5 +6,5 @@ import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 class GetCurrentDeviceAppUseCase(
     private val devicesRepository: DevicesRepository,
 ) {
-    operator fun invoke(): DeviceAppDomainModel? = devicesRepository.getCurrentDeviceApp()
+    suspend operator fun invoke(): DeviceAppDomainModel? = devicesRepository.getCurrentDeviceApp()
 }

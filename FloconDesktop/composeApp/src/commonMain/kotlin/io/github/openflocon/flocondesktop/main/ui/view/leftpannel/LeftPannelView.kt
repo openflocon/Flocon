@@ -36,6 +36,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
+import io.github.openflocon.flocondesktop.main.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
@@ -59,6 +60,7 @@ fun LeftPanelView(
     expanded: Boolean,
     onClickItem: (LeftPanelItem) -> Unit,
     devicesState: DevicesStateUiModel,
+    appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
     modifier: Modifier = Modifier,
@@ -89,6 +91,7 @@ fun LeftPanelView(
                 .fillMaxWidth()
                 .heightIn(min = 64.dp),
             devicesState = devicesState,
+            appsState = appsState,
             onDeviceSelected = onDeviceSelected,
             onAppSelected = onAppSelected,
         )
@@ -186,6 +189,7 @@ private fun LeftPanelViewPreview() {
             onAppSelected = {},
             expanded = false,
             devicesState = previewDevicesStateUiModel(),
+            appsState = AppsStateUiModel.Empty,
         )
     }
 }

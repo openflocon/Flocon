@@ -1,9 +1,10 @@
 package io.github.openflocon.domain.device.usecase
 
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.repository.DevicesRepository
 
 class GetCurrentDeviceIdUseCase(
-    private val getCurrentDeviceUseCase: GetCurrentDeviceUseCase,
+    private val devicesRepository: DevicesRepository,
 ) {
-    operator fun invoke(): DeviceId? = getCurrentDeviceUseCase()?.deviceId
+    suspend operator fun invoke(): DeviceId? = devicesRepository.getCurrentDeviceId()
 }

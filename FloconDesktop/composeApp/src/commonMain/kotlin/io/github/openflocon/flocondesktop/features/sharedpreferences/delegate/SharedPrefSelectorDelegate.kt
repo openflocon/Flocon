@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.delegate
 
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.domain.sharedpreference.usecase.AskForDeviceSharedPreferencesUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.GetCurrentDeviceSharedPreferenceValuesUseCase
@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SharedPrefSelectorDelegate(
-    private val observeCurrentDeviceUseCase: ObserveCurrentDeviceUseCase,
+    private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
     private val observeDeviceSharedPrefUseCase: ObserveDeviceSharedPreferencesUseCase,
     private val observeCurrentDeviceSelectedSharedPrefUseCase: ObserveCurrentDeviceSelectedSharedPreferenceUseCase,
     private val closeableDelegate: CloseableDelegate,
@@ -76,7 +76,7 @@ class SharedPrefSelectorDelegate(
         askForSharedPrefsJob =
             coroutineScope.launch(dispatcherProvider.viewModel) {
                 // if we change the device, we should ask again
-                observeCurrentDeviceUseCase()
+                observeCurrentDeviceIdUseCase()
                     .distinctUntilChanged()
                     .collect {
                         askForDeviceSharedPrefsUseCase()
