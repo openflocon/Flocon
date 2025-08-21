@@ -37,7 +37,7 @@ fun FloconTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     textStyle: TextStyle = FloconTheme.typography.bodySmall
 ) {
-    val contentColor = LocalContentColor.current
+    val contentColor = FloconTheme.colorPalette.onSurfaceVariant
     val colors = TextFieldDefaults.colors(
         focusedTextColor = contentColor,
         errorTextColor = contentColor,
@@ -62,7 +62,7 @@ fun FloconTextField(
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        textStyle = textStyle,
+        textStyle = textStyle.copy(color = contentColor), // Fix style
         maxLines = maxLines,
         minLines = minLines,
         cursorBrush = SolidColor(Color.White), // TODO Light mod
