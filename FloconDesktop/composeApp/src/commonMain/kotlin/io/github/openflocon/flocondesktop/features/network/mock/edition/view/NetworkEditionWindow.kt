@@ -180,6 +180,7 @@ fun MockEditorScreen(
                     label = defaultLabel("URL Pattern"),
                     placeholder = defaultPlaceHolder("https://www.myDomain.*"),
                     modifier = Modifier.fillMaxWidth(),
+                    containerColor = FloconTheme.colorPalette.panel
                 )
                 MockNetworkMethodDropdown(
                     // TODO should be a dropdown
