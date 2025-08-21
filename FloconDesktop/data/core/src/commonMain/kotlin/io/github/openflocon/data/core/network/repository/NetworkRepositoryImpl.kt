@@ -168,24 +168,29 @@ class NetworkRepositoryImpl(
         response: FloconNetworkResponseOnlyDomainModel,
         request: FloconNetworkCallDomainModel,
     ): FloconNetworkCallDomainModel? {
+        val isRequestGraphQl = request.request.specificInfos is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl
         return try {
-            val response = when (val r = response.response) {
-                is FloconNetworkCallDomainModel.Response.Success -> {
-                    // specific case : map to graphQl if needed
-                    when (val s = r.specificInfos) {
-                        is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> {
-                            r.copy(
-                                specificInfos = FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl(
-                                    httpCode = s.httpCode,
-                                    isSuccess = s.httpCode in 200..299
+            val response = if(isRequestGraphQl) {
+                when (val r = response.response) {
+                    is FloconNetworkCallDomainModel.Response.Success -> {
+                        // specific case : map to graphQl if needed
+                        when (val s = r.specificInfos) {
+                            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> {
+                                r.copy(
+                                    specificInfos = FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl(
+                                        httpCode = s.httpCode,
+                                        isSuccess = s.httpCode in 200..299
+                                    )
                                 )
-                            )
+                            }
+                            else -> r
                         }
-                        else -> r
                     }
-                }
 
-                is FloconNetworkCallDomainModel.Response.Failure -> response.response
+                    is FloconNetworkCallDomainModel.Response.Failure -> response.response
+                }
+            } else {
+                response.response
             }
             request.copy(
                 response = response,
