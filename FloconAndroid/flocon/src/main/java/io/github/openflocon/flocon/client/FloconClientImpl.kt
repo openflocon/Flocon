@@ -50,7 +50,7 @@ internal class FloconClientImpl(
     override val tablePlugin = FloconTablePluginImpl(sender = this)
     override val deeplinksPlugin = FloconDeeplinksPluginImpl(sender = this)
     override val analyticsPlugin = FloconAnalyticsPluginImpl(sender = this)
-    override val devicePlugin = FloconDevicePluginImpl(sender = this)
+    override val devicePlugin = FloconDevicePluginImpl(sender = this, context = appContext)
     override val networkPlugin = FloconNetworkPluginImpl(
         context = appContext,
         sender = this,
@@ -108,6 +108,13 @@ internal class FloconClientImpl(
 
                     Protocol.ToDevice.SharedPreferences.Plugin -> {
                         sharedPrefsPlugin.onMessageReceived(
+                            messageFromServer = messageFromServer,
+                            sender = this@FloconClientImpl,
+                        )
+                    }
+
+                    Protocol.ToDevice.Device.Plugin -> {
+                        devicePlugin.onMessageReceived(
                             messageFromServer = messageFromServer,
                             sender = this@FloconClientImpl,
                         )

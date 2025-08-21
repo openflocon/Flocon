@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.device
 
+import android.content.Context
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
@@ -7,6 +8,7 @@ import io.github.openflocon.flocon.plugins.device.model.fromdevice.RegisterDevic
 
 class FloconDevicePluginImpl(
     private var sender: FloconMessageSender,
+    private val context: Context,
 ) : FloconDevicePlugin {
 
     override fun registerWithSerial(serial: String) {
@@ -21,7 +23,18 @@ class FloconDevicePluginImpl(
         messageFromServer: FloconMessageFromServer,
         sender: FloconMessageSender
     ) {
-        // no op
+        when (messageFromServer.method) {
+            Protocol.ToDevice.Device.Method.GetAppIcon -> {
+                val icon = getAppIconBase64(context)
+                if (icon != null) {
+                    sender.send(
+                        plugin = Protocol.FromDevice.Device.Plugin,
+                        method = Protocol.FromDevice.Device.Method.AppIcon,
+                        body = icon,
+                    )
+                }
+            }
+        }
     }
 
     override fun onConnectedToServer(sender: FloconMessageSender) {

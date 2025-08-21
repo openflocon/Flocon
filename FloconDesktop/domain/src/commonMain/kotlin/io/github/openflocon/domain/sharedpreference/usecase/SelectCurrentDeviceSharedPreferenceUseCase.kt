@@ -8,7 +8,7 @@ class SelectCurrentDeviceSharedPreferenceUseCase(
     private val sharedPreferenceRepository: SharedPreferencesRepository,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(sharedPreferenceId: DeviceSharedPreferenceId) {
+    suspend operator fun invoke(sharedPreferenceId: DeviceSharedPreferenceId) {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return
 
         sharedPreferenceRepository.selectDeviceSharedPreference(

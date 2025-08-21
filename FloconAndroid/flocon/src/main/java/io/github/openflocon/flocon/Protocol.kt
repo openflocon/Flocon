@@ -24,6 +24,7 @@ object Protocol {
 
             object Method {
                 const val RegisterDevice = "registerDevice"
+                const val AppIcon = "appIcon"
             }
         }
 
@@ -115,6 +116,14 @@ object Protocol {
             object Method {
                 const val Query = "query"
                 const val GetDatabases = "getDatabases"
+            }
+        }
+
+        object Device {
+            const val Plugin = "device"
+
+            object Method {
+                const val GetAppIcon = "getAppIcon"
             }
         }
 

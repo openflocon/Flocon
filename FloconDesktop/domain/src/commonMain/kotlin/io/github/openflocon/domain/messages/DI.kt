@@ -1,6 +1,7 @@
 package io.github.openflocon.domain.messages
 
 import io.github.openflocon.domain.messages.usecase.HandleIncomingMessagesUseCase
+import io.github.openflocon.domain.device.usecase.HandleNewAppUseCase
 import io.github.openflocon.domain.messages.usecase.StartServerUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -10,8 +11,9 @@ internal val messagesModule = module {
         HandleIncomingMessagesUseCase(
             messagesRepository = get(),
             plugins = getAll(),
-            handleDeviceUseCase = get(),
+            handleDeviceAndAppUseCase = get(),
             handleNewDeviceUseCase = get(),
+            handleNewAppUseCase = get(),
         )
     }
     factoryOf(::StartServerUseCase)

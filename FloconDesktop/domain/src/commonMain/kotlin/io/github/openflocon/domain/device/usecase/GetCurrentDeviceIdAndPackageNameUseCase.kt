@@ -1,14 +1,15 @@
 package io.github.openflocon.domain.device.usecase
 
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.repository.DevicesRepository
 
 class GetCurrentDeviceIdAndPackageNameUseCase(
-    private val getCurrentDeviceUseCase: GetCurrentDeviceUseCase,
-    private val getCurrentDeviceAppUseCase: GetCurrentDeviceAppUseCase,
+    private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,
+    private val devicesRepository: DevicesRepository,
 ) {
-    operator fun invoke(): DeviceIdAndPackageNameDomainModel? {
-        val deviceId = getCurrentDeviceUseCase()?.deviceId ?: return null
-        val packageName = getCurrentDeviceAppUseCase()?.packageName ?: return null
+    suspend operator fun invoke(): DeviceIdAndPackageNameDomainModel? {
+        val deviceId = getCurrentDeviceIdUseCase() ?: return null
+        val packageName = devicesRepository.getDeviceSelectedApp(deviceId)?.packageName ?: return null
 
         return DeviceIdAndPackageNameDomainModel(
             deviceId = deviceId,

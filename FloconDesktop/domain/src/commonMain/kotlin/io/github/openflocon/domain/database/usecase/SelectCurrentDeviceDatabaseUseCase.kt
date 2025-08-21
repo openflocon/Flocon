@@ -8,7 +8,7 @@ class SelectCurrentDeviceDatabaseUseCase(
     private val databaseRepository: DatabaseRepository,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(databaseId: DeviceDataBaseId) {
+    suspend operator fun invoke(databaseId: DeviceDataBaseId) {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return
 
         databaseRepository.selectDeviceDatabase(
