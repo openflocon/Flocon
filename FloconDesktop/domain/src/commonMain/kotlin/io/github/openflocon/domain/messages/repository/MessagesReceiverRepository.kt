@@ -11,5 +11,8 @@ interface MessagesReceiverRepository {
         message: FloconIncomingMessageDomainModel,
     )
 
-    suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
+    suspend fun onDeviceConnected(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        isNewDevice: Boolean,
+    )
 }

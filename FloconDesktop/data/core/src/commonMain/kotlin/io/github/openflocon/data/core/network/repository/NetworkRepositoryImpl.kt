@@ -37,12 +37,20 @@ class NetworkRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Network.Plugin)
 
-    override suspend fun onNewDevice(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+    override suspend fun onDeviceConnected(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        isNewDevice: Boolean,
+    ) {
         // on new device, send the mocks setup
         networkRemoteDataSource.setupMocks(
             deviceIdAndPackageName = deviceIdAndPackageName,
             mocks = getAllEnabledMocks(deviceIdAndPackageName = deviceIdAndPackageName),
         )
+        if(isNewDevice) {
+            networkQualityLocalDataSource.prepopulate(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+            )
+        }
     }
 
     override fun observeRequests(

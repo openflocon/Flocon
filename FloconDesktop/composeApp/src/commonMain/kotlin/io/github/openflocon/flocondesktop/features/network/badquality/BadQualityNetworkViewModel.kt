@@ -41,8 +41,8 @@ class BadQualityNetworkViewModel(
         Close,
     }
 
-    private val _events = Channel<BadQualityNetworkViewModel.Event?>()
-    val events: Flow<Event?> = _events.receiveAsFlow()
+    private val _events = Channel<BadQualityNetworkViewModel.Event>()
+    val events: Flow<Event> = _events.receiveAsFlow()
 
     val items = observeAllNetworkBadQualitiesUseCase()
         .distinctUntilChanged()
