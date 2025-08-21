@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NetworkBadQualityConfigDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun save(config: BadQualityConfigEntity)
+    suspend fun save(configs: List<BadQualityConfigEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun saveIfNotExists(configs: List<BadQualityConfigEntity>)
 
     @Query("""
         SELECT * 

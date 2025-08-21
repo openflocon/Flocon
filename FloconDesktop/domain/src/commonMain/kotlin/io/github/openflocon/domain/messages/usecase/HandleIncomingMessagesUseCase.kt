@@ -32,11 +32,12 @@ class HandleIncomingMessagesUseCase(
             }
             plugins.forEach { plugin ->
                 if (handleDeviceResult.isNewDevice) {
-                    plugin.onNewDevice(
+                    plugin.onDeviceConnected(
                         deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                             deviceId = handleDeviceResult.deviceId,
                             packageName = it.appPackageName,
                         ),
+                        isNewDevice = true, // TODO on a next MR, for now handleDeviceResult.isNewDevice is always true the first time
                     )
                 }
                 if (plugin.pluginName.contains(it.plugin)) {
