@@ -72,6 +72,14 @@ fun FloconNetworkCallDomainModel.httpCode(): Int? {
     }
 }
 
+fun FloconNetworkCallDomainModel.byteSize(): Long? {
+    return when(this.response) {
+        is FloconNetworkCallDomainModel.Response.Failure -> null
+        is FloconNetworkCallDomainModel.Response.Success -> this.response.byteSize
+        null -> null
+    }
+}
+
 fun FloconNetworkCallDomainModel.Response.getContentType(): String? {
     return when(this) {
         is FloconNetworkCallDomainModel.Response.Failure -> null

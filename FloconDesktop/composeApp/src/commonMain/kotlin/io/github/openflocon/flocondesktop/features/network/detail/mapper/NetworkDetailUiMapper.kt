@@ -46,16 +46,16 @@ fun toDetailUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState = 
 )
 
 private fun toDetailHttpStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.response?.let { response ->
-    when (val r = networkCall.response) {
+    when (response) {
         is FloconNetworkCallDomainModel.Response.Failure -> NetworkStatusUi(
-            text = r.issue,
+            text = response.issue,
             status = NetworkStatusUi.Status.ERROR,
         )
-        is FloconNetworkCallDomainModel.Response.Success -> when(val s = r.specificInfos) {
+        is FloconNetworkCallDomainModel.Response.Success -> when(val s = response.specificInfos) {
             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> toGrpcNetworkStatusUi(networkCall)
             // here for grphql we want the http code, the graphql status will be displayed on the specific graphql section
-            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toNetworkStatusUi(code = r.httpCode)
-            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> toNetworkStatusUi(code = r.httpCode)
+            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toNetworkStatusUi(code = s.httpCode)
+            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> toNetworkStatusUi(code = s.httpCode)
         }
     }
 } ?: loadingStatus()

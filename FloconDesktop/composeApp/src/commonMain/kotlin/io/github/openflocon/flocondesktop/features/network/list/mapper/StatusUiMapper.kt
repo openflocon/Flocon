@@ -32,10 +32,10 @@ fun toGraphQlNetworkStatusUi(isSuccess: Boolean): NetworkStatusUi = NetworkStatu
     status = if (isSuccess) NetworkStatusUi.Status.SUCCESS else NetworkStatusUi.Status.ERROR,
 )
 
-fun toGrpcNetworkStatusUi(call: FloconNetworkCallDomainModel): NetworkStatusUi? {
+fun toGrpcNetworkStatusUi(call: FloconNetworkCallDomainModel): NetworkStatusUi {
     val response = call.response ?: return loadingStatus()
     return when(response) {
-        is FloconNetworkCallDomainModel.Response.Failure -> return NetworkStatusUi(
+        is FloconNetworkCallDomainModel.Response.Failure -> NetworkStatusUi(
             text = response.issue,
             status = NetworkStatusUi.Status.ERROR,
         )
@@ -48,7 +48,10 @@ fun toGrpcNetworkStatusUi(call: FloconNetworkCallDomainModel): NetworkStatusUi? 
                         status = if (isSuccess) NetworkStatusUi.Status.SUCCESS else NetworkStatusUi.Status.ERROR,
                     )
                 }
-                else -> null
+                else -> NetworkStatusUi(
+                    text = "not a grpc response",
+                    status = NetworkStatusUi.Status.ERROR,
+                )
             }
         }
     }

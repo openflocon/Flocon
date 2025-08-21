@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.list.mapper
 
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.byteSize
 import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.ktor.http.Url
@@ -46,7 +47,7 @@ fun toUi(networkCall: FloconNetworkCallDomainModel): NetworkItemViewState = Netw
     dateFormatted = formatTimestamp(networkCall.request.startTime),
     timeFormatted = networkCall.response?.durationMs?.let { formatDuration(it) },
     requestSize = ByteFormatter.formatBytes(networkCall.request.byteSize),
-    responseSize = networkCall.response?.byteSize?.let { ByteFormatter.formatBytes(it) },
+    responseSize = networkCall.byteSize()?.let { ByteFormatter.formatBytes(it) },
     domain = getDomainUi(networkCall),
     type = toTypeUi(networkCall),
     method = getMethodUi(networkCall),
