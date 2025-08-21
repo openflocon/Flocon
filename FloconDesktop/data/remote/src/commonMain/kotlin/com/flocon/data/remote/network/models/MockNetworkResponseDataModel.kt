@@ -15,10 +15,11 @@ data class MockNetworkResponseDataModel(
 
     @Serializable
     data class Response(
-        val httpCode: Int,
-        val body: String,
-        val mediaType: String,
-        val delay: Long,
-        val headers: Map<String, String>,
+        val httpCode: Int?,
+        val body: String?,
+        val mediaType: String?,
+        val delay: Long?,
+        val headers: Map<String, String>?,
+        val errorException: String?,
     )
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,19 +35,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
+import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.possibleExceptions
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.createEditable
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.editableToUi
+import io.github.openflocon.flocondesktop.features.network.mock.edition.model.EditableMockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.HeaderUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.SelectedMockUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
-import kotlin.collections.plus
 
 @Composable
 fun NetworkEditionWindow(
@@ -204,150 +207,253 @@ fun MockEditorScreen(
                     fontWeight = FontWeight.Bold,
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    NetworkMockFieldView(
-                        label = "HTTP Code",
-                        maxLines = 1,
-                        placeHolder = "eg: 200",
-                        value = mock.response.httpCode.toString(),
-                        onValueChange = { newValue ->
-                            if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                NetworkMockFieldView(
+                    label = "Additional Delay (ms)",
+                    maxLines = 1,
+                    value = mock.delay.toString(),
+                    placeHolder = "0",
+                    onValueChange = { newValue ->
+                        // On vérifie si la nouvelle valeur est vide ou si elle contient uniquement des chiffres
+                        if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                            // Si c'est le cas, on met à jour l'état
+                            val newDelay = newValue.toLongOrNull() ?: 0L
+                            mock = mock.copy(
+                                delay = newDelay
+                            )
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                )
+
+                Text(
+                    text = "Type :",
+                    style = MaterialTheme.typography.titleMedium,
+                )
+
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Tab(
+                        text = "HttpCode + Body",
+                        isSelected = mock.responseType == EditableMockNetworkUiModel.ResponseType.BODY,
+                        onSelected = {
+                            mock =
+                                mock.copy(responseType = EditableMockNetworkUiModel.ResponseType.BODY)
+                        }
+                    )
+                    Tab(
+                        text = "Exception",
+                        isSelected = mock.responseType == EditableMockNetworkUiModel.ResponseType.EXCEPTION,
+                        onSelected = {
+                            mock =
+                                mock.copy(responseType = EditableMockNetworkUiModel.ResponseType.EXCEPTION)
+                        }
+                    )
+                }
+                when (mock.responseType) {
+                    EditableMockNetworkUiModel.ResponseType.EXCEPTION -> {
+                        MockNetworkErrorSelection(
+                            selected = mock.exceptionResponse.classPath,
+                            onChanged = { new ->
                                 mock = mock.copy(
-                                    response = mock.response.copy(
-                                        httpCode = newValue.toIntOrNull() ?: 0,
+                                    exceptionResponse = mock.exceptionResponse.copy(
+                                        classPath = new,
                                     ),
                                 )
                             }
-                        },
-                        modifier = Modifier.weight(1f),
-                    )
-                    NetworkMockFieldView(
-                        label = "Additional Delay (ms)",
-                        maxLines = 1,
-                        value = mock.response.delay.toString(),
-                        placeHolder = "0",
-                        onValueChange = { newValue ->
-                            // On vérifie si la nouvelle valeur est vide ou si elle contient uniquement des chiffres
-                            if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                                // Si c'est le cas, on met à jour l'état
-                                val newDelay = newValue.toLongOrNull() ?: 0L
-                                mock = mock.copy(response = mock.response.copy(delay = newDelay))
-                            }
-                        },
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-
-                NetworkMockFieldView(
-                    label = "Media Type",
-                    maxLines = 1,
-                    value = mock.response.mediaType,
-                    placeHolder = "application/json",
-                    onValueChange = { newValue ->
-                        mock = mock.copy(response = mock.response.copy(mediaType = newValue))
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    NetworkMockMediaType(
-                        text = "application/json",
-                        onClicked = {
-                            mock = mock.copy(response = mock.response.copy(mediaType = it))
-                        },
-                    )
-                    NetworkMockMediaType(
-                        text = "text/plain",
-                        onClicked = {
-                            mock = mock.copy(response = mock.response.copy(mediaType = it))
-                        },
-                    )
-                }
-
-                // Section Headers
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    MockNetworkLabelView("Headers")
-                    Box(
-                        modifier = Modifier.size(28.dp)
-                            .clip(
-                                RoundedCornerShape(4.dp),
-                            ).clickable {
-                                val newHeaders = mock.response.headers + HeaderUiModel(
-                                    key = "",
-                                    value = "",
-                                )
-                                mock =
-                                    mock.copy(response = mock.response.copy(headers = newHeaders))
-                            },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Image(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add Header",
-                            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface),
                         )
                     }
-                }
 
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
-                ) {
-                    mock.response.headers.fastForEach { header ->
-                        HeaderInputField(
-                            key = header.key,
-                            value = header.value,
-                            onKeyChange = { newKey ->
-                                val newHeaders = mock.response.headers.map {
-                                    if (it.id == header.id) {
-                                        it.copy(key = newKey)
-                                    } else {
-                                        it
+                    EditableMockNetworkUiModel.ResponseType.BODY -> {
+                        val bodyResponse = mock.bodyResponse
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            NetworkMockFieldView(
+                                label = "HTTP Code",
+                                maxLines = 1,
+                                placeHolder = "eg: 200",
+                                value = bodyResponse.httpCode.toString(),
+                                onValueChange = { newValue ->
+                                    if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                                        mock = mock.copy(
+                                            bodyResponse = bodyResponse.copy(
+                                                httpCode = newValue.toIntOrNull() ?: 0,
+                                            ),
+                                        )
                                     }
-                                }
-                                mock =
-                                    mock.copy(response = mock.response.copy(headers = newHeaders))
-                            },
+                                },
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+
+                        NetworkMockFieldView(
+                            label = "Media Type",
+                            maxLines = 1,
+                            value = bodyResponse.mediaType,
+                            placeHolder = "application/json",
                             onValueChange = { newValue ->
-                                val newHeaders = mock.response.headers.map {
-                                    if (it.id == header.id) {
-                                        it.copy(value = newValue)
-                                    } else {
-                                        it
-                                    }
-                                }
-                                mock =
-                                    mock.copy(response = mock.response.copy(headers = newHeaders))
+                                mock = mock.copy(
+                                    bodyResponse = bodyResponse.copy(mediaType = newValue)
+                                )
                             },
-                            onRemove = {
-                                val newHeaders =
-                                    mock.response.headers.filterNot { it.id == header.id }
-                                mock =
-                                    mock.copy(response = mock.response.copy(headers = newHeaders))
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            NetworkMockMediaType(
+                                text = "application/json",
+                                onClicked = {
+                                    mock = mock.copy(
+                                        bodyResponse = bodyResponse.copy(mediaType = it)
+                                    )
+                                },
+                            )
+                            NetworkMockMediaType(
+                                text = "text/plain",
+                                onClicked = {
+                                    mock = mock.copy(
+                                        bodyResponse = bodyResponse.copy(mediaType = it)
+                                    )
+                                },
+                            )
+                        }
+
+                        // Section Headers
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            MockNetworkLabelView("Headers")
+                            Box(
+                                modifier = Modifier.size(28.dp)
+                                    .clip(
+                                        RoundedCornerShape(4.dp),
+                                    ).clickable {
+                                        val newHeaders = bodyResponse.headers + HeaderUiModel(
+                                            key = "",
+                                            value = "",
+                                        )
+                                        mock =
+                                            mock.copy(
+                                                bodyResponse = bodyResponse.copy(headers = newHeaders)
+                                            )
+                                    },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Image(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Add Header",
+                                    colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface),
+                                )
+                            }
+                        }
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                        ) {
+                            bodyResponse.headers.fastForEach { header ->
+                                HeaderInputField(
+                                    key = header.key,
+                                    value = header.value,
+                                    onKeyChange = { newKey ->
+                                        val newHeaders = bodyResponse.headers.map {
+                                            if (it.id == header.id) {
+                                                it.copy(key = newKey)
+                                            } else {
+                                                it
+                                            }
+                                        }
+                                        mock =
+                                            mock.copy(
+                                                bodyResponse = bodyResponse.copy(headers = newHeaders)
+                                            )
+                                    },
+                                    onValueChange = { newValue ->
+                                        val newHeaders = bodyResponse.headers.map {
+                                            if (it.id == header.id) {
+                                                it.copy(value = newValue)
+                                            } else {
+                                                it
+                                            }
+                                        }
+                                        mock = mock.copy(
+                                            bodyResponse = bodyResponse.copy(headers = newHeaders)
+                                        )
+                                    },
+                                    onRemove = {
+                                        val newHeaders =
+                                            bodyResponse.headers.filterNot { it.id == header.id }
+                                        mock = mock.copy(
+                                            bodyResponse = bodyResponse.copy(headers = newHeaders)
+                                        )
+                                    },
+                                )
+                            }
+                        }
+
+                        NetworkMockFieldView(
+                            label = "Body",
+                            value = bodyResponse.body ?: "",
+                            placeHolder = null,
+                            minLines = 4,
+                            onValueChange = { newValue ->
+                                mock = mock.copy(bodyResponse = bodyResponse.copy(body = newValue))
                             },
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     }
                 }
+            }
+        }
+    }
+}
 
-                NetworkMockFieldView(
-                    label = "Body",
-                    value = mock.response.body ?: "",
-                    placeHolder = null,
-                    minLines = 4,
-                    onValueChange = { newValue ->
-                        mock = mock.copy(response = mock.response.copy(body = newValue))
-                    },
-                    modifier = Modifier.fillMaxWidth(),
+@Composable
+private fun MockNetworkErrorSelection(
+    selected: String,
+    onChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        possibleExceptions.fastForEach { exception ->
+            val (backgroundColor, textColor) = if (exception.classPath == selected) {
+                FloconTheme.colorPalette.onSurface to FloconTheme.colorPalette.panel
+            } else {
+                FloconTheme.colorPalette.panel to FloconTheme.colorPalette.onSurface
+            }
+            Column(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        color = backgroundColor,
+                    )
+                    .then(
+                        Modifier.clickable(
+                            onClick = {
+                                onChanged(exception.classPath)
+                            },
+                        )
+                    ).padding(all = 8.dp)
+            ) {
+                Text(
+                    text = exception.description,
+                    style = FloconTheme.typography.bodySmall,
+                    color = textColor,
+                )
+                Text(
+                    text = exception.classPath,
+                    style = FloconTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
+                    color = textColor,
                 )
             }
         }
@@ -452,4 +558,33 @@ private fun HeaderInputField(
             )
         }
     }
+}
+
+@Composable
+fun RowScope.Tab(
+    text: String,
+    isSelected: Boolean,
+    onSelected: () -> Unit
+) {
+    Text(
+        modifier = Modifier.weight(1f)
+            .clip(RoundedCornerShape(4.dp))
+            .background(
+                color = if (isSelected) {
+                    Color.White.copy(alpha = 0.8f)
+                } else {
+                    Color.White.copy(alpha = 0.1f)
+                },
+            ).clickable {
+                onSelected()
+            }.padding(vertical = 8.dp),
+        text = text,
+        textAlign = TextAlign.Center,
+        style = FloconTheme.typography.bodyMedium,
+        color = if(isSelected) {
+            FloconTheme.colorPalette.panel
+        } else {
+            FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f)
+        },
+    )
 }

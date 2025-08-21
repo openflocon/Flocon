@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 
 class NetworkLocalDataSourceRoom(
     private val dispatcherProvider: DispatcherProvider,
-    private val floconNetworkDao: FloconNetworkDao
+    private val floconNetworkDao: FloconNetworkDao,
 ) : NetworkLocalDataSource {
 
     override fun observeRequests(

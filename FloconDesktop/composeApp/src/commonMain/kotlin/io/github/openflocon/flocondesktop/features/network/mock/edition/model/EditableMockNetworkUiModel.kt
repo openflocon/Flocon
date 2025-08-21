@@ -13,33 +13,52 @@ data class MockNetworkUiModel(
         val method: MockNetworkMethodUi,
     )
 
-    data class Response(
-        val httpCode: Int,
-        val body: String,
-        val mediaType: String,
-        val delay: Long,
-        val headers: Map<String, String>,
-    )
+    sealed interface Response {
+        val delay: Long
+        data class Body(
+            val httpCode: Int,
+            val body: String,
+            val mediaType: String,
+            override val delay: Long,
+            val headers: Map<String, String>,
+        ) : Response
+        data class Exception(
+            override val delay: Long,
+            val classPath: String,
+        ) : Response
+    }
 }
 
 data class EditableMockNetworkUiModel(
     val id: String?,
     val isEnabled: Boolean, // not visible
     val expectation: Expectation,
-    val response: Response,
+    val delay: Long,
+    val responseType: ResponseType,
+    val exceptionResponse: Response.Exception,
+    val bodyResponse: Response.Body,
 ) {
     data class Expectation(
         val urlPattern: String?, // a regex
         val method: MockNetworkMethodUi, // can be get, post, put, ... or a wildcard *
     )
 
-    data class Response(
-        val httpCode: Int,
-        val body: String,
-        val mediaType: String,
-        val delay: Long,
-        val headers: List<HeaderUiModel>,
-    )
+    enum class ResponseType {
+        BODY,
+        EXCEPTION,
+    }
+
+    sealed interface Response {
+        data class Body(
+            val httpCode: Int,
+            val body: String,
+            val mediaType: String,
+            val headers: List<HeaderUiModel>,
+        ) : Response
+        data class Exception(
+            val classPath: String,
+        ) : Response
+    }
 }
 
 data class HeaderUiModel(

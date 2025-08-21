@@ -18,19 +18,10 @@ data class MockNetworkEntity(
     val isEnabled: Boolean,
     @Embedded(prefix = "expectation_")
     val expectation: MockNetworkExpectationEmbedded,
-    @Embedded(prefix = "response_")
-    val response: MockNetworkResponseEmbedded,
+    val response: String, // saved as json
 )
 
 data class MockNetworkExpectationEmbedded(
     val urlPattern: String,
     val method: String,
-)
-
-data class MockNetworkResponseEmbedded(
-    val httpCode: Int,
-    val body: String,
-    val mediaType: String,
-    val delay: Long,
-    val headers: Map<String, String>,
 )

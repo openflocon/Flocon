@@ -8,17 +8,23 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 
 class NetworkMocksLocalDataSourceImpl(
     private val dao: NetworkMocksDao,
+    private val json: Json,
 ) : NetworkMocksLocalDataSource {
 
     override suspend fun addMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         mock: MockNetworkDomainModel,
     ) {
-        val mockEntity = toEntity(mock, deviceIdAndPackageName)
-        dao.addMock(mockEntity)
+        mock.toEntity(
+            json = json,
+            deviceInfo = deviceIdAndPackageName
+        )?.let {
+            dao.addMock(it)
+        }
     }
 
     override suspend fun getMock(
@@ -29,9 +35,9 @@ class NetworkMocksLocalDataSourceImpl(
             deviceIdAndPackageName.deviceId,
             deviceIdAndPackageName.packageName,
             id
-        )?.let {
-            toDomain(it)
-        }
+        )?.toDomain(
+            json = json,
+        )
     }
 
     override suspend fun getAllEnabledMocks(
@@ -40,8 +46,10 @@ class NetworkMocksLocalDataSourceImpl(
         return dao.getAllEnabledMocks(
             deviceIdAndPackageName.deviceId,
             deviceIdAndPackageName.packageName
-        ).map {
-            toDomain(it)
+        ).mapNotNull {
+            it.toDomain(
+                json = json,
+            )
         }
     }
 
@@ -52,8 +60,10 @@ class NetworkMocksLocalDataSourceImpl(
             deviceIdAndPackageName.deviceId,
             deviceIdAndPackageName.packageName
         ).map { entities ->
-            entities.map {
-                toDomain(it)
+            entities.mapNotNull {
+                it.toDomain(
+                    json = json,
+                )
             }
         }
     }

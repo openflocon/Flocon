@@ -19,13 +19,24 @@ fun toRemote(mock: MockNetworkDomainModel): MockNetworkResponseDataModel = MockN
         urlPattern = mock.expectation.urlPattern,
         method = mock.expectation.method,
     ),
-    response = MockNetworkResponseDataModel.Response(
-        httpCode = mock.response.httpCode,
-        body = mock.response.body,
-        mediaType = mock.response.mediaType,
-        delay = mock.response.delay,
-        headers = mock.response.headers,
-    ),
+    response = when(val r = mock.response) {
+        is MockNetworkDomainModel.Response.Body -> MockNetworkResponseDataModel.Response(
+            httpCode = r.httpCode,
+            body = r.body,
+            mediaType = r.mediaType,
+            delay = r.delay,
+            headers = r.headers,
+            errorException = null
+        )
+        is MockNetworkDomainModel.Response.Exception -> MockNetworkResponseDataModel.Response(
+            httpCode = null,
+            body = null,
+            mediaType = null,
+            delay = r.delay,
+            headers = null,
+            errorException = null
+        )
+    }
 )
 
 @OptIn(ExperimentalUuidApi::class)
