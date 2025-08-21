@@ -68,13 +68,13 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
         request.attributes.put(FLOCON_START_TIME_KEY, startTime)
         request.attributes.put(FLOCON_IS_MOCKED_KEY, isMocked)
 
-        if (isMocked) {
-            val fakeCall = executeMock(client = theClient, request = request, mock = mockConfig)
-            proceedWith(fakeCall)
-            return@intercept
-        }
-
         try {
+            if (isMocked) {
+                val fakeCall = executeMock(client = theClient, request = request, mock = mockConfig)
+                proceedWith(fakeCall)
+                return@intercept
+            }
+
             floconNetworkPlugin.badQualityConfig?.let { badQualityConfig ->
                 executeBadQuality(
                     badQualityConfig = badQualityConfig,

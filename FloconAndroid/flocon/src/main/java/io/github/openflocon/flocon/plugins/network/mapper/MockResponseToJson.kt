@@ -41,6 +41,7 @@ private fun decodeMockNetworkResponse(jsonObject: JSONObject): MockNetworkRespon
         val body = responseJson.getString("body")
         val mediaType = responseJson.getString("mediaType")
         val delay = responseJson.getLong("delay")
+        val errorException = responseJson.optString("errorException", "").takeIf { it.isNotBlank() }
 
         val headersJson = responseJson.getJSONObject("headers")
         val headers = buildMap<String, String> {
@@ -51,7 +52,12 @@ private fun decodeMockNetworkResponse(jsonObject: JSONObject): MockNetworkRespon
             }
         }
 
-        val response = MockNetworkResponse.Response(
+        val response = errorException?.let {
+            MockNetworkResponse.Response.ErrorThrow(
+                classPath = it,
+                delay = delay,
+            )
+        } ?: MockNetworkResponse.Response.Body(
             httpCode = httpCode,
             body = body,
             mediaType = mediaType,
@@ -89,14 +95,21 @@ private fun encodeMockNetworkResponse(mock: MockNetworkResponse): JSONObject {
             // On le laisse de côté, il sera recréé lors du parsing.
         }
 
-        val headersJson = JSONObject(mock.response.headers)
-
         val responseJson = JSONObject().apply {
-            put("httpCode", mock.response.httpCode)
-            put("body", mock.response.body)
-            put("mediaType", mock.response.mediaType)
+            when(val response = mock.response) {
+                is MockNetworkResponse.Response.ErrorThrow -> {
+                    put("errorException", response.classPath)
+                }
+                is MockNetworkResponse.Response.Body -> {
+                    val headersJson = JSONObject(response.headers)
+                    put("httpCode", response.httpCode)
+                    put("body", response.body)
+                    put("mediaType", response.mediaType)
+                    put("headers", headersJson)
+                }
+            }
+
             put("delay", mock.response.delay)
-            put("headers", headersJson)
         }
 
         JSONObject().apply {

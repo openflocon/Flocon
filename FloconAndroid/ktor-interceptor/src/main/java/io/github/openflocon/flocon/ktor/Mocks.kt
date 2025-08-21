@@ -13,6 +13,7 @@ import io.ktor.util.date.GMTDate
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.delay
+import java.io.IOException
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -30,6 +31,7 @@ internal fun findMock(
     }
 }
 
+@Throws(IOException::class)
 @OptIn(InternalAPI::class)
 internal suspend fun executeMock(
     request: HttpRequestBuilder,
@@ -40,19 +42,33 @@ internal suspend fun executeMock(
         delay(mock.response.delay)
     }
 
-    val bodyBytes = mock.response.body.toByteArray()
-    val headers = HeadersBuilder().apply {
-        mock.response.headers.forEach { (name, value) -> append(name, value) }
-    }.build()
+    when(val response = mock.response) {
+        is MockNetworkResponse.Response.Body -> {
+            val bodyBytes = response.body.toByteArray()
+            val headers = HeadersBuilder().apply {
+                response.headers.forEach { (name, value) -> append(name, value) }
+            }.build()
 
-    val responseData = HttpResponseData(
-        statusCode = HttpStatusCode.fromValue(mock.response.httpCode),
-        requestTime = GMTDate(),
-        headers = headers,
-        version = HttpProtocolVersion.HTTP_1_1,
-        body = ByteReadChannel(bodyBytes),
-        callContext = client.coroutineContext,
-    )
+            val responseData = HttpResponseData(
+                statusCode = HttpStatusCode.fromValue(response.httpCode),
+                requestTime = GMTDate(),
+                headers = headers,
+                version = HttpProtocolVersion.HTTP_1_1,
+                body = ByteReadChannel(bodyBytes),
+                callContext = client.coroutineContext,
+            )
 
-    return HttpClientCall(client, request.build(), responseData)
+            return HttpClientCall(client, request.build(), responseData)
+        }
+        is MockNetworkResponse.Response.ErrorThrow -> {
+            val error = response.generate()
+            if (error is IOException) {
+                throw error //okhttp accepts only IOException
+            } else if (error is Throwable) {
+                throw IOException(error)
+            } else {
+                throw IOException("Unknown flocon/mock error type")
+            }
+        }
+    }
 }

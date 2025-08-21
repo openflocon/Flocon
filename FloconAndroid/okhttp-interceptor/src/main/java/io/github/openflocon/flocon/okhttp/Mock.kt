@@ -6,7 +6,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.Response.*
 import okhttp3.ResponseBody.Companion.toResponseBody
+import java.io.IOException
 
 internal fun findMock(
     request: Request,
@@ -22,6 +24,7 @@ internal fun findMock(
     }
 }
 
+@Throws(IOException::class)
 internal fun executeMock(request: Request, mock: MockNetworkResponse): Response {
     if (mock.response.delay > 0) {
         try {
@@ -31,20 +34,35 @@ internal fun executeMock(request: Request, mock: MockNetworkResponse): Response 
         }
     }
 
-    val body = mock.response.body.toResponseBody(
-        mock.response.mediaType.toMediaTypeOrNull()
-    )
+    when(val response = mock.response) {
+        is MockNetworkResponse.Response.Body -> {
+            val body = response.body.toResponseBody(
+                response.mediaType.toMediaTypeOrNull()
+            )
 
-    return Response.Builder()
-        .request(request)
-        .protocol(Protocol.HTTP_1_1)
-        .message(getHttpMessage(mock.response.httpCode))
-        .code(mock.response.httpCode)
-        .body(body)
-        .apply {
-            mock.response.headers.forEach { (name, value) ->
-                addHeader(name, value)
+            return Builder()
+                .request(request)
+                .protocol(Protocol.HTTP_1_1)
+                .message(getHttpMessage(response.httpCode))
+                .code(response.httpCode)
+                .body(body)
+                .apply {
+                    response.headers.forEach { (name, value) ->
+                        addHeader(name, value)
+                    }
+                }
+                .build()
+        }
+
+        is MockNetworkResponse.Response.ErrorThrow -> {
+            val error = response.generate()
+            if (error is IOException) {
+                throw error //okhttp accepts only IOException
+            } else if (error is Throwable) {
+                throw IOException(error)
+            } else {
+                throw IOException("Unknown flocon/mock error type")
             }
         }
-        .build()
+    }
 }
