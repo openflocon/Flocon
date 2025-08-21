@@ -21,6 +21,12 @@ interface LocalDevicesDataSource {
     suspend fun getDeviceAppByPackage(deviceId: DeviceId, packageName: String) : DeviceAppDomainModel?
     // endregion
 
+    // region apps icons
+    fun observeAppIcon(deviceId: DeviceId, appPackageName: String): Flow<String?>
+    suspend fun saveAppIcon(deviceId: DeviceId, appPackageName: String, iconEncoded: String)
+    suspend fun hasAppIcon(deviceId: DeviceId, appPackageName: String) : Boolean
+    // endregion
+
     suspend fun clear()
 }
 

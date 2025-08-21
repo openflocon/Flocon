@@ -1,4 +1,4 @@
-package io.github.openflocon.domain.messages.usecase
+package io.github.openflocon.domain.device.usecase
 
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel

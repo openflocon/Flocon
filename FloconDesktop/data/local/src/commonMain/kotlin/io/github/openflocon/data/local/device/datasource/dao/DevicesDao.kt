@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
+import io.github.openflocon.data.local.device.datasource.model.DeviceAppIconEntity
 import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -48,4 +49,28 @@ interface DevicesDao {
         deviceId: String,
         packageName: String
     ): DeviceAppEntity?
+
+    @Query(
+        """
+        SELECT iconEncoded FROM DeviceAppIconEntity
+        WHERE deviceId = :deviceId 
+        AND appPackageName = :appPackageName
+        LIMIT 1
+     """
+    )
+    fun observeAppIcon(deviceId: String, appPackageName: String): Flow<String?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAppIcon(deviceAppIconEntity: DeviceAppIconEntity)
+
+    @Query(
+        """
+        SELECT EXISTS(
+            SELECT * FROM DeviceAppIconEntity
+            WHERE deviceId = :deviceId 
+            AND appPackageName = :appPackageName
+        )
+     """
+    )
+    suspend fun hasAppIcon(deviceId: String, appPackageName: String): Boolean
 }

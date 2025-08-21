@@ -5,6 +5,8 @@ import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainModel
 import io.github.openflocon.domain.device.usecase.HandleDeviceAndAppUseCase
+import io.github.openflocon.domain.device.usecase.HandleNewAppUseCase
+import io.github.openflocon.domain.device.usecase.HandleNewDeviceUseCase
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.messages.repository.MessagesRepository
@@ -17,6 +19,7 @@ class HandleIncomingMessagesUseCase(
     private val plugins: List<MessagesReceiverRepository>,
     private val handleDeviceAndAppUseCase: HandleDeviceAndAppUseCase,
     private val handleNewDeviceUseCase: HandleNewDeviceUseCase,
+    private val handleNewAppUseCase: HandleNewAppUseCase,
 ) {
 
     operator fun invoke(): Flow<Unit> = messagesRepository
@@ -25,6 +28,14 @@ class HandleIncomingMessagesUseCase(
             val handleDeviceResult = handleDeviceAndAppUseCase(device = getDeviceAndApp(it))
             if (handleDeviceResult.isNewDevice) {
                 handleNewDeviceUseCase(
+                    deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                        deviceId = handleDeviceResult.deviceId,
+                        packageName = it.appPackageName,
+                    )
+                )
+            }
+            if (handleDeviceResult.isNewApp) {
+                handleNewAppUseCase(
                     deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                         deviceId = handleDeviceResult.deviceId,
                         packageName = it.appPackageName,

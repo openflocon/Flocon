@@ -143,6 +143,45 @@ class DevicesRepositoryImpl(
             localDevicesDataSource.getDeviceAppByPackage(deviceId, appPackageName)
         }
     }
+
+    override fun observeAppIcon(
+        deviceId: DeviceId,
+        appPackageName: String
+    ): Flow<String?> {
+        return localDevicesDataSource.observeAppIcon(
+            deviceId = deviceId,
+            appPackageName = appPackageName
+        ).flowOn(dispatcherProvider.data)
+    }
+
+    override suspend fun saveAppIcon(
+        deviceId: DeviceId,
+        appPackageName: String,
+        iconEncoded: String
+    ) {
+        return localDevicesDataSource.saveAppIcon(
+            deviceId = deviceId,
+            appPackageName = appPackageName,
+            iconEncoded = iconEncoded
+        )
+    }
+
+    override suspend fun hasAppIcon(
+        deviceId: DeviceId,
+        appPackageName: String
+    ): Boolean {
+        return localDevicesDataSource.hasAppIcon(
+            deviceId = deviceId,
+            appPackageName = appPackageName
+        )
+    }
+
+    override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        withContext(dispatcherProvider.data) {
+            remoteDeviceDataSource.askForDeviceAppIcon(deviceIdAndPackageName)
+        }
+    }
+
     // endregion
 
     override val pluginName = listOf(Protocol.FromDevice.Device.Plugin)
@@ -159,6 +198,13 @@ class DevicesRepositoryImpl(
                         serial = serial,
                     )
                 }
+            }
+            Protocol.FromDevice.Device.Method.AppIcon -> {
+                localDevicesDataSource.saveAppIcon(
+                    deviceId = message.deviceId,
+                    appPackageName = message.appPackageName,
+                    iconEncoded = message.body, // here we receive the image directly as base64
+                )
             }
         }
     }
