@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.Icon
@@ -25,12 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.placeHolder
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -59,33 +59,13 @@ fun DashboardTextFieldView(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Box(
+            FloconTextField(
+                value = value,
+                onValueChange = { value = it },
+                placeholder = placeHolder(rowItem.placeHolder?.takeIf(String::isNotEmpty)),
                 modifier = Modifier
                     .weight(1f)
-                    .background(
-                        color = Color.White.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(8.dp),
-                    ).padding(horizontal = 12.dp, vertical = 8.dp),
-            ) {
-                rowItem.placeHolder?.takeIf { value.isEmpty() }?.let {
-                    Text(
-                        text = it,
-                        style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
-                    )
-                }
-                BasicTextField(
-                    textStyle = FloconTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorPalette.onSurface,
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    value = value,
-                    cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
-                    onValueChange = {
-                        value = it
-                    },
-                )
-            }
+            )
             DashboardSendButton(
                 icon = Icons.AutoMirrored.Outlined.Send,
                 onClick = {

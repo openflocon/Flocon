@@ -14,9 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.AddCircle
@@ -34,11 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.common.ui.interactions.hover
@@ -46,6 +42,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.Tex
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.previewTextFilterState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconTextField
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -221,18 +218,9 @@ private fun TextFilterFieldView(
                     color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
                 )
             }
-            BasicTextField(
-                textStyle = FloconTheme.typography.bodySmall.copy(
-                    color = FloconTheme.colorPalette.onSurface,
-                ),
-                modifier = Modifier.fillMaxWidth(),
+            FloconTextField(
                 value = value,
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
-                onValueChange = {
-                    value = it
-                },
+                onValueChange = { value = it },
                 keyboardActions = KeyboardActions(
                     onDone = {
                         // default action -> add as "include filter"
@@ -240,6 +228,10 @@ private fun TextFilterFieldView(
                         value = "" // reset
                     },
                 ),
+                textStyle = FloconTheme.typography.bodySmall.copy(
+                    color = FloconTheme.colorPalette.onSurface,
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
         }
         TextFilterButton(

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -32,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -46,7 +44,7 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.model.Mo
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.SelectedMockUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
-import kotlin.collections.plus
+import io.github.openflocon.library.designsystem.components.FloconTextField
 
 @Composable
 fun NetworkEditionWindow(
@@ -397,16 +395,13 @@ private fun HeaderInputField(
                     color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
                 )
             }
-            BasicTextField(
+            FloconTextField(
+                value = value,
+                onValueChange = onKeyChange,
                 textStyle = FloconTheme.typography.bodySmall.copy(
                     color = FloconTheme.colorPalette.onSurface,
                 ),
                 modifier = Modifier.fillMaxWidth(),
-                value = key,
-                cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
-                onValueChange = {
-                    onKeyChange(it)
-                },
             )
         }
         Box(
@@ -423,16 +418,10 @@ private fun HeaderInputField(
                     color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
                 )
             }
-            BasicTextField(
-                textStyle = FloconTheme.typography.bodySmall.copy(
-                    color = FloconTheme.colorPalette.onSurface,
-                ),
-                modifier = Modifier.fillMaxWidth(),
+            FloconTextField(
                 value = value,
-                cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
-                onValueChange = {
-                    onValueChange(it)
-                },
+                onValueChange = onValueChange,
+                modifier = Modifier.fillMaxWidth(),
             )
         }
 

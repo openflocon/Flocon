@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
@@ -20,11 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconTextField
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -43,19 +42,17 @@ fun DatabaseQueryView(
             )
             .padding(16.dp),
     ) {
-        BasicTextField(
+        FloconTextField(
             value = query,
-            onValueChange = { updateQuery(it) },
-            modifier = Modifier
-                .fillMaxWidth(),
+            onValueChange = updateQuery,
             singleLine = false,
-            maxLines = 10,
             minLines = 5,
-            cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
+            maxLines = 10,
             textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            modifier = Modifier
+                .fillMaxWidth()
         )
-
         Box(modifier = Modifier.fillMaxWidth()) {
             DatabaseButton(
                 icon = Icons.Outlined.Delete,
