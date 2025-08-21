@@ -28,10 +28,10 @@ data class FloconNetworkCallDomainModel(
 
     sealed interface Response {
 
-        val durationMs: Long
+        val durationMs: Double
 
         data class Success(
-            override val durationMs: Long,
+            override val durationMs: Double,
             val contentType: String? = null,
             val body: String? = null,
             val headers: Map<String, String>,
@@ -52,7 +52,7 @@ data class FloconNetworkCallDomainModel(
             }
         }
         data class Failure(
-            override val durationMs: Long,
+            override val durationMs: Double,
             val issue: String,
         ) : Response
     }

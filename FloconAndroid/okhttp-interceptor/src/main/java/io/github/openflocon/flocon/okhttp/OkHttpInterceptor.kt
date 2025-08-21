@@ -142,6 +142,7 @@ class FloconOkhttpInterceptor() : Interceptor {
             headers = responseHeadersMap,
             size = responseSize,
             grpcStatus = null,
+            error = null,
         )
 
         floconNetworkPlugin.logResponse(

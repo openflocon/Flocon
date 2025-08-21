@@ -61,7 +61,7 @@ fun getDomainUi(networkRequest: FloconNetworkCallDomainModel): String = when (ne
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> networkRequest.request.url
 }
 
-fun formatDuration(duration: Long): String = duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)
+fun formatDuration(duration: Double): String = duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)
 
 fun formatTimestamp(timestamp: Long): String {
     val instant = Instant.fromEpochMilliseconds(timestamp)

@@ -49,7 +49,7 @@ data class FloconNetworkRequestEmbedded(
 )
 
 data class FloconNetworkResponseEmbedded(
-    val durationMs: Long,
+    val durationMs: Double,
     val responseContentType: String?,
     val responseBody: String?,
     val responseHeaders: Map<String, String>,

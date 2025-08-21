@@ -39,6 +39,7 @@ fun floconNetworkCallResponseToJson(network: FloconNetworkCallResponse): JSONObj
         response.body?.let { json.put("responseBody", it) }
         json.put("responseHeaders", JSONObject(response.headers))
         json.put("responseSize", response.size)
+        json.put("responseError", response.error)
     }
 
     return json
