@@ -488,49 +488,20 @@ private fun HeaderInputField(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Box(
-            Modifier.weight(1f)
-                .background(
-                    color = Color.White.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(8.dp),
-                ).padding(horizontal = 12.dp, vertical = 8.dp),
-        ) {
-            if (key.isEmpty()) {
-                Text(
-                    text = "Key",
-                    style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
-                )
-            }
-            FloconTextField(
-                value = key,
-                onValueChange = onKeyChange,
-                textStyle = FloconTheme.typography.bodySmall.copy(
-                    color = FloconTheme.colorPalette.onSurface,
-                ),
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-        Box(
-            Modifier.weight(1f)
-                .background(
-                    color = Color.White.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(8.dp),
-                ).padding(horizontal = 12.dp, vertical = 8.dp),
-        ) {
-            if (value.isEmpty()) {
-                Text(
-                    text = "Value",
-                    style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
-                )
-            }
-            FloconTextField(
-                value = value,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
+        FloconTextField(
+            value = key,
+            onValueChange = onKeyChange,
+            placeholder = defaultPlaceHolder("Key"),
+            modifier = Modifier.weight(1f),
+            containerColor = FloconTheme.colorPalette.panel
+        )
+        FloconTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = defaultPlaceHolder("Value"),
+            modifier = Modifier.weight(1f),
+            containerColor = FloconTheme.colorPalette.panel
+        )
 
         Box(
             modifier = Modifier
