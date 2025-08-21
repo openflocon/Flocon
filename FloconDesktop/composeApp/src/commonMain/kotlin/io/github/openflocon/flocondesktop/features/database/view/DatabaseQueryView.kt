@@ -48,8 +48,9 @@ fun DatabaseQueryView(
             singleLine = false,
             minLines = 5,
             maxLines = 10,
-            textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
+            textStyle = FloconTheme.typography.bodySmall,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            containerColor = FloconTheme.colorPalette.surfaceVariant,
             modifier = Modifier
                 .fillMaxWidth()
         )

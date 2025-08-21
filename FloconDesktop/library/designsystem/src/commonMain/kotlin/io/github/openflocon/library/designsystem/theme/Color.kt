@@ -46,7 +46,7 @@ internal val lightPalette = FloconColorPalette(
 
     surface = Color(0xFF2C2C2E),
     onSurface = Color(0xffF2F2F7),
-    surfaceVariant = Color(0xFF2C2C2E).copy(alpha = .8f),
+    surfaceVariant = Color(0xFF29282c),
     onSurfaceVariant = Color(0xffF2F2F7),
     inverseSurface = Color(0xFFe2e2e9),
     inverseOnSurface = Color(0xFF2e3036),
@@ -75,7 +75,7 @@ internal val darkPalette = FloconColorPalette(
 
     surface = Color(0xFF2C2C2E),
     onSurface = Color(0xffF2F2F7),
-    surfaceVariant = Color(0xFF2C2C2E).copy(alpha = .8f),
+    surfaceVariant = Color(0xFF29282c),
     onSurfaceVariant = Color(0xffF2F2F7),
     inverseSurface = Color(0xFFe2e2e9),
     inverseOnSurface = Color(0xFF2e3036),
