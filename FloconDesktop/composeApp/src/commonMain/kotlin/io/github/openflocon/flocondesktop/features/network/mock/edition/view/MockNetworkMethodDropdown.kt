@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkMethodUi
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 
 @Composable
 fun MockNetworkMethodDropdown(
@@ -33,11 +33,11 @@ fun MockNetworkMethodDropdown(
                     expanded = true
                 },
             )
-            DropdownMenu(
+            FloconDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
             ) {
-                MockNetworkMethodUi.values().forEach { method ->
+                MockNetworkMethodUi.entries.forEach { method ->
                     MockNetworkMethodView(
                         modifier = Modifier.padding(all = 4.dp),
                         method = method,

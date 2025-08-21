@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +26,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsSta
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.previewDeviceDashboardUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -83,7 +83,7 @@ internal fun DashboardSelectorView(
                         .padding(contentPadding),
                 )
 
-                DropdownMenu(
+                FloconDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                 ) {

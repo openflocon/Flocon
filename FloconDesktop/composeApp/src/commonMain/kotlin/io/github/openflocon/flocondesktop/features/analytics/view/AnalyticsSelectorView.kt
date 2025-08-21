@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +26,7 @@ import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStat
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.previewDeviceAnalyticsUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -62,9 +62,9 @@ internal fun AnalyticsSelectorView(
             AnalyticsStateUiModel.Empty -> {
                 Text(
                     modifier =
-                    Modifier
-                        .background(FloconTheme.colorPalette.onBackground, shape = shape)
-                        .padding(contentPadding),
+                        Modifier
+                            .background(FloconTheme.colorPalette.onBackground, shape = shape)
+                            .padding(contentPadding),
                     text = "No Analytics Found",
                     style = FloconTheme.typography.bodySmall,
                     color = FloconTheme.colorPalette.background,
@@ -78,14 +78,14 @@ internal fun AnalyticsSelectorView(
                     analytics = analyticsState.selected,
                     textColor = FloconTheme.colorPalette.background,
                     modifier =
-                    Modifier
-                        .clip(shape)
-                        .background(FloconTheme.colorPalette.onBackground)
-                        .clickable { expanded = true }
-                        .padding(contentPadding),
+                        Modifier
+                            .clip(shape)
+                            .background(FloconTheme.colorPalette.onBackground)
+                            .clickable { expanded = true }
+                            .padding(contentPadding),
                 )
 
-                DropdownMenu(
+                FloconDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                 ) {
