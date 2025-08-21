@@ -23,6 +23,7 @@ val successTagText = Color(0xFF28A745) // Brighter green for text
 
 val errorTagBackground = Color(0xFFDC3545).copy(alpha = 0.3f) // Muted red for error
 val errorTagText = Color(0xFFDC3545) // Brighter red for text
+val exceptionTagText = Color(0xFF7B1FA2)
 
 val loadingTagBackground = Color(0xFF6C757D).copy(alpha = 0.3f) // Muted gray for OTHER
 val loadingTagText = Color(0xFF6C757D)
@@ -40,6 +41,7 @@ fun StatusView(
         when (status.status) {
             NetworkStatusUi.Status.SUCCESS,
             NetworkStatusUi.Status.ERROR,
+            NetworkStatusUi.Status.EXCEPTION,
             -> BasicText(
                 text = status.text,
                 autoSize = TextAutoSize.StepBased(
@@ -50,6 +52,7 @@ fun StatusView(
                 style = FloconTheme.typography.labelSmall.copy(
                     color = when (status.status) {
                         NetworkStatusUi.Status.SUCCESS -> successTagText
+                        NetworkStatusUi.Status.EXCEPTION -> exceptionTagText
                         NetworkStatusUi.Status.ERROR -> errorTagText
                         NetworkStatusUi.Status.LOADING -> loadingTagText
                     },

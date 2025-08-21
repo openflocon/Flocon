@@ -10,6 +10,7 @@ data class NetworkStatusUi(
     enum class Status {
         SUCCESS,
         ERROR,
+        EXCEPTION,
         LOADING,
     }
 }
