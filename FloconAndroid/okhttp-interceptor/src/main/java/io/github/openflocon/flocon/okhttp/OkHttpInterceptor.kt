@@ -88,30 +88,12 @@ class FloconOkhttpInterceptor() : Interceptor {
             val response = if (isMocked) {
                 executeMock(request = request, mock = mockConfig)
             } else {
-                val badQualityConfig =
-                    floconNetworkPlugin.badQualityConfig // Supposons que cette propriété existe
-
-                if (badQualityConfig != null) {
-                    val latencyProbability = badQualityConfig.latency.latencyTriggerProbability
-                    val shouldSimulateLatency =
-                        latencyProbability > 0f && (latencyProbability == 1f || Math.random() < latencyProbability)
-                    if (shouldSimulateLatency) {
-                        try {
-                            val latencyMs = Random.nextLong(
-                                badQualityConfig.latency.minLatencyMs,
-                                badQualityConfig.latency.maxLatencyMs + 1
-                            )
-                            Thread.sleep(latencyMs)
-                        } catch (e: InterruptedException) {
-                            Thread.currentThread().interrupt()
-                        }
-                    }
-
-                    failResponseIfNeeded(
+                floconNetworkPlugin.badQualityConfig?.let { badQualityConfig ->
+                    executeBadQuality(
                         badQualityConfig = badQualityConfig,
                         request = request,
-                    ) ?: chain.proceed(request) // if no need to trigger an error
-                } else {
+                    )
+                } ?: run {
                     chain.proceed(request)
                 }
             }
@@ -194,110 +176,4 @@ class FloconOkhttpInterceptor() : Interceptor {
         }
     }
 
-    private fun failResponseIfNeeded(
-        badQualityConfig: BadQualityConfig,
-        request: Request,
-    ): Response? {
-        val shouldFail = badQualityConfig.errorProbability > 0 && Math.random() < badQualityConfig.errorProbability
-        if (shouldFail) {
-            val selectedError = selectRandomError(badQualityConfig.errors)
-            if (selectedError != null) {
-                when(val t = selectedError.type) {
-                    is BadQualityConfig.Error.Type.Body -> {
-                        val errorBody = t.errorBody.toResponseBody(t.errorContentType.toMediaTypeOrNull())
-
-                        return Response.Builder()
-                            .request(request)
-                            .protocol(Protocol.HTTP_1_1)
-                            .code(t.errorCode) // Utiliser le code d'erreur configuré
-                            .message(getHttpMessage(t.errorCode))
-                            .body(errorBody)
-                            .build()
-                    }
-                    is BadQualityConfig.Error.Type.ErrorThrow -> {
-                        val errorClass = Class.forName(t.classPath)
-                        val error = errorClass.newInstance() as? Throwable
-                        if(error is IOException) {
-                            throw error //okhttp accepts only IOException
-                        } else if(error is Throwable){
-                            throw IOException(error)
-                        }
-                    }
-                }
-            }
-        }
-        return null
-    }
-
-    private fun findMock(
-        request: Request,
-        floconNetworkPlugin: FloconNetworkPlugin,
-    ): MockNetworkResponse? {
-        for (mock in floconNetworkPlugin.mocks) {
-            val url = request.url.toString()
-            val method = request.method
-
-            val urlMatches = mock.expectation.pattern.matcher(url).matches()
-            val methodMatches = mock.expectation.method == "*" || mock.expectation.method.equals(
-                method,
-                ignoreCase = true
-            )
-
-            if (urlMatches && methodMatches) {
-                return mock
-            }
-        }
-
-        return null
-    }
-
-    private fun executeMock(request: Request, mock: MockNetworkResponse): Response {
-        if (mock.response.delay > 0) {
-            try {
-                Thread.sleep(mock.response.delay)
-            } catch (e: InterruptedException) {
-                Thread.currentThread().interrupt()
-            }
-        }
-
-        val body = mock.response.body.toResponseBody(
-            mock.response.mediaType.toMediaTypeOrNull()
-        )
-
-        return Response.Builder()
-            .request(request)
-            .protocol(Protocol.HTTP_1_1)
-            .message(getHttpMessage(mock.response.httpCode))
-            .code(mock.response.httpCode)
-            .body(body)
-            .apply {
-                mock.response.headers.forEach { (name, value) ->
-                    addHeader(name, value)
-                }
-            }
-            .build()
-    }
-}
-
-private fun selectRandomError(errors: List<BadQualityConfig.Error>): BadQualityConfig.Error? {
-    if (errors.isEmpty()) {
-        return null
-    }
-
-    // Calculer la somme totale des poids
-    val totalWeight = errors.sumOf { it.weight.toDouble() }
-
-    // Générer un nombre aléatoire entre 0 et la somme totale des poids
-    var randomNumber = Random.nextDouble(0.0, totalWeight)
-
-    // Parcourir la liste pour trouver l'erreur sélectionnée
-    for (error in errors) {
-        randomNumber -= error.weight.toDouble()
-        if (randomNumber <= 0) {
-            return error
-        }
-    }
-
-    // Cas de secours (ne devrait pas arriver si les poids sont positifs)
-    return errors.first()
 }

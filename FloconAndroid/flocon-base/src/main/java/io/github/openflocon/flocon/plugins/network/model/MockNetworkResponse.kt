@@ -10,7 +10,16 @@ data class MockNetworkResponse(
         val urlPattern: String, // a regex
         val pattern: Pattern,
         val method: String, // can be get, post, put, ... or a wildcard *
-    )
+    ) {
+        fun matches(url: String, method: String): Boolean {
+            val urlMatches = pattern.matcher(url).matches()
+            val methodMatches = this.method == "*" || this.method.equals(
+                method,
+                ignoreCase = true
+            )
+            return urlMatches && methodMatches
+        }
+    }
 
     data class Response(
         val httpCode: Int,

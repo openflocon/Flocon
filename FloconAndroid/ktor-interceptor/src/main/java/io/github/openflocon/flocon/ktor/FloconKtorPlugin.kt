@@ -24,60 +24,91 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
 
     // Intercept requests
     client.sendPipeline.intercept(HttpSendPipeline.Monitoring) {
+        val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin
+        if (floconNetworkPlugin == null) {
+            proceed()
+            return@intercept
+        }
+
+        val request = context
+        val floconCallId = UUID.randomUUID().toString()
+        val floconNetworkType = "http"
+        val requestedAt = System.currentTimeMillis()
+
+        // Reads the body without consuming it
+        val requestBodyString = extractAndReplaceRequestBody(request)
+        val requestSize = requestBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
+        val requestHeadersMap =
+            request.headers.entries().associate { it.key to it.value.joinToString(",") }
+
+        val mockConfig = findMock(request, floconNetworkPlugin)
+        val isMocked = mockConfig != null
+
+        val floconNetworkRequest = FloconNetworkRequest(
+            url = request.url.toString(),
+            method = request.method.value,
+            startTime = requestedAt,
+            headers = requestHeadersMap,
+            body = requestBodyString,
+            size = requestSize,
+            isMocked = isMocked
+        )
+
+        floconNetworkPlugin.logRequest(
+            FloconNetworkCallRequest(
+                floconCallId = floconCallId,
+                floconNetworkType = floconNetworkType,
+                isMocked = isMocked,
+                request = floconNetworkRequest
+            )
+        )
+
+        val startTime = System.nanoTime()
+        request.attributes.put(FLOCON_CALL_ID_KEY, floconCallId)
+        request.attributes.put(FLOCON_START_TIME_KEY, startTime)
+        request.attributes.put(FLOCON_IS_MOCKED_KEY, isMocked)
+
+        if (isMocked) {
+            val fakeCall = executeMock(client = theClient, request = request, mock = mockConfig)
+            proceedWith(fakeCall)
+            return@intercept
+        }
+
         try {
-            val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin
-            if (floconNetworkPlugin == null) {
+            floconNetworkPlugin.badQualityConfig?.let { badQualityConfig ->
+                executeBadQuality(
+                    badQualityConfig = badQualityConfig,
+                    client = theClient,
+                    request = request
+                )
+            } ?: run {
                 proceed()
-                return@intercept
             }
+        } catch (t: Throwable) {
+            val endTime = System.nanoTime()
 
-            val request = context
-            val floconCallId = UUID.randomUUID().toString()
-            val floconNetworkType = "http"
-            val requestedAt = System.currentTimeMillis()
+            val durationMs: Double = (endTime - startTime) / 1e6
 
-            // Reads the body without consuming it
-            val requestBodyString = extractAndReplaceRequestBody(request)
-            val requestSize = requestBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
-            val requestHeadersMap =
-                request.headers.entries().associate { it.key to it.value.joinToString(",") }
-
-            val mockConfig = findMock(request, floconNetworkPlugin)
-            val isMocked = mockConfig != null
-
-            val floconNetworkRequest = FloconNetworkRequest(
-                url = request.url.toString(),
-                method = request.method.value,
-                startTime = requestedAt,
-                headers = requestHeadersMap,
-                body = requestBodyString,
-                size = requestSize,
-                isMocked = isMocked
+            val floconCallResponse = FloconNetworkResponse(
+                httpCode = null,
+                contentType = null,
+                body = null,
+                headers = emptyMap(),
+                size = null,
+                grpcStatus = null,
+                error = t.message ?: t.javaClass.simpleName,
             )
 
-            floconNetworkPlugin.logRequest(
-                FloconNetworkCallRequest(
+            floconNetworkPlugin.logResponse(
+                FloconNetworkCallResponse(
                     floconCallId = floconCallId,
+                    durationMs = durationMs,
                     floconNetworkType = floconNetworkType,
                     isMocked = isMocked,
-                    request = floconNetworkRequest
+                    response = floconCallResponse,
                 )
             )
-
-            request.attributes.put(FLOCON_CALL_ID_KEY, floconCallId)
-            request.attributes.put(FLOCON_START_TIME_KEY, System.nanoTime())
-            request.attributes.put(FLOCON_IS_MOCKED_KEY, isMocked)
-
-            if (isMocked) {
-                val fakeCall = executeMock(client = theClient, request = request, mock = mockConfig)
-                proceedWith(fakeCall)
-                return@intercept
-            }
-
-            proceed()
-        } catch (t: Throwable) {
-            FloconLogger.logError("Ktor interceptor issue", t)
-            proceed()
+            throw t
         }
     }
 
@@ -129,7 +160,6 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
         proceedWith(newResponse)
     }
 }
-
 
 fun HttpClientConfig<*>.floconInterceptor() {
     install(FloconKtorPlugin)
