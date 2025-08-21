@@ -5,13 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
@@ -29,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +37,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewS
 import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.placeHolder
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -118,36 +116,20 @@ private fun TextFieldPart(
         is DeeplinkPart.TextField -> {
             val onFieldValueChangedCallback by rememberUpdatedState(onFieldValueChanged)
             var value by remember { mutableStateOf("") }
+            
             LaunchedEffect(part, value) {
                 onFieldValueChangedCallback(part, value)
             }
-            val isValueEmpty = value.isEmpty()
-            Box(
-                modifier = Modifier.background(
-                    color = FloconTheme.colorPalette.panel.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(2.dp),
-                ).padding(horizontal = 2.dp, vertical = 2.dp)
-                    .width(IntrinsicSize.Min), // Cela fera que la Box enveloppe la largeur minimale de son contenu
 
-            ) {
-                Text(
-                    text = part.label,
-                    style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
-                    modifier = Modifier.graphicsLayer {
-                        alpha = if (isValueEmpty) 1f else 0f
-                    },
+            FloconTextField(
+                value = value,
+                onValueChange = { value = it },
+                placeholder = placeHolder(part.label),
+                textStyle = FloconTheme.typography.bodySmall.copy(
+                    color = FloconTheme.colorPalette.onSurface,
+                    fontWeight = FontWeight.Bold,
                 )
-
-                FloconTextField(
-                    value = value,
-                    onValueChange = { value = it },
-                    textStyle = FloconTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorPalette.onSurface,
-                        fontWeight = FontWeight.Bold,
-                    )
-                )
-            }
+            )
         }
 
         is DeeplinkPart.Text -> {

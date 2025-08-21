@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,6 +30,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.placeHolder
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val freeformItem = DeeplinkViewState(
@@ -48,7 +47,7 @@ fun DeeplinkFreeformItemView(
     modifier: Modifier = Modifier,
 ) {
     var value by remember { mutableStateOf("") }
-    val isValueEmpty = value.isEmpty()
+    value.isEmpty()
 
     Column(
         modifier = modifier,
@@ -60,40 +59,16 @@ fun DeeplinkFreeformItemView(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(
-                        color = Color.White.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(8.dp),
-                    ).padding(horizontal = 12.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 2.dp, vertical = 2.dp)
-                        .fillMaxWidth(),
-
-                    ) {
-                    Text(
-                        text = "freeform link",
-                        style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
-                        modifier = Modifier.graphicsLayer {
-                            alpha = if (isValueEmpty) 1f else 0f
-                        },
-                    )
-                    FloconTextField(
-                        value = value,
-                        onValueChange = { value = it },
-                        textStyle = FloconTheme.typography.bodySmall.copy(
-                            color = FloconTheme.colorPalette.onSurface,
-                            fontWeight = FontWeight.Bold,
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            }
+            FloconTextField(
+                value = value,
+                onValueChange = { value = it },
+                placeholder = placeHolder("freeform link"),
+                textStyle = FloconTheme.typography.bodySmall.copy(
+                    color = FloconTheme.colorPalette.onSurface,
+                    fontWeight = FontWeight.Bold,
+                ),
+                modifier = Modifier.weight(1f),
+            )
             DeeplinkSendButton(
                 icon = Icons.AutoMirrored.Outlined.Send,
                 onClick = {
