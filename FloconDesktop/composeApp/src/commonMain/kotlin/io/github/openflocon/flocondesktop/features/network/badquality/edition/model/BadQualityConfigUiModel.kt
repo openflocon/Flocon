@@ -19,10 +19,19 @@ data class BadQualityConfigUiModel(
     data class Error(
         val uuid: String = UUID.randomUUID().toString(),
         val weight: Float, // increase the probability of being triggered vs all others errors
-        val httpCode: Int,
-        val body: String,
-        val contentType: String, // "application/json"
-    )
+        val type: Type,
+    ) {
+        sealed interface Type {
+            data class Body(
+                val httpCode: Int,
+                val body: String,
+                val contentType: String, // "application/json"
+            ) : Type
+            data class Exception(
+                val classPath: String,
+            ) : Type
+        }
+    }
 }
 
 fun previewBadQualityConfigUiModel(errorCount: Int) = BadQualityConfigUiModel(
@@ -39,9 +48,11 @@ fun previewBadQualityConfigUiModel(errorCount: Int) = BadQualityConfigUiModel(
     errors = List(errorCount) {
         BadQualityConfigUiModel.Error(
             weight = 1f,
-            httpCode = 500,
-            body = "{\"error\":\"...\"}",
-            contentType = "application/json",
+            type = BadQualityConfigUiModel.Error.Type.Body(
+                httpCode = 500,
+                body = "{\"error\":\"...\"}",
+                contentType = "application/json",
+            )
         )
     },
 )

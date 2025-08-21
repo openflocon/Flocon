@@ -22,9 +22,8 @@ class BadQualityConfigLocalDataSourceImpl(
         config: BadQualityConfigDomainModel
     ) {
         networkBadQualityConfigDao.save(
-            toEntity(
+            config.toEntity(
                 json = json,
-                config = config,
                 deviceIdAndPackageName = deviceIdAndPackageName
             )
         )
@@ -39,9 +38,8 @@ class BadQualityConfigLocalDataSourceImpl(
             packageName = deviceIdAndPackageName.packageName,
             configId = configId
         )?.let {
-            toDomain(
-                json = json,
-                entity = it
+            it.toDomain(
+                json = json
             )
         }
     }
@@ -56,9 +54,8 @@ class BadQualityConfigLocalDataSourceImpl(
             configId = configId,
         ).map {
             it?.let {
-                toDomain(
-                    json = json,
-                    entity = it
+                it.toDomain(
+                    json = json
                 )
             }
         }.distinctUntilChanged()
@@ -73,9 +70,8 @@ class BadQualityConfigLocalDataSourceImpl(
             packageName = deviceIdAndPackageName.packageName,
         ).map { list ->
             list.map {
-                toDomain(
-                    json = json,
-                    entity = it
+                it.toDomain(
+                    json = json
                 )
             }
         }.distinctUntilChanged()
@@ -99,9 +95,8 @@ class BadQualityConfigLocalDataSourceImpl(
             deviceId = deviceIdAndPackageName.deviceId,
             packageName = deviceIdAndPackageName.packageName,
         )?.let {
-            toDomain(
-                json = json,
-                entity = it
+            it.toDomain(
+                json = json
             )
         }
     }
