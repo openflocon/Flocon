@@ -2,28 +2,30 @@ package io.github.openflocon.flocondesktop.common.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 interface ViewModelEvent<E> {
 
-    val events: SharedFlow<E>
+    val events: Flow<E>
 
-    fun ViewModel.sendEvents(vararg event: E)
+    context(vm: ViewModel)
+    fun sendEvents(vararg event: E)
 
     interface Event
 }
 
 class ViewModelEventImpl<E : ViewModelEvent.Event> : ViewModelEvent<E> {
 
-    private val _events = MutableSharedFlow<E>()
-    override val events: SharedFlow<E> = _events.asSharedFlow()
+    private val _events = Channel<E>()
+    override val events: Flow<E> = _events.receiveAsFlow()
 
-    override fun ViewModel.sendEvents(vararg event: E) {
-        viewModelScope.launch {
-            event.forEach { _events.emit(it) }
+    context(vm: ViewModel)
+    override fun sendEvents(vararg event: E) {
+        vm.viewModelScope.launch {
+            event.forEach { _events.send(it) }
         }
     }
 }
