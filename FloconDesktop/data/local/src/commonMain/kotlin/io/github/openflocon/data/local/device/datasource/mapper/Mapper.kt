@@ -8,7 +8,8 @@ import io.github.openflocon.domain.device.models.DeviceDomainModel
 internal fun DeviceAppEntity.toDomainModel(): DeviceAppDomainModel {
     return DeviceAppDomainModel(
         name = this.name,
-        packageName = this.packageName
+        packageName = this.packageName,
+        iconEncoded = this.iconEncoded
     )
 }
 
@@ -30,6 +31,7 @@ internal fun DeviceAppDomainModel.toEntity(parentDeviceId: String): DeviceAppEnt
     return DeviceAppEntity(
         parentDeviceId = parentDeviceId,
         name = this.name,
-        packageName = this.packageName
+        packageName = this.packageName,
+        iconEncoded = this.iconEncoded,
     )
 }

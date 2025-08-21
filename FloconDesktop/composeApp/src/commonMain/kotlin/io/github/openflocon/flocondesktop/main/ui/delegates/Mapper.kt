@@ -22,4 +22,5 @@ internal fun mapAppsToUi(devices: List<DeviceAppDomainModel>): List<DeviceAppUiM
 internal fun DeviceAppDomainModel.mapToUi() = DeviceAppUiModel(
     name = name,
     packageName = packageName,
+    iconEncoded = iconEncoded,
 )

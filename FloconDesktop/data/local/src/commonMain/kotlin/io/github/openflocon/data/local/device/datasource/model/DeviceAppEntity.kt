@@ -21,4 +21,5 @@ data class DeviceAppEntity(
     val parentDeviceId: String,
     val name: String,
     val packageName: String,
+    val iconEncoded: String?, // base64
 )

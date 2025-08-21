@@ -5,7 +5,6 @@ import io.github.openflocon.data.core.device.datasource.local.model.InsertResult
 import io.github.openflocon.data.local.device.datasource.dao.DevicesDao
 import io.github.openflocon.data.local.device.datasource.mapper.toDomainModel
 import io.github.openflocon.data.local.device.datasource.mapper.toEntity
-import io.github.openflocon.data.local.device.datasource.model.DeviceAppIconEntity
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
@@ -68,25 +67,15 @@ class LocalDevicesDataSourceRoom(
         return dao.getDeviceAppByPackageName(deviceId, packageName)?.toDomainModel()
     }
 
-    /*
-    override fun observeAppIcon(
-        deviceId: DeviceId,
-        appPackageName: String
-    ): Flow<String?> {
-        return dao.observeAppIcon(deviceId = deviceId, appPackageName = appPackageName)
-    }
-
     override suspend fun saveAppIcon(
         deviceId: DeviceId,
         appPackageName: String,
         iconEncoded: String
     ) {
-        dao.saveAppIcon(
-            DeviceAppIconEntity(
-                deviceId = deviceId,
-                appPackageName = appPackageName,
-                iconEncoded = iconEncoded
-            )
+        dao.updateAppIcon(
+            deviceId = deviceId,
+            packageName = appPackageName,
+            iconEncoded = iconEncoded
         )
     }
 
@@ -95,30 +84,6 @@ class LocalDevicesDataSourceRoom(
         appPackageName: String
     ): Boolean {
         return dao.hasAppIcon(deviceId, appPackageName)
-    }
-
-     */
-
-    override fun observeAppIcon(
-        deviceId: DeviceId,
-        appPackageName: String
-    ): Flow<String?> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun saveAppIcon(
-        deviceId: DeviceId,
-        appPackageName: String,
-        iconEncoded: String
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun hasAppIcon(
-        deviceId: DeviceId,
-        appPackageName: String
-    ): Boolean {
-        TODO("Not yet implemented")
     }
 
     override suspend fun clear() {

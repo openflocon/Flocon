@@ -30,7 +30,6 @@ interface DevicesRepository {
     // endregion
 
     // region app icon
-    fun observeAppIcon(deviceId: DeviceId, appPackageName: String): Flow<String?>
     suspend fun saveAppIcon(deviceId: DeviceId, appPackageName: String, iconEncoded: String)
     suspend fun hasAppIcon(deviceId: DeviceId, appPackageName: String) : Boolean
     suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)

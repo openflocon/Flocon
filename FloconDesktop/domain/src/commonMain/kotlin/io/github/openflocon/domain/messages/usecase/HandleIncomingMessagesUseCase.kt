@@ -68,6 +68,7 @@ class HandleIncomingMessagesUseCase(
             app = DeviceAppDomainModel(
                 name = message.appName,
                 packageName = message.appPackageName,
+                iconEncoded = null,
             ),
         )
 }

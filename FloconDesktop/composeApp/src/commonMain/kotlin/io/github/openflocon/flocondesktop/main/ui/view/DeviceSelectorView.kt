@@ -47,6 +47,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -63,6 +65,8 @@ import io.github.openflocon.library.designsystem.components.FloconCircularProgre
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.io.encoding.Base64
+import org.jetbrains.skia.Image
 
 private val CelluleHeight = 64.dp
 
@@ -377,23 +381,63 @@ private fun DeviceAppName(
         onClick = onClick,
         modifier = modifier,
     ) {
-        Column(
-            verticalArrangement = Arrangement.SpaceEvenly,
+        Row(
             modifier = Modifier.padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text(
-                text = deviceApp.name,
-                style = FloconTheme.typography.labelMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = FloconTheme.colorPalette.onPanel,
+            AppImage(
+                deviceApp = deviceApp,
+                modifier = Modifier.size(24.dp),
             )
-            Text(
-                text = deviceApp.packageName,
-                style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPanel.copy(alpha = 0.8f),
-            )
+            Column(
+                verticalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                Text(
+                    text = deviceApp.name,
+                    style = FloconTheme.typography.labelMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = FloconTheme.colorPalette.onPanel,
+                )
+                Text(
+                    text = deviceApp.packageName,
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.onPanel.copy(alpha = 0.8f),
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun AppImage(
+    deviceApp: DeviceAppUiModel,
+    modifier : Modifier = Modifier
+) {
+    val imageBitmap = remember(deviceApp.iconEncoded) {
+        deviceApp.iconEncoded?.let { encoded ->
+            try {
+                val decodedBytes = Base64.decode(encoded) //, Base64.DEFAULT)
+                Image.makeFromEncoded(decodedBytes).toComposeImageBitmap()
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    if (imageBitmap != null) {
+        Image(
+            bitmap = imageBitmap,
+            contentDescription = null,
+            modifier = modifier,
+        )
+    } else {
+        // Fallback : affiche une icône par défaut si iconEncoded est null ou invalide
+        Image(
+            painter = painterResource(Res.drawable.smartphone),
+            contentDescription = null,
+            modifier = modifier,
+        )
     }
 }
 

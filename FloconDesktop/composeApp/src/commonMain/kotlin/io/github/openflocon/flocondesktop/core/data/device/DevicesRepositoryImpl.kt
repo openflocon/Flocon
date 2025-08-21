@@ -144,16 +144,6 @@ class DevicesRepositoryImpl(
         }
     }
 
-    override fun observeAppIcon(
-        deviceId: DeviceId,
-        appPackageName: String
-    ): Flow<String?> {
-        return localDevicesDataSource.observeAppIcon(
-            deviceId = deviceId,
-            appPackageName = appPackageName
-        ).flowOn(dispatcherProvider.data)
-    }
-
     override suspend fun saveAppIcon(
         deviceId: DeviceId,
         appPackageName: String,
