@@ -18,15 +18,16 @@ import kotlin.collections.component2
 
 internal fun findMock(
     request: HttpRequestBuilder,
-    plugin: FloconNetworkPlugin,
+    floconNetworkPlugin: FloconNetworkPlugin,
 ): MockNetworkResponse? {
-    for (mock in plugin.mocks) {
-        val urlMatches = mock.expectation.pattern.matcher(request.url.toString()).matches()
-        val methodMatches = mock.expectation.method == "*" ||
-                mock.expectation.method.equals(request.method.value, ignoreCase = true)
-        if (urlMatches && methodMatches) return mock
+    val url =  request.url.toString()
+    val method = request.method.value
+    return floconNetworkPlugin.mocks.firstOrNull {
+        it.expectation.matches(
+            url = url,
+            method = method
+        )
     }
-    return null
 }
 
 @OptIn(InternalAPI::class)
