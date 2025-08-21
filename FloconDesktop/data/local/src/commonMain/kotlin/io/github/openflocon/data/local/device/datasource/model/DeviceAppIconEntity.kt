@@ -7,8 +7,8 @@ import androidx.room.ForeignKey
     foreignKeys = [
         ForeignKey(
             entity = DeviceAppEntity::class,
-            parentColumns = ["packageName"],
-            childColumns = ["appPackageName"],
+            parentColumns = ["parentDeviceId", "packageName"],
+            childColumns = ["deviceId", "appPackageName"],
             onDelete = ForeignKey.Companion.CASCADE
         )
     ],
