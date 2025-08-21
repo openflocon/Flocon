@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.list.mapper
 
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.byteSize
 import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.ktor.http.Url
@@ -43,21 +44,21 @@ fun extractPath(url: String): String {
 
 fun toUi(networkCall: FloconNetworkCallDomainModel): NetworkItemViewState = NetworkItemViewState(
     uuid = networkCall.callId,
-    dateFormatted = formatTimestamp(networkCall.networkRequest.startTime),
-    timeFormatted = networkCall.networkResponse?.durationMs?.let { formatDuration(it) },
-    requestSize = ByteFormatter.formatBytes(networkCall.networkRequest.byteSize),
-    responseSize = networkCall.networkResponse?.byteSize?.let { ByteFormatter.formatBytes(it) },
+    dateFormatted = formatTimestamp(networkCall.request.startTime),
+    timeFormatted = networkCall.response?.durationMs?.let { formatDuration(it) },
+    requestSize = ByteFormatter.formatBytes(networkCall.request.byteSize),
+    responseSize = networkCall.byteSize()?.let { ByteFormatter.formatBytes(it) },
     domain = getDomainUi(networkCall),
     type = toTypeUi(networkCall),
     method = getMethodUi(networkCall),
     status = getStatusUi(networkCall),
-    isMocked = networkCall.networkRequest.isMocked,
+    isMocked = networkCall.request.isMocked,
 )
 
-fun getDomainUi(networkRequest: FloconNetworkCallDomainModel): String = when (networkRequest) {
-    is FloconNetworkCallDomainModel.GraphQl -> extractDomainAndPath(networkRequest.networkRequest.url)
-    is FloconNetworkCallDomainModel.Http -> extractDomain(networkRequest.networkRequest.url)
-    is FloconNetworkCallDomainModel.Grpc -> networkRequest.networkRequest.url
+fun getDomainUi(networkRequest: FloconNetworkCallDomainModel): String = when (networkRequest.request.specificInfos) {
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> extractDomainAndPath(networkRequest.request.url)
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> extractDomain(networkRequest.request.url)
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> networkRequest.request.url
 }
 
 fun formatDuration(duration: Double): String = duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)

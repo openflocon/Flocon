@@ -110,7 +110,8 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
             body = bodyString.takeUnless { isImage },
             headers = responseHeadersMap,
             size = responseSize,
-            grpcStatus = null
+            grpcStatus = null,
+            error = null,
         )
 
         floconNetworkPlugin.logResponse(

@@ -38,12 +38,12 @@ class ImagesRepositoryImpl(
         deviceId: String,
         call: FloconNetworkCallDomainModel,
     ) {
-        val duration = call.networkResponse?.durationMs ?: return
+        val duration = call.response?.durationMs ?: return
         imagesLocalDataSource.addImage(
             deviceId = deviceId,
             image = DeviceImageDomainModel(
-                url = call.networkRequest.url,
-                time = (call.networkRequest.startTime + duration).toLong(),
+                url = call.request.url,
+                time = (call.request.startTime + duration).toLong(),
             ),
         )
     }

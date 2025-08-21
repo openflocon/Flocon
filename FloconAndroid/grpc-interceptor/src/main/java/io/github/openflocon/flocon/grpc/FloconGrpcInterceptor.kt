@@ -148,6 +148,7 @@ private class LoggingClientCallListener<RespT>(
                         contentType = "grpc",
                         size = 0L,
                         grpcStatus = status.code.toString(),
+                        error = null,
                     ),
                 )
             }

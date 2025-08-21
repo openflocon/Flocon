@@ -1,7 +1,7 @@
 package com.flocon.data.remote.network.models
 
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import kotlinx.serialization.Serializable
 
@@ -37,31 +37,41 @@ data class FloconNetworkResponseDataModel(
     val responseHeaders: Map<String, String>? = null,
     val responseSize: Long? = null,
     val responseGrpcStatus: String? = null,
+    val responseError: String? = null,
 )
 
 internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnlyDomainModel? {
     return try {
         val callId = floconCallId!!
-        val networkResponse = FloconNetworkResponseDomainModel(
-            durationMs = durationMs ?: 0.0,
-            body = responseBody,
-            byteSize = responseSize ?: 0L,
-            headers = responseHeaders.orEmpty(),
-            contentType = responseContentType,
-        )
-        when (floconNetworkType) {
-            "grpc" -> FloconNetworkResponseOnlyDomainModel.Grpc(
-                floconCallId = callId,
-                networkResponse = networkResponse,
-                grpcStatus = responseGrpcStatus!!,
+        val durationMs = durationMs ?: 0.0
+
+        val response = if (responseError != null) {
+            FloconNetworkCallDomainModel.Response.Failure(
+                durationMs = durationMs,
+                issue = responseError,
             )
-            // otherwise tread like http
-            else -> FloconNetworkResponseOnlyDomainModel.Http(
-                floconCallId = callId,
-                networkResponse = networkResponse,
-                httpCode = responseHttpCode!!,
+        } else {
+            FloconNetworkCallDomainModel.Response.Success(
+                durationMs = durationMs,
+                contentType = responseContentType,
+                body = responseBody,
+                headers = responseHeaders.orEmpty(),
+                byteSize = responseSize ?: 0L,
+                specificInfos = when (floconNetworkType) {
+                    "grpc" -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc(
+                        grpcStatus = responseGrpcStatus!!,
+                    )
+                    // otherwise tread like http
+                    else -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http(
+                        httpCode = responseHttpCode!!,
+                    )
+                }
             )
         }
+        FloconNetworkResponseOnlyDomainModel(
+            floconCallId = callId,
+            response = response,
+        )
     } catch (t: Throwable) {
         t.printStackTrace()
         return null

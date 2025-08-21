@@ -25,4 +25,5 @@ data class FloconNetworkResponse(
     val body: String?,
     val size: Long?,
     val headers: Map<String, String>,
+    val error: String?,
 )

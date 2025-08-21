@@ -45,12 +45,12 @@ private fun sort(
     }
 
     val comparator = when (sorted.column) {
-        NetworkColumnsTypeUiModel.RequestTime -> compareBy<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>> { it.first.networkRequest.startTime }
+        NetworkColumnsTypeUiModel.RequestTime -> compareBy<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>> { it.first.request.startTime }
         NetworkColumnsTypeUiModel.Method -> compareBy { it.second.method.text }
         NetworkColumnsTypeUiModel.Domain -> compareBy { it.second.domain }
         NetworkColumnsTypeUiModel.Query -> compareBy { it.second.type.text }
         NetworkColumnsTypeUiModel.Status -> compareBy { it.second.status.text }
-        NetworkColumnsTypeUiModel.Time -> compareBy { it.first.networkResponse?.durationMs }
+        NetworkColumnsTypeUiModel.Time -> compareBy { it.first.response?.durationMs }
     }
 
     val sortedComparator = when (sorted.sort) {

@@ -24,11 +24,18 @@ data class NetworkDetailViewState(
     val response: Response?,
 ) {
     @Immutable
-    data class Response(
-        val body: String,
-        val size: String,
-        val headers: List<NetworkDetailHeaderUi>,
-    )
+    sealed interface Response {
+        @Immutable
+        data class Success(
+            val body: String,
+            val size: String,
+            val headers: List<NetworkDetailHeaderUi>,
+        ) : Response
+        @Immutable
+        data class Error(
+            val issue: String,
+        ) : Response
+    }
 
     @Immutable
     data class GraphQlSection(

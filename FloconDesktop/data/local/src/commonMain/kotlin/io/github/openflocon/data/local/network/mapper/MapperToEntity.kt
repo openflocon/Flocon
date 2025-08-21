@@ -19,61 +19,75 @@ fun FloconNetworkCallDomainModel.toEntity(
         callId = callId,
         deviceId = deviceId,
         packageName = packageName,
-        type = when (this) {
-            is FloconNetworkCallDomainModel.Http -> FloconNetworkCallType.HTTP
-            is FloconNetworkCallDomainModel.GraphQl -> FloconNetworkCallType.GRAPHQL
-            is FloconNetworkCallDomainModel.Grpc -> FloconNetworkCallType.GRPC
+        type = when (this.request.specificInfos) {
+            is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> FloconNetworkCallType.HTTP
+            is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> FloconNetworkCallType.GRAPHQL
+            is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> FloconNetworkCallType.GRPC
         },
         request = FloconNetworkRequestEmbedded(
-            url = networkRequest.url,
-            method = networkRequest.method,
-            startTime = networkRequest.startTime,
-            requestHeaders = networkRequest.headers,
-            requestBody = networkRequest.body,
-            requestByteSize = networkRequest.byteSize,
-            isMocked = networkRequest.isMocked,
-            graphql = when (this) {
-                is FloconNetworkCallDomainModel.GraphQl -> NetworkCallGraphQlRequestEmbedded(
-                    query = this.request.query,
-                    operationType = this.request.operationType,
+            url = request.url,
+            method = request.method,
+            startTime = request.startTime,
+            requestHeaders = request.headers,
+            requestBody = request.body,
+            requestByteSize = request.byteSize,
+            isMocked = request.isMocked,
+            graphql = when (val s = this.request.specificInfos) {
+                is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> NetworkCallGraphQlRequestEmbedded(
+                    query = s.query,
+                    operationType = s.operationType,
                 )
 
                 else -> null
             }
         ),
-        response = networkResponse?.let { networkResponse ->
-            FloconNetworkResponseEmbedded(
-                durationMs = networkResponse.durationMs,
-                responseContentType = networkResponse.contentType,
-                responseBody = networkResponse.body,
-                responseHeaders = networkResponse.headers,
-                responseByteSize = networkResponse.byteSize,
-                graphql = when (this) {
-                    is FloconNetworkCallDomainModel.GraphQl -> NetworkCallGraphQlResponseEmbedded(
-                        responseHttpCode = (this.response as FloconNetworkCallDomainModel.GraphQl.Response).httpCode,
-                        isSuccess = (this.response as FloconNetworkCallDomainModel.GraphQl.Response).isSuccess,
+        response = response?.let { networkResponse ->
+            when(networkResponse) {
+                is FloconNetworkCallDomainModel.Response.Failure -> {
+                    FloconNetworkResponseEmbedded(
+                        durationMs = networkResponse.durationMs,
+                        responseError = networkResponse.issue,
+                        graphql = null,
+                        http = null,
+                        grpc = null,
+                        responseContentType = null,
+                        responseBody = null,
+                        responseHeaders = emptyMap(),
+                        responseByteSize = 0,
                     )
-
-                    is FloconNetworkCallDomainModel.Grpc,
-                    is FloconNetworkCallDomainModel.Http -> null
-                },
-                http = when (this) {
-                    is FloconNetworkCallDomainModel.Http -> NetworkCallHttpResponseEmbedded(
-                        responseHttpCode = (this.response as FloconNetworkCallDomainModel.Http.Response).httpCode,
-                    )
-
-                    is FloconNetworkCallDomainModel.Grpc,
-                    is FloconNetworkCallDomainModel.GraphQl -> null
-                },
-                grpc = when (this) {
-                    is FloconNetworkCallDomainModel.Grpc -> NetworkCallGrpcResponseEmbedded(
-                        responseStatus = (this.response as FloconNetworkCallDomainModel.Grpc.Response).responseStatus,
-                    )
-
-                    is FloconNetworkCallDomainModel.Http,
-                    is FloconNetworkCallDomainModel.GraphQl -> null
                 }
-            )
+                is FloconNetworkCallDomainModel.Response.Success -> {
+                    FloconNetworkResponseEmbedded(
+                        durationMs = networkResponse.durationMs,
+                        responseContentType = networkResponse.contentType,
+                        responseBody = networkResponse.body,
+                        responseHeaders = networkResponse.headers,
+                        responseByteSize = networkResponse.byteSize,
+                        responseError = null,
+                        graphql = when (val s = networkResponse.specificInfos) {
+                            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> NetworkCallGraphQlResponseEmbedded(
+                                responseHttpCode = s.httpCode,
+                                isSuccess = s.isSuccess,
+                            )
+
+                            else -> null
+                        },
+                        http = when (val s = networkResponse.specificInfos) {
+                            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> NetworkCallHttpResponseEmbedded(
+                                responseHttpCode = s.httpCode,
+                            )
+
+                            else -> null
+                        },
+                        grpc = when (val s = networkResponse.specificInfos) {
+                            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> NetworkCallGrpcResponseEmbedded(
+                                responseStatus = s.grpcStatus,
+                            )
+                            else -> null
+                        }
+                    )
+                }
+            }
         }
     )
 }

@@ -1,65 +1,89 @@
 package io.github.openflocon.domain.network.models
 
-sealed interface FloconNetworkCallDomainModel {
-    val callId: String
-    val networkRequest: FloconNetworkRequestDomainModel
-    val networkResponse: FloconNetworkResponseDomainModel?
+data class FloconNetworkCallDomainModel(
+    val callId: String,
+    val request: Request,
+    val response: Response?,
+) {
 
-    data class Http(
-        override val callId: String,
-        override val networkRequest: FloconNetworkRequestDomainModel,
-        val response: Response?,
-    ) : FloconNetworkCallDomainModel {
-        data class Response(
-            val networkResponse: FloconNetworkResponseDomainModel,
-            val httpCode: Int, // ex: 200
-        )
-
-        override val networkResponse = response?.networkResponse
+    data class Request(
+        val url: String,
+        val startTime: Long,
+        val method: String,
+        val headers: Map<String, String>,
+        val body: String?,
+        val byteSize: Long,
+        val isMocked: Boolean,
+        val specificInfos: SpecificInfos,
+    ) {
+        sealed interface SpecificInfos {
+            data object Http: SpecificInfos
+            data class GraphQl(
+                val query: String,
+                val operationType: String,
+            ) : SpecificInfos
+            data object Grpc : SpecificInfos
+        }
     }
 
-    data class GraphQl(
-        override val callId: String,
-        val request: Request,
-        val response: Response?,
-    ) : FloconNetworkCallDomainModel {
+    sealed interface Response {
 
-        data class Request(
-            val networkRequest: FloconNetworkRequestDomainModel,
-            val query: String,
-            val operationType: String,
-        )
+        val durationMs: Double
 
-        data class Response(
-            val httpCode: Int, // ex: 200
-            val isSuccess: Boolean,
-            val networkResponse: FloconNetworkResponseDomainModel,
-        )
-
-        override val networkRequest = request.networkRequest
-        override val networkResponse = response?.networkResponse
+        data class Success(
+            override val durationMs: Double,
+            val contentType: String? = null,
+            val body: String? = null,
+            val headers: Map<String, String>,
+            val byteSize: Long,
+            val specificInfos: SpecificInfos,
+        ) : Response {
+            sealed interface SpecificInfos {
+                data class Http(
+                    val httpCode: Int, // ex: 200
+                ) : SpecificInfos
+                data class GraphQl(
+                    val httpCode: Int, // ex: 200
+                    val isSuccess: Boolean,
+                ) : SpecificInfos
+                data class Grpc(
+                    val grpcStatus: String,
+                ) : SpecificInfos
+            }
+        }
+        data class Failure(
+            override val durationMs: Double,
+            val issue: String,
+        ) : Response
     }
+}
 
-    data class Grpc(
-        override val callId: String,
-        override val networkRequest: FloconNetworkRequestDomainModel,
-        val response: Response?,
-    ) : FloconNetworkCallDomainModel {
-        data class Response(
-            val networkResponse: FloconNetworkResponseDomainModel,
-            val responseStatus: String,
-        )
-
-        override val networkResponse = response?.networkResponse
-    }
-
+fun FloconNetworkCallDomainModel.Response.Success.SpecificInfos.httpCode() : Int? = when(this) {
+    is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> httpCode
+    is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> httpCode
+    is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> null
 }
 
 fun FloconNetworkCallDomainModel.httpCode(): Int? {
-    return when (this) {
-        is FloconNetworkCallDomainModel.Http -> this.response?.httpCode
-        is FloconNetworkCallDomainModel.GraphQl -> this.response?.httpCode
-        else -> null
+    return when(this.response) {
+        is FloconNetworkCallDomainModel.Response.Failure -> null
+        is FloconNetworkCallDomainModel.Response.Success -> this.response.specificInfos.httpCode()
+        null -> null
+    }
+}
+
+fun FloconNetworkCallDomainModel.byteSize(): Long? {
+    return when(this.response) {
+        is FloconNetworkCallDomainModel.Response.Failure -> null
+        is FloconNetworkCallDomainModel.Response.Success -> this.response.byteSize
+        null -> null
+    }
+}
+
+fun FloconNetworkCallDomainModel.Response.getContentType(): String? {
+    return when(this) {
+        is FloconNetworkCallDomainModel.Response.Failure -> null
+        is FloconNetworkCallDomainModel.Response.Success -> this.contentType
     }
 }
 
@@ -67,6 +91,7 @@ data class FloconNetworkCallIdDomainModel(
     val floconCallId: String,
 )
 
+/*
 data class FloconNetworkRequestDomainModel(
     val url: String,
     val startTime: Long,
@@ -76,28 +101,9 @@ data class FloconNetworkRequestDomainModel(
     val byteSize: Long,
     val isMocked: Boolean,
 )
+ */
 
-sealed interface FloconNetworkResponseOnlyDomainModel {
-    val floconCallId: String
-    val networkResponse: FloconNetworkResponseDomainModel
-
-    data class Http(
-        override val floconCallId: String,
-        override val networkResponse: FloconNetworkResponseDomainModel,
-        val httpCode: Int, // ex: 200
-    ) : FloconNetworkResponseOnlyDomainModel
-
-    data class Grpc(
-        override val floconCallId: String,
-        override val networkResponse: FloconNetworkResponseDomainModel,
-        val grpcStatus: String,
-    ) : FloconNetworkResponseOnlyDomainModel
-}
-
-data class FloconNetworkResponseDomainModel(
-    val contentType: String? = null,
-    val body: String? = null,
-    val headers: Map<String, String>,
-    val byteSize: Long,
-    val durationMs: Double
+data class FloconNetworkResponseOnlyDomainModel(
+    val floconCallId: String,
+    val response: FloconNetworkCallDomainModel.Response,
 )

@@ -2,82 +2,70 @@ package io.github.openflocon.data.local.network.mapper
 
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.data.local.network.models.FloconNetworkCallType
-import io.github.openflocon.data.local.network.models.FloconNetworkRequestEmbedded
 import io.github.openflocon.data.local.network.models.FloconNetworkResponseEmbedded
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkRequestDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkResponseDomainModel
-
-private fun toDomainModel(request: FloconNetworkRequestEmbedded): FloconNetworkRequestDomainModel {
-    return with(request) {
-        FloconNetworkRequestDomainModel(
-            url = this.url,
-            method = this.method,
-            startTime = this.startTime,
-            headers = this.requestHeaders,
-            body = this.requestBody,
-            byteSize = this.requestByteSize,
-            isMocked = this.isMocked,
-        )
-    }
-}
 
 
 fun FloconNetworkCallEntity.toDomainModel(): FloconNetworkCallDomainModel? {
     return try {
-        val networkRequest = toDomainModel(request)
-        when (type) {
-            FloconNetworkCallType.HTTP -> FloconNetworkCallDomainModel.Http(
-                callId = callId,
-                networkRequest = networkRequest,
-                response = response?.let {
-                    FloconNetworkCallDomainModel.Http.Response(
-                        httpCode = response.http!!.responseHttpCode,
-                        networkResponse = toDomainModel(response),
-                    )
-                }
-            )
-
-            FloconNetworkCallType.GRAPHQL -> FloconNetworkCallDomainModel.GraphQl(
-                callId = callId,
-                request = FloconNetworkCallDomainModel.GraphQl.Request(
-                    networkRequest = networkRequest,
-                    query = request.graphql!!.query,
-                    operationType = request.graphql.operationType,
-                ),
-                response = response?.let {
-                    FloconNetworkCallDomainModel.GraphQl.Response(
-                        httpCode = response.graphql!!.responseHttpCode,
-                        isSuccess = response.graphql.isSuccess,
-                        networkResponse = toDomainModel(response),
-                    )
-                }
-            )
-
-            FloconNetworkCallType.GRPC -> FloconNetworkCallDomainModel.Grpc(
-                callId = callId,
-                networkRequest = networkRequest,
-                response = response?.let {
-                    FloconNetworkCallDomainModel.Grpc.Response(
-                        networkResponse = toDomainModel(response),
-                        responseStatus = response.grpc!!.responseStatus,
-                    )
-                }
-            )
-        }
+        FloconNetworkCallDomainModel(
+            callId = callId,
+            request = toRequestDomainModel(),
+            response = response?.toDomainModel(),
+        )
     } catch (t: Throwable) {
         t.printStackTrace()
         return null
     }
 }
 
-private fun toDomainModel(response: FloconNetworkResponseEmbedded): FloconNetworkResponseDomainModel =
-    with(response) {
-        FloconNetworkResponseDomainModel(
+private fun FloconNetworkCallEntity.toRequestDomainModel(): FloconNetworkCallDomainModel.Request =
+    FloconNetworkCallDomainModel.Request(
+        url = request.url,
+        method = request.method,
+        startTime = request.startTime,
+        headers = request.requestHeaders,
+        body = request.requestBody,
+        byteSize = request.requestByteSize,
+        isMocked = request.isMocked,
+        specificInfos = when (type) {
+            FloconNetworkCallType.HTTP -> FloconNetworkCallDomainModel.Request.SpecificInfos.Http
+            FloconNetworkCallType.GRAPHQL -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
+                query = request.graphql!!.query,
+                operationType = request.graphql.operationType,
+            )
+
+            FloconNetworkCallType.GRPC -> FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc
+        },
+    )
+
+
+private fun FloconNetworkResponseEmbedded.toDomainModel(): FloconNetworkCallDomainModel.Response? {
+    return if(responseError != null) {
+        FloconNetworkCallDomainModel.Response.Failure(
+            durationMs = durationMs,
+            issue = responseError
+        )
+    } else {
+        FloconNetworkCallDomainModel.Response.Success(
             contentType = responseContentType,
             body = responseBody,
             headers = responseHeaders,
             byteSize = responseByteSize,
             durationMs = durationMs,
+            specificInfos = when {
+                graphql != null -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl(
+                    httpCode = graphql.responseHttpCode,
+                    isSuccess = graphql.isSuccess,
+                )
+                grpc != null -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc(
+                    grpcStatus = grpc.responseStatus,
+                )
+                http != null -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http(
+                    httpCode = http.responseHttpCode,
+                )
+                else -> return null
+            }
         )
     }
+}

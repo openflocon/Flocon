@@ -149,6 +149,7 @@ class FloconOkhttpInterceptor() : Interceptor {
                 headers = responseHeadersMap,
                 size = responseSize,
                 grpcStatus = null,
+                error = null,
             )
 
             floconNetworkPlugin.logResponse(
@@ -171,12 +172,13 @@ class FloconOkhttpInterceptor() : Interceptor {
             val durationMs: Double = (endTime - startTime) / 1e6
 
             val floconCallResponse = FloconNetworkResponse(
-                httpCode = 0,
-                contentType = "error",
-                body = e.message, // TODO better handle of errors
+                httpCode = null,
+                contentType = null,
+                body = null,
                 headers = emptyMap(),
                 size = null,
                 grpcStatus = null,
+                error = e.message ?: e.javaClass.simpleName,
             )
 
             floconNetworkPlugin.logResponse(

@@ -4,6 +4,7 @@ import kotlinx.serialization.json.Json
 
 internal inline fun <reified T> Json.safeDecodeFromString(data: String): T? = try {
     decodeFromString(data)
-} catch (e: Throwable) {
+} catch (t: Throwable) {
+    t.printStackTrace()
     null
 }
