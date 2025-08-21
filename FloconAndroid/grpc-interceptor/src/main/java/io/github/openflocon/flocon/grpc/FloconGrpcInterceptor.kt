@@ -8,6 +8,7 @@ import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.grpc.model.RequestHolder
 import io.github.openflocon.flocon.grpc.model.toHeaders
+import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkResponse
 import io.grpc.CallOptions
@@ -44,7 +45,7 @@ class FloconGrpcInterceptor(
     private val shouldExcludeField: (name: String) -> Boolean = defaultFieldExcluder,
 ) : ClientInterceptor {
 
-    private val flipperGrpcPlugin = FloconGrpcPlugin()
+    private val floconGrpcPlugin = FloconGrpcPlugin()
 
     private val gson = buildGsonInstance(shouldExcludeField)
 
@@ -61,7 +62,8 @@ class FloconGrpcInterceptor(
 
         val callId = UUID.randomUUID().toString()
         return LoggingForwardingClientCall(
-            floconGrpcPlugin = flipperGrpcPlugin,
+            floconGrpcPlugin = floconGrpcPlugin,
+            floconNetworkPlugin = networkPlugin,
             callId = callId,
             method = method,
             next = next,
@@ -72,6 +74,7 @@ class FloconGrpcInterceptor(
 }
 
 private class LoggingForwardingClientCall<ReqT, RespT>(
+    private val floconNetworkPlugin: FloconNetworkPlugin,
     private val floconGrpcPlugin: FloconGrpcPlugin,
     private val callId: String,
     private val method: MethodDescriptor<ReqT, RespT>,
@@ -118,6 +121,9 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
             callId = callId,
             request = request
         )
+        floconNetworkPlugin.badQualityConfig?.let {
+            executeBadQuality(it)
+        }
         super.sendMessage(message)
     }
 }
@@ -138,19 +144,35 @@ private class LoggingClientCallListener<RespT>(
     override fun onClose(status: Status, trailers: Metadata) {
         try {
             runBlocking { requestHolder.request.await() }.let { request ->
-                floconGrpcPlugin.reportResponse(
-                    callId = callId,
-                    request = request,
-                    response = FloconNetworkResponse(
-                        body = message?.toJson(gson),
-                        headers = (this.headers ?: trailers).toHeaders(),
-                        httpCode = null,
-                        contentType = "grpc",
-                        size = 0L,
-                        grpcStatus = status.code.toString(),
-                        error = null,
-                    ),
-                )
+                status.cause?.let { cause ->
+                    floconGrpcPlugin.reportResponse(
+                        callId = callId,
+                        request = request,
+                        response = FloconNetworkResponse(
+                            body = null,
+                            headers = emptyMap(),
+                            httpCode = null,
+                            contentType = "grpc",
+                            size = null,
+                            grpcStatus = null,
+                            error = cause.message ?: cause.javaClass.simpleName,
+                        ),
+                    )
+                } ?: run {
+                    floconGrpcPlugin.reportResponse(
+                        callId = callId,
+                        request = request,
+                        response = FloconNetworkResponse(
+                            body = message?.toJson(gson),
+                            headers = (this.headers ?: trailers).toHeaders(),
+                            httpCode = null,
+                            contentType = "grpc",
+                            size = 0L,
+                            grpcStatus = status.code.toString(),
+                            error = null,
+                        ),
+                    )
+                }
             }
         } catch (t: Throwable) {
             FloconLogger.logError("cannot find request for callId $callId", t)
