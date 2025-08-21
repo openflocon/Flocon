@@ -37,33 +37,36 @@ private fun decodeMockNetworkResponse(jsonObject: JSONObject): MockNetworkRespon
         )
 
         val responseJson = jsonObject.getJSONObject("response")
-        val httpCode = responseJson.getInt("httpCode")
-        val body = responseJson.getString("body")
-        val mediaType = responseJson.getString("mediaType")
-        val delay = responseJson.getLong("delay")
-        val errorException = responseJson.optString("errorException", "").takeIf { it.isNotBlank() }
 
-        val headersJson = responseJson.getJSONObject("headers")
-        val headers = buildMap<String, String> {
-            val keys = headersJson.keys()
-            while (keys.hasNext()) {
-                val key = keys.next()
-                put(key = key, value = headersJson.getString(key))
-            }
-        }
+        val delay = responseJson.getLong("delay")
+        val errorException = responseJson.optString("errorException", "").takeIf { it.isNotBlank() && it != "null" }
 
         val response = errorException?.let {
             MockNetworkResponse.Response.ErrorThrow(
                 classPath = it,
                 delay = delay,
             )
-        } ?: MockNetworkResponse.Response.Body(
-            httpCode = httpCode,
-            body = body,
-            mediaType = mediaType,
-            delay = delay,
-            headers = headers
-        )
+        } ?: run {
+            val httpCode = responseJson.getInt("httpCode")
+            val body = responseJson.getString("body")
+            val mediaType = responseJson.getString("mediaType")
+            val headersJson = responseJson.getJSONObject("headers")
+            val headers = buildMap<String, String> {
+                val keys = headersJson.keys()
+                while (keys.hasNext()) {
+                    val key = keys.next()
+                    put(key = key, value = headersJson.getString(key))
+                }
+            }
+
+            MockNetworkResponse.Response.Body(
+                httpCode = httpCode,
+                body = body,
+                mediaType = mediaType,
+                delay = delay,
+                headers = headers
+            )
+        }
 
         MockNetworkResponse(expectation, response)
     } catch (t: Throwable) {

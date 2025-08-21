@@ -34,7 +34,7 @@ fun toRemote(mock: MockNetworkDomainModel): MockNetworkResponseDataModel = MockN
             mediaType = null,
             delay = r.delay,
             headers = null,
-            errorException = null
+            errorException = r.classPath
         )
     }
 )
