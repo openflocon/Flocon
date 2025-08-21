@@ -39,16 +39,14 @@ import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.SelectedBadQualityUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.possibleExceptions
-import io.github.openflocon.flocondesktop.features.network.list.view.components.getMethodBackground
-import io.github.openflocon.flocondesktop.features.network.list.view.components.getMethodText
-import io.github.openflocon.flocondesktop.features.network.list.view.components.postMethodBackground
-import io.github.openflocon.flocondesktop.features.network.list.view.components.postMethodText
-import io.github.openflocon.flocondesktop.features.network.mock.edition.view.NetworkMockFieldView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.defaultLabel
+import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import java.util.UUID
 
 @Composable
@@ -111,62 +109,65 @@ fun BadNetworkQualityEditionContent(
             .fillMaxSize()
             .padding(8.dp),
     ) {
-        NetworkMockFieldView(
-            label = "Name",
-            placeHolder = "",
+        FloconTextField(
+            label = defaultLabel("Name"),
             value = name,
-            onValueChange = {
-                name = it
-            },
-            trailingComponent = { },
+            onValueChange = { name = it },
+            suffix = { },
+            modifier = Modifier.fillMaxWidth(fraction = 0.5f),
+            containerColor = FloconTheme.colorPalette.panel,
         )
-        NetworkMockFieldView(
-            label = "Trigger probability",
-            placeHolder = "0",
+        FloconTextField(
+            label = defaultLabel("Trigger probability"),
+            placeholder = defaultPlaceHolder("0"),
             value = triggerProbability,
             onValueChange = {
                 if (it.isEmpty() || it.toDoubleOrNull() != null) {
                     triggerProbability = it
                 }
             },
-            trailingComponent = { Text(text = "%") },
+            suffix = { Text(text = "%") },
+            containerColor = FloconTheme.colorPalette.panel
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            NetworkMockFieldView(
+            FloconTextField(
                 modifier = Modifier.weight(1f),
-                label = "Min latency",
-                placeHolder = "0",
+                label = defaultLabel("Min latency"),
+                placeholder = defaultPlaceHolder("0"),
                 value = minLatencyMs,
                 onValueChange = {
                     if (it.isEmpty() || it.toLongOrNull()?.takeIf { it >= 0L } != null) {
                         minLatencyMs = it
                     }
                 },
-                trailingComponent = { Text(text = "ms") },
+                suffix = { Text(text = "ms") },
+                containerColor = FloconTheme.colorPalette.panel,
             )
-            NetworkMockFieldView(
+            FloconTextField(
                 modifier = Modifier.weight(1f),
-                label = "Max latency",
-                placeHolder = "0",
+                label = defaultLabel("Max latency"),
+                placeholder = defaultPlaceHolder("0"),
                 value = maxLatencyMs,
                 onValueChange = {
                     if (it.isEmpty() || it.toLongOrNull()?.takeIf { it >= 0L } != null) {
                         maxLatencyMs = it
                     }
                 },
-                trailingComponent = { Text(text = "ms") },
+                suffix = { Text(text = "ms") },
+                containerColor = FloconTheme.colorPalette.panel,
             )
         }
-        NetworkMockFieldView(
-            label = "Error probability",
-            placeHolder = "0",
+        FloconTextField(
+            label = defaultLabel("Error probability"),
+            placeholder = defaultPlaceHolder("0"),
             value = errorProbability,
             onValueChange = {
                 if (it.isEmpty() || it.toDoubleOrNull() != null) {
                     errorProbability = it
                 }
             },
-            trailingComponent = { Text(text = "%") },
+            suffix = { Text(text = "%") },
+            containerColor = FloconTheme.colorPalette.panel,
         )
         ErrorsListView(
             modifier = Modifier.padding(top = 16.dp),
@@ -480,9 +481,9 @@ fun ErrorsEditor(
                 .background(Color(0xFFEFEFEF).copy(alpha = 0.2f))
                 .padding(8.dp),
         ) {
-            NetworkMockFieldView(
-                label = "Weight",
-                placeHolder = "eg: 1.0",
+            FloconTextField(
+                label = defaultLabel("Weight"),
+                placeholder = defaultPlaceHolder("eg: 1.0"),
                 value = weight,
                 onValueChange = {
                     if (it.isEmpty() || it.toFloatOrNull() != null) {
@@ -491,9 +492,9 @@ fun ErrorsEditor(
                 },
             )
 
-            NetworkMockFieldView(
-                label = "HTTP Code",
-                placeHolder = "eg: 500",
+            FloconTextField(
+                label = defaultLabel("HTTP Code"),
+                placeholder = defaultPlaceHolder("eg: 500"),
                 value = httpCode,
                 onValueChange = {
                     if (it.isEmpty() || it.toIntOrNull() != null) {
@@ -502,22 +503,18 @@ fun ErrorsEditor(
                 },
             )
 
-            NetworkMockFieldView(
-                label = "Content-Type",
-                placeHolder = "application/json",
+            FloconTextField(
+                label = defaultLabel("Content-Type"),
+                placeholder = defaultPlaceHolder("application/json"),
                 value = contentType,
-                onValueChange = {
-                    contentType = it
-                },
+                onValueChange = { contentType = it }
             )
 
-            NetworkMockFieldView(
-                label = "Body",
-                placeHolder = "{\"error\":\"...\"}",
+            FloconTextField(
+                label = defaultLabel("Body"),
+                placeholder = defaultPlaceHolder("{\"error\":\"...\"}"),
                 value = body,
-                onValueChange = {
-                    body = it
-                },
+                onValueChange = { body = it },
             )
         }
     }

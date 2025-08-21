@@ -30,7 +30,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconTextField
-import io.github.openflocon.library.designsystem.components.placeHolder
+import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val freeformItem = DeeplinkViewState(
@@ -62,7 +62,7 @@ fun DeeplinkFreeformItemView(
             FloconTextField(
                 value = value,
                 onValueChange = { value = it },
-                placeholder = placeHolder("freeform link"),
+                placeholder = defaultPlaceHolder("freeform link"),
                 textStyle = FloconTheme.typography.bodySmall.copy(
                     color = FloconTheme.colorPalette.onSurface,
                     fontWeight = FontWeight.Bold,

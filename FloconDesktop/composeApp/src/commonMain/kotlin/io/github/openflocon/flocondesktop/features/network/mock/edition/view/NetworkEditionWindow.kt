@@ -45,6 +45,8 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.model.Se
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.defaultLabel
+import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 
 @Composable
 fun NetworkEditionWindow(
@@ -170,13 +172,13 @@ fun MockEditorScreen(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
-                NetworkMockFieldView(
+                FloconTextField(
                     value = mock.expectation.urlPattern ?: "",
                     onValueChange = { newValue ->
                         mock = mock.copy(expectation = mock.expectation.copy(urlPattern = newValue))
                     },
-                    label = "URL Pattern",
-                    placeHolder = "https://www.myDomain.*",
+                    label = defaultLabel("URL Pattern"),
+                    placeholder = defaultPlaceHolder("https://www.myDomain.*"),
                     modifier = Modifier.fillMaxWidth(),
                 )
                 MockNetworkMethodDropdown(
@@ -206,11 +208,12 @@ fun MockEditorScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    NetworkMockFieldView(
-                        label = "HTTP Code",
+                    FloconTextField(
+                        label = defaultLabel("HTTP Code"),
                         maxLines = 1,
-                        placeHolder = "eg: 200",
+                        placeholder = defaultPlaceHolder("eg: 200"),
                         value = mock.response.httpCode.toString(),
+                        containerColor = FloconTheme.colorPalette.panel,
                         onValueChange = { newValue ->
                             if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
                                 mock = mock.copy(
@@ -222,11 +225,12 @@ fun MockEditorScreen(
                         },
                         modifier = Modifier.weight(1f),
                     )
-                    NetworkMockFieldView(
-                        label = "Additional Delay (ms)",
+                    FloconTextField(
+                        label = defaultLabel("Additional Delay (ms)"),
                         maxLines = 1,
                         value = mock.response.delay.toString(),
-                        placeHolder = "0",
+                        placeholder = defaultPlaceHolder("0"),
+                        containerColor = FloconTheme.colorPalette.panel,
                         onValueChange = { newValue ->
                             // On vérifie si la nouvelle valeur est vide ou si elle contient uniquement des chiffres
                             if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
@@ -239,11 +243,12 @@ fun MockEditorScreen(
                     )
                 }
 
-                NetworkMockFieldView(
-                    label = "Media Type",
+                FloconTextField(
+                    label = defaultLabel("Media Type"),
                     maxLines = 1,
                     value = mock.response.mediaType,
-                    placeHolder = "application/json",
+                    placeholder = defaultPlaceHolder("application/json"),
+                    containerColor = FloconTheme.colorPalette.panel,
                     onValueChange = { newValue ->
                         mock = mock.copy(response = mock.response.copy(mediaType = newValue))
                     },
@@ -337,15 +342,15 @@ fun MockEditorScreen(
                     }
                 }
 
-                NetworkMockFieldView(
-                    label = "Body",
-                    value = mock.response.body ?: "",
-                    placeHolder = null,
+                FloconTextField(
+                    label = defaultLabel("Body"),
+                    value = mock.response.body,
                     minLines = 4,
                     onValueChange = { newValue ->
                         mock = mock.copy(response = mock.response.copy(body = newValue))
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    containerColor = FloconTheme.colorPalette.panel
                 )
             }
         }

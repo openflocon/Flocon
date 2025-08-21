@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconTextField
-import io.github.openflocon.library.designsystem.components.placeHolder
+import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -62,7 +62,7 @@ fun DashboardTextFieldView(
             FloconTextField(
                 value = value,
                 onValueChange = { value = it },
-                placeholder = placeHolder(rowItem.placeHolder?.takeIf(String::isNotEmpty)),
+                placeholder = defaultPlaceHolder(rowItem.placeHolder?.takeIf(String::isNotEmpty)),
                 modifier = Modifier
                     .weight(1f)
             )

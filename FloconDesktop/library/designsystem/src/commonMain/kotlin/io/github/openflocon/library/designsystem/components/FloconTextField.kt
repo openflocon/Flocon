@@ -2,25 +2,32 @@
 
 package io.github.openflocon.library.designsystem.components
 
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.theme.contentColorFor
 
 @Composable
 fun FloconTextField(
@@ -28,6 +35,9 @@ fun FloconTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: @Composable (() -> Unit)? = null,
+    trailingComponent: @Composable (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
     enabled: Boolean = true,
     singleLine: Boolean = true,
     isError: Boolean = false,
@@ -35,18 +45,19 @@ fun FloconTextField(
     maxLines: Int = Int.MAX_VALUE,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    textStyle: TextStyle = FloconTheme.typography.bodySmall
+    textStyle: TextStyle = FloconTheme.typography.bodySmall,
+    containerColor: Color = FloconTheme.colorPalette.surfaceVariant
 ) {
-    val contentColor = FloconTheme.colorPalette.onSurfaceVariant
+    val contentColor = FloconTheme.colorPalette.contentColorFor(containerColor)
     val colors = TextFieldDefaults.colors(
         focusedTextColor = contentColor,
         errorTextColor = contentColor,
         unfocusedTextColor = contentColor,
         disabledTextColor = contentColor,
-        errorContainerColor = FloconTheme.colorPalette.surfaceVariant,
-        focusedContainerColor = FloconTheme.colorPalette.surfaceVariant,
-        disabledContainerColor = FloconTheme.colorPalette.surfaceVariant,
-        unfocusedContainerColor = FloconTheme.colorPalette.surfaceVariant,
+        errorContainerColor = containerColor,
+        focusedContainerColor = containerColor,
+        disabledContainerColor = containerColor,
+        unfocusedContainerColor = containerColor,
         focusedIndicatorColor = Color.Transparent,
         errorIndicatorColor = Color.Transparent,
         disabledIndicatorColor = Color.Transparent,
@@ -54,7 +65,11 @@ fun FloconTextField(
         errorPlaceholderColor = contentColor.copy(alpha = 0.8f),
         disabledPlaceholderColor = contentColor.copy(alpha = 0.8f),
         focusedPlaceholderColor = contentColor.copy(alpha = 0.8f),
-        unfocusedPlaceholderColor = contentColor.copy(alpha = 0.8f)
+        unfocusedPlaceholderColor = contentColor.copy(alpha = 0.8f),
+        errorLabelColor = FloconTheme.colorPalette.onSurface,
+        disabledLabelColor = FloconTheme.colorPalette.onSurface,
+        focusedLabelColor = FloconTheme.colorPalette.onSurface,
+        unfocusedLabelColor = FloconTheme.colorPalette.onSurface
     )
     val interactionSource = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(10.dp)
@@ -69,27 +84,19 @@ fun FloconTextField(
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
         decorationBox = {
-            TextFieldDefaults.DecorationBox(
+            DecorationBox(
                 value = value,
-                shape = shape,
-                interactionSource = interactionSource,
                 innerTextField = it,
+                interactionSource = interactionSource,
                 enabled = enabled,
-                isError = isError,
+                trailingComponent = trailingComponent,
+                prefix = prefix,
+                suffix = suffix,
                 singleLine = singleLine,
+                isError = isError,
+                placeholder = placeholder,
                 colors = colors,
-                visualTransformation = VisualTransformation.None,
-                contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
-                container = {
-                    TextFieldDefaults.Container(
-                        enabled = enabled,
-                        isError = isError,
-                        interactionSource = interactionSource,
-                        shape = shape,
-                        colors = colors
-                    )
-                },
-                placeholder = placeholder
+                shape = shape
             )
         },
         modifier = modifier
@@ -97,7 +104,121 @@ fun FloconTextField(
 }
 
 @Composable
-fun placeHolder(text: String?): @Composable (() -> Unit)? = if (text.isNullOrEmpty())
+fun FloconTextField(
+    value: String,
+    label: @Composable () -> Unit,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: @Composable (() -> Unit)? = null,
+    trailingComponent: @Composable (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true,
+    singleLine: Boolean = true,
+    isError: Boolean = false,
+    minLines: Int = 1,
+    maxLines: Int = Int.MAX_VALUE,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    textStyle: TextStyle = FloconTheme.typography.bodySmall,
+    containerColor: Color = FloconTheme.colorPalette.surfaceVariant
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier
+    ) {
+        label()
+        FloconTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = placeholder,
+            isError = isError,
+            singleLine = singleLine,
+            minLines = minLines,
+            maxLines = maxLines,
+            textStyle = textStyle,
+            containerColor = containerColor,
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            suffix = suffix,
+            prefix = prefix,
+            enabled = enabled,
+            trailingComponent = trailingComponent,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun DecorationBox(
+    value: String,
+    innerTextField: @Composable () -> Unit,
+    colors: TextFieldColors,
+    shape: Shape,
+    interactionSource: InteractionSource,
+    placeholder: @Composable (() -> Unit)?,
+    trailingComponent: @Composable (() -> Unit)?,
+    prefix: @Composable (() -> Unit)?,
+    suffix: @Composable (() -> Unit)?,
+    enabled: Boolean,
+    singleLine: Boolean,
+    isError: Boolean
+) {
+    TextFieldDefaults.DecorationBox(
+        value = value,
+        shape = shape,
+        interactionSource = interactionSource,
+        innerTextField = innerTextField,
+        enabled = enabled,
+        isError = isError,
+        singleLine = singleLine,
+        colors = colors,
+        visualTransformation = VisualTransformation.None,
+        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
+        container = {
+            ContainerBox(
+                enabled = enabled,
+                isError = isError,
+                interactionSource = interactionSource,
+                shape = shape,
+                colors = colors
+            )
+        },
+        placeholder = placeholder,
+        prefix = prefix,
+        suffix = suffix,
+        trailingIcon = trailingComponent
+    )
+}
+
+
+@Composable
+private fun ContainerBox(
+    enabled: Boolean,
+    isError: Boolean,
+    interactionSource: InteractionSource,
+    shape: Shape,
+    colors: TextFieldColors
+) {
+    TextFieldDefaults.Container(
+        enabled = enabled,
+        isError = isError,
+        interactionSource = interactionSource,
+        shape = shape,
+        colors = colors
+    )
+}
+
+@Composable
+fun defaultLabel(text: String): @Composable () -> Unit = {
+    Text(
+        text = text,
+        style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Thin),
+    )
+}
+
+@Composable
+fun defaultPlaceHolder(text: String?): @Composable (() -> Unit)? = if (text.isNullOrEmpty())
     null
 else {
     {

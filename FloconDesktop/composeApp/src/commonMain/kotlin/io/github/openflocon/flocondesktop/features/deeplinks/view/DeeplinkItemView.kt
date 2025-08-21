@@ -37,7 +37,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewS
 import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconTextField
-import io.github.openflocon.library.designsystem.components.placeHolder
+import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -116,7 +116,7 @@ private fun TextFieldPart(
         is DeeplinkPart.TextField -> {
             val onFieldValueChangedCallback by rememberUpdatedState(onFieldValueChanged)
             var value by remember { mutableStateOf("") }
-            
+
             LaunchedEffect(part, value) {
                 onFieldValueChangedCallback(part, value)
             }
@@ -124,7 +124,7 @@ private fun TextFieldPart(
             FloconTextField(
                 value = value,
                 onValueChange = { value = it },
-                placeholder = placeHolder(part.label),
+                placeholder = defaultPlaceHolder(part.label),
                 textStyle = FloconTheme.typography.bodySmall.copy(
                     color = FloconTheme.colorPalette.onSurface,
                     fontWeight = FontWeight.Bold,

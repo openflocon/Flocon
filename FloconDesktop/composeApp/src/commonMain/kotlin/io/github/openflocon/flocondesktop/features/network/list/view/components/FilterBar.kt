@@ -24,7 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconTextField
-import io.github.openflocon.library.designsystem.components.placeHolder
+import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 
 @Composable
 fun FilterBar(
@@ -47,7 +47,7 @@ fun FilterBar(
                 filterText = it
                 onTextChangedCallback(filterText)
             },
-            placeholder = placeHolder(placeholderText),
+            placeholder = defaultPlaceHolder(placeholderText),
             textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
             modifier = Modifier.weight(1f),
         )
