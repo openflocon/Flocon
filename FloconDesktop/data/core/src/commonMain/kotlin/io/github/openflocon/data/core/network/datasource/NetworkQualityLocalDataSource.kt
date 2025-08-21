@@ -39,4 +39,6 @@ interface NetworkQualityLocalDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     ): BadQualityConfigDomainModel?
 
+    suspend fun prepopulate(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
+
 }
