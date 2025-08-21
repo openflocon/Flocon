@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 43,
-    "identityHash": "6986b724711e2e57552c0c4d4dc1071e",
+    "identityHash": "709eea740fda569b945b16d91e67d5c4",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -889,7 +889,7 @@
       },
       {
         "tableName": "MockNetworkEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mockId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `expectation_urlPattern` TEXT NOT NULL, `expectation_method` TEXT NOT NULL, `response_httpCode` INTEGER NOT NULL, `response_body` TEXT NOT NULL, `response_mediaType` TEXT NOT NULL, `response_delay` INTEGER NOT NULL, `response_headers` TEXT NOT NULL, PRIMARY KEY(`mockId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mockId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `response` TEXT NOT NULL, `expectation_urlPattern` TEXT NOT NULL, `expectation_method` TEXT NOT NULL, PRIMARY KEY(`mockId`))",
         "fields": [
           {
             "fieldPath": "mockId",
@@ -916,6 +916,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "response",
+            "columnName": "response",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "expectation.urlPattern",
             "columnName": "expectation_urlPattern",
             "affinity": "TEXT",
@@ -924,36 +930,6 @@
           {
             "fieldPath": "expectation.method",
             "columnName": "expectation_method",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "response.httpCode",
-            "columnName": "response_httpCode",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "response.body",
-            "columnName": "response_body",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "response.mediaType",
-            "columnName": "response_mediaType",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "response.delay",
-            "columnName": "response_delay",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "response.headers",
-            "columnName": "response_headers",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -1094,7 +1070,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6986b724711e2e57552c0c4d4dc1071e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '709eea740fda569b945b16d91e67d5c4')"
     ]
   }
 }

@@ -21,11 +21,23 @@ data class MockNetworkResponse(
         }
     }
 
-    data class Response(
-        val httpCode: Int,
-        val body: String,
-        val mediaType: String,
-        val delay: Long,
-        val headers: Map<String, String>,
-    )
+    sealed interface Response {
+        val delay: Long
+        data class Body(
+            val httpCode: Int,
+            val body: String,
+            override val delay: Long,
+            val mediaType: String,
+            val headers: Map<String, String>,
+        ) : Response
+        data class ErrorThrow(
+            val classPath: String,
+            override val delay: Long,
+        ) : Response {
+            fun generate() : Throwable? {
+                val errorClass = Class.forName(classPath)
+                return errorClass.newInstance() as? Throwable
+            }
+        }
+    }
 }

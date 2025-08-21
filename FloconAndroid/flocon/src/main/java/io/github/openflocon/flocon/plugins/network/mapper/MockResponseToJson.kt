@@ -37,27 +37,36 @@ private fun decodeMockNetworkResponse(jsonObject: JSONObject): MockNetworkRespon
         )
 
         val responseJson = jsonObject.getJSONObject("response")
-        val httpCode = responseJson.getInt("httpCode")
-        val body = responseJson.getString("body")
-        val mediaType = responseJson.getString("mediaType")
+
         val delay = responseJson.getLong("delay")
+        val errorException = responseJson.optString("errorException", "").takeIf { it.isNotBlank() && it != "null" }
 
-        val headersJson = responseJson.getJSONObject("headers")
-        val headers = buildMap<String, String> {
-            val keys = headersJson.keys()
-            while (keys.hasNext()) {
-                val key = keys.next()
-                put(key = key, value = headersJson.getString(key))
+        val response = errorException?.let {
+            MockNetworkResponse.Response.ErrorThrow(
+                classPath = it,
+                delay = delay,
+            )
+        } ?: run {
+            val httpCode = responseJson.getInt("httpCode")
+            val body = responseJson.getString("body")
+            val mediaType = responseJson.getString("mediaType")
+            val headersJson = responseJson.getJSONObject("headers")
+            val headers = buildMap<String, String> {
+                val keys = headersJson.keys()
+                while (keys.hasNext()) {
+                    val key = keys.next()
+                    put(key = key, value = headersJson.getString(key))
+                }
             }
-        }
 
-        val response = MockNetworkResponse.Response(
-            httpCode = httpCode,
-            body = body,
-            mediaType = mediaType,
-            delay = delay,
-            headers = headers
-        )
+            MockNetworkResponse.Response.Body(
+                httpCode = httpCode,
+                body = body,
+                mediaType = mediaType,
+                delay = delay,
+                headers = headers
+            )
+        }
 
         MockNetworkResponse(expectation, response)
     } catch (t: Throwable) {
@@ -89,14 +98,21 @@ private fun encodeMockNetworkResponse(mock: MockNetworkResponse): JSONObject {
             // On le laisse de côté, il sera recréé lors du parsing.
         }
 
-        val headersJson = JSONObject(mock.response.headers)
-
         val responseJson = JSONObject().apply {
-            put("httpCode", mock.response.httpCode)
-            put("body", mock.response.body)
-            put("mediaType", mock.response.mediaType)
+            when(val response = mock.response) {
+                is MockNetworkResponse.Response.ErrorThrow -> {
+                    put("errorException", response.classPath)
+                }
+                is MockNetworkResponse.Response.Body -> {
+                    val headersJson = JSONObject(response.headers)
+                    put("httpCode", response.httpCode)
+                    put("body", response.body)
+                    put("mediaType", response.mediaType)
+                    put("headers", headersJson)
+                }
+            }
+
             put("delay", mock.response.delay)
-            put("headers", headersJson)
         }
 
         JSONObject().apply {

@@ -11,11 +11,18 @@ data class MockNetworkDomainModel(
         val method: String, // can be get, post, put, ... or a wildcard *
     )
 
-    data class Response(
-        val httpCode: Int,
-        val body: String,
-        val mediaType: String,
-        val delay: Long,
-        val headers: Map<String, String>,
-    )
+    sealed interface Response {
+        val delay: Long
+        data class Body(
+            val httpCode: Int,
+            val body: String,
+            val mediaType: String,
+            override val delay: Long,
+            val headers: Map<String, String>,
+        ) : Response
+        data class Exception(
+            override val delay: Long,
+            val classPath: String,
+        ) : Response
+    }
 }
