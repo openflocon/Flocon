@@ -62,10 +62,10 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-private val CelluleHeight = 64.dp
+private val CelluleHeight = 32.dp
 
 @Composable
-internal fun ColumnScope.DeviceSelectorView(
+fun DeviceSelectorView(
     panelExpanded: Boolean,
     devicesState: DevicesStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,

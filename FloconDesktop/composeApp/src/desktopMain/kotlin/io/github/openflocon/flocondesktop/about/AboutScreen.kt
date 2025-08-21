@@ -52,16 +52,16 @@ internal fun AboutScreen(
                 modifier = Modifier
                     .padding(16.dp)
             ) {
-                Image(
-                    painter = painterResource(Res.drawable.app_icon),
-                    contentDescription = null,
-                    modifier = Modifier.size(120.dp)
-                )
-                Text(
-                    text = "Flocon",
-                    style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.onSurface
-                )
+//                Image(
+//                    painter = painterResource(Res.drawable.app_icon),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(120.dp)
+//                )
+//                Text(
+//                    text = "Flocon",
+//                    style = FloconTheme.typography.titleSmall,
+//                    color = FloconTheme.colorPalette.onSurface
+//                )
                 FloconTextButton(
                     onClick = {
                         openInBrowser(URI.create("https://github.com/openflocon/Flocon"))

@@ -82,16 +82,16 @@ fun LeftPanelView(
             expanded = expanded,
             onClickItem = onClickItem,
         )
-        LeftPannelDivider(modifier = Modifier.padding(vertical = 12.dp))
-        DeviceSelectorView(
-            panelExpanded = expanded,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 64.dp),
-            devicesState = devicesState,
-            onDeviceSelected = onDeviceSelected,
-            onAppSelected = onAppSelected,
-        )
+//        LeftPannelDivider(modifier = Modifier.padding(vertical = 12.dp))
+//        DeviceSelectorView(
+//            panelExpanded = expanded,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .heightIn(min = 64.dp),
+//            devicesState = devicesState,
+//            onDeviceSelected = onDeviceSelected,
+//            onAppSelected = onAppSelected,
+//        )
     }
 }
 
