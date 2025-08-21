@@ -8,12 +8,14 @@ fun loadingStatus() = NetworkStatusUi(
     status = NetworkStatusUi.Status.LOADING,
 )
 
+fun failureStatus() = NetworkStatusUi(
+    text = "Exception",
+    status = NetworkStatusUi.Status.EXCEPTION,
+)
+
 fun getStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.response?.let { response ->
     when(response) {
-        is FloconNetworkCallDomainModel.Response.Failure -> NetworkStatusUi(
-            text = response.issue,
-            status = NetworkStatusUi.Status.ERROR,
-        )
+        is FloconNetworkCallDomainModel.Response.Failure -> failureStatus()
         is FloconNetworkCallDomainModel.Response.Success -> when (val s = response.specificInfos) {
             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toGraphQlNetworkStatusUi(isSuccess = s.isSuccess)
             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> toNetworkStatusUi(s.httpCode)
@@ -35,10 +37,7 @@ fun toGraphQlNetworkStatusUi(isSuccess: Boolean): NetworkStatusUi = NetworkStatu
 fun toGrpcNetworkStatusUi(call: FloconNetworkCallDomainModel): NetworkStatusUi {
     val response = call.response ?: return loadingStatus()
     return when(response) {
-        is FloconNetworkCallDomainModel.Response.Failure -> NetworkStatusUi(
-            text = response.issue,
-            status = NetworkStatusUi.Status.ERROR,
-        )
+        is FloconNetworkCallDomainModel.Response.Failure -> failureStatus()
         is FloconNetworkCallDomainModel.Response.Success -> {
             when(val s = response.specificInfos) {
                 is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> {
