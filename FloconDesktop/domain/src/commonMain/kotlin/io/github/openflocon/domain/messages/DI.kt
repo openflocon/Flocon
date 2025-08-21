@@ -10,7 +10,7 @@ internal val messagesModule = module {
         HandleIncomingMessagesUseCase(
             messagesRepository = get(),
             plugins = getAll(),
-            handleDeviceUseCase = get(),
+            handleDeviceAndAppUseCase = get(),
             handleNewDeviceUseCase = get(),
         )
     }

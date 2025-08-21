@@ -2,7 +2,7 @@ package io.github.openflocon.flocondesktop.core.data.device
 
 import io.github.openflocon.data.core.device.datasource.local.LocalCurrentDeviceDataSource
 import io.github.openflocon.data.core.device.datasource.local.LocalDevicesDataSource
-import io.github.openflocon.data.core.device.datasource.local.model.InsertDeviceResult
+import io.github.openflocon.data.core.device.datasource.local.model.InsertResult
 import io.github.openflocon.data.core.device.datasource.remote.RemoteDeviceDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.adb.repository.AdbRepository
@@ -11,23 +11,13 @@ import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.device.models.DeviceWithAppDomainModel
-import io.github.openflocon.domain.device.models.DeviceWithAppsDomainModel
 import io.github.openflocon.domain.device.models.HandleDeviceResultDomainModel
 import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainModel
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -38,7 +28,6 @@ class DevicesRepositoryImpl(
     private val remoteDeviceDataSource: RemoteDeviceDataSource,
     private val localDevicesDataSource: LocalDevicesDataSource,
     private val localCurrentDeviceDataSource: LocalCurrentDeviceDataSource,
-    applicationScope: CoroutineScope,
 ) : DevicesRepository,
     MessagesReceiverRepository {
 
@@ -49,29 +38,6 @@ class DevicesRepositoryImpl(
 
     override val currentDeviceId: Flow<DeviceId?> = localCurrentDeviceDataSource.currentDeviceId
 
-    override val currentDeviceWithApp: StateFlow<DeviceWithAppDomainModel?> = combine(
-        localCurrentDeviceDataSource.currentDeviceId,
-        localCurrentDeviceDataSource.currentDeviceApp,
-    ) { device, app ->
-        Pair(device, app)
-    }.flatMapLatest { (deviceId, app) ->
-        if (deviceId == null || app == null) {
-            flowOf(null)
-        } else {
-            localDevicesDataSource.observeDeviceById(deviceId)
-                .map { device ->
-                    device?.let {
-                        DeviceWithAppDomainModel(
-                            device = it,
-                            app = app,
-                        )
-                    }
-                }
-        }
-    }
-        .flowOn(dispatcherProvider.data)
-        .stateIn(applicationScope, SharingStarted.Eagerly, null)
-
     override suspend fun getCurrentDeviceId(): DeviceId? =
         localCurrentDeviceDataSource.getCurrentDeviceId()
 
@@ -80,33 +46,53 @@ class DevicesRepositoryImpl(
             localDevicesDataSource.getDeviceById(it)
         }
 
-    override suspend fun getCurrentDeviceApp(): DeviceAppDomainModel? =
-        localCurrentDeviceDataSource.getCurrentDeviceApp()
-
     // returns new if new device
     override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel =
         withContext(dispatcherProvider.data) {
             devicesMutex.withLock {
-                val isKnownDevice =
-                    localCurrentDeviceDataSource.isKnownDeviceForThisSession(
-                        registerDeviceWithApp.device.deviceId
-                    )
-                if (!isKnownDevice) {
+                val isKnownDevice = localCurrentDeviceDataSource.isKnownDeviceForThisSession(
+                    registerDeviceWithApp.device.deviceId
+                )
+                val isKnownApp = localCurrentDeviceDataSource.isKnownAppForThisSession(
+                    deviceId = registerDeviceWithApp.device.deviceId,
+                    packageName = registerDeviceWithApp.app.packageName
+                )
+                if (isKnownDevice && isKnownApp) {
                     HandleDeviceResultDomainModel(
                         deviceId = registerDeviceWithApp.device.deviceId,
                         justConnectedForThisSession = false,
                         isNewDevice = false,
+                        isNewApp = false,
                     )
                 } else {
-                    val isNewDevice = when (localDevicesDataSource.insertDevice(registerDeviceWithApp.device)) {
-                        InsertDeviceResult.New -> true
-                        InsertDeviceResult.Exists -> false
+                    val isNewDevice = when (localDevicesDataSource.insertDevice(
+                        registerDeviceWithApp.device
+                    )) {
+                        InsertResult.New -> true
+                        InsertResult.Exists -> false
                     }
-                    localCurrentDeviceDataSource.addNewDeviceConnectedForThisSession(registerDeviceWithApp.device.deviceId)
+                    localCurrentDeviceDataSource.addNewDeviceConnectedForThisSession(
+                        registerDeviceWithApp.device.deviceId
+                    )
+
+                    val isNewApp = when(localDevicesDataSource.insertDeviceApp(
+                        deviceId = registerDeviceWithApp.device.deviceId,
+                        app = registerDeviceWithApp.app,
+                    )) {
+                        InsertResult.New -> true
+                        InsertResult.Exists -> false
+                    }
+
+                    localCurrentDeviceDataSource.addNewDeviceAppConnectedForThisSession(
+                        deviceId = registerDeviceWithApp.device.deviceId,
+                        packageName = registerDeviceWithApp.app.packageName
+                    )
+
                     HandleDeviceResultDomainModel(
                         deviceId = registerDeviceWithApp.device.deviceId,
                         justConnectedForThisSession = true,
                         isNewDevice = isNewDevice,
+                        isNewApp = isNewApp,
                     )
                 }
             }
@@ -120,9 +106,9 @@ class DevicesRepositoryImpl(
         }
     }
 
-    override suspend fun selectApp(app: DeviceAppDomainModel) {
+    override suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel) {
         withContext(dispatcherProvider.data) {
-            localCurrentDeviceDataSource.selectApp(app)
+            localCurrentDeviceDataSource.selectApp(deviceId = deviceId, app = app)
         }
     }
 
@@ -138,7 +124,21 @@ class DevicesRepositoryImpl(
             .flowOn(dispatcherProvider.data)
     }
 
-    override suspend fun getDeviceAppByPackage(deviceId: DeviceId, appPackageName: String) : DeviceAppDomainModel? {
+    override suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel? {
+        return withContext(dispatcherProvider.data) {
+            localCurrentDeviceDataSource.getDeviceSelectedApp(deviceId)
+        }
+    }
+
+    override fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?> {
+        return localCurrentDeviceDataSource.observeDeviceSelectedApp(deviceId)
+            .flowOn(dispatcherProvider.data)
+    }
+
+    override suspend fun getDeviceAppByPackage(
+        deviceId: DeviceId,
+        appPackageName: String
+    ): DeviceAppDomainModel? {
         return withContext(dispatcherProvider.data) {
             localDevicesDataSource.getDeviceAppByPackage(deviceId, appPackageName)
         }

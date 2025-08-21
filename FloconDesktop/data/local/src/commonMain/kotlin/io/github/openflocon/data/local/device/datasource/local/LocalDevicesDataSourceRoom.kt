@@ -1,7 +1,7 @@
 package io.github.openflocon.data.local.device.datasource.local
 
 import io.github.openflocon.data.core.device.datasource.local.LocalDevicesDataSource
-import io.github.openflocon.data.core.device.datasource.local.model.InsertDeviceResult
+import io.github.openflocon.data.core.device.datasource.local.model.InsertResult
 import io.github.openflocon.data.local.device.datasource.dao.DevicesDao
 import io.github.openflocon.data.local.device.datasource.mapper.toDomainModel
 import io.github.openflocon.data.local.device.datasource.mapper.toEntity
@@ -27,13 +27,28 @@ class LocalDevicesDataSourceRoom(
         return dao.getDeviceById(deviceId = it)?.toDomainModel()
     }
 
-    override suspend fun insertDevice(device: DeviceDomainModel): InsertDeviceResult {
+    override suspend fun insertDevice(device: DeviceDomainModel): InsertResult {
         val deviceEntity = dao.getDeviceById(device.deviceId)
         if (deviceEntity != null) {
-            return InsertDeviceResult.Exists
+            return InsertResult.Exists
         } else {
             dao.insertDevice(device.toEntity())
-            return InsertDeviceResult.New
+            return InsertResult.New
+        }
+    }
+
+    override suspend fun insertDeviceApp(
+        deviceId: DeviceId,
+        app: DeviceAppDomainModel
+    ): InsertResult {
+        val appEntity = dao.getDeviceAppByPackageName(deviceId = deviceId, packageName = app.packageName)
+        if (appEntity != null) {
+            return InsertResult.Exists
+        } else {
+            dao.insertDeviceApp(app.toEntity(
+                parentDeviceId = deviceId,
+            ))
+            return InsertResult.New
         }
     }
 

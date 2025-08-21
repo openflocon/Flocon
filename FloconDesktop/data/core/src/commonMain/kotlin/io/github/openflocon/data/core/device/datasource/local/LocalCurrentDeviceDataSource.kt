@@ -9,12 +9,16 @@ interface LocalCurrentDeviceDataSource {
     suspend fun getCurrentDeviceId(): DeviceId?
     suspend fun selectDevice(deviceId: DeviceId)
 
-    val currentDeviceApp: Flow<DeviceAppDomainModel?>
-    suspend fun getCurrentDeviceApp(): DeviceAppDomainModel?
-    suspend fun selectApp(app: DeviceAppDomainModel)
-
     suspend fun addNewDeviceConnectedForThisSession(deviceId: DeviceId)
     suspend fun isKnownDeviceForThisSession(deviceId: DeviceId): Boolean
+
+    // region app
+    fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?>
+    suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel?
+    suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel)
+    suspend fun isKnownAppForThisSession(deviceId: DeviceId, packageName: String) : Boolean
+    suspend fun addNewDeviceAppConnectedForThisSession(deviceId: DeviceId, packageName: String)
+    // endregion
 
     suspend fun clear()
 }

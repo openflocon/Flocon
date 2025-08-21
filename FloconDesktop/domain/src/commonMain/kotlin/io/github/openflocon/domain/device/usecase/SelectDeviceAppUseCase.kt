@@ -12,6 +12,6 @@ class SelectDeviceAppUseCase(
 
         val app = devicesRepository.getDeviceAppByPackage(deviceId = deviceId, appPackageName = packageName) ?: return
 
-        devicesRepository.selectApp(app)
+        devicesRepository.selectApp(deviceId = deviceId, app = app)
     }
 }

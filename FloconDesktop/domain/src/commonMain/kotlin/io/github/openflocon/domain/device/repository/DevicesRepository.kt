@@ -11,10 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface DevicesRepository {
     val devices: Flow<List<DeviceDomainModel>>
-    val currentDeviceWithApp: Flow<DeviceWithAppDomainModel?>
     val currentDeviceId: Flow<DeviceId?>
-
-    fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>>
 
     suspend fun getCurrentDeviceId(): DeviceId?
 
@@ -23,12 +20,15 @@ interface DevicesRepository {
 
     suspend fun getCurrentDevice(): DeviceDomainModel?
 
-    suspend fun getCurrentDeviceApp(): DeviceAppDomainModel?
-
     suspend fun selectDevice(deviceId: DeviceId)
 
+    // region apps
+    fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>>
+    fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?>
+    suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel?
     suspend fun getDeviceAppByPackage(deviceId: DeviceId, appPackageName: String) : DeviceAppDomainModel?
-    suspend fun selectApp(app: DeviceAppDomainModel)
+    suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel)
+    // endregion
 
     suspend fun clear()
 }

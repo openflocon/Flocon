@@ -1,6 +1,6 @@
 package io.github.openflocon.data.core.device.datasource.local.model
 
-enum class InsertDeviceResult {
+enum class InsertResult {
     New,
     Exists,
 }
