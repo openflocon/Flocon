@@ -87,73 +87,79 @@ fun BadNetworkQualityEditionContent(
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp),
+            .fillMaxSize(),
     ) {
-        FloconTextField(
-            label = defaultLabel("Name"),
-            value = name,
-            onValueChange = { name = it },
-            suffix = { },
-            modifier = Modifier.fillMaxWidth(fraction = 0.5f),
-            containerColor = FloconTheme.colorPalette.panel,
-        )
-        FloconTextField(
-            label = defaultLabel("Trigger probability"),
-            placeholder = defaultPlaceHolder("0"),
-            value = triggerProbability,
-            onValueChange = {
-                if (it.isEmpty() || it.toDoubleOrNull() != null) {
-                    triggerProbability = it
-                }
-            },
-            suffix = { Text(text = "%") },
-            containerColor = FloconTheme.colorPalette.panel
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+        ) {
             FloconTextField(
-                modifier = Modifier.weight(1f),
-                label = defaultLabel("Min latency"),
-                placeholder = defaultPlaceHolder("0"),
-                value = minLatencyMs,
-                onValueChange = {
-                    if (it.isEmpty() || it.toLongOrNull()?.takeIf { it >= 0L } != null) {
-                        minLatencyMs = it
-                    }
-                },
-                suffix = { Text(text = "ms") },
+                label = defaultLabel("Name"),
+                value = name,
+                onValueChange = { name = it },
+                suffix = { },
+                modifier = Modifier.fillMaxWidth(fraction = 0.5f),
                 containerColor = FloconTheme.colorPalette.panel,
             )
             FloconTextField(
-                modifier = Modifier.weight(1f),
-                label = defaultLabel("Max latency"),
+                label = defaultLabel("Trigger probability"),
                 placeholder = defaultPlaceHolder("0"),
-                value = maxLatencyMs,
+                value = triggerProbability,
                 onValueChange = {
-                    if (it.isEmpty() || it.toLongOrNull()?.takeIf { it >= 0L } != null) {
-                        maxLatencyMs = it
+                    if (it.isEmpty() || it.toDoubleOrNull() != null) {
+                        triggerProbability = it
                     }
                 },
-                suffix = { Text(text = "ms") },
+                suffix = { Text(text = "%") },
+                containerColor = FloconTheme.colorPalette.panel
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FloconTextField(
+                    modifier = Modifier.weight(1f),
+                    label = defaultLabel("Min latency"),
+                    placeholder = defaultPlaceHolder("0"),
+                    value = minLatencyMs,
+                    onValueChange = {
+                        if (it.isEmpty() || it.toLongOrNull()?.takeIf { it >= 0L } != null) {
+                            minLatencyMs = it
+                        }
+                    },
+                    suffix = { Text(text = "ms") },
+                    containerColor = FloconTheme.colorPalette.panel,
+                )
+                FloconTextField(
+                    modifier = Modifier.weight(1f),
+                    label = defaultLabel("Max latency"),
+                    placeholder = defaultPlaceHolder("0"),
+                    value = maxLatencyMs,
+                    onValueChange = {
+                        if (it.isEmpty() || it.toLongOrNull()?.takeIf { it >= 0L } != null) {
+                            maxLatencyMs = it
+                        }
+                    },
+                    suffix = { Text(text = "ms") },
+                    containerColor = FloconTheme.colorPalette.panel,
+                )
+            }
+            FloconTextField(
+                label = defaultLabel("Error probability"),
+                placeholder = defaultPlaceHolder("0"),
+                value = errorProbability,
+                onValueChange = {
+                    if (it.isEmpty() || it.toDoubleOrNull() != null) {
+                        errorProbability = it
+                    }
+                },
+                suffix = { Text(text = "%") },
                 containerColor = FloconTheme.colorPalette.panel,
             )
         }
-        FloconTextField(
-            label = defaultLabel("Error probability"),
-            placeholder = defaultPlaceHolder("0"),
-            value = errorProbability,
-            onValueChange = {
-                if (it.isEmpty() || it.toDoubleOrNull() != null) {
-                    errorProbability = it
-                }
-            },
-            suffix = { Text(text = "%") },
-            containerColor = FloconTheme.colorPalette.panel,
-        )
         BadQualityErrorsListView(
             modifier = Modifier.padding(top = 16.dp),
             errors = errors,
-            onErrorsClicked = { error ->
+            onErrorslicked = { error ->
                 selectedErrorToEdit = error
             },
             deleteError = { error ->
