@@ -218,6 +218,7 @@ private fun TextFilterFieldView(
             textStyle = FloconTheme.typography.bodySmall.copy(
                 color = FloconTheme.colorPalette.onSurface,
             ),
+            containerColor = FloconTheme.colorPalette.panel,
             modifier = Modifier
                 .weight(1f)
         )
