@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface DevicesRepository {
     val devices: Flow<List<DeviceDomainModel>>
     val currentDeviceId: Flow<DeviceId?>
+    val activeDevices: Flow<Set<DeviceIdAndPackageNameDomainModel>> // devices with active websocket connection
 
     suspend fun getCurrentDeviceId(): DeviceId?
 

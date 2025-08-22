@@ -355,6 +355,11 @@ private fun DeviceView(
                     modifier = Modifier.padding(start = 4.dp, end = 8.dp),
                 ) {
                     Text(
+                        text = if(device.isActive) "ON" else "OFF",
+                        color = FloconTheme.colorPalette.onPanel,
+                        style = FloconTheme.typography.bodySmall,
+                    )
+                    Text(
                         text = device.deviceName,
                         color = FloconTheme.colorPalette.onPanel,
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
