@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.outlined.OpenInFull
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -96,7 +95,9 @@ private fun Request(
         },
         modifier = modifier.fillMaxWidth()
     ) {
-        Column {
+        Column(
+            modifier = Modifier.padding(12.dp)
+        ) {
             Column(
                 modifier = Modifier
                     .background(
@@ -171,7 +172,7 @@ private fun Request(
                                 color = FloconTheme.colorPalette.surfaceVariant,
                                 shape = RoundedCornerShape(12.dp),
                             )
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                            .padding(12.dp)
                     ) {
                         DetailLineTextView(
                             modifier = Modifier.fillMaxWidth(),
@@ -197,8 +198,10 @@ private fun Request(
             ) {
                 DetailHeadersView(
                     headers = state.requestHeaders,
-                    modifier = Modifier.fillMaxWidth(),
                     labelWidth = headersLabelWidth,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
                 )
             }
             FloconSection(
@@ -225,7 +228,9 @@ private fun Request(
             ) {
                 CodeBlockView(
                     code = state.requestBody,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
                 )
             }
         }
@@ -249,6 +254,7 @@ private fun Response(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(12.dp)
         ) {
             when (response) {
                 is NetworkDetailViewState.Response.Error -> {
@@ -258,7 +264,9 @@ private fun Response(
                     ) {
                         CodeBlockView(
                             code = response.issue,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
                         )
                     }
                 }
@@ -271,8 +279,10 @@ private fun Response(
                     ) {
                         DetailHeadersView(
                             headers = response.headers,
-                            modifier = Modifier.fillMaxWidth(),
                             labelWidth = headersLabelWidth,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
                         )
                     }
                     FloconSection(
@@ -299,7 +309,9 @@ private fun Response(
                     ) {
                         CodeBlockView(
                             code = response.body,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
                         )
                     }
                 }
