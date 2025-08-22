@@ -2,7 +2,6 @@ package io.github.openflocon.flocondesktop.features.network.detail.view.componen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -11,6 +10,7 @@ import androidx.compose.ui.util.fastForEachIndexed
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailHeaderUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconLineDescription
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -29,7 +29,7 @@ fun DetailHeadersView(
                 modifier = Modifier.fillMaxWidth()
             )
             if (index != headers.lastIndex) {
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                FloconHorizontalDivider(modifier = Modifier.fillMaxWidth())
             }
         }
     }

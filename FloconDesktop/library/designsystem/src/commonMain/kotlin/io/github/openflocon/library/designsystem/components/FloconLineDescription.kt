@@ -1,8 +1,8 @@
 package io.github.openflocon.library.designsystem.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -22,7 +22,7 @@ fun FloconLineDescription(
     label: String,
     modifier: Modifier = Modifier,
     labelWidth: Dp? = null,
-    content: @Composable () -> Unit,
+    content: @Composable RowScope.() -> Unit,
 ) {
     Row(
         modifier = modifier.padding(vertical = 2.dp),
@@ -41,8 +41,7 @@ fun FloconLineDescription(
                 Modifier.weight(1f)
             },
         )
-        Box(
-            contentAlignment = Alignment.CenterStart,
+        SelectionContainer(
             modifier = Modifier
                 .weight(1f)
                 .wrapContentWidth(align = Alignment.Start)
@@ -57,29 +56,18 @@ fun FloconLineDescription(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
-    labelWidth: Dp? = null,
-    selection: Boolean = true
+    labelWidth: Dp? = null
 ) {
     FloconLineDescription(
         labelWidth = labelWidth,
         label = label,
         modifier = modifier,
     ) {
-        if (selection) {
-            SelectionContainer {
-                Text(
-                    text = value,
-                    style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colorPalette.onBackground
-                )
-            }
-        } else {
-            Text(
-                text = value,
-                style = FloconTheme.typography.bodyMedium,
-                color = FloconTheme.colorPalette.onBackground
-            )
-        }
+        Text(
+            text = value,
+            style = FloconTheme.typography.bodyMedium,
+            color = FloconTheme.colorPalette.onBackground
+        )
     }
 }
 

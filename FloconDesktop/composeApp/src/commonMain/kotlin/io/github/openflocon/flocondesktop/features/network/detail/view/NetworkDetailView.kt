@@ -28,6 +28,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCodeBlock
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconLineDescription
 import io.github.openflocon.library.designsystem.components.FloconSection
@@ -58,7 +59,7 @@ fun NetworkDetailView(
             linesLabelWidth = linesLabelWidth,
             headersLabelWidth = headersLabelWidth,
         )
-        HorizontalDivider(
+        FloconHorizontalDivider(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp)
