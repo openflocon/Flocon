@@ -47,11 +47,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.smartphone
@@ -65,8 +66,8 @@ import io.github.openflocon.library.designsystem.components.FloconCircularProgre
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.io.encoding.Base64
 import org.jetbrains.skia.Image
+import kotlin.io.encoding.Base64
 
 private val CelluleHeight = 64.dp
 
@@ -140,11 +141,12 @@ private fun DeviceAppSelector(
                 }
             }
 
-            when(appsState) {
+            when (appsState) {
                 AppsStateUiModel.Empty,
                 AppsStateUiModel.Loading -> {
                     // no op
                 }
+
                 is AppsStateUiModel.WithApps -> {
                     ExposedDropdownMenu(
                         expanded = expanded,
@@ -352,19 +354,32 @@ private fun DeviceView(
                 exit = fadeOut(tween(100)),
             ) {
                 Row(
-                    modifier = Modifier.padding(start = 4.dp, end = 8.dp),
+                    modifier = Modifier
+                        .padding(start = 4.dp, end = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = if(device.isActive) "ON" else "OFF",
-                        color = FloconTheme.colorPalette.onPanel,
-                        style = FloconTheme.typography.bodySmall,
-                    )
-                    Text(
-                        text = device.deviceName,
-                        color = FloconTheme.colorPalette.onPanel,
-                        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.weight(1f),
-                    )
+                    Column(
+                        modifier = Modifier
+                            .graphicsLayer {
+                                alpha = if (device.isActive) 1f else 0.4f
+                            },
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = device.deviceName,
+                            color = FloconTheme.colorPalette.onPanel,
+                            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                        )
+                        if (device.isActive.not()) {
+                            Text(
+                                text = "Disconnected",
+                                color = FloconTheme.colorPalette.onPanel,
+                                style = FloconTheme.typography.bodySmall.copy(
+                                    fontSize = 10.sp,
+                                ),
+                            )
+                        }
+                    }
                     if (selected)
                         FloconIcon(
                             imageVector = Icons.Outlined.Check,
@@ -417,7 +432,7 @@ private fun DeviceAppName(
 @Composable
 private fun AppImage(
     deviceApp: DeviceAppUiModel,
-    modifier : Modifier = Modifier
+    modifier: Modifier = Modifier
 ) {
     val imageBitmap = remember(deviceApp.iconEncoded) {
         deviceApp.iconEncoded?.let { encoded ->
