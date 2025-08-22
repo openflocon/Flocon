@@ -1,8 +1,0 @@
-io.github.openflocon.flocon.grpc.base.grpc-interceptor-base-release-0 /Users/s.vinouze-ext/Documents/Flocon/FloconAndroid/flocon-base/build/intermediates/packaged_res/release/packageReleaseResources
-io.github.openflocon.flocon.grpc.base.grpc-interceptor-base-pngs-1 /Users/s.vinouze-ext/Documents/Flocon/FloconAndroid/grpc-interceptor-base/build/generated/res/pngs/release
-io.github.openflocon.flocon.grpc.base.grpc-interceptor-base-resValues-2 /Users/s.vinouze-ext/Documents/Flocon/FloconAndroid/grpc-interceptor-base/build/generated/res/resValues/release
-io.github.openflocon.flocon.grpc.base.grpc-interceptor-base-mergeReleaseResources-3 /Users/s.vinouze-ext/Documents/Flocon/FloconAndroid/grpc-interceptor-base/build/intermediates/incremental/release/mergeReleaseResources/merged.dir
-io.github.openflocon.flocon.grpc.base.grpc-interceptor-base-mergeReleaseResources-4 /Users/s.vinouze-ext/Documents/Flocon/FloconAndroid/grpc-interceptor-base/build/intermediates/incremental/release/mergeReleaseResources/stripped.dir
-io.github.openflocon.flocon.grpc.base.grpc-interceptor-base-release-5 /Users/s.vinouze-ext/Documents/Flocon/FloconAndroid/grpc-interceptor-base/build/intermediates/merged_res/release/mergeReleaseResources
-io.github.openflocon.flocon.grpc.base.grpc-interceptor-base-main-6 /Users/s.vinouze-ext/Documents/Flocon/FloconAndroid/grpc-interceptor-base/src/main/res
-io.github.openflocon.flocon.grpc.base.grpc-interceptor-base-release-7 /Users/s.vinouze-ext/Documents/Flocon/FloconAndroid/grpc-interceptor-base/src/release/res

@@ -1,1 +1,0 @@
-var memberSearchIndex = [{"p":"io.github.openflocon.flocon.grpc.lite","c":"GrpcFormatter","l":"GrpcFormatter()","url":"io/github/openflocon/flocon/grpc/lite/GrpcFormatter.html#GrpcFormatter()"}, {"p":"io.github.openflocon.flocon.grpc.lite","c":"GrpcFormatter","l":"format(T)","url":"io/github/openflocon/flocon/grpc/lite/GrpcFormatter.html#format(T)"}]
