@@ -486,3 +486,7 @@ That was all the inspiration I needed.
 No brainstorming, no hesitation — just the perfect name at the perfect time.
 
 <img width="540" height="501" alt="Flocon - Golden Retriever" src="https://github.com/user-attachments/assets/6ea7acd9-abea-4062-b375-17cb8337ce11" />
+
+## License
+
+Flocon is MIT licensed, as found in the [LICENSE](/LICENSE) file.
