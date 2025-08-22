@@ -1,7 +1,5 @@
 package io.github.openflocon.flocon.grpc
 
-import com.google.protobuf.MessageOrBuilder
-import com.google.protobuf.util.JsonFormat
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.grpc.model.RequestHolder
@@ -20,7 +18,7 @@ import io.grpc.Status
 import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
-class FloconGrpcInterceptor : ClientInterceptor {
+class FloconGrpcInterceptor(private val formatter: FloconGrpcFormatter) : ClientInterceptor {
 
     private val floconGrpcPlugin = FloconGrpcPlugin()
 
@@ -42,6 +40,7 @@ class FloconGrpcInterceptor : ClientInterceptor {
             callId = callId,
             method = method,
             next = next,
+            formatter = formatter,
             callOptions = callOptions,
         )
     }
@@ -53,6 +52,7 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
     private val callId: String,
     private val method: MethodDescriptor<ReqT, RespT>,
     private val next: Channel,
+    private val formatter: FloconGrpcFormatter,
     callOptions: CallOptions,
 ) : ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(
     next.newCall(
@@ -64,7 +64,6 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
     val requestHolder = RequestHolder()
 
     private var headers: Metadata? = null
-    private val printer = JsonFormat.printer().alwaysPrintFieldsWithNoPresence()
 
     override fun start(responseListener: Listener<RespT>, headers: Metadata) {
         this.headers = headers
@@ -74,18 +73,17 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
                 callId = callId,
                 requestHolder = requestHolder,
                 responseListener = responseListener,
-                printer = printer,
+                formatter = formatter,
             ),
             headers,
         )
     }
 
     override fun sendMessage(message: ReqT) {
-        val body = (message as? MessageOrBuilder)?.let { printer.print(it) } ?: ""
         val request = FloconNetworkRequest(
             url = next.authority(),
             method = method.fullMethodName,
-            body = body,
+            body = formatter.format(message),
             startTime = System.currentTimeMillis(),
             headers = headers?.toHeaders().orEmpty(),
             size = 0, // TODO
@@ -107,8 +105,8 @@ private class LoggingClientCallListener<RespT>(
     private val floconGrpcPlugin: FloconGrpcPlugin,
     private val callId: String,
     responseListener: ClientCall.Listener<RespT>,
-    private val printer: JsonFormat.Printer,
     private val requestHolder: RequestHolder,
+    private val formatter: FloconGrpcFormatter,
 ) : ForwardingClientCallListener.SimpleForwardingClientCallListener<RespT>(
     responseListener,
 ) {
@@ -134,12 +132,11 @@ private class LoggingClientCallListener<RespT>(
                         ),
                     )
                 } ?: run {
-                    val body = (message as? MessageOrBuilder)?.let { printer.print(it) } ?: ""
                     floconGrpcPlugin.reportResponse(
                         callId = callId,
                         request = request,
                         response = FloconNetworkResponse(
-                            body = body,
+                            body = formatter.format(message),
                             headers = (this.headers ?: trailers).toHeaders(),
                             httpCode = null,
                             contentType = "grpc",

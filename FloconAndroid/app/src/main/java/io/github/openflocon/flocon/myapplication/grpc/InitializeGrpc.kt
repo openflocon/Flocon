@@ -1,14 +1,12 @@
 package io.github.openflocon.flocon.myapplication.grpc
 
 import io.github.openflocon.flocon.grpc.FloconGrpcInterceptor
+import io.github.openflocon.flocon.grpc.lite.GrpcFormatter
 import io.grpc.CallOptions
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import io.grpc.examples.helloworld.GreeterGrpcKt
-import io.grpc.examples.helloworld.copy
-import io.grpc.examples.helloworld.helloReply
 import io.grpc.examples.helloworld.helloRequest
-import kotlin.getValue
 
 object GrpcController {
     val channel: ManagedChannel by lazy {
@@ -16,7 +14,7 @@ object GrpcController {
             .forAddress("localhost", 50051)
             .usePlaintext()
             .intercept(
-                FloconGrpcInterceptor()
+                FloconGrpcInterceptor(GrpcFormatter())
             )
             .build()
     }

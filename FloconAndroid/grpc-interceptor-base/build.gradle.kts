@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.openflocon.flocon.grpc"
+    namespace = "io.github.openflocon.flocon.grpc.base"
     compileSdk = 36
 
     defaultConfig {
@@ -35,9 +35,12 @@ android {
 }
 
 dependencies {
-    api(project(":grpc-interceptor-base"))
+    implementation(project(":flocon-base"))
 
-    implementation(libs.protobuf.util)
+    implementation(platform(libs.kotlinx.coroutines.bom))
+    implementation(libs.kotlinx.coroutines.core)
+
+    implementation(libs.grpc.android)
 }
 
 
@@ -52,7 +55,7 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-        artifactId = "flocon-grpc-interceptor",
+        artifactId = "flocon-grpc-interceptor-base",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
