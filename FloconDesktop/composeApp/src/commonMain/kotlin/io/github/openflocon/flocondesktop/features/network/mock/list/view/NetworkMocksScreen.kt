@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +26,7 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.view.Net
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockNetworkLineUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.previewMockNetworkLineUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -45,14 +45,12 @@ fun NetworkMocksWindow(
     val mocks by viewModel.items.collectAsStateWithLifecycle()
     val editionWindow by viewModel.editionWindow.collectAsStateWithLifecycle()
     key(instanceId) {
-        BasicAlertDialog(
+        FloconDialog(
             onDismissRequest = onCloseRequest,
         ) {
             NetworkMocksContent(
                 mocks = mocks,
-                modifier = Modifier.fillMaxSize()
-                    .padding(vertical = 100.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                modifier = Modifier.fillMaxSize(),
                 onItemClicked = viewModel::clickOnMock,
                 onAddItemClicked = viewModel::createNewMock,
                 onDeleteClicked = viewModel::deleteMock,
