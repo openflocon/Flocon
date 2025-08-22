@@ -156,7 +156,7 @@ fun BadNetworkQualityEditionContent(
             )
         }
         BadQualityErrorsListView(
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier.weight(1f).padding(top = 16.dp),
             errors = errors,
             onErrorslicked = { error ->
                 selectedErrorToEdit = error
@@ -214,7 +214,6 @@ fun BadNetworkQualityEditionContent(
                 }
             }
         }
-        Spacer(Modifier.weight(1f))
         FloconDialogButtons(
             onCancel = close,
             onValidate = {
