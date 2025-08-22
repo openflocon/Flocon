@@ -21,17 +21,17 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
-import io.github.openflocon.flocondesktop.features.network.detail.view.components.CodeBlockView
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailHeadersView
-import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailLineTextView
-import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailLineView
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconCodeBlock
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconLineDescription
 import io.github.openflocon.library.designsystem.components.FloconSection
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -60,7 +60,7 @@ fun NetworkDetailView(
             linesLabelWidth = linesLabelWidth,
             headersLabelWidth = headersLabelWidth,
         )
-        HorizontalDivider(
+        FloconHorizontalDivider(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp)
@@ -107,13 +107,13 @@ private fun Request(
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
-                DetailLineTextView(
+                FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Full url",
                     value = state.fullUrl,
                     labelWidth = linesLabelWidth,
                 )
-                DetailLineView(
+                FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Method",
                     labelWidth = linesLabelWidth,
@@ -135,7 +135,7 @@ private fun Request(
                         }
                     }
                 }
-                DetailLineView(
+                FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Status",
                     labelWidth = linesLabelWidth,
@@ -144,14 +144,14 @@ private fun Request(
                         status = state.status,
                     )
                 }
-                DetailLineTextView(
+                FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Request Time",
                     value = state.requestTimeFormatted,
                     labelWidth = linesLabelWidth,
                 )
                 state.durationFormatted?.let {
-                    DetailLineTextView(
+                    FloconLineDescription(
                         modifier = Modifier.fillMaxWidth(),
                         label = "Time",
                         value = it,
@@ -175,13 +175,13 @@ private fun Request(
                             )
                             .padding(12.dp)
                     ) {
-                        DetailLineTextView(
+                        FloconLineDescription(
                             modifier = Modifier.fillMaxWidth(),
                             label = "Query name",
                             value = it.queryName,
                             labelWidth = linesLabelWidth,
                         )
-                        DetailLineView(
+                        FloconLineDescription(
                             modifier = Modifier.fillMaxWidth(),
                             label = "Type",
                             labelWidth = linesLabelWidth,
@@ -227,7 +227,7 @@ private fun Request(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CodeBlockView(
+                FloconCodeBlock(
                     code = state.requestBody,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -263,7 +263,7 @@ private fun Response(
                         title = "Response - Body",
                         initialValue = true
                     ) {
-                        CodeBlockView(
+                        FloconCodeBlock(
                             code = response.issue,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -308,7 +308,7 @@ private fun Response(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        CodeBlockView(
+                        FloconCodeBlock(
                             code = response.body,
                             modifier = Modifier
                                 .fillMaxWidth()
