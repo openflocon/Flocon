@@ -168,7 +168,13 @@ private fun BadQualityErrorItemView(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = error.weight.toString(),
+                text = if (error.weight.rem(1.0) == 0.0) {
+                    // Affiche la valeur comme un entier si elle est égale à 1.0, 2.0, etc.
+                    error.weight.toInt().toString()
+                } else {
+                    // Affiche la valeur telle quelle si elle a une décimale non nulle
+                    error.weight.toString()
+                },
                 style = FloconTheme.typography.bodySmall.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 11.sp,
