@@ -38,7 +38,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.header.Netw
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.view.NetworkBodyWindow
-import io.github.openflocon.flocondesktop.features.network.view.NetworkDetailView
+import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface
