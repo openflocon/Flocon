@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
-import io.github.openflocon.flocondesktop.features.network.detail.view.components.CodeBlockView
+import io.github.openflocon.library.designsystem.components.FloconCodeBlock
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailHeadersView
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailLineTextView
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailLineView
@@ -226,7 +226,7 @@ private fun Request(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CodeBlockView(
+                FloconCodeBlock(
                     code = state.requestBody,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -262,7 +262,7 @@ private fun Response(
                         title = "Response - Body",
                         initialValue = true
                     ) {
-                        CodeBlockView(
+                        FloconCodeBlock(
                             code = response.issue,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -307,7 +307,7 @@ private fun Response(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        CodeBlockView(
+                        FloconCodeBlock(
                             code = response.body,
                             modifier = Modifier
                                 .fillMaxWidth()
