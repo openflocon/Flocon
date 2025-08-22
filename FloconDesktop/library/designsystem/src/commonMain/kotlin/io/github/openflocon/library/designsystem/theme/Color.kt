@@ -35,7 +35,9 @@ data class FloconColorPalette(
     val onTertiary: Color,
 
     val error: Color,
-    val onError: Color
+    val onError: Color,
+
+    val exceptions: Color,
 )
 
 internal val lightPalette = FloconColorPalette(
@@ -64,7 +66,9 @@ internal val lightPalette = FloconColorPalette(
     onTertiary = Color(0xffF2F2F7),
 
     error = Color(0xFFCF6679),
-    onError = Color(0xFF000000)
+    onError = Color(0xFF000000),
+
+    exceptions = Color(0xFF7B1FA2)
 )
 
 internal val darkPalette = FloconColorPalette(
@@ -93,7 +97,9 @@ internal val darkPalette = FloconColorPalette(
     onTertiary = Color(0xffF2F2F7),
 
     error = Color(0xFFCF6679),
-    onError = Color(0xFF000000)
+    onError = Color(0xFF000000),
+
+    exceptions = Color(0xFF7B1FA2)
 )
 
 /**
