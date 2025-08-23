@@ -5,9 +5,9 @@ package io.github.openflocon.flocondesktop.features.network.badquality.edition.v
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -86,11 +86,11 @@ fun BadNetworkQualityEditionContent(
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxWidth(),
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
         ) {
@@ -156,7 +156,9 @@ fun BadNetworkQualityEditionContent(
             )
         }
         BadQualityErrorsListView(
-            modifier = Modifier.weight(1f).padding(top = 16.dp),
+            modifier = Modifier
+                .height(200.dp)
+                .padding(top = 16.dp),
             errors = errors,
             onErrorslicked = { error ->
                 selectedErrorToEdit = error
@@ -177,7 +179,10 @@ fun BadNetworkQualityEditionContent(
                             BadQualityErrorsEditor(
                                 error = selectedError,
                                 httpType = t,
-                                onErrorsChange = { error ->
+                                cancel = {
+                                    selectedErrorToEdit = null
+                                },
+                                save = { error ->
                                     errors = if (errors.any { it.uuid == selectedError.uuid }) {
                                         errors.map {
                                             if (it.uuid == selectedError.uuid) {
@@ -196,7 +201,10 @@ fun BadNetworkQualityEditionContent(
                             BadQuaityErrorExceptionEditor(
                                 error = selectedError,
                                 errorException = t,
-                                onErrorsChange = { error ->
+                                cancel = {
+                                    selectedErrorToEdit = null
+                                },
+                                save = { error ->
                                     errors = if (errors.any { it.uuid == selectedError.uuid }) {
                                         errors.map {
                                             if (it.uuid == selectedError.uuid) {

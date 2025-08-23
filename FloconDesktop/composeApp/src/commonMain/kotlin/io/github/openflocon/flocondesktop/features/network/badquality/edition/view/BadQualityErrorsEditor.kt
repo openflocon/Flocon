@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
@@ -27,7 +29,8 @@ import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 internal fun BadQualityErrorsEditor(
     error: BadQualityConfigUiModel.Error,
     httpType: BadQualityConfigUiModel.Error.Type.Body,
-    onErrorsChange: (BadQualityConfigUiModel.Error) -> Unit,
+    cancel: () -> Unit,
+    save: (BadQualityConfigUiModel.Error) -> Unit,
 ) {
     var weight by remember(error) { mutableStateOf<String>(error.weight.toString()) }
     var httpCode by remember(error) { mutableStateOf<String>(httpType.httpCode.toString()) }
@@ -35,31 +38,6 @@ internal fun BadQualityErrorsEditor(
     var body by remember(error) { mutableStateOf<String>(httpType.body) }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        // bouton ajouter
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(FloconTheme.colorPalette.onSurface)
-                .clickable {
-                    onErrorsChange(
-                        error.copy(
-                            weight = weight.toFloatOrNull() ?: error.weight,
-                            type = httpType.copy(
-                                httpCode = httpCode.toIntOrNull() ?: httpType.httpCode,
-                                contentType = contentType,
-                                body = body,
-                            )
-                        ),
-                    )
-                }
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-        ) {
-            Text(
-                "Save",
-                style = FloconTheme.typography.titleSmall,
-                color = FloconTheme.colorPalette.panel,
-            )
-        }
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
@@ -102,5 +80,24 @@ internal fun BadQualityErrorsEditor(
                 onValueChange = { body = it },
             )
         }
+
+        FloconDialogButtons(
+            onCancel = cancel,
+            onValidate = {
+                save(
+                    error.copy(
+                        weight = weight.toFloatOrNull() ?: error.weight,
+                        type = httpType.copy(
+                            httpCode = httpCode.toIntOrNull() ?: httpType.httpCode,
+                            contentType = contentType,
+                            body = body,
+                        )
+                    ),
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
+        )
     }
 }
