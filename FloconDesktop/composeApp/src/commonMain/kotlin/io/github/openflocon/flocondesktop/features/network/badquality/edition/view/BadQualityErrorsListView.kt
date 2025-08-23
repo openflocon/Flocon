@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -63,7 +64,7 @@ fun BadQualityErrorsListView(
                             weight = 1f,
                             type = BadQualityConfigUiModel.Error.Type.Body(
                                 httpCode = 500,
-                                body = "{\"error\":\"...\"}",
+                                body = "",
                                 contentType = "application/json",
                             ),
                         ),
@@ -93,54 +94,58 @@ fun BadQualityErrorsListView(
             }
         }
 
-        val lazyListState = rememberLazyListState()
-        val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
-        Box(modifier = Modifier.fillMaxSize()) {
-            val contentPadding = PaddingValues(horizontal = 12.dp)
-            LazyColumn(
-                state = lazyListState,
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                if(errors.isNotEmpty()) {
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(horizontal = 6.dp)
-                        ) {
-                            Text(
-                                "Weight",
-                                style = FloconTheme.typography.bodySmall.copy(
-                                    fontWeight = FontWeight.Thin,
-                                    fontSize = 10.sp,
-                                ),
-                            )
-                            Spacer(modifier = Modifier.width(28.dp))
-                            Text(
-                                "Type",
-                                style = FloconTheme.typography.bodySmall.copy(
-                                    fontWeight = FontWeight.Thin,
-                                    fontSize = 10.sp,
-                                ),
-                            )
+        if (errors.isNotEmpty()) {
+            val lazyListState = rememberLazyListState()
+            val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
+            Box(modifier = Modifier.height(160.dp)) {
+                val contentPadding = PaddingValues(horizontal = 12.dp)
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    if (errors.isNotEmpty()) {
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(horizontal = 6.dp)
+                            ) {
+                                Text(
+                                    "Weight",
+                                    style = FloconTheme.typography.bodySmall.copy(
+                                        fontWeight = FontWeight.Thin,
+                                        fontSize = 10.sp,
+                                    ),
+                                )
+                                Spacer(modifier = Modifier.width(28.dp))
+                                Text(
+                                    "Type",
+                                    style = FloconTheme.typography.bodySmall.copy(
+                                        fontWeight = FontWeight.Thin,
+                                        fontSize = 10.sp,
+                                    ),
+                                )
+                            }
                         }
                     }
+                    items(errors) { error ->
+                        BadQualityErrorItemView(
+                            modifier = Modifier,
+                            error = error,
+                            deleteError = deleteError,
+                            clickedError = onErrorslicked,
+                            contentPadding = contentPadding,
+                        )
+                    }
                 }
-                items(errors) { error ->
-                    BadQualityErrorItemView(
-                        modifier = Modifier.fillMaxWidth(),
-                        error = error,
-                        deleteError = deleteError,
-                        clickedError = onErrorslicked,
-                        contentPadding = contentPadding,
-                    )
-                }
+                FloconVerticalScrollbar(
+                    adapter = scrollAdapter,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .fillMaxHeight(),
+                )
             }
-            FloconVerticalScrollbar(
-                adapter = scrollAdapter,
-                modifier = Modifier.fillMaxHeight(),
-            )
         }
     }
 }

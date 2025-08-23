@@ -3,6 +3,7 @@
 package io.github.openflocon.flocondesktop.features.network.badquality.list.view
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,7 +45,7 @@ private fun BadNetworkQualityContent(
 
     NetworkBadQualityContent(
         lines = items,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         onItemClicked = viewModel::select,
         onAddItemClicked = viewModel::create,
         onDeleteClicked = viewModel::delete,

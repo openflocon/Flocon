@@ -34,12 +34,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
+import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.possibleExceptions
+import io.github.openflocon.flocondesktop.features.network.badquality.edition.view.NetworkExceptionSelector
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.createEditable
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.editableToUi
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.EditableMockNetworkUiModel
@@ -47,10 +50,13 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.model.He
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.SelectedMockUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconDialogButtons
+import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import java.util.UUID
 
 @Composable
 fun NetworkEditionWindow(
@@ -61,7 +67,9 @@ fun NetworkEditionWindow(
     onSave: (MockNetworkUiModel) -> Unit,
 ) {
     val windowState: FloconWindowState = remember(instanceId) {
-        createFloconWindowState()
+        createFloconWindowState(
+            size = DpSize(900.dp, 700.dp)
+        )
     }
     key(windowState, instanceId) {
         FloconWindow(
@@ -109,49 +117,11 @@ fun MockEditorScreen(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .background(FloconTheme.colorPalette.panel)
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-        ) {
-            Box(
-                modifier = Modifier.align(Alignment.CenterStart)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(FloconTheme.colorPalette.onSurface)
-                    .clickable(onClick = onCancel)
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-            ) {
-                Text(
-                    "Cancel",
-                    style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.panel,
-                )
-            }
-            Box(
-                modifier = Modifier.align(Alignment.CenterEnd)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(FloconTheme.colorPalette.onSurface)
-                    .clickable(onClick = {
-                        editableToUi(mock).fold(
-                            doOnFailure = {
-                                error = "Some fields are required"
-                            },
-                            doOnSuccess = {
-                                onSave(it)
-                                error = null
-                            },
-                        )
-                    })
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-            ) {
-                Text(
-                    "Save",
-                    style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.panel,
-                )
-            }
-        }
+        FloconDialogHeader(
+            modifier = Modifier
+                .fillMaxWidth(),
+            title = "Mock Edition"
+        )
 
         error?.let {
             Text(
@@ -161,7 +131,8 @@ fun MockEditorScreen(
         }
 
         Row(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
+                .weight(1f)
                 .verticalScroll(scrollState),
         ) {
             Column(
@@ -251,9 +222,9 @@ fun MockEditorScreen(
                 }
                 when (mock.responseType) {
                     EditableMockNetworkUiModel.ResponseType.EXCEPTION -> {
-                        MockNetworkErrorSelection(
+                        NetworkExceptionSelector(
                             selected = mock.exceptionResponse.classPath,
-                            onChanged = { new ->
+                            onSelected = { new ->
                                 mock = mock.copy(
                                     exceptionResponse = mock.exceptionResponse.copy(
                                         classPath = new,
@@ -409,53 +380,23 @@ fun MockEditorScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun MockNetworkErrorSelection(
-    selected: String,
-    onChanged: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        possibleExceptions.fastForEach { exception ->
-            val (backgroundColor, textColor) = if (exception.classPath == selected) {
-                FloconTheme.colorPalette.onSurface to FloconTheme.colorPalette.panel
-            } else {
-                FloconTheme.colorPalette.panel to FloconTheme.colorPalette.onSurface
-            }
-            Column(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(
-                        color = backgroundColor,
-                    )
-                    .then(
-                        Modifier.clickable(
-                            onClick = {
-                                onChanged(exception.classPath)
-                            },
-                        )
-                    ).padding(all = 8.dp)
-            ) {
-                Text(
-                    text = exception.description,
-                    style = FloconTheme.typography.bodySmall,
-                    color = textColor,
+        FloconDialogButtons(
+            onCancel = onCancel,
+            onValidate = {
+                editableToUi(mock).fold(
+                    doOnFailure = {
+                        error = "Some fields are required"
+                    },
+                    doOnSuccess = {
+                        onSave(it)
+                        error = null
+                    },
                 )
-                Text(
-                    text = exception.classPath,
-                    style = FloconTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
-                    color = textColor,
-                )
-            }
-        }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
+        )
     }
 }
 
