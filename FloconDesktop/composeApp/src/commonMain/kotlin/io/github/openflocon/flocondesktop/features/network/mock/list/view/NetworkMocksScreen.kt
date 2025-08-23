@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,8 +27,9 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.view.Net
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockNetworkLineUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.previewMockNetworkLineUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDialog
-import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -50,7 +52,7 @@ fun NetworkMocksWindow(
         ) {
             NetworkMocksContent(
                 mocks = mocks,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxWidth(),
                 onItemClicked = viewModel::clickOnMock,
                 onAddItemClicked = viewModel::createNewMock,
                 onDeleteClicked = viewModel::deleteMock,
@@ -79,50 +81,30 @@ private fun NetworkMocksContent(
     onAddItemClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    FloconSurface(
-        modifier = modifier,
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .background(FloconTheme.colorPalette.panel)
-                    .padding(horizontal = 12.dp, vertical = 4.dp),
-            ) {
-                Text(
-                    text = "Mocks",
-                    modifier = Modifier
-                        .background(FloconTheme.colorPalette.panel)
-                        .padding(all = 12.dp),
-                    style = FloconTheme.typography.titleMedium,
-                    color = FloconTheme.colorPalette.onSurface,
-                )
-                Box(
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(FloconTheme.colorPalette.onSurface)
-                        .clickable(onClick = onAddItemClicked)
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
+
+    Column(modifier = modifier) {
+        FloconDialogHeader(
+            title = "Mocks",
+            modifier = Modifier.fillMaxWidth(),
+            trailingContent = {
+                FloconButton(
+                    onClick = onAddItemClicked,
                 ) {
-                    Text(
-                        "Create",
-                        style = FloconTheme.typography.titleSmall,
-                        color = FloconTheme.colorPalette.panel,
-                    )
+                    Text("Create",)
                 }
             }
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                items(mocks) {
-                    MockLineView(
-                        item = it,
-                        onClicked = onItemClicked,
-                        onDeleteClicked = onDeleteClicked,
-                        changeIsEnabled = changeIsEnabled,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
+        )
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().height(400.dp),
+        ) {
+            items(mocks) {
+                MockLineView(
+                    item = it,
+                    onClicked = onItemClicked,
+                    onDeleteClicked = onDeleteClicked,
+                    changeIsEnabled = changeIsEnabled,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     }

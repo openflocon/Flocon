@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -23,6 +21,7 @@ import io.github.openflocon.flocondesktop.features.network.badquality.edition.mo
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
+import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultLabel
@@ -43,6 +42,13 @@ fun BadQualityEditionWindow(
             save = save,
             close = onCloseRequest,
         )
+    }
+}
+
+fun SelectedBadQualityUiModel.title(): String {
+    return when (this) {
+        SelectedBadQualityUiModel.Creation -> "Creation"
+        is SelectedBadQualityUiModel.Edition -> "Edition"
     }
 }
 
@@ -88,11 +94,16 @@ fun BadNetworkQualityEditionContent(
         modifier = modifier
             .fillMaxWidth(),
     ) {
+        FloconDialogHeader(
+            title = state.title(),
+            modifier = Modifier.fillMaxWidth(),
+        )
+
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(horizontal = 12.dp),
         ) {
             FloconTextField(
                 label = defaultLabel("Name"),
@@ -157,7 +168,6 @@ fun BadNetworkQualityEditionContent(
         }
         BadQualityErrorsListView(
             modifier = Modifier
-                .height(200.dp)
                 .padding(top = 16.dp),
             errors = errors,
             onErrorslicked = { error ->
@@ -176,7 +186,7 @@ fun BadNetworkQualityEditionContent(
                 FloconSurface {
                     when (val t = selectedError.type) {
                         is BadQualityConfigUiModel.Error.Type.Body -> {
-                            BadQualityErrorsEditor(
+                            BadQualityHttpErrorEditor(
                                 error = selectedError,
                                 httpType = t,
                                 cancel = {
@@ -231,7 +241,7 @@ fun BadNetworkQualityEditionContent(
                 save(
                     BadQualityConfigUiModel(
                         id = config?.id ?: UUID.randomUUID().toString(), // generate a new one
-                        name = name,
+                        name = name.takeIf { it.isNotBlank() } ?: UUID.randomUUID().toString(), // generate if empty, TODO : fail
                         isEnabled = config?.isEnabled ?: false, // disabled by default
                         createdAt = config?.createdAt
                             ?: System.currentTimeMillis(), // generate a new date

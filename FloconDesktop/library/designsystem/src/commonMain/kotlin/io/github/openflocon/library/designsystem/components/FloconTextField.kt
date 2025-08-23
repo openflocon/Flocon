@@ -211,6 +211,11 @@ private fun ContainerBox(
 
 @Composable
 fun defaultLabel(text: String): @Composable () -> Unit = {
+    DefaultLabel(text)
+}
+
+@Composable
+fun DefaultLabel(text: String) {
     Text(
         text = text,
         style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Thin),
