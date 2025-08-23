@@ -37,6 +37,7 @@ android {
 dependencies {
     api(project(":grpc-interceptor-base"))
 
+    implementation(libs.grpc.android)
     implementation(libs.protobuf.util)
 }
 

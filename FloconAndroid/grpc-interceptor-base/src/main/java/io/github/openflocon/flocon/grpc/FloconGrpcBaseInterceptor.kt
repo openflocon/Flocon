@@ -19,9 +19,11 @@ import io.grpc.Status
 import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
-class FloconGrpcInterceptor(private val formatter: FloconGrpcFormatter) : ClientInterceptor {
+abstract class FloconGrpcBaseInterceptor : ClientInterceptor {
 
     private val floconGrpcPlugin = FloconGrpcPlugin()
+
+    abstract val  floconGrpcFormatter: FloconGrpcBaseFormatter
 
     override fun <ReqT : Any?, RespT : Any?> interceptCall(
         method: MethodDescriptor<ReqT, RespT>,
@@ -41,7 +43,7 @@ class FloconGrpcInterceptor(private val formatter: FloconGrpcFormatter) : Client
             callId = callId,
             method = method,
             next = next,
-            formatter = formatter,
+            formatter = floconGrpcFormatter,
             callOptions = callOptions,
         )
     }
@@ -53,7 +55,7 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
     private val callId: String,
     private val method: MethodDescriptor<ReqT, RespT>,
     private val next: Channel,
-    private val formatter: FloconGrpcFormatter,
+    private val formatter: FloconGrpcBaseFormatter,
     callOptions: CallOptions,
 ) : ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(
     next.newCall(
@@ -107,7 +109,7 @@ private class LoggingClientCallListener<RespT>(
     private val callId: String,
     responseListener: ClientCall.Listener<RespT>,
     private val requestHolder: RequestHolder,
-    private val formatter: FloconGrpcFormatter,
+    private val formatter: FloconGrpcBaseFormatter,
 ) : ForwardingClientCallListener.SimpleForwardingClientCallListener<RespT>(
     responseListener,
 ) {

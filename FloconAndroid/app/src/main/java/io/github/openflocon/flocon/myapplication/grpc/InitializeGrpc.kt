@@ -1,7 +1,6 @@
 package io.github.openflocon.flocon.myapplication.grpc
 
-import io.github.openflocon.flocon.grpc.FloconGrpcInterceptor
-import io.github.openflocon.flocon.grpc.lite.GrpcFormatter
+import io.github.openflocon.flocon.grpc.lite.FloconGrpcInterceptor
 import io.grpc.CallOptions
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
@@ -14,7 +13,7 @@ object GrpcController {
             .forAddress("localhost", 50051)
             .usePlaintext()
             .intercept(
-                FloconGrpcInterceptor(GrpcFormatter())
+                FloconGrpcInterceptor()
             )
             .build()
     }

@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.grpc
 import com.google.protobuf.MessageOrBuilder
 import com.google.protobuf.util.JsonFormat
 
-class GrpcFormatter : FloconGrpcFormatter {
+class FloconGrpcFormatter : FloconGrpcBaseFormatter {
 
     private val printer = JsonFormat.printer().alwaysPrintFieldsWithNoPresence()
 

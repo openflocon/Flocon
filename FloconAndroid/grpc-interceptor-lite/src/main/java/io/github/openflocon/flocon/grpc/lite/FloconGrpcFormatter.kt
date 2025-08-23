@@ -4,9 +4,9 @@ import com.google.gson.ExclusionStrategy
 import com.google.gson.FieldAttributes
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.github.openflocon.flocon.grpc.FloconGrpcFormatter
+import io.github.openflocon.flocon.grpc.FloconGrpcBaseFormatter
 
-class GrpcFormatter : FloconGrpcFormatter {
+class FloconGrpcFormatter : FloconGrpcBaseFormatter {
 
     private val excluded = setOf(
         "unknownFields",

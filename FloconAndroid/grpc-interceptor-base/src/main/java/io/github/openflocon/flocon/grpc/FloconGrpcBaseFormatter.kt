@@ -1,6 +1,6 @@
 package io.github.openflocon.flocon.grpc
 
-interface FloconGrpcFormatter {
+interface FloconGrpcBaseFormatter {
 
     fun <T> format(message: T): String
 }
