@@ -59,7 +59,7 @@ mavenPublishing {
 
 
     pom {
-        name = "Flocon Grpc Interceptor"
+        name = "Flocon Grpc Interceptor Lite"
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"
