@@ -72,6 +72,7 @@ class ServerJvm : Server {
                                             val device = FloconDeviceIdAndPackageNameDataModel(
                                                 deviceId = floconIncomingMessageDataModel.deviceId,
                                                 packageName = floconIncomingMessageDataModel.appPackageName,
+                                                appInstance = floconIncomingMessageDataModel.appInstance,
                                             )
                                             _activeSessions.update {
                                                 it + (device to currentSession)

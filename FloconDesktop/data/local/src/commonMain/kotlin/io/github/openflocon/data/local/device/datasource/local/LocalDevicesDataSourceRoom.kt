@@ -41,18 +41,19 @@ class LocalDevicesDataSourceRoom(
         deviceId: DeviceId,
         app: DeviceAppDomainModel
     ): InsertResult {
-        val appEntity =
-            dao.getDeviceAppByPackageName(deviceId = deviceId, packageName = app.packageName)
+        val appEntity = dao.getDeviceAppByPackageName(deviceId = deviceId, packageName = app.packageName)
         if (appEntity != null) {
             return InsertResult.Exists
-        } else {
-            dao.insertDeviceApp(
-                app.toEntity(
-                    parentDeviceId = deviceId,
-                )
-            )
-            return InsertResult.New
         }
+
+        // update the app instance if needed
+        dao.insertDeviceApp(
+            app.toEntity(
+                parentDeviceId = deviceId,
+            )
+        )
+
+        return InsertResult.New
     }
 
     override fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>> {

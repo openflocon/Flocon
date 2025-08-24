@@ -4,4 +4,5 @@ data class DeviceAppDomainModel(
     val name: String,
     val packageName: String,
     val iconEncoded: String?,
+    val lastAppInstance: AppInstance, // last start app time
 )

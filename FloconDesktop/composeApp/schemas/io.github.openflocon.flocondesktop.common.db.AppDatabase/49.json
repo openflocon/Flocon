@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 49,
-    "identityHash": "875878b8757c53779c12989a8b0c8869",
+    "identityHash": "d1b9dd72b7ce377bcfd366023a8d6d12",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -1100,7 +1100,7 @@
       },
       {
         "tableName": "DeviceAppEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parentDeviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `packageName` TEXT NOT NULL, `iconEncoded` TEXT, PRIMARY KEY(`parentDeviceId`, `packageName`), FOREIGN KEY(`parentDeviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parentDeviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `packageName` TEXT NOT NULL, `iconEncoded` TEXT, `lastAppInstance` INTEGER NOT NULL, PRIMARY KEY(`parentDeviceId`, `packageName`), FOREIGN KEY(`parentDeviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "parentDeviceId",
@@ -1124,6 +1124,12 @@
             "fieldPath": "iconEncoded",
             "columnName": "iconEncoded",
             "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lastAppInstance",
+            "columnName": "lastAppInstance",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -1150,7 +1156,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '875878b8757c53779c12989a8b0c8869')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd1b9dd72b7ce377bcfd366023a8d6d12')"
     ]
   }
 }

@@ -9,7 +9,8 @@ internal fun DeviceAppEntity.toDomainModel(): DeviceAppDomainModel {
     return DeviceAppDomainModel(
         name = this.name,
         packageName = this.packageName,
-        iconEncoded = this.iconEncoded
+        iconEncoded = this.iconEncoded,
+        lastAppInstance = this.lastAppInstance,
     )
 }
 
@@ -33,5 +34,6 @@ internal fun DeviceAppDomainModel.toEntity(parentDeviceId: String): DeviceAppEnt
         name = this.name,
         packageName = this.packageName,
         iconEncoded = this.iconEncoded,
+        lastAppInstance = this.lastAppInstance,
     )
 }

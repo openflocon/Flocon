@@ -30,6 +30,7 @@ class HandleIncomingMessagesUseCase(
             val deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
                 deviceId = handleDeviceResult.deviceId,
                 packageName = message.appPackageName,
+                appInstance = message.appInstance,
             )
 
             if (handleDeviceResult.isNewDevice) {
@@ -68,6 +69,7 @@ class HandleIncomingMessagesUseCase(
             app = DeviceAppDomainModel(
                 name = message.appName,
                 packageName = message.appPackageName,
+                lastAppInstance = message.appInstance,
                 iconEncoded = null,
             ),
         )

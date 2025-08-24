@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.device.repository
 
+import io.github.openflocon.domain.device.models.AppInstance
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId

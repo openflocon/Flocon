@@ -24,7 +24,8 @@ class DeviceRemoteDataSourceImpl(
             it.map {
                 DeviceIdAndPackageNameDomainModel(
                     deviceId = it.deviceId,
-                    packageName = it.packageName
+                    packageName = it.packageName,
+                    appInstance = it.appInstance,
                 )
             }.toSet()
         }.distinctUntilChanged()
