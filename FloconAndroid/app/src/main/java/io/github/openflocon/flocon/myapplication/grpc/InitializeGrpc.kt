@@ -1,6 +1,5 @@
 package io.github.openflocon.flocon.myapplication.grpc
 
-import io.github.openflocon.flocon.grpc.lite.FloconGrpcFormatter
 import io.github.openflocon.flocon.grpc.lite.FloconGrpcInterceptor
 import io.grpc.CallOptions
 import io.grpc.ManagedChannel
