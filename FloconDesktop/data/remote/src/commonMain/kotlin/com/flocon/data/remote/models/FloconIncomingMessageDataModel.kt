@@ -11,4 +11,5 @@ data class FloconIncomingMessageDataModel(
     val method: String,
     val appName: String,
     val appPackageName: String,
+    val appInstance: String,
 )

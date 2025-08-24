@@ -33,6 +33,18 @@ internal class FloconClientImpl(
 
     private val FLOCON_PORT = 9023
 
+    private val appInstance by lazy {
+        // store the start time of the sdk, for this app launch
+        System.currentTimeMillis().toString()
+    }
+
+    private val deviceId by lazy {
+        Settings.Secure.getString(
+            appContext.contentResolver,
+            Settings.Secure.ANDROID_ID,
+        )
+    }
+
     private val webSocketClient: FloconWebSocketClient = FloconWebSocketClientImpl()
 
     private val deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
@@ -152,13 +164,6 @@ internal class FloconClientImpl(
         }
     }
 
-    private val deviceId by lazy {
-        Settings.Secure.getString(
-            appContext.contentResolver,
-            Settings.Secure.ANDROID_ID,
-        )
-    }
-
     override fun send(
         plugin: String,
         method: String,
@@ -173,6 +178,7 @@ internal class FloconClientImpl(
                 appPackageName = appPackageName,
                 method = method,
                 deviceName = deviceName,
+                appInstance = appInstance,
             )
             webSocketClient.sendMessage(
                 message = floconMessage,
