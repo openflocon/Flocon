@@ -79,7 +79,7 @@ dependencies {
         debugImplementation(project(":flocon"))
         releaseImplementation(project(":flocon-no-op"))
         implementation(project(":okhttp-interceptor"))
-        implementation(project(":grpc-interceptor-lite"))
+        implementation(project(":grpc:grpc-interceptor-lite"))
         implementation(project(":ktor-interceptor"))
     }
 
