@@ -5,6 +5,7 @@ import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.mapper.toEntity
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.table.models.TableDomainModel
 import io.github.openflocon.domain.table.models.TableId
@@ -91,4 +92,26 @@ internal class TableLocalDataSourceRoom(
         id = entity.id,
         name = entity.name,
     )
+
+    override suspend fun deleteItem(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        itemId: String
+    ) {
+        tableDao.deleteItem(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            itemId = itemId,
+        )
+    }
+
+    override suspend fun deleteBefore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        itemId: String
+    ) {
+        tableDao.deleteBefore(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            itemId = itemId,
+        )
+    }
 }
