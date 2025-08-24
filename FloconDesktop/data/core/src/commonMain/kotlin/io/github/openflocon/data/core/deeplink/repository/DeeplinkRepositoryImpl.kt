@@ -21,16 +21,16 @@ class DeeplinkRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Deeplink.Plugin)
 
-    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
+    override suspend fun onMessageReceived(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        message: FloconIncomingMessageDomainModel
+    ) {
         when (message.method) {
             Protocol.FromDevice.Deeplink.Method.GetDeeplinks -> {
                 val items = remote.getItems(message)
 
                 localDeeplinkDataSource.update(
-                    deviceIdAndPackageNameDomainModel = DeviceIdAndPackageNameDomainModel(
-                        deviceId = deviceId,
-                        packageName = message.appPackageName,
-                    ),
+                    deviceIdAndPackageNameDomainModel = deviceIdAndPackageName,
                     deeplinks = items
                 )
             }

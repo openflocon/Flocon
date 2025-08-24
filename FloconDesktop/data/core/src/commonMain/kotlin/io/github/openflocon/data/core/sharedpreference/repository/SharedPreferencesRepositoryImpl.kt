@@ -26,17 +26,17 @@ class SharedPreferencesRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.SharedPreferences.Plugin)
 
-    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
+    override suspend fun onMessageReceived(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        message: FloconIncomingMessageDomainModel
+    ) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
                 Protocol.FromDevice.SharedPreferences.Method.GetSharedPreferences -> {
                     val items = remote.getPreferences(message)
 
                     deviceSharedPreferencesDataSource.registerDeviceSharedPreferences(
-                        deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                            deviceId = deviceId,
-                            packageName = message.appPackageName,
-                        ),
+                        deviceIdAndPackageName = deviceIdAndPackageName,
                         sharedPreferences = items,
                     )
                 }
@@ -45,10 +45,7 @@ class SharedPreferencesRepositoryImpl(
                     remote.getValues(message)
                         ?.let {
                             deviceSharedPreferencesValuesDataSource.onSharedPreferencesValuesReceived(
-                                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                                    deviceId = deviceId,
-                                    packageName = message.appPackageName,
-                                ),
+                                deviceIdAndPackageName = deviceIdAndPackageName,
                                 received = it,
                             )
                         }

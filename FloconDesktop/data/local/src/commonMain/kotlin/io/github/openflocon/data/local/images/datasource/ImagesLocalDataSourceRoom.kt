@@ -6,6 +6,7 @@ import io.github.openflocon.data.local.images.mapper.toDomainModel
 import io.github.openflocon.data.local.images.mapper.toEntity
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -18,23 +19,35 @@ internal class ImagesLocalDataSourceRoom(
 ) : ImagesLocalDataSource {
 
     override suspend fun addImage(
-        deviceId: DeviceId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         image: DeviceImageDomainModel,
     ) {
         withContext(dispatcherProvider.data) {
             imageDao.insertImage(
-                image.toEntity(deviceId),
+                image.toEntity(
+                    deviceIdAndPackageName = deviceIdAndPackageName
+                ),
             )
         }
     }
 
-    override fun observeImages(deviceId: DeviceId): Flow<List<DeviceImageDomainModel>> = imageDao.observeImagesForDevice(deviceId)
+    override fun observeImages(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<List<DeviceImageDomainModel>> = imageDao.observeImagesForDevice(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    )
         .map { entities -> entities.map { it.toDomainModel() } }
         .flowOn(dispatcherProvider.data)
 
-    override suspend fun clearImages(deviceId: DeviceId) {
+    override suspend fun clearImages(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ) {
         withContext(dispatcherProvider.data) {
-            imageDao.deleteAllImagesForDevice(deviceId)
+            imageDao.deleteAllImagesForDevice(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+            )
         }
     }
 }

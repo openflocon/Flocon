@@ -180,7 +180,7 @@ class DevicesRepositoryImpl(
     override val pluginName = listOf(Protocol.FromDevice.Device.Plugin)
 
     override suspend fun onMessageReceived(
-        deviceId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         message: FloconIncomingMessageDomainModel,
     ) {
         when (message.method) {

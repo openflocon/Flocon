@@ -7,7 +7,7 @@ interface MessagesReceiverRepository {
     val pluginName: List<String>
 
     suspend fun onMessageReceived(
-        deviceId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         message: FloconIncomingMessageDomainModel,
     )
 

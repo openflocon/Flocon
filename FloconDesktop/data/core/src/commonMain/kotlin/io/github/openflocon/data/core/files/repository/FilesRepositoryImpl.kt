@@ -24,7 +24,10 @@ class FilesRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Files.Plugin)
 
-    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
+    override suspend fun onMessageReceived(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        message: FloconIncomingMessageDomainModel,
+    ) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
                 Protocol.FromDevice.Files.Method.ListFiles -> remoteFilesDataSource.getItems(message)

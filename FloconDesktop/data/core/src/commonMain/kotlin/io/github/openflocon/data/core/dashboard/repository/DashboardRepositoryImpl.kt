@@ -25,15 +25,15 @@ class DashboardRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Dashboard.Plugin)
 
-    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
+    override suspend fun onMessageReceived(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        message: FloconIncomingMessageDomainModel
+    ) {
         withContext(dispatcherProvider.data) {
             val item = toDeviceDashboardDataSource.getItem(message) ?: return@withContext
 
             dashboardLocalDataSource.saveDashboard(
-                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                    deviceId = deviceId,
-                    packageName = message.appPackageName,
-                ),
+                deviceIdAndPackageName = deviceIdAndPackageName,
                 dashboard = item
             )
         }
