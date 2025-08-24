@@ -51,6 +51,18 @@ interface DevicesDao {
 
     @Query(
         """
+        SELECT * FROM DeviceAppEntity
+        WHERE parentDeviceId = :deviceId 
+        AND packageName = :packageName
+     """
+    )
+    fun observeDeviceAppByPackageName(
+        deviceId: String,
+        packageName: String
+    ): Flow<DeviceAppEntity?>
+
+    @Query(
+        """
         UPDATE DeviceAppEntity
         SET iconEncoded = :iconEncoded
         WHERE parentDeviceId = :deviceId AND packageName = :packageName

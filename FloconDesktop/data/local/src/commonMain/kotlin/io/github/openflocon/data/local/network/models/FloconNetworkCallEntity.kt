@@ -20,6 +20,8 @@ data class FloconNetworkCallEntity(
 
     val deviceId: String, // To associate with a device
     val packageName: String,
+    val appInstance: Long, // the start time of the mobile app
+
     val type: FloconNetworkCallType,
 
     @Embedded(prefix = "request_")

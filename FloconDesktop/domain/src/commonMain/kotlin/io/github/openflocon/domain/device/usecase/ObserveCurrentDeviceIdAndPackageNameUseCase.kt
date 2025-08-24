@@ -23,6 +23,7 @@ class ObserveCurrentDeviceIdAndPackageNameUseCase(
                             DeviceIdAndPackageNameDomainModel(
                                 deviceId = deviceId,
                                 packageName = app.packageName,
+                                appInstance = app.lastAppInstance,
                             )
                         }
                     }

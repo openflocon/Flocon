@@ -35,7 +35,7 @@ internal class FloconClientImpl(
 
     private val appInstance by lazy {
         // store the start time of the sdk, for this app launch
-        System.currentTimeMillis().toString()
+        System.currentTimeMillis()
     }
 
     private val deviceId by lazy {

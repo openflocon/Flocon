@@ -9,11 +9,13 @@ class GetCurrentDeviceIdAndPackageNameUseCase(
 ) {
     suspend operator fun invoke(): DeviceIdAndPackageNameDomainModel? {
         val deviceId = getCurrentDeviceIdUseCase() ?: return null
-        val packageName = devicesRepository.getDeviceSelectedApp(deviceId)?.packageName ?: return null
+        val selectedApp = devicesRepository.getDeviceSelectedApp(deviceId)
+        val packageName = selectedApp?.packageName ?: return null
 
         return DeviceIdAndPackageNameDomainModel(
             deviceId = deviceId,
             packageName = packageName,
+            appInstance = selectedApp.lastAppInstance,
         )
     }
 }

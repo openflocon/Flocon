@@ -9,9 +9,11 @@ import kotlinx.serialization.Serializable
 data class FloconDeviceIdAndPackageNameDataModel(
     val deviceId: DeviceId,
     val packageName: String,
+    val appInstance: Long,
 )
 
 fun DeviceIdAndPackageNameDomainModel.toRemote() = FloconDeviceIdAndPackageNameDataModel(
     deviceId = deviceId,
     packageName = packageName,
+    appInstance = appInstance,
 )

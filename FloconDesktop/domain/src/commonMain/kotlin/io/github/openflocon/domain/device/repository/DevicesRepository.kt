@@ -4,8 +4,6 @@ import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.device.models.DeviceWithAppsDomainModel
-import io.github.openflocon.domain.device.models.DeviceWithAppDomainModel
 import io.github.openflocon.domain.device.models.HandleDeviceResultDomainModel
 import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainModel
 import kotlinx.coroutines.flow.Flow

@@ -1,7 +1,9 @@
 package io.github.openflocon.data.core.device.datasource.local
 
-import io.github.openflocon.domain.device.models.DeviceAppDomainModel
+import io.github.openflocon.domain.device.models.AppInstance
+import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface LocalCurrentDeviceDataSource {
@@ -13,11 +15,15 @@ interface LocalCurrentDeviceDataSource {
     suspend fun isKnownDeviceForThisSession(deviceId: DeviceId): Boolean
 
     // region app
-    fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?>
-    suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel?
-    suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel)
-    suspend fun isKnownAppForThisSession(deviceId: DeviceId, packageName: String) : Boolean
-    suspend fun addNewDeviceAppConnectedForThisSession(deviceId: DeviceId, packageName: String)
+    fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<AppPackageName?>
+    suspend fun getDeviceSelectedApp(deviceId: DeviceId): AppPackageName?
+    suspend fun selectApp(deviceId: DeviceId, packageName: AppPackageName)
+    suspend fun isKnownAppForThisSession(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ) : Boolean
+    suspend fun addNewDeviceAppConnectedForThisSession(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    )
     // endregion
 
     suspend fun clear()

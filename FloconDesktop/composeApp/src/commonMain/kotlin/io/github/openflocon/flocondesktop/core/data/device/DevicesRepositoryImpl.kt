@@ -17,7 +17,10 @@ import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -57,8 +60,7 @@ class DevicesRepositoryImpl(
                     registerDeviceWithApp.device.deviceId
                 )
                 val isKnownApp = localCurrentDeviceDataSource.isKnownAppForThisSession(
-                    deviceId = registerDeviceWithApp.device.deviceId,
-                    packageName = registerDeviceWithApp.app.packageName
+                    deviceIdAndPackageName = registerDeviceWithApp.deviceIdAndPackageName,
                 )
                 if (isKnownDevice && isKnownApp) {
                     HandleDeviceResultDomainModel(
@@ -72,7 +74,7 @@ class DevicesRepositoryImpl(
                         registerDeviceWithApp.device
                     )) {
                         InsertResult.New -> true
-                        InsertResult.Exists -> false
+                        InsertResult.Exists, InsertResult.Updated -> false
                     }
                     localCurrentDeviceDataSource.addNewDeviceConnectedForThisSession(
                         registerDeviceWithApp.device.deviceId
@@ -82,13 +84,12 @@ class DevicesRepositoryImpl(
                         deviceId = registerDeviceWithApp.device.deviceId,
                         app = registerDeviceWithApp.app,
                     )) {
-                        InsertResult.New -> true
+                        InsertResult.New, InsertResult.Updated -> true
                         InsertResult.Exists -> false
                     }
 
                     localCurrentDeviceDataSource.addNewDeviceAppConnectedForThisSession(
-                        deviceId = registerDeviceWithApp.device.deviceId,
-                        packageName = registerDeviceWithApp.app.packageName
+                        deviceIdAndPackageName = registerDeviceWithApp.deviceIdAndPackageName,
                     )
 
                     HandleDeviceResultDomainModel(
@@ -111,7 +112,7 @@ class DevicesRepositoryImpl(
 
     override suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel) {
         withContext(dispatcherProvider.data) {
-            localCurrentDeviceDataSource.selectApp(deviceId = deviceId, app = app)
+            localCurrentDeviceDataSource.selectApp(deviceId = deviceId, packageName = app.packageName)
         }
     }
 
@@ -129,12 +130,22 @@ class DevicesRepositoryImpl(
 
     override suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel? {
         return withContext(dispatcherProvider.data) {
-            localCurrentDeviceDataSource.getDeviceSelectedApp(deviceId)
+            localCurrentDeviceDataSource.getDeviceSelectedApp(deviceId)?.let { packageName ->
+                localDevicesDataSource.getDeviceAppByPackage(deviceId = deviceId, packageName = packageName)
+            }
         }
     }
 
     override fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?> {
         return localCurrentDeviceDataSource.observeDeviceSelectedApp(deviceId)
+            .flatMapLatest { packageName ->
+                packageName?.let {
+                    localDevicesDataSource.observeDeviceAppByPackage(
+                        deviceId = deviceId,
+                        packageName = it
+                    )
+                } ?: flowOf(null)
+            }
             .flowOn(dispatcherProvider.data)
     }
 

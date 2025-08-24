@@ -1,7 +1,10 @@
 package io.github.openflocon.domain.network.models
 
+import io.github.openflocon.domain.device.models.AppInstance
+
 data class FloconNetworkCallDomainModel(
     val callId: String,
+    val appInstance: AppInstance,
     val request: Request,
     val response: Response?,
 ) {

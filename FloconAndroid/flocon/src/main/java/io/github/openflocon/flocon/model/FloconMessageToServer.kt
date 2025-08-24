@@ -10,7 +10,7 @@ fun toFloconMessageToServer(
     body: String,
     appName: String,
     appPackageName: String,
-    appInstance: String, // app launch id / when the app has been launched
+    appInstance: Long, // app launch id / when the app has been launched
 ): String {
     val json = JSONObject()
 

@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 49,
-    "identityHash": "d1b9dd72b7ce377bcfd366023a8d6d12",
+    "version": 50,
+    "identityHash": "f28e9abf196f2ecf8b34e2cba7f87981",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`callId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `type` TEXT NOT NULL, `request_url` TEXT NOT NULL, `request_method` TEXT NOT NULL, `request_startTime` INTEGER NOT NULL, `request_requestHeaders` TEXT NOT NULL, `request_requestBody` TEXT, `request_requestByteSize` INTEGER NOT NULL, `request_isMocked` INTEGER NOT NULL, `request_graphql_query` TEXT, `request_graphql_operationType` TEXT, `response_durationMs` REAL, `response_responseContentType` TEXT, `response_responseBody` TEXT, `response_responseHeaders` TEXT, `response_responseByteSize` INTEGER, `response_responseError` TEXT, `response_graphql_isSuccess` INTEGER, `response_graphql_responseHttpCode` INTEGER, `response_http_responseHttpCode` INTEGER, `response_grpc_responseStatus` TEXT, PRIMARY KEY(`callId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`callId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `appInstance` INTEGER NOT NULL, `type` TEXT NOT NULL, `request_url` TEXT NOT NULL, `request_method` TEXT NOT NULL, `request_startTime` INTEGER NOT NULL, `request_requestHeaders` TEXT NOT NULL, `request_requestBody` TEXT, `request_requestByteSize` INTEGER NOT NULL, `request_isMocked` INTEGER NOT NULL, `request_graphql_query` TEXT, `request_graphql_operationType` TEXT, `response_durationMs` REAL, `response_responseContentType` TEXT, `response_responseBody` TEXT, `response_responseHeaders` TEXT, `response_responseByteSize` INTEGER, `response_responseError` TEXT, `response_graphql_isSuccess` INTEGER, `response_graphql_responseHttpCode` INTEGER, `response_http_responseHttpCode` INTEGER, `response_grpc_responseStatus` TEXT, PRIMARY KEY(`callId`))",
         "fields": [
           {
             "fieldPath": "callId",
@@ -24,6 +24,12 @@
             "fieldPath": "packageName",
             "columnName": "packageName",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appInstance",
+            "columnName": "appInstance",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -1156,7 +1162,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd1b9dd72b7ce377bcfd366023a8d6d12')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f28e9abf196f2ecf8b34e2cba7f87981')"
     ]
   }
 }

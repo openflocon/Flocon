@@ -45,8 +45,7 @@ class NetworkLocalDataSourceRoom(
     ) {
         withContext(dispatcherProvider.data) {
             val entity = call.toEntity(
-                deviceId = deviceIdAndPackageName.deviceId,
-                packageName = deviceIdAndPackageName.packageName,
+                deviceIdAndPackageName = deviceIdAndPackageName,
             )
             floconNetworkDao.upsertRequest(entity)
         }
