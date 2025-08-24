@@ -27,7 +27,7 @@ class AnalyticsRepositoryImpl(
     override val pluginName = listOf(Protocol.FromDevice.Analytics.Plugin)
 
     override suspend fun onMessageReceived(
-        deviceId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         message: FloconIncomingMessageDomainModel
     ) {
         withContext(dispatcherProvider.data) {
@@ -36,17 +36,11 @@ class AnalyticsRepositoryImpl(
                     val items = remoteAnalyticsDataSource.getItems(message)
 
                     analyticsLocalDataSource.insert(
-                        deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                            deviceId = deviceId,
-                            packageName = message.appPackageName,
-                        ),
+                        deviceIdAndPackageName = deviceIdAndPackageName,
                         items = items,
                     )
                     remoteAnalyticsDataSource.clearReceivedItem(
-                        deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                            deviceId = deviceId,
-                            packageName = message.appPackageName,
-                        ),
+                        deviceIdAndPackageName = deviceIdAndPackageName,
                         items = items.map { it.itemId },
                     )
                 }

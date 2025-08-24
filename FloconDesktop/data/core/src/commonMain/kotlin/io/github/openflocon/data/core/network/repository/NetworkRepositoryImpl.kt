@@ -69,17 +69,17 @@ class NetworkRepositoryImpl(
             callId = requestId,
         ).flowOn(dispatcherProvider.data)
 
-    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
+    override suspend fun onMessageReceived(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        message: FloconIncomingMessageDomainModel
+    ) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
                 Protocol.FromDevice.Network.Method.LogNetworkCallRequest -> {
                     networkRemoteDataSource.getRequestData(message)
                         ?.let { call ->
                             networkLocalDataSource.save(
-                                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                                    deviceId = deviceId,
-                                    packageName = message.appPackageName,
-                                ),
+                                deviceIdAndPackageName = deviceIdAndPackageName,
                                 call = call,
                             )
                         }
@@ -93,10 +93,7 @@ class NetworkRepositoryImpl(
                                 return@let null
                             }
                             val request = networkLocalDataSource.getCall(
-                                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                                    deviceId = deviceId,
-                                    packageName = message.appPackageName,
-                                ),
+                                deviceIdAndPackageName = deviceIdAndPackageName,
                                 callId = callId,
                             ) ?: run {
                                 println("cannot find request")
@@ -110,25 +107,15 @@ class NetworkRepositoryImpl(
                             toDomainForResponse(response = response, request = request)
                         }?.let { call ->
                             if (call.response?.getContentType()?.startsWith("image/") == true) {
-                                networkImageRepository.onImageReceived(deviceId = deviceId, call = call)
+                                networkImageRepository.onImageReceived(deviceIdAndPackageName = deviceIdAndPackageName, call = call)
                             }
                             networkLocalDataSource.save(
-                                deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                                    deviceId = deviceId,
-                                    packageName = message.appPackageName,
-                                ),
+                                deviceIdAndPackageName = deviceIdAndPackageName,
                                 call = call,
                             )
                         }
                 }
             }
-            // decode(message)?.let { toDomain(it) }?.let { request ->
-            //    val responseContentType = request.response.contentType
-            //    if (request.response.contentType != null && responseContentType?.startsWith("image/") == true) {
-            //        networkImageRepository.onImageReceived(deviceId = deviceId, request = request)
-            //    }
-            //    networkLocalDataSource.save(deviceId = deviceId, packageName = message.appPackageName, request = request)
-            // }
         }
     }
 

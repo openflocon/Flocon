@@ -26,7 +26,10 @@ class ImagesRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Images.Plugin)
 
-    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
+    override suspend fun onMessageReceived(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        message: FloconIncomingMessageDomainModel
+    ) {
         // no op for now
     }
 
@@ -38,12 +41,12 @@ class ImagesRepositoryImpl(
     }
 
     override suspend fun onImageReceived(
-        deviceId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         call: FloconNetworkCallDomainModel,
     ) {
         val duration = call.response?.durationMs ?: return
         imagesLocalDataSource.addImage(
-            deviceId = deviceId,
+            deviceIdAndPackageName = deviceIdAndPackageName,
             image = DeviceImageDomainModel(
                 url = call.request.url,
                 time = (call.request.startTime + duration).toLong(),
@@ -51,15 +54,17 @@ class ImagesRepositoryImpl(
         )
     }
 
-    override fun observeImages(deviceId: DeviceId): Flow<List<DeviceImageDomainModel>> = imagesLocalDataSource
-        .observeImages(deviceId = deviceId)
+    override fun observeImages(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<List<DeviceImageDomainModel>> = imagesLocalDataSource
+        .observeImages(deviceIdAndPackageName = deviceIdAndPackageName)
         .map { it.sortedBy { it.time } }
         .distinctUntilChanged()
         .flowOn(dispatcherProvider.data)
 
-    override suspend fun clearImages(deviceId: DeviceId) {
+    override suspend fun clearImages(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         withContext(dispatcherProvider.data) {
-            imagesLocalDataSource.clearImages(deviceId = deviceId)
+            imagesLocalDataSource.clearImages(deviceIdAndPackageName = deviceIdAndPackageName)
         }
     }
 }

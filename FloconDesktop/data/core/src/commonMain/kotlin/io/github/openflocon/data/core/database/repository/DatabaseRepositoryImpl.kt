@@ -78,7 +78,10 @@ class DatabaseRepositoryImpl(
         )
     }
 
-    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
+    override suspend fun onMessageReceived(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        message: FloconIncomingMessageDomainModel,
+    ) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
                 Protocol.FromDevice.Database.Method.Query -> {
@@ -90,10 +93,7 @@ class DatabaseRepositoryImpl(
                     val items = queryDatabaseDataSource.getDeviceDatabases(message)
 
                     deviceDatabasesDataSource.registerDeviceDatabases(
-                        deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                            deviceId = deviceId,
-                            packageName = message.appPackageName,
-                        ),
+                        deviceIdAndPackageName = deviceIdAndPackageName,
                         databases = items,
                     )
                 }

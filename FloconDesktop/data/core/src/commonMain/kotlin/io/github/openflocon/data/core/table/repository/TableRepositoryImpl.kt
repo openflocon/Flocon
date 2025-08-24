@@ -27,21 +27,20 @@ class TableRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Table.Plugin)
 
-    override suspend fun onMessageReceived(deviceId: String, message: FloconIncomingMessageDomainModel) {
+    override suspend fun onMessageReceived(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        message: FloconIncomingMessageDomainModel
+    ) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
                 Protocol.FromDevice.Table.Method.AddItems -> {
                     val items = remoteTableDataSource.getItems(message)
-                    val current = DeviceIdAndPackageNameDomainModel(
-                        deviceId = deviceId,
-                        packageName = message.appPackageName,
-                    )
                     tableLocalDataSource.insert(
-                        deviceIdAndPackageName = current,
+                        deviceIdAndPackageName = deviceIdAndPackageName,
                         tablePartialInfos = items,
                     )
                     remoteTableDataSource.clearReceivedItem(
-                        deviceIdAndPackageName = current,
+                        deviceIdAndPackageName = deviceIdAndPackageName,
                         items = items.flatMap { it.items.map { it.itemId } },
                     )
                 }

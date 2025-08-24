@@ -24,36 +24,36 @@ class HandleIncomingMessagesUseCase(
 
     operator fun invoke(): Flow<Unit> = messagesRepository
         .listenMessages()
-        .onEach {
-            val handleDeviceResult = handleDeviceAndAppUseCase(device = getDeviceAndApp(it))
+        .onEach { message ->
+            val handleDeviceResult = handleDeviceAndAppUseCase(device = getDeviceAndApp(message))
+
+            val deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
+                deviceId = handleDeviceResult.deviceId,
+                packageName = message.appPackageName,
+            )
+
             if (handleDeviceResult.isNewDevice) {
                 handleNewDeviceUseCase(
-                    deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                        deviceId = handleDeviceResult.deviceId,
-                        packageName = it.appPackageName,
-                    )
+                    deviceIdAndPackageName = deviceIdAndPackageName,
                 )
             }
             if (handleDeviceResult.isNewApp) {
                 handleNewAppUseCase(
-                    deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                        deviceId = handleDeviceResult.deviceId,
-                        packageName = it.appPackageName,
-                    )
+                    deviceIdAndPackageName = deviceIdAndPackageName,
                 )
             }
             plugins.forEach { plugin ->
                 if (handleDeviceResult.justConnectedForThisSession) {
                     plugin.onDeviceConnected(
-                        deviceIdAndPackageName = DeviceIdAndPackageNameDomainModel(
-                            deviceId = handleDeviceResult.deviceId,
-                            packageName = it.appPackageName,
-                        ),
+                        deviceIdAndPackageName = deviceIdAndPackageName,
                         isNewDevice = handleDeviceResult.isNewDevice,
                     )
                 }
-                if (plugin.pluginName.contains(it.plugin)) {
-                    plugin.onMessageReceived(deviceId = handleDeviceResult.deviceId, message = it)
+                if (plugin.pluginName.contains(message.plugin)) {
+                    plugin.onMessageReceived(
+                        deviceIdAndPackageName = deviceIdAndPackageName,
+                        message = message
+                    )
                 }
             }
         }

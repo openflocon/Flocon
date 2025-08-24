@@ -5,12 +5,14 @@ import androidx.room.Entity
 @Entity(
     primaryKeys = [
         "deviceId",
+        "packageName",
         "url",
         "time",
     ],
 )
 data class DeviceImageEntity(
     val deviceId: String,
+    val packageName: String,
     val url: String,
     val time: Long,
 )
