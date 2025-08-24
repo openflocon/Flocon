@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.network.detail.view.components
+package io.github.openflocon.library.designsystem.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,19 +15,18 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun CodeBlockView(
+fun FloconCodeBlock(
     code: String,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier =
-        modifier
+        modifier = modifier
             .background(
                 color = FloconTheme.colorPalette.surfaceVariant,
                 shape = RoundedCornerShape(8.dp),
-            ).padding(8.dp),
+            )
+            .padding(8.dp),
     ) {
-        // Wrap the Text composable with SelectionContainer
         SelectionContainer {
             Text(
                 text = code,
@@ -42,9 +41,9 @@ fun CodeBlockView(
 @Composable
 private fun CodeBlockViewPreview() {
     FloconTheme {
-        CodeBlockView(
+        FloconCodeBlock(
             code =
-            """
+                """
                 {
                    "code" : "value"
                 }

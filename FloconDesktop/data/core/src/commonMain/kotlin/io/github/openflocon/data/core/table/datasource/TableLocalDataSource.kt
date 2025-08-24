@@ -1,5 +1,6 @@
 package io.github.openflocon.data.core.table.datasource
 
+import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.table.models.TableDomainModel
 import io.github.openflocon.domain.table.models.TableId
@@ -19,5 +20,14 @@ interface TableLocalDataSource {
     suspend fun delete(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         tableId: TableIdentifierDomainModel,
+    )
+
+    suspend fun deleteItem(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        itemId: String
+    )
+    suspend fun deleteBefore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        itemId: String
     )
 }

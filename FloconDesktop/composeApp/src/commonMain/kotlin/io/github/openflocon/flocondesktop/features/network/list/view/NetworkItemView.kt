@@ -12,6 +12,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,49 +43,10 @@ fun NetworkItemView(
     val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
 
     ContextualView(
-        items = buildList {
-            add(
-                ContextualItem(
-                    id = "copy_url",
-                    text = "Copy url",
-                ),
-            )
-            if (state.type !is NetworkItemViewState.NetworkTypeUi.Grpc) {
-                add(
-                    ContextualItem(
-                        id = "copy_curl",
-                        text = "Copy cUrl",
-                    ),
-                )
-                add(
-                    ContextualItem(
-                        id = "create_mock",
-                        text = "Create Mock",
-                    ),
-                )
-            }
-            add(
-                ContextualItem(
-                    id = "remove",
-                    text = "Remove",
-                ),
-            )
-            add(
-                ContextualItem(
-                    id = "remove_lines_above",
-                    text = "Remove lines above ",
-                ),
-            )
-        },
-        onSelect = {
-            when (it.id) {
-                "copy_url" -> onAction(NetworkAction.CopyUrl(state))
-                "copy_curl" -> onAction(NetworkAction.CopyCUrl(state))
-                "remove" -> onAction(NetworkAction.Remove(state))
-                "create_mock" -> onAction(NetworkAction.CreateMock(state))
-                "remove_lines_above" -> onAction(NetworkAction.RemoveLinesAbove(state))
-            }
-        },
+        items = contextualActions(
+            onAction = onAction,
+            state = state,
+        ),
     ) {
         Row(
             modifier = modifier
@@ -164,6 +128,60 @@ fun NetworkItemView(
                     color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun contextualActions(
+    onAction: (NetworkAction) -> Unit,
+    state: NetworkItemViewState
+): List<ContextualItem> {
+    val onActionCallback by rememberUpdatedState(onAction)
+    return remember(state) {
+        buildList {
+            add(
+                ContextualItem(
+                    text = "Copy url",
+                    onClick = {
+                        onActionCallback(NetworkAction.CopyUrl(state))
+                    }
+                ),
+            )
+            if (state.type !is NetworkItemViewState.NetworkTypeUi.Grpc) {
+                add(
+                    ContextualItem(
+                        text = "Copy cUrl",
+                        onClick = {
+                            onActionCallback(NetworkAction.CopyCUrl(state))
+                        }
+                    ),
+                )
+                add(
+                    ContextualItem(
+                        text = "Create Mock",
+                        onClick = {
+                            onActionCallback(NetworkAction.CreateMock(state))
+                        }
+                    ),
+                )
+            }
+            add(
+                ContextualItem(
+                    text = "Remove",
+                    onClick = {
+                        onActionCallback(NetworkAction.Remove(state))
+                    }
+                ),
+            )
+            add(
+                ContextualItem(
+                    text = "Remove lines above ",
+                    onClick = {
+                        onActionCallback(NetworkAction.RemoveLinesAbove(state))
+                    }
+                ),
+            )
         }
     }
 }

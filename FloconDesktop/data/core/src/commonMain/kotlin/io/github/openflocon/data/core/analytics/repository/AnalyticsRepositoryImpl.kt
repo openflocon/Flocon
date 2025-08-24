@@ -86,11 +86,13 @@ class AnalyticsRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId
     ) {
+        withContext(dispatcherProvider.data) {
         deviceAnalyticsDataSource.selectDeviceAnalytics(
             deviceIdAndPackageName = deviceIdAndPackageName,
             analyticsTableId = analyticsTableId,
             deviceAnalytics = analyticsLocalDataSource.getDeviceAnalytics(deviceIdAndPackageName = deviceIdAndPackageName),
         )
+            }
     }
 
     override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> =
@@ -100,4 +102,28 @@ class AnalyticsRepositoryImpl(
     override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
         analyticsLocalDataSource.observeDeviceAnalytics(deviceIdAndPackageName)
             .flowOn(dispatcherProvider.data)
+
+    override suspend fun deleteAnalyticsItem(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsItemId: String
+    ) {
+        withContext(dispatcherProvider.data) {
+            analyticsLocalDataSource.deleteAnalyticsItem(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                analyticsItemId = analyticsItemId,
+            )
+        }
+    }
+
+    override suspend fun deleteBefore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsItemId: String
+    ) {
+        withContext(dispatcherProvider.data) {
+            analyticsLocalDataSource.deleteBefore(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                analyticsItemId = analyticsItemId,
+            )
+        }
+    }
 }

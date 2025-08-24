@@ -16,4 +16,14 @@ interface AnalyticsLocalDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsId: AnalyticsIdentifierDomainModel,
     )
+
+    suspend fun deleteAnalyticsItem(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsItemId: String
+    )
+
+    suspend fun deleteBefore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsItemId: String
+    )
 }

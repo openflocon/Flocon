@@ -38,6 +38,9 @@ class DevicesRepositoryImpl(
 
     override val currentDeviceId: Flow<DeviceId?> = localCurrentDeviceDataSource.currentDeviceId
 
+    override val activeDevices = remoteDeviceDataSource.activeDevices
+        .flowOn(dispatcherProvider.data)
+
     override suspend fun getCurrentDeviceId(): DeviceId? =
         localCurrentDeviceDataSource.getCurrentDeviceId()
 

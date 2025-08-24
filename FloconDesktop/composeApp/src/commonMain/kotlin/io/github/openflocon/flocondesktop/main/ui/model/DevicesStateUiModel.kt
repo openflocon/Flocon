@@ -43,20 +43,24 @@ sealed interface AppsStateUiModel {
 fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.WithDevices(
     devices = listOf(
         DeviceItemUiModel(
-            deviceName = "deviceName1",
             id = "id1",
+            deviceName = "deviceName1",
+            isActive = true,
         ),
         DeviceItemUiModel(
-            deviceName = "deviceName2",
             id = "id2",
+            deviceName = "deviceName2",
+            isActive = true,
         ),
         DeviceItemUiModel(
-            deviceName = "deviceName",
             id = "id",
+            deviceName = "deviceName",
+            isActive = true,
         ),
     ),
     deviceSelected = DeviceItemUiModel(
-        deviceName = "deviceName",
         id = "id",
+        deviceName = "deviceName",
+        isActive = true,
     ),
 )

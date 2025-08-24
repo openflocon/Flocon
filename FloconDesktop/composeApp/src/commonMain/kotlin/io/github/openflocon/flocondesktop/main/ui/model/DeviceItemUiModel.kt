@@ -6,9 +6,11 @@ import androidx.compose.runtime.Immutable
 data class DeviceItemUiModel(
     val id: String,
     val deviceName: String,
+    val isActive: Boolean,
 )
 
 fun previewDeviceItemUiModel() = DeviceItemUiModel(
-    deviceName = "deviceName",
     id = "id",
+    deviceName = "deviceName",
+    isActive = true,
 )

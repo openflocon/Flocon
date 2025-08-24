@@ -2,11 +2,16 @@ package io.github.openflocon.flocondesktop.features.analytics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
+import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemUseCase
+import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemsBeforeUseCase
 import io.github.openflocon.domain.analytics.usecase.ResetCurrentDeviceSelectedAnalyticsUseCase
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.analytics.delegate.AnalyticsSelectorDelegate
+import io.github.openflocon.flocondesktop.features.analytics.mapper.mapToUi
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
@@ -26,13 +31,11 @@ class AnalyticsViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val analyticsSelectorDelegate: AnalyticsSelectorDelegate,
-    private val observeCurrentDeviceAnalyticsContentUseCase: ObserveCurrentDeviceAnalyticsContentUseCase,
+    observeCurrentDeviceAnalyticsContentUseCase: ObserveCurrentDeviceAnalyticsContentUseCase,
     private val resetCurrentDeviceSelectedAnalyticsUseCase: ResetCurrentDeviceSelectedAnalyticsUseCase,
+    private val removeAnalyticsItemUseCase: RemoveAnalyticsItemUseCase,
+    private val removeAnalyticsItemsBeforeUseCase: RemoveAnalyticsItemsBeforeUseCase,
 ) : ViewModel() {
-
-    companion object {
-        const val MAX_PROPERTIES_TO_SHOW = 10
-    }
 
     val deviceAnalytics: StateFlow<AnalyticsStateUiModel> = analyticsSelectorDelegate.deviceAnalyticss
 
@@ -47,17 +50,7 @@ class AnalyticsViewModel(
                 } else {
                     AnalyticsContentStateUiModel.WithContent(
                         rows = it.map { item ->
-                            AnalyticsRowUiModel(
-                                dateFormatted = formatTimestamp(item.createdAt),
-                                eventName = item.eventName,
-                                properties = item.properties.map {
-                                    AnalyticsRowUiModel.PropertyUiModel(
-                                        name = it.name,
-                                        value = it.value,
-                                    )
-                                }.take(MAX_PROPERTIES_TO_SHOW),
-                                hasMoreProperties = item.properties.size > MAX_PROPERTIES_TO_SHOW,
-                            )
+                            item.mapToUi()
                         },
                     )
                 }
@@ -68,6 +61,8 @@ class AnalyticsViewModel(
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = AnalyticsContentStateUiModel.Loading,
             )
+
+
 
     fun onVisible() {
         // no op
@@ -87,14 +82,25 @@ class AnalyticsViewModel(
         }
     }
 
-    fun onClickItem(item: AnalyticsRowUiModel?) {
+    fun onAction(action: AnalyticsAction) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            _selectedItem.update {
-                if (it == item) {
-                    null
-                } else {
-                    item
+            when(action) {
+                AnalyticsAction.ClosePanel -> {
+                    _selectedItem.update {
+                        null
+                    }
                 }
+                is AnalyticsAction.OnClick -> {
+                    _selectedItem.update {
+                        if (it == action.item) {
+                            null
+                        } else {
+                            action.item
+                        }
+                    }
+                }
+                is AnalyticsAction.Remove -> removeAnalyticsItemUseCase(action.item.id)
+                is AnalyticsAction.RemoveLinesAbove -> removeAnalyticsItemsBeforeUseCase(action.item.id)
             }
         }
     }

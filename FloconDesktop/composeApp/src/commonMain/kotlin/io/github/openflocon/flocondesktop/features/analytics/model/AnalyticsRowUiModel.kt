@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class AnalyticsRowUiModel(
+    val id: String,
     val dateFormatted: String,
     val eventName: String,
     val properties: List<PropertyUiModel>,
@@ -23,6 +24,7 @@ data class AnalyticsRowUiModel(
 }
 
 fun previewAnalyticsRowUiModel() = AnalyticsRowUiModel(
+    id = "id",
     dateFormatted = "2023-01-01 00:00:00",
     eventName = "event_name",
     properties = List(5) {

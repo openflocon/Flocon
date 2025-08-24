@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.table.TableViewModel
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
+import io.github.openflocon.flocondesktop.features.table.model.TableAction
 import io.github.openflocon.flocondesktop.features.table.model.TableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
@@ -65,7 +66,7 @@ fun TableScreen(modifier: Modifier = Modifier) {
         selectedItem = selectedItem,
         onResetClicked = viewModel::onResetClicked,
         modifier = modifier,
-        onClickItem = viewModel::onClickItem, // TODO click outside
+        onTableAction = viewModel::onTableAction,
     )
 }
 
@@ -76,7 +77,7 @@ fun TableScreen(
     content: TableContentStateUiModel,
     onResetClicked: () -> Unit,
     selectedItem: TableRowUiModel?,
-    onClickItem: (selected: TableRowUiModel?) -> Unit,
+    onTableAction: (TableAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val columnsWidth = 150.dp
@@ -119,8 +120,7 @@ fun TableScreen(
                             indication = null,
                             enabled = selectedItem != null,
                         ) {
-                            // close detail panel
-                            onClickItem(null)
+                            onTableAction(TableAction.ClosePanel)
                         },
                 ) {
                     LazyColumn(
@@ -137,7 +137,7 @@ fun TableScreen(
                                         model = item,
                                         columnsWidth = columnsWidth,
                                         modifier = Modifier.fillMaxWidth(),
-                                        onClick = onClickItem,
+                                        onAction = onTableAction,
                                     )
                                     if (index < tableItems.lastIndex) {
                                         HorizontalDivider(
@@ -247,7 +247,7 @@ private fun TableScreenPreview() {
             onResetClicked = {},
             selectedItem = null,
             content = previewTableContentStateUiModel(),
-            onClickItem = {},
+            onTableAction = {},
             modifier = Modifier.fillMaxSize(),
         )
     }

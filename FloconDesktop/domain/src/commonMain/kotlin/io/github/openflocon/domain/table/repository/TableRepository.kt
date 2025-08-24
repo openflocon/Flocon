@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.table.repository
 
+import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.table.models.TableDomainModel
 import io.github.openflocon.domain.table.models.TableId
@@ -13,4 +14,7 @@ interface TableRepository {
     suspend fun selectDeviceTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId)
     fun observeSelectedDeviceTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<TableIdentifierDomainModel?>
     fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>>
+
+    suspend fun deleteItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, itemId: String)
+    suspend fun deleteBefore(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, itemId: String)
 }

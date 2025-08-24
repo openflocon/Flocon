@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.main.ui.delegates
 
+import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
@@ -22,6 +23,7 @@ class DevicesDelegate(
     observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
     observeCurrentDeviceAppsUseCase: ObserveCurrentDeviceAppsUseCase,
     observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
+    observeActiveDevicesUseCase: ObserveActiveDevicesUseCase,
     private val closeableDelegate: CloseableDelegate,
 ) : CloseableScoped by closeableDelegate {
 
@@ -29,7 +31,8 @@ class DevicesDelegate(
         combine(
             observeDevicesUseCase(),
             observeCurrentDeviceIdUseCase(),
-        ) { devices, currentDeviceId ->
+            observeActiveDevicesUseCase(),
+        ) { devices, currentDeviceId, activeDevices ->
             if (devices.isEmpty()) {
                 DevicesStateUiModel.Empty
             } else {
@@ -38,13 +41,23 @@ class DevicesDelegate(
                     val firstDevice = devices.first()
                     select(firstDevice.deviceId)
                     DevicesStateUiModel.WithDevices(
-                        devices = mapToUi(devices),
-                        deviceSelected = firstDevice.mapToUi(),
+                        devices = mapListToUi(
+                            devices = devices,
+                            activeDevices = activeDevices
+                        ),
+                        deviceSelected = firstDevice.mapToUi(
+                            activeDevices = activeDevices
+                        ),
                     )
                 } else {
                     DevicesStateUiModel.WithDevices(
-                        devices = mapToUi(devices),
-                        deviceSelected = current.mapToUi(),
+                        devices = mapListToUi(
+                            devices = devices,
+                            activeDevices = activeDevices
+                        ),
+                        deviceSelected = current.mapToUi(
+                            activeDevices = activeDevices
+                        ),
                     )
                 }
             }

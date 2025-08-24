@@ -1,8 +1,9 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package io.github.openflocon.flocondesktop.features.network.badquality.list
+package io.github.openflocon.flocondesktop.features.network.badquality.list.view
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.network.badquality.BadQualityNetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.view.BadQualityEditionWindow
-import io.github.openflocon.flocondesktop.features.network.badquality.list.view.NetworkBadQualityContent
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -45,7 +45,7 @@ private fun BadNetworkQualityContent(
 
     NetworkBadQualityContent(
         lines = items,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         onItemClicked = viewModel::select,
         onAddItemClicked = viewModel::create,
         onDeleteClicked = viewModel::delete,

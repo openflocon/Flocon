@@ -129,12 +129,13 @@ class BadQualityConfigLocalDataSourceImpl(
     private fun defaultConfig(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<BadQualityConfigDomainModel> {
         // to be sure we don't have doubles
         val idPrefix = deviceIdAndPackageName.deviceId + deviceIdAndPackageName.packageName
+        val now = System.currentTimeMillis()
         return listOf(
             BadQualityConfigDomainModel(
                 id = idPrefix + "low_latency",
                 isEnabled = false,
                 name = "Low latency",
-                createdAt = Instant.fromEpochMilliseconds(System.currentTimeMillis()),
+                createdAt = Instant.fromEpochMilliseconds(now + 1) ,
                 latency = BadQualityConfigDomainModel.LatencyConfig(
                     minLatencyMs = 100,
                     maxLatencyMs = 400,
@@ -147,7 +148,7 @@ class BadQualityConfigLocalDataSourceImpl(
                 id = idPrefix + "medium_latency",
                 isEnabled = false,
                 name = "Medium latency",
-                createdAt = Instant.fromEpochMilliseconds(System.currentTimeMillis()),
+                createdAt = Instant.fromEpochMilliseconds(now + 2),
                 latency = BadQualityConfigDomainModel.LatencyConfig(
                     minLatencyMs = 2000,
                     maxLatencyMs = 4000,
@@ -160,7 +161,7 @@ class BadQualityConfigLocalDataSourceImpl(
                 id = idPrefix + "high_latency",
                 isEnabled = false,
                 name = "High latency",
-                createdAt = Instant.fromEpochMilliseconds(System.currentTimeMillis()),
+                createdAt = Instant.fromEpochMilliseconds(now + 3),
                 latency = BadQualityConfigDomainModel.LatencyConfig(
                     minLatencyMs = 10_000,
                     maxLatencyMs = 30_000,
@@ -173,7 +174,7 @@ class BadQualityConfigLocalDataSourceImpl(
                 id = idPrefix + "timeout",
                 isEnabled = false,
                 name = "100% Timeout",
-                createdAt = Instant.fromEpochMilliseconds(System.currentTimeMillis()),
+                createdAt = Instant.fromEpochMilliseconds(now + 4),
                 latency = BadQualityConfigDomainModel.LatencyConfig(
                     minLatencyMs = 0,
                     maxLatencyMs = 0,
@@ -193,7 +194,7 @@ class BadQualityConfigLocalDataSourceImpl(
                 id = idPrefix + "server_down",
                 isEnabled = false,
                 name = "Server Down",
-                createdAt = Instant.fromEpochMilliseconds(System.currentTimeMillis()),
+                createdAt = Instant.fromEpochMilliseconds(now + 5),
                 latency = BadQualityConfigDomainModel.LatencyConfig(
                     minLatencyMs = 0,
                     maxLatencyMs = 0,

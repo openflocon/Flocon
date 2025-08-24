@@ -62,6 +62,28 @@ class AnalyticsLocalDataSourceRoom(
         )
     }
 
+    override suspend fun deleteAnalyticsItem(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsItemId: String
+    ) {
+        analyticsDao.deleteAnalyticsItem(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            analyticsItemId = analyticsItemId,
+        )
+    }
+
+    override suspend fun deleteBefore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsItemId: String
+    ) {
+        analyticsDao.deleteBefore(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            analyticsItemId = analyticsItemId,
+        )
+    }
+
     override suspend fun getDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<AnalyticsIdentifierDomainModel> =
         analyticsDao.getAnalyticsForDevice(
             deviceId = deviceIdAndPackageName.deviceId,

@@ -43,6 +43,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.col
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.previewTextFilterState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -203,37 +204,24 @@ private fun TextFilterFieldView(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Box(
+        FloconTextField(
+            value = value,
+            onValueChange = { value = it },
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    // default action -> add as "include filter"
+                    submitTextField(value, true)
+                    value = "" // reset
+                },
+            ),
+            placeholder = defaultPlaceHolder("Filter by value"),
+            textStyle = FloconTheme.typography.bodySmall.copy(
+                color = FloconTheme.colorPalette.onSurface,
+            ),
+            containerColor = FloconTheme.colorPalette.panel,
             modifier = Modifier
                 .weight(1f)
-                .background(
-                    color = Color.White.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(8.dp),
-                ).padding(horizontal = 12.dp, vertical = 8.dp),
-        ) {
-            if (value.isEmpty()) {
-                Text(
-                    text = "Filter by value",
-                    style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
-                )
-            }
-            FloconTextField(
-                value = value,
-                onValueChange = { value = it },
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        // default action -> add as "include filter"
-                        submitTextField(value, true)
-                        value = "" // reset
-                    },
-                ),
-                textStyle = FloconTheme.typography.bodySmall.copy(
-                    color = FloconTheme.colorPalette.onSurface,
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        )
         TextFilterButton(
             icon = Icons.Outlined.AddCircle,
             enabled = value.isNotEmpty(),
