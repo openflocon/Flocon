@@ -5,6 +5,7 @@ import io.github.openflocon.data.core.table.datasource.TableLocalDataSource
 import io.github.openflocon.data.core.table.datasource.TableRemoteDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
@@ -62,6 +63,20 @@ class TableRepositoryImpl(
     override suspend fun deleteTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableIdentifierDomainModel) {
         withContext(dispatcherProvider.data) {
             tableLocalDataSource.delete(deviceIdAndPackageName = deviceIdAndPackageName, tableId = tableId)
+        }
+    }
+
+    override suspend fun deleteItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, itemId: String) {
+        withContext(dispatcherProvider.data) {
+            tableLocalDataSource.deleteItem(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                itemId = itemId,
+            )
+        }
+    }
+    override suspend fun deleteBefore(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, itemId: String) {
+        withContext(dispatcherProvider.data) {
+            tableLocalDataSource.deleteBefore(deviceIdAndPackageName = deviceIdAndPackageName, itemId = itemId)
         }
     }
 

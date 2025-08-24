@@ -84,4 +84,43 @@ interface FloconTableDao {
         """,
     )
     suspend fun deleteTableContent(tableId: Long)
+
+    @Transaction
+    @Query(
+        """
+        DELETE FROM TableItemEntity 
+        WHERE itemId = :itemId 
+          AND tableId IN (
+            SELECT id FROM TableEntity 
+            WHERE deviceId = :deviceId 
+              AND packageName = :packageName
+          )
+    """
+    )
+    suspend fun deleteItem(
+        deviceId: DeviceId,
+        packageName: String,
+        itemId: String
+    )
+
+    @Transaction
+    @Query(
+        """
+        DELETE FROM TableItemEntity 
+        WHERE createdAt < (
+            SELECT TIE.createdAt 
+            FROM TableItemEntity AS TIE
+            JOIN TableEntity AS TE ON TIE.tableId = TE.id
+            WHERE TIE.itemId = :itemId 
+              AND TE.deviceId = :deviceId
+              AND TE.packageName = :packageName
+        ) AND tableId IN (
+            SELECT id FROM TableEntity 
+            WHERE deviceId = :deviceId
+              AND packageName = :packageName
+        )
+    """
+    )
+    suspend fun deleteBefore(deviceId: DeviceId, packageName: String, itemId: String)
+
 }

@@ -1,12 +1,14 @@
 package io.github.openflocon.flocondesktop.features.table.delegate
 
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.table.models.TableIdentifierDomainModel
 import io.github.openflocon.domain.table.usecase.ObserveCurrentDeviceSelectedTableUseCase
 import io.github.openflocon.domain.table.usecase.ObserveDeviceTablesUseCase
+import io.github.openflocon.domain.table.usecase.RemoveTableItemUseCase
+import io.github.openflocon.domain.table.usecase.RemoveTableItemsBeforeUseCase
 import io.github.openflocon.domain.table.usecase.SelectCurrentDeviceTableUseCase
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.flocondesktop.features.table.mapper.toUi
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,6 +24,8 @@ class TableSelectorDelegate(
     private val closeableDelegate: CloseableDelegate,
     private val dispatcherProvider: DispatcherProvider,
     private val selectCurrentDeviceTableUseCase: SelectCurrentDeviceTableUseCase,
+    private val removeTableItemsBeforeUseCase: RemoveTableItemsBeforeUseCase,
+    private val removeTableItemUseCase: RemoveTableItemUseCase,
 ) : CloseableScoped by closeableDelegate {
 
     val deviceTables: StateFlow<TablesStateUiModel> =
@@ -33,15 +37,13 @@ class TableSelectorDelegate(
                 TablesStateUiModel.Empty
             } else {
                 TablesStateUiModel.WithContent(
-                    tables = tables.map { toUi(it) },
+                    tables = tables.map { it.toUi() },
                     selected =
-                    toUi(
-                        selected ?: run {
+                        (selected ?: run {
                             tables.first().also {
                                 selectCurrentDeviceTableUseCase(it.id)
                             }
-                        },
-                    ),
+                        }).toUi(),
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)
@@ -50,11 +52,6 @@ class TableSelectorDelegate(
                 SharingStarted.WhileSubscribed(5_000),
                 TablesStateUiModel.Loading,
             )
-
-    fun toUi(table: TableIdentifierDomainModel) = DeviceTableUiModel(
-        id = table.id,
-        name = table.name,
-    )
 
     fun onTableSelected(table: DeviceTableUiModel) {
         coroutineScope.launch(dispatcherProvider.viewModel) {
