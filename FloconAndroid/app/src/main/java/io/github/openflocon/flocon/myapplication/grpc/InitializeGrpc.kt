@@ -14,11 +14,7 @@ object GrpcController {
             .forAddress("localhost", 50051)
             .usePlaintext()
             .intercept(
-                FloconGrpcInterceptor(
-                    FloconGrpcFormatter(
-                        shouldExcludeField = FloconGrpcFormatter.defaultFieldExcluder
-                    )
-                )
+                FloconGrpcInterceptor()
             )
             .build()
     }
