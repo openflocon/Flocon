@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.myapplication.grpc
 
+import io.github.openflocon.flocon.grpc.lite.FloconGrpcFormatter
 import io.github.openflocon.flocon.grpc.lite.FloconGrpcInterceptor
 import io.grpc.CallOptions
 import io.grpc.ManagedChannel
@@ -13,7 +14,11 @@ object GrpcController {
             .forAddress("localhost", 50051)
             .usePlaintext()
             .intercept(
-                FloconGrpcInterceptor()
+                FloconGrpcInterceptor(
+                    FloconGrpcFormatter(
+                        shouldExcludeField = FloconGrpcFormatter.defaultFieldExcluder
+                    )
+                )
             )
             .build()
     }
