@@ -8,17 +8,19 @@ import io.github.openflocon.data.local.network.models.graphql.NetworkCallGraphQl
 import io.github.openflocon.data.local.network.models.graphql.NetworkCallGraphQlResponseEmbedded
 import io.github.openflocon.data.local.network.models.grpc.NetworkCallGrpcResponseEmbedded
 import io.github.openflocon.data.local.network.models.http.NetworkCallHttpResponseEmbedded
+import io.github.openflocon.domain.device.models.AppInstance
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 
 fun FloconNetworkCallDomainModel.toEntity(
-    deviceId: DeviceId,
-    packageName: String
+    deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
 ): FloconNetworkCallEntity {
     return FloconNetworkCallEntity(
         callId = callId,
-        deviceId = deviceId,
-        packageName = packageName,
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        appInstance = deviceIdAndPackageName.appInstance,
         type = when (this.request.specificInfos) {
             is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> FloconNetworkCallType.HTTP
             is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> FloconNetworkCallType.GRAPHQL
