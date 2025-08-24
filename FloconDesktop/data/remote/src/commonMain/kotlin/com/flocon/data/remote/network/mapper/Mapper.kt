@@ -6,6 +6,7 @@ import com.flocon.data.remote.network.models.MockNetworkResponseDataModel
 import io.github.openflocon.data.core.network.graphql.model.GraphQlExtracted
 import io.github.openflocon.data.core.network.graphql.model.GraphQlRequestBody
 import io.github.openflocon.data.core.network.graphql.model.GraphQlResponseBody
+import io.github.openflocon.domain.device.models.AppInstance
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
@@ -40,7 +41,10 @@ fun toRemote(mock: MockNetworkDomainModel): MockNetworkResponseDataModel = MockN
 )
 
 @OptIn(ExperimentalUuidApi::class)
-fun toDomain(decoded: FloconNetworkRequestDataModel): FloconNetworkCallDomainModel? = try {
+fun toDomain(
+    decoded: FloconNetworkRequestDataModel,
+    appInstance: AppInstance,
+): FloconNetworkCallDomainModel? = try {
     val graphQl = extractGraphQl(decoded)
 
     val callId = decoded.floconCallId!!
@@ -65,6 +69,7 @@ fun toDomain(decoded: FloconNetworkRequestDataModel): FloconNetworkCallDomainMod
 
     FloconNetworkCallDomainModel(
         callId = callId,
+        appInstance = appInstance,
         request = request,
         response = null, // for now it's null
     )

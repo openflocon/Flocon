@@ -60,8 +60,8 @@ class NetworkRemoteDataSourceImpl(
         )
     }
 
-    override fun getRequestData(message: FloconIncomingMessageDomainModel): FloconNetworkCallDomainModel? = json.safeDecodeFromString<FloconNetworkRequestDataModel>(message.body)
-        ?.let { com.flocon.data.remote.network.mapper.toDomain(it) }
+    override fun getRequestData(message: FloconIncomingMessageDomainModel,): FloconNetworkCallDomainModel? = json.safeDecodeFromString<FloconNetworkRequestDataModel>(message.body)
+        ?.let { com.flocon.data.remote.network.mapper.toDomain(it, appInstance = message.appInstance) }
 
     override fun getCallId(message: FloconIncomingMessageDomainModel): FloconNetworkCallIdDomainModel? = json.safeDecodeFromString<FloconNetworkCallIdDataModel>(message.body)
         ?.let(FloconNetworkCallIdDataModel::toDomain)

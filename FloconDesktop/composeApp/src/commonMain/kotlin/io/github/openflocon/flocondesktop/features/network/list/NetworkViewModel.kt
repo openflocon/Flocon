@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsByIdUseCase
@@ -47,6 +48,7 @@ class NetworkViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
     private val headerDelegate: HeaderDelegate,
     private val sortAndFilterNetworkItemsProcessor: SortAndFilterNetworkItemsProcessor,
+    private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) : ViewModel(headerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -74,10 +76,20 @@ class NetworkViewModel(
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
+    private val items = combine(
+        observeHttpRequestsUseCase(lite = true),
+        observeCurrentDeviceIdAndPackageNameUseCase(),
+    ) { list, deviceIdAndPackageName ->
+        list.map { networkCall ->
+            networkCall to toUi(
+                networkCall = networkCall,
+                deviceIdAndPackageName = deviceIdAndPackageName
+            )
+        } // keep the domain for the filter
+    }
+
     private val filteredItems = combine(
-        observeHttpRequestsUseCase(lite = true).map { list ->
-            list.map { it to toUi(it) }
-        }, // keep the domain for the filter
+        items,
         filterUiState,
         headerDelegate.sorted,
         headerDelegate.allowedMethods(),

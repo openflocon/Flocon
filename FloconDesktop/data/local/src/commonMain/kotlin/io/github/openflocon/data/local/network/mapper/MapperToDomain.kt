@@ -10,6 +10,7 @@ fun FloconNetworkCallEntity.toDomainModel(): FloconNetworkCallDomainModel? {
     return try {
         FloconNetworkCallDomainModel(
             callId = callId,
+            appInstance = appInstance,
             request = toRequestDomainModel(),
             response = response?.toDomainModel(),
         )

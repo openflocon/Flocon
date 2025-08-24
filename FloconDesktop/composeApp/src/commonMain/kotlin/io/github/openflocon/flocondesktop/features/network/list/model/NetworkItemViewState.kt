@@ -14,6 +14,7 @@ data class NetworkItemViewState(
     val status: NetworkStatusUi,
     val method: NetworkMethodUi,
     val isMocked: Boolean,
+    val isFromOldAppInstance: Boolean,
 ) {
 
     fun contains(text: String): Boolean = type.contains(text) ||
@@ -70,6 +71,7 @@ fun previewNetworkItemViewState(): NetworkItemViewState = NetworkItemViewState(
         method = "get",
     ),
     isMocked = false,
+    isFromOldAppInstance = false,
 )
 
 fun previewGraphQlItemViewState(): NetworkItemViewState = NetworkItemViewState(
@@ -85,4 +87,5 @@ fun previewGraphQlItemViewState(): NetworkItemViewState = NetworkItemViewState(
         queryName = "GetUserInfoQuery",
     ),
     isMocked = false,
+    isFromOldAppInstance = false,
 )

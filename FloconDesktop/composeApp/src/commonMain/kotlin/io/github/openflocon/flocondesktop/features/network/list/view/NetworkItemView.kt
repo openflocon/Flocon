@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,6 +52,11 @@ fun NetworkItemView(
         Row(
             modifier = modifier
                 .clip(shape = RoundedCornerShape(8.dp))
+                .then(
+                    if (state.isFromOldAppInstance) {
+                        Modifier.alpha(0.4f)
+                    } else Modifier
+                )
                 .then(
                     if (state.isMocked) {
                         Modifier.background(Color.Yellow.copy(alpha = 0.05f))

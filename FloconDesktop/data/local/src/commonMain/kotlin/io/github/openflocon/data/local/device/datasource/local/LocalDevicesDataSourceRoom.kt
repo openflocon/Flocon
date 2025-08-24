@@ -5,6 +5,7 @@ import io.github.openflocon.data.core.device.datasource.local.model.InsertResult
 import io.github.openflocon.data.local.device.datasource.dao.DevicesDao
 import io.github.openflocon.data.local.device.datasource.mapper.toDomainModel
 import io.github.openflocon.data.local.device.datasource.mapper.toEntity
+import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
@@ -41,19 +42,27 @@ class LocalDevicesDataSourceRoom(
         deviceId: DeviceId,
         app: DeviceAppDomainModel
     ): InsertResult {
-        val appEntity = dao.getDeviceAppByPackageName(deviceId = deviceId, packageName = app.packageName)
-        if (appEntity != null) {
-            return InsertResult.Exists
-        }
+        val appEntity =
+            dao.getDeviceAppByPackageName(deviceId = deviceId, packageName = app.packageName)
 
-        // update the app instance if needed
-        dao.insertDeviceApp(
-            app.toEntity(
-                parentDeviceId = deviceId,
+        return if (appEntity ==  null) {
+            dao.insertDeviceApp(
+                app.toEntity(
+                    parentDeviceId = deviceId,
+                )
             )
-        )
-
-        return InsertResult.New
+            InsertResult.New
+        } else if (appEntity.lastAppInstance != app.lastAppInstance) {
+            // update the app instance if needed
+            dao.insertDeviceApp(
+                app.toEntity(
+                    parentDeviceId = deviceId,
+                )
+            )
+            InsertResult.Updated
+        } else {
+            InsertResult.Exists
+        }
     }
 
     override fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>> {
@@ -63,9 +72,22 @@ class LocalDevicesDataSourceRoom(
 
     override suspend fun getDeviceAppByPackage(
         deviceId: DeviceId,
-        packageName: String
+        packageName: AppPackageName
     ): DeviceAppDomainModel? {
-        return dao.getDeviceAppByPackageName(deviceId, packageName)?.toDomainModel()
+        return dao.getDeviceAppByPackageName(
+            deviceId = deviceId,
+            packageName = packageName,
+        )?.toDomainModel()
+    }
+
+    override fun observeDeviceAppByPackage(
+        deviceId: DeviceId,
+        packageName: AppPackageName
+    ): Flow<DeviceAppDomainModel?> {
+        return dao.observeDeviceAppByPackageName(
+            deviceId = deviceId,
+            packageName = packageName,
+        ).map { it?.toDomainModel() }
     }
 
     override suspend fun saveAppIcon(

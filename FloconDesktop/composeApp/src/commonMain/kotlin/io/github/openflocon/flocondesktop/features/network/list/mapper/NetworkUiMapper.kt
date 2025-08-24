@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.list.mapper
 
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.byteSize
 import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
@@ -10,8 +11,6 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 import kotlin.time.Instant
-
-fun listToUi(networkCalls: List<FloconNetworkCallDomainModel>): List<NetworkItemViewState> = networkCalls.map { toUi(it) }
 
 fun extractDomain(url: String): String {
     // Parse l'URL en un objet Url
@@ -42,18 +41,24 @@ fun extractPath(url: String): String {
     return parsedUrl.encodedPathAndQuery
 }
 
-fun toUi(networkCall: FloconNetworkCallDomainModel): NetworkItemViewState = NetworkItemViewState(
-    uuid = networkCall.callId,
-    dateFormatted = formatTimestamp(networkCall.request.startTime),
-    timeFormatted = networkCall.response?.durationMs?.let { formatDuration(it) },
-    requestSize = ByteFormatter.formatBytes(networkCall.request.byteSize),
-    responseSize = networkCall.byteSize()?.let { ByteFormatter.formatBytes(it) },
-    domain = getDomainUi(networkCall),
-    type = toTypeUi(networkCall),
-    method = getMethodUi(networkCall),
-    status = getStatusUi(networkCall),
-    isMocked = networkCall.request.isMocked,
-)
+fun toUi(
+    networkCall: FloconNetworkCallDomainModel,
+    deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?
+): NetworkItemViewState {
+    return NetworkItemViewState(
+        uuid = networkCall.callId,
+        dateFormatted = formatTimestamp(networkCall.request.startTime),
+        timeFormatted = networkCall.response?.durationMs?.let { formatDuration(it) },
+        requestSize = ByteFormatter.formatBytes(networkCall.request.byteSize),
+        responseSize = networkCall.byteSize()?.let { ByteFormatter.formatBytes(it) },
+        domain = getDomainUi(networkCall),
+        type = toTypeUi(networkCall),
+        method = getMethodUi(networkCall),
+        status = getStatusUi(networkCall),
+        isMocked = networkCall.request.isMocked,
+        isFromOldAppInstance = deviceIdAndPackageName?.appInstance?.let { it != networkCall.appInstance } ?: false
+    )
+}
 
 fun getDomainUi(networkRequest: FloconNetworkCallDomainModel): String = when (networkRequest.request.specificInfos) {
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> extractDomainAndPath(networkRequest.request.url)

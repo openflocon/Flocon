@@ -1,8 +1,10 @@
 package io.github.openflocon.data.local.device.datasource.local
 
 import io.github.openflocon.data.core.device.datasource.local.LocalCurrentDeviceDataSource
-import io.github.openflocon.domain.device.models.DeviceAppDomainModel
+import io.github.openflocon.domain.device.models.AppInstance
+import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,8 +19,8 @@ class LocalCurrentDeviceDataSourceInMemory : LocalCurrentDeviceDataSource {
     override val currentDeviceId = _currentDeviceId.asStateFlow()
 
     private val connectedDevicesForSession = MutableStateFlow(emptySet<DeviceId>())
-    private val connectedDevicesAndAppsForSession = MutableStateFlow(emptySet<Pair<DeviceId,String>>())
-    private val currentDeviceApp = MutableStateFlow(emptyMap<DeviceId, DeviceAppDomainModel>())
+    private val connectedDevicesAndAppsForSession = MutableStateFlow(emptySet<DeviceIdAndPackageNameDomainModel>())
+    private val currentDeviceApp = MutableStateFlow(emptyMap<DeviceId, AppPackageName>())
 
     override suspend fun getCurrentDeviceId(): DeviceId? {
         return _currentDeviceId.value
@@ -28,9 +30,9 @@ class LocalCurrentDeviceDataSourceInMemory : LocalCurrentDeviceDataSource {
         _currentDeviceId.value = deviceId
     }
 
-    override suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel) {
+    override suspend fun selectApp(deviceId: DeviceId, packageName: AppPackageName) {
         currentDeviceApp.update {
-            it + (deviceId to app)
+            it + (deviceId to packageName)
         }
     }
 
@@ -42,28 +44,24 @@ class LocalCurrentDeviceDataSourceInMemory : LocalCurrentDeviceDataSource {
        return connectedDevicesForSession.first().contains(deviceId)
     }
 
-    override fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?> {
+    override fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<AppPackageName?> {
         return currentDeviceApp.map { it[deviceId] }
     }
 
-    override suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel? {
+    override suspend fun getDeviceSelectedApp(deviceId: DeviceId): AppPackageName? {
         return currentDeviceApp.first()[deviceId]
     }
 
     override suspend fun isKnownAppForThisSession(
-        deviceId: DeviceId,
-        packageName: String
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Boolean {
-        val element = deviceId to packageName
-        return connectedDevicesAndAppsForSession.first().contains(element)
+        return connectedDevicesAndAppsForSession.first().contains(deviceIdAndPackageName)
     }
 
     override suspend fun addNewDeviceAppConnectedForThisSession(
-        deviceId: DeviceId,
-        packageName: String
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ) {
-        val element = deviceId to packageName
-        connectedDevicesAndAppsForSession.update { it + element }
+        connectedDevicesAndAppsForSession.update { it + deviceIdAndPackageName }
     }
 
     override suspend fun clear() {
