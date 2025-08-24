@@ -34,16 +34,15 @@ fun FileItemRow(
     modifier: Modifier = Modifier,
 ) {
     ContextualView(
-        file.contextualActions.map {
+        file.contextualActions.map { action ->
             ContextualItem(
-                id = it.id.name,
-                text = it.text,
-            )
-        },
-        onSelect = {
-            onContextualAction(
-                file,
-                FileUiModel.ContextualAction.Action.valueOf(it.id),
+                text = action.text,
+                onClick = {
+                    onContextualAction(
+                        file,
+                        action.id,
+                    )
+                }
             )
         },
     ) {

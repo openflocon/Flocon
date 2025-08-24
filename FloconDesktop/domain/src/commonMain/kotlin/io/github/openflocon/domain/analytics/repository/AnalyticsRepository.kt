@@ -13,4 +13,14 @@ interface AnalyticsRepository {
     suspend fun selectDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsTableId: AnalyticsTableId)
     fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?>
     fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>>
+
+    suspend fun deleteAnalyticsItem(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsItemId: String
+    )
+
+    suspend fun deleteBefore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsItemId: String
+    )
 }

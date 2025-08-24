@@ -89,4 +89,28 @@ interface FloconAnalyticsDao {
         packageName: String,
         analyticsTableId: String,
     )
+
+    @Query(
+        """
+        DELETE FROM AnalyticsItemEntity
+        WHERE itemId = :analyticsItemId
+        AND deviceId = :deviceId
+        AND packageName = :packageName
+        """,
+    )
+    suspend fun deleteAnalyticsItem(
+        deviceId: DeviceId,
+        packageName: String,
+        analyticsItemId: String
+    )
+
+    @Query("""
+        DELETE FROM AnalyticsItemEntity 
+        WHERE createdAt < (SELECT createdAt FROM AnalyticsItemEntity WHERE itemId = :analyticsItemId)
+          AND deviceId = :deviceId
+          AND packageName = :packageName
+    """)
+    suspend fun deleteBefore(deviceId: DeviceId, packageName: String, analyticsItemId: String)
+
+
 }

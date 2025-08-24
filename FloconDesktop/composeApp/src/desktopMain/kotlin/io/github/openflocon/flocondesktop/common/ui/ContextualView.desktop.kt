@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 @Composable
 actual fun ContextualView(
     items: List<ContextualItem>,
-    onSelect: (ContextualItem) -> Unit,
     modifier: Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -19,7 +18,7 @@ actual fun ContextualView(
                     ContextMenuItem(
                         label = it.text,
                         onClick = {
-                            onSelect(it)
+                            it.onClick()
                         },
                     )
                 }
