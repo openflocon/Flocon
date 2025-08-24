@@ -6,25 +6,9 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.openflocon.flocon.grpc.FloconGrpcBaseFormatter
 
-class FloconGrpcFormatter : FloconGrpcBaseFormatter {
-
-    private val excluded = setOf(
-        "unknownFields",
-        "memoizedHashCode",
-        "bitField",
-        "memoizedSerializedSize",
-        "bytes",
-    )
-
-    private val defaultFieldExcluder: (name: String) -> Boolean = { name ->
-        var isExcluded = false
-        excluded.forEach { toExclude ->
-            if (name.startsWith(prefix = toExclude)) {
-                isExcluded = true
-            }
-        }
-        isExcluded
-    }
+class FloconGrpcFormatter(
+    private val shouldExcludeField: (name: String) -> Boolean = defaultFieldExcluder,
+) : FloconGrpcBaseFormatter {
 
     private val gson = buildGsonInstance(defaultFieldExcluder)
 
@@ -47,5 +31,25 @@ class FloconGrpcFormatter : FloconGrpcBaseFormatter {
                     return false
                 }
             }).create()
+    }
+
+    companion object {
+        val excluded = setOf(
+            "unknownFields",
+            "memoizedHashCode",
+            "bitField",
+            "memoizedSerializedSize",
+            "bytes",
+        )
+
+        val defaultFieldExcluder: (name: String) -> Boolean = { name ->
+            var isExcluded = false
+            excluded.forEach { toExclude ->
+                if (name.startsWith(prefix = toExclude)) {
+                    isExcluded = true
+                }
+            }
+            isExcluded
+        }
     }
 }

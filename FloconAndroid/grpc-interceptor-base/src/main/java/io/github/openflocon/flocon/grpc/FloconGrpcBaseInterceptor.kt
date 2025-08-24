@@ -19,11 +19,11 @@ import io.grpc.Status
 import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
-abstract class FloconGrpcBaseInterceptor : ClientInterceptor {
+abstract class FloconGrpcBaseInterceptor(
+    private val grpcFormatter: FloconGrpcBaseFormatter,
+) : ClientInterceptor {
 
     private val floconGrpcPlugin = FloconGrpcPlugin()
-
-    abstract val  floconGrpcFormatter: FloconGrpcBaseFormatter
 
     override fun <ReqT : Any?, RespT : Any?> interceptCall(
         method: MethodDescriptor<ReqT, RespT>,
@@ -43,7 +43,7 @@ abstract class FloconGrpcBaseInterceptor : ClientInterceptor {
             callId = callId,
             method = method,
             next = next,
-            formatter = floconGrpcFormatter,
+            formatter = grpcFormatter,
             callOptions = callOptions,
         )
     }

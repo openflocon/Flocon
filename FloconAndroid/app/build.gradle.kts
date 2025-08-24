@@ -66,7 +66,7 @@ android {
     }
 }
 
-val useMaven = true
+val useMaven = false
 dependencies {
     if(useMaven) {
         val floconVersion = "1.1.2"
