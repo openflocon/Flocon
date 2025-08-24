@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsViewModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
@@ -56,7 +57,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
         selectedItem = selectedItem,
         onResetClicked = viewModel::onResetClicked,
         modifier = modifier,
-        onClickItem = viewModel::onClickItem, // TODO click outside
+        onAction = viewModel::onAction,
     )
 }
 
@@ -67,7 +68,7 @@ fun AnalyticsScreen(
     content: AnalyticsContentStateUiModel,
     onResetClicked: () -> Unit,
     selectedItem: AnalyticsRowUiModel?,
-    onClickItem: (selected: AnalyticsRowUiModel?) -> Unit,
+    onAction: (AnalyticsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var analyticsItems by remember { mutableStateOf<List<AnalyticsRowUiModel>>(emptyList()) }
@@ -110,7 +111,7 @@ fun AnalyticsScreen(
                             enabled = selectedItem != null,
                         ) {
                             // close detail panel
-                            onClickItem(null)
+                            onAction(AnalyticsAction.ClosePanel)
                         },
                 ) {
                     LazyColumn(
@@ -126,7 +127,7 @@ fun AnalyticsScreen(
                                     AnalyticsRowView(
                                         model = item,
                                         modifier = Modifier.fillMaxWidth(),
-                                        onClick = onClickItem,
+                                        onAction = onAction,
                                     )
                                 }
                             }
@@ -158,7 +159,7 @@ private fun AnalyticsScreenPreview() {
             onResetClicked = {},
             selectedItem = null,
             content = previewAnalyticsContentStateUiModel(),
-            onClickItem = {},
+            onAction = {},
             modifier = Modifier.fillMaxSize(),
         )
     }
