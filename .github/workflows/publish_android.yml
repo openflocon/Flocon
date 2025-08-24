@@ -23,9 +23,9 @@ jobs:
               :flocon:publishToMavenCentral \
               :flocon-no-op:publishToMavenCentral \
               :okhttp-interceptor:publishToMavenCentral \
-              :grpc-interceptor-base:publishToMavenCentral \
-              :grpc-interceptor-lite:publishToMavenCentral \
-              :grpc-interceptor:publishToMavenCentral \
+              :grpc:grpc-interceptor-base:publishToMavenCentral \
+              :grpc:grpc-interceptor-lite:publishToMavenCentral \
+              :grpc:grpc-interceptor:publishToMavenCentral \
               :ktor-interceptor:publishToMavenCentral \
               --no-configuration-cache
         working-directory: FloconAndroid
