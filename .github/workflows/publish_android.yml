@@ -23,6 +23,8 @@ jobs:
               :flocon:publishToMavenCentral \
               :flocon-no-op:publishToMavenCentral \
               :okhttp-interceptor:publishToMavenCentral \
+              :grpc-interceptor-base:publishToMavenCentral \
+              :grpc-interceptor-lite:publishToMavenCentral \
               :grpc-interceptor:publishToMavenCentral \
               :ktor-interceptor:publishToMavenCentral \
               --no-configuration-cache
