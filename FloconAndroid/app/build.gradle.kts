@@ -66,19 +66,20 @@ android {
     }
 }
 
-val useMaven = false
+val useMaven = true
 dependencies {
     if(useMaven) {
-        val floconVersion = "1.0.5"
+        val floconVersion = "1.1.2"
         implementation("io.github.openflocon:flocon:$floconVersion")
         //implementation("io.github.openflocon:flocon-no-op:$floconVersion")
-        implementation("io.github.openflocon:flocon-grpc-interceptor:$floconVersion")
+        implementation("io.github.openflocon:flocon-grpc-interceptor-lite:$floconVersion")
         implementation("io.github.openflocon:flocon-okhttp-interceptor:$floconVersion")
+        implementation("io.github.openflocon:flocon-ktor-interceptor:$floconVersion")
     } else {
         debugImplementation(project(":flocon"))
         releaseImplementation(project(":flocon-no-op"))
         implementation(project(":okhttp-interceptor"))
-        implementation(project(":grpc-interceptor"))
+        implementation(project(":grpc-interceptor-lite"))
         implementation(project(":ktor-interceptor"))
     }
 
@@ -106,7 +107,7 @@ dependencies {
 
     // region grpc
     implementation(libs.grpc.android)
-    implementation(libs.grpc.kotin.stub)
+    implementation(libs.grpc.kotlin.stub)
     implementation(libs.grpc.protobuf.lite)
     implementation(libs.grpc.okhttp)
     implementation(libs.protobuf.kotlin.lite)
