@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.openflocon.flocon.grpc"
+    namespace = "io.github.openflocon.flocon.grpc.lite"
     compileSdk = 36
 
     defaultConfig {
@@ -35,10 +35,10 @@ android {
 }
 
 dependencies {
-    api(project(":grpc-interceptor-base"))
+    api(project(":grpc:grpc-interceptor-base"))
 
     implementation(libs.grpc.android)
-    implementation(libs.protobuf.util)
+    implementation(libs.gson)
 }
 
 
@@ -53,13 +53,13 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-        artifactId = "flocon-grpc-interceptor",
+        artifactId = "flocon-grpc-interceptor-lite",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
 
     pom {
-        name = "Flocon Grpc Interceptor"
+        name = "Flocon Grpc Interceptor Lite"
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"
