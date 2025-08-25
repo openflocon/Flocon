@@ -23,7 +23,6 @@ import io.github.openflocon.flocondesktop.main.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.main.ui.view.TopBarDeviceAndAppView
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 
@@ -34,6 +33,7 @@ fun MainScreenTopBar(
     appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
+    onTakeScreenshotClicked: () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -48,6 +48,7 @@ fun MainScreenTopBar(
             appsState = appsState,
             onDeviceSelected = onDeviceSelected,
             onAppSelected = onAppSelected,
+            onTakeScreenshotClicked = onTakeScreenshotClicked,
         )
     }
 }

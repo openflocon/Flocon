@@ -5,16 +5,22 @@ import androidx.compose.runtime.Immutable
 @Immutable
 sealed interface DevicesStateUiModel {
 
-    @Immutable
-    data object Loading : DevicesStateUiModel
+    val deviceSelected: DeviceItemUiModel?
 
     @Immutable
-    data object Empty : DevicesStateUiModel
+    data object Loading : DevicesStateUiModel {
+        override val deviceSelected: DeviceItemUiModel? = null
+    }
+
+    @Immutable
+    data object Empty : DevicesStateUiModel {
+        override val deviceSelected: DeviceItemUiModel? = null
+    }
 
     @Immutable
     data class WithDevices(
         val devices: List<DeviceItemUiModel>,
-        val deviceSelected: DeviceItemUiModel,
+        override val deviceSelected: DeviceItemUiModel,
     ) : DevicesStateUiModel
 }
 

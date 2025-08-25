@@ -3,6 +3,8 @@ package io.github.openflocon.flocondesktop.main.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
 import io.github.openflocon.flocondesktop.main.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.main.ui.model.AppsStateUiModel
@@ -28,6 +30,8 @@ class MainViewModel(
     private val devicesDelegate: DevicesDelegate,
     private val dispatcherProvider: DispatcherProvider,
     private val initialSetupStateHolder: InitialSetupStateHolder,
+    private val takeScreenshotUseCase : TakeScreenshotUseCase,
+    private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel(
     devicesDelegate,
 ) {
@@ -71,6 +75,19 @@ class MainViewModel(
 
     fun onClickLeftPanelItem(leftPanelItem: LeftPanelItem) {
         this.subScreen.update { SubScreen.fromId(leftPanelItem.id) }
+    }
+
+    fun onTakeScreenshotClicked() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            takeScreenshotUseCase().fold(
+                doOnFailure = {
+                    feedbackDisplayer.displayMessage(it.message ?: "Unknown error")
+                },
+                doOnSuccess = {
+                    feedbackDisplayer.displayMessage("Success, file saved in Desktop")
+                },
+            )
+        }
     }
 }
 

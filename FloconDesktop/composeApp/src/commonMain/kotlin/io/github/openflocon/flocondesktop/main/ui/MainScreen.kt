@@ -81,6 +81,7 @@ fun MainScreen(
             onAppSelected = viewModel::onAppSelected,
             leftPanelState = leftPanelState,
             onClickLeftPanelItem = viewModel::onClickLeftPanelItem,
+            onTakeScreenshotClicked = viewModel::onTakeScreenshotClicked,
         )
     }
 }
@@ -94,6 +95,7 @@ private fun MainScreen(
     appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
+    onTakeScreenshotClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(true) }
@@ -114,6 +116,7 @@ private fun MainScreen(
             appsState = appsState,
             onDeviceSelected = onDeviceSelected,
             onAppSelected = onAppSelected,
+            onTakeScreenshotClicked = onTakeScreenshotClicked,
         )
         Box(
             modifier = Modifier.fillMaxSize().onGloballyPositioned {

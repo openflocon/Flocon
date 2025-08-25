@@ -100,6 +100,9 @@ actual fun askSerialToAllDevices(adbPath: String, command: String, serialVariabl
 
 private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): Either<Throwable, String> = try {
     val process = Runtime.getRuntime().exec("$adbPath $command")
+    if(command.contains("reverse").not())
+        println("Executing command: $adbPath $command")
+
     val output = process.inputStream.bufferedReader().use { it.readText() }
     val error = process.errorStream.bufferedReader().use { it.readText() }
     val exitCode = process.waitFor()
