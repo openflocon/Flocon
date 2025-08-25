@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +21,6 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
@@ -41,6 +41,7 @@ import io.github.openflocon.flocondesktop.features.network.mock.list.view.Networ
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.view.NetworkBodyWindow
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
@@ -83,18 +84,11 @@ fun NetworkScreen(
                         onClick = { onAction(NetworkAction.ClosePanel) },
                     ),
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                        .background(FloconTheme.colorPalette.background)
+                FloconPageTopBar(
+                    title = "Network",
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    Text(
-                        text = "Network",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(all = 12.dp),
-                        style = FloconTheme.typography.titleLarge,
-                        color = FloconTheme.colorPalette.onSurface,
-                    )
                     NetworkFilter(
                         modifier = Modifier
                             .fillMaxWidth()

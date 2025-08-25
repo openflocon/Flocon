@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 
 @Composable
@@ -43,39 +44,19 @@ fun NetworkFilter(
                 imageVector = Icons.Outlined.Delete,
                 onClick = { onAction(NetworkAction.Reset) },
             )
-            Box(
-                modifier = Modifier.clip(RoundedCornerShape(8.dp))
-                    .background(Color.White.copy(alpha = 0.9f))
-                    .clickable(
-                        onClick = {
-                            onAction(NetworkAction.OpenMocks)
-                        },
-                    )
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+            FloconButton(
+                onClick = {
+                    onAction(NetworkAction.OpenMocks)
+                },
             ) {
-                Text(
-                    text = "Mocks",
-                    style = FloconTheme.typography.bodyMedium.copy(
-                        color = Color.Black,
-                    ),
-                )
+                Text("Mocks")
             }
-            Box(
-                modifier = Modifier.clip(RoundedCornerShape(8.dp))
-                    .background(Color.White.copy(alpha = 0.9f))
-                    .clickable(
-                        onClick = {
-                            onAction(NetworkAction.OpenBadNetworkQuality)
-                        },
-                    )
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+            FloconButton(
+                onClick = {
+                    onAction(NetworkAction.OpenBadNetworkQuality)
+                },
             ) {
-                Text(
-                    text = "Bad Network Quality",
-                    style = FloconTheme.typography.bodyMedium.copy(
-                        color = Color.Black,
-                    ),
-                )
+                Text("Bad Network Quality")
             }
         }
     }

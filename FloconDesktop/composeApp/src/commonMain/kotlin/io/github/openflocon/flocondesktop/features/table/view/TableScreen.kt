@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.flocondesktop.features.deeplinks.view.DeeplinkFreeformItemView
 import io.github.openflocon.flocondesktop.features.table.TableViewModel
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableAction
@@ -41,6 +42,7 @@ import io.github.openflocon.flocondesktop.features.table.model.items
 import io.github.openflocon.flocondesktop.features.table.model.previewTableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.model.previewTablesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -86,31 +88,26 @@ fun TableScreen(
     FloconSurface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize()) {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                        .background(FloconTheme.colorPalette.panel)
-                        .padding(all = 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Text(
-                        text = "Tables",
-                        style = FloconTheme.typography.titleLarge,
-                        color = FloconTheme.colorPalette.onSurface,
-                    )
-
-                    TableSelectorView(
-                        tablesState = deviceTables,
-                        onTableSelected = onTableSelected,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-
-                    TableFilterBar(
-                        tableItems = content.items(),
-                        onResetClicked = onResetClicked,
-                        onItemsChange = {
-                            tableItems = it
-                        },
-                    )
+                FloconPageTopBar(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Tables",
+                ) { contentPadding ->
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(contentPadding),
+                    ) {
+                        TableSelectorView(
+                            tablesState = deviceTables,
+                            onTableSelected = onTableSelected,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        TableFilterBar(
+                            tableItems = content.items(),
+                            onResetClicked = onResetClicked,
+                            onItemsChange = {
+                                tableItems = it
+                            },
+                        )
+                    }
                 }
 
                 FloconSurface(

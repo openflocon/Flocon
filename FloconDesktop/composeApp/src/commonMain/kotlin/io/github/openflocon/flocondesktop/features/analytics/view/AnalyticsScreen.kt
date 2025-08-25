@@ -32,6 +32,7 @@ import io.github.openflocon.flocondesktop.features.analytics.model.items
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -76,31 +77,29 @@ fun AnalyticsScreen(
     FloconSurface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize()) {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                        .background(FloconTheme.colorPalette.panel)
-                        .padding(all = 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Text(
-                        text = "Analytics",
-                        style = FloconTheme.typography.titleLarge,
-                        color = FloconTheme.colorPalette.onSurface,
-                    )
+                FloconPageTopBar(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Analytics",
+                ) { contentPadding ->
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(contentPadding),
+                    ) {
 
-                    AnalyticsSelectorView(
-                        analyticsState = deviceAnalytics,
-                        onAnalyticsSelected = onAnalyticsSelected,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                        AnalyticsSelectorView(
+                            analyticsState = deviceAnalytics,
+                            onAnalyticsSelected = onAnalyticsSelected,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
 
-                    AnalyticsFilterBar(
-                        analyticsItems = content.items(),
-                        onResetClicked = onResetClicked,
-                        onItemsChange = {
-                            analyticsItems = it
-                        },
-                    )
+                        AnalyticsFilterBar(
+                            analyticsItems = content.items(),
+                            onResetClicked = onResetClicked,
+                            onItemsChange = {
+                                analyticsItems = it
+                            },
+                        )
+                    }
                 }
 
                 FloconSurface(
