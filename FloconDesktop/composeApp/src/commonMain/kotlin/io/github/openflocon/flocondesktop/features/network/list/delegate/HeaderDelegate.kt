@@ -201,27 +201,43 @@ private fun TextFilterStateUiModel.performAction(
     }
 
     is TextFilterAction.Exclude -> {
-        copy(
-            excludedFilters = (
-                excludedFilters + TextFilterStateUiModel.FilterItem(
-                    text = action.text,
-                    isActive = true,
-                    isExcluded = true,
-                )
-                ).distinctBy { it.text },
+        val newItem = TextFilterStateUiModel.FilterItem(
+            text = action.text,
+            isActive = true,
+            isExcluded = true,
         )
+        val exists = excludedFilters.any { it.text == newItem.text }
+        if (exists) {
+            copy(excludedFilters = (excludedFilters.map {
+                if (it.text == action.text) {
+                    newItem
+                } else {
+                    it
+                }
+            }).distinctBy { it.text })
+        } else {
+            copy(excludedFilters = (excludedFilters + newItem).distinctBy { it.text })
+        }
     }
 
     is TextFilterAction.Include -> {
-        copy(
-            includedFilters = (
-                includedFilters + TextFilterStateUiModel.FilterItem(
-                    text = action.text,
-                    isActive = true,
-                    isExcluded = false,
-                )
-                ).distinctBy { it.text },
+        val newItem = TextFilterStateUiModel.FilterItem(
+            text = action.text,
+            isActive = true,
+            isExcluded = false,
         )
+        val exists = includedFilters.any { it.text == newItem.text }
+        if (exists) {
+            copy(includedFilters = (includedFilters.map {
+                if (it.text == action.text) {
+                    newItem
+                } else {
+                    it
+                }
+            }).distinctBy { it.text })
+        } else {
+            copy(includedFilters = (includedFilters + newItem).distinctBy { it.text })
+        }
     }
 
     is TextFilterAction.SetIsActive -> {
