@@ -20,6 +20,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -44,20 +45,13 @@ private fun DeeplinkScreen(
 ) {
     FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-                    .background(FloconTheme.colorPalette.panel)
-                    .padding(vertical = 16.dp, horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                Text(
-                    text = "Deeplinks",
-                    style = FloconTheme.typography.titleLarge,
-                    color = FloconTheme.colorPalette.onSurface,
-                )
+            FloconPageTopBar(
+                modifier = Modifier.fillMaxWidth(),
+                title = "Deeplinks",
+            ) { contentPadding ->
                 DeeplinkFreeformItemView(
                     submit = submit,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(contentPadding),
                 )
             }
 

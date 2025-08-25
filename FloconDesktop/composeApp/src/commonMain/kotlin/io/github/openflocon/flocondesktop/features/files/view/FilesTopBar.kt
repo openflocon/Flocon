@@ -28,8 +28,10 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.view.SharedPrefSelectorView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -43,20 +45,12 @@ fun FilesTopBar(
     val hasParentFile = current != null
     val isDirectory = current?.isDirectory == true
 
-    Column(
-        modifier = modifier
-            .background(FloconTheme.colorPalette.panel)
-            .padding(vertical = 16.dp, horizontal = 16.dp),
-    ) {
-        Text(
-            text = "Files",
-            modifier = Modifier.padding(bottom = 12.dp),
-            style = FloconTheme.typography.titleLarge,
-            color = FloconTheme.colorPalette.onSurface,
-        )
-
+    FloconPageTopBar(
+        modifier = modifier,
+        title = "Files",
+    ) { contentPadding ->
         Row(
-            modifier = Modifier,
+            modifier = Modifier.padding(contentPadding),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {

@@ -25,6 +25,7 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.Share
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPrefsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -59,22 +60,14 @@ fun SharedPrefScreen(
 ) {
     FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-                    .background(FloconTheme.colorPalette.panel)
-                    .padding(all = 12.dp),
-            ) {
-                Text(
-                    text = "SharedPreference",
-                    modifier = Modifier.padding(bottom = 12.dp),
-                    style = FloconTheme.typography.titleLarge,
-                    color = FloconTheme.colorPalette.onSurface,
-                )
-
+            FloconPageTopBar(
+                title = "SharedPreference",
+            ) { contentPadding ->
                 SharedPrefSelectorView(
                     sharedPrefsState = deviceSharedPrefs,
                     onSharedPrefSelected = onSharedPrefSelected,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(contentPadding),
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))

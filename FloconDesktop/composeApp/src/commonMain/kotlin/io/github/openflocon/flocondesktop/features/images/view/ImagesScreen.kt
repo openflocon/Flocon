@@ -36,6 +36,7 @@ import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -79,26 +80,17 @@ private fun ImagesScreen(
 ) {
     FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Column(
+            FloconPageTopBar(
+                title = "Images",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(FloconTheme.colorPalette.panel)
-                    .padding(vertical = 16.dp, horizontal = 16.dp),
-            ) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = "Images",
-                        modifier = Modifier.padding(bottom = 12.dp),
-                        style = FloconTheme.typography.titleLarge,
-                        color = FloconTheme.colorPalette.onSurface,
-                    )
-                    Box(modifier = Modifier.weight(1f))
+                    .fillMaxWidth(),
+                trailing = {
                     FloconIconButton(
                         imageVector = Icons.Outlined.Delete,
                         onClick = onReset,
                     )
                 }
-            }
+            )
             when (state) {
                 ImagesStateUiModel.Empty,
                 ImagesStateUiModel.Idle,
