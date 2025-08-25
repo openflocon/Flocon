@@ -23,11 +23,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.header.OnFilterAction
+import io.github.openflocon.flocondesktop.features.network.list.model.header.TextFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
@@ -168,6 +171,66 @@ private fun contextualActions(
                         text = "Create Mock",
                         onClick = {
                             onActionCallback(NetworkAction.CreateMock(state))
+                        }
+                    ),
+                )
+                add(
+                    ContextualItem(
+                        text = "Filter: Include this domain",
+                        onClick = {
+                            onActionCallback(
+                                NetworkAction.HeaderAction.FilterAction(
+                                    OnFilterAction.TextFilter(
+                                        column = NetworkTextFilterColumns.Domain,
+                                        action = TextFilterAction.Include(text = state.domain)
+                                    )
+                                )
+                            )
+                        }
+                    ),
+                )
+                add(
+                    ContextualItem(
+                        text = "Filter: Include this url",
+                        onClick = {
+                            onActionCallback(
+                                NetworkAction.HeaderAction.FilterAction(
+                                    OnFilterAction.TextFilter(
+                                        column = NetworkTextFilterColumns.Query,
+                                        action = TextFilterAction.Include(text = state.type.query)
+                                    )
+                                )
+                            )
+                        }
+                    ),
+                )
+                add(
+                    ContextualItem(
+                        text = "Filter: Exclude this domain",
+                        onClick = {
+                            onActionCallback(
+                                NetworkAction.HeaderAction.FilterAction(
+                                    OnFilterAction.TextFilter(
+                                        column = NetworkTextFilterColumns.Domain,
+                                        action = TextFilterAction.Exclude(text = state.domain)
+                                    )
+                                )
+                            )
+                        }
+                    ),
+                )
+                add(
+                    ContextualItem(
+                        text = "Filter: Exclude this url",
+                        onClick = {
+                            onActionCallback(
+                                NetworkAction.HeaderAction.FilterAction(
+                                    OnFilterAction.TextFilter(
+                                        column = NetworkTextFilterColumns.Query,
+                                        action = TextFilterAction.Exclude(text = state.type.query)
+                                    )
+                                )
+                            )
                         }
                     ),
                 )
