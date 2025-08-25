@@ -59,10 +59,6 @@ fun LeftPanelView(
     state: LeftPanelState,
     expanded: Boolean,
     onClickItem: (LeftPanelItem) -> Unit,
-    devicesState: DevicesStateUiModel,
-    appsState: AppsStateUiModel,
-    onDeviceSelected: (DeviceItemUiModel) -> Unit,
-    onAppSelected: (DeviceAppUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -83,17 +79,6 @@ fun LeftPanelView(
             items = state.bottomItems,
             expanded = expanded,
             onClickItem = onClickItem,
-        )
-        LeftPannelDivider(modifier = Modifier.padding(vertical = 12.dp))
-        DeviceSelectorView(
-            panelExpanded = expanded,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 64.dp),
-            devicesState = devicesState,
-            appsState = appsState,
-            onDeviceSelected = onDeviceSelected,
-            onAppSelected = onAppSelected,
         )
     }
 }
@@ -185,11 +170,7 @@ private fun LeftPanelViewPreview() {
                 selectedItem.value = it.id
             },
             modifier = Modifier.wrapContentHeight(),
-            onDeviceSelected = {},
-            onAppSelected = {},
             expanded = false,
-            devicesState = previewDevicesStateUiModel(),
-            appsState = AppsStateUiModel.Empty,
         )
     }
 }
