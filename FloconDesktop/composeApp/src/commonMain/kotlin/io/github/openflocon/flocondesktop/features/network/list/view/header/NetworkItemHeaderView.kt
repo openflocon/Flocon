@@ -36,7 +36,6 @@ fun NetworkItemHeaderView(
 ) {
     Row(
         modifier = modifier
-            .background(FloconTheme.colorPalette.panel)
             .padding(horizontal = 4.dp, vertical = 6.dp)
             .padding(contentPadding),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
