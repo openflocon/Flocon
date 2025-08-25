@@ -44,9 +44,10 @@ class HeaderDelegate(
         val sort: SortedByUiModel.Enabled,
     )
 
-    val textFiltersState: StateFlow<Map<NetworkTextFilterColumns, TextFilterStateUiModel>> = observeNetworkFilterUseCase()
-        .map { it.mapValues { (key, value) -> toTextFilterUi(value) } }
-        .stateIn(coroutineScope, started = SharingStarted.WhileSubscribed(5_000), emptyMap())
+    val textFiltersState: StateFlow<Map<NetworkTextFilterColumns, TextFilterStateUiModel>> =
+        observeNetworkFilterUseCase()
+            .map { it.mapValues { (key, value) -> toTextFilterUi(value) } }
+            .stateIn(coroutineScope, started = SharingStarted.WhileSubscribed(5_000), emptyMap())
 
     val sorted = MutableStateFlow<Sorted?>(null)
     private val methodFilterState = MutableStateFlow(
@@ -104,22 +105,26 @@ class HeaderDelegate(
         domain = NetworkTextColumnUiModel(
             sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Domain }?.sort
                 ?: SortedByUiModel.None,
-            filter = textFiltersState[NetworkTextFilterColumns.Domain] ?: TextFilterStateUiModel.EMPTY,
+            filter = textFiltersState[NetworkTextFilterColumns.Domain]
+                ?: TextFilterStateUiModel.EMPTY,
         ),
         query = NetworkTextColumnUiModel(
             sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Query }?.sort
                 ?: SortedByUiModel.None,
-            filter = textFiltersState[NetworkTextFilterColumns.Query] ?: TextFilterStateUiModel.EMPTY,
+            filter = textFiltersState[NetworkTextFilterColumns.Query]
+                ?: TextFilterStateUiModel.EMPTY,
         ),
         status = NetworkStatusColumnUiModel(
             sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Status }?.sort
                 ?: SortedByUiModel.None,
-            filter = textFiltersState[NetworkTextFilterColumns.Status] ?: TextFilterStateUiModel.EMPTY,
+            filter = textFiltersState[NetworkTextFilterColumns.Status]
+                ?: TextFilterStateUiModel.EMPTY,
         ),
         time = NetworkTextColumnUiModel(
             sortedBy = sorted?.takeIf { it.column == NetworkColumnsTypeUiModel.Time }?.sort
                 ?: SortedByUiModel.None,
-            filter = textFiltersState[NetworkTextFilterColumns.Time] ?: TextFilterStateUiModel.EMPTY,
+            filter = textFiltersState[NetworkTextFilterColumns.Time]
+                ?: TextFilterStateUiModel.EMPTY,
         ),
     )
 
@@ -174,8 +179,9 @@ class HeaderDelegate(
         column: NetworkTextFilterColumns,
         action: TextFilterAction,
     ) {
-        val filter: TextFilterStateUiModel = getNetworkFilterUseCase(column).let { toTextFilterUi(it) }
-        val updated = parformAction(filter, action)
+        val filter: TextFilterStateUiModel =
+            getNetworkFilterUseCase(column).let { toTextFilterUi(it) }
+        val updated = filter.performAction(action)
 
         updateNetworkFilterUseCase(
             column = column,
@@ -184,21 +190,20 @@ class HeaderDelegate(
     }
 }
 
-private fun parformAction(
-    filter: TextFilterStateUiModel,
+private fun TextFilterStateUiModel.performAction(
     action: TextFilterAction,
 ): TextFilterStateUiModel = when (action) {
     is TextFilterAction.Delete -> {
-        filter.copy(
-            includedFilters = filter.includedFilters - action.item,
-            excludedFilters = filter.excludedFilters - action.item,
+        copy(
+            includedFilters = includedFilters - action.item,
+            excludedFilters = excludedFilters - action.item,
         )
     }
 
     is TextFilterAction.Exclude -> {
-        filter.copy(
+        copy(
             excludedFilters = (
-                filter.excludedFilters + TextFilterStateUiModel.FilterItem(
+                excludedFilters + TextFilterStateUiModel.FilterItem(
                     text = action.text,
                     isActive = true,
                     isExcluded = true,
@@ -208,9 +213,9 @@ private fun parformAction(
     }
 
     is TextFilterAction.Include -> {
-        filter.copy(
+        copy(
             includedFilters = (
-                filter.includedFilters + TextFilterStateUiModel.FilterItem(
+                includedFilters + TextFilterStateUiModel.FilterItem(
                     text = action.text,
                     isActive = true,
                     isExcluded = false,
@@ -220,13 +225,13 @@ private fun parformAction(
     }
 
     is TextFilterAction.SetIsActive -> {
-        filter.copy(
-            includedFilters = filter.includedFilters.map {
+        this.copy(
+            includedFilters = includedFilters.map {
                 if (it == action.item) {
                     action.item.copy(isActive = action.isActive)
                 } else it
             },
-            excludedFilters = filter.excludedFilters.map {
+            excludedFilters = excludedFilters.map {
                 if (it == action.item) {
                     action.item.copy(isActive = action.isActive)
                 } else it
