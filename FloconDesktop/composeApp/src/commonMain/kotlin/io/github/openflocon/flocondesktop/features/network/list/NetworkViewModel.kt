@@ -142,6 +142,7 @@ class NetworkViewModel(
             is NetworkAction.CreateMock -> {
                 openMocks(callId = action.item.uuid)
             }
+
             is NetworkAction.OpenBadNetworkQuality -> openBadNetworkQuality()
             is NetworkAction.CloseBadNetworkQuality -> closeBadNetworkQuality()
             is NetworkAction.CloseMocks -> closeMocks()
