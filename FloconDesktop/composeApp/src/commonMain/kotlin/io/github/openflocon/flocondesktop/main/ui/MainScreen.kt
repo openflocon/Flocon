@@ -7,10 +7,13 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -49,12 +52,15 @@ import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.main.ui.settings.SettingsScreen
+import io.github.openflocon.flocondesktop.main.ui.view.DeviceSelectorView
+import io.github.openflocon.flocondesktop.main.ui.view.MainScreenTopBar
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.PanelMinWidth
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import org.koin.compose.viewmodel.koinViewModel
+
 
 @Composable
 fun MainScreen(
@@ -83,12 +89,12 @@ fun MainScreen(
 @Composable
 private fun MainScreen(
     subScreen: SubScreen,
+    leftPanelState: LeftPanelState,
+    onClickLeftPanelItem: (LeftPanelItem) -> Unit,
     devicesState: DevicesStateUiModel,
     appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
-    leftPanelState: LeftPanelState,
-    onClickLeftPanelItem: (LeftPanelItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(true) }
@@ -99,117 +105,123 @@ private fun MainScreen(
     )
     val rotate by animateFloatAsState(targetValue = if (expanded) 180f else 0f)
 
-    Box(
-        modifier = modifier.onGloballyPositioned {
-            windowSize = it.size // TODO Add windowsize lib
-        },
-    ) {
-        Row(
+    Column(modifier = modifier) {
+        MainScreenTopBar(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxWidth(),
+            devicesState = devicesState,
+            appsState = appsState,
+            onDeviceSelected = onDeviceSelected,
+            onAppSelected = onAppSelected,
+        )
+        Box(
+            modifier = Modifier.fillMaxSize().onGloballyPositioned {
+                windowSize = it.size // TODO Add windowsize lib
+            },
         ) {
-            LeftPanelView(
+            Row(
                 modifier = Modifier
-                    .width(width)
-                    .fillMaxHeight(),
-                expanded = expanded,
-                onClickItem = onClickLeftPanelItem,
-                state = leftPanelState,
-                devicesState = devicesState,
-                appsState = appsState,
-                onDeviceSelected = onDeviceSelected,
-                onAppSelected = onAppSelected,
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .shadow(6.dp),
+                    .fillMaxSize(),
             ) {
-                when (subScreen) {
-                    SubScreen.Network ->
-                        NetworkScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                LeftPanelView(
+                    modifier = Modifier
+                        .width(width)
+                        .fillMaxHeight(),
+                    expanded = expanded,
+                    onClickItem = onClickLeftPanelItem,
+                    state = leftPanelState,
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .shadow(6.dp),
+                ) {
+                    when (subScreen) {
+                        SubScreen.Network ->
+                            NetworkScreen(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                            )
 
-                    SubScreen.Database ->
-                        DatabaseScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                        SubScreen.Database ->
+                            DatabaseScreen(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                            )
 
-                    SubScreen.Images ->
-                        ImagesScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                        SubScreen.Images ->
+                            ImagesScreen(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                            )
 
-                    SubScreen.Files ->
-                        FilesScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                        SubScreen.Files ->
+                            FilesScreen(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                            )
 
-                    SubScreen.Tables ->
-                        TableScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                        SubScreen.Tables ->
+                            TableScreen(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                            )
 
-                    SubScreen.SharedPreferences ->
-                        SharedPreferencesScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                        SubScreen.SharedPreferences ->
+                            SharedPreferencesScreen(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                            )
 
-                    SubScreen.Dashboard ->
-                        DashboardScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
+                        SubScreen.Dashboard ->
+                            DashboardScreen(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                            )
 
-                    SubScreen.Settings -> {
-                        SettingsScreen(
-                            modifier = Modifier.fillMaxSize(),
-                        )
-                    }
+                        SubScreen.Settings -> {
+                            SettingsScreen(
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
 
-                    SubScreen.Deeplinks -> {
-                        DeeplinkScreen(
-                            modifier =
-                            Modifier
-                                .fillMaxSize(),
-                        )
-                    }
+                        SubScreen.Deeplinks -> {
+                            DeeplinkScreen(
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize(),
+                            )
+                        }
 
-                    SubScreen.Analytics -> {
-                        AnalyticsScreen(
-                            modifier =
-                            Modifier
-                                .fillMaxSize(),
-                        )
+                        SubScreen.Analytics -> {
+                            AnalyticsScreen(
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize(),
+                            )
+                        }
                     }
                 }
             }
-        }
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .width(20.dp)
-                .height(60.dp)
-                .graphicsLayer {
-                    translationX = position.toPx() - size.width / 2
-                    translationY = (windowSize.height / 2) - (size.height / 2)
-                }
-                .clip(RoundedCornerShape(4.dp))
-                .background(FloconTheme.colorPalette.panel)
-                .clickable(onClick = { expanded = !expanded }),
-        ) {
-            FloconIcon(
-                imageVector = Icons.Outlined.ChevronRight,
-                tint = Color.LightGray,
-                modifier = Modifier.rotate(rotate),
-            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .width(20.dp)
+                    .height(60.dp)
+                    .graphicsLayer {
+                        translationX = position.toPx() - size.width / 2
+                        translationY = (windowSize.height / 2) - (size.height / 2)
+                    }
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(FloconTheme.colorPalette.panel)
+                    .clickable(onClick = { expanded = !expanded }),
+            ) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.ChevronRight,
+                    tint = Color.LightGray,
+                    modifier = Modifier.rotate(rotate),
+                )
+            }
         }
     }
 }

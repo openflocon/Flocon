@@ -3,12 +3,7 @@
 
 package io.github.openflocon.flocondesktop.main.ui.view
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,8 +11,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,18 +21,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.PhoneDisabled
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuBoxScope
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,8 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toComposeImageBitmap
@@ -64,41 +59,37 @@ import io.github.openflocon.flocondesktop.main.ui.model.previewDeviceItemUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.theme.FloconColorPalette
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.jetbrains.skia.Image
 import kotlin.io.encoding.Base64
 
-private val CelluleHeight = 64.dp
-
 @Composable
-internal fun ColumnScope.DeviceSelectorView(
-    panelExpanded: Boolean,
+internal fun DeviceSelectorView(
     devicesState: DevicesStateUiModel,
     appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
+        DeviceSelector(
+            state = devicesState,
+            onDeviceSelected = onDeviceSelected,
+        )
+
         AnimatedVisibility(devicesState is DevicesStateUiModel.WithDevices) {
             DeviceAppSelector(
                 devicesState = devicesState,
                 appsState = appsState,
-                panelExpanded = panelExpanded,
                 onAppSelected = onAppSelected,
             )
         }
-        AnimatedVisibility(visible = devicesState is DevicesStateUiModel.WithDevices) {
-            Spacer(Modifier.height(8.dp))
-        }
-        DeviceSelector(
-            state = devicesState,
-            panelExpanded = panelExpanded,
-            onDeviceSelected = onDeviceSelected,
-        )
     }
 }
 
@@ -106,21 +97,14 @@ internal fun ColumnScope.DeviceSelectorView(
 private fun DeviceAppSelector(
     devicesState: DevicesStateUiModel,
     appsState: AppsStateUiModel,
-    panelExpanded: Boolean,
     onAppSelected: (DeviceAppUiModel) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-
-    LaunchedEffect(panelExpanded) {
-        if (!panelExpanded)
-            expanded = false
-    }
 
     if (devicesState is DevicesStateUiModel.WithDevices) {
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = false },
-            modifier = Modifier.fillMaxWidth(),
         ) {
             val modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
 
@@ -173,55 +157,26 @@ private fun DeviceAppSelector(
 @Composable
 private fun DeviceSelector(
     state: DevicesStateUiModel,
-    panelExpanded: Boolean,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val topRadius by animateDpAsState(
-        targetValue = if (expanded) 0.dp else 12.dp,
-    )
-
-    LaunchedEffect(panelExpanded) {
-        if (!panelExpanded)
-            expanded = false
-    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = {
-            if (panelExpanded)
-                expanded = it
+            expanded = it
         },
         modifier = modifier,
     ) {
-        AnimatedContent(
-            targetState = state,
-            contentKey = { it::class.simpleName },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(CelluleHeight)
-                .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(
-                        topStart = topRadius,
-                        topEnd = topRadius,
-                        bottomEnd = 12.dp,
-                        bottomStart = 12.dp,
-                    ),
-                    clip = true,
-                )
-                .background(color = FloconTheme.colorPalette.panel),
-        ) { targetState ->
-            when (targetState) {
-                DevicesStateUiModel.Empty -> Empty(expanded = panelExpanded)
-                DevicesStateUiModel.Loading -> Loading()
-                is DevicesStateUiModel.WithDevices -> Device(
-                    state = targetState,
-                    panelExpanded = panelExpanded,
-                    onClick = {},
-                )
-            }
+        when (state) {
+            DevicesStateUiModel.Empty -> Empty()
+            DevicesStateUiModel.Loading -> Loading()
+            is DevicesStateUiModel.WithDevices -> DeviceView(
+                device = state.deviceSelected,
+                onClick = {},
+                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            )
         }
         ExposedDropdownMenu(
             expanded = expanded,
@@ -235,21 +190,14 @@ private fun DeviceSelector(
                 state.devices.forEach { device ->
                     DeviceView(
                         device = device,
-                        panelExpanded = panelExpanded,
                         selected = state.deviceSelected.id == device.id,
                         onClick = {
                             onDeviceSelected(device)
                             expanded = false
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(64.dp)
-                            .clickable(enabled = panelExpanded) {
-                            },
                     )
                 }
             }
-            HorizontalDivider(color = Color.LightGray) // TODO Change
         }
     }
 }
@@ -258,48 +206,43 @@ private fun DeviceSelector(
 private fun Selector(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    alignment: Alignment = Alignment.CenterStart,
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(12.dp),
-    content: @Composable BoxScope.() -> Unit,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+    content: @Composable RowScope.() -> Unit,
 ) {
-    Box(
+    Row(
         modifier = modifier
             .then(
                 Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 64.dp)
                     .clip(shape)
                     .background(FloconTheme.colorPalette.panel)
-                    .clickable(enabled = enabled, onClick = onClick),
+                    .clickable(enabled = enabled, onClick = onClick)
+                    .padding(contentPadding),
             ),
-        contentAlignment = alignment,
-        content = content,
-    )
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        content()
+        Image(
+            imageVector = Icons.Outlined.KeyboardArrowDown,
+            contentDescription = "",
+            modifier = Modifier.width(16.dp),
+            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface)
+        )
+    }
 }
 
 @Composable
-private fun Empty(
-    expanded: Boolean,
-) {
+private fun Empty() {
     Selector(
         onClick = {},
     ) {
-        Crossfade(expanded) {
-            if (it) {
-                Text(
-                    text = "No Devices Found",
-                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
-                    style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colorPalette.onSurface,
-                )
-            } else {
-                FloconIcon(
-                    imageVector = Icons.Outlined.PhoneDisabled,
-                    tint = Color.White,
-                )
-            }
-        }
+        Text(
+            text = "No Devices Found",
+            modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
+            style = FloconTheme.typography.bodyMedium,
+            color = FloconTheme.colorPalette.onSurface,
+        )
     }
 }
 
@@ -313,23 +256,8 @@ private fun Loading() {
 }
 
 @Composable
-private fun ExposedDropdownMenuBoxScope.Device(
-    panelExpanded: Boolean,
-    state: DevicesStateUiModel.WithDevices,
-    onClick: () -> Unit,
-) {
-    DeviceView(
-        device = state.deviceSelected,
-        panelExpanded = panelExpanded,
-        onClick = onClick,
-        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
-    )
-}
-
-@Composable
 private fun DeviceView(
     device: DeviceItemUiModel,
-    panelExpanded: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -341,51 +269,47 @@ private fun DeviceView(
         modifier = modifier,
     ) {
         Row(
-            modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Image(
                 modifier = Modifier.size(24.dp),
                 painter = painterResource(Res.drawable.smartphone),
                 contentDescription = null,
             )
-            AnimatedVisibility(
-                visible = panelExpanded,
-                exit = fadeOut(tween(100)),
+
+            Row(
+                modifier = Modifier
+                    .padding(start = 4.dp, end = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
+                Column(
                     modifier = Modifier
-                        .padding(start = 4.dp, end = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                        .graphicsLayer {
+                            alpha = if (device.isActive) 1f else 0.4f
+                        },
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .graphicsLayer {
-                                alpha = if (device.isActive) 1f else 0.4f
-                            },
-                        verticalArrangement = Arrangement.Center
-                    ) {
+                    Text(
+                        text = device.deviceName,
+                        color = FloconTheme.colorPalette.onPanel,
+                        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                    )
+                    if (device.isActive.not()) {
                         Text(
-                            text = device.deviceName,
+                            text = "Disconnected",
                             color = FloconTheme.colorPalette.onPanel,
-                            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                            style = FloconTheme.typography.bodySmall.copy(
+                                fontSize = 10.sp,
+                            ),
                         )
-                        if (device.isActive.not()) {
-                            Text(
-                                text = "Disconnected",
-                                color = FloconTheme.colorPalette.onPanel,
-                                style = FloconTheme.typography.bodySmall.copy(
-                                    fontSize = 10.sp,
-                                ),
-                            )
-                        }
                     }
-                    if (selected)
-                        FloconIcon(
-                            imageVector = Icons.Outlined.Check,
-                            tint = FloconTheme.colorPalette.onPanel,
-                        )
                 }
+                if (selected)
+                    FloconIcon(
+                        imageVector = Icons.Outlined.Check,
+                        tint = FloconTheme.colorPalette.onPanel,
+                    )
             }
         }
     }
@@ -404,14 +328,13 @@ private fun DeviceAppName(
         Row(
             modifier = Modifier.padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             AppImage(
                 deviceApp = deviceApp,
                 modifier = Modifier.size(24.dp),
             )
-            Column(
-                verticalArrangement = Arrangement.SpaceEvenly,
-            ) {
+            Column {
                 Text(
                     text = deviceApp.name,
                     style = FloconTheme.typography.labelMedium,
@@ -467,7 +390,6 @@ private fun DeviceViewPreview() {
     FloconTheme {
         DeviceView(
             device = previewDeviceItemUiModel(),
-            panelExpanded = false,
             onClick = {},
         )
     }
