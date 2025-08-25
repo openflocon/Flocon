@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -52,8 +51,7 @@ import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.main.ui.settings.SettingsScreen
-import io.github.openflocon.flocondesktop.main.ui.view.DeviceSelectorView
-import io.github.openflocon.flocondesktop.main.ui.view.MainScreenTopBar
+import io.github.openflocon.flocondesktop.main.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.PanelMinWidth
