@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.analytics.view.AnalyticsScreen
 import io.github.openflocon.flocondesktop.features.dashboard.view.DashboardScreen
@@ -106,7 +107,9 @@ private fun MainScreen(
     Column(modifier = modifier) {
         MainScreenTopBar(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .shadow(10.dp)
+                .zIndex(10f),
             devicesState = devicesState,
             appsState = appsState,
             onDeviceSelected = onDeviceSelected,

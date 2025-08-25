@@ -40,9 +40,9 @@ fun LeftPanelView(
     Column(
         modifier = modifier
             .background(FloconTheme.colorPalette.surface)
-            .padding(horizontal = 12.dp, vertical = 16.dp),
+            .padding(bottom = 16.dp, top = 8.dp)
+            .padding(horizontal = 12.dp),
     ) {
-        Spacer(modifier = Modifier.height(12.dp))
         MenuSection(
             items = state.sections,
             expanded = expanded,

@@ -20,11 +20,13 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
+import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailView
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
@@ -38,7 +40,6 @@ import io.github.openflocon.flocondesktop.features.network.list.view.header.Netw
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.view.NetworkBodyWindow
-import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface
@@ -82,33 +83,36 @@ fun NetworkScreen(
                         onClick = { onAction(NetworkAction.ClosePanel) },
                     ),
             ) {
-                Text(
-                    text = "Network",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(FloconTheme.colorPalette.panel)
-                        .padding(all = 12.dp),
-                    style = FloconTheme.typography.titleLarge,
-                    color = FloconTheme.colorPalette.onSurface,
-                )
-                NetworkFilter(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(FloconTheme.colorPalette.panel)
-                        .padding(horizontal = 12.dp),
-                    onAction = onAction,
-                )
-                NetworkItemHeaderView(
-                    columnWidths = columnWidths,
-                    modifier = Modifier.fillMaxWidth(),
-                    clickOnSort = { type, sort ->
-                        onAction(NetworkAction.HeaderAction.ClickOnSort(type, sort))
-                    },
-                    onFilterAction = {
-                        onAction(NetworkAction.HeaderAction.FilterAction(it))
-                    },
-                    state = uiState.headerState,
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                        .background(FloconTheme.colorPalette.background)
+                ) {
+                    Text(
+                        text = "Network",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(all = 12.dp),
+                        style = FloconTheme.typography.titleLarge,
+                        color = FloconTheme.colorPalette.onSurface,
+                    )
+                    NetworkFilter(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp),
+                        onAction = onAction,
+                    )
+                    NetworkItemHeaderView(
+                        columnWidths = columnWidths,
+                        modifier = Modifier.fillMaxWidth(),
+                        clickOnSort = { type, sort ->
+                            onAction(NetworkAction.HeaderAction.ClickOnSort(type, sort))
+                        },
+                        onFilterAction = {
+                            onAction(NetworkAction.HeaderAction.FilterAction(it))
+                        },
+                        state = uiState.headerState,
+                    )
+                }
                 Row(
                     Modifier.fillMaxSize(),
                 ) {
@@ -153,8 +157,10 @@ fun NetworkScreen(
     val states = remember { mutableStateMapOf<NetworkBodyDetailUi, FloconWindowState>() }
 
     LaunchedEffect(uiState.contentState.detailJsons) {
-        val deletedJson = states.keys.filter { key -> uiState.contentState.detailJsons.none { key.id == it.id } }
-        val addedJson = uiState.contentState.detailJsons.filter { key -> states.keys.none { key.id == it.id } }
+        val deletedJson =
+            states.keys.filter { key -> uiState.contentState.detailJsons.none { key.id == it.id } }
+        val addedJson =
+            uiState.contentState.detailJsons.filter { key -> states.keys.none { key.id == it.id } }
 
         deletedJson.forEach { states.remove(it) }
         addedJson.forEach {
