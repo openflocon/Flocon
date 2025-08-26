@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.common
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
+import io.github.openflocon.domain.models.ProcessId
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -107,7 +108,17 @@ private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): 
 
     val output = process.inputStream.bufferedReader().use { it.readText() }
     val error = process.errorStream.bufferedReader().use { it.readText() }
+
+    if(command.contains("reverse").not())
+        println("Executing command: $adbPath $command")
+
     val exitCode = process.waitFor()
+
+
+    if(command.contains("reverse").not()) {
+        println("command result success : $output")
+        println("command result error : $error")
+    }
 
     if (exitCode == 0) {
         // println("Command executed successfully. Output:\n$output")

@@ -48,6 +48,7 @@ import io.github.openflocon.flocondesktop.main.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
+import io.github.openflocon.flocondesktop.main.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
@@ -70,6 +71,7 @@ fun MainScreen(
     val subScreen by viewModel.subScreen.collectAsStateWithLifecycle()
     val devicesState by viewModel.devicesState.collectAsStateWithLifecycle()
     val appsState by viewModel.appsState.collectAsStateWithLifecycle()
+    val recordState by viewModel.recordState.collectAsStateWithLifecycle()
 
     Box(modifier = modifier) {
         MainScreen(
@@ -77,11 +79,13 @@ fun MainScreen(
             modifier = Modifier.fillMaxSize(),
             devicesState = devicesState,
             appsState = appsState,
+            recordState = recordState,
             onDeviceSelected = viewModel::onDeviceSelected,
             onAppSelected = viewModel::onAppSelected,
             leftPanelState = leftPanelState,
             onClickLeftPanelItem = viewModel::onClickLeftPanelItem,
             onTakeScreenshotClicked = viewModel::onTakeScreenshotClicked,
+            onRecordClicked = viewModel::onRecordClicked,
         )
     }
 }
@@ -96,6 +100,8 @@ private fun MainScreen(
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
     onTakeScreenshotClicked: () -> Unit,
+    recordState: RecordVideoStateUiModel,
+    onRecordClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(true) }
@@ -117,6 +123,8 @@ private fun MainScreen(
             onDeviceSelected = onDeviceSelected,
             onAppSelected = onAppSelected,
             onTakeScreenshotClicked = onTakeScreenshotClicked,
+            recordState = recordState,
+            onRecordClicked = onRecordClicked,
         )
         Box(
             modifier = Modifier.fillMaxSize().onGloballyPositioned {

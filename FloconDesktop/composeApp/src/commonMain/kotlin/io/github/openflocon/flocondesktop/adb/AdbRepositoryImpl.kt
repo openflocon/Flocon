@@ -6,7 +6,6 @@ import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.models.ProcessId
-import io.github.openflocon.flocondesktop.common.ProcessId
 import io.github.openflocon.flocondesktop.common.askSerialToAllDevices
 import io.github.openflocon.flocondesktop.common.localExecuteAdbCommand
 import io.github.openflocon.flocondesktop.common.localFindAdbPath

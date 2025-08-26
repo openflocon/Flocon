@@ -5,4 +5,6 @@ import org.koin.dsl.module
 
 internal val adbModule = module {
     factoryOf(::ExecuteAdbCommandUseCase)
+    factoryOf(::StartAdbProcessUseCase)
+    factoryOf(::StopAdbProcessUseCase)
 }

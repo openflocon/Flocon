@@ -7,10 +7,12 @@ import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
 import io.github.openflocon.flocondesktop.main.ui.delegates.DevicesDelegate
+import io.github.openflocon.flocondesktop.main.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.main.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
+import io.github.openflocon.flocondesktop.main.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.main.ui.model.id
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
@@ -18,7 +20,9 @@ import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPannelSection
 import io.github.openflocon.flocondesktop.main.ui.view.displayName
 import io.github.openflocon.flocondesktop.main.ui.view.icon
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -31,11 +35,15 @@ class MainViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val takeScreenshotUseCase : TakeScreenshotUseCase,
+    private val recordVideoDelegate: RecordVideoDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel(
     devicesDelegate,
+    recordVideoDelegate,
 ) {
     val subScreen = MutableStateFlow(SubScreen.Network)
+
+    val recordState: StateFlow<RecordVideoStateUiModel> = recordVideoDelegate.state
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
@@ -54,7 +62,7 @@ class MainViewModel(
     }.flowOn(dispatcherProvider.ui)
         .stateIn(
             scope = viewModelScope,
-            started = kotlinx.coroutines.flow.SharingStarted.Eagerly,
+            started = SharingStarted.Eagerly,
             initialValue = buildLeftPanelState(subScreen.value.id),
         )
 
@@ -75,6 +83,12 @@ class MainViewModel(
 
     fun onClickLeftPanelItem(leftPanelItem: LeftPanelItem) {
         this.subScreen.update { SubScreen.fromId(leftPanelItem.id) }
+    }
+
+    fun onRecordClicked() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            recordVideoDelegate.toggleRecording()
+        }
     }
 
     fun onTakeScreenshotClicked() {
