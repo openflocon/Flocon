@@ -12,6 +12,8 @@ import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
 import io.github.openflocon.domain.device.usecase.HandleNewDeviceUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
+import io.github.openflocon.domain.device.usecase.StartRecordingVideoUseCase
+import io.github.openflocon.domain.device.usecase.StopRecordingVideoUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -30,4 +32,6 @@ internal val deviceModule = module {
     factoryOf(::SelectDeviceUseCase)
     factoryOf(::HandleNewAppUseCase)
     factoryOf(::TakeScreenshotUseCase)
+    factoryOf(::StartRecordingVideoUseCase)
+    factoryOf(::StopRecordingVideoUseCase)
 }

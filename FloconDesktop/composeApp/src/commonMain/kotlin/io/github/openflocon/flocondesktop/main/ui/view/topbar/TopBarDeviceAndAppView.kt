@@ -41,7 +41,6 @@ internal fun TopBarDeviceAndAppView(
     appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
-    onTakeScreenshotClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -59,37 +58,6 @@ internal fun TopBarDeviceAndAppView(
                 devicesState = devicesState,
                 appsState = appsState,
                 onAppSelected = onAppSelected,
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(Color.Black.copy(alpha = 0.1f))
-                .then(if(devicesState.deviceSelected?.isActive == true) {
-                    Modifier.clickable {
-                        onTakeScreenshotClicked()
-                    }
-                } else {
-                    Modifier.alpha(0.4f)
-                })
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Image(
-                imageVector = Icons.Outlined.CameraAlt,
-                modifier = Modifier.size(18.dp),
-                contentDescription = "screenshot",
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface)
-            )
-            Text(
-                "Screeshot",
-                style = FloconTheme.typography.bodySmall.copy(
-                    fontSize = 10.sp,
-                ),
-                color = FloconTheme.colorPalette.onSurface
             )
         }
     }

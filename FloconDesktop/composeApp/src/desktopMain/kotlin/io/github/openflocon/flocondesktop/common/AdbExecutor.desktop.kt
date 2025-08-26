@@ -105,7 +105,14 @@ private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): 
 
     val output = process.inputStream.bufferedReader().use { it.readText() }
     val error = process.errorStream.bufferedReader().use { it.readText() }
+
     val exitCode = process.waitFor()
+
+
+    if(command.contains("reverse").not()) {
+        println("command result success : $output")
+        println("command result error : $error")
+    }
 
     if (exitCode == 0) {
         // println("Command executed successfully. Output:\n$output")
