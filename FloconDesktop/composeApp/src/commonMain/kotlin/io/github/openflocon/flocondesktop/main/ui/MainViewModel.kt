@@ -84,7 +84,7 @@ class MainViewModel(
                     feedbackDisplayer.displayMessage(it.message ?: "Unknown error")
                 },
                 doOnSuccess = {
-                    feedbackDisplayer.displayMessage("Success, file saved in Desktop")
+                    feedbackDisplayer.displayMessage("Success, file saved at $it")
                 },
             )
         }
