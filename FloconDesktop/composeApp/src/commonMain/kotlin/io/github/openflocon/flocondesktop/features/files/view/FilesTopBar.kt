@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +29,7 @@ import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -43,23 +43,9 @@ fun FilesTopBar(
     val hasParentFile = current != null
     val isDirectory = current?.isDirectory == true
 
-    Column(
-        modifier = modifier
-            .background(FloconTheme.colorPalette.panel)
-            .padding(vertical = 16.dp, horizontal = 16.dp),
-    ) {
-        Text(
-            text = "Files",
-            modifier = Modifier.padding(bottom = 12.dp),
-            style = FloconTheme.typography.titleLarge,
-            color = FloconTheme.colorPalette.onSurface,
-        )
-
-        Row(
-            modifier = Modifier,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
+    FloconPageTopBar(
+        modifier = modifier,
+        filterBar = {
             TopBarButton(
                 onClick = onBack,
                 enabled = hasParentFile,
@@ -78,6 +64,8 @@ fun FilesTopBar(
                     color = FloconTheme.colorPalette.onSurface,
                 )
             }
+        },
+        actions = {
             FloconIconButton(
                 imageVector = Icons.Outlined.Delete,
                 enabled = isDirectory,
@@ -89,7 +77,7 @@ fun FilesTopBar(
                 onClick = onRefresh,
             )
         }
-    }
+    )
 }
 
 @Composable

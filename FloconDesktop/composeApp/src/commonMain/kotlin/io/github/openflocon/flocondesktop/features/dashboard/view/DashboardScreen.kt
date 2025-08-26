@@ -17,6 +17,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardView
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -57,24 +58,17 @@ fun DashboardScreen(
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-                    .background(FloconTheme.colorPalette.panel)
-                    .padding(all = 12.dp),
-            ) {
-                Text(
-                    text = "Dashboard",
-                    modifier = Modifier.padding(bottom = 12.dp),
-                    style = FloconTheme.typography.titleLarge,
-                    color = FloconTheme.colorPalette.onSurface,
-                )
+            FloconPageTopBar(
+                modifier = Modifier.fillMaxWidth(),
+                selector = {
+                    DashboardSelectorView(
+                        dashboardsState = deviceDashboards,
+                        onDashboardSelected = onDashboardSelected,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            )
 
-                DashboardSelectorView(
-                    dashboardsState = deviceDashboards,
-                    onDashboardSelected = onDashboardSelected,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
             state?.let {
                 DashboardView(
                     modifier = Modifier.fillMaxSize().padding(all = 8.dp),

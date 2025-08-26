@@ -24,6 +24,7 @@ import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiM
 import io.github.openflocon.flocondesktop.features.database.model.previewDatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.previewDatabasesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -65,33 +66,31 @@ fun DatabaseScreen(
 
     FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-                    .background(FloconTheme.colorPalette.panel)
-                    .padding(all = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Text(
-                    text = "Database",
-                    style = FloconTheme.typography.titleLarge,
-                    color = FloconTheme.colorPalette.onSurface,
-                )
-
-                DatabaseSelectorView(
-                    databasesState = deviceDataBases,
-                    onDatabaseSelected = onDatabaseSelected,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                DatabaseQueryView(
-                    query = query,
-                    updateQuery = {
-                        query = it
-                    },
-                    executeQuery = executeQuery,
-                    clearQuery = clearQuery,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+            FloconPageTopBar(
+                modifier = Modifier.fillMaxWidth(),
+                selector = {
+                    DatabaseSelectorView(
+                        databasesState = deviceDataBases,
+                        onDatabaseSelected = onDatabaseSelected,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            ) { contentPadding ->
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(contentPadding),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    DatabaseQueryView(
+                        query = query,
+                        updateQuery = {
+                            query = it
+                        },
+                        executeQuery = executeQuery,
+                        clearQuery = clearQuery,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
 
             recentQueries.takeIf { it.isNotEmpty() }?.let {

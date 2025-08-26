@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,8 +33,11 @@ import io.github.openflocon.flocondesktop.features.images.ImagesViewModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesStateUiModel
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
+import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -63,6 +65,7 @@ fun ImagesScreen(modifier: Modifier = Modifier) {
         resetClickedImage = {
             clickedImage = null
         },
+        onFilterChanged = viewModel::onFilterChanged,
         clickedImage = clickedImage,
         modifier = modifier,
     )
@@ -72,6 +75,7 @@ fun ImagesScreen(modifier: Modifier = Modifier) {
 private fun ImagesScreen(
     state: ImagesStateUiModel,
     onReset: () -> Unit,
+    onFilterChanged: (text: String) -> Unit,
     onClickImage: (ImagesUiModel) -> Unit,
     resetClickedImage: () -> Unit,
     clickedImage: ImagesUiModel?,
@@ -79,26 +83,23 @@ private fun ImagesScreen(
 ) {
     FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Column(
+            FloconPageTopBar(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(FloconTheme.colorPalette.panel)
-                    .padding(vertical = 16.dp, horizontal = 16.dp),
-            ) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = "Images",
-                        modifier = Modifier.padding(bottom = 12.dp),
-                        style = FloconTheme.typography.titleLarge,
-                        color = FloconTheme.colorPalette.onSurface,
+                    .fillMaxWidth(),
+                filterBar = {
+                    FilterBar(
+                        placeholderText = "Filter images",
+                        onTextChange = { onFilterChanged(it) },
+                        modifier = Modifier.weight(1f),
                     )
-                    Box(modifier = Modifier.weight(1f))
+                },
+                actions = {
                     FloconIconButton(
                         imageVector = Icons.Outlined.Delete,
                         onClick = onReset,
                     )
                 }
-            }
+            )
             when (state) {
                 ImagesStateUiModel.Empty,
                 ImagesStateUiModel.Idle,
@@ -170,6 +171,7 @@ private fun ImagesScreenPreview() {
             onReset = {},
             onClickImage = {},
             resetClickedImage = {},
+            onFilterChanged = {},
             clickedImage = null,
             state = previewImagesStateUiModel(),
         )
