@@ -7,6 +7,8 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.io.bufferedReader
 import kotlin.io.println
 import kotlin.io.readText
@@ -100,9 +102,6 @@ actual fun askSerialToAllDevices(adbPath: String, command: String, serialVariabl
 
 private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): Either<Throwable, String> = try {
     val process = Runtime.getRuntime().exec("$adbPath $command")
-    if(command.contains("reverse").not())
-        println("Executing command: $adbPath $command")
-
     val output = process.inputStream.bufferedReader().use { it.readText() }
     val error = process.errorStream.bufferedReader().use { it.readText() }
     val exitCode = process.waitFor()
@@ -142,4 +141,43 @@ private fun listConnectedDevices(adbPath: String): List<String> {
         println("Error executing adb devices: ${e.message}")
     }
     return devices
+}
+
+private val processes = ConcurrentHashMap<ProcessId, Process>()
+
+actual fun startProcess(adbPath: String, deviceSerial: String?, command: String): Either<Throwable, ProcessId> = try {
+    val processId = UUID.randomUUID().toString()
+    val process = Runtime.getRuntime().exec("$adbPath -s $deviceSerial $command")
+    processes[processId] = process
+
+    if(command.contains("reverse").not())
+        println("Executing command: $adbPath $command")
+
+    Success(processId)
+} catch (e: IOException) {
+    val errorMessage = "Error executing command '$command': ${e.message}"
+    // System.err.println(errorMessage)
+    Failure(IOException(errorMessage, e))
+} catch (e: InterruptedException) {
+    // Thread.currentThread().interrupt()
+    val errorMessage = "Command execution interrupted for '$command': ${e.message}"
+    System.err.println(errorMessage)
+    Failure(IOException(errorMessage, e))
+}
+
+actual fun stopProcess(processId: ProcessId) {
+    processes[processId]?.let { process ->
+        try {
+            process.destroyForcibly()
+
+            val exitCode = process.waitFor()
+
+            // Une fois arrêté, on peut pull le fichier
+            // pullFile(deviceFilePath, localDesktopPath)
+            // runCommand("adb", "shell", "rm", deviceFilePath)
+
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+    }
 }
