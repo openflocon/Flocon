@@ -47,13 +47,13 @@ private fun DeeplinkScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             FloconPageTopBar(
                 modifier = Modifier.fillMaxWidth(),
-                title = "Deeplinks",
-            ) { contentPadding ->
-                DeeplinkFreeformItemView(
-                    submit = submit,
-                    modifier = Modifier.fillMaxWidth().padding(contentPadding),
-                )
-            }
+                filterBar = {
+                    DeeplinkFreeformItemView(
+                        submit = submit,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            )
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

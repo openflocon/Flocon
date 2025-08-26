@@ -60,14 +60,15 @@ fun DashboardScreen(
         ) {
             FloconPageTopBar(
                 modifier = Modifier.fillMaxWidth(),
-                title = "Dashboard",
-            ) { contentPadding ->
-                DashboardSelectorView(
-                    dashboardsState = deviceDashboards,
-                    onDashboardSelected = onDashboardSelected,
-                    modifier = Modifier.fillMaxWidth().padding(contentPadding),
-                )
-            }
+                selector = {
+                    DashboardSelectorView(
+                        dashboardsState = deviceDashboards,
+                        onDashboardSelected = onDashboardSelected,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            )
+
             state?.let {
                 DashboardView(
                     modifier = Modifier.fillMaxSize().padding(all = 8.dp),

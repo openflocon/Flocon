@@ -61,15 +61,15 @@ fun SharedPrefScreen(
     FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
             FloconPageTopBar(
-                title = "SharedPreference",
-            ) { contentPadding ->
-                SharedPrefSelectorView(
-                    sharedPrefsState = deviceSharedPrefs,
-                    onSharedPrefSelected = onSharedPrefSelected,
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(contentPadding),
-                )
-            }
+                modifier = Modifier.fillMaxWidth(),
+                selector = {
+                    SharedPrefSelectorView(
+                        sharedPrefsState = deviceSharedPrefs,
+                        onSharedPrefSelected = onSharedPrefSelected,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            )
             Spacer(modifier = Modifier.height(12.dp))
             SelectionContainer {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
