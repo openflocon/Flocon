@@ -1,21 +1,18 @@
 package io.github.openflocon.domain.device.usecase
 
 import io.github.openflocon.domain.adb.ExecuteAdbCommandUseCase
-import io.github.openflocon.domain.adb.StartAdbProcessUseCase
 import io.github.openflocon.domain.adb.model.AdbCommandTargetDomainModel
-import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
-import io.github.openflocon.domain.common.then
+import io.github.openflocon.domain.common.success
 import io.github.openflocon.domain.device.models.RecordingDomainModel
-import io.github.openflocon.domain.models.ProcessId
-import java.io.File
-import java.nio.file.Paths
-import kotlin.io.path.absolutePathString
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 
 class StartRecordingVideoUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
-    private val startAdbProcessUseCase: StartAdbProcessUseCase,
+    private val executeAdbCommandUseCase: ExecuteAdbCommandUseCase,
+    private val applicationScope: CoroutineScope,
 ) {
 
     suspend operator fun invoke() : Either<Throwable, RecordingDomainModel> {
@@ -24,14 +21,20 @@ class StartRecordingVideoUseCase(
         val fileName = "record_${current.packageName}_${System.currentTimeMillis()}.mp4"
         val onDeviceFilePath = "/sdcard/$fileName"
 
-        return startAdbProcessUseCase(
-            target = AdbCommandTargetDomainModel.Device(current.deviceId),
-            command = "shell screenrecord $onDeviceFilePath",
-        ).mapSuccess { processId ->
-            RecordingDomainModel(
-                onDeviceFilePath = onDeviceFilePath,
-                processId = processId,
+        val processName = "screenrecord"
+
+        val screenRecordAsync = applicationScope.async {
+            executeAdbCommandUseCase(
+                target = AdbCommandTargetDomainModel.Device(current.deviceId),
+                command = "shell $processName $onDeviceFilePath &",
             )
-        }.alsoFailure { it.printStackTrace() }
+
+        }
+
+        return RecordingDomainModel(
+            onDeviceFilePath = onDeviceFilePath,
+            processName = processName,
+            completableDeferred = screenRecordAsync,
+        ).success()
     }
 }

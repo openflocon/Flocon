@@ -2,7 +2,6 @@ package io.github.openflocon.domain.adb.repository
 
 import io.github.openflocon.domain.adb.model.DeviceWithSerialDomainModel
 import io.github.openflocon.domain.common.Either
-import io.github.openflocon.domain.models.ProcessId
 import kotlinx.coroutines.flow.Flow
 
 interface AdbRepository {
@@ -27,13 +26,4 @@ interface AdbRepository {
 
     fun findAdbPath(): String?
 
-    fun startAdbProcess(
-        adbPath: String,
-        deviceSerial: String?,
-        command: String
-    ): Either<Throwable, ProcessId>
-
-    fun stopAdbProcess(
-        processId: ProcessId,
-    )
 }

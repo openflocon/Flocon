@@ -5,12 +5,9 @@ import io.github.openflocon.domain.adb.model.DeviceWithSerialDomainModel
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.Either
-import io.github.openflocon.domain.models.ProcessId
 import io.github.openflocon.flocondesktop.common.askSerialToAllDevices
 import io.github.openflocon.flocondesktop.common.localExecuteAdbCommand
 import io.github.openflocon.flocondesktop.common.localFindAdbPath
-import io.github.openflocon.flocondesktop.common.startProcess
-import io.github.openflocon.flocondesktop.common.stopProcess
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
@@ -56,22 +53,6 @@ class AdbRepositoryImpl(
         adbPath = adbPath,
         command = command,
         serialVariableName = serialVariableName,
-    )
-
-    override fun startAdbProcess(
-        adbPath: String,
-        deviceSerial: String?,
-        command: String,
-    ): Either<Throwable, ProcessId> = startProcess(
-        adbPath = adbPath,
-        command = command,
-        deviceSerial = deviceSerial,
-    )
-
-    override fun stopAdbProcess(
-        processId: ProcessId,
-    ) = stopProcess(
-        processId = processId,
     )
 
     override fun findAdbPath(): String? = localFindAdbPath()
