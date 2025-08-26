@@ -90,16 +90,14 @@ fun TableScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 FloconPageTopBar(
                     modifier = Modifier.fillMaxWidth(),
-                    title = "Tables",
-                ) { contentPadding ->
-                    Column(
-                        modifier = Modifier.fillMaxWidth().padding(contentPadding),
-                    ) {
+                    selector = {
                         TableSelectorView(
                             tablesState = deviceTables,
                             onTableSelected = onTableSelected,
                             modifier = Modifier.fillMaxWidth(),
                         )
+                    },
+                    filterBar = {
                         TableFilterBar(
                             tableItems = content.items(),
                             onResetClicked = onResetClicked,
@@ -108,7 +106,7 @@ fun TableScreen(
                             },
                         )
                     }
-                }
+                )
 
                 FloconSurface(
                     modifier = Modifier.fillMaxSize()

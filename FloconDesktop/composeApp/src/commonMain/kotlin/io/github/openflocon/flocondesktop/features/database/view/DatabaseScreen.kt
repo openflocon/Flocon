@@ -68,20 +68,19 @@ fun DatabaseScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             FloconPageTopBar(
                 modifier = Modifier.fillMaxWidth(),
-                title = "Database",
+                selector = {
+                    DatabaseSelectorView(
+                        databasesState = deviceDataBases,
+                        onDatabaseSelected = onDatabaseSelected,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             ) { contentPadding ->
                 Column(
                     modifier = Modifier.fillMaxWidth()
                         .padding(contentPadding),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-
-                    DatabaseSelectorView(
-                        databasesState = deviceDataBases,
-                        onDatabaseSelected = onDatabaseSelected,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-
                     DatabaseQueryView(
                         query = query,
                         updateQuery = {

@@ -79,19 +79,14 @@ fun AnalyticsScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 FloconPageTopBar(
                     modifier = Modifier.fillMaxWidth(),
-                    title = "Analytics",
-                ) { contentPadding ->
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(contentPadding),
-                    ) {
-
+                    selector = {
                         AnalyticsSelectorView(
                             analyticsState = deviceAnalytics,
                             onAnalyticsSelected = onAnalyticsSelected,
                             modifier = Modifier.fillMaxWidth(),
                         )
-
+                    },
+                    filterBar = {
                         AnalyticsFilterBar(
                             analyticsItems = content.items(),
                             onResetClicked = onResetClicked,
@@ -100,7 +95,7 @@ fun AnalyticsScreen(
                             },
                         )
                     }
-                }
+                )
 
                 FloconSurface(
                     modifier = Modifier.fillMaxSize()

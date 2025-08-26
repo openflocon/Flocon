@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.view.SharedPrefSelectorView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
@@ -47,13 +45,7 @@ fun FilesTopBar(
 
     FloconPageTopBar(
         modifier = modifier,
-        title = "Files",
-    ) { contentPadding ->
-        Row(
-            modifier = Modifier.padding(contentPadding),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
+        filterBar = {
             TopBarButton(
                 onClick = onBack,
                 enabled = hasParentFile,
@@ -72,6 +64,8 @@ fun FilesTopBar(
                     color = FloconTheme.colorPalette.onSurface,
                 )
             }
+        },
+        actions = {
             FloconIconButton(
                 imageVector = Icons.Outlined.Delete,
                 enabled = isDirectory,
@@ -83,7 +77,7 @@ fun FilesTopBar(
                 onClick = onRefresh,
             )
         }
-    }
+    )
 }
 
 @Composable
