@@ -35,7 +35,7 @@ class TakeScreenshotUseCase(
                 command = "shell rm $onDeviceFilePath",
             )
         }.mapSuccess {
-            onDeviceFilePath
+            desktopPath
         }.alsoFailure { it.printStackTrace() }
     }
 }
