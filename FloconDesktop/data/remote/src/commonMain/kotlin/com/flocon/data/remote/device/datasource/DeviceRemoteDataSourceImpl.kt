@@ -30,9 +30,8 @@ class DeviceRemoteDataSourceImpl(
             }.toSet()
         }.distinctUntilChanged()
 
-    override fun getDeviceSerial(message: FloconIncomingMessageDomainModel): String? =
-        json.safeDecodeFromString<RegisterDeviceDataModel>(message.body)
-            ?.serial
+    override fun getDeviceSerial(message: FloconIncomingMessageDomainModel): String? = json.safeDecodeFromString<RegisterDeviceDataModel>(message.body)
+        ?.serial
 
     override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         server.sendMessageToClient(
@@ -40,7 +39,7 @@ class DeviceRemoteDataSourceImpl(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Device.Plugin,
                 method = Protocol.ToDevice.Device.Method.GetAppIcon,
-                body = ""
+                body = "",
             ),
         )
     }

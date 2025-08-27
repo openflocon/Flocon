@@ -142,7 +142,7 @@ class ServerJvm : Server {
      */
     override suspend fun sendMessageToClient(
         deviceIdAndPackageName: FloconDeviceIdAndPackageNameDataModel,
-        message: FloconOutgoingMessageDataModel
+        message: FloconOutgoingMessageDataModel,
     ) {
         val session = _activeSessions.value[deviceIdAndPackageName]
         if (session != null) {

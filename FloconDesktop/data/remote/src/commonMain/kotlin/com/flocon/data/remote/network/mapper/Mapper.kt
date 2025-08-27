@@ -20,14 +20,14 @@ fun toRemote(mock: MockNetworkDomainModel): MockNetworkResponseDataModel = MockN
         urlPattern = mock.expectation.urlPattern,
         method = mock.expectation.method,
     ),
-    response = when(val r = mock.response) {
+    response = when (val r = mock.response) {
         is MockNetworkDomainModel.Response.Body -> MockNetworkResponseDataModel.Response(
             httpCode = r.httpCode,
             body = r.body,
             mediaType = r.mediaType,
             delay = r.delay,
             headers = r.headers,
-            errorException = null
+            errorException = null,
         )
         is MockNetworkDomainModel.Response.Exception -> MockNetworkResponseDataModel.Response(
             httpCode = null,
@@ -35,9 +35,9 @@ fun toRemote(mock: MockNetworkDomainModel): MockNetworkResponseDataModel = MockN
             mediaType = null,
             delay = r.delay,
             headers = null,
-            errorException = r.classPath
+            errorException = r.classPath,
         )
-    }
+    },
 )
 
 @OptIn(ExperimentalUuidApi::class)
@@ -64,7 +64,7 @@ fun toDomain(
             )
             decoded.floconNetworkType == "grpc" -> FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc
             else -> FloconNetworkCallDomainModel.Request.SpecificInfos.Http
-        }
+        },
     )
 
     FloconNetworkCallDomainModel(
@@ -138,7 +138,7 @@ fun toRemote(domain: BadQualityConfigDomainModel): BadQualityConfigDataModel = B
     },
     errorProbability = domain.errorProbability,
     errors = domain.errors.map {
-        when(val t = it.type) {
+        when (val t = it.type) {
             is BadQualityConfigDomainModel.Error.Type.Body -> BadQualityConfigDataModel.Error(
                 weight = it.weight,
                 errorCode = t.httpCode,

@@ -65,7 +65,7 @@ internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnl
                     else -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http(
                         httpCode = responseHttpCode!!,
                     )
-                }
+                },
             )
         }
         FloconNetworkResponseOnlyDomainModel(
