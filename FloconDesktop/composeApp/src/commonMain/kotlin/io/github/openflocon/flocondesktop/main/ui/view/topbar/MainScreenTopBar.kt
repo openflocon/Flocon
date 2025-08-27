@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,6 +34,7 @@ import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.RecordVideoStateUiModel
+import io.github.openflocon.flocondesktop.main.ui.view.topbar.actions.TopBarActions
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 
@@ -61,70 +63,13 @@ fun MainScreenTopBar(
             onDeviceSelected = onDeviceSelected,
             onAppSelected = onAppSelected,
         )
-
         Spacer(modifier = Modifier.weight(1f))
-
-
-        Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(Color.Black.copy(alpha = 0.1f))
-                .then(if(devicesState.deviceSelected?.isActive == true) {
-                    Modifier.clickable {
-                        onRecordClicked()
-                    }
-                } else {
-                    Modifier.alpha(0.4f)
-                })
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Image(
-                imageVector = when(recordState) {
-                    RecordVideoStateUiModel.Idle -> Icons.Outlined.Videocam
-                    RecordVideoStateUiModel.Recording -> Icons.Outlined.Stop
-                },
-                modifier = Modifier.size(18.dp),
-                contentDescription = "record",
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface)
-            )
-            Text(
-                "Record",
-                style = FloconTheme.typography.bodySmall.copy(
-                    fontSize = 10.sp,
-                ),
-                color = FloconTheme.colorPalette.onSurface
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(Color.Black.copy(alpha = 0.1f))
-                .then(if(devicesState.deviceSelected?.isActive == true) {
-                    Modifier.clickable {
-                        onTakeScreenshotClicked()
-                    }
-                } else {
-                    Modifier.alpha(0.4f)
-                })
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Image(
-                imageVector = Icons.Outlined.CameraAlt,
-                modifier = Modifier.size(18.dp),
-                contentDescription = "screenshot",
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface)
-            )
-            Text(
-                "Screenshot",
-                style = FloconTheme.typography.bodySmall.copy(
-                    fontSize = 10.sp,
-                ),
-                color = FloconTheme.colorPalette.onSurface
-            )
-        }
+        TopBarActions(
+            onTakeScreenshotClicked = onTakeScreenshotClicked,
+            recordState = recordState,
+            onRecordClicked = onRecordClicked,
+            devicesState = devicesState,
+        )
     }
 }
 
@@ -155,3 +100,4 @@ private fun Title(
         )
     }
 }
+
