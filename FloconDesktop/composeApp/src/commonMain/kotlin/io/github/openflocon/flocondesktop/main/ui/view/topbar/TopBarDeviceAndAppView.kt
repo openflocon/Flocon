@@ -41,6 +41,7 @@ internal fun TopBarDeviceAndAppView(
     appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
+    deleteDevice: (DeviceItemUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -51,6 +52,7 @@ internal fun TopBarDeviceAndAppView(
         TopBarDeviceDropdown(
             state = devicesState,
             onDeviceSelected = onDeviceSelected,
+            deleteDevice = deleteDevice,
         )
 
         AnimatedVisibility(devicesState is DevicesStateUiModel.WithDevices) {

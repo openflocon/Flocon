@@ -1,20 +1,19 @@
-package io.github.openflocon.flocondesktop.main.ui.view.topbar
+package io.github.openflocon.flocondesktop.main.ui.view.topbar.device
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MobileOff
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.MobileOff
-import androidx.compose.material.icons.outlined.Smartphone
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,12 +23,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.smartphone
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
+import io.github.openflocon.flocondesktop.main.ui.view.topbar.TopBarSelector
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 internal fun TopBarDeviceView(
@@ -38,6 +35,8 @@ internal fun TopBarDeviceView(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     selected: Boolean = false,
+    canDelete: Boolean = false,
+    onDelete: () -> Unit = {},
 ) {
     TopBarSelector(
         onClick = onClick,
@@ -56,7 +55,7 @@ internal fun TopBarDeviceView(
             ) {
                 Image(
                     modifier = Modifier.width(20.dp),
-                    imageVector =  if (device.isActive.not()) {
+                    imageVector = if (device.isActive.not()) {
                         Icons.Filled.MobileOff
                     } else {
                         Icons.Filled.Smartphone
@@ -80,7 +79,9 @@ internal fun TopBarDeviceView(
                     )
 
                     Text(
-                        text = if (device.isActive.not()) { "Disconnected" }else "Connected",
+                        text = if (device.isActive.not()) {
+                            "Disconnected"
+                        } else "Connected",
                         color = FloconTheme.colorPalette.onPanel,
                         style = FloconTheme.typography.bodySmall.copy(
                             fontSize = 10.sp,
@@ -92,6 +93,15 @@ internal fun TopBarDeviceView(
                         imageVector = Icons.Outlined.Check,
                         tint = FloconTheme.colorPalette.onPanel,
                     )
+                else if (canDelete) {
+                    FloconIcon(
+                        imageVector = Icons.Outlined.Delete,
+                        tint = FloconTheme.colorPalette.onPanel,
+                        modifier = Modifier.clickable {
+                            onDelete()
+                        }
+                    )
+                }
             }
         }
     }

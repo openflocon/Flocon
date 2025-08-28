@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
+import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -79,4 +80,10 @@ interface DevicesDao {
      """
     )
     suspend fun hasAppIcon(deviceId: String, appPackageName: String): Boolean
+
+    @Query("DELETE FROM DeviceEntity WHERE deviceId = :deviceId")
+    suspend fun deleteDevice(deviceId: String)
+
+    @Query("DELETE FROM DeviceAppEntity WHERE deviceId = :deviceId AND packageName = :packageName")
+    suspend fun deleteApp(deviceId: String, packageName: String)
 }

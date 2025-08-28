@@ -109,6 +109,14 @@ class LocalDevicesDataSourceRoom(
         return dao.hasAppIcon(deviceId, appPackageName)
     }
 
+    override suspend fun delete(deviceId: DeviceId) {
+        return dao.deleteDevice(deviceId)
+    }
+
+    override suspend fun deleteApp(deviceId: DeviceId, packageName: AppPackageName) {
+        return dao.deleteApp(deviceId = deviceId, packageName = packageName)
+    }
+
     override suspend fun clear() {
         dao.clear()
     }

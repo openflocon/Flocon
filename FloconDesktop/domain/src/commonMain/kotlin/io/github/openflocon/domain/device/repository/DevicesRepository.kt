@@ -34,5 +34,6 @@ interface DevicesRepository {
     suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 // endregion
 
+    suspend fun deleteDevice(deviceId: DeviceId)
     suspend fun clear()
 }
