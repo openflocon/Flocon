@@ -64,6 +64,19 @@ class LocalCurrentDeviceDataSourceInMemory : LocalCurrentDeviceDataSource {
         connectedDevicesAndAppsForSession.update { it + deviceIdAndPackageName }
     }
 
+    override suspend fun deleteApp(deviceId: DeviceId, packageName: AppPackageName) {
+        connectedDevicesAndAppsForSession.update {
+            it.filterNot {
+                it.deviceId == deviceId && it.packageName == packageName
+            }.toSet()
+        }
+        currentDeviceApp.update { map ->
+            if(map[deviceId] == packageName)
+                map - deviceId
+            else map
+        }
+    }
+
     override suspend fun delete(deviceId: DeviceId) {
         _currentDeviceId.update {
             if(it == deviceId)

@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.main.ui.delegates
 
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.usecase.DeleteDeviceApplicationUseCase
 import io.github.openflocon.domain.device.usecase.DeleteDeviceUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
@@ -30,8 +32,9 @@ class DevicesDelegate(
     observeCurrentDeviceAppsUseCase: ObserveCurrentDeviceAppsUseCase,
     observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     observeActiveDevicesUseCase: ObserveActiveDevicesUseCase,
-    getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
+    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase,
+    private val deleteDeviceApplicationUseCase: DeleteDeviceApplicationUseCase,
     private val closeableDelegate: CloseableDelegate,
 ) : CloseableScoped by closeableDelegate {
 
@@ -128,7 +131,12 @@ class DevicesDelegate(
         deleteDeviceUseCase(deviceId)
     }
 
-    fun deleteApp(packageName: String) {
-        TODO("Not yet implemented")
+    suspend fun deleteApp(packageName: String) {
+        // only fur the current device id
+        val currentDeviceId = getCurrentDeviceIdAndPackageNameUseCase()?.deviceId ?: return
+        deleteDeviceApplicationUseCase(
+            deviceId = currentDeviceId,
+            packageName = packageName,
+        )
     }
 }
