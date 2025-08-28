@@ -27,5 +27,6 @@ interface LocalCurrentDeviceDataSource {
     // endregion
 
     suspend fun delete(deviceId: DeviceId)
+    suspend fun deleteApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
     suspend fun clear()
 }
