@@ -48,7 +48,7 @@ class LocalDevicesDataSourceRoom(
         return if (appEntity ==  null) {
             dao.insertDeviceApp(
                 app.toEntity(
-                    parentDeviceId = deviceId,
+                    deviceId = deviceId,
                 )
             )
             InsertResult.New
@@ -56,7 +56,7 @@ class LocalDevicesDataSourceRoom(
             // update the app instance if needed
             dao.insertDeviceApp(
                 app.toEntity(
-                    parentDeviceId = deviceId,
+                    deviceId = deviceId,
                 )
             )
             InsertResult.Updated

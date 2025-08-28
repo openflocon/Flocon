@@ -2,8 +2,10 @@ package io.github.openflocon.data.local.network.models
 
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 import io.github.openflocon.data.local.network.models.graphql.NetworkCallGraphQlRequestEmbedded
 import io.github.openflocon.data.local.network.models.graphql.NetworkCallGraphQlResponseEmbedded
 import io.github.openflocon.data.local.network.models.grpc.NetworkCallGrpcResponseEmbedded
@@ -12,6 +14,14 @@ import io.github.openflocon.data.local.network.models.http.NetworkCallHttpRespon
 @Entity(
     indices = [
         Index(value = ["deviceId", "packageName"]),
+    ],
+    foreignKeys = [
+        ForeignKey(
+            entity = DeviceAppEntity::class,
+            parentColumns = ["deviceId", "packageName"],
+            childColumns = ["deviceId", "packageName"],
+            onDelete = ForeignKey.CASCADE
+        )
     ],
 )
 data class FloconNetworkCallEntity(

@@ -1,19 +1,22 @@
 package io.github.openflocon.data.core.network.datasource
 
-import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkFilterLocalDataSource {
     suspend fun get(
-        deviceId: DeviceId,
+        deviceAndApp: DeviceIdAndPackageNameDomainModel,
         column: NetworkTextFilterColumns,
     ): TextFilterStateDomainModel?
 
-    fun observe(deviceId: DeviceId): Flow<Map<NetworkTextFilterColumns, TextFilterStateDomainModel>>
+    fun observe(
+        deviceAndApp: DeviceIdAndPackageNameDomainModel,
+    ): Flow<Map<NetworkTextFilterColumns, TextFilterStateDomainModel>>
+
     suspend fun update(
-        deviceId: DeviceId,
+        deviceAndApp: DeviceIdAndPackageNameDomainModel,
         column: NetworkTextFilterColumns,
         newValue: TextFilterStateDomainModel,
     )

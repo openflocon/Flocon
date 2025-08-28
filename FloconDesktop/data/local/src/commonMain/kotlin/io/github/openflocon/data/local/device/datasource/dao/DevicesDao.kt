@@ -32,7 +32,7 @@ interface DevicesDao {
     @Query(
         """
         SELECT * FROM DeviceAppEntity 
-        WHERE parentDeviceId = :deviceId
+        WHERE deviceId = :deviceId
         """
     )
     fun observeDeviceApps(deviceId: String): Flow<List<DeviceAppEntity>>
@@ -40,7 +40,7 @@ interface DevicesDao {
     @Query(
         """
         SELECT * FROM DeviceAppEntity
-        WHERE parentDeviceId = :deviceId 
+        WHERE deviceId = :deviceId 
         AND packageName = :packageName
      """
     )
@@ -52,7 +52,7 @@ interface DevicesDao {
     @Query(
         """
         SELECT * FROM DeviceAppEntity
-        WHERE parentDeviceId = :deviceId 
+        WHERE deviceId = :deviceId 
         AND packageName = :packageName
      """
     )
@@ -65,7 +65,7 @@ interface DevicesDao {
         """
         UPDATE DeviceAppEntity
         SET iconEncoded = :iconEncoded
-        WHERE parentDeviceId = :deviceId AND packageName = :packageName
+        WHERE deviceId = :deviceId AND packageName = :packageName
         """
     )
     suspend fun updateAppIcon(deviceId: String, packageName: String, iconEncoded: String)
@@ -74,7 +74,7 @@ interface DevicesDao {
         """
         SELECT iconEncoded IS NOT NULL 
         FROM DeviceAppEntity
-        WHERE parentDeviceId = :deviceId 
+        WHERE deviceId = :deviceId 
         AND packageName = :appPackageName
      """
     )

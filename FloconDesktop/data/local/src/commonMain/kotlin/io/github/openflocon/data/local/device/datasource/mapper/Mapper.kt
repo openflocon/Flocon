@@ -28,9 +28,9 @@ internal fun DeviceEntity.toDomainModel(): DeviceDomainModel {
     )
 }
 
-internal fun DeviceAppDomainModel.toEntity(parentDeviceId: String): DeviceAppEntity {
+internal fun DeviceAppDomainModel.toEntity(deviceId: String): DeviceAppEntity {
     return DeviceAppEntity(
-        parentDeviceId = parentDeviceId,
+        deviceId = deviceId,
         name = this.name,
         packageName = this.packageName,
         iconEncoded = this.iconEncoded,

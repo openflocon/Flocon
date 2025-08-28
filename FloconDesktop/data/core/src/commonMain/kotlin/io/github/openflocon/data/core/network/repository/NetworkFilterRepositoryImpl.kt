@@ -1,7 +1,9 @@
 package io.github.openflocon.data.core.network.repository
 
 import io.github.openflocon.data.core.network.datasource.NetworkFilterLocalDataSource
+import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.repository.NetworkFilterRepository
@@ -12,23 +14,23 @@ class NetworkFilterRepositoryImpl(
     private val networkFilterLocalDataSource: NetworkFilterLocalDataSource,
 ) : NetworkFilterRepository {
     override suspend fun get(
-        deviceId: DeviceId,
+        deviceAndApp: DeviceIdAndPackageNameDomainModel,
         column: NetworkTextFilterColumns,
     ): TextFilterStateDomainModel? = networkFilterLocalDataSource.get(
-        deviceId = deviceId,
+        deviceAndApp = deviceAndApp,
         column = column,
     )
 
-    override fun observe(deviceId: DeviceId): Flow<Map<NetworkTextFilterColumns, TextFilterStateDomainModel>> = networkFilterLocalDataSource.observe(
-        deviceId = deviceId,
+    override fun observe(deviceAndApp: DeviceIdAndPackageNameDomainModel): Flow<Map<NetworkTextFilterColumns, TextFilterStateDomainModel>> = networkFilterLocalDataSource.observe(
+        deviceAndApp = deviceAndApp,
     ).distinctUntilChanged()
 
     override suspend fun update(
-        deviceId: DeviceId,
+        deviceAndApp: DeviceIdAndPackageNameDomainModel,
         column: NetworkTextFilterColumns,
         newValue: TextFilterStateDomainModel,
     ) = networkFilterLocalDataSource.update(
-        deviceId = deviceId,
+        deviceAndApp = deviceAndApp,
         column = column,
         newValue = newValue,
     )

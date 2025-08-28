@@ -1,21 +1,22 @@
 package io.github.openflocon.domain.network.usecase
 
+import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.repository.NetworkFilterRepository
 
 class UpdateNetworkFilterUseCase(
-    private val getCurrentDeviceIdUseCase: GetCurrentDeviceIdUseCase,
+    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val networkFilterRepository: NetworkFilterRepository,
 ) {
     suspend operator fun invoke(
         column: NetworkTextFilterColumns,
         newValue: TextFilterStateDomainModel,
     ) {
-        getCurrentDeviceIdUseCase()?.let { deviceId ->
+        getCurrentDeviceIdAndPackageNameUseCase()?.let { current  ->
             networkFilterRepository.update(
-                deviceId = deviceId,
+                deviceAndApp = current,
                 column = column,
                 newValue = newValue,
             )

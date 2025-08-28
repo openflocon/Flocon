@@ -4,7 +4,9 @@ import io.github.openflocon.data.core.network.datasource.NetworkFilterLocalDataS
 import io.github.openflocon.data.local.network.dao.NetworkFilterDao
 import io.github.openflocon.data.local.network.mapper.textFilterToDomain
 import io.github.openflocon.data.local.network.mapper.textFilterToEntity
+import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import kotlinx.coroutines.flow.Flow
@@ -15,17 +17,21 @@ class NetworkFilterLocalDataSourceRoom(
 ) : NetworkFilterLocalDataSource {
 
     override suspend fun get(
-        deviceId: DeviceId,
+        deviceAndApp: DeviceIdAndPackageNameDomainModel,
         column: NetworkTextFilterColumns,
     ): TextFilterStateDomainModel? = networkFilterDao.get(
-        deviceId = deviceId,
+        deviceId = deviceAndApp.deviceId,
+        packageName = deviceAndApp.packageName,
         column = column,
     )?.let {
         textFilterToDomain(it)
     }
 
-    override fun observe(deviceId: DeviceId): Flow<Map<NetworkTextFilterColumns, TextFilterStateDomainModel>> = networkFilterDao.observe(
-        deviceId = deviceId,
+    override fun observe(
+        deviceAndApp: DeviceIdAndPackageNameDomainModel,
+    ): Flow<Map<NetworkTextFilterColumns, TextFilterStateDomainModel>> = networkFilterDao.observe(
+        deviceId = deviceAndApp.deviceId,
+        packageName = deviceAndApp.packageName,
     ).map {
         it.associate {
             it.columnName to textFilterToDomain(it)
@@ -33,13 +39,14 @@ class NetworkFilterLocalDataSourceRoom(
     }
 
     override suspend fun update(
-        deviceId: DeviceId,
+        deviceAndApp: DeviceIdAndPackageNameDomainModel,
         column: NetworkTextFilterColumns,
         newValue: TextFilterStateDomainModel,
     ) {
         networkFilterDao.insertOrUpdate(
             textFilterToEntity(
-                deviceId = deviceId,
+                deviceId = deviceAndApp.deviceId,
+                packageName = deviceAndApp.packageName,
                 column = column,
                 domain = newValue,
             ),
