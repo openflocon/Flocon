@@ -41,7 +41,8 @@ fun List<FloconNetworkCallDomainModel>.exportToCsv(fileName: String) {
         "Duration (ms)",
         "Status",
         "Http Code",
-        "Body Size (bytes)",
+        "grpcStatus",
+        "Response Body Size (bytes)",
         "Issue",
         "Request Body",
         "Request Headers",
@@ -57,19 +58,27 @@ fun List<FloconNetworkCallDomainModel>.exportToCsv(fileName: String) {
             is FloconNetworkCallDomainModel.Response.Failure -> "Failure"
             null -> "Pending"
         }
-        val httpResponse = when (call.response) {
+        val httpCode = when (call.response) {
             is FloconNetworkCallDomainModel.Response.Success -> call.response.specificInfos.httpCode().toString()
             is FloconNetworkCallDomainModel.Response.Failure -> null
             null -> null
         }
         val issue = (call.response as? FloconNetworkCallDomainModel.Response.Failure)?.issue ?: ""
-        val bodySize = call.response?.let {
+        val responseBodySize = call.response?.let {
             when (it) {
                 is FloconNetworkCallDomainModel.Response.Success -> it.byteSize
                 is FloconNetworkCallDomainModel.Response.Failure -> 0L
             }
         } ?: call.request.byteSize
 
+        val grpcStatus = when(call.response) {
+            is FloconNetworkCallDomainModel.Response.Success -> when(val s = call.response.specificInfos) {
+                is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> s.grpcStatus
+                else -> null
+            }
+            is FloconNetworkCallDomainModel.Response.Failure -> null
+            null -> null
+        } ?: ""
 
         val requestBody = call.request.body ?: ""
 
@@ -105,8 +114,9 @@ fun List<FloconNetworkCallDomainModel>.exportToCsv(fileName: String) {
             "\"$formattedTime\"",
             "\"$durationMs\"",
             "\"$status\"",
-            "\"$httpResponse\"",
-            "\"$bodySize\"",
+            "\"$httpCode\"",
+            "\"$grpcStatus\"",
+            "\"$responseBodySize\"",
             "\"$issue\"",
             "\"$requestBody\"",
             "\"$requestHeadersString\"",
