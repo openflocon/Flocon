@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.main.ui.delegates
 
+import io.github.openflocon.domain.device.usecase.DeleteDeviceUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCase
@@ -30,6 +31,7 @@ class DevicesDelegate(
     observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     observeActiveDevicesUseCase: ObserveActiveDevicesUseCase,
     getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
+    private val deleteDeviceUseCase: DeleteDeviceUseCase,
     private val closeableDelegate: CloseableDelegate,
 ) : CloseableScoped by closeableDelegate {
 
@@ -120,5 +122,13 @@ class DevicesDelegate(
 
     suspend fun selectApp(packageName: String) {
         selectDeviceAppUseCase(packageName)
+    }
+
+    suspend fun delete(deviceId: String) {
+        deleteDeviceUseCase(deviceId)
+    }
+
+    fun deleteApp(packageName: String) {
+        TODO("Not yet implemented")
     }
 }

@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.main.ui.view.topbar.TopBarDeviceView
 import io.github.openflocon.flocondesktop.main.ui.view.topbar.TopBarSelector
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
@@ -27,6 +26,7 @@ import io.github.openflocon.library.designsystem.components.FloconCircularProgre
 internal fun TopBarDeviceDropdown(
     state: DevicesStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
+    deleteDevice: (DeviceItemUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -62,6 +62,11 @@ internal fun TopBarDeviceDropdown(
                         selected = state.deviceSelected.id == device.id,
                         onClick = {
                             onDeviceSelected(device)
+                            expanded = false
+                        },
+                        canDelete = true,
+                        onDelete = {
+                            deleteDevice(device)
                             expanded = false
                         },
                     )

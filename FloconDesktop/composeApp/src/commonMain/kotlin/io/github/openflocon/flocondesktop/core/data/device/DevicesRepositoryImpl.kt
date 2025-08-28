@@ -186,6 +186,13 @@ class DevicesRepositoryImpl(
         }
     }
 
+    override suspend fun deleteDevice(deviceId: DeviceId) {
+        withContext(dispatcherProvider.data) {
+            localDevicesDataSource.delete(deviceId)
+            localCurrentDeviceDataSource.delete(deviceId)
+        }
+    }
+
     // endregion
 
     override val pluginName = listOf(Protocol.FromDevice.Device.Plugin)
