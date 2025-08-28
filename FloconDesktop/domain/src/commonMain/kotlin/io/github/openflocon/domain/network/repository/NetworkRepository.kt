@@ -28,4 +28,9 @@ interface NetworkRepository {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         requestId: String,
     )
+
+    suspend fun getRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        ids: List<String>
+    ) : List<FloconNetworkCallDomainModel>
 }

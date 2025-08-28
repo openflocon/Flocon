@@ -39,6 +39,17 @@ class NetworkLocalDataSourceRoom(
     }
         .flowOn(dispatcherProvider.data)
 
+    override suspend fun getCalls(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        ids: List<String>
+    ): List<FloconNetworkCallDomainModel> {
+        return floconNetworkDao.getRequests(
+            ids = ids,
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+        ).mapNotNull { entities -> entities.toDomainModel() }
+    }
+
     override suspend fun save(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         call: FloconNetworkCallDomainModel,

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsUseCase
@@ -19,10 +20,12 @@ import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderD
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.list.model.FilterUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.processor.SortAndFilterNetworkItemsProcessor
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -49,6 +52,7 @@ class NetworkViewModel(
     private val headerDelegate: HeaderDelegate,
     private val sortAndFilterNetworkItemsProcessor: SortAndFilterNetworkItemsProcessor,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
+    private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase,
 ) : ViewModel(headerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -88,7 +92,7 @@ class NetworkViewModel(
         } // keep the domain for the filter
     }
 
-    private val filteredItems = combine(
+    private val filteredItems: Flow<List<NetworkItemViewState>> = combine(
         items,
         filterUiState,
         headerDelegate.sorted,
@@ -153,6 +157,7 @@ class NetworkViewModel(
             is NetworkAction.FilterQuery -> onFilterQuery(action)
             is NetworkAction.CloseJsonDetail -> onCloseJsonDetail(action)
             is NetworkAction.JsonDetail -> onJsonDetail(action)
+            is NetworkAction.ExportCsv -> onExportCsv()
             is NetworkAction.HeaderAction.ClickOnSort -> headerDelegate.onClickSort(
                 type = action.type,
                 sort = action.sort,
@@ -277,6 +282,26 @@ class NetworkViewModel(
     private fun onFilterQuery(action: NetworkAction.FilterQuery) {
         filterUiState.update { state ->
             state.copy(query = action.query)
+        }
+    }
+
+    private fun onExportCsv() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            filteredItems.firstOrNull()?.let {
+                val ids = it.map { it.uuid }
+                exportNetworkCallsToCsv(ids).fold(
+                    doOnFailure = {
+                        feedbackDisplayer.displayMessage(
+                            "Error while exporting csv"
+                        )
+                    },
+                    doOnSuccess = { path ->
+                        feedbackDisplayer.displayMessage(
+                            "Csv exported at $path"
+                        )
+                    }
+                )
+            }
         }
     }
 }
