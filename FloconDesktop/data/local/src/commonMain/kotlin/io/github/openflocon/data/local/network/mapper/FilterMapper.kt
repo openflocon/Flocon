@@ -2,6 +2,7 @@ package io.github.openflocon.data.local.network.mapper
 
 import io.github.openflocon.data.local.network.models.FilterItemSavedEntity
 import io.github.openflocon.data.local.network.models.NetworkFilterEntity
+import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
@@ -21,6 +22,7 @@ fun textFilterItemToDomain(item: FilterItemSavedEntity): TextFilterStateDomainMo
 
 fun textFilterToEntity(
     deviceId: DeviceId,
+    packageName: AppPackageName,
     column: NetworkTextFilterColumns,
     domain: TextFilterStateDomainModel,
 ): NetworkFilterEntity {
@@ -29,6 +31,7 @@ fun textFilterToEntity(
     }
     return NetworkFilterEntity(
         deviceId = deviceId,
+        packageName = packageName,
         columnName = column,
         isEnabled = domain.isEnabled,
         itemsAsJson = Json.encodeToString(itemsEntity),

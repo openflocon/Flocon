@@ -10,11 +10,27 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NetworkFilterDao {
-    @Query("SELECT * FROM network_filter WHERE deviceId = :deviceId AND columnName = :column")
-    suspend fun get(deviceId: String, column: NetworkTextFilterColumns): NetworkFilterEntity?
+    @Query("""
+        SELECT * FROM NetworkFilterEntity 
+        WHERE deviceId = :deviceId 
+        AND packageName = :packageName
+        AND columnName = :column
+    """)
+    suspend fun get(
+        deviceId: String,
+        packageName: String,
+        column: NetworkTextFilterColumns
+    ): NetworkFilterEntity?
 
-    @Query("SELECT * FROM network_filter WHERE deviceId = :deviceId")
-    fun observe(deviceId: String): Flow<List<NetworkFilterEntity>>
+    @Query("""
+        SELECT * FROM NetworkFilterEntity 
+        WHERE deviceId = :deviceId
+         AND packageName = :packageName
+        """)
+    fun observe(
+        deviceId: String,
+        packageName: String
+    ): Flow<List<NetworkFilterEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdate(entity: NetworkFilterEntity)

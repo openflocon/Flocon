@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 
 @Entity(
     foreignKeys = [

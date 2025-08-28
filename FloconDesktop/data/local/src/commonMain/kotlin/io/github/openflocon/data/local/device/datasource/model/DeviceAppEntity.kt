@@ -8,17 +8,17 @@ import androidx.room.ForeignKey
         ForeignKey(
             entity = DeviceEntity::class,
             parentColumns = ["deviceId"],
-            childColumns = ["parentDeviceId"],
-            onDelete = ForeignKey.Companion.CASCADE
+            childColumns = ["deviceId"],
+            onDelete = ForeignKey.CASCADE
         )
     ],
     primaryKeys = [
-        "parentDeviceId",
+        "deviceId",
         "packageName"
     ]
 )
 data class DeviceAppEntity(
-    val parentDeviceId: String,
+    val deviceId: String,
     val name: String,
     val packageName: String,
     val iconEncoded: String?, // base64

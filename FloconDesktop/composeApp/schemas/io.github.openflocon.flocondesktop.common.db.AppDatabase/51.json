@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 51,
-    "identityHash": "f28e9abf196f2ecf8b34e2cba7f87981",
+    "identityHash": "64b36881637304970d9214a010aa86ba",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`callId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `appInstance` INTEGER NOT NULL, `type` TEXT NOT NULL, `request_url` TEXT NOT NULL, `request_method` TEXT NOT NULL, `request_startTime` INTEGER NOT NULL, `request_requestHeaders` TEXT NOT NULL, `request_requestBody` TEXT, `request_requestByteSize` INTEGER NOT NULL, `request_isMocked` INTEGER NOT NULL, `request_graphql_query` TEXT, `request_graphql_operationType` TEXT, `response_durationMs` REAL, `response_responseContentType` TEXT, `response_responseBody` TEXT, `response_responseHeaders` TEXT, `response_responseByteSize` INTEGER, `response_responseError` TEXT, `response_graphql_isSuccess` INTEGER, `response_graphql_responseHttpCode` INTEGER, `response_http_responseHttpCode` INTEGER, `response_grpc_responseStatus` TEXT, PRIMARY KEY(`callId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`callId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `appInstance` INTEGER NOT NULL, `type` TEXT NOT NULL, `request_url` TEXT NOT NULL, `request_method` TEXT NOT NULL, `request_startTime` INTEGER NOT NULL, `request_requestHeaders` TEXT NOT NULL, `request_requestBody` TEXT, `request_requestByteSize` INTEGER NOT NULL, `request_isMocked` INTEGER NOT NULL, `request_graphql_query` TEXT, `request_graphql_operationType` TEXT, `response_durationMs` REAL, `response_responseContentType` TEXT, `response_responseBody` TEXT, `response_responseHeaders` TEXT, `response_responseByteSize` INTEGER, `response_responseError` TEXT, `response_graphql_isSuccess` INTEGER, `response_graphql_responseHttpCode` INTEGER, `response_http_responseHttpCode` INTEGER, `response_grpc_responseStatus` TEXT, PRIMARY KEY(`callId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "callId",
@@ -157,11 +157,26 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_FloconNetworkCallEntity_deviceId_packageName` ON `${TABLE_NAME}` (`deviceId`, `packageName`)"
           }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
+          }
         ]
       },
       {
         "tableName": "FileEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `name` TEXT NOT NULL, `isDirectory` INTEGER NOT NULL, `path` TEXT NOT NULL, `parentPath` TEXT NOT NULL, `size` INTEGER NOT NULL, `lastModifiedTimestamp` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `name` TEXT NOT NULL, `isDirectory` INTEGER NOT NULL, `path` TEXT NOT NULL, `parentPath` TEXT NOT NULL, `size` INTEGER NOT NULL, `lastModifiedTimestamp` INTEGER NOT NULL, FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -235,11 +250,26 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_FileEntity_deviceId_packageName` ON `${TABLE_NAME}` (`deviceId`, `packageName`)"
           }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
+          }
         ]
       },
       {
         "tableName": "DashboardEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dashboardId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, PRIMARY KEY(`dashboardId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dashboardId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, PRIMARY KEY(`dashboardId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "dashboardId",
@@ -285,6 +315,21 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_DashboardEntity_deviceId_packageName` ON `${TABLE_NAME}` (`deviceId`, `packageName`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
           }
         ]
       },
@@ -499,7 +544,7 @@
       },
       {
         "tableName": "TableEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `name` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `name` TEXT NOT NULL, FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -543,6 +588,21 @@
             ],
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_TableEntity_deviceId_packageName_name` ON `${TABLE_NAME}` (`deviceId`, `packageName`, `name`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
           }
         ]
       },
@@ -614,7 +674,7 @@
       },
       {
         "tableName": "DeviceImageEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `url` TEXT NOT NULL, `time` INTEGER NOT NULL, PRIMARY KEY(`deviceId`, `packageName`, `url`, `time`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `url` TEXT NOT NULL, `time` INTEGER NOT NULL, PRIMARY KEY(`deviceId`, `packageName`, `url`, `time`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "deviceId",
@@ -649,11 +709,26 @@
             "url",
             "time"
           ]
-        }
+        },
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
+          }
+        ]
       },
       {
         "tableName": "SuccessQueryEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `databaseId` TEXT NOT NULL, `queryString` TEXT NOT NULL, `timestamp` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `databaseId` TEXT NOT NULL, `queryString` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -720,11 +795,26 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_SuccessQueryEntity_databaseId` ON `${TABLE_NAME}` (`databaseId`)"
           }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
+          }
         ]
       },
       {
         "tableName": "DeeplinkEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `link` TEXT NOT NULL, `label` TEXT, `description` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `link` TEXT NOT NULL, `label` TEXT, `description` TEXT, FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -788,11 +878,26 @@
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_DeeplinkEntity_deviceId_link` ON `${TABLE_NAME}` (`deviceId`, `link`)"
           }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
+          }
         ]
       },
       {
         "tableName": "AnalyticsItemEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`itemId` TEXT NOT NULL, `analyticsTableId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `eventName` TEXT NOT NULL, `propertiesColumnsNames` TEXT NOT NULL, `propertiesValues` TEXT NOT NULL, PRIMARY KEY(`itemId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`itemId` TEXT NOT NULL, `analyticsTableId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `eventName` TEXT NOT NULL, `propertiesColumnsNames` TEXT NOT NULL, `propertiesValues` TEXT NOT NULL, PRIMARY KEY(`itemId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "itemId",
@@ -861,15 +966,36 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_AnalyticsItemEntity_deviceId_packageName_analyticsTableId` ON `${TABLE_NAME}` (`deviceId`, `packageName`, `analyticsTableId`)"
           }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
+          }
         ]
       },
       {
-        "tableName": "network_filter",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `columnName` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `itemsAsJson` TEXT NOT NULL, PRIMARY KEY(`deviceId`, `columnName`))",
+        "tableName": "NetworkFilterEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `columnName` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `itemsAsJson` TEXT NOT NULL, PRIMARY KEY(`deviceId`, `columnName`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "deviceId",
             "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -898,11 +1024,26 @@
             "deviceId",
             "columnName"
           ]
-        }
+        },
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
+          }
+        ]
       },
       {
         "tableName": "MockNetworkEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mockId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `response` TEXT NOT NULL, `expectation_urlPattern` TEXT NOT NULL, `expectation_method` TEXT NOT NULL, PRIMARY KEY(`mockId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mockId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `response` TEXT NOT NULL, `expectation_urlPattern` TEXT NOT NULL, `expectation_method` TEXT NOT NULL, PRIMARY KEY(`mockId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "mockId",
@@ -964,11 +1105,26 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_MockNetworkEntity_deviceId_packageName` ON `${TABLE_NAME}` (`deviceId`, `packageName`)"
           }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
+          }
         ]
       },
       {
         "tableName": "DeviceWithSerialEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `serial` TEXT NOT NULL, PRIMARY KEY(`deviceId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `serial` TEXT NOT NULL, PRIMARY KEY(`deviceId`), FOREIGN KEY(`deviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "deviceId",
@@ -988,11 +1144,24 @@
           "columnNames": [
             "deviceId"
           ]
-        }
+        },
+        "foreignKeys": [
+          {
+            "table": "DeviceEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId"
+            ],
+            "referencedColumns": [
+              "deviceId"
+            ]
+          }
+        ]
       },
       {
         "tableName": "BadQualityConfigEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `packageName` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `errorProbability` REAL NOT NULL, `errors` TEXT NOT NULL, `triggerProbability` REAL NOT NULL, `minLatencyMs` INTEGER NOT NULL, `maxLatencyMs` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `packageName` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `errorProbability` REAL NOT NULL, `errors` TEXT NOT NULL, `triggerProbability` REAL NOT NULL, `minLatencyMs` INTEGER NOT NULL, `maxLatencyMs` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -1078,6 +1247,21 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_BadQualityConfigEntity_deviceId_packageName` ON `${TABLE_NAME}` (`deviceId`, `packageName`)"
           }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
+          }
         ]
       },
       {
@@ -1106,11 +1290,11 @@
       },
       {
         "tableName": "DeviceAppEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parentDeviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `packageName` TEXT NOT NULL, `iconEncoded` TEXT, `lastAppInstance` INTEGER NOT NULL, PRIMARY KEY(`parentDeviceId`, `packageName`), FOREIGN KEY(`parentDeviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `packageName` TEXT NOT NULL, `iconEncoded` TEXT, `lastAppInstance` INTEGER NOT NULL, PRIMARY KEY(`deviceId`, `packageName`), FOREIGN KEY(`deviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
-            "fieldPath": "parentDeviceId",
-            "columnName": "parentDeviceId",
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -1141,7 +1325,7 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "parentDeviceId",
+            "deviceId",
             "packageName"
           ]
         },
@@ -1151,7 +1335,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
-              "parentDeviceId"
+              "deviceId"
             ],
             "referencedColumns": [
               "deviceId"
@@ -1162,7 +1346,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f28e9abf196f2ecf8b34e2cba7f87981')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '64b36881637304970d9214a010aa86ba')"
     ]
   }
 }
