@@ -75,9 +75,10 @@ class DevicesDelegate(
 
     init {
         // everytime we detect a new active app, we check if it's the current one, if not, we select it
+        // do this only if we have 1 unique active device
         observeActiveDevicesUseCase().distinctUntilChanged().onEach { activeDevices ->
             val currentDeviceId = getCurrentDeviceIdAndPackageNameUseCase()?.deviceId
-            if(activeDevices.isNotEmpty() && currentDeviceId !in activeDevices.map { it.deviceId }) {
+            if(activeDevices.size == 1 && currentDeviceId !in activeDevices.map { it.deviceId }) {
                 val firstActiveDevice = activeDevices.first()
                 select(firstActiveDevice.deviceId)
             }
