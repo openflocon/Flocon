@@ -46,6 +46,7 @@ fun MainScreenTopBar(
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     deleteDevice: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
+    deleteApp: (DeviceAppUiModel) -> Unit,
     onTakeScreenshotClicked: () -> Unit,
     recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
@@ -64,6 +65,7 @@ fun MainScreenTopBar(
             onDeviceSelected = onDeviceSelected,
             onAppSelected = onAppSelected,
             deleteDevice = deleteDevice,
+            deleteApp = deleteApp,
         )
         Spacer(modifier = Modifier.weight(1f))
         TopBarActions(

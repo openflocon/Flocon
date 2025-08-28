@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.device
 
+import io.github.openflocon.domain.device.usecase.DeleteDeviceApplicationUseCase
 import io.github.openflocon.domain.device.usecase.DeleteDeviceUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
@@ -36,4 +37,5 @@ internal val deviceModule = module {
     factoryOf(::StartRecordingVideoUseCase)
     factoryOf(::StopRecordingVideoUseCase)
     factoryOf(::DeleteDeviceUseCase)
+    factoryOf(::DeleteDeviceApplicationUseCase)
 }

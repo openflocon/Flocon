@@ -40,8 +40,9 @@ internal fun TopBarDeviceAndAppView(
     devicesState: DevicesStateUiModel,
     appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
-    onAppSelected: (DeviceAppUiModel) -> Unit,
     deleteDevice: (DeviceItemUiModel) -> Unit,
+    onAppSelected: (DeviceAppUiModel) -> Unit,
+    deleteApp: (DeviceAppUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -60,6 +61,7 @@ internal fun TopBarDeviceAndAppView(
                 devicesState = devicesState,
                 appsState = appsState,
                 onAppSelected = onAppSelected,
+                deleteApp = deleteApp,
             )
         }
     }
