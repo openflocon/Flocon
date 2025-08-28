@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.main.ui.delegates
 
+import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
@@ -14,7 +15,11 @@ import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class DevicesDelegate(
     private val selectDeviceUseCase: SelectDeviceUseCase,
@@ -24,6 +29,7 @@ class DevicesDelegate(
     observeCurrentDeviceAppsUseCase: ObserveCurrentDeviceAppsUseCase,
     observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     observeActiveDevicesUseCase: ObserveActiveDevicesUseCase,
+    getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val closeableDelegate: CloseableDelegate,
 ) : CloseableScoped by closeableDelegate {
 
@@ -66,6 +72,17 @@ class DevicesDelegate(
             SharingStarted.WhileSubscribed(5_000),
             DevicesStateUiModel.Loading,
         )
+
+    init {
+        // everytime we detect a new active app, we check if it's the current one, if not, we select it
+        observeActiveDevicesUseCase().distinctUntilChanged().onEach { activeDevices ->
+            val currentDeviceId = getCurrentDeviceIdAndPackageNameUseCase()?.deviceId
+            if(activeDevices.isNotEmpty() && currentDeviceId !in activeDevices.map { it.deviceId }) {
+                val firstActiveDevice = activeDevices.first()
+                select(firstActiveDevice.deviceId)
+            }
+        }.launchIn(coroutineScope)
+    }
 
     val appsState: StateFlow<AppsStateUiModel> = combine(
         observeCurrentDeviceAppsUseCase(),
