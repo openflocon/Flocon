@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.network
 
+import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkFilterUseCase
 import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsByIdUseCase
@@ -32,6 +33,7 @@ internal val networkModule = module {
     factoryOf(::ResetCurrentDeviceHttpRequestsUseCase)
     factoryOf(::RemoveHttpRequestsBeforeUseCase)
     factoryOf(::RemoveHttpRequestUseCase)
+    factoryOf(::ExportNetworkCallsToCsvUseCase)
     // filters
     factoryOf(::GetNetworkFilterUseCase)
     factoryOf(::ObserveNetworkFilterUseCase)

@@ -11,6 +11,11 @@ interface NetworkLocalDataSource {
         lite: Boolean,
     ): Flow<List<FloconNetworkCallDomainModel>>
 
+    suspend fun getCalls(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        ids: List<String>
+    ): List<FloconNetworkCallDomainModel>
+
     suspend fun getCall(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         callId: String,

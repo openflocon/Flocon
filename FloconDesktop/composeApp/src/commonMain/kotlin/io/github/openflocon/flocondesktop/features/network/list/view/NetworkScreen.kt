@@ -135,6 +135,15 @@ fun NetworkScreen(
                         modifier = Modifier.weight(1f)
                             .fillMaxHeight(),
                     ) {
+                        item {
+                            FloconButton(
+                                onClick = {
+                                    onAction(NetworkAction.ExportCsv)
+                                }
+                            ) {
+                                Text("export csv")
+                            }
+                        }
                         items(
                             items = uiState.items,
                             key = NetworkItemViewState::uuid,

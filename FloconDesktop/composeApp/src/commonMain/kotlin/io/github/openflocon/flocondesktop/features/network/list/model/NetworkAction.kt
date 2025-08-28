@@ -23,6 +23,8 @@ sealed interface NetworkAction {
     data object OpenBadNetworkQuality : NetworkAction
     data object CloseBadNetworkQuality : NetworkAction
 
+    data object ExportCsv : NetworkAction
+
     data class CloseJsonDetail(val id: String) : NetworkAction
 
     data class CopyUrl(val item: NetworkItemViewState) : NetworkAction

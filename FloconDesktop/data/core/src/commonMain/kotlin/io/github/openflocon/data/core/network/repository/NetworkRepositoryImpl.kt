@@ -60,6 +60,18 @@ class NetworkRepositoryImpl(
         .observeRequests(deviceIdAndPackageName = deviceIdAndPackageName, lite = lite)
         .flowOn(dispatcherProvider.data)
 
+    override suspend fun getRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        ids: List<String>
+    ): List<FloconNetworkCallDomainModel> {
+        return withContext(dispatcherProvider.data) {
+            networkLocalDataSource.getCalls(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                ids = ids,
+            )
+        }
+    }
+
     override fun observeRequest(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         requestId: String,
