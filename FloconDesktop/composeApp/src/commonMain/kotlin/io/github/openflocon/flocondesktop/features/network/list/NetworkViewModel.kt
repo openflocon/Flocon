@@ -289,7 +289,18 @@ class NetworkViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             filteredItems.firstOrNull()?.let {
                 val ids = it.map { it.uuid }
-                exportNetworkCallsToCsv(ids)
+                exportNetworkCallsToCsv(ids).fold(
+                    doOnFailure = {
+                        feedbackDisplayer.displayMessage(
+                            "Error while exporting csv"
+                        )
+                    },
+                    doOnSuccess = { path ->
+                        feedbackDisplayer.displayMessage(
+                            "Csv exported at $path"
+                        )
+                    }
+                )
             }
         }
     }

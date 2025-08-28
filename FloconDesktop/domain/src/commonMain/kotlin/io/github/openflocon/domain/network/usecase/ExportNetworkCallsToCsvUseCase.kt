@@ -24,15 +24,14 @@ class ExportNetworkCallsToCsvUseCase(
             ids = ids
         )
         val fileName = "network_calls_${System.currentTimeMillis()}.csv"
-        requests.exportToCsv(fileName = fileName)
-        return Success(fileName)
+        val desktopPath = System.getProperty("user.home") + File.separator + "Desktop"
+        val file = File(desktopPath, fileName)
+        requests.exportToCsv(file = file)
+        return Success(file.absolutePath)
     }
 }
 
-fun List<FloconNetworkCallDomainModel>.exportToCsv(fileName: String) {
-    val desktopPath = System.getProperty("user.home") + File.separator + "Desktop"
-    val file = File(desktopPath, fileName)
-
+private fun List<FloconNetworkCallDomainModel>.exportToCsv(file: File) {
     val headerList = listOf(
         "Type",
         "URL",
