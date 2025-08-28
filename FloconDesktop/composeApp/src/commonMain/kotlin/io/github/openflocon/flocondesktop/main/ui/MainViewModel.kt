@@ -81,6 +81,12 @@ class MainViewModel(
         }
     }
 
+    fun deleteApp(app: DeviceAppUiModel) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            devicesDelegate.deleteApp(app.packageName)
+        }
+    }
+
     fun onAppSelected(app: DeviceAppUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             devicesDelegate.selectApp(app.packageName)

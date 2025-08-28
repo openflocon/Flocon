@@ -64,16 +64,16 @@ class LocalCurrentDeviceDataSourceInMemory : LocalCurrentDeviceDataSource {
         connectedDevicesAndAppsForSession.update { it + deviceIdAndPackageName }
     }
 
-    override suspend fun deleteApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+    override suspend fun deleteApp(deviceId: DeviceId, packageName: AppPackageName) {
         connectedDevicesAndAppsForSession.update {
             it.filterNot {
-                it == deviceIdAndPackageName
+                it.deviceId == deviceId && it.packageName == packageName
             }.toSet()
         }
-        currentDeviceApp.update {
-            it.filterNot {
-                it.value == deviceIdAndPackageName.packageName
-            }
+        currentDeviceApp.update { map ->
+            if(map[deviceId] == packageName)
+                map - deviceId
+            else map
         }
     }
 

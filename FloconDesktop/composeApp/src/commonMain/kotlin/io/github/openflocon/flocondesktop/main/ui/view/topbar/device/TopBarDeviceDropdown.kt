@@ -41,11 +41,17 @@ internal fun TopBarDeviceDropdown(
         when (state) {
             DevicesStateUiModel.Empty -> Empty()
             DevicesStateUiModel.Loading -> Loading()
-            is DevicesStateUiModel.WithDevices -> TopBarDeviceView(
-                device = state.deviceSelected,
-                onClick = {},
-                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
-            )
+            is DevicesStateUiModel.WithDevices ->  TopBarSelector(
+                onClick = {
+                    expanded = true
+                },
+                modifier = modifier,
+            ) {
+                TopBarDeviceView(
+                    device = state.deviceSelected,
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                )
+            }
         }
         ExposedDropdownMenu(
             expanded = expanded,
@@ -64,7 +70,6 @@ internal fun TopBarDeviceDropdown(
                             onDeviceSelected(device)
                             expanded = false
                         },
-                        canDelete = true,
                         onDelete = {
                             deleteDevice(device)
                             expanded = false

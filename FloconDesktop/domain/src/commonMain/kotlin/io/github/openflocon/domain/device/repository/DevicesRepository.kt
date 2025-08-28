@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.device.repository
 
+import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
@@ -35,5 +36,9 @@ interface DevicesRepository {
 // endregion
 
     suspend fun deleteDevice(deviceId: DeviceId)
+    suspend fun deleteApplication(
+        deviceId : DeviceId,
+        packageName : AppPackageName,
+    )
     suspend fun clear()
 }

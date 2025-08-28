@@ -7,6 +7,7 @@ import io.github.openflocon.data.core.device.datasource.remote.RemoteDeviceDataS
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
@@ -190,6 +191,22 @@ class DevicesRepositoryImpl(
         withContext(dispatcherProvider.data) {
             localDevicesDataSource.delete(deviceId)
             localCurrentDeviceDataSource.delete(deviceId)
+        }
+    }
+
+    override suspend fun deleteApplication(
+        deviceId: DeviceId,
+        packageName: AppPackageName,
+    ) {
+        withContext(dispatcherProvider.data) {
+            localDevicesDataSource.deleteApp(
+                deviceId = deviceId,
+                packageName = packageName
+            )
+            localCurrentDeviceDataSource.deleteApp(
+                deviceId = deviceId,
+                packageName = packageName
+            )
         }
     }
 

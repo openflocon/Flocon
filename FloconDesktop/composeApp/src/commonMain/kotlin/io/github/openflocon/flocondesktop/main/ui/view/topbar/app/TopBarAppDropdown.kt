@@ -26,6 +26,7 @@ internal fun TopBarAppDropdown(
     devicesState: DevicesStateUiModel,
     appsState: AppsStateUiModel,
     onAppSelected: (DeviceAppUiModel) -> Unit,
+    deleteApp: (DeviceAppUiModel) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -37,11 +38,14 @@ internal fun TopBarAppDropdown(
             val modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
 
             appsState.appSelected?.let {
-                TopBarAppView(
-                    deviceApp = it,
+                TopBarSelector(
                     onClick = { expanded = true },
-                    modifier = modifier,
-                )
+                ) {
+                    TopBarAppView(
+                        deviceApp = it,
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                    )
+                }
             } ?: run {
                 TopBarSelector(
                     onClick = { expanded = true },
@@ -73,6 +77,11 @@ internal fun TopBarAppDropdown(
                                         onAppSelected(app)
                                         expanded = false
                                     },
+                                    selected = appsState.appSelected?.packageName == app.packageName,
+                                    deleteClick = {
+                                        deleteApp(app)
+                                        expanded = false
+                                    }
                                 )
                             }
                     }
