@@ -116,7 +116,7 @@ class NetworkRepositoryImpl(
                                 println("cannot decode response")
                                 return@let null
                             }
-                            toDomainForResponse(response = response, request = request)
+                            toDomainForResponse(receivedResponse = response, request = request)
                         }?.let { call ->
                             if (call.response?.getContentType()?.startsWith("image/") == true) {
                                 networkImageRepository.onImageReceived(deviceIdAndPackageName = deviceIdAndPackageName, call = call)
@@ -164,13 +164,13 @@ class NetworkRepositoryImpl(
     }
 
     fun toDomainForResponse(
-        response: FloconNetworkResponseOnlyDomainModel,
+        receivedResponse: FloconNetworkResponseOnlyDomainModel,
         request: FloconNetworkCallDomainModel,
     ): FloconNetworkCallDomainModel? {
         val isRequestGraphQl = request.request.specificInfos is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl
         return try {
             val response = if(isRequestGraphQl) {
-                when (val r = response.response) {
+                when (val r = receivedResponse.response) {
                     is FloconNetworkCallDomainModel.Response.Success -> {
                         // specific case : map to graphQl if needed
                         when (val s = r.specificInfos) {
@@ -186,12 +186,16 @@ class NetworkRepositoryImpl(
                         }
                     }
 
-                    is FloconNetworkCallDomainModel.Response.Failure -> response.response
+                    is FloconNetworkCallDomainModel.Response.Failure -> receivedResponse.response
                 }
             } else {
-                response.response
+                receivedResponse.response
             }
+
             request.copy(
+                request = request.request.copy(
+                    headers = receivedResponse.toUpdateRequestHeaders ?: request.request.headers,
+                ),
                 response = response,
             )
         } catch (t: Throwable) {

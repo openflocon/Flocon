@@ -94,19 +94,8 @@ data class FloconNetworkCallIdDomainModel(
     val floconCallId: String,
 )
 
-/*
-data class FloconNetworkRequestDomainModel(
-    val url: String,
-    val startTime: Long,
-    val method: String,
-    val headers: Map<String, String>,
-    val body: String?,
-    val byteSize: Long,
-    val isMocked: Boolean,
-)
- */
-
 data class FloconNetworkResponseOnlyDomainModel(
     val floconCallId: String,
+    val toUpdateRequestHeaders: Map<String, String>?,
     val response: FloconNetworkCallDomainModel.Response,
 )

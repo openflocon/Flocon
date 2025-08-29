@@ -38,6 +38,10 @@ fun floconNetworkCallResponseToJson(network: FloconNetworkCallResponse): JSONObj
         response.contentType?.let { json.put("responseContentType", it) }
         response.body?.let { json.put("responseBody", it) }
         json.put("responseHeaders", JSONObject(response.headers))
+        // if we have delayed headers
+        response.requestHeaders?.takeIf { it.isNotEmpty() }?.let { requestHeaders ->
+            json.put("requestHeaders", JSONObject(requestHeaders))
+        }
         json.put("responseSize", response.size)
         response.error?.let { json.put("responseError", it) }
     }
