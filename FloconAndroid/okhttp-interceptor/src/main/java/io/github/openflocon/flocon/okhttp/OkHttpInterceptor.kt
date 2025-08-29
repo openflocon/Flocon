@@ -124,6 +124,9 @@ class FloconOkhttpInterceptor() : Interceptor {
 
             val isImage = responseContentType?.toString()?.startsWith("image/") == true
 
+            val requestHeadersMapUpToDate =
+                response.request.headers.toMultimap().mapValues { it.value.joinToString(",") }
+
             val floconCallResponse = FloconNetworkResponse(
                 httpCode = response.code,
                 contentType = responseContentType?.toString(),
@@ -132,6 +135,7 @@ class FloconOkhttpInterceptor() : Interceptor {
                 size = responseSize,
                 grpcStatus = null,
                 error = null,
+                requestHeaders = requestHeadersMapUpToDate,
             )
 
             floconNetworkPlugin.logResponse(
@@ -161,6 +165,7 @@ class FloconOkhttpInterceptor() : Interceptor {
                 size = null,
                 grpcStatus = null,
                 error = e.message ?: e.javaClass.simpleName,
+                requestHeaders = null,
             )
 
             floconNetworkPlugin.logResponse(

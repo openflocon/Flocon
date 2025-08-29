@@ -38,6 +38,9 @@ data class FloconNetworkResponseDataModel(
     val responseSize: Long? = null,
     val responseGrpcStatus: String? = null,
     val responseError: String? = null,
+
+    // if we have delayed headers (if the flocon-interceptor is before others)
+    val requestHeaders: Map<String, String>? = null,
 )
 
 internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnlyDomainModel? {
@@ -71,6 +74,7 @@ internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnl
         FloconNetworkResponseOnlyDomainModel(
             floconCallId = callId,
             response = response,
+            toUpdateRequestHeaders = requestHeaders,
         )
     } catch (t: Throwable) {
         t.printStackTrace()

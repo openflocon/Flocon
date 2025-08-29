@@ -97,6 +97,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
                 size = null,
                 grpcStatus = null,
                 error = t.message ?: t.javaClass.simpleName,
+                requestHeaders = requestHeadersMap,
             )
 
             floconNetworkPlugin.logResponse(
@@ -135,6 +136,9 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
         val contentType = response.contentType()?.toString()
         val isImage = contentType?.startsWith("image/") == true
 
+        val requestHeadersMap =
+            request.headers.entries().associate { it.key to it.value.joinToString(",") }
+
         val floconCallResponse = FloconNetworkResponse(
             httpCode = response.status.value,
             contentType = contentType,
@@ -143,6 +147,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
             size = responseSize,
             grpcStatus = null,
             error = null,
+            requestHeaders = requestHeadersMap,
         )
 
         floconNetworkPlugin.logResponse(

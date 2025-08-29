@@ -174,67 +174,68 @@ private fun contextualActions(
                         }
                     ),
                 )
-                add(
-                    ContextualItem(
-                        text = "Filter: Include this domain",
-                        onClick = {
-                            onActionCallback(
-                                NetworkAction.HeaderAction.FilterAction(
-                                    OnFilterAction.TextFilter(
-                                        column = NetworkTextFilterColumns.Domain,
-                                        action = TextFilterAction.Include(text = state.domain)
-                                    )
-                                )
-                            )
-                        }
-                    ),
-                )
-                add(
-                    ContextualItem(
-                        text = "Filter: Include this url",
-                        onClick = {
-                            onActionCallback(
-                                NetworkAction.HeaderAction.FilterAction(
-                                    OnFilterAction.TextFilter(
-                                        column = NetworkTextFilterColumns.Query,
-                                        action = TextFilterAction.Include(text = state.type.query)
-                                    )
-                                )
-                            )
-                        }
-                    ),
-                )
-                add(
-                    ContextualItem(
-                        text = "Filter: Exclude this domain",
-                        onClick = {
-                            onActionCallback(
-                                NetworkAction.HeaderAction.FilterAction(
-                                    OnFilterAction.TextFilter(
-                                        column = NetworkTextFilterColumns.Domain,
-                                        action = TextFilterAction.Exclude(text = state.domain)
-                                    )
-                                )
-                            )
-                        }
-                    ),
-                )
-                add(
-                    ContextualItem(
-                        text = "Filter: Exclude this url",
-                        onClick = {
-                            onActionCallback(
-                                NetworkAction.HeaderAction.FilterAction(
-                                    OnFilterAction.TextFilter(
-                                        column = NetworkTextFilterColumns.Query,
-                                        action = TextFilterAction.Exclude(text = state.type.query)
-                                    )
-                                )
-                            )
-                        }
-                    ),
-                )
             }
+            add(
+                ContextualItem(
+                    text = "Filter: Include this domain",
+                    onClick = {
+                        onActionCallback(
+                            NetworkAction.HeaderAction.FilterAction(
+                                OnFilterAction.TextFilter(
+                                    column = NetworkTextFilterColumns.Domain,
+                                    action = TextFilterAction.Include(text = state.domain)
+                                )
+                            )
+                        )
+                    }
+                ),
+            )
+            add(
+                ContextualItem(
+                    text = "Filter: Include this Query",
+                    onClick = {
+                        onActionCallback(
+                            NetworkAction.HeaderAction.FilterAction(
+                                OnFilterAction.TextFilter(
+                                    column = NetworkTextFilterColumns.Query,
+                                    action = TextFilterAction.Include(text = state.type.query)
+                                )
+                            )
+                        )
+                    }
+                ),
+            )
+            add(
+                ContextualItem(
+                    text = "Filter: Exclude this domain",
+                    onClick = {
+                        onActionCallback(
+                            NetworkAction.HeaderAction.FilterAction(
+                                OnFilterAction.TextFilter(
+                                    column = NetworkTextFilterColumns.Domain,
+                                    action = TextFilterAction.Exclude(text = state.domain)
+                                )
+                            )
+                        )
+                    }
+                ),
+            )
+            add(
+                ContextualItem(
+                    text = "Filter: Exclude this Query",
+                    onClick = {
+                        onActionCallback(
+                            NetworkAction.HeaderAction.FilterAction(
+                                OnFilterAction.TextFilter(
+                                    column = NetworkTextFilterColumns.Query,
+                                    action = TextFilterAction.Exclude(text = state.type.query)
+                                )
+                            )
+                        )
+                    }
+                ),
+            )
+
             add(
                 ContextualItem(
                     text = "Remove",

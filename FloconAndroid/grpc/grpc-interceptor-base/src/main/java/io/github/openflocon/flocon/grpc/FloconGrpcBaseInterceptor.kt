@@ -132,6 +132,7 @@ private class LoggingClientCallListener<RespT>(
                             size = null,
                             grpcStatus = null,
                             error = cause.message ?: cause.javaClass.simpleName,
+                            requestHeaders = null,
                         ),
                     )
                 } ?: run {
@@ -146,6 +147,7 @@ private class LoggingClientCallListener<RespT>(
                             size = 0L,
                             grpcStatus = status.code.toString(),
                             error = null,
+                            requestHeaders = null,
                         ),
                     )
                 }
