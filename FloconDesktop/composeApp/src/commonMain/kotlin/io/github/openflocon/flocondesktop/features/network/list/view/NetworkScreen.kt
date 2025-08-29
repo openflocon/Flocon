@@ -13,7 +13,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
+import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,12 +36,12 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewGra
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
+import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkHeaderButton
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.view.NetworkBodyWindow
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconOverflowItem
@@ -63,6 +64,7 @@ fun NetworkScreen(modifier: Modifier = Modifier) {
         modifier = modifier,
     )
 }
+
 
 @Composable
 fun NetworkScreen(
@@ -101,20 +103,20 @@ fun NetworkScreen(
                             imageVector = Icons.Outlined.Delete,
                             onClick = { onAction(NetworkAction.Reset) },
                         )
-                        FloconButton(
+                        NetworkHeaderButton(
+                            title = "Mocks",
+                            imageVector = Icons.Outlined.WifiTethering,
                             onClick = {
                                 onAction(NetworkAction.OpenMocks)
                             },
-                        ) {
-                            Text("Mocks")
-                        }
-                        FloconButton(
+                        )
+                        NetworkHeaderButton(
+                            title = "Bad Network Quality",
+                            imageVector = Icons.Outlined.SignalWifiStatusbarConnectedNoInternet4,
                             onClick = {
                                 onAction(NetworkAction.OpenBadNetworkQuality)
                             },
-                        ) {
-                            Text("Bad Network Quality")
-                        }
+                        )
                         FloconOverflow(
                             items = listOf(
                                 FloconOverflowItem(
