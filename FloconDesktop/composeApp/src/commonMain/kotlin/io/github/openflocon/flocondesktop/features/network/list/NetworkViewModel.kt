@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsByIdUseCase
@@ -53,6 +54,7 @@ class NetworkViewModel(
     private val sortAndFilterNetworkItemsProcessor: SortAndFilterNetworkItemsProcessor,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase,
+    private val decodeJwtTokenUseCase: DecodeJwtTokenUseCase,
 ) : ViewModel(headerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -157,6 +159,7 @@ class NetworkViewModel(
             is NetworkAction.FilterQuery -> onFilterQuery(action)
             is NetworkAction.CloseJsonDetail -> onCloseJsonDetail(action)
             is NetworkAction.JsonDetail -> onJsonDetail(action)
+            is NetworkAction.DisplayBearerJwt -> displayBearerJwt(action.token)
             is NetworkAction.ExportCsv -> onExportCsv()
             is NetworkAction.HeaderAction.ClickOnSort -> headerDelegate.onClickSort(
                 type = action.type,
@@ -166,6 +169,12 @@ class NetworkViewModel(
             is NetworkAction.HeaderAction.FilterAction -> headerDelegate.onFilterAction(
                 action = action.action,
             )
+        }
+    }
+
+    private fun displayBearerJwt(token: String) {
+        decodeJwtTokenUseCase(token)?.let {
+            onJsonDetail(NetworkAction.JsonDetail(id = token, json = it))
         }
     }
 

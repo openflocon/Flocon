@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.network
 
+import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkFilterUseCase
@@ -34,6 +35,7 @@ internal val networkModule = module {
     factoryOf(::RemoveHttpRequestsBeforeUseCase)
     factoryOf(::RemoveHttpRequestUseCase)
     factoryOf(::ExportNetworkCallsToCsvUseCase)
+    factoryOf(::DecodeJwtTokenUseCase)
     // filters
     factoryOf(::GetNetworkFilterUseCase)
     factoryOf(::ObserveNetworkFilterUseCase)

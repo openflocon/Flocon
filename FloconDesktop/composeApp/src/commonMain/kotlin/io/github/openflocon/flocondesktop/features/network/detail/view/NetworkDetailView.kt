@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.outlined.OpenInFull
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -200,6 +199,7 @@ private fun Request(
                 DetailHeadersView(
                     headers = state.requestHeaders,
                     labelWidth = headersLabelWidth,
+                    onAuthorizationClicked = { token -> onAction(NetworkAction.DisplayBearerJwt(token)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp)
@@ -281,6 +281,7 @@ private fun Response(
                         DetailHeadersView(
                             headers = response.headers,
                             labelWidth = headersLabelWidth,
+                            onAuthorizationClicked = { token -> onAction(NetworkAction.DisplayBearerJwt(token)) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(12.dp)
