@@ -20,6 +20,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.col
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.NetworkTextColumnUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.MethodFilterState
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -62,7 +63,7 @@ class HeaderDelegate(
         ),
     )
 
-    fun allowedMethods() = methodFilterState.map {
+    fun allowedMethods(): Flow<List<NetworkMethodUi>> = methodFilterState.map {
         it.items
             .filter { item -> item.isSelected }
             .map { item -> item.method }

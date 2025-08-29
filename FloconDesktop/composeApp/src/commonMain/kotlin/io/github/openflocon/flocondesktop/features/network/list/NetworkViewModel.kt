@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
@@ -22,7 +23,9 @@ import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.list.model.FilterUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
+import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
 import io.github.openflocon.flocondesktop.features.network.list.processor.SortAndFilterNetworkItemsProcessor
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.common.copyToClipboard
@@ -37,6 +40,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -94,21 +98,38 @@ class NetworkViewModel(
         } // keep the domain for the filter
     }
 
-    private val filteredItems: Flow<List<NetworkItemViewState>> = combine(
-        items,
+    data class FilterConfig(
+        val filterState: FilterUiState,
+        val sorted: HeaderDelegate.Sorted?,
+        val allowedMethods: List<NetworkMethodUi>,
+        val textFilters: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
+    )
+
+    private val filterConfig = combine(
         filterUiState,
         headerDelegate.sorted,
         headerDelegate.allowedMethods(),
         headerDelegate.textFiltersState,
-    ) { items, filterState, sorted, allowedMethods, textFilters ->
-        sortAndFilterNetworkItemsProcessor(
-            items = items,
+    ) { filterState, sorted, allowedMethods, textFilters ->
+        FilterConfig(
             filterState = filterState,
             sorted = sorted,
             allowedMethods = allowedMethods,
             textFilters = textFilters,
         )
-    }
+    }.distinctUntilChanged()
+
+    private val filteredItems: Flow<List<NetworkItemViewState>> = items.flatMapLatest { items ->
+        filterConfig.mapLatest { filterConfig ->
+            sortAndFilterNetworkItemsProcessor(
+                items = items,
+                filterState = filterConfig.filterState,
+                sorted = filterConfig.sorted,
+                allowedMethods = filterConfig.allowedMethods,
+                textFilters = filterConfig.textFilters,
+            )
+        }
+    }.flowOn(dispatcherProvider.viewModel.limitedParallelism(1))
         .distinctUntilChanged()
 
     val uiState = combine(
@@ -125,7 +146,7 @@ class NetworkViewModel(
             filterState = filter,
             headerState = header,
         )
-    }
+    }.flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
