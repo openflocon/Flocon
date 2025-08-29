@@ -206,6 +206,7 @@ private fun TextFilterStateUiModel.performAction(
             text = action.text,
             isActive = true,
             isExcluded = true,
+            isRegex = action.isRegex,
         )
         val exists = excludedFilters.any { it.text == newItem.text }
         if (exists) {
@@ -226,6 +227,7 @@ private fun TextFilterStateUiModel.performAction(
             text = action.text,
             isActive = true,
             isExcluded = false,
+            isRegex = action.isRegex,
         )
         val exists = includedFilters.any { it.text == newItem.text }
         if (exists) {

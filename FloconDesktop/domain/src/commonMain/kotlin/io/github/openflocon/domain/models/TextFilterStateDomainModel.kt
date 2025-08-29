@@ -8,5 +8,6 @@ data class TextFilterStateDomainModel(
         val text: String,
         val isActive: Boolean,
         val isExcluded: Boolean,
+        val isRegex: Boolean,
     )
 }

@@ -98,9 +98,16 @@ private fun TextFilterStateUiModel.FilterItem.filterByText(text: String): Boolea
     if (!this.isActive)
         return true
 
-    return if (this.isExcluded) {
-        !text.contains(this.text, ignoreCase = true)
+    // Crée une instance de Regex en fonction de 'isRegex'
+    val filterResult = if (this.isRegex) {
+        Regex(this.text, setOf(RegexOption.IGNORE_CASE)).containsMatchIn(text)
     } else {
         text.contains(this.text, ignoreCase = true)
+    }
+
+    return if (this.isExcluded) {
+        !filterResult
+    } else {
+        filterResult
     }
 }
