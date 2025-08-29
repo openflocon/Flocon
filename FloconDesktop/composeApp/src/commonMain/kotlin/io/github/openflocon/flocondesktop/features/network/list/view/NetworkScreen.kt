@@ -139,13 +139,12 @@ fun NetworkScreen(
                     },
                     state = uiState.headerState,
                 )
-                Row(
+                Box(
                     Modifier.fillMaxSize(),
                 ) {
                     LazyColumn(
                         state = lazyListState,
-                        modifier = Modifier.weight(1f)
-                            .fillMaxHeight(),
+                        modifier = Modifier.fillMaxSize(),
                     ) {
                         items(
                             items = uiState.items,
