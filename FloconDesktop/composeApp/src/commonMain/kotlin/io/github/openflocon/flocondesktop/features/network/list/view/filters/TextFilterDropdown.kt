@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.common.ui.interactions.hover
 import io.github.openflocon.flocondesktop.features.network.list.model.header.TextFilterAction
@@ -44,6 +45,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.col
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import io.github.openflocon.library.designsystem.theme.FloconColorPalette
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -59,11 +61,11 @@ fun TextFilterDropdownContent(
             modifier = Modifier.fillMaxWidth()
                 .background(FloconTheme.colorPalette.onSurface.copy(alpha = 0.05f))
                 .padding(horizontal = 8.dp, vertical = 8.dp),
-            submitTextField = { text, toInclude ->
+            submitTextField = { text, toInclude, isRegex ->
                 if (toInclude) {
-                    textFilterAction.invoke(TextFilterAction.Include(text))
+                    textFilterAction.invoke(TextFilterAction.Include(text, isRegex = isRegex))
                 } else {
-                    textFilterAction.invoke(TextFilterAction.Exclude(text))
+                    textFilterAction.invoke(TextFilterAction.Exclude(text, isRegex = isRegex))
                 }
             },
         )
@@ -194,39 +196,52 @@ private fun FilterItemView(
 
 @Composable
 private fun TextFilterFieldView(
-    submitTextField: (value: String, toInclude: Boolean) -> Unit,
+    submitTextField: (value: String, toInclude: Boolean, isRegex: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var value by remember { mutableStateOf("") }
+    var isRegex by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        FloconTextField(
-            value = value,
-            onValueChange = { value = it },
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    // default action -> add as "include filter"
-                    submitTextField(value, true)
-                    value = "" // reset
-                },
-            ),
-            placeholder = defaultPlaceHolder("Filter by value"),
-            textStyle = FloconTheme.typography.bodySmall.copy(
-                color = FloconTheme.colorPalette.onSurface,
-            ),
-            containerColor = FloconTheme.colorPalette.panel,
+        Box(
             modifier = Modifier
                 .weight(1f)
-        )
+        ) {
+            FloconTextField(
+                value = value,
+                onValueChange = { value = it },
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        // default action -> add as "include filter"
+                        submitTextField(value, true, isRegex)
+                        value = "" // reset
+                    },
+                ),
+                placeholder = defaultPlaceHolder("Filter by value"),
+                textStyle = FloconTheme.typography.bodySmall.copy(
+                    color = FloconTheme.colorPalette.onSurface,
+                ),
+                containerColor = FloconTheme.colorPalette.panel,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            RegexFilterButton(
+                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 6.dp),
+                isRegex = isRegex,
+                onClick = {
+                    isRegex = !isRegex
+                },
+            )
+        }
         TextFilterButton(
             icon = Icons.Outlined.AddCircle,
             enabled = value.isNotEmpty(),
             onClick = {
-                submitTextField(value, true)
+                submitTextField(value, true, isRegex)
                 value = "" // reset
             },
         )
@@ -234,7 +249,7 @@ private fun TextFilterFieldView(
             icon = Icons.Outlined.RemoveCircle,
             enabled = value.isNotEmpty(),
             onClick = {
-                submitTextField(value, false)
+                submitTextField(value, false, isRegex)
                 value = "" // reset
             },
         )
@@ -262,6 +277,30 @@ private fun TextFilterButton(
             contentDescription = null,
             tint = Color.Black,
             modifier = Modifier.fillMaxSize(),
+        )
+    }
+}
+
+
+@Composable
+private fun RegexFilterButton(
+    onClick: () -> Unit,
+    isRegex: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .size(20.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .graphicsLayer { alpha = if (isRegex) 1f else 0.5f }
+            .background(Color.White)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            ".*",
+            fontSize = 11.sp,
+            color = FloconTheme.colorPalette.surface,
         )
     }
 }

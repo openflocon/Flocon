@@ -12,12 +12,14 @@ fun textFilterItemToEntity(item: TextFilterStateDomainModel.FilterItem): FilterI
     text = item.text,
     isActive = item.isActive,
     isExcluded = item.isExcluded,
+    isRegex = item.isRegex,
 )
 
 fun textFilterItemToDomain(item: FilterItemSavedEntity): TextFilterStateDomainModel.FilterItem = TextFilterStateDomainModel.FilterItem(
     text = item.text,
     isActive = item.isActive,
     isExcluded = item.isExcluded,
+    isRegex = item.isRegex,
 )
 
 fun textFilterToEntity(
