@@ -39,6 +39,9 @@ private const val ACTIVATE_TRAY_NOTIFICATION = false
 fun main() {
     System.setProperty("apple.awt.application.name", "Flocon")
 
+    System.setProperty("apple.awt.application.appearance", "system")
+    System.setProperty("apple.laf.useScreenMenuBar", "true")
+
     return application {
         var openAbout by remember { mutableStateOf(false) }
         val savedState = remember { WindowStateSaver.load() }
