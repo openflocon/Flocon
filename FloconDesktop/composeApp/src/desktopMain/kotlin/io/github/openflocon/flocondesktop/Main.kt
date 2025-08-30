@@ -33,7 +33,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 import java.awt.Desktop
 import java.awt.Dimension
-import javax.swing.UIManager
 
 private const val ACTIVATE_TRAY_NOTIFICATION = false
 
