@@ -49,7 +49,7 @@ fun NetworkDetailView(
         modifier = modifier
             .background(FloconTheme.colorPalette.background)
             .verticalScroll(scrollState)
-            .padding(all = 12.dp),
+            .padding(vertical = 8.dp, horizontal = 4.dp),
     ) {
         Request(
             modifier = Modifier
@@ -63,7 +63,7 @@ fun NetworkDetailView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp)
-                .padding(vertical = 12.dp),
+                .padding(vertical = 8.dp),
         )
         Response(
             modifier = Modifier
@@ -96,7 +96,7 @@ private fun Request(
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(horizontal = 12.dp  )
         ) {
             Column(
                 modifier = Modifier

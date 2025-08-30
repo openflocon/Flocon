@@ -11,7 +11,9 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.theme.FloconColorPalette
 import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
 import io.github.openflocon.library.designsystem.theme.darkPalette
@@ -47,8 +49,23 @@ fun FloconTheme(
         backgroundColor = Color.White.copy(alpha = 0.5f)
     )
 
+    val materialTypo = MaterialTheme.typography
+    val typography = remember(materialTypo) {
+        materialTypo.copy(
+            bodyMedium = materialTypo.bodyMedium.copy(
+                fontSize = 13.sp // was 14
+            ),
+            bodySmall = materialTypo.bodySmall.copy(
+                fontSize = 11.sp, // was 12
+            ),
+            labelSmall = materialTypo.labelSmall.copy(
+                fontSize = 10.sp // was 11
+            )
+        )
+    }
+
     MaterialTheme(
-        typography = MaterialTheme.typography,
+        typography = typography,
         colorScheme = if (isDarkTheme) {
             materialDarkScheme(colorPalette)
         } else {
