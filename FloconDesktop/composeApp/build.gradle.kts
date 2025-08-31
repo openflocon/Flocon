@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
@@ -31,20 +30,11 @@ kotlin {
         languageVersion.set(KotlinVersion.KOTLIN_2_2)
     }
 
-    androidTarget()
-
     jvm("desktop")
 
     sourceSets {
         val desktopMain by getting
 
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
-
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.android)
-        }
         commonMain.dependencies {
             // TODO Remove
             implementation(compose.components.resources)
@@ -89,51 +79,6 @@ kotlin {
     }
 }
 
-android {
-    namespace = "io.github.openflocon.flocondesktop"
-    compileSdk =
-        libs.versions.android.compileSdk
-            .get()
-            .toInt()
-
-    defaultConfig {
-        applicationId = "io.github.openflocon.flocondesktop"
-        minSdk =
-            libs.versions.android.minSdk
-                .get()
-                .toInt()
-        targetSdk =
-            libs.versions.android.targetSdk
-                .get()
-                .toInt()
-        versionCode = 1
-        versionName = "1.0"
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    // Room schema location for Android (if not using KSP argument)
-    // You might need to configure KSP arguments for Room schema location
-    // defaultConfig {
-    //     javaCompileOptions {
-    //         annotationProcessorOptions {
-    //             arguments["room.schemaLocation"] = "$projectDir/schemas".toString()
-    //         }
-    //     }
-    // }
-}
-
 ktlint {
     android.set(true)
     outputToConsole.set(true)
@@ -149,7 +94,6 @@ ktlint {
 
 dependencies {
     ksp(libs.androidx.room.compiler)
-    debugImplementation(compose.uiTooling)
     ktlintRuleset("io.nlopez.compose.rules:ktlint:0.4.24")
 }
 
