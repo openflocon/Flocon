@@ -1,5 +1,6 @@
 package io.github.openflocon.data.core.network.repository
 
+import co.touchlab.kermit.Logger
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkMocksLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkQualityLocalDataSource
@@ -101,19 +102,19 @@ class NetworkRepositoryImpl(
                     networkRemoteDataSource.getCallId(message)
                         ?.let {
                             val callId = it.floconCallId ?: run {
-                                println("cannot find floconCallId in message")
+                                Logger.e { "cannot find floconCallId in message" }
                                 return@let null
                             }
                             val request = networkLocalDataSource.getCall(
                                 deviceIdAndPackageName = deviceIdAndPackageName,
                                 callId = callId,
                             ) ?: run {
-                                println("cannot find request")
+                                Logger.e { "cannot find request" }
                                 return@let null
                             }
 
                             val response = networkRemoteDataSource.getResponseData(message) ?: run {
-                                println("cannot decode response")
+                                Logger.e { "cannot decode response" }
                                 return@let null
                             }
                             toDomainForResponse(receivedResponse = response, request = request)

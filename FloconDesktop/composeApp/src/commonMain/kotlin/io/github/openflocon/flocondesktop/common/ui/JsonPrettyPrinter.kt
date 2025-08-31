@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.common.ui
 
+import co.touchlab.kermit.Logger
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
@@ -30,8 +31,8 @@ object JsonPrettyPrinter {
             // Encode it back to a string with prettyPrint enabled
             json.encodeToString(JsonElement.serializer(), parsedJson)
         } catch (e: Exception) {
+            Logger.e(e) { "Failed to pretty-print JSON" }
             // If parsing fails (e.g., not valid JSON), return the original string
-            println("Failed to pretty-print JSON: ${e.message}")
             jsonString
         }
     }
