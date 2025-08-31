@@ -1,5 +1,6 @@
 package com.flocon.data.remote.server
 
+import co.touchlab.kermit.Logger
 import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
@@ -54,8 +55,9 @@ class ServerJvm : Server {
                 }
                 routing {
                     webSocket("/") {
-                        println("WebSocket connection established!")
-                        val currentSession = this // Store the current session to use in finally block
+                        Logger.d("WebSocket connection established!")
+                        val currentSession =
+                            this // Store the current session to use in finally block
 
                         // Use a try-catch block to handle the exception when the channel is closed.
                         try {
@@ -63,7 +65,7 @@ class ServerJvm : Server {
                                 when (frame) {
                                     is Frame.Text -> {
                                         val receivedText = frame.readText()
-                                        println("<---- Received raw message: $receivedText")
+                                        Logger.w("<---- Received raw message: $receivedText")
                                         try {
                                             val floconIncomingMessageDataModel =
                                                 Json.decodeFromString<FloconIncomingMessageDataModel>(
@@ -77,18 +79,16 @@ class ServerJvm : Server {
                                             _activeSessions.update {
                                                 it + (device to currentSession)
                                             }
-                                            // println("+ new client : ${floconIncomingMessageDataModel.deviceId}")
                                             _receivedMessages.emit(floconIncomingMessageDataModel)
-                                            // Access other fields of floconMessage as needed
                                         } catch (e: Exception) {
-                                            println("Error parsing JSON message: ${e.message}")
+                                            Logger.e(e) { "Error parsing JSON message: ${e.message}" }
                                             // Optionally send an error back to the client
                                             // outgoing.send(Frame.Text("Error: Could not parse message as FloconIncomingMessageDataModel. ${e.message}"))
                                         }
                                     }
 
                                     is Frame.Binary -> {
-                                        println("Received binary message (not printed): ${frame.data.size} bytes")
+                                        Logger.w("Received binary message (not printed): ${frame.data.size} bytes")
                                     }
 
                                     is Frame.Close -> {
@@ -96,34 +96,34 @@ class ServerJvm : Server {
                                         _activeSessions.update { map ->
                                             map.filterValues { it != currentSession }
                                         }
-                                        println("WebSocket connection closed: ${reason?.message}")
+                                        Logger.d("WebSocket connection closed: ${reason?.message}")
                                     }
 
                                     is Frame.Ping -> {
-                                        println("Received Ping frame.")
+                                        Logger.w("Received Ping frame.")
                                     }
 
                                     is Frame.Pong -> {
-                                        println("Received Pong frame.")
+                                        Logger.w("Received Pong frame.")
                                     }
                                 }
                             }
                         } catch (e: ClosedReceiveChannelException) {
-                            println("WebSocket connection closed (channel closed): ${closeReason.await()}")
+                            Logger.e(e) {"WebSocket connection closed (channel closed): ${closeReason.await()}" }
                         } catch (e: Exception) {
-                            println("WebSocket error: ${e.message}")
+                            Logger.e(e) { "WebSocket error: ${e.message}" }
                         } finally {
                             // This block will always be executed when the coroutine ends,
                             // whether the connection was closed cleanly or due to an error.
                             _activeSessions.update { map ->
                                 map.filterValues { it != currentSession }
                             }
-                            println("WebSocket : Session removed from active sessions.")
+                            Logger.d("WebSocket : Session removed from active sessions.")
                         }
                     }
                 }
             }.also { this.server = it }
-        println("server started on $port")
+        Logger.d("server started on $port")
 
         try {
             server.start(wait = false)
@@ -153,16 +153,16 @@ class ServerJvm : Server {
                         message,
                     ) // Assuming you have a serializer for FloconIncomingMessageDataModel
                 session.outgoing.send(Frame.Text(jsonMessage))
-                println("------> Message sent to client: $message")
+                Logger.w("------> Message sent to client: $message")
             } catch (e: Exception) {
-                println("Error sending message to client: ${e.message}")
+                Logger.e(e) { "Error sending message to client: ${e.message}" }
                 // The session might have closed unexpectedly
                 _activeSessions.update { map ->
                     map.filterKeys { it != deviceIdAndPackageName }
                 }
             }
         } else {
-            println("Target session is no longer active. deviceId=$deviceIdAndPackageName, message=$message")
+            Logger.e("Target session is no longer active. deviceId=$deviceIdAndPackageName, message=$message")
         }
     }
 

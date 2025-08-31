@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.common
 
+import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
@@ -8,7 +9,6 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 import kotlin.io.bufferedReader
-import kotlin.io.println
 import kotlin.io.readText
 import kotlin.use
 
@@ -21,19 +21,19 @@ actual fun localFindAdbPath(): String? {
                 .start()
         val exitCode = process.waitFor()
         if (exitCode == 0) {
-            println(" 'adb' found in system PATH.")
+            Logger.d(" 'adb' found in system PATH.")
             return "adb" // It's in the PATH, so we can just use "adb"
         }
     } catch (e: IOException) {
-        println(" 'adb' not found in system PATH directly: ${e.message}")
+        Logger.e(e) { " 'adb' not found in system PATH directly: ${e.message}" }
         // Fall through to search in SDK
     } catch (e: InterruptedException) {
         Thread.currentThread().interrupt()
-        println("Process interrupted while checking 'adb' in system PATH.")
+        Logger.e(e) { "Process interrupted while checking 'adb' in system PATH." }
     }
 
     // 2. Search in common Android SDK locations
-    println("Searching for 'adb' in common Android SDK locations...")
+    Logger.d { "Searching for 'adb' in common Android SDK locations..." }
     val userHome = System.getProperty("user.home")
     val possibleSdkPaths =
         listOf(
@@ -101,7 +101,7 @@ actual fun askSerialToAllDevices(adbPath: String, command: String, serialVariabl
 private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): Either<Throwable, String> = try {
     val process = Runtime.getRuntime().exec("$adbPath $command")
     if(command.contains("reverse").not())
-        println("Executing command: $adbPath $command")
+        Logger.d("Executing command: $adbPath $command")
 
     val output = process.inputStream.bufferedReader().use { it.readText() }
     val error = process.errorStream.bufferedReader().use { it.readText() }
@@ -110,27 +110,26 @@ private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): 
 
 
     if(command.contains("reverse").not()) {
-        println("command result success : $output")
-        println("command result error : $error")
+        Logger.d("command result success : $output")
+        Logger.d("command result error : $error")
     }
 
     if (exitCode == 0) {
-        // println("Command executed successfully. Output:\n$output")
         Success(output)
     } else {
         val errorMessage =
             "Command failed with exit code $exitCode. Error:\n$error"
-        // System.err.println(errorMessage)
+        Logger.e(errorMessage)
         Failure(IOException(errorMessage))
     }
 } catch (e: IOException) {
     val errorMessage = "Error executing command '$command': ${e.message}"
-    // System.err.println(errorMessage)
+    //Logger.e(errorMessage)
     Failure(IOException(errorMessage, e))
 } catch (e: InterruptedException) {
     // Thread.currentThread().interrupt()
     val errorMessage = "Command execution interrupted for '$command': ${e.message}"
-    System.err.println(errorMessage)
+    Logger.e(errorMessage)
     Failure(IOException(errorMessage, e))
 }
 
@@ -146,7 +145,7 @@ private fun listConnectedDevices(adbPath: String): List<String> {
         }
         process.waitFor() // Attendre la fin du processus
     } catch (e: Exception) {
-        println("Error executing adb devices: ${e.message}")
+        Logger.e(e) { "Error executing adb devices: ${e.message}" }
     }
     return devices
 }

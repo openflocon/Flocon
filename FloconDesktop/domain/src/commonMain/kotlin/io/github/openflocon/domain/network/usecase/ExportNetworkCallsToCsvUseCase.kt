@@ -125,7 +125,6 @@ private fun List<FloconNetworkCallDomainModel>.exportToCsv(file: File) {
         val escapedDataList = dataList.map { csvEscape(it) }
         file.appendText(escapedDataList.joinToString(separator = ",", postfix = "\n"))
     }
-    println("Fichier CSV exporté avec succès sur le bureau : ${file.absolutePath}")
 }
 
 private fun csvEscape(text: String?): String {

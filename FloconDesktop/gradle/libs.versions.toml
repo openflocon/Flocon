@@ -14,6 +14,7 @@ coil = "3.3.0"
 composeHotReload = "1.0.0-beta05"
 composeMultiplatform = "1.8.2"
 junit = "4.13.2"
+kermit = "2.0.8"
 koin = "4.1.0"
 kotlin = "2.2.0"
 kotlinx-coroutines = "1.10.2"
@@ -34,6 +35,7 @@ other-jsontree = "2.5.0"
 uiToolingPreviewDesktop = "1.8.2"
 
 [libraries]
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }

@@ -1,5 +1,6 @@
 package com.flocon.data.remote.database.datasource
 
+import co.touchlab.kermit.Logger
 import com.flocon.data.remote.database.mapper.decodeDeviceDatabases
 import com.flocon.data.remote.database.mapper.decodeReceivedQuery
 import com.flocon.data.remote.database.models.DatabaseExecuteSqlResponseDataModel
@@ -72,14 +73,10 @@ class QueryDatabaseRemoteDataSourceImpl(
                 }
             return Success(result.response)
         } catch (e: TimeoutCancellationException) {
-            // Ce bloc est exécuté si le timeout se produit
-            println("Timeout: Aucune réponse reçue pour la requête $requestId dans le délai imparti.")
-            // Tu peux ajouter ici d'autres logiques de gestion du timeout,
-            // comme renvoyer une erreur à l'appelant, journaliser l'événement, etc.
+            Logger.e(e) { "Timeout: No response for the DB request $requestId" }
             return Failure(e)
         } catch (e: Exception) {
-            // Gère d'autres exceptions qui pourraient survenir
-            println("Une erreur inattendue est survenue : ${e.message}")
+            Logger.e(e) { "Unknown exception : ${e.message}" }
             return Failure(e)
         }
     }

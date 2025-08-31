@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import co.touchlab.kermit.Logger
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
@@ -204,8 +205,12 @@ private fun SettingsScreenPreview() {
         SettingsScreen(
             adbPathText = adbPath,
             onAdbPathChanged = { adbPath = it },
-            saveAdbPath = { println("Save ADB FilePathDomainModel: $adbPath") },
-            testAdbPath = { println("Test ADB FilePathDomainModel: $adbPath") },
+            saveAdbPath = {
+                Logger.d { "Save ADB FilePathDomainModel: $adbPath" }
+            },
+            testAdbPath = {
+                Logger.d { "Test ADB FilePathDomainModel: $adbPath" }
+            },
             modifier = Modifier.fillMaxSize(),
             needsAdbSetup = false,
             onClickLicenses = {},
@@ -221,8 +226,8 @@ private fun SettingsScreenPreview_needsAdbSetup() {
         SettingsScreen(
             adbPathText = adbPath,
             onAdbPathChanged = { adbPath = it },
-            saveAdbPath = { println("Save ADB FilePathDomainModel: $adbPath") },
-            testAdbPath = { println("Test ADB FilePathDomainModel: $adbPath") },
+            saveAdbPath = { Logger.d { "Save ADB FilePathDomainModel: $adbPath" } },
+            testAdbPath = { Logger.d { "Test ADB FilePathDomainModel: $adbPath" } },
             modifier = Modifier.fillMaxSize(),
             needsAdbSetup = true,
             onClickLicenses = {},

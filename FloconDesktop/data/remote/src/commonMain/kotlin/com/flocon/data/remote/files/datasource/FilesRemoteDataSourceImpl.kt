@@ -1,5 +1,6 @@
 package com.flocon.data.remote.files.datasource
 
+import co.touchlab.kermit.Logger
 import com.flocon.data.remote.common.safeDecodeFromString
 import com.flocon.data.remote.files.models.FromDeviceFilesResultDataModel
 import com.flocon.data.remote.files.models.ToDeviceDeleteFileMessage
@@ -162,14 +163,10 @@ class FilesRemoteDataSourceImpl(
             val files: List<FileDomainModel> = getFilesFromResult(result)
             return Success(files)
         } catch (e: TimeoutCancellationException) {
-            // Ce bloc est exécuté si le timeout se produit
-            println("Timeout: Aucune réponse reçue pour la requête $requestId dans le délai imparti.")
-            // Tu peux ajouter ici d'autres logiques de gestion du timeout,
-            // comme renvoyer une erreur à l'appelant, journaliser l'événement, etc.
+            Logger.e { "Timeout: No response for the file request $requestId" }
             return Failure(e)
         } catch (e: Exception) {
-            // Gère d'autres exceptions qui pourraient survenir
-            println("Une erreur inattendue est survenue : ${e.message}")
+            Logger.e(e) { "Unknown exception: ${e.message}" }
             return Failure(e)
         }
     }
