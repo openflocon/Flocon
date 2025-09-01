@@ -1,16 +1,7 @@
 package io.github.openflocon.flocondesktop
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
-import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
+import androidx.compose.runtime.LaunchedEffect
 import com.flocon.data.remote.dataRemoteModule
 import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
@@ -20,13 +11,17 @@ import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
 import io.github.openflocon.flocondesktop.app.AppViewModel
 import io.github.openflocon.flocondesktop.app.di.appModule
 import io.github.openflocon.flocondesktop.common.di.commonModule
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
 import io.github.openflocon.flocondesktop.core.di.coreModule
 import io.github.openflocon.flocondesktop.features.featuresModule
+import io.github.openflocon.flocondesktop.features.network.NetworkRoute
+import io.github.openflocon.flocondesktop.features.network.networkNavigation
 import io.github.openflocon.flocondesktop.main.di.mainModule
-import io.github.openflocon.flocondesktop.main.ui.MainScreen
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.navigation.FloconNavigation
+import io.github.openflocon.navigation.FloconNavigationState
+import io.github.openflocon.navigation.navigationModule
 import org.koin.compose.KoinApplication
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -46,6 +41,7 @@ fun App() {
                 dataCoreModule,
                 dataLocalModule,
                 dataRemoteModule,
+                navigationModule,
                 // Temporary
                 module {
                     singleOf(::AdbRepositoryImpl) bind AdbRepository::class
@@ -55,34 +51,27 @@ fun App() {
     ) {
         FloconTheme {
             val appViewModel: AppViewModel = koinViewModel()
+            val navigationState = koinInject<FloconNavigationState>()
 
-            Box(
-                Modifier
-                    .safeContentPadding()
-                    .fillMaxSize()
-                    .background(FloconTheme.colorPalette.background),
-            ) {
-                MainScreen(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                )
-                FeedbackDisplayerView()
+            LaunchedEffect(Unit) {
+                navigationState.navigate(NetworkRoute)
             }
+
+            FloconNavigation {
+                networkNavigation()
+            }
+//            Box(
+//                Modifier
+//                    .safeContentPadding()
+//                    .fillMaxSize()
+//                    .background(FloconTheme.colorPalette.background),
+//            ) {
+//                MainScreen(
+//                    modifier = Modifier
+//                        .fillMaxSize(),
+//                )
+//                FeedbackDisplayerView()
+//            }
         }
-    }
-}
-
-@Composable
-private fun Navigation() {
-    val backStack = remember { mutableStateListOf<Any>() }
-
-    NavDisplay(
-        backStack = backStack,
-        entryDecorators = listOf(
-            rememberSceneSetupNavEntryDecorator(),
-            rememberSavedStateNavEntryDecorator()
-        )
-    ) {
-
     }
 }

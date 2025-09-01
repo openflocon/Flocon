@@ -66,6 +66,9 @@ kotlin {
             implementation(projects.domain)
 
             implementation(projects.library.designsystem)
+
+            implementation(projects.navigation)
+
             implementation(libs.kermit)
         }
         commonTest.dependencies {
