@@ -65,7 +65,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun NetworkScreen(modifier: Modifier = Modifier) {
+fun NetworkScreen(
+    modifier: Modifier = Modifier
+) {
     val viewModel: NetworkViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

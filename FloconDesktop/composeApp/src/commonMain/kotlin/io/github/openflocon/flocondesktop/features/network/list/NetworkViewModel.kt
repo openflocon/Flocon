@@ -6,6 +6,7 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
@@ -45,6 +46,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -134,19 +136,26 @@ class NetworkViewModel(
             allowedMethods = allowedMethods,
             textFilters = textFilters,
         )
-    }.distinctUntilChanged()
+    }
+        .distinctUntilChanged()
 
-    private val filteredItems: Flow<List<NetworkItemViewState>> = items.flatMapLatest { items ->
-        filterConfig.mapLatest { filterConfig ->
-            sortAndFilterNetworkItemsProcessor(
-                items = items,
-                filterState = filterConfig.filterState,
-                sorted = filterConfig.sorted,
-                allowedMethods = filterConfig.allowedMethods,
-                textFilters = filterConfig.textFilters,
-            )
-        }
-    }.flowOn(dispatcherProvider.viewModel.limitedParallelism(1))
+    private var cachedItems: List<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>> = emptyList()
+    private val filteredItems: Flow<List<NetworkItemViewState>> = combine(
+        items,
+        contentState,
+        filterConfig
+    ) { items, content, config ->
+        if (content.liveUpdate)
+            cachedItems = items
+        sortAndFilterNetworkItemsProcessor(
+            items = cachedItems,
+            filterState = config.filterState,
+            sorted = config.sorted,
+            allowedMethods = config.allowedMethods,
+            textFilters = config.textFilters
+        )
+    }
+        .flowOn(dispatcherProvider.viewModel.limitedParallelism(1))
         .distinctUntilChanged()
 
     val uiState = combine(
