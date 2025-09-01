@@ -1,12 +1,10 @@
 package io.github.openflocon.flocondesktop.features.network.list.view.header
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,7 +87,6 @@ fun NetworkItemHeaderView(
             TextFilterDropdownContent(
                 filterState = state.query.filter,
                 textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Query, it)) },
-                modifier = Modifier.widthIn(min = 300.dp),
             )
         }
         HeaderDropdown(
@@ -102,7 +99,6 @@ fun NetworkItemHeaderView(
             TextFilterDropdownContent(
                 filterState = state.status.filter,
                 textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Status, it)) },
-                modifier = Modifier.widthIn(min = 300.dp),
             )
         }
         HeaderDropdown(
@@ -115,7 +111,6 @@ fun NetworkItemHeaderView(
             TextFilterDropdownContent(
                 filterState = state.time.filter,
                 textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Time, it)) },
-                modifier = Modifier.widthIn(min = 300.dp),
             )
         }
     }
