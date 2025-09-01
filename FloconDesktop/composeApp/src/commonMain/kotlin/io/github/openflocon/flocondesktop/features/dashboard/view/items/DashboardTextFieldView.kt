@@ -36,12 +36,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun DashboardTextFieldView(
     rowItem: DashboardItemViewState.RowItem.TextField,
-    submitTextField: (id: String, value: String) -> Unit,
+    value: String,
+    onValueChange: (String) -> Unit,
+    onSubmit: () -> Unit = {},
+    showSubmitButton: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
-    var value by remember(rowItem.value) {
-        mutableStateOf(rowItem.value)
-    }
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -61,17 +61,18 @@ fun DashboardTextFieldView(
         ) {
             FloconTextField(
                 value = value,
-                onValueChange = { value = it },
+                onValueChange = onValueChange,
                 placeholder = defaultPlaceHolder(rowItem.placeHolder?.takeIf(String::isNotEmpty)),
                 modifier = Modifier
                     .weight(1f)
             )
-            DashboardSendButton(
-                icon = Icons.AutoMirrored.Outlined.Send,
-                onClick = {
-                    submitTextField(rowItem.id, value)
-                },
-            )
+
+            if (showSubmitButton) {
+                DashboardSendButton(
+                    icon = Icons.AutoMirrored.Outlined.Send,
+                    onClick = onSubmit,
+                )
+            }
         }
     }
 }
@@ -114,7 +115,8 @@ internal fun DashboardTextFieldViewPreview_placeholder() {
                 FloconTheme.colorPalette.panel,
             ),
             rowItem = rowItem,
-            submitTextField = { _, _ -> },
+            value = "",
+            onValueChange = {},
         )
     }
 }
@@ -134,7 +136,8 @@ internal fun DashboardTextFieldViewPreview_withValue() {
                 FloconTheme.colorPalette.panel,
             ),
             rowItem = rowItem,
-            submitTextField = { _, _ -> },
+            value = "value",
+            onValueChange = {},
         )
     }
 }

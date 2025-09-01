@@ -8,11 +8,11 @@ import io.github.openflocon.data.local.dashboard.models.DashboardElementPlainTex
 import io.github.openflocon.data.local.dashboard.models.DashboardElementText
 import io.github.openflocon.data.local.dashboard.models.DashboardElementTextField
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
-import io.github.openflocon.data.local.dashboard.models.DashboardSectionEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardId
-import io.github.openflocon.domain.dashboard.models.DashboardSectionDomainModel
+import io.github.openflocon.domain.dashboard.models.DashboardContainerDomainModel
 
 internal fun DashboardDomainModel.toEntity(deviceId: DeviceId, packageName: String): DashboardEntity = DashboardEntity(
     deviceId = deviceId,
@@ -20,20 +20,21 @@ internal fun DashboardDomainModel.toEntity(deviceId: DeviceId, packageName: Stri
     dashboardId = dashboardId,
 )
 
-internal fun DashboardSectionDomainModel.toEntity(
+internal fun DashboardContainerDomainModel.toEntity(
     dashboardId: DashboardId,
     index: Int,
-): DashboardSectionEntity = DashboardSectionEntity(
+): DashboardContainerEntity = DashboardContainerEntity(
     name = this.name,
     dashboardId = dashboardId,
-    sectionOrder = index,
+    containerOrder = index,
+    containerConfig = this.containerConfig
 )
 
 internal fun DashboardElementDomainModel.toEntity(
-    sectionId: Long,
+    containerId: Long,
     index: Int,
 ): DashboardElementEntity = DashboardElementEntity(
-    sectionId = sectionId,
+    containerId = containerId,
     elementOrder = index,
     button = (this as? DashboardElementDomainModel.Button)?.toButtonEntity(),
     text = (this as? DashboardElementDomainModel.Text)?.toTextEntity(),

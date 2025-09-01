@@ -1,18 +1,52 @@
 package com.flocon.data.remote.dashboard.models
 
+import io.github.openflocon.domain.dashboard.models.ContainerConfigDomainModel
+import io.github.openflocon.domain.dashboard.models.FormContainerConfigDomainModel
+import io.github.openflocon.domain.dashboard.models.SectionContainerConfigDomainModel
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 @Serializable
 data class DashboardConfigDataModel(
     val dashboardId: String,
-    val sections: List<SectionConfigDataModel>,
+    val containers: List<DashboardContainerDataModel>,
 )
 
 @Serializable
-data class SectionConfigDataModel(
+data class DashboardContainerDataModel(
     val name: String,
     val elements: List<DashboardElementDataModel>,
+    val containerConfig: ContainerConfigDataModel
 )
+
+@OptIn(ExperimentalSerializationApi::class)
+@JsonClassDiscriminator("containerType")
+@Serializable
+sealed class ContainerConfigDataModel {
+    abstract fun unwrap(): ContainerConfigDomainModel
+}
+
+@Serializable
+@SerialName("FORM")
+data class FormContainerConfigDataModel(
+    val formId: String,
+    val submitText: String,
+) : ContainerConfigDataModel() {
+    override fun unwrap(): ContainerConfigDomainModel =
+        FormContainerConfigDomainModel(
+            formId = formId,
+            submitText = submitText,
+        )
+}
+
+@Serializable
+@SerialName("SECTION")
+data object SectionContainerConfigDataModel : ContainerConfigDataModel() {
+    override fun unwrap(): ContainerConfigDomainModel =
+        SectionContainerConfigDomainModel
+}
 
 @Serializable
 data class DashboardElementDataModel(

@@ -1,11 +1,9 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -16,7 +14,6 @@ import io.github.openflocon.flocondesktop.features.dashboard.DashboardViewModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.koin.compose.viewmodel.koinViewModel
@@ -40,6 +37,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         onDashboardSelected = viewModel::onDashboardSelected,
         onClickButton = viewModel::onButtonClicked,
         submitTextField = viewModel::onTextFieldSubmit,
+        submitForm = viewModel::onFormSubmit,
         onUpdateCheckBox = viewModel::onUpdateCheckBox,
     )
 }
@@ -51,6 +49,7 @@ fun DashboardScreen(
     onDashboardSelected: (DeviceDashboardUiModel) -> Unit,
     onClickButton: (buttonId: String) -> Unit,
     submitTextField: (textFieldId: String, value: String) -> Unit,
+    submitForm: (formId: String, formValues: Map<String, Any>) -> Unit,
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -75,6 +74,7 @@ fun DashboardScreen(
                     viewState = state,
                     onClickButton = onClickButton,
                     submitTextField = submitTextField,
+                    submitForm = submitForm,
                     onUpdateCheckBox = onUpdateCheckBox,
                 )
             }

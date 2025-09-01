@@ -4,23 +4,24 @@ import com.flocon.data.remote.dashboard.models.ButtonConfigDataModel
 import com.flocon.data.remote.dashboard.models.CheckBoxConfigDataModel
 import com.flocon.data.remote.dashboard.models.DashboardConfigDataModel
 import com.flocon.data.remote.dashboard.models.DashboardElementDataModel
-import com.flocon.data.remote.dashboard.models.SectionConfigDataModel
+import com.flocon.data.remote.dashboard.models.DashboardContainerDataModel
 import com.flocon.data.remote.dashboard.models.TextConfigDataModel
 import com.flocon.data.remote.dashboard.models.TextFieldConfigDataModel
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
-import io.github.openflocon.domain.dashboard.models.DashboardSectionDomainModel
+import io.github.openflocon.domain.dashboard.models.DashboardContainerDomainModel
 
 fun toDomain(model: DashboardConfigDataModel): DashboardDomainModel = DashboardDomainModel(
     dashboardId = model.dashboardId,
-    sections = model.sections.map {
+    containers = model.containers.map {
         toDomain(it)
     },
 )
 
-fun toDomain(model: SectionConfigDataModel): DashboardSectionDomainModel = DashboardSectionDomainModel(
+fun toDomain(model: DashboardContainerDataModel): DashboardContainerDomainModel = DashboardContainerDomainModel(
     name = model.name,
     elements = model.elements.mapNotNull { toDomain(it) },
+    containerConfig = model.containerConfig.unwrap()
 )
 
 fun toDomain(model: DashboardElementDataModel): DashboardElementDomainModel? {

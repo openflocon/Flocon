@@ -25,12 +25,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 internal fun DashboardCheckBoxView(
     rowItem: DashboardItemViewState.RowItem.CheckBox,
-    onUpdateCheckBox: (String, Boolean) -> Unit,
+    value: Boolean,
+    onCheckedChange: (value: Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var value by remember(rowItem.value) {
-        mutableStateOf(rowItem.value)
-    }
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -54,10 +52,7 @@ internal fun DashboardCheckBoxView(
             }
             Checkbox(
                 checked = value,
-                onCheckedChange = {
-                    value = it
-                    onUpdateCheckBox(rowItem.id, it)
-                },
+                onCheckedChange = onCheckedChange,
             )
         }
     }
@@ -77,7 +72,8 @@ internal fun DashboardCheckBoxViewPreview() {
                 FloconTheme.colorPalette.panel,
             ),
             rowItem = rowItem,
-            onUpdateCheckBox = { _, _ -> },
+            value = rowItem.value,
+            onCheckedChange = {},
         )
     }
 }
