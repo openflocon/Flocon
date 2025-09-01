@@ -14,9 +14,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.items
+import io.github.openflocon.flocondesktop.features.analytics.view.AnalyticsFilterBar
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesViewModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
@@ -58,6 +64,8 @@ fun SharedPrefScreen(
     rows: SharedPreferencesRowsStateUiModel,
     changeValue: (SharedPreferencesRowUiModel, String) -> Unit,
 ) {
+    var sharedPrefRows by remember { mutableStateOf<List<SharedPreferencesRowUiModel>>(emptyList()) }
+
     FloconSurface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
             FloconPageTopBar(
@@ -68,6 +76,14 @@ fun SharedPrefScreen(
                         onSharedPrefSelected = onSharedPrefSelected,
                         modifier = Modifier.fillMaxWidth()
                     )
+                },
+                filterBar = {
+                    SharedPreferencesFilterBar(
+                        items = rows.rows,
+                        onItemsChange = {
+                            sharedPrefRows = it
+                        },
+                    )
                 }
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -77,7 +93,7 @@ fun SharedPrefScreen(
                         SharedPreferencesRowsStateUiModel.Empty -> {}
                         SharedPreferencesRowsStateUiModel.Loading -> {}
                         is SharedPreferencesRowsStateUiModel.WithContent -> {
-                            items(rows.rows) {
+                            items(sharedPrefRows) {
                                 SharedPreferenceRowView(
                                     model = it,
                                     modifier = Modifier.fillMaxWidth(),
