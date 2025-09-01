@@ -18,8 +18,8 @@ import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCa
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
-import io.github.openflocon.flocondesktop.features.network.ContentUiState
-import io.github.openflocon.flocondesktop.features.network.MockDisplayed
+import io.github.openflocon.flocondesktop.features.network.body.model.ContentUiState
+import io.github.openflocon.flocondesktop.features.network.body.model.MockDisplayed
 import io.github.openflocon.flocondesktop.features.network.detail.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
@@ -73,6 +73,9 @@ class NetworkViewModel(
             detailJsons = emptySet(),
             mocksDisplayed = null,
             badNetworkQualityDisplayed = false,
+            invertList = false,
+            liveUpdate = false,
+            autoScroll = false
         ),
     )
 
@@ -204,7 +207,23 @@ class NetworkViewModel(
             is NetworkAction.HeaderAction.FilterAction -> headerDelegate.onFilterAction(
                 action = action.action,
             )
+
+            is NetworkAction.InvertList -> onInvertList(action)
+            NetworkAction.LiveUpdate -> onLiveUpdate()
+            NetworkAction.AutoScroll -> onAutoScroll()
         }
+    }
+
+    private fun onAutoScroll() {
+        contentState.update { it.copy(autoScroll = !it.autoScroll) }
+    }
+
+    private fun onLiveUpdate() {
+        contentState.update { it.copy(liveUpdate = !it.liveUpdate) }
+    }
+
+    private fun onInvertList(action: NetworkAction.InvertList) {
+        contentState.update { it.copy(invertList = action.value) }
     }
 
     private fun displayBearerJwt(token: String) {

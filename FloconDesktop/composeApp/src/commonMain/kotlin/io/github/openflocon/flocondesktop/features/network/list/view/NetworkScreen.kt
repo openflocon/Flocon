@@ -1,10 +1,11 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
-import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.CleaningServices
+import androidx.compose.material.icons.outlined.ClearAll
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.ImportExport
+import androidx.compose.material.icons.outlined.PauseCircleOutline
+import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.runtime.Composable
@@ -21,6 +30,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
@@ -40,10 +50,12 @@ import io.github.openflocon.flocondesktop.features.network.mock.list.view.Networ
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.view.NetworkBodyWindow
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
+import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.library.designsystem.components.FloconOverflow
-import io.github.openflocon.library.designsystem.components.FloconOverflowItem
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconSurface
@@ -64,7 +76,6 @@ fun NetworkScreen(modifier: Modifier = Modifier) {
     )
 }
 
-
 @Composable
 fun NetworkScreen(
     uiState: NetworkUiState,
@@ -74,6 +85,12 @@ fun NetworkScreen(
     val lazyListState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
     val columnWidths: NetworkItemColumnWidths = remember { NetworkItemColumnWidths() } // Default widths provided
+
+    LaunchedEffect(uiState.contentState.autoScroll, uiState.items) {
+        if (uiState.contentState.autoScroll && uiState.items.lastIndex != -1) {
+            lazyListState.animateScrollToItem(uiState.items.lastIndex)
+        }
+    }
 
     FloconSurface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -90,11 +107,29 @@ fun NetworkScreen(
                 FloconPageTopBar(
                     modifier = Modifier.fillMaxWidth(),
                     filterBar = {
-                        FilterBar(
-                            placeholderText = "Filter route",
-                            onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
-                            modifier = Modifier.fillMaxWidth(.5f),
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            FloconIconToggleButton(
+                                value = uiState.contentState.liveUpdate,
+                                tooltip = "Live Update",
+                                onValueChange = { onAction(NetworkAction.LiveUpdate) }
+                            ) {
+                                FloconIcon(
+                                    imageVector = if (uiState.contentState.liveUpdate) {
+                                        Icons.Outlined.PlayCircleOutline
+                                    } else {
+                                        Icons.Outlined.PauseCircleOutline
+                                    }
+                                )
+                            }
+                            FilterBar(
+                                placeholderText = "Filter route",
+                                onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
+                                modifier = Modifier.fillMaxWidth(.7f),
+                            )
+                        }
                     },
                     actions = {
                         FloconIconToggleButton(
@@ -115,14 +150,40 @@ fun NetworkScreen(
                                 imageVector = Icons.Outlined.SignalWifiStatusbarConnectedNoInternet4
                             )
                         }
-                        FloconOverflow(
-                            items = listOf(
-                                FloconOverflowItem(
-                                    text = "Export Csv",
-                                    onClick = { onAction(NetworkAction.ExportCsv) },
-                                ),
-                            ),
+                        FloconIconButton(
+                            imageVector = Icons.Outlined.Delete,
+                            onClick = { onAction(NetworkAction.Reset) }
                         )
+                        FloconOverflow {
+                            FloconDropdownMenuItem(
+                                text = "Export CSV",
+                                leadingIcon = Icons.Outlined.ImportExport,
+                                onClick = { onAction(NetworkAction.ExportCsv) }
+                            )
+                            FloconDropdownMenuItem(
+                                checked = uiState.contentState.autoScroll,
+                                text = "Auto scroll",
+                                leadingIcon = Icons.Outlined.PlayCircle,
+                                onCheckedChange = { onAction(NetworkAction.AutoScroll) }
+                            )
+                            FloconDropdownMenuItem(
+                                checked = uiState.contentState.invertList,
+                                text = "Invert list",
+                                leadingIcon = Icons.AutoMirrored.Outlined.List,
+                                onCheckedChange = { onAction(NetworkAction.InvertList(it)) }
+                            )
+                            FloconDropdownSeparator()
+                            FloconDropdownMenuItem(
+                                text = "Clear old sessions",
+                                leadingIcon = Icons.Outlined.CleaningServices,
+                                onClick = {}
+                            )
+                            FloconDropdownMenuItem(
+                                text = "Delete All",
+                                leadingIcon = Icons.Outlined.ClearAll,
+                                onClick = {}
+                            )
+                        }
                     },
                 )
                 NetworkItemHeaderView(
@@ -142,6 +203,7 @@ fun NetworkScreen(
                 ) {
                     LazyColumn(
                         state = lazyListState,
+                        reverseLayout = uiState.contentState.invertList,
                         modifier = Modifier.fillMaxSize(),
                     ) {
                         items(
