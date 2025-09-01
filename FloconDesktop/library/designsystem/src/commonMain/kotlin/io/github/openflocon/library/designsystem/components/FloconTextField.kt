@@ -72,7 +72,7 @@ fun FloconTextField(
         unfocusedLabelColor = FloconTheme.colorPalette.onSurface
     )
     val interactionSource = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(10.dp)
+    val shape = FloconTheme.shapes.medium
 
     BasicTextField(
         value = value,

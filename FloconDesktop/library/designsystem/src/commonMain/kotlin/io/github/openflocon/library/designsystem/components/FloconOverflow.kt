@@ -43,7 +43,7 @@ fun FloconOverflow(
 ) {
     var expanded by remember { mutableStateOf(false) }
     Column(modifier = modifier) {
-        IconButton(
+        FloconIconButton(
             onClick = { expanded = true },
         ) {
             Icon(

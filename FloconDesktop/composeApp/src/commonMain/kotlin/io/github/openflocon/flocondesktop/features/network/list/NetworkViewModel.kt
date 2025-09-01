@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
+import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
@@ -14,6 +16,8 @@ import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
+import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
+import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
 import io.github.openflocon.flocondesktop.features.network.ContentUiState
 import io.github.openflocon.flocondesktop.features.network.MockDisplayed
 import io.github.openflocon.flocondesktop.features.network.detail.mapper.toDetailUi
@@ -52,6 +56,8 @@ class NetworkViewModel(
     private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase,
     private val removeHttpRequestsBeforeUseCase: RemoveHttpRequestsBeforeUseCase,
     private val removeHttpRequestUseCase: RemoveHttpRequestUseCase,
+    private val mocksUseCase: ObserveNetworkMocksUseCase,
+    private val badNetworkUseCase: ObserveAllNetworkBadQualitiesUseCase,
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val headerDelegate: HeaderDelegate,
@@ -70,7 +76,15 @@ class NetworkViewModel(
         ),
     )
 
-    private val filterUiState = MutableStateFlow(FilterUiState(query = ""))
+    private val _filterUiState = MutableStateFlow(FilterUiState(query = "", hasBadNetwork = false, hasMocks = false))
+    private val filterUiState = combine(
+        _filterUiState,
+        mocksUseCase().map { it.any(MockNetworkDomainModel::isEnabled) },
+        badNetworkUseCase().map { it.any(BadQualityConfigDomainModel::isEnabled) }
+    ) { state, mockEnabled, badNetworkEnabled ->
+        state.copy(hasMocks = mockEnabled, hasBadNetwork = badNetworkEnabled)
+    }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _filterUiState.value)
 
     private val detailState: StateFlow<NetworkDetailViewState?> =
         contentState.map { it.selectedRequestId }
@@ -310,7 +324,7 @@ class NetworkViewModel(
     }
 
     private fun onFilterQuery(action: NetworkAction.FilterQuery) {
-        filterUiState.update { state ->
+        _filterUiState.update { state ->
             state.copy(query = action.query)
         }
     }
