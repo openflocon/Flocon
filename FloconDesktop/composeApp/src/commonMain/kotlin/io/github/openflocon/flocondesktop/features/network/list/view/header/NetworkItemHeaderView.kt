@@ -51,7 +51,6 @@ fun NetworkItemHeaderView(
             TextFilterDropdownContent(
                 filterState = state.requestTime.filter,
                 textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.RequestTime, it)) },
-                modifier = Modifier.widthIn(min = 300.dp),
             )
         }
         HeaderDropdown(
@@ -77,7 +76,6 @@ fun NetworkItemHeaderView(
             TextFilterDropdownContent(
                 filterState = state.domain.filter,
                 textFilterAction = { onFilterAction(OnFilterAction.TextFilter(NetworkTextFilterColumns.Domain, it)) },
-                modifier = Modifier.widthIn(min = 300.dp),
             )
         }
         HeaderDropdown(

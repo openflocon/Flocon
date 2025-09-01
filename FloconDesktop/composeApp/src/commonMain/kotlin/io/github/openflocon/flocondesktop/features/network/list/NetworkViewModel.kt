@@ -76,7 +76,7 @@ class NetworkViewModel(
             mocksDisplayed = null,
             badNetworkQualityDisplayed = false,
             invertList = false,
-            liveUpdate = false,
+            liveUpdate = true,
             autoScroll = false
         ),
     )
@@ -220,7 +220,12 @@ class NetworkViewModel(
             is NetworkAction.InvertList -> onInvertList(action)
             NetworkAction.LiveUpdate -> onLiveUpdate()
             NetworkAction.AutoScroll -> onAutoScroll()
+            NetworkAction.ClearSession -> onClearSession()
         }
+    }
+
+    private fun onClearSession() {
+
     }
 
     private fun onAutoScroll() {

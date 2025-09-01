@@ -3,6 +3,8 @@
 package io.github.openflocon.library.designsystem.components
 
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -24,12 +26,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.DropdownPanelAnchor
 import com.composeunstyled.Text
 import io.github.openflocon.library.designsystem.FloconTheme
 
+private val DropdownWidth = 300.dp
 private val DropdownItemHeight = 30.dp
 
 @Composable
@@ -72,8 +76,15 @@ fun FloconDropdownMenu(
             contentPadding = PaddingValues(2.dp),
             anchor = anchor,
             modifier = Modifier
-                .padding(vertical = 4.dp)
-                .width(width = 200.dp)
+                .width(width = DropdownWidth)
+                .clip(FloconTheme.shapes.medium)
+                .background(FloconTheme.colorPalette.primary)
+                .border(
+                    width = 1.dp,
+                    color = Color.White.copy(alpha = .5f), // TODO
+                    shape = FloconTheme.shapes.medium
+                )
+                .padding(horizontal = 4.dp, vertical = 4.dp)
         ) {
             content()
         }

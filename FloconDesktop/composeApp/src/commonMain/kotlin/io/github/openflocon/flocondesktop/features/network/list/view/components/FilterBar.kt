@@ -71,6 +71,6 @@ fun FilterBar(
             }
         },
         textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
-        modifier = modifier.height(30.dp)
+        modifier = modifier
     )
 }

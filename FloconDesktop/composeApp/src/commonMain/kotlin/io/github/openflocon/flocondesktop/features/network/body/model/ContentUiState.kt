@@ -27,6 +27,6 @@ fun previewContentUiState() = ContentUiState(
     mocksDisplayed = null,
     badNetworkQualityDisplayed = false,
     invertList = false,
-    liveUpdate = false,
+    liveUpdate = true,
     autoScroll = false
 )

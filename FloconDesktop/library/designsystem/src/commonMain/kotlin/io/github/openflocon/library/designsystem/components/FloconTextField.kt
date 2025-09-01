@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.theme.contentColorFor
+import kotlin.math.min
 
 @Composable
 fun FloconTextField(
@@ -181,28 +183,6 @@ fun FloconTextFieldWithoutM3(
     containerColor: Color = FloconTheme.colorPalette.surfaceVariant
 ) {
     val contentColor = FloconTheme.colorPalette.contentColorFor(containerColor)
-    TextFieldDefaults.colors(
-        focusedTextColor = contentColor,
-        errorTextColor = contentColor,
-        unfocusedTextColor = contentColor,
-        disabledTextColor = contentColor,
-        errorContainerColor = containerColor,
-        focusedContainerColor = containerColor,
-        disabledContainerColor = containerColor,
-        unfocusedContainerColor = containerColor,
-        focusedIndicatorColor = Color.Transparent,
-        errorIndicatorColor = Color.Transparent,
-        disabledIndicatorColor = Color.Transparent,
-        unfocusedIndicatorColor = Color.Transparent,
-        errorPlaceholderColor = contentColor.copy(alpha = 0.6f),
-        disabledPlaceholderColor = contentColor.copy(alpha = 0.6f),
-        focusedPlaceholderColor = contentColor.copy(alpha = 0.6f),
-        unfocusedPlaceholderColor = contentColor.copy(alpha = 0.6f),
-        errorLabelColor = FloconTheme.colorPalette.onSurface,
-        disabledLabelColor = FloconTheme.colorPalette.onSurface,
-        focusedLabelColor = FloconTheme.colorPalette.onSurface,
-        unfocusedLabelColor = FloconTheme.colorPalette.onSurface
-    )
     val shape = FloconTheme.shapes.medium
 
     BasicTextField(
@@ -249,7 +229,7 @@ fun FloconTextFieldWithoutM3(
                 }
             }
         },
-        modifier = modifier
+        modifier = modifier.heightIn(min = 30.dp)
     )
 }
 

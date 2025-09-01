@@ -147,7 +147,10 @@ fun FloconSmallIconButton(
             .clickable(
                 enabled = enabled,
                 onClick = onClick
-            ),
+            )
+            .graphicsLayer {
+                alpha = if (enabled) 1f else .5f
+            },
         content = content
     )
 }
