@@ -38,6 +38,7 @@ paging = "3.3.2"
 
 # TODO Sort
 nav3Core = "1.0.0-alpha08"
+navEvent = "1.0.0-alpha07"
 lifecycleViewmodelNav3 = "2.10.0-alpha03"
 kotlinxSerializationCore = "1.8.1"
 
@@ -99,6 +100,9 @@ ui-tooling-preview-desktop = { module = "org.jetbrains.compose.ui:ui-tooling-pre
 # TODO Sort
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
+
+androidx-navigationevent-core = { group = "androidx.navigationevent", name = "navigationevent", version.ref = "navEvent" }
+androidx-navigationevent-compose = { group = "androidx.navigationevent", name = "navigationevent-compose", version.ref = "navEvent" }
 
 # Optional add-on libraries
 androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
