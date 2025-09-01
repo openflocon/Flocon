@@ -5,7 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.flocon.data.remote.dataRemoteModule
 import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
@@ -64,5 +69,20 @@ fun App() {
                 FeedbackDisplayerView()
             }
         }
+    }
+}
+
+@Composable
+private fun Navigation() {
+    val backStack = remember { mutableStateListOf<Any>() }
+
+    NavDisplay(
+        backStack = backStack,
+        entryDecorators = listOf(
+            rememberSceneSetupNavEntryDecorator(),
+            rememberSavedStateNavEntryDecorator()
+        )
+    ) {
+
     }
 }
