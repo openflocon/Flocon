@@ -96,3 +96,18 @@ fun App() {
         }
     }
 }
+
+@Composable
+private fun Navigation() {
+    val backStack = remember { mutableStateListOf<Any>() }
+
+    NavDisplay(
+        backStack = backStack,
+        entryDecorators = listOf(
+            rememberSceneSetupNavEntryDecorator(),
+            rememberSavedStateNavEntryDecorator()
+        )
+    ) {
+
+    }
+}
