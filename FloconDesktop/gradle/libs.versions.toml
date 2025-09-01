@@ -36,6 +36,11 @@ uiToolingPreviewDesktop = "1.8.2"
 buildconfig = "5.6.8"
 paging = "3.3.2"
 
+# TODO Sort
+nav3Core = "1.0.0-alpha08"
+lifecycleViewmodelNav3 = "2.10.0-alpha03"
+kotlinxSerializationCore = "1.8.1"
+
 [libraries]
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -91,8 +96,13 @@ androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }
 other-jsontree = { module = "com.sebastianneubauer.jsontree:jsontree", version.ref = "other-jsontree"}
 ui-tooling-preview-desktop = { module = "org.jetbrains.compose.ui:ui-tooling-preview-desktop", version.ref = "uiToolingPreviewDesktop" }
 
-androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
-androidx-paging-compose = { module = "androidx.paging:paging-compose", version = "3.4.0-alpha04" }
+# TODO Sort
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
+
+# Optional add-on libraries
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
