@@ -38,11 +38,11 @@ import io.github.openflocon.flocondesktop.app.AppViewModel
 import io.github.openflocon.flocondesktop.app.di.appModule
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
 import io.github.openflocon.flocondesktop.common.di.commonModule
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
 import io.github.openflocon.flocondesktop.core.di.coreModule
 import io.github.openflocon.flocondesktop.features.featuresModule
+import io.github.openflocon.flocondesktop.features.network.NetworkRoute
+import io.github.openflocon.flocondesktop.features.network.networkNavigation
 import io.github.openflocon.flocondesktop.main.di.mainModule
-import io.github.openflocon.flocondesktop.main.ui.MainScreen
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.panel.FloconPanelDisplayer
@@ -71,6 +71,7 @@ fun App() {
                 dataCoreModule,
                 dataLocalModule,
                 dataRemoteModule,
+                navigationModule,
                 // Temporary
                 module {
                     singleOf(::AdbRepositoryImpl) bind AdbRepository::class
@@ -87,6 +88,7 @@ fun App() {
             fontSizeMultiplier = fontSizeMultiplier
         ) {
             val appViewModel: AppViewModel = koinViewModel()
+            val navigationState = koinInject<FloconNavigationState>()
 
             FloconSurface(
                 modifier = Modifier
@@ -110,21 +112,22 @@ fun App() {
                     }
                 }
             }
+
+            FloconNavigation {
+                networkNavigation()
+            }
+//            Box(
+//                Modifier
+//                    .safeContentPadding()
+//                    .fillMaxSize()
+//                    .background(FloconTheme.colorPalette.background),
+//            ) {
+//                MainScreen(
+//                    modifier = Modifier
+//                        .fillMaxSize(),
+//                )
+//                FeedbackDisplayerView()
+//            }
         }
-    }
-}
-
-@Composable
-private fun Navigation() {
-    val backStack = remember { mutableStateListOf<Any>() }
-
-    NavDisplay(
-        backStack = backStack,
-        entryDecorators = listOf(
-            rememberSceneSetupNavEntryDecorator(),
-            rememberSavedStateNavEntryDecorator()
-        )
-    ) {
-
     }
 }
