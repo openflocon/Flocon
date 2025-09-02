@@ -11,7 +11,6 @@ data class ContentUiState(
     val mocksDisplayed: MockDisplayed?,
     val badNetworkQualityDisplayed: Boolean,
     val invertList: Boolean,
-    val liveUpdate: Boolean,
     val autoScroll: Boolean
 )
 
@@ -27,6 +26,5 @@ fun previewContentUiState() = ContentUiState(
     mocksDisplayed = null,
     badNetworkQualityDisplayed = false,
     invertList = false,
-    liveUpdate = true,
     autoScroll = false
 )

@@ -40,9 +40,7 @@ sealed interface NetworkAction {
     data class FilterQuery(val query: String) : NetworkAction
 
     data class InvertList(val value: Boolean) : NetworkAction
-
-    data object LiveUpdate : NetworkAction
-
+    
     data object AutoScroll : NetworkAction
 
     data object ClearSession : NetworkAction

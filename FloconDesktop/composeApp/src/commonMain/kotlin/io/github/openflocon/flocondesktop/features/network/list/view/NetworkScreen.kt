@@ -3,10 +3,8 @@ package io.github.openflocon.flocondesktop.features.network.list.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,19 +17,14 @@ import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ImportExport
-import androidx.compose.material.icons.outlined.PauseCircleOutline
 import androidx.compose.material.icons.outlined.PlayCircle
-import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
-import androidx.compose.material.icons.outlined.ViewColumn
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,7 +49,6 @@ import io.github.openflocon.flocondesktop.features.network.mock.list.view.Networ
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.view.NetworkBodyWindow
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
 import io.github.openflocon.library.designsystem.components.FloconFeature
@@ -92,7 +84,6 @@ fun NetworkScreen(
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var expandedColumn by remember { mutableStateOf(false) }
 
     val lazyListState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
@@ -120,29 +111,11 @@ fun NetworkScreen(
             FloconPageTopBar(
                 modifier = Modifier.fillMaxWidth(),
                 filterBar = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        FloconIconToggleButton(
-                            value = uiState.contentState.liveUpdate,
-                            tooltip = "Live Update",
-                            onValueChange = { onAction(NetworkAction.LiveUpdate) }
-                        ) {
-                            FloconIcon(
-                                imageVector = if (uiState.contentState.liveUpdate) {
-                                    Icons.Outlined.PlayCircleOutline
-                                } else {
-                                    Icons.Outlined.PauseCircleOutline
-                                }
-                            )
-                        }
-                        FilterBar(
-                            placeholderText = "Filter route",
-                            onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
-                            modifier = Modifier.fillMaxWidth(.7f),
-                        )
-                    }
+                    FilterBar(
+                        placeholderText = "Filter route",
+                        onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
+                        modifier = Modifier.fillMaxWidth(.7f),
+                    )
                 },
                 actions = {
                     FloconIconToggleButton(

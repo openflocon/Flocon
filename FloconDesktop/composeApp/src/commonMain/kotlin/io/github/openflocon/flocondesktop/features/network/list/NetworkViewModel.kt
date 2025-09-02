@@ -74,7 +74,6 @@ class NetworkViewModel(
             mocksDisplayed = null,
             badNetworkQualityDisplayed = false,
             invertList = false,
-            liveUpdate = true,
             autoScroll = false
         ),
     )
@@ -137,16 +136,13 @@ class NetworkViewModel(
     }
         .distinctUntilChanged()
 
-    private var cachedItems: List<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>> = emptyList()
     private val filteredItems: Flow<List<NetworkItemViewState>> = combine(
         items,
         contentState,
         filterConfig
     ) { items, content, config ->
-        if (content.liveUpdate)
-            cachedItems = items
         sortAndFilterNetworkItemsProcessor(
-            items = cachedItems,
+            items = items,
             filterState = config.filterState,
             sorted = config.sorted,
             allowedMethods = config.allowedMethods,
@@ -217,7 +213,6 @@ class NetworkViewModel(
             )
 
             is NetworkAction.InvertList -> onInvertList(action)
-            NetworkAction.LiveUpdate -> onLiveUpdate()
             NetworkAction.AutoScroll -> onAutoScroll()
             NetworkAction.ClearSession -> onClearSession()
         }
@@ -229,10 +224,6 @@ class NetworkViewModel(
 
     private fun onAutoScroll() {
         contentState.update { it.copy(autoScroll = !it.autoScroll) }
-    }
-
-    private fun onLiveUpdate() {
-        contentState.update { it.copy(liveUpdate = !it.liveUpdate) }
     }
 
     private fun onInvertList(action: NetworkAction.InvertList) {
