@@ -73,7 +73,7 @@ fun SharedPreferenceRowView(
                 Box(
                     Modifier
                         .weight(1f)
-                        .background(color = FloconTheme.colorPalette.panel, shape = RoundedCornerShape(4.dp)),
+                        .background(color = FloconTheme.colorPalette.primary, shape = RoundedCornerShape(4.dp)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Checkbox(

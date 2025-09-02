@@ -60,7 +60,7 @@ fun SettingsScreen(
                 AboutScreen(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(FloconTheme.colorPalette.background),
+                        .background(FloconTheme.colorPalette.primary),
                 )
             }
         }
@@ -82,7 +82,7 @@ private fun SettingsScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier.fillMaxWidth()
-                    .background(FloconTheme.colorPalette.panel)
+                    .background(FloconTheme.colorPalette.primary)
                     .padding(all = 12.dp),
             ) {
                 Text(
@@ -103,7 +103,7 @@ private fun SettingsScreen(
                 Column(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
-                        .background(FloconTheme.colorPalette.panel)
+                        .background(FloconTheme.colorPalette.primary)
                         .padding(all = 12.dp),
                 ) {
                     if (needsAdbSetup) {

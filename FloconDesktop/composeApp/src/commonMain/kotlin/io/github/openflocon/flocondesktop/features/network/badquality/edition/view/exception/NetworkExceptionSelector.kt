@@ -29,9 +29,9 @@ fun NetworkExceptionSelector(
     ) {
         possibleExceptions.fastForEach { exception ->
             val (backgroundColor, textColor) = if (exception.classPath == selected) {
-                FloconTheme.colorPalette.onSurface to FloconTheme.colorPalette.panel
+                FloconTheme.colorPalette.onSurface to FloconTheme.colorPalette.primary
             } else {
-                FloconTheme.colorPalette.panel to FloconTheme.colorPalette.onSurface
+                FloconTheme.colorPalette.primary to FloconTheme.colorPalette.onSurface
             }
             Column(
                 modifier = Modifier

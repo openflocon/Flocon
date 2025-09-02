@@ -6,6 +6,7 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.v2.ScrollbarAdapter
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 
 data class FloconScrollAdapterDesktop(
     val scrollbarAdapter: ScrollbarAdapter
@@ -14,7 +15,7 @@ data class FloconScrollAdapterDesktop(
 @Composable
 actual fun FloconVerticalScrollbar(
     adapter: FloconScrollAdapter,
-    modifier: androidx.compose.ui.Modifier
+    modifier: Modifier
 ) {
     VerticalScrollbar(
         adapter = (adapter as FloconScrollAdapterDesktop).scrollbarAdapter,

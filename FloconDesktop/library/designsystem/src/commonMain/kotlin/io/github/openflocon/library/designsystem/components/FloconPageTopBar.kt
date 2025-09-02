@@ -27,7 +27,7 @@ fun FloconPageTopBar(
     Column(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.background)
+            .background(FloconTheme.colorPalette.primary)
             .padding(vertical = 8.dp)
     ) {
         if (selector != null) {

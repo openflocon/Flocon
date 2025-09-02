@@ -42,7 +42,7 @@ fun DatabaseResultView(
                 is QueryResultUiModel.Text -> {
                     Text(
                         text = result.text,
-                        color = FloconTheme.colorPalette.onBackground,
+                        color = FloconTheme.colorPalette.onPrimary,
                         modifier = Modifier.padding(8.dp),
                     )
                 }

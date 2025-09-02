@@ -26,7 +26,7 @@ fun AnalyticsDetailView(modifier: Modifier = Modifier, state: AnalyticsRowUiMode
     val linesLabelWidth: Dp = 130.dp
     SelectionContainer(
         modifier
-            .background(FloconTheme.colorPalette.background)
+            .background(FloconTheme.colorPalette.primary)
             .verticalScroll(scrollState)
             .padding(all = 18.dp),
     ) {
@@ -72,7 +72,7 @@ fun AnalyticsDetailLineTextView(
         Text(
             text = value,
             style = FloconTheme.typography.bodyMedium, // Body text for the URL
-            color = FloconTheme.colorPalette.onBackground, // Primary text color
+            color = FloconTheme.colorPalette.onPrimary, // Primary text color
             modifier = Modifier.weight(1f), // Takes remaining space
         )
     }
@@ -92,7 +92,7 @@ fun AnalyticsDetailLineView(
         Text(
             text = label,
             style = FloconTheme.typography.titleSmall, // Slightly smaller title for details
-            color = FloconTheme.colorPalette.onBackground.copy(alpha = 0.7f), // Muted label color
+            color = FloconTheme.colorPalette.onPrimary,
             modifier = Modifier.width(labelWidth).padding(end = 8.dp),
         )
         content()

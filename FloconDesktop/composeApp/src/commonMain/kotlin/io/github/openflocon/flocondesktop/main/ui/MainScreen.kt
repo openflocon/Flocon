@@ -236,7 +236,7 @@ private fun MainScreen(
                         translationY = (windowSize.height / 2) - (size.height / 2)
                     }
                     .clip(RoundedCornerShape(4.dp))
-                    .background(FloconTheme.colorPalette.panel)
+                    .background(FloconTheme.colorPalette.primary)
                     .clickable(onClick = { expanded = !expanded }),
             ) {
                 FloconIcon(

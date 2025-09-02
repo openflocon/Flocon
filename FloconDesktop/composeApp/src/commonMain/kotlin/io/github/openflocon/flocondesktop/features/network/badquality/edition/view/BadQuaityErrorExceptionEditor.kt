@@ -51,7 +51,7 @@ fun BadQuaityErrorExceptionEditor(
                         weight = it
                     }
                 },
-                containerColor = FloconTheme.colorPalette.panel
+                containerColor = FloconTheme.colorPalette.primary
             )
 
             DefaultLabel("Select the exception")

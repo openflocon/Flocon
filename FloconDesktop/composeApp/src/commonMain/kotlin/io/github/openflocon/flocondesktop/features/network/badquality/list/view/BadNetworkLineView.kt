@@ -56,7 +56,7 @@ fun BadNetworkLineView(
                 color = FloconTheme.colorPalette.onSurface,
                 modifier = Modifier.weight(2f)
                     .background(
-                        color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
+                        color = FloconTheme.colorPalette.primary.copy(alpha = 0.8f),
                         shape = RoundedCornerShape(4.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 6.dp),

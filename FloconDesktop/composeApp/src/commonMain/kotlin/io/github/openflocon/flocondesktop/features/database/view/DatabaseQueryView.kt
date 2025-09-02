@@ -37,7 +37,7 @@ fun DatabaseQueryView(
     Column(
         modifier = modifier
             .background(
-                color = FloconTheme.colorPalette.surfaceVariant,
+                color = FloconTheme.colorPalette.primary,
                 shape = RoundedCornerShape(12.dp),
             )
             .padding(16.dp),
@@ -50,7 +50,7 @@ fun DatabaseQueryView(
             maxLines = 10,
             textStyle = FloconTheme.typography.bodySmall,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            containerColor = FloconTheme.colorPalette.surfaceVariant,
+            containerColor = FloconTheme.colorPalette.secondary,
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -88,7 +88,7 @@ private fun DatabaseButton(
         modifier = modifier
             .clip(RoundedCornerShape(6.dp))
             .size(32.dp)
-            .background(if (dark) FloconTheme.colorPalette.panel else Color.White)
+            .background(if (dark) FloconTheme.colorPalette.primary else Color.White)
             .clickable(onClick = onClick)
             .padding(all = 8.dp),
     ) {

@@ -14,8 +14,8 @@ fun FloconTextButton(
     TextButton(
         onClick = onClick,
         colors = ButtonDefaults.textButtonColors(
-            containerColor = FloconTheme.colorPalette.inverseSurface,
-            contentColor = FloconTheme.colorPalette.inverseOnSurface
+            containerColor = FloconTheme.colorPalette.primary,
+            contentColor = FloconTheme.colorPalette.onPrimary
         ),
         content = content
     )

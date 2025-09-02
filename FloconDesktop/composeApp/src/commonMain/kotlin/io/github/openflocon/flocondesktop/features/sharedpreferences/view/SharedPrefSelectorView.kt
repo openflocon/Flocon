@@ -49,7 +49,7 @@ internal fun SharedPrefSelectorView(
     ) {
         Text(
             text = "SharedPref : ",
-            color = FloconTheme.colorPalette.onBackground,
+            color = FloconTheme.colorPalette.onPrimary,
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
         )
 
@@ -63,11 +63,11 @@ internal fun SharedPrefSelectorView(
             SharedPrefsStateUiModel.Empty -> {
                 Text(
                     modifier = Modifier
-                        .background(FloconTheme.colorPalette.onBackground, shape = shape)
+                        .background(FloconTheme.colorPalette.onPrimary, shape = shape)
                         .padding(contentPadding),
                     text = "No SharedPreferences Found",
                     style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.background,
+                    color = FloconTheme.colorPalette.primary,
                 )
             }
 
@@ -76,10 +76,10 @@ internal fun SharedPrefSelectorView(
 
                 SharedPrefView(
                     sharedPref = sharedPrefsState.selected,
-                    textColor = FloconTheme.colorPalette.background,
+                    textColor = FloconTheme.colorPalette.primary,
                     modifier = Modifier
                         .clip(shape)
-                        .background(FloconTheme.colorPalette.onBackground)
+                        .background(FloconTheme.colorPalette.onPrimary)
                         .clickable { expanded = true }
                         .padding(contentPadding),
                 )
@@ -93,7 +93,7 @@ internal fun SharedPrefSelectorView(
                             text = {
                                 SharedPrefView(
                                     sharedPref = SharedPref,
-                                    textColor = FloconTheme.colorPalette.onBackground,
+                                    textColor = FloconTheme.colorPalette.onPrimary,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },
@@ -130,7 +130,7 @@ private fun SharedPrefViewPreview() {
     FloconTheme {
         SharedPrefView(
             sharedPref = previewDeviceSharedPrefUiModel(),
-            textColor = FloconTheme.colorPalette.background,
+            textColor = FloconTheme.colorPalette.primary,
         )
     }
 }

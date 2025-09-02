@@ -34,7 +34,7 @@ fun ImageItemView(
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(FloconTheme.colorPalette.panel)
+            .background(FloconTheme.colorPalette.primary)
             .clickable(onClick = {
                 onClick(model)
             }),
