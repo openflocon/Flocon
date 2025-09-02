@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -230,13 +231,15 @@ fun NetworkScreen(
                     state = uiState.headerState,
                 )
                 FloconHorizontalDivider()
-                Box(
-                    Modifier.fillMaxSize(),
+                Row(
+                    Modifier.fillMaxSize()
                 ) {
                     LazyColumn(
                         state = lazyListState,
                         reverseLayout = uiState.contentState.invertList,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
                     ) {
                         items(
                             items = uiState.items,

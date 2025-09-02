@@ -1,6 +1,7 @@
 package io.github.openflocon.library.designsystem
 
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -64,6 +65,10 @@ fun FloconTheme(
             )
         )
     }
+    val scrollbarStyle = LocalScrollbarStyle.current.copy(
+        unhoverColor = colorPalette.secondary,
+        hoverColor = colorPalette.onSecondary
+    )
 
     MaterialTheme(
         typography = typography,
@@ -77,6 +82,7 @@ fun FloconTheme(
             LocalIndication provides ripple,
             LocalFloconColorPalette provides colorPalette,
             LocalTextSelectionColors provides selectionTextColor,
+            LocalScrollbarStyle provides scrollbarStyle,
             content = content
         )
     }
