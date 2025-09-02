@@ -113,7 +113,7 @@ fun NetworkItemView(
                     modifier = Modifier
                         .weight(2f)
                         .background(
-                            color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
+                            color = FloconTheme.colorPalette.surfaceVariant.copy(alpha = 0.8f),
                             shape = RoundedCornerShape(4.dp),
                         )
                         .padding(horizontal = 8.dp, vertical = 6.dp),
