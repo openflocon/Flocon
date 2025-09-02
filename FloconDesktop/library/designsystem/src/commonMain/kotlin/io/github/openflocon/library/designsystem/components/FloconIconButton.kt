@@ -2,8 +2,7 @@
 
 package io.github.openflocon.library.designsystem.components
 
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.TooltipArea
@@ -17,10 +16,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -66,32 +63,32 @@ fun FloconIconToggleButton(
     value: Boolean,
     onValueChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     tooltip: String? = null,
     content: @Composable () -> Unit
 ) {
     val shape = FloconTheme.shapes.medium
-    val transition = updateTransition(value)
-    val contentColor by transition.animateColor {
-        if (it) {
-            FloconTheme.colorPalette.onSecondary
-        } else {
-            FloconTheme.colorPalette.onPrimary
+    val contentColor by animateColorAsState(
+        when {
+            !enabled -> FloconTheme.colorPalette.onPrimary.copy(alpha = .5f)
+            value -> FloconTheme.colorPalette.onSecondary
+            else -> FloconTheme.colorPalette.onPrimary
         }
-    }
-    val borderColor by transition.animateColor {
-        if (it) {
-            FloconTheme.colorPalette.onSecondary
-        } else {
-            Color.Transparent
+    )
+    val borderColor by animateColorAsState(
+        when {
+            !enabled -> Color.Transparent
+            value -> FloconTheme.colorPalette.onSecondary
+            else -> Color.Transparent
         }
-    }
-    val containerColor by transition.animateColor {
-        if (it) {
-            FloconTheme.colorPalette.secondary
-        } else {
-            FloconTheme.colorPalette.primary
+    )
+    val containerColor by animateColorAsState(
+        when {
+            !enabled -> FloconTheme.colorPalette.primary.copy(alpha = .5f)
+            value -> FloconTheme.colorPalette.secondary
+            else -> FloconTheme.colorPalette.primary
         }
-    }
+    )
 
     TooltipArea(
         tooltip = {
@@ -193,7 +190,7 @@ fun FloconSmallIconButton(
             imageVector = imageVector,
             contentDescription = contentDescription,
             modifier = Modifier.graphicsLayer {
-                alpha = if(enabled) 1f else 0.3f
+                alpha = if (enabled) 1f else 0.3f
             }
         )
     }

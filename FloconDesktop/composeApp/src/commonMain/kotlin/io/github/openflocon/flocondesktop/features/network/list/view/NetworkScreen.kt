@@ -105,8 +105,7 @@ fun NetworkScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         FloconFeature(
             modifier = Modifier
@@ -168,48 +167,49 @@ fun NetworkScreen(
                         imageVector = Icons.Outlined.Delete,
                         onClick = { onAction(NetworkAction.Reset) }
                     )
-                    FloconDropdownMenu(
-                        expanded = expandedColumn,
-                        anchorContent = {
-                            FloconIconButton(
-                                imageVector = Icons.Outlined.ViewColumn,
-                                onClick = { expandedColumn = true }
-                            )
-                        },
-                        onExpandRequest = { expandedColumn = true },
-                        onDismissRequest = { expandedColumn = false }
-                    ) {
-                        FloconDropdownMenuItem(
-                            checked = true,
-                            text = "Request Time",
-                            onCheckedChange = {}
-                        )
-                        FloconDropdownMenuItem(
-                            checked = true,
-                            text = "Method",
-                            onCheckedChange = {}
-                        )
-                        FloconDropdownMenuItem(
-                            checked = true,
-                            text = "Domain",
-                            onCheckedChange = {}
-                        )
-                        FloconDropdownMenuItem(
-                            checked = true,
-                            text = "Query",
-                            onCheckedChange = {}
-                        )
-                        FloconDropdownMenuItem(
-                            checked = true,
-                            text = "Status",
-                            onCheckedChange = {}
-                        )
-                        FloconDropdownMenuItem(
-                            checked = true,
-                            text = "Time",
-                            onCheckedChange = {}
-                        )
-                    }
+                    // TODO Later
+//                    FloconDropdownMenu(
+//                        expanded = expandedColumn,
+//                        anchorContent = {
+//                            FloconIconButton(
+//                                imageVector = Icons.Outlined.ViewColumn,
+//                                onClick = { expandedColumn = true }
+//                            )
+//                        },
+//                        onExpandRequest = { expandedColumn = true },
+//                        onDismissRequest = { expandedColumn = false }
+//                    ) {
+//                        FloconDropdownMenuItem(
+//                            checked = true,
+//                            text = "Request Time",
+//                            onCheckedChange = {}
+//                        )
+//                        FloconDropdownMenuItem(
+//                            checked = true,
+//                            text = "Method",
+//                            onCheckedChange = {}
+//                        )
+//                        FloconDropdownMenuItem(
+//                            checked = true,
+//                            text = "Domain",
+//                            onCheckedChange = {}
+//                        )
+//                        FloconDropdownMenuItem(
+//                            checked = true,
+//                            text = "Query",
+//                            onCheckedChange = {}
+//                        )
+//                        FloconDropdownMenuItem(
+//                            checked = true,
+//                            text = "Status",
+//                            onCheckedChange = {}
+//                        )
+//                        FloconDropdownMenuItem(
+//                            checked = true,
+//                            text = "Time",
+//                            onCheckedChange = {}
+//                        )
+//                    }
                     FloconOverflow {
                         FloconDropdownMenuItem(
                             text = "Export CSV",
