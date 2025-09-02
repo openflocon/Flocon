@@ -51,9 +51,7 @@ internal fun DashboardButtonViewPreview() {
     )
     FloconTheme {
         DashboardButtonView(
-            modifier = Modifier.background(
-                FloconTheme.colorPalette.panel,
-            ),
+            modifier = Modifier.background(FloconTheme.colorPalette.primary),
             onClickButton = {},
             rowItem = rowItem,
         )

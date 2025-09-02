@@ -230,7 +230,7 @@ private fun TextFilterFieldView(
                     },
                 )
             },
-            containerColor = FloconTheme.colorPalette.panel,
+            containerColor = FloconTheme.colorPalette.primary,
             modifier = Modifier
                 .weight(1f)
         )

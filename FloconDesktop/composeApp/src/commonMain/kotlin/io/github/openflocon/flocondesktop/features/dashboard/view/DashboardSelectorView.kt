@@ -48,7 +48,7 @@ internal fun DashboardSelectorView(
     ) {
         Text(
             text = "Dashboard : ",
-            color = FloconTheme.colorPalette.onBackground,
+            color = FloconTheme.colorPalette.onPrimary,
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
         )
 
@@ -62,11 +62,11 @@ internal fun DashboardSelectorView(
             DashboardsStateUiModel.Empty -> {
                 Text(
                     modifier = Modifier
-                        .background(FloconTheme.colorPalette.onBackground, shape = shape)
+                        .background(FloconTheme.colorPalette.primary, shape = shape)
                         .padding(contentPadding),
                     text = "No Dashboard Found",
                     style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.background,
+                    color = FloconTheme.colorPalette.onPrimary,
                 )
             }
 
@@ -75,10 +75,10 @@ internal fun DashboardSelectorView(
 
                 DashboardView(
                     dashboard = dashboardsState.selected,
-                    textColor = FloconTheme.colorPalette.background,
+                    textColor = FloconTheme.colorPalette.primary,
                     modifier = Modifier
                         .clip(shape)
-                        .background(FloconTheme.colorPalette.onBackground)
+                        .background(FloconTheme.colorPalette.onPrimary)
                         .clickable { expanded = true }
                         .padding(contentPadding),
                 )
@@ -92,7 +92,7 @@ internal fun DashboardSelectorView(
                             text = {
                                 DashboardView(
                                     dashboard = Dashboard,
-                                    textColor = FloconTheme.colorPalette.onBackground,
+                                    textColor = FloconTheme.colorPalette.onPrimary,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },
@@ -129,7 +129,7 @@ private fun DashboardViewPreview() {
     FloconTheme {
         DashboardView(
             dashboard = previewDeviceDashboardUiModel(),
-            textColor = FloconTheme.colorPalette.background,
+            textColor = FloconTheme.colorPalette.primary,
         )
     }
 }

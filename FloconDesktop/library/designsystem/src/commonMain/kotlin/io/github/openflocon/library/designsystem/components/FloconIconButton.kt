@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.theme.contentColorFor
 
 private val Size = 32.dp
 private val Padding = 8.dp
@@ -52,7 +53,7 @@ fun FloconIconButton(
             .clickable(enabled = enabled, onClick = onClick)
             .padding(all = 8.dp)
     ) {
-        CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.onBackground) {
+        CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.onSurface) {
             content()
         }
     }
@@ -65,28 +66,30 @@ fun FloconIconToggleButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     tooltip: String? = null,
+    containerColor: Color = FloconTheme.colorPalette.primary,
+    contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor),
     content: @Composable () -> Unit
 ) {
     val shape = FloconTheme.shapes.medium
     val contentColor by animateColorAsState(
         when {
-            !enabled -> FloconTheme.colorPalette.onPrimary.copy(alpha = .5f)
-            value -> FloconTheme.colorPalette.onSecondary
-            else -> FloconTheme.colorPalette.onPrimary
+            !enabled -> contentColor.copy(alpha = .5f)
+            value -> FloconTheme.colorPalette.onAccent
+            else -> contentColor
         }
     )
     val borderColor by animateColorAsState(
         when {
             !enabled -> Color.Transparent
-            value -> FloconTheme.colorPalette.onSecondary
+            value -> FloconTheme.colorPalette.onAccent
             else -> Color.Transparent
         }
     )
     val containerColor by animateColorAsState(
         when {
-            !enabled -> FloconTheme.colorPalette.primary.copy(alpha = .5f)
-            value -> FloconTheme.colorPalette.secondary
-            else -> FloconTheme.colorPalette.primary
+            !enabled -> containerColor.copy(alpha = .5f)
+            value -> FloconTheme.colorPalette.accent
+            else -> containerColor
         }
     )
 

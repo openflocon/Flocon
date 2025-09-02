@@ -56,7 +56,7 @@ internal fun TopBarDeviceDropdown(
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            containerColor = FloconTheme.colorPalette.panel,
+            containerColor = FloconTheme.colorPalette.primary,
             shadowElevation = 0.dp,
             shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
             modifier = Modifier.exposedDropdownSize(),

@@ -22,7 +22,7 @@ fun FloconCodeBlock(
     Box(
         modifier = modifier
             .background(
-                color = FloconTheme.colorPalette.surfaceVariant,
+                color = FloconTheme.colorPalette.primary,
                 shape = RoundedCornerShape(8.dp),
             )
             .padding(8.dp),
@@ -30,7 +30,7 @@ fun FloconCodeBlock(
         SelectionContainer {
             Text(
                 text = code,
-                color = FloconTheme.colorPalette.onSurface,
+                color = FloconTheme.colorPalette.onPrimary,
                 style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
             )
         }

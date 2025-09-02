@@ -111,7 +111,7 @@ fun BadNetworkQualityEditionContent(
                 onValueChange = { name = it },
                 suffix = { },
                 modifier = Modifier.fillMaxWidth(fraction = 0.5f),
-                containerColor = FloconTheme.colorPalette.panel,
+                containerColor = FloconTheme.colorPalette.primary,
             )
             FloconTextField(
                 label = defaultLabel("Trigger probability"),
@@ -123,7 +123,7 @@ fun BadNetworkQualityEditionContent(
                     }
                 },
                 suffix = { Text(text = "%") },
-                containerColor = FloconTheme.colorPalette.panel
+                containerColor = FloconTheme.colorPalette.primary
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FloconTextField(
@@ -137,7 +137,7 @@ fun BadNetworkQualityEditionContent(
                         }
                     },
                     suffix = { Text(text = "ms") },
-                    containerColor = FloconTheme.colorPalette.panel,
+                    containerColor = FloconTheme.colorPalette.primary,
                 )
                 FloconTextField(
                     modifier = Modifier.weight(1f),
@@ -150,7 +150,7 @@ fun BadNetworkQualityEditionContent(
                         }
                     },
                     suffix = { Text(text = "ms") },
-                    containerColor = FloconTheme.colorPalette.panel,
+                    containerColor = FloconTheme.colorPalette.primary,
                 )
             }
             FloconTextField(
@@ -163,7 +163,7 @@ fun BadNetworkQualityEditionContent(
                     }
                 },
                 suffix = { Text(text = "%") },
-                containerColor = FloconTheme.colorPalette.panel,
+                containerColor = FloconTheme.colorPalette.primary,
             )
         }
         BadQualityErrorsListView(

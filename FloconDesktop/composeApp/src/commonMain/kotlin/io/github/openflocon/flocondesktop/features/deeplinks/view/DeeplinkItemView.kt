@@ -172,7 +172,7 @@ private fun DeeplinkItemViewPreview() {
     FloconTheme {
         DeeplinkItemView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.panel,
+                FloconTheme.colorPalette.primary,
             ),
             submit = { _, _ -> },
             item = previewDeeplinkViewState(),

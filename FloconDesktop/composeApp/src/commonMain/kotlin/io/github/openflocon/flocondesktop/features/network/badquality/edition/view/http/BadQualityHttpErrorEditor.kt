@@ -52,7 +52,7 @@ internal fun BadQualityHttpErrorEditor(
                         weight = it
                     }
                 },
-                containerColor = FloconTheme.colorPalette.panel
+                containerColor = FloconTheme.colorPalette.primary
             )
 
             FloconTextField(
@@ -64,7 +64,7 @@ internal fun BadQualityHttpErrorEditor(
                         httpCode = it
                     }
                 },
-                containerColor = FloconTheme.colorPalette.panel
+                containerColor = FloconTheme.colorPalette.primary
             )
 
             FloconTextField(
@@ -72,7 +72,7 @@ internal fun BadQualityHttpErrorEditor(
                 placeholder = defaultPlaceHolder("application/json"),
                 value = contentType,
                 onValueChange = { contentType = it },
-                containerColor = FloconTheme.colorPalette.panel
+                containerColor = FloconTheme.colorPalette.primary
             )
 
             FloconTextField(
@@ -81,7 +81,7 @@ internal fun BadQualityHttpErrorEditor(
                 value = body,
                 minLines = 5,
                 onValueChange = { body = it },
-                containerColor = FloconTheme.colorPalette.panel
+                containerColor = FloconTheme.colorPalette.primary
             )
         }
 

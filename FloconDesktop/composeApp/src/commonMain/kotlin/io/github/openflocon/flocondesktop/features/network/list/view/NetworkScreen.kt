@@ -214,13 +214,13 @@ fun NetworkScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.background)
+                    .background(FloconTheme.colorPalette.primary)
             ) {
                 NetworkItemHeaderView(
                     columnWidths = columnWidths,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(FloconTheme.colorPalette.background),
+                        .background(FloconTheme.colorPalette.primary),
                     clickOnSort = { type, sort ->
                         onAction(NetworkAction.HeaderAction.ClickOnSort(type, sort))
                     },

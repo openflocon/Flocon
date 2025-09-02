@@ -53,7 +53,7 @@ fun FloconDialogHeader(
 ) {
     Row(
         modifier
-            .background(FloconTheme.colorPalette.panel)
+            .background(FloconTheme.colorPalette.primary)
             .padding(horizontal = 12.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -64,7 +64,7 @@ fun FloconDialogHeader(
                 .padding(start = 4.dp)
                 .weight(1f),
             style = FloconTheme.typography.titleMedium,
-            color = FloconTheme.colorPalette.onSurface,
+            color = FloconTheme.colorPalette.onPrimary,
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,

@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.flocondesktop.features.deeplinks.view.DeeplinkFreeformItemView
 import io.github.openflocon.flocondesktop.features.table.TableViewModel
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableAction
@@ -137,8 +136,8 @@ fun TableScreen(
                                     if (index < tableItems.lastIndex) {
                                         HorizontalDivider(
                                             modifier =
-                                            Modifier.fillMaxWidth()
-                                                .padding(top = 4.dp),
+                                                Modifier.fillMaxWidth()
+                                                    .padding(top = 4.dp),
                                         )
                                     }
                                 }
@@ -154,10 +153,10 @@ fun TableScreen(
             ) {
                 TableDetailView(
                     modifier =
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxHeight()
-                        .width(500.dp),
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .fillMaxHeight()
+                            .width(500.dp),
                     state = it,
                 )
             }
@@ -171,7 +170,7 @@ fun TableDetailView(modifier: Modifier = Modifier, state: TableRowUiModel) {
     val linesLabelWidth: Dp = 130.dp
     SelectionContainer(
         modifier
-            .background(FloconTheme.colorPalette.background)
+            .background(FloconTheme.colorPalette.primary)
             .verticalScroll(scrollState) // Rendre le contenu défilable
             .padding(all = 18.dp),
     ) {
@@ -205,7 +204,7 @@ fun TableDetailLineTextView(
         Text(
             text = value,
             style = FloconTheme.typography.bodyMedium, // Body text for the URL
-            color = FloconTheme.colorPalette.onBackground, // Primary text color
+            color = FloconTheme.colorPalette.onPrimary, // Primary text color
             modifier = Modifier.weight(1f), // Takes remaining space
         )
     }
@@ -225,7 +224,7 @@ fun TableDetailLineView(
         Text(
             text = label,
             style = FloconTheme.typography.titleSmall, // Slightly smaller title for details
-            color = FloconTheme.colorPalette.onBackground.copy(alpha = 0.7f), // Muted label color
+            color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f), // Muted label color
             modifier = Modifier.width(labelWidth).padding(end = 8.dp),
         )
         content()

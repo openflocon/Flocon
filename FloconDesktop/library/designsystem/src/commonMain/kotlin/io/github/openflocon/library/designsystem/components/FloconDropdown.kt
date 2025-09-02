@@ -47,7 +47,7 @@ fun FloconDropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
         modifier = modifier,
-        containerColor = FloconTheme.colorPalette.panel,
+        containerColor = FloconTheme.colorPalette.primary,
         content = content
     )
 }

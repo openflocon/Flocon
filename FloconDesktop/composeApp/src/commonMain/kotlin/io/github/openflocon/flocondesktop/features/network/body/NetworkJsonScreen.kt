@@ -131,7 +131,7 @@ private fun SearchBar(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .background(FloconTheme.colorPalette.panel)
+            .background(FloconTheme.colorPalette.primary)
             .padding(horizontal = 12.dp, vertical = 8.dp),
     ) {
         FloconTextField(
@@ -161,7 +161,7 @@ private fun SearchBar(
                     modifier = Modifier
                         .height(32.dp)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(FloconTheme.colorPalette.surfaceVariant),
+                        .background(FloconTheme.colorPalette.primary),
                 ) {
                     FloconSmallIconButton(
                         imageVector = Icons.Outlined.ArrowUpward,

@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
@@ -49,6 +50,7 @@ fun FilterBar(
                 modifier = Modifier.size(16.dp)
             )
         },
+        containerColor = FloconTheme.colorPalette.secondary,
         trailingComponent = {
             AnimatedVisibility(
                 visible = displayClearButton,

@@ -34,7 +34,7 @@ fun DashboardItemView(
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val backColor = FloconTheme.colorPalette.panel
+    val backColor = FloconTheme.colorPalette.primary
     val textColor = FloconTheme.colorPalette.onSurface
 
     Box(

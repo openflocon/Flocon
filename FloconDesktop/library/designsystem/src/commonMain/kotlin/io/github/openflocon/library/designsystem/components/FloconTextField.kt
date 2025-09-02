@@ -36,8 +36,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.theme.contentColorFor
-import kotlin.math.min
-import kotlin.math.sin
 
 @Composable
 fun FloconTextField(
@@ -57,7 +55,7 @@ fun FloconTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     textStyle: TextStyle = FloconTheme.typography.bodySmall,
-    containerColor: Color = FloconTheme.colorPalette.surfaceVariant
+    containerColor: Color = FloconTheme.colorPalette.primary
 ) {
     val contentColor = FloconTheme.colorPalette.contentColorFor(containerColor)
     val colors = TextFieldDefaults.colors(
@@ -77,10 +75,10 @@ fun FloconTextField(
         disabledPlaceholderColor = contentColor.copy(alpha = 0.6f),
         focusedPlaceholderColor = contentColor.copy(alpha = 0.6f),
         unfocusedPlaceholderColor = contentColor.copy(alpha = 0.6f),
-        errorLabelColor = FloconTheme.colorPalette.onSurface,
-        disabledLabelColor = FloconTheme.colorPalette.onSurface,
-        focusedLabelColor = FloconTheme.colorPalette.onSurface,
-        unfocusedLabelColor = FloconTheme.colorPalette.onSurface
+        errorLabelColor = FloconTheme.colorPalette.onPrimary,
+        disabledLabelColor = FloconTheme.colorPalette.onPrimary,
+        focusedLabelColor = FloconTheme.colorPalette.onPrimary,
+        unfocusedLabelColor = FloconTheme.colorPalette.onPrimary
     )
     val interactionSource = remember { MutableInteractionSource() }
     val shape = FloconTheme.shapes.medium
@@ -134,7 +132,7 @@ fun FloconTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     textStyle: TextStyle = FloconTheme.typography.bodySmall,
-    containerColor: Color = FloconTheme.colorPalette.surfaceVariant
+    containerColor: Color = FloconTheme.colorPalette.primary
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -181,9 +179,9 @@ fun FloconTextFieldWithoutM3(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     textStyle: TextStyle = FloconTheme.typography.bodySmall,
-    containerColor: Color = FloconTheme.colorPalette.surfaceVariant
+    containerColor: Color = FloconTheme.colorPalette.primary,
+    contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor)
 ) {
-    val contentColor = FloconTheme.colorPalette.contentColorFor(containerColor)
     val shape = FloconTheme.shapes.medium
 
     BasicTextField(
@@ -192,7 +190,7 @@ fun FloconTextFieldWithoutM3(
         textStyle = textStyle.copy(color = contentColor),
         maxLines = maxLines,
         minLines = minLines,
-        cursorBrush = SolidColor(Color.White), // TODO Light mod
+        cursorBrush = SolidColor(contentColor),
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
         enabled = enabled,

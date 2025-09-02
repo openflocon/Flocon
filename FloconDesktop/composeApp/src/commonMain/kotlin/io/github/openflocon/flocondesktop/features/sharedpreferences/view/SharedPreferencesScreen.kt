@@ -86,7 +86,7 @@ fun SharedPrefScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.background)
+                    .background(FloconTheme.colorPalette.primary)
             ) {
                 when (rows) {
                     SharedPreferencesRowsStateUiModel.Empty -> {}

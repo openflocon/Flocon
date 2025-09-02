@@ -113,7 +113,7 @@ private fun DeeplinkFreeformItemViewPreview() {
     FloconTheme {
         DeeplinkFreeformItemView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.panel,
+                FloconTheme.colorPalette.primary,
             ),
             submit = { _, _ -> },
         )

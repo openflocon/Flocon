@@ -59,7 +59,7 @@ fun DatabaseQueriesItemView(
             .clickable(onClick = {
                 onClick(query)
             })
-            .background(FloconTheme.colorPalette.panel)
+            .background(FloconTheme.colorPalette.primary)
             .padding(horizontal = 8.dp, vertical = 6.dp),
     ) {
         Text(

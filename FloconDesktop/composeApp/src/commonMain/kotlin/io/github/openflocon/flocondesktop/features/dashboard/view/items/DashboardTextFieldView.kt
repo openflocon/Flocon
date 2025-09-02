@@ -111,7 +111,7 @@ internal fun DashboardTextFieldViewPreview_placeholder() {
     FloconTheme {
         DashboardTextFieldView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.panel,
+                FloconTheme.colorPalette.primary,
             ),
             rowItem = rowItem,
             submitTextField = { _, _ -> },
@@ -131,7 +131,7 @@ internal fun DashboardTextFieldViewPreview_withValue() {
     FloconTheme {
         DashboardTextFieldView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.panel,
+                FloconTheme.colorPalette.primary,
             ),
             rowItem = rowItem,
             submitTextField = { _, _ -> },

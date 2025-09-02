@@ -13,7 +13,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-import io.github.openflocon.library.designsystem.theme.FloconColorPalette
+import io.github.openflocon.library.designsystem.theme.FloconColorPaletteNew
 import io.github.openflocon.library.designsystem.theme.FloconShape
 import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
 import io.github.openflocon.library.designsystem.theme.LocalFloconShape
@@ -24,7 +24,7 @@ import io.github.openflocon.library.designsystem.theme.materialLightScheme
 
 object FloconTheme {
 
-    val colorPalette: FloconColorPalette
+    val colorPalette: FloconColorPaletteNew
         @Composable @ReadOnlyComposable get() = LocalFloconColorPalette.current
 
     val typography: Typography
