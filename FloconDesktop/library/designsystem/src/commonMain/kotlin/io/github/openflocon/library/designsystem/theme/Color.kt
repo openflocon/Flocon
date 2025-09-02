@@ -123,14 +123,3 @@ fun FloconColorPaletteNew.contentColorFor(backgroundColor: Color) = when (backgr
     accent -> onAccent
     else -> Color.Unspecified
 }
-
-@Stable
-fun FloconColorPaletteNew.contentColorFor(backgroundColor: Color) = when (backgroundColor) {
-    primary -> onPrimary
-    secondary -> onSecondary
-    tertiary -> onTertiary
-    surface -> onSurface
-    error -> onError
-    accent -> onAccent
-    else -> Color.Unspecified
-}

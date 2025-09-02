@@ -4,7 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CameraAlt
-import androidx.compose.material.icons.outlined.Stop
+import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,24 +28,20 @@ internal fun TopBarActions(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         TopBarButton(
+            active = recordState == RecordVideoStateUiModel.Recording,
             imageVector = when (recordState) {
                 RecordVideoStateUiModel.Idle -> Icons.Outlined.Videocam
-                RecordVideoStateUiModel.Recording -> Icons.Outlined.Stop
+                RecordVideoStateUiModel.Recording -> Icons.Outlined.StopCircle
             },
-            title = "Record",
-            contentDescription = "record",
-            onClicked = {
-                onRecordClicked()
-            },
+            contentDescription = "Record",
+            onClicked = onRecordClicked,
             isEnabled = devicesState.deviceSelected?.isActive == true,
         )
         TopBarButton(
+            active = false,
             imageVector = Icons.Outlined.CameraAlt,
-            title = "Screenshot",
             contentDescription = "screenshot",
-            onClicked = {
-                onTakeScreenshotClicked()
-            },
+            onClicked = onTakeScreenshotClicked,
             isEnabled = devicesState.deviceSelected?.isActive == true,
         )
     }

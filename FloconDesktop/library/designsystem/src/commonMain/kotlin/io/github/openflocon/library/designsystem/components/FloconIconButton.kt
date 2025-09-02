@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -66,6 +67,7 @@ fun FloconIconToggleButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     tooltip: String? = null,
+    size: Dp = Size,
     containerColor: Color = FloconTheme.colorPalette.primary,
     contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor),
     content: @Composable () -> Unit
@@ -114,7 +116,7 @@ fun FloconIconToggleButton(
         Box(
             contentAlignment = Alignment.Center,
             modifier = modifier
-                .size(Size)
+                .size(size)
                 .clip(shape)
                 .background(color = containerColor)
                 .border(
