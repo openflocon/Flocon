@@ -5,12 +5,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
@@ -21,7 +23,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -33,22 +37,23 @@ import io.github.openflocon.flocondesktop.features.images.ImagesViewModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesStateUiModel
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
-import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ImagesScreen(modifier: Modifier = Modifier) {
+fun ImagesScreen(
+    modifier: Modifier = Modifier
+) {
     val viewModel: ImagesViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
-    var clickedImage by remember {
-        mutableStateOf<ImagesUiModel?>(null)
-    }
+    var clickedImage by remember { mutableStateOf<ImagesUiModel?>(null) }
 
     DisposableEffect(viewModel) {
         viewModel.onVisible()
@@ -56,15 +61,12 @@ fun ImagesScreen(modifier: Modifier = Modifier) {
             viewModel.onNotVisible()
         }
     }
+
     ImagesScreen(
         state = state,
         onReset = viewModel::reset,
-        onClickImage = {
-            clickedImage = it
-        },
-        resetClickedImage = {
-            clickedImage = null
-        },
+        onClickImage = { clickedImage = it },
+        resetClickedImage = { clickedImage = null },
         onFilterChanged = viewModel::onFilterChanged,
         clickedImage = clickedImage,
         modifier = modifier,
@@ -81,58 +83,74 @@ private fun ImagesScreen(
     clickedImage: ImagesUiModel?,
     modifier: Modifier = Modifier,
 ) {
-    FloconSurface(modifier = modifier) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            FloconPageTopBar(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                filterBar = {
-                    FilterBar(
-                        placeholderText = "Filter images",
-                        onTextChange = { onFilterChanged(it) },
-                        modifier = Modifier.weight(1f),
-                    )
-                },
-                actions = {
-                    FloconIconButton(
-                        imageVector = Icons.Outlined.Delete,
-                        onClick = onReset,
-                    )
-                }
-            )
-            when (state) {
-                ImagesStateUiModel.Empty,
-                ImagesStateUiModel.Idle,
-                -> Box(Modifier)
+    val lazyListState = rememberLazyGridState()
+    val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
 
-                is ImagesStateUiModel.WithImages -> {
-                    val gridPadding = 12.dp
+    FloconFeature(
+        modifier = modifier
+    ) {
+        FloconPageTopBar(
+            modifier = Modifier
+                .fillMaxWidth(),
+            filterBar = {
+                FilterBar(
+                    placeholderText = "Filter images",
+                    onTextChange = { onFilterChanged(it) },
+                    modifier = Modifier.weight(1f),
+                )
+            },
+            actions = {
+                FloconIconButton(
+                    imageVector = Icons.Outlined.Delete,
+                    onClick = onReset,
+                )
+            }
+        )
+        when (state) {
+            ImagesStateUiModel.Empty,
+            ImagesStateUiModel.Idle -> Box(Modifier)
 
+            is ImagesStateUiModel.WithImages -> {
+                val gridPadding = 8.dp
+
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     LazyVerticalGrid(
-                        modifier = Modifier.fillMaxSize(),
+                        state = lazyListState,
                         columns = GridCells.Adaptive(minSize = 250.dp),
                         horizontalArrangement = Arrangement.spacedBy(gridPadding),
                         verticalArrangement = Arrangement.spacedBy(gridPadding),
                         contentPadding = PaddingValues(all = gridPadding),
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clip(FloconTheme.shapes.medium)
+                            .background(FloconTheme.colorPalette.primary)
                     ) {
                         items(state.images) {
                             ImageItemView(
                                 model = it,
                                 onClick = onClickImage,
                                 modifier = Modifier
-                                    .fillMaxSize(),
+                                    .fillMaxSize()
                             )
                         }
                     }
+                    FloconVerticalScrollbar(
+                        adapter = scrollAdapter,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .align(Alignment.CenterEnd)
+                    )
                 }
             }
         }
-        clickedImage?.let {
-            ImageDialog(
-                model = it,
-                onDismiss = { resetClickedImage() },
-            )
-        }
+    }
+    clickedImage?.let {
+        ImageDialog(
+            model = it,
+            onDismiss = { resetClickedImage() },
+        )
     }
 }
 
