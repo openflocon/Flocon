@@ -232,7 +232,7 @@ private fun MainScreen(
                     .width(20.dp)
                     .height(60.dp)
                     .graphicsLayer {
-                        translationX = position.toPx() - size.width / 2
+                        translationX = position.toPx() - size.width / 2 - 8.dp.toPx()
                         translationY = (windowSize.height / 2) - (size.height / 2)
                     }
                     .clip(RoundedCornerShape(4.dp))
