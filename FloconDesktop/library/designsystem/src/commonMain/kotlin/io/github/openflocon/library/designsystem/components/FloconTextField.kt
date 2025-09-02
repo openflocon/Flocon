@@ -262,7 +262,7 @@ private fun DecorationBox(
         singleLine = singleLine,
         colors = colors,
         visualTransformation = VisualTransformation.None,
-        contentPadding = PaddingValues(),//PaddingValues(vertical = 4.dp, horizontal = 8.dp),
+        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
         container = {
             ContainerBox(
                 enabled = enabled,

@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.RemoveCircle
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -45,6 +43,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.col
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSmallIconButton
+import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -162,12 +161,9 @@ private fun FilterItemView(
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Box(modifier = Modifier.height(12.dp)) {
-            Switch(
-                modifier = Modifier.scale(0.6f),
+            FloconSwitch(
                 checked = item.isActive,
-                onCheckedChange = {
-                    changeIsActive(item, it)
-                },
+                onCheckedChange = { changeIsActive(item, it) }
             )
         }
 
