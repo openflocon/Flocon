@@ -1,26 +1,29 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastForEachIndexed
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -39,73 +42,91 @@ fun DatabaseResultView(
     }
 
     SelectionContainer {
-        Column(
-            modifier = modifier
-                .horizontalScroll(rememberScrollState())
-                .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary)
-        ) {
-            when (result) {
-                is QueryResultUiModel.Text -> {
-                    Text(
-                        text = result.text,
-                        color = FloconTheme.colorPalette.onPrimary,
-                        modifier = Modifier.padding(8.dp),
-                    )
-                }
+        when (result) {
+            is QueryResultUiModel.Text -> {
+                Text(
+                    text = result.text,
+                    color = FloconTheme.colorPalette.onPrimary,
+                    modifier = Modifier.padding(8.dp),
+                )
+            }
 
-                is QueryResultUiModel.Values -> {
-                    Row(
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 8.dp,
-                                vertical = 4.dp,
-                            )
-                            .clip(shape = RoundedCornerShape(8.dp))
-                            .padding(horizontal = 8.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        result.columns.fastForEach { item ->
-                            Text(
-                                item,
-                                style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                color = FloconTheme.colorPalette.onPrimary,
-                                modifier = Modifier.width(columnsWidth)
-                                    .padding(all = 4.dp),
-                            )
-                        }
-                    }
-                    FloconHorizontalDivider(
-                        color = FloconTheme.colorPalette.onPrimary
-                    )
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        items(result.rows) { row ->
-                            Row(
-                                modifier = modifier
-                                    .padding(
-                                        horizontal = 8.dp,
-                                        vertical = 2.dp,
-                                    ) // Padding for the entire item
-                                    .clip(shape = RoundedCornerShape(8.dp))
-                                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                                // Inner padding for content
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            ) {
-                                // Date - Fixed width from data class
-                                row.items.forEach { item ->
-                                    Text(
-                                        item ?: "null",
-                                        style = FloconTheme.typography.bodySmall,
-                                        color = FloconTheme.colorPalette.onPrimary,
-                                        modifier = Modifier.width(columnsWidth)
-                                            .padding(horizontal = 4.dp),
+            is QueryResultUiModel.Values -> {
+                val color = FloconTheme.colorPalette.secondary
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(FloconTheme.shapes.medium)
+                        .background(FloconTheme.colorPalette.primary)
+                        .border(
+                            width = 1.dp,
+                            color = color,
+                            shape = FloconTheme.shapes.medium
+                        )
+                        .drawBehind {
+                            result.columns
+                                .fastForEachIndexed { index, column ->
+                                    val x = columnsWidth.toPx() * index.plus(1)
+
+                                    drawLine(
+                                        color = color,
+                                        start = Offset(x = x, y = 0f),
+                                        end = Offset(x = x, y = size.height),
+                                        strokeWidth = 1.dp.toPx()
+                                    )
+                                    drawRect(
+                                        color = color,
+                                        size = size.copy(height = 32.dp.toPx())
                                     )
                                 }
+                        }
+                        .horizontalScroll(rememberScrollState())
+                ) {
+                    stickyHeader {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(32.dp)
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            result.columns
+                                .fastForEachIndexed { index, item ->
+                                    Text(
+                                        item,
+                                        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                                        color = FloconTheme.colorPalette.onSecondary,
+                                        modifier = Modifier
+                                            .width(columnsWidth)
+                                            .padding(all = 4.dp),
+                                    )
+                                }
+                        }
+                    }
+                    itemsIndexed(result.rows) { index, row ->
+                        Row(
+                            modifier = Modifier
+                                .height(32.dp)
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            row.items.forEachIndexed { index, item ->
+                                Text(
+                                    item ?: "null",
+                                    style = FloconTheme.typography.bodySmall,
+                                    color = FloconTheme.colorPalette.onPrimary,
+                                    modifier = Modifier
+                                        .width(columnsWidth)
+                                        .padding(horizontal = 4.dp),
+                                )
                             }
+                        }
+                        if (index != result.rows.lastIndex) {
+                            FloconHorizontalDivider(
+                                color = color,
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                     }
                 }

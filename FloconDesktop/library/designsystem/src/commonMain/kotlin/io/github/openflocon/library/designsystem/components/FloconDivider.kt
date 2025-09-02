@@ -5,8 +5,8 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
-
 
 @Composable
 fun FloconHorizontalDivider(
@@ -15,7 +15,8 @@ fun FloconHorizontalDivider(
 ) {
     HorizontalDivider(
         modifier = modifier,
-        color = color
+        color = color,
+        thickness = 1.dp
     )
 }
 
@@ -26,6 +27,7 @@ fun FloconVerticalDivider(
 ) {
     VerticalDivider(
         modifier = modifier,
-        color = color
+        color = color,
+        thickness = 1.dp
     )
 }
