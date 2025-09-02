@@ -48,15 +48,10 @@ internal fun ContainerConfig.toJson(
     dashboardId: String,
 ): JSONObject = JSONObject().apply {
 
-    val elementsCallback = when (containerType) {
-        ContainerType.FORM -> { _ -> Unit }
-        ContainerType.SECTION -> registerCallback
-    }
-
     val elementsJsonArray = JSONArray(elements.map { element ->
         parseElementConfig(
             element = element,
-            registerCallback = elementsCallback,
+            registerCallback = registerCallback,
             dashboardId = dashboardId
         )
     })
