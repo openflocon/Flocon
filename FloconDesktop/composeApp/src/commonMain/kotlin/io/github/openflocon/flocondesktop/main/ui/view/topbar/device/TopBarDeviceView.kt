@@ -42,15 +42,19 @@ internal fun TopBarDeviceView(
 ) {
     Row(
         modifier = modifier
-            .then(if (onClick != null) Modifier.clickable {
-                onClick()
-            } else Modifier
-            ).padding(horizontal = 8.dp, 4.dp),
+            .then(
+                if (onClick != null)
+                    Modifier.clickable(onClick = onClick)
+                else
+                    Modifier
+            )
+            .padding(horizontal = 8.dp, 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Box(
-            modifier = Modifier.padding(horizontal = 4.dp)
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
                 .graphicsLayer {
                     alpha = if (device.isActive) 1f else 0.4f
                 }
@@ -62,7 +66,7 @@ internal fun TopBarDeviceView(
                 } else {
                     Icons.Filled.Smartphone
                 },
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface),
+                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary),
                 contentDescription = null,
             )
         }
@@ -76,7 +80,7 @@ internal fun TopBarDeviceView(
             ) {
                 Text(
                     text = device.deviceName,
-                    color = FloconTheme.colorPalette.onPanel,
+                    color = FloconTheme.colorPalette.onPrimary,
                     style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 )
 
@@ -84,7 +88,7 @@ internal fun TopBarDeviceView(
                     text = if (device.isActive.not()) {
                         "Disconnected"
                     } else "Connected",
-                    color = FloconTheme.colorPalette.onPanel,
+                    color = FloconTheme.colorPalette.onPrimary,
                     style = FloconTheme.typography.bodySmall.copy(
                         fontSize = 10.sp,
                     ),
@@ -103,7 +107,7 @@ internal fun TopBarDeviceView(
                 ) {
                     FloconIcon(
                         imageVector = Icons.Outlined.Close,
-                        tint = FloconTheme.colorPalette.panel,
+                        tint = FloconTheme.colorPalette.primary,
                         modifier = Modifier.size(14.dp)
                     )
                 }

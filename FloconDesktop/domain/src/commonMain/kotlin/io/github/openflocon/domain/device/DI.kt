@@ -14,6 +14,8 @@ import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
 import io.github.openflocon.domain.device.usecase.HandleNewDeviceUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
+import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
+import io.github.openflocon.domain.device.usecase.ObserveIsCurrentIsActiveUseCase
 import io.github.openflocon.domain.device.usecase.StartRecordingVideoUseCase
 import io.github.openflocon.domain.device.usecase.StopRecordingVideoUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
@@ -38,4 +40,6 @@ internal val deviceModule = module {
     factoryOf(::StopRecordingVideoUseCase)
     factoryOf(::DeleteDeviceUseCase)
     factoryOf(::DeleteDeviceApplicationUseCase)
+    factoryOf(::ObserveIsCurrentDeviceIAndAppIsActiveUseCase)
+    factoryOf(::ObserveIsCurrentIsActiveUseCase)
 }

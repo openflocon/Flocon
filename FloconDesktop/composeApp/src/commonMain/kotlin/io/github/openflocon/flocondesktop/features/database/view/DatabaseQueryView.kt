@@ -1,28 +1,21 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -37,10 +30,10 @@ fun DatabaseQueryView(
     Column(
         modifier = modifier
             .background(
-                color = FloconTheme.colorPalette.surfaceVariant,
-                shape = RoundedCornerShape(12.dp),
+                color = FloconTheme.colorPalette.secondary,
+                shape = FloconTheme.shapes.medium
             )
-            .padding(16.dp),
+            .padding(4.dp),
     ) {
         FloconTextField(
             value = query,
@@ -50,54 +43,26 @@ fun DatabaseQueryView(
             maxLines = 10,
             textStyle = FloconTheme.typography.bodySmall,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            containerColor = FloconTheme.colorPalette.surfaceVariant,
+            containerColor = FloconTheme.colorPalette.secondary,
             modifier = Modifier
                 .fillMaxWidth()
         )
-        Box(modifier = Modifier.fillMaxWidth()) {
-            DatabaseButton(
-                icon = Icons.Outlined.Delete,
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            FloconIconButton(
+                imageVector = Icons.Outlined.Delete,
+                onClick = clearQuery,
                 modifier = Modifier
                     .align(Alignment.TopStart),
-                dark = true,
-                onClick = {
-                    clearQuery()
-                },
             )
-            DatabaseButton(
+            FloconIconButton(
+                imageVector = Icons.AutoMirrored.Outlined.Send,
+                onClick = { executeQuery(query) },
                 modifier = Modifier
                     .align(Alignment.TopEnd),
-                icon = Icons.AutoMirrored.Outlined.Send,
-                dark = false,
-                onClick = {
-                    executeQuery(query)
-                },
             )
         }
-    }
-}
-
-@Composable
-private fun DatabaseButton(
-    onClick: () -> Unit,
-    icon: ImageVector,
-    dark: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(6.dp))
-            .size(32.dp)
-            .background(if (dark) FloconTheme.colorPalette.panel else Color.White)
-            .clickable(onClick = onClick)
-            .padding(all = 8.dp),
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = if (dark) Color.White else Color.Black,
-            modifier = Modifier.fillMaxSize(),
-        )
     }
 }
 

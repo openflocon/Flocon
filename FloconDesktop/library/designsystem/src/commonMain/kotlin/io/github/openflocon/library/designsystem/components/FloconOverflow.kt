@@ -1,13 +1,9 @@
 package io.github.openflocon.library.designsystem.components
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -15,7 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.util.fastForEach
+import com.composeunstyled.DropdownPanelAnchor
 
 @Immutable
 data class FloconOverflowItem(
@@ -38,32 +34,28 @@ data class FloconOverflowItem(
 
 @Composable
 fun FloconOverflow(
-    items: List<FloconOverflowItem>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    Column(modifier = modifier) {
-        IconButton(
-            onClick = { expanded = true },
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.MoreVert,
-                contentDescription = "More actions"
-            )
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            items.fastForEach {
-                DropdownMenuItem(
-                    text = { Text(it.text) },
-                    onClick = {
-                        it.onClick()
-                        expanded = false
-                    },
+
+    FloconDropdownMenu(
+        expanded = expanded,
+        anchor = DropdownPanelAnchor.BottomEnd,
+        anchorContent = {
+            FloconIconButton(
+                onClick = { expanded = true },
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.MoreVert,
+                    contentDescription = "More actions"
                 )
             }
-        }
+        },
+        onExpandRequest = { expanded = true },
+        onDismissRequest = { expanded = false },
+        modifier = modifier
+    ) {
+        content()
     }
 }

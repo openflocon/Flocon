@@ -45,7 +45,7 @@ fun PannelView(
         label = "shadow",
     )
     val color by animateColorAsState(
-        targetValue = if (isSelected) FloconTheme.colorPalette.panel else FloconTheme.colorPalette.surface,
+        targetValue = if (isSelected) FloconTheme.colorPalette.primary else FloconTheme.colorPalette.surface,
         label = "color",
     )
 

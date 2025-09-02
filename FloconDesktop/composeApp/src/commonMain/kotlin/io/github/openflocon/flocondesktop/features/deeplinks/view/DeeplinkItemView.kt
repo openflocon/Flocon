@@ -49,14 +49,17 @@ fun DeeplinkItemView(
     val values = remember { mutableStateMapOf<DeeplinkPart.TextField, String>() }
 
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .clip(FloconTheme.shapes.medium)
+            .background(FloconTheme.colorPalette.primary)
+            .padding(2.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         item.label?.let {
             Text(
                 text = item.label,
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onSurface,
+                color = FloconTheme.colorPalette.onPrimary,
                 modifier = Modifier.padding(start = 4.dp),
             )
         }
@@ -172,7 +175,7 @@ private fun DeeplinkItemViewPreview() {
     FloconTheme {
         DeeplinkItemView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.panel,
+                FloconTheme.colorPalette.primary,
             ),
             submit = { _, _ -> },
             item = previewDeeplinkViewState(),

@@ -27,6 +27,19 @@ data class SharedPreferencesRowUiModel(
         @Immutable
         data class StringSetValue(val value: Set<String>) : Value
     }
+
+    fun contains(text: String) : Boolean {
+        return key.contains(text, ignoreCase = true) || value.asString().contains(text, ignoreCase = true)
+    }
+}
+
+fun SharedPreferencesRowUiModel.Value.asString() = when(this) {
+    is SharedPreferencesRowUiModel.Value.BooleanValue -> value.toString()
+    is SharedPreferencesRowUiModel.Value.FloatValue -> value.toString()
+    is SharedPreferencesRowUiModel.Value.IntValue -> value.toString()
+    is SharedPreferencesRowUiModel.Value.LongValue -> value.toString()
+    is SharedPreferencesRowUiModel.Value.StringValue -> value
+    is SharedPreferencesRowUiModel.Value.StringSetValue -> value.toString()
 }
 
 fun previewSharedPreferencesStringRowUiModel() = SharedPreferencesRowUiModel(

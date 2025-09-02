@@ -74,7 +74,7 @@ fun HeaderLabelItem(
                 .weight(1f)
                 .fillMaxHeight()
                 .clip(shape)
-                .background(if (filtered) FloconTheme.colorPalette.surfaceVariant else Color.Transparent)
+                .background(if (filtered) FloconTheme.colorPalette.primary else Color.Transparent)
                 .clickable(onClick = clickOnFilter),
         ) {
             Text(

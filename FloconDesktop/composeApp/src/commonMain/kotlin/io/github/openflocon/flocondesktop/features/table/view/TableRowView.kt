@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.table.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,9 +39,9 @@ fun TableRowView(
     ) {
         Column(
             modifier = modifier
-                .clickable(onClick = {
-                    onAction(TableAction.OnClick(model))
-                }).padding(horizontal = 8.dp, vertical = 4.dp),
+                .background(FloconTheme.colorPalette.primary)
+                .clickable(onClick = { onAction(TableAction.OnClick(model)) })
+                .padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
             Row {
                 model.columns.fastForEach { column ->
@@ -51,7 +52,7 @@ fun TableRowView(
                                 .width(columnsWidth)
                                 .padding(horizontal = 4.dp),
                         style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = FloconTheme.colorPalette.onPrimaryContainer,
+                        color = FloconTheme.colorPalette.onPrimary,
                     )
                 }
             }
@@ -64,7 +65,7 @@ fun TableRowView(
                                 .width(columnsWidth)
                                 .padding(horizontal = 4.dp),
                         style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Thin),
-                        color = FloconTheme.colorPalette.onPrimaryContainer,
+                        color = FloconTheme.colorPalette.onPrimary,
                     )
                 }
             }

@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
@@ -37,7 +36,7 @@ internal fun TopBarSelector(
             .then(
                 Modifier
                     .clip(shape)
-                    .background(Color.Black.copy(alpha = 0.1f))
+                    .background(FloconTheme.colorPalette.primary)
                     .clickable(enabled = enabled, onClick = onClick)
                     .padding(contentPadding),
             ),
@@ -49,7 +48,7 @@ internal fun TopBarSelector(
             imageVector = Icons.Outlined.KeyboardArrowDown,
             contentDescription = "",
             modifier = Modifier.width(16.dp),
-            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface)
+            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
         )
     }
 }

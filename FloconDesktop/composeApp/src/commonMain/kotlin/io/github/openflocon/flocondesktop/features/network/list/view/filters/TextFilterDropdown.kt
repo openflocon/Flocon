@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.RemoveCircle
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -43,9 +41,11 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.Tex
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.previewTextFilterState
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconSmallIconButton
+import io.github.openflocon.library.designsystem.components.FloconSwitch
+import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
-import io.github.openflocon.library.designsystem.theme.FloconColorPalette
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -55,12 +55,9 @@ fun TextFilterDropdownContent(
     textFilterAction: (TextFilterAction) -> Unit,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth()
     ) {
         TextFilterFieldView(
-            modifier = Modifier.fillMaxWidth()
-                .background(FloconTheme.colorPalette.onSurface.copy(alpha = 0.05f))
-                .padding(horizontal = 8.dp, vertical = 8.dp),
             submitTextField = { text, toInclude, isRegex ->
                 if (toInclude) {
                     textFilterAction.invoke(TextFilterAction.Include(text, isRegex = isRegex))
@@ -68,20 +65,26 @@ fun TextFilterDropdownContent(
                     textFilterAction.invoke(TextFilterAction.Exclude(text, isRegex = isRegex))
                 }
             },
+            modifier = Modifier
+                .fillMaxWidth()
         )
 
         if (filterState.allFilters.isNotEmpty()) {
-            Column(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp)
+            ) {
                 if (filterState.includedFilters.isNotEmpty()) {
                     Text(
-                        text = "Includes :",
+                        text = "Includes",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 2.dp, horizontal = 12.dp),
                         style = FloconTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
-                        ),
+                        )
                     )
 
                     filterState.includedFilters.fastForEach {
@@ -107,7 +110,7 @@ fun TextFilterDropdownContent(
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = "Excludes :",
+                        text = "Excludes",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 2.dp, horizontal = 12.dp),
@@ -158,12 +161,9 @@ private fun FilterItemView(
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Box(modifier = Modifier.height(12.dp)) {
-            Switch(
-                modifier = Modifier.scale(0.6f),
+            FloconSwitch(
                 checked = item.isActive,
-                onCheckedChange = {
-                    changeIsActive(item, it)
-                },
+                onCheckedChange = { changeIsActive(item, it) }
             )
         }
 
@@ -205,54 +205,53 @@ private fun TextFilterFieldView(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Box(
+        FloconTextFieldWithoutM3(
+            value = value,
+            onValueChange = { value = it },
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    // default action -> add as "include filter"
+                    submitTextField(value, true, isRegex)
+                    value = "" // reset
+                },
+            ),
+            placeholder = defaultPlaceHolder("By value"),
+            textStyle = FloconTheme.typography.bodySmall.copy(
+                color = FloconTheme.colorPalette.onSurface,
+            ),
+            trailingComponent = {
+                RegexFilterButton(
+                    modifier = Modifier.size(24.dp),
+                    isRegex = isRegex,
+                    onClick = {
+                        isRegex = !isRegex
+                    },
+                )
+            },
+            containerColor = FloconTheme.colorPalette.primary,
             modifier = Modifier
                 .weight(1f)
-        ) {
-            FloconTextField(
-                value = value,
-                onValueChange = { value = it },
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        // default action -> add as "include filter"
-                        submitTextField(value, true, isRegex)
-                        value = "" // reset
-                    },
-                ),
-                placeholder = defaultPlaceHolder("Filter by value"),
-                textStyle = FloconTheme.typography.bodySmall.copy(
-                    color = FloconTheme.colorPalette.onSurface,
-                ),
-                containerColor = FloconTheme.colorPalette.panel,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            RegexFilterButton(
-                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 6.dp),
-                isRegex = isRegex,
-                onClick = {
-                    isRegex = !isRegex
-                },
-            )
-        }
-        TextFilterButton(
-            icon = Icons.Outlined.AddCircle,
+        )
+        FloconSmallIconButton(
             enabled = value.isNotEmpty(),
             onClick = {
                 submitTextField(value, true, isRegex)
                 value = "" // reset
-            },
-        )
-        TextFilterButton(
-            icon = Icons.Outlined.RemoveCircle,
+            }
+        ) {
+            FloconIcon(imageVector = Icons.Outlined.AddCircle)
+        }
+        FloconSmallIconButton(
             enabled = value.isNotEmpty(),
             onClick = {
                 submitTextField(value, false, isRegex)
                 value = "" // reset
-            },
-        )
+            }
+        ) {
+            FloconIcon(imageVector = Icons.Outlined.RemoveCircle)
+        }
     }
 }
 

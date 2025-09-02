@@ -48,7 +48,7 @@ internal fun AnalyticsSelectorView(
     ) {
         Text(
             text = "Analytics : ",
-            color = FloconTheme.colorPalette.onBackground,
+            color = FloconTheme.colorPalette.onPrimary,
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
         )
 
@@ -61,13 +61,12 @@ internal fun AnalyticsSelectorView(
 
             AnalyticsStateUiModel.Empty -> {
                 Text(
-                    modifier =
-                        Modifier
-                            .background(FloconTheme.colorPalette.onBackground, shape = shape)
-                            .padding(contentPadding),
+                    modifier = Modifier
+                        .background(FloconTheme.colorPalette.primary, shape = shape)
+                        .padding(contentPadding),
                     text = "No Analytics Found",
                     style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.background,
+                    color = FloconTheme.colorPalette.onPrimary,
                 )
             }
 
@@ -76,13 +75,12 @@ internal fun AnalyticsSelectorView(
 
                 AnalyticsView(
                     analytics = analyticsState.selected,
-                    textColor = FloconTheme.colorPalette.background,
-                    modifier =
-                        Modifier
-                            .clip(shape)
-                            .background(FloconTheme.colorPalette.onBackground)
-                            .clickable { expanded = true }
-                            .padding(contentPadding),
+                    textColor = FloconTheme.colorPalette.primary,
+                    modifier = Modifier
+                        .clip(shape)
+                        .background(FloconTheme.colorPalette.onPrimary)
+                        .clickable { expanded = true }
+                        .padding(contentPadding),
                 )
 
                 FloconDropdownMenu(
@@ -94,7 +92,7 @@ internal fun AnalyticsSelectorView(
                             text = {
                                 AnalyticsView(
                                     analytics = analytics,
-                                    textColor = FloconTheme.colorPalette.onBackground,
+                                    textColor = FloconTheme.colorPalette.onPrimary,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },
@@ -131,7 +129,7 @@ private fun AnalyticsViewPreview() {
     FloconTheme {
         AnalyticsView(
             analytics = previewDeviceAnalyticsUiModel(),
-            textColor = FloconTheme.colorPalette.background,
+            textColor = FloconTheme.colorPalette.primary,
         )
     }
 }

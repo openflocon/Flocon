@@ -48,7 +48,7 @@ fun SharedPreferenceRowView(
     Row(
         modifier = modifier
             .padding(
-                horizontal = 8.dp,
+                horizontal = 2.dp,
                 vertical = 2.dp,
             ) // Padding for the entire item
             .clip(shape = RoundedCornerShape(8.dp))
@@ -73,7 +73,7 @@ fun SharedPreferenceRowView(
                 Box(
                     Modifier
                         .weight(1f)
-                        .background(color = FloconTheme.colorPalette.panel, shape = RoundedCornerShape(4.dp)),
+                        .background(color = FloconTheme.colorPalette.primary, shape = RoundedCornerShape(4.dp)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Checkbox(

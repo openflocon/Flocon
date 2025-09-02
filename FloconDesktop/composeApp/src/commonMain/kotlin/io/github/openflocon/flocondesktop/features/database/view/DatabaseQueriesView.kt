@@ -24,16 +24,20 @@ fun DatabaseQueriesView(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(all = 8.dp),
+        modifier = modifier
+            .clip(FloconTheme.shapes.medium)
+            .background(FloconTheme.colorPalette.primary)
+            .padding(all = 8.dp),
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             text = "Recent queries",
-            color = FloconTheme.colorPalette.onSurface,
+            color = FloconTheme.colorPalette.onPrimary,
             style = FloconTheme.typography.titleSmall,
         )
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().padding(all = 4.dp),
+            modifier = Modifier
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             items(queries) {
@@ -56,15 +60,13 @@ fun DatabaseQueriesItemView(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(6.dp))
-            .clickable(onClick = {
-                onClick(query)
-            })
-            .background(FloconTheme.colorPalette.panel)
+            .clickable(onClick = { onClick(query) })
+            .background(FloconTheme.colorPalette.secondary)
             .padding(horizontal = 8.dp, vertical = 6.dp),
     ) {
         Text(
             text = query,
-            color = FloconTheme.colorPalette.onSurface,
+            color = FloconTheme.colorPalette.onSecondary,
             style = FloconTheme.typography.bodySmall,
         )
     }
