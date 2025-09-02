@@ -1,12 +1,8 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -24,8 +20,8 @@ import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiM
 import io.github.openflocon.flocondesktop.features.database.model.previewDatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.previewDatabasesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
-import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -35,12 +31,14 @@ fun DatabaseScreen(modifier: Modifier = Modifier) {
     val deviceDataBases by viewModel.deviceDataBases.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val recentQueries by viewModel.recentQueries.collectAsStateWithLifecycle()
+
     DisposableEffect(viewModel) {
         viewModel.onVisible()
         onDispose {
             viewModel.onNotVisible()
         }
     }
+
     DatabaseScreen(
         deviceDataBases = deviceDataBases,
         onDatabaseSelected = viewModel::onDatabaseSelected,
@@ -60,54 +58,49 @@ fun DatabaseScreen(
     clearQuery: () -> Unit,
     recentQueries: List<String>,
     state: DatabaseScreenState,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     var query by remember { mutableStateOf("") }
 
-    FloconSurface(modifier = modifier) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            FloconPageTopBar(
-                modifier = Modifier.fillMaxWidth(),
-                selector = {
-                    DatabaseSelectorView(
-                        databasesState = deviceDataBases,
-                        onDatabaseSelected = onDatabaseSelected,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            ) { contentPadding ->
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(contentPadding),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    DatabaseQueryView(
-                        query = query,
-                        updateQuery = {
-                            query = it
-                        },
-                        executeQuery = executeQuery,
-                        clearQuery = clearQuery,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            }
-
-            recentQueries.takeIf { it.isNotEmpty() }?.let {
-                DatabaseQueriesView(
+    FloconFeature(
+        modifier = modifier.fillMaxSize()
+    ) {
+        FloconPageTopBar(
+            modifier = Modifier.fillMaxWidth(),
+            selector = {
+                DatabaseSelectorView(
+                    databasesState = deviceDataBases,
+                    onDatabaseSelected = onDatabaseSelected,
                     modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        ) { contentPadding ->
+            DatabaseQueryView(
+                query = query,
+                updateQuery = { query = it },
+                executeQuery = executeQuery,
+                clearQuery = clearQuery,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+            )
+        }
+
+        recentQueries.takeIf { it.isNotEmpty() }
+            ?.let {
+                DatabaseQueriesView(
                     queries = recentQueries,
                     onClickQuery = {
                         query = it
                     },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            DatabaseContentView(
-                state = state,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
+        DatabaseContentView(
+            state = state,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 

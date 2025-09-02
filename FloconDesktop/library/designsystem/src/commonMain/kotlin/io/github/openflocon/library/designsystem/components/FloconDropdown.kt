@@ -41,13 +41,14 @@ fun FloconDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    containerColor: Color = FloconTheme.colorPalette.primary,
     content: @Composable ColumnScope.() -> Unit
 ) {
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
         modifier = modifier,
-        containerColor = FloconTheme.colorPalette.primary,
+        containerColor = containerColor,
         content = content
     )
 }
