@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
@@ -286,12 +288,21 @@ fun NetworkScreen(
         }
         FloconPanel(
             contentState = uiState.detailState,
-            modifier = Modifier.align(Alignment.CenterEnd),
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(8.dp)
+                .clip(FloconTheme.shapes.medium)
         ) {
             NetworkDetailView(
-                modifier = Modifier.fillMaxSize(),
                 state = it,
                 onAction = onAction,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .border(
+                        width = 1.dp,
+                        color = Color.White.copy(alpha = .5f),
+                        shape = FloconTheme.shapes.medium
+                    )
             )
         }
     }

@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.theme.contentColorFor
 import kotlin.math.min
+import kotlin.math.sin
 
 @Composable
 fun FloconTextField(
@@ -194,6 +195,8 @@ fun FloconTextFieldWithoutM3(
         cursorBrush = SolidColor(Color.White), // TODO Light mod
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
+        enabled = enabled,
+        singleLine = singleLine,
         decorationBox = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
