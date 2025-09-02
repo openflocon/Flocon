@@ -23,41 +23,9 @@ data class FloconColorPaletteNew(
     val onAccent: Color, // Color of content when actif // 0xFFfcaf28
 
     val error: Color, // Color of container when in error // 0xFFCF6679
-    val onError: Color // Color of content when in error // 0xFF000000
-)
+    val onError: Color, // Color of content when in error // 0xFF000000
 
-data class FloconColorPalette(
-    val primary: Color,
-    val onPrimary: Color,
-
-    val primaryContainer: Color,
-    val onPrimaryContainer: Color,
-
-    val surface: Color,
-    val onSurface: Color,
-
-    val surfaceVariant: Color,
-    val onSurfaceVariant: Color,
-
-    val inverseSurface: Color,
-    val inverseOnSurface: Color,
-
-    val background: Color,
-    val onBackground: Color,
-
-    val panel: Color,
-    val onPanel: Color,
-
-    val secondary: Color,
-    val onSecondary: Color,
-
-    val tertiary: Color,
-    val onTertiary: Color,
-
-    val error: Color,
-    val onError: Color,
-
-    val exceptions: Color,
+    val exceptions: Color // Specific to exception status
 )
 
 internal val lightPalette = FloconColorPaletteNew(
@@ -72,7 +40,8 @@ internal val lightPalette = FloconColorPaletteNew(
     accent = Color(0xFF4a330c),
     onAccent = Color(0xFFfcaf28),
     error = Color(0xFFCF6679),
-    onError = Color(0xFF000000)
+    onError = Color(0xFF000000),
+    exceptions = Color(0xFF7B1FA2)
 )
 
 internal val darkPalette = FloconColorPaletteNew(
@@ -87,70 +56,9 @@ internal val darkPalette = FloconColorPaletteNew(
     accent = Color(0xFF4a330c),
     onAccent = Color(0xFFfcaf28),
     error = Color(0xFFCF6679),
-    onError = Color(0xFF000000)
+    onError = Color(0xFF000000),
+    exceptions = Color(0xFF7B1FA2)
 )
-
-//internal val lightPalette = FloconColorPalette(
-//    primary = Color(0xff69696b),
-//    onPrimary = Color(0xffF2F2F7),
-//    primaryContainer = Color(0xff0A84FF),
-//    onPrimaryContainer = Color(0xffF2F2F7),
-//
-//    surface = Color(0xFF2C2C2E),
-//    onSurface = Color(0xffF2F2F7),
-//    surfaceVariant = Color(0xFF29282c),
-//    onSurfaceVariant = Color(0xffF2F2F7),
-//    inverseSurface = Color(0xFFe2e2e9),
-//    inverseOnSurface = Color(0xFF2e3036),
-//
-//    background = Color(0xff1E1E1E),
-//    onBackground = Color(0xffF2F2F7),
-//
-//    panel = Color(0xff1E1F22),
-//    onPanel = Color.LightGray, // TODO
-//
-//    secondary = Color(0xffAEAEB2),
-//    onSecondary = Color(0xff1E1E1E),
-//
-//    tertiary = Color(0xFFBF5AF2),
-//    onTertiary = Color(0xffF2F2F7),
-//
-//    error = Color(0xFFCF6679),
-//    onError = Color(0xFF000000),
-//
-//    exceptions = Color(0xFF7B1FA2)
-//)
-//
-//internal val darkPalette = FloconColorPalette(
-//    primary = Color(0xff2a2a2b),
-//    onPrimary = Color(0xffF2F2F7),
-//    primaryContainer = Color(0xff0A84FF),
-//    onPrimaryContainer = Color(0xffF2F2F7),
-//
-//    surface = Color(0xFF2C2C2E),
-//    onSurface = Color(0xffF2F2F7),
-//    surfaceVariant = Color(0xFF29282c),
-//    onSurfaceVariant = Color(0xffF2F2F7),
-//    inverseSurface = Color(0xFFe2e2e9),
-//    inverseOnSurface = Color(0xFF2e3036),
-//
-//    background = Color(0xff1E1E1E),
-//    onBackground = Color(0xffF2F2F7),
-//
-//    panel = Color(0xff1E1F22),
-//    onPanel = Color.LightGray, // TODO
-//
-//    secondary = Color(0xFF4a330c),//Color(0xff0f3166),
-//    onSecondary = Color(0xFFfcaf28),
-//
-//    tertiary = Color(0xFFBF5AF2),
-//    onTertiary = Color(0xffF2F2F7),
-//
-//    error = Color(0xFFCF6679),
-//    onError = Color(0xFF000000),
-//
-//    exceptions = Color(0xFF7B1FA2)
-//)
 
 /**
  * TODO Remove when all component are overriden
@@ -204,20 +112,6 @@ internal fun materialLightScheme(palette: FloconColorPaletteNew) = lightColorSch
 )
 
 internal val LocalFloconColorPalette = staticCompositionLocalOf { lightPalette }
-
-@Stable
-fun FloconColorPalette.contentColorFor(backgroundColor: Color) = when (backgroundColor) {
-    primary -> onPrimary
-    secondary -> onSecondary
-    tertiary -> onTertiary
-    surface -> onSurface
-    surfaceVariant -> onSurfaceVariant
-    inverseSurface -> inverseOnSurface
-    background -> onBackground
-    error -> onError
-    panel -> onPanel
-    else -> Color.Unspecified
-}
 
 @Stable
 fun FloconColorPaletteNew.contentColorFor(backgroundColor: Color) = when (backgroundColor) {
