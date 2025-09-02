@@ -36,11 +36,10 @@ internal fun DatabaseSelectorView(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(12.dp)
-    val contentPadding =
-        PaddingValues(
-            horizontal = 8.dp,
-            vertical = 4.dp,
-        )
+    val contentPadding = PaddingValues(
+        horizontal = 8.dp,
+        vertical = 4.dp,
+    )
 
     Row(
         modifier = modifier,
@@ -75,17 +74,16 @@ internal fun DatabaseSelectorView(
 
                 DatabaseView(
                     database = databasesState.selected,
-                    textColor = FloconTheme.colorPalette.onPrimary,
-                    modifier =
-                        Modifier
-                            .clip(shape)
-                            .background(FloconTheme.colorPalette.primary)
-                            .clickable { expanded = true }
-                            .padding(contentPadding),
+                    textColor = FloconTheme.colorPalette.onSecondary,
+                    modifier = Modifier.clip(shape)
+                        .background(FloconTheme.colorPalette.secondary)
+                        .clickable { expanded = true }
+                        .padding(contentPadding),
                 )
 
                 FloconDropdownMenu(
                     expanded = expanded,
+                    containerColor = FloconTheme.colorPalette.secondary,
                     onDismissRequest = { expanded = false },
                 ) {
                     databasesState.databases.forEach { database ->
@@ -93,7 +91,7 @@ internal fun DatabaseSelectorView(
                             text = {
                                 DatabaseView(
                                     database = database,
-                                    textColor = FloconTheme.colorPalette.primary,
+                                    textColor = FloconTheme.colorPalette.onSecondary,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },

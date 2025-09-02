@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -37,7 +39,12 @@ fun DatabaseResultView(
     }
 
     SelectionContainer {
-        Column(modifier = modifier.horizontalScroll(rememberScrollState())) {
+        Column(
+            modifier = modifier
+                .horizontalScroll(rememberScrollState())
+                .clip(FloconTheme.shapes.medium)
+                .background(FloconTheme.colorPalette.primary)
+        ) {
             when (result) {
                 is QueryResultUiModel.Text -> {
                     Text(
@@ -48,32 +55,30 @@ fun DatabaseResultView(
                 }
 
                 is QueryResultUiModel.Values -> {
-                    // Column Headers
                     Row(
                         modifier = Modifier
                             .padding(
                                 horizontal = 8.dp,
                                 vertical = 4.dp,
-                            ) // Padding for the entire item
+                            )
                             .clip(shape = RoundedCornerShape(8.dp))
                             .padding(horizontal = 8.dp, vertical = 6.dp),
-                        // Inner padding for content
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        // Date - Fixed width from data class
                         result.columns.fastForEach { item ->
                             Text(
                                 item,
                                 style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                color = FloconTheme.colorPalette.onSurface,
+                                color = FloconTheme.colorPalette.onPrimary,
                                 modifier = Modifier.width(columnsWidth)
                                     .padding(all = 4.dp),
                             )
                         }
                     }
-
-                    // Data Rows
+                    FloconHorizontalDivider(
+                        color = FloconTheme.colorPalette.onPrimary
+                    )
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
@@ -95,7 +100,7 @@ fun DatabaseResultView(
                                     Text(
                                         item ?: "null",
                                         style = FloconTheme.typography.bodySmall,
-                                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
+                                        color = FloconTheme.colorPalette.onPrimary,
                                         modifier = Modifier.width(columnsWidth)
                                             .padding(horizontal = 4.dp),
                                     )
