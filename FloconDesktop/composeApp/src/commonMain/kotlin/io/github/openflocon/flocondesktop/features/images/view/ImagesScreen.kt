@@ -33,22 +33,21 @@ import io.github.openflocon.flocondesktop.features.images.ImagesViewModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesStateUiModel
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
-import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ImagesScreen(modifier: Modifier = Modifier) {
+fun ImagesScreen(
+    modifier: Modifier = Modifier
+) {
     val viewModel: ImagesViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
-    var clickedImage by remember {
-        mutableStateOf<ImagesUiModel?>(null)
-    }
+    var clickedImage by remember { mutableStateOf<ImagesUiModel?>(null) }
 
     DisposableEffect(viewModel) {
         viewModel.onVisible()
@@ -56,15 +55,12 @@ fun ImagesScreen(modifier: Modifier = Modifier) {
             viewModel.onNotVisible()
         }
     }
+
     ImagesScreen(
         state = state,
         onReset = viewModel::reset,
-        onClickImage = {
-            clickedImage = it
-        },
-        resetClickedImage = {
-            clickedImage = null
-        },
+        onClickImage = { clickedImage = it },
+        resetClickedImage = { clickedImage = null },
         onFilterChanged = viewModel::onFilterChanged,
         clickedImage = clickedImage,
         modifier = modifier,
@@ -81,58 +77,57 @@ private fun ImagesScreen(
     clickedImage: ImagesUiModel?,
     modifier: Modifier = Modifier,
 ) {
-    FloconSurface(modifier = modifier) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            FloconPageTopBar(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                filterBar = {
-                    FilterBar(
-                        placeholderText = "Filter images",
-                        onTextChange = { onFilterChanged(it) },
-                        modifier = Modifier.weight(1f),
-                    )
-                },
-                actions = {
-                    FloconIconButton(
-                        imageVector = Icons.Outlined.Delete,
-                        onClick = onReset,
-                    )
-                }
-            )
-            when (state) {
-                ImagesStateUiModel.Empty,
-                ImagesStateUiModel.Idle,
-                -> Box(Modifier)
+    FloconFeature(
+        modifier = modifier
+    ) {
+        FloconPageTopBar(
+            modifier = Modifier
+                .fillMaxWidth(),
+            filterBar = {
+                FilterBar(
+                    placeholderText = "Filter images",
+                    onTextChange = { onFilterChanged(it) },
+                    modifier = Modifier.weight(1f),
+                )
+            },
+            actions = {
+                FloconIconButton(
+                    imageVector = Icons.Outlined.Delete,
+                    onClick = onReset,
+                )
+            }
+        )
+        when (state) {
+            ImagesStateUiModel.Empty,
+            ImagesStateUiModel.Idle -> Box(Modifier)
 
-                is ImagesStateUiModel.WithImages -> {
-                    val gridPadding = 12.dp
+            is ImagesStateUiModel.WithImages -> {
+                val gridPadding = 12.dp
 
-                    LazyVerticalGrid(
-                        modifier = Modifier.fillMaxSize(),
-                        columns = GridCells.Adaptive(minSize = 250.dp),
-                        horizontalArrangement = Arrangement.spacedBy(gridPadding),
-                        verticalArrangement = Arrangement.spacedBy(gridPadding),
-                        contentPadding = PaddingValues(all = gridPadding),
-                    ) {
-                        items(state.images) {
-                            ImageItemView(
-                                model = it,
-                                onClick = onClickImage,
-                                modifier = Modifier
-                                    .fillMaxSize(),
-                            )
-                        }
+                LazyVerticalGrid(
+                    modifier = Modifier.fillMaxSize(),
+                    columns = GridCells.Adaptive(minSize = 250.dp),
+                    horizontalArrangement = Arrangement.spacedBy(gridPadding),
+                    verticalArrangement = Arrangement.spacedBy(gridPadding),
+                    contentPadding = PaddingValues(all = gridPadding),
+                ) {
+                    items(state.images) {
+                        ImageItemView(
+                            model = it,
+                            onClick = onClickImage,
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
                     }
                 }
             }
         }
-        clickedImage?.let {
-            ImageDialog(
-                model = it,
-                onDismiss = { resetClickedImage() },
-            )
-        }
+    }
+    clickedImage?.let {
+        ImageDialog(
+            model = it,
+            onDismiss = { resetClickedImage() },
+        )
     }
 }
 
