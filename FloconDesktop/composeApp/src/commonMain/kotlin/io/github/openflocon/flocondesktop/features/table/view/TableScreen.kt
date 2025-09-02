@@ -108,7 +108,8 @@ fun TableScreen(
                 )
 
                 FloconSurface(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .clickable(
                             interactionSource = null,
                             indication = null,

@@ -50,7 +50,7 @@ fun DatabaseQueryView(
             maxLines = 10,
             textStyle = FloconTheme.typography.bodySmall,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            containerColor = FloconTheme.colorPalette.primary,
+            containerColor = FloconTheme.colorPalette.secondary,
             modifier = Modifier
                 .fillMaxWidth()
         )
