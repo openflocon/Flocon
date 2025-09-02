@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -53,12 +54,14 @@ import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.main.ui.settings.SettingsScreen
-import io.github.openflocon.flocondesktop.main.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.PanelMinWidth
+import io.github.openflocon.flocondesktop.main.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -116,11 +119,12 @@ private fun MainScreen(
     )
     val rotate by animateFloatAsState(targetValue = if (expanded) 180f else 0f)
 
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+    ) {
         MainScreenTopBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(10.dp)
                 .zIndex(10f),
             devicesState = devicesState,
             appsState = appsState,
@@ -133,9 +137,11 @@ private fun MainScreen(
             onRecordClicked = onRecordClicked,
         )
         Box(
-            modifier = Modifier.fillMaxSize().onGloballyPositioned {
-                windowSize = it.size // TODO Add windowsize lib
-            },
+            modifier = Modifier
+                .fillMaxSize()
+                .onGloballyPositioned {
+                    windowSize = it.size // TODO Add windowsize lib
+                },
         ) {
             Row(
                 modifier = Modifier
@@ -152,7 +158,6 @@ private fun MainScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .shadow(6.dp),
                 ) {
                     when (subScreen) {
                         SubScreen.Network ->
@@ -227,7 +232,7 @@ private fun MainScreen(
                     .width(20.dp)
                     .height(60.dp)
                     .graphicsLayer {
-                        translationX = position.toPx() - size.width / 2
+                        translationX = position.toPx() - size.width / 2 - 8.dp.toPx()
                         translationY = (windowSize.height / 2) - (size.height / 2)
                     }
                     .clip(RoundedCornerShape(4.dp))

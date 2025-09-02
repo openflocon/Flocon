@@ -48,7 +48,7 @@ fun SharedPreferenceRowView(
     Row(
         modifier = modifier
             .padding(
-                horizontal = 8.dp,
+                horizontal = 2.dp,
                 vertical = 2.dp,
             ) // Padding for the entire item
             .clip(shape = RoundedCornerShape(8.dp))

@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,6 +24,7 @@ import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockN
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconSwitch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -40,13 +39,12 @@ fun MockLineView(
         modifier = modifier.padding(vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.height(12.dp)) {
-            Switch(
-                modifier = Modifier.scale(0.6f),
+        Box(
+            modifier = Modifier.height(12.dp)
+        ) {
+            FloconSwitch(
                 checked = item.isEnabled,
-                onCheckedChange = {
-                    changeIsEnabled(item.id, it)
-                },
+                onCheckedChange = { changeIsEnabled(item.id, it) }
             )
         }
 

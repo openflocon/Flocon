@@ -39,6 +39,12 @@ sealed interface NetworkAction {
 
     data class FilterQuery(val query: String) : NetworkAction
 
+    data class InvertList(val value: Boolean) : NetworkAction
+
+    data object AutoScroll : NetworkAction
+
+    data object ClearSession : NetworkAction
+
     sealed interface HeaderAction : NetworkAction {
         data class ClickOnSort(
             val type: NetworkColumnsTypeUiModel,

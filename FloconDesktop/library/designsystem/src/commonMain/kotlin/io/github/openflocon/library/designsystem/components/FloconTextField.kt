@@ -2,23 +2,31 @@
 
 package io.github.openflocon.library.designsystem.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
@@ -28,6 +36,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.theme.contentColorFor
+import kotlin.math.min
+import kotlin.math.sin
 
 @Composable
 fun FloconTextField(
@@ -35,6 +45,7 @@ fun FloconTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: @Composable (() -> Unit)? = null,
+    leadingComponent: @Composable (() -> Unit)? = null,
     trailingComponent: @Composable (() -> Unit)? = null,
     prefix: @Composable (() -> Unit)? = null,
     suffix: @Composable (() -> Unit)? = null,
@@ -72,7 +83,7 @@ fun FloconTextField(
         unfocusedLabelColor = FloconTheme.colorPalette.onSurface
     )
     val interactionSource = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(10.dp)
+    val shape = FloconTheme.shapes.medium
 
     BasicTextField(
         value = value,
@@ -90,6 +101,7 @@ fun FloconTextField(
                 interactionSource = interactionSource,
                 enabled = enabled,
                 trailingComponent = trailingComponent,
+                leadingComponent = leadingComponent,
                 prefix = prefix,
                 suffix = suffix,
                 singleLine = singleLine,
@@ -110,6 +122,7 @@ fun FloconTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: @Composable (() -> Unit)? = null,
+    leadingComponent: @Composable (() -> Unit)? = null,
     trailingComponent: @Composable (() -> Unit)? = null,
     prefix: @Composable (() -> Unit)? = null,
     suffix: @Composable (() -> Unit)? = null,
@@ -143,10 +156,84 @@ fun FloconTextField(
             suffix = suffix,
             prefix = prefix,
             enabled = enabled,
+            leadingComponent = leadingComponent,
             trailingComponent = trailingComponent,
             modifier = Modifier.fillMaxWidth()
         )
     }
+}
+
+@Composable
+fun FloconTextFieldWithoutM3(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: @Composable (() -> Unit)? = null,
+    leadingComponent: @Composable (() -> Unit)? = null,
+    trailingComponent: @Composable (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true,
+    singleLine: Boolean = true,
+    isError: Boolean = false,
+    minLines: Int = 1,
+    maxLines: Int = Int.MAX_VALUE,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    textStyle: TextStyle = FloconTheme.typography.bodySmall,
+    containerColor: Color = FloconTheme.colorPalette.surfaceVariant
+) {
+    val contentColor = FloconTheme.colorPalette.contentColorFor(containerColor)
+    val shape = FloconTheme.shapes.medium
+
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        textStyle = textStyle.copy(color = contentColor),
+        maxLines = maxLines,
+        minLines = minLines,
+        cursorBrush = SolidColor(Color.White), // TODO Light mod
+        keyboardActions = keyboardActions,
+        keyboardOptions = keyboardOptions,
+        enabled = enabled,
+        singleLine = singleLine,
+        decorationBox = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(shape)
+                    .background(containerColor)
+                    .padding(horizontal = 4.dp)
+            ) {
+                CompositionLocalProvider(LocalContentColor provides contentColor) {
+                    if (leadingComponent != null) {
+                        leadingComponent()
+                    }
+                    if (prefix != null) {
+                        prefix()
+                    }
+                    Box(
+                        contentAlignment = Alignment.CenterStart,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        if (value.isEmpty() && placeholder != null) {
+                            placeholder()
+                        }
+                        it()
+                    }
+                    if (suffix != null) {
+                        suffix()
+                    }
+                    if (trailingComponent != null) {
+                        trailingComponent()
+                    }
+                }
+            }
+        },
+        modifier = modifier.heightIn(min = 30.dp)
+    )
 }
 
 @Composable
@@ -157,6 +244,7 @@ private fun DecorationBox(
     shape: Shape,
     interactionSource: InteractionSource,
     placeholder: @Composable (() -> Unit)?,
+    leadingComponent: @Composable (() -> Unit)?,
     trailingComponent: @Composable (() -> Unit)?,
     prefix: @Composable (() -> Unit)?,
     suffix: @Composable (() -> Unit)?,
@@ -187,7 +275,8 @@ private fun DecorationBox(
         placeholder = placeholder,
         prefix = prefix,
         suffix = suffix,
-        trailingIcon = trailingComponent
+        trailingIcon = trailingComponent,
+        leadingIcon = leadingComponent
     )
 }
 

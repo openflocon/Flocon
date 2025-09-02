@@ -41,7 +41,7 @@ data class FloconColorPalette(
 )
 
 internal val lightPalette = FloconColorPalette(
-    primary = Color(0xff0A84FF),
+    primary = Color(0xff69696b),
     onPrimary = Color(0xffF2F2F7),
     primaryContainer = Color(0xff0A84FF),
     onPrimaryContainer = Color(0xffF2F2F7),
@@ -72,7 +72,7 @@ internal val lightPalette = FloconColorPalette(
 )
 
 internal val darkPalette = FloconColorPalette(
-    primary = Color(0xff0A84FF),
+    primary = Color(0xff2a2a2b),
     onPrimary = Color(0xffF2F2F7),
     primaryContainer = Color(0xff0A84FF),
     onPrimaryContainer = Color(0xffF2F2F7),
@@ -90,8 +90,8 @@ internal val darkPalette = FloconColorPalette(
     panel = Color(0xff1E1F22),
     onPanel = Color.LightGray, // TODO
 
-    secondary = Color(0xffAEAEB2),
-    onSecondary = Color(0xff1E1E1E),
+    secondary = Color(0xff0f3166),
+    onSecondary = Color(0xff2577fa),
 
     tertiary = Color(0xFFBF5AF2),
     onTertiary = Color(0xffF2F2F7),

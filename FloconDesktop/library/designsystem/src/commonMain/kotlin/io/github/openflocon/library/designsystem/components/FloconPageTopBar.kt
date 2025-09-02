@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
@@ -25,12 +26,15 @@ fun FloconPageTopBar(
 ) {
     Column(
         modifier = modifier
+            .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colorPalette.background)
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
     ) {
-        if(selector != null) {
+        if (selector != null) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -39,8 +43,9 @@ fun FloconPageTopBar(
         }
         if (filterBar != null || actions != null) {
             Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
