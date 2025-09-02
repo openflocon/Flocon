@@ -57,6 +57,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
+import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
@@ -104,10 +105,8 @@ fun NetworkScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp)
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+        FloconFeature(
             modifier = Modifier
                 .matchParentSize()
                 .clickable(
