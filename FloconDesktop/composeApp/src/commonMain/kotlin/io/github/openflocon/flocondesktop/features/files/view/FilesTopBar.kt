@@ -1,34 +1,23 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -46,24 +35,24 @@ fun FilesTopBar(
     FloconPageTopBar(
         modifier = modifier,
         filterBar = {
-            TopBarButton(
+            FloconIconTonalButton(
                 onClick = onBack,
                 enabled = hasParentFile,
-                icon = Icons.AutoMirrored.Filled.ArrowBack,
-            )
-            Box(
-                modifier = Modifier.weight(1f)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(FloconTheme.colorPalette.onSurface.copy(alpha = 0.1f))
-                    .padding(vertical = 4.dp, horizontal = 12.dp),
+                containerColor = FloconTheme.colorPalette.secondary
             ) {
-                Text(
-                    current?.name ?: "",
-                    style = FloconTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    color = FloconTheme.colorPalette.onSurface,
+                FloconIcon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack
                 )
             }
+            Text(
+                text = current?.name.orEmpty(),
+                style = FloconTheme.typography.bodyLarge,
+                maxLines = 1,
+                color = FloconTheme.colorPalette.onPrimary,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 4.dp, horizontal = 12.dp),
+            )
         },
         actions = {
             FloconIconButton(
@@ -78,35 +67,6 @@ fun FilesTopBar(
             )
         }
     )
-}
-
-@Composable
-private fun TopBarButton(
-    onClick: () -> Unit,
-    enabled: Boolean,
-    icon: ImageVector,
-) {
-    Box(
-        modifier = Modifier.size(32.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(FloconTheme.colorPalette.onSurface.copy(alpha = 0.1f))
-            .clickable(onClick = onClick, enabled = enabled)
-            .padding(6.dp)
-            .graphicsLayer {
-                alpha = if (enabled) {
-                    1f
-                } else {
-                    0.5f
-                }
-            },
-    ) {
-        Icon(
-            imageVector = icon,
-            modifier = Modifier.fillMaxSize(),
-            tint = FloconTheme.colorPalette.onSurface,
-            contentDescription = null,
-        )
-    }
 }
 
 @Preview
