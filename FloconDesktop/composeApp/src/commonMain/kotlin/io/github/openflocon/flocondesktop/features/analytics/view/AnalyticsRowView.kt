@@ -43,7 +43,7 @@ fun AnalyticsRowView(
         Column(
             modifier = modifier
                 .clip(shape = RoundedCornerShape(8.dp))
-                .background(color = FloconTheme.colorPalette.panel)
+                .background(color = FloconTheme.colorPalette.primary)
                 .clickable(onClick = {
                     onAction(AnalyticsAction.OnClick(model))
                 })
@@ -54,13 +54,13 @@ fun AnalyticsRowView(
             Text(
                 text = model.eventName,
                 style = FloconTheme.typography.titleSmall,
-                color = FloconTheme.colorPalette.onPrimaryContainer,
+                color = FloconTheme.colorPalette.onPrimary,
             )
 
             Text(
                 text = model.dateFormatted,
                 style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
-                color = FloconTheme.colorPalette.onPrimaryContainer.copy(alpha = 0.4f),
+                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.4f),
             )
 
             FlowRow(
@@ -80,12 +80,12 @@ fun AnalyticsRowView(
                         Text(
                             text = it.name + " :",
                             style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
-                            color = FloconTheme.colorPalette.onPrimaryContainer,
+                            color = FloconTheme.colorPalette.onPrimary,
                         )
                         Text(
                             text = it.value,
                             style = FloconTheme.typography.titleSmall,
-                            color = FloconTheme.colorPalette.onPrimaryContainer,
+                            color = FloconTheme.colorPalette.onPrimary,
                         )
                     }
                 }
@@ -96,7 +96,7 @@ fun AnalyticsRowView(
                             Modifier
                                 .padding(horizontal = 4.dp),
                         style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = FloconTheme.colorPalette.onPrimaryContainer,
+                        color = FloconTheme.colorPalette.onPrimary,
                     )
                 }
             }

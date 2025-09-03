@@ -62,7 +62,7 @@ fun NetworkItemView(
                 )
                 .then(
                     if (state.isMocked) {
-                        Modifier.background(Color.Yellow.copy(alpha = 0.05f))
+                        Modifier.background(FloconTheme.colorPalette.accent)
                     } else Modifier,
                 )
                 .clickable(onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) })
@@ -79,7 +79,7 @@ fun NetworkItemView(
                 Text(
                     state.dateFormatted,
                     style = bodySmall,
-                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
+                    color = FloconTheme.colorPalette.onPrimary
                 )
             }
 
@@ -99,7 +99,7 @@ fun NetworkItemView(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = bodySmall,
-                    color = FloconTheme.colorPalette.onSurface,
+                    color = FloconTheme.colorPalette.onPrimary,
                     modifier = Modifier
                         .weight(columnWidths.domainWeight)
                         .padding(horizontal = 4.dp),
@@ -109,11 +109,11 @@ fun NetworkItemView(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = bodySmall,
-                    color = FloconTheme.colorPalette.onSurface,
+                    color = FloconTheme.colorPalette.onSecondary,
                     modifier = Modifier
                         .weight(2f)
                         .background(
-                            color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
+                            color = FloconTheme.colorPalette.secondary,
                             shape = RoundedCornerShape(4.dp),
                         )
                         .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -134,7 +134,7 @@ fun NetworkItemView(
                 Text(
                     state.timeFormatted ?: "",
                     style = bodySmall,
-                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
+                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f),
                 )
             }
         }

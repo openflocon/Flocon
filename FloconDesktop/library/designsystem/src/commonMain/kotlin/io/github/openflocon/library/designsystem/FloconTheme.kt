@@ -1,11 +1,11 @@
 package io.github.openflocon.library.designsystem
 
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -14,8 +14,10 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-import io.github.openflocon.library.designsystem.theme.FloconColorPalette
+import io.github.openflocon.library.designsystem.theme.FloconColorPaletteNew
+import io.github.openflocon.library.designsystem.theme.FloconShape
 import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
+import io.github.openflocon.library.designsystem.theme.LocalFloconShape
 import io.github.openflocon.library.designsystem.theme.darkPalette
 import io.github.openflocon.library.designsystem.theme.lightPalette
 import io.github.openflocon.library.designsystem.theme.materialDarkScheme
@@ -23,14 +25,14 @@ import io.github.openflocon.library.designsystem.theme.materialLightScheme
 
 object FloconTheme {
 
-    val colorPalette: FloconColorPalette
+    val colorPalette: FloconColorPaletteNew
         @Composable @ReadOnlyComposable get() = LocalFloconColorPalette.current
 
     val typography: Typography
         @Composable @ReadOnlyComposable get() = MaterialTheme.typography
 
-    val shapes: Shapes
-        @Composable @ReadOnlyComposable get() = MaterialTheme.shapes
+    val shapes: FloconShape
+        @Composable @ReadOnlyComposable get() = LocalFloconShape.current
 
 }
 
@@ -63,6 +65,10 @@ fun FloconTheme(
             )
         )
     }
+    val scrollbarStyle = LocalScrollbarStyle.current.copy(
+        unhoverColor = colorPalette.secondary,
+        hoverColor = colorPalette.onSecondary
+    )
 
     MaterialTheme(
         typography = typography,
@@ -76,6 +82,7 @@ fun FloconTheme(
             LocalIndication provides ripple,
             LocalFloconColorPalette provides colorPalette,
             LocalTextSelectionColors provides selectionTextColor,
+            LocalScrollbarStyle provides scrollbarStyle,
             content = content
         )
     }

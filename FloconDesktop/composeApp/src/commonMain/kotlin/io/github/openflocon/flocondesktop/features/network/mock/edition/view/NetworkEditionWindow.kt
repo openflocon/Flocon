@@ -155,7 +155,7 @@ fun MockEditorScreen(
                     label = defaultLabel("URL Pattern"),
                     placeholder = defaultPlaceHolder("https://www.myDomain.*"),
                     modifier = Modifier.fillMaxWidth(),
-                    containerColor = FloconTheme.colorPalette.panel
+                    containerColor = FloconTheme.colorPalette.primary
                 )
                 MockNetworkMethodDropdown(
                     // TODO should be a dropdown
@@ -185,7 +185,7 @@ fun MockEditorScreen(
                     maxLines = 1,
                     value = mock.delay.toString(),
                     placeholder = defaultPlaceHolder("0"),
-                    containerColor = FloconTheme.colorPalette.panel,
+                    containerColor = FloconTheme.colorPalette.primary,
                     onValueChange = { newValue ->
                         // On vérifie si la nouvelle valeur est vide ou si elle contient uniquement des chiffres
                         if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
@@ -242,7 +242,7 @@ fun MockEditorScreen(
                             maxLines = 1,
                             placeholder = defaultPlaceHolder("eg: 200"),
                             value = bodyResponse.httpCode.toString(),
-                            containerColor = FloconTheme.colorPalette.panel,
+                            containerColor = FloconTheme.colorPalette.primary,
                             onValueChange = { newValue ->
                                 if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
                                     mock = mock.copy(
@@ -260,7 +260,7 @@ fun MockEditorScreen(
                             maxLines = 1,
                             value = bodyResponse.mediaType,
                             placeholder = defaultPlaceHolder("application/json"),
-                            containerColor = FloconTheme.colorPalette.panel,
+                            containerColor = FloconTheme.colorPalette.primary,
                             onValueChange = { newValue ->
                                 mock = mock.copy(
                                     bodyResponse = bodyResponse.copy(mediaType = newValue)
@@ -374,7 +374,7 @@ fun MockEditorScreen(
                                 mock = mock.copy(bodyResponse = bodyResponse.copy(body = newValue))
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            containerColor = FloconTheme.colorPalette.panel
+                            containerColor = FloconTheme.colorPalette.primary
                         )
                     }
                 }
@@ -404,11 +404,11 @@ fun MockEditorScreen(
 fun NetworkMockMediaType(text: String, onClicked: (text: String) -> Unit) {
     Text(
         text = text,
-        color = FloconTheme.colorPalette.onPanel,
+        color = FloconTheme.colorPalette.onPrimary,
         style = FloconTheme.typography.bodySmall,
         modifier = Modifier
             .clip(RoundedCornerShape(20.dp))
-            .background(FloconTheme.colorPalette.panel.copy(alpha = 0.8f))
+            .background(FloconTheme.colorPalette.primary.copy(alpha = 0.8f))
             .clickable {
                 onClicked(text)
             }
@@ -434,14 +434,14 @@ private fun HeaderInputField(
             onValueChange = onKeyChange,
             placeholder = defaultPlaceHolder("Key"),
             modifier = Modifier.weight(1f),
-            containerColor = FloconTheme.colorPalette.panel
+            containerColor = FloconTheme.colorPalette.primary
         )
         FloconTextField(
             value = value,
             onValueChange = onValueChange,
             placeholder = defaultPlaceHolder("Value"),
             modifier = Modifier.weight(1f),
-            containerColor = FloconTheme.colorPalette.panel
+            containerColor = FloconTheme.colorPalette.primary
         )
 
         Box(
@@ -484,7 +484,7 @@ fun RowScope.Tab(
         textAlign = TextAlign.Center,
         style = FloconTheme.typography.bodyMedium,
         color = if(isSelected) {
-            FloconTheme.colorPalette.panel
+            FloconTheme.colorPalette.primary
         } else {
             FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f)
         },

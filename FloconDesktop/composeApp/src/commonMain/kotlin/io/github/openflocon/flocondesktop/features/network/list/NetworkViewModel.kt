@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
@@ -14,8 +17,10 @@ import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
-import io.github.openflocon.flocondesktop.features.network.ContentUiState
-import io.github.openflocon.flocondesktop.features.network.MockDisplayed
+import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
+import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
+import io.github.openflocon.flocondesktop.features.network.body.model.ContentUiState
+import io.github.openflocon.flocondesktop.features.network.body.model.MockDisplayed
 import io.github.openflocon.flocondesktop.features.network.detail.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
@@ -40,7 +45,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -52,6 +56,8 @@ class NetworkViewModel(
     private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase,
     private val removeHttpRequestsBeforeUseCase: RemoveHttpRequestsBeforeUseCase,
     private val removeHttpRequestUseCase: RemoveHttpRequestUseCase,
+    private val mocksUseCase: ObserveNetworkMocksUseCase,
+    private val badNetworkUseCase: ObserveAllNetworkBadQualitiesUseCase,
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val headerDelegate: HeaderDelegate,
@@ -67,10 +73,20 @@ class NetworkViewModel(
             detailJsons = emptySet(),
             mocksDisplayed = null,
             badNetworkQualityDisplayed = false,
+            invertList = false,
+            autoScroll = false
         ),
     )
 
-    private val filterUiState = MutableStateFlow(FilterUiState(query = ""))
+    private val _filterUiState = MutableStateFlow(FilterUiState(query = "", hasBadNetwork = false, hasMocks = false))
+    private val filterUiState = combine(
+        _filterUiState,
+        mocksUseCase().map { it.any(MockNetworkDomainModel::isEnabled) },
+        badNetworkUseCase().map { it.any(BadQualityConfigDomainModel::isEnabled) }
+    ) { state, mockEnabled, badNetworkEnabled ->
+        state.copy(hasMocks = mockEnabled, hasBadNetwork = badNetworkEnabled)
+    }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _filterUiState.value)
 
     private val detailState: StateFlow<NetworkDetailViewState?> =
         contentState.map { it.selectedRequestId }
@@ -117,19 +133,23 @@ class NetworkViewModel(
             allowedMethods = allowedMethods,
             textFilters = textFilters,
         )
-    }.distinctUntilChanged()
+    }
+        .distinctUntilChanged()
 
-    private val filteredItems: Flow<List<NetworkItemViewState>> = items.flatMapLatest { items ->
-        filterConfig.mapLatest { filterConfig ->
-            sortAndFilterNetworkItemsProcessor(
-                items = items,
-                filterState = filterConfig.filterState,
-                sorted = filterConfig.sorted,
-                allowedMethods = filterConfig.allowedMethods,
-                textFilters = filterConfig.textFilters,
-            )
-        }
-    }.flowOn(dispatcherProvider.viewModel.limitedParallelism(1))
+    private val filteredItems: Flow<List<NetworkItemViewState>> = combine(
+        items,
+        contentState,
+        filterConfig
+    ) { items, content, config ->
+        sortAndFilterNetworkItemsProcessor(
+            items = items,
+            filterState = config.filterState,
+            sorted = config.sorted,
+            allowedMethods = config.allowedMethods,
+            textFilters = config.textFilters
+        )
+    }
+        .flowOn(dispatcherProvider.viewModel.limitedParallelism(1))
         .distinctUntilChanged()
 
     val uiState = combine(
@@ -146,7 +166,8 @@ class NetworkViewModel(
             filterState = filter,
             headerState = header,
         )
-    }.flowOn(dispatcherProvider.viewModel)
+    }
+        .flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -190,7 +211,23 @@ class NetworkViewModel(
             is NetworkAction.HeaderAction.FilterAction -> headerDelegate.onFilterAction(
                 action = action.action,
             )
+
+            is NetworkAction.InvertList -> onInvertList(action)
+            NetworkAction.AutoScroll -> onAutoScroll()
+            NetworkAction.ClearSession -> onClearSession()
         }
+    }
+
+    private fun onClearSession() {
+
+    }
+
+    private fun onAutoScroll() {
+        contentState.update { it.copy(autoScroll = !it.autoScroll) }
+    }
+
+    private fun onInvertList(action: NetworkAction.InvertList) {
+        contentState.update { it.copy(invertList = action.value) }
     }
 
     private fun displayBearerJwt(token: String) {
@@ -310,7 +347,7 @@ class NetworkViewModel(
     }
 
     private fun onFilterQuery(action: NetworkAction.FilterQuery) {
-        filterUiState.update { state ->
+        _filterUiState.update { state ->
             state.copy(query = action.query)
         }
     }

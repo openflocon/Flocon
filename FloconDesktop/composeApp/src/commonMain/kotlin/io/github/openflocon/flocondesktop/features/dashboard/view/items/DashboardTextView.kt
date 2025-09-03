@@ -76,7 +76,7 @@ internal fun DashboardTextViewPreview() {
     FloconTheme {
         DashboardTextView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.panel,
+                FloconTheme.colorPalette.primary,
             ),
             rowItem = rowItem,
         )
@@ -94,7 +94,7 @@ internal fun DashboardTextViewPreview_Red() {
     FloconTheme {
         DashboardTextView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.panel,
+                FloconTheme.colorPalette.onPrimary,
             ),
             rowItem = rowItem,
         )

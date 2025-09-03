@@ -36,11 +36,10 @@ internal fun DatabaseSelectorView(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(12.dp)
-    val contentPadding =
-        PaddingValues(
-            horizontal = 8.dp,
-            vertical = 4.dp,
-        )
+    val contentPadding = PaddingValues(
+        horizontal = 8.dp,
+        vertical = 4.dp,
+    )
 
     Row(
         modifier = modifier,
@@ -48,7 +47,7 @@ internal fun DatabaseSelectorView(
     ) {
         Text(
             text = "Database : ",
-            color = FloconTheme.colorPalette.onBackground,
+            color = FloconTheme.colorPalette.onPrimary,
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
         )
 
@@ -61,13 +60,12 @@ internal fun DatabaseSelectorView(
 
             DatabasesStateUiModel.Empty -> {
                 Text(
-                    modifier =
-                        Modifier
-                            .background(FloconTheme.colorPalette.onBackground, shape = shape)
-                            .padding(contentPadding),
+                    modifier = Modifier
+                        .background(FloconTheme.colorPalette.primary, shape = shape)
+                        .padding(contentPadding),
                     text = "No Databases Found",
                     style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.background,
+                    color = FloconTheme.colorPalette.onPrimary,
                 )
             }
 
@@ -76,17 +74,16 @@ internal fun DatabaseSelectorView(
 
                 DatabaseView(
                     database = databasesState.selected,
-                    textColor = FloconTheme.colorPalette.background,
-                    modifier =
-                        Modifier
-                            .clip(shape)
-                            .background(FloconTheme.colorPalette.onBackground)
-                            .clickable { expanded = true }
-                            .padding(contentPadding),
+                    textColor = FloconTheme.colorPalette.onSecondary,
+                    modifier = Modifier.clip(shape)
+                        .background(FloconTheme.colorPalette.secondary)
+                        .clickable { expanded = true }
+                        .padding(contentPadding),
                 )
 
                 FloconDropdownMenu(
                     expanded = expanded,
+                    containerColor = FloconTheme.colorPalette.secondary,
                     onDismissRequest = { expanded = false },
                 ) {
                     databasesState.databases.forEach { database ->
@@ -94,7 +91,7 @@ internal fun DatabaseSelectorView(
                             text = {
                                 DatabaseView(
                                     database = database,
-                                    textColor = FloconTheme.colorPalette.onBackground,
+                                    textColor = FloconTheme.colorPalette.onSecondary,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },
@@ -131,7 +128,7 @@ private fun DatabaseViewPreview() {
     FloconTheme {
         DatabaseView(
             database = previewDeviceDataBaseUiModel(),
-            textColor = FloconTheme.colorPalette.background,
+            textColor = FloconTheme.colorPalette.primary,
         )
     }
 }

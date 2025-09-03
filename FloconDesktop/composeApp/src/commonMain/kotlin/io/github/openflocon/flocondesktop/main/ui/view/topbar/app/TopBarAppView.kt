@@ -62,14 +62,14 @@ internal fun TopBarAppView(
                 style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = FloconTheme.colorPalette.onPanel,
+                color = FloconTheme.colorPalette.onPrimary,
             )
             Text(
                 text = deviceApp.packageName,
                 style = FloconTheme.typography.bodySmall.copy(
                     fontSize = 10.sp,
                 ),
-                color = FloconTheme.colorPalette.onPanel.copy(alpha = 0.8f),
+                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.8f),
             )
         }
         if (!selected && deleteClick != null) {
@@ -85,7 +85,7 @@ internal fun TopBarAppView(
             ) {
                 FloconIcon(
                     imageVector = Icons.Outlined.Close,
-                    tint = FloconTheme.colorPalette.panel,
+                    tint = FloconTheme.colorPalette.primary,
                     modifier = Modifier.size(14.dp)
                 )
             }

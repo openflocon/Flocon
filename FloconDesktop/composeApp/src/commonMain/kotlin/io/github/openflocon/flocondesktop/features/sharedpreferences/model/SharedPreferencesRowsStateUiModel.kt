@@ -1,12 +1,18 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.model
 
 sealed interface SharedPreferencesRowsStateUiModel {
-    data object Loading : SharedPreferencesRowsStateUiModel
+    val rows: List<SharedPreferencesRowUiModel>
 
-    data object Empty : SharedPreferencesRowsStateUiModel
+    data object Loading : SharedPreferencesRowsStateUiModel {
+        override val rows = emptyList<SharedPreferencesRowUiModel>()
+    }
+
+    data object Empty : SharedPreferencesRowsStateUiModel {
+        override val rows = emptyList<SharedPreferencesRowUiModel>()
+    }
 
     data class WithContent(
-        val rows: List<SharedPreferencesRowUiModel>,
+        override val rows: List<SharedPreferencesRowUiModel>,
     ) : SharedPreferencesRowsStateUiModel
 }
 

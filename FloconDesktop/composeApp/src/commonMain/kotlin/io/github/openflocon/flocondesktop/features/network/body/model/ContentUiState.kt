@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.network
+package io.github.openflocon.flocondesktop.features.network.body.model
 
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
@@ -10,6 +10,8 @@ data class ContentUiState(
     val detailJsons: Set<NetworkBodyDetailUi>,
     val mocksDisplayed: MockDisplayed?,
     val badNetworkQualityDisplayed: Boolean,
+    val invertList: Boolean,
+    val autoScroll: Boolean
 )
 
 @Immutable
@@ -23,4 +25,6 @@ fun previewContentUiState() = ContentUiState(
     detailJsons = emptySet(),
     mocksDisplayed = null,
     badNetworkQualityDisplayed = false,
+    invertList = false,
+    autoScroll = false
 )

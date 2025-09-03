@@ -26,8 +26,8 @@ fun FloconButton(
     content: @Composable RowScope.() -> Unit
 ) {
     FloconSurface(
-        color = FloconTheme.colorPalette.inverseSurface,
-        contentColor = FloconTheme.colorPalette.inverseOnSurface,
+        color = FloconTheme.colorPalette.primary,
+        contentColor = FloconTheme.colorPalette.onPrimary,
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(6.dp)
@@ -51,11 +51,11 @@ fun FloconOutlinedButton(
 ) {
     FloconSurface(
         color = Color.Transparent,
-        contentColor = FloconTheme.colorPalette.inverseSurface,
+        contentColor = FloconTheme.colorPalette.onSurface,
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(1.dp, FloconTheme.colorPalette.inverseSurface),
+        border = BorderStroke(1.dp, FloconTheme.colorPalette.onSurface),
     ) {
         CompositionLocalProvider(LocalTextStyle provides FloconTheme.typography.labelLarge) {
             Row(

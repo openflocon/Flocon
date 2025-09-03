@@ -68,9 +68,7 @@ internal fun DashboardCheckBoxViewPreview() {
     )
     FloconTheme {
         DashboardCheckBoxView(
-            modifier = Modifier.background(
-                FloconTheme.colorPalette.panel,
-            ),
+            modifier = Modifier.background(FloconTheme.colorPalette.primary),
             rowItem = rowItem,
             value = rowItem.value,
             onCheckedChange = {},

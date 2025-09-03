@@ -47,7 +47,7 @@ fun NetworkDetailView(
 
     Column(
         modifier = modifier
-            .background(FloconTheme.colorPalette.background)
+            .background(FloconTheme.colorPalette.primary)
             .verticalScroll(scrollState)
             .padding(vertical = 8.dp, horizontal = 4.dp),
     ) {
@@ -101,7 +101,7 @@ private fun Request(
             Column(
                 modifier = Modifier
                     .background(
-                        color = FloconTheme.colorPalette.surfaceVariant,
+                        color = FloconTheme.colorPalette.primary,
                         shape = RoundedCornerShape(12.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -126,7 +126,7 @@ private fun Request(
                                 color = FloconTheme.colorPalette.onSurface,
                                 modifier = Modifier.weight(2f)
                                     .background(
-                                        color = FloconTheme.colorPalette.panel.copy(alpha = 0.8f),
+                                        color = FloconTheme.colorPalette.primary.copy(alpha = 0.8f),
                                         shape = RoundedCornerShape(4.dp),
                                     )
                                     .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -169,7 +169,7 @@ private fun Request(
                     Column(
                         modifier = Modifier
                             .background(
-                                color = FloconTheme.colorPalette.surfaceVariant,
+                                color = FloconTheme.colorPalette.primary,
                                 shape = RoundedCornerShape(12.dp),
                             )
                             .padding(12.dp)

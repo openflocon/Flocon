@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -207,7 +208,7 @@ private fun BadQualityErrorItemView(
                     modifier = Modifier
                         .weight(1f)
                         .background(
-                            color = FloconTheme.colorPalette.panel,
+                            color = FloconTheme.colorPalette.primary,
                             shape = RoundedCornerShape(4.dp),
                         )
                         .padding(horizontal = 4.dp, vertical = 4.dp),
@@ -221,7 +222,7 @@ private fun BadQualityErrorItemView(
                         color = FloconTheme.colorPalette.onSurface,
                         fontWeight = FontWeight.Bold,
                     ),
-                    color = FloconTheme.colorPalette.exceptions,
+                    color = Color(0xFF7B1FA2)//FloconTheme.colorPalette.exceptions, TODO
                 )
                 Text(
                     text = t.classPath,
@@ -231,7 +232,7 @@ private fun BadQualityErrorItemView(
                     modifier = Modifier
                         .weight(1f)
                         .background(
-                            color = FloconTheme.colorPalette.panel,
+                            color = FloconTheme.colorPalette.primary,
                             shape = RoundedCornerShape(4.dp),
                         )
                         .padding(horizontal = 4.dp, vertical = 4.dp),

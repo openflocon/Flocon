@@ -41,8 +41,7 @@ fun StatusView(
         when (status.status) {
             NetworkStatusUi.Status.SUCCESS,
             NetworkStatusUi.Status.ERROR,
-            NetworkStatusUi.Status.EXCEPTION,
-            -> BasicText(
+            NetworkStatusUi.Status.EXCEPTION -> BasicText(
                 text = status.text,
                 autoSize = TextAutoSize.StepBased(
                     maxFontSize = textSize,

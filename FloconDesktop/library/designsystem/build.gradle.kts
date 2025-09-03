@@ -30,6 +30,7 @@ kotlin {
                 api(compose.components.resources)
                 api(compose.components.uiToolingPreview)
                 api(libs.other.jsontree)
+                api("com.composables:core:1.43.1")
             }
         }
 

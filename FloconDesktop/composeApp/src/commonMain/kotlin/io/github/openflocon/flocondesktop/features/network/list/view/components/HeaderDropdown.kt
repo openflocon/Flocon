@@ -2,7 +2,6 @@
 
 package io.github.openflocon.flocondesktop.features.network.list.view.components
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,23 +27,23 @@ fun HeaderDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier,
-    ) {
-        HeaderLabelItem(
-            modifier = Modifier
-                .fillMaxWidth(),
-            text = label,
-            filtered = filtered,
-            sortedBy = sortedBy,
-            clickOnSort = onClickSort,
-            clickOnFilter = { expanded = true },
-            labelAlignment = labelAlignment,
-        )
-        FloconDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            content = dropdownMenu,
-        )
-    }
+    FloconDropdownMenu(
+        expanded = expanded,
+        anchorContent = {
+            HeaderLabelItem(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                text = label,
+                filtered = filtered,
+                sortedBy = sortedBy,
+                clickOnSort = onClickSort,
+                clickOnFilter = { expanded = true },
+                labelAlignment = labelAlignment,
+            )
+        },
+        onDismissRequest = { expanded = false },
+        onExpandRequest = { expanded = true },
+        content = dropdownMenu,
+        modifier = modifier
+    )
 }
