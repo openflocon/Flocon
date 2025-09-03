@@ -63,11 +63,11 @@ internal fun SharedPrefSelectorView(
             SharedPrefsStateUiModel.Empty -> {
                 Text(
                     modifier = Modifier
-                        .background(FloconTheme.colorPalette.onPrimary, shape = shape)
+                        .background(FloconTheme.colorPalette.secondary, shape = shape)
                         .padding(contentPadding),
                     text = "No SharedPreferences Found",
                     style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.primary,
+                    color = FloconTheme.colorPalette.onSecondary,
                 )
             }
 
@@ -76,10 +76,10 @@ internal fun SharedPrefSelectorView(
 
                 SharedPrefView(
                     sharedPref = sharedPrefsState.selected,
-                    textColor = FloconTheme.colorPalette.primary,
+                    textColor = FloconTheme.colorPalette.onSecondary,
                     modifier = Modifier
                         .clip(shape)
-                        .background(FloconTheme.colorPalette.onPrimary)
+                        .background(FloconTheme.colorPalette.secondary)
                         .clickable { expanded = true }
                         .padding(contentPadding),
                 )

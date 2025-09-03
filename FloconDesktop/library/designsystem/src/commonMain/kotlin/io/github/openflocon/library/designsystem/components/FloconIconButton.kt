@@ -61,6 +61,28 @@ fun FloconIconButton(
 }
 
 @Composable
+fun FloconIconTonalButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    containerColor: Color = FloconTheme.colorPalette.primary,
+    content: @Composable BoxScope.() -> Unit
+) {
+    Box(
+        modifier = modifier
+            .size(Size)
+            .clip(FloconTheme.shapes.medium)
+            .background(containerColor)
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(all = 8.dp)
+    ) {
+        CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.contentColorFor(containerColor)) {
+            content()
+        }
+    }
+}
+
+@Composable
 fun FloconIconToggleButton(
     value: Boolean,
     onValueChange: (Boolean) -> Unit,
