@@ -25,7 +25,6 @@ interface DashboardRepository {
         values: Map<String, String>
     )
 
-
     suspend fun submitTextFieldEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId,

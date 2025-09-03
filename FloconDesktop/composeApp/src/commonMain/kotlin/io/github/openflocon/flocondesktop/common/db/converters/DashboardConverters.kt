@@ -1,34 +1,34 @@
 package io.github.openflocon.flocondesktop.common.db.converters
 
 import androidx.room.TypeConverter
-import io.github.openflocon.domain.dashboard.models.ContainerConfigDomainModel
-import io.github.openflocon.domain.dashboard.models.FormContainerConfigDomainModel
-import io.github.openflocon.domain.dashboard.models.SectionContainerConfigDomainModel
-import kotlinx.serialization.modules.SerializersModule
+import io.github.openflocon.data.local.dashboard.models.ContainerConfigEntity
+import io.github.openflocon.data.local.dashboard.models.FormContainerConfigEntity
+import io.github.openflocon.data.local.dashboard.models.SectionContainerConfigEntity
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 
 class DashboardConverters {
 
     @TypeConverter
-    fun fromContainerConfig(value: ContainerConfigDomainModel): String =
+    fun fromContainerConfig(value: ContainerConfigEntity): String =
         json.encodeToString(value)
 
     @TypeConverter
-    fun toContainerConfig(value: String): ContainerConfigDomainModel =
-        json.decodeFromString<ContainerConfigDomainModel>(value)
+    fun toContainerConfig(value: String): ContainerConfigEntity =
+        json.decodeFromString(value)
 
     private companion object {
         val json = Json {
             serializersModule = SerializersModule {
-                polymorphic(ContainerConfigDomainModel::class) {
+                polymorphic(ContainerConfigEntity::class) {
                     subclass(
-                        FormContainerConfigDomainModel::class,
-                        FormContainerConfigDomainModel.serializer()
+                        FormContainerConfigEntity::class,
+                        FormContainerConfigEntity.serializer()
                     )
                     subclass(
-                        SectionContainerConfigDomainModel::class,
-                        SectionContainerConfigDomainModel.serializer()
+                        SectionContainerConfigEntity::class,
+                        SectionContainerConfigEntity.serializer()
                     )
                 }
             }

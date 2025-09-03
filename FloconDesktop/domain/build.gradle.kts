@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {
@@ -21,8 +20,6 @@ kotlin {
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
-
-            implementation(libs.kotlinx.serializationJson)
         }
 
         commonTest.dependencies {

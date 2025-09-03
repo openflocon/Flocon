@@ -4,7 +4,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import io.github.openflocon.domain.dashboard.models.ContainerConfigDomainModel
 
 @Entity(
     foreignKeys = [
@@ -28,6 +27,6 @@ data class DashboardContainerEntity(
     val id: Long = 0,
     val dashboardId: String,
     val containerOrder: Int,
-    val containerConfig: ContainerConfigDomainModel,
+    val containerConfig: ContainerConfigEntity,
     val name: String,
 )

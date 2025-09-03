@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.dashboard.mapper
 
+import io.github.openflocon.data.local.dashboard.models.ContainerConfigEntity
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.data.local.dashboard.models.DashboardElementButton
 import io.github.openflocon.data.local.dashboard.models.DashboardElementCheckBox
@@ -9,10 +10,15 @@ import io.github.openflocon.data.local.dashboard.models.DashboardElementText
 import io.github.openflocon.data.local.dashboard.models.DashboardElementTextField
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
+import io.github.openflocon.data.local.dashboard.models.FormContainerConfigEntity
+import io.github.openflocon.data.local.dashboard.models.SectionContainerConfigEntity
+import io.github.openflocon.domain.dashboard.models.ContainerConfigDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.dashboard.models.DashboardContainerDomainModel
+import io.github.openflocon.domain.dashboard.models.FormContainerConfigDomainModel
+import io.github.openflocon.domain.dashboard.models.SectionContainerConfigDomainModel
 
 internal fun DashboardDomainModel.toEntity(deviceId: DeviceId, packageName: String): DashboardEntity = DashboardEntity(
     deviceId = deviceId,
@@ -27,7 +33,7 @@ internal fun DashboardContainerDomainModel.toEntity(
     name = this.name,
     dashboardId = dashboardId,
     containerOrder = index,
-    containerConfig = this.containerConfig
+    containerConfig = this.containerConfig.toEntity()
 )
 
 internal fun DashboardElementDomainModel.toEntity(
@@ -75,3 +81,8 @@ internal fun DashboardElementDomainModel.CheckBox.toCheckBoxEntity() = Dashboard
     label = label,
     value = value,
 )
+
+fun ContainerConfigDomainModel.toEntity(): ContainerConfigEntity = when (this) {
+    is FormContainerConfigDomainModel -> FormContainerConfigEntity(formId, submitText)
+    is SectionContainerConfigDomainModel -> SectionContainerConfigEntity
+}
