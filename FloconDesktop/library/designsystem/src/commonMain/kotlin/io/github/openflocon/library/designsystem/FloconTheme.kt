@@ -47,7 +47,7 @@ fun FloconTheme(
         isDarkTheme -> darkPalette
         else -> lightPalette
     }
-    val ripple = ripple()
+    val ripple = ripple(color = colorPalette.accent)
     val selectionTextColor = TextSelectionColors(
         handleColor = Color.White,
         backgroundColor = Color.White.copy(alpha = 0.5f)
