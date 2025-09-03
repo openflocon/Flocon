@@ -29,7 +29,10 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -47,30 +50,25 @@ fun DeeplinkFreeformItemView(
     modifier: Modifier = Modifier,
 ) {
     var value by remember { mutableStateOf("") }
-    value.isEmpty()
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        // TODO a label
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            FloconTextField(
+            FloconTextFieldWithoutM3(
                 value = value,
                 onValueChange = { value = it },
                 placeholder = defaultPlaceHolder("freeform link"),
-                textStyle = FloconTheme.typography.bodySmall.copy(
-                    color = FloconTheme.colorPalette.onSurface,
-                    fontWeight = FontWeight.Bold,
-                ),
+                textStyle = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                containerColor = FloconTheme.colorPalette.secondary,
                 modifier = Modifier.weight(1f),
             )
-            DeeplinkSendButton(
-                icon = Icons.AutoMirrored.Outlined.Send,
+            FloconIconTonalButton(
                 onClick = {
                     submit(
                         freeformItem,
@@ -79,31 +77,13 @@ fun DeeplinkFreeformItemView(
                         ),
                     )
                 },
-            )
+                containerColor = FloconTheme.colorPalette.secondary
+            ) {
+                FloconIcon(
+                    imageVector = Icons.AutoMirrored.Outlined.Send,
+                )
+            }
         }
-    }
-}
-
-@Composable
-private fun DeeplinkSendButton(
-    onClick: () -> Unit,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(6.dp))
-            .size(32.dp)
-            .background(Color.White)
-            .clickable(onClick = onClick)
-            .padding(all = 8.dp),
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = Color.Black,
-            modifier = Modifier.fillMaxSize(),
-        )
     }
 }
 
