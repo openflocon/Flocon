@@ -36,11 +36,10 @@ internal fun TableSelectorView(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(12.dp)
-    val contentPadding =
-        PaddingValues(
-            horizontal = 8.dp,
-            vertical = 4.dp,
-        )
+    val contentPadding = PaddingValues(
+        horizontal = 8.dp,
+        vertical = 4.dp,
+    )
 
     Row(
         modifier = modifier,
@@ -62,11 +61,11 @@ internal fun TableSelectorView(
             TablesStateUiModel.Empty -> {
                 Text(
                     modifier = Modifier
-                        .background(FloconTheme.colorPalette.onPrimary, shape = shape)
+                        .background(FloconTheme.colorPalette.secondary, shape = shape)
                         .padding(contentPadding),
                     text = "No Table Found",
                     style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.primary,
+                    color = FloconTheme.colorPalette.onSecondary,
                 )
             }
 
@@ -75,11 +74,11 @@ internal fun TableSelectorView(
 
                 TableView(
                     table = tablesState.selected,
-                    textColor = FloconTheme.colorPalette.primary,
+                    textColor = FloconTheme.colorPalette.onSecondary,
                     modifier =
                         Modifier
                             .clip(shape)
-                            .background(FloconTheme.colorPalette.onPrimary)
+                            .background(FloconTheme.colorPalette.secondary)
                             .clickable { expanded = true }
                             .padding(contentPadding),
                 )

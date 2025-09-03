@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
@@ -28,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,9 +43,11 @@ import io.github.openflocon.flocondesktop.features.table.model.items
 import io.github.openflocon.flocondesktop.features.table.model.previewTableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.model.previewTablesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconPanel
-import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -83,84 +87,90 @@ fun TableScreen(
 ) {
     val columnsWidth = 150.dp
     var tableItems by remember { mutableStateOf<List<TableRowUiModel>>(emptyList()) }
+    val listState = rememberLazyListState()
+    val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
-    FloconSurface(modifier = modifier) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                FloconPageTopBar(
-                    modifier = Modifier.fillMaxWidth(),
-                    selector = {
-                        TableSelectorView(
-                            tablesState = deviceTables,
-                            onTableSelected = onTableSelected,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    },
-                    filterBar = {
-                        TableFilterBar(
-                            tableItems = content.items(),
-                            onResetClicked = onResetClicked,
-                            onItemsChange = {
-                                tableItems = it
-                            },
-                        )
-                    }
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        FloconFeature(
+            modifier = modifier
+                .clickable(
+                    interactionSource = null,
+                    indication = null,
+                    enabled = selectedItem != null,
+                    onClick = { onTableAction(TableAction.ClosePanel) }
                 )
-
-                FloconSurface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable(
-                            interactionSource = null,
-                            indication = null,
-                            enabled = selectedItem != null,
-                        ) {
-                            onTableAction(TableAction.ClosePanel)
-                        },
+        ) {
+            FloconPageTopBar(
+                modifier = Modifier.fillMaxWidth(),
+                selector = {
+                    TableSelectorView(
+                        tablesState = deviceTables,
+                        onTableSelected = onTableSelected,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                },
+                filterBar = {
+                    TableFilterBar(
+                        tableItems = content.items(),
+                        onResetClicked = onResetClicked,
+                        onItemsChange = { tableItems = it },
+                    )
+                }
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.primary)
+            ) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(all = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(all = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        when (content) {
-                            is TableContentStateUiModel.Empty -> {}
-                            is TableContentStateUiModel.Loading -> {}
-                            is TableContentStateUiModel.WithContent -> {
-                                itemsIndexed(tableItems) { index, item ->
-                                    TableRowView(
-                                        model = item,
-                                        columnsWidth = columnsWidth,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        onAction = onTableAction,
+                    when (content) {
+                        is TableContentStateUiModel.Empty -> {}
+                        is TableContentStateUiModel.Loading -> {}
+                        is TableContentStateUiModel.WithContent -> {
+                            itemsIndexed(tableItems) { index, item ->
+                                TableRowView(
+                                    model = item,
+                                    columnsWidth = columnsWidth,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onAction = onTableAction,
+                                )
+                                if (index < tableItems.lastIndex) {
+                                    HorizontalDivider(
+                                        modifier =
+                                            Modifier.fillMaxWidth()
+                                                .padding(top = 4.dp),
                                     )
-                                    if (index < tableItems.lastIndex) {
-                                        HorizontalDivider(
-                                            modifier =
-                                                Modifier.fillMaxWidth()
-                                                    .padding(top = 4.dp),
-                                        )
-                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-
-            FloconPanel(
-                contentState = selectedItem,
-                modifier = Modifier.align(Alignment.CenterEnd),
-            ) {
-                TableDetailView(
-                    modifier =
-                        Modifier
-                            .align(Alignment.TopEnd)
-                            .fillMaxHeight()
-                            .width(500.dp),
-                    state = it,
+                FloconVerticalScrollbar(
+                    adapter = scrollAdapter,
+                    modifier = Modifier.fillMaxHeight()
                 )
             }
+        }
+        FloconPanel(
+            contentState = selectedItem,
+            modifier = Modifier.align(Alignment.CenterEnd),
+        ) {
+            TableDetailView(
+                modifier =
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .fillMaxHeight()
+                        .width(500.dp),
+                state = it,
+            )
         }
     }
 }
