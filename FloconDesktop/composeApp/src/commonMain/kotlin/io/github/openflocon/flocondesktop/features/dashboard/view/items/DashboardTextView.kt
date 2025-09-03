@@ -2,12 +2,11 @@ package io.github.openflocon.flocondesktop.features.dashboard.view.items
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -33,9 +33,9 @@ internal fun DashboardTextView(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
-                rowItem.label,
+                text = rowItem.label,
                 modifier = Modifier.padding(start = 4.dp),
-                color = FloconTheme.colorPalette.onSurface,
+                color = FloconTheme.colorPalette.onPrimary,
                 style = FloconTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Thin,
                 ),
@@ -45,21 +45,18 @@ internal fun DashboardTextView(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Box(
+                FloconTextFieldWithoutM3(
+                    value = rowItem.value,
+                    onValueChange = {},
+                    readOnly = true,
+                    singleLine = false,
+                    containerColor = FloconTheme.colorPalette.secondary,
+                    textStyle = FloconTheme.typography.bodySmall,
+                    contentColor = rowItem.color ?: FloconTheme.colorPalette.onSecondary,
+                    contentPadding = PaddingValues(8.dp),
                     modifier = Modifier
-                        .weight(1f)
-                        .background(
-                            color = Color.White.copy(alpha = 0.1f),
-                            shape = RoundedCornerShape(8.dp),
-                        ).padding(horizontal = 12.dp, vertical = 8.dp),
-                ) {
-                    Text(
-                        style = FloconTheme.typography.bodySmall.copy(
-                            color = rowItem.color ?: FloconTheme.colorPalette.onSurface,
-                        ),
-                        text = rowItem.value,
-                    )
-                }
+                        .fillMaxWidth()
+                )
             }
         }
     }

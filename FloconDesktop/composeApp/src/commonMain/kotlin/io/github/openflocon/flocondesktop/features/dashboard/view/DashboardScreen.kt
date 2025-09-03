@@ -1,15 +1,14 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.dashboard.DashboardViewModel
@@ -17,8 +16,8 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardView
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
-import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -54,30 +53,32 @@ fun DashboardScreen(
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    FloconSurface(modifier = modifier) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            FloconPageTopBar(
-                modifier = Modifier.fillMaxWidth(),
-                selector = {
-                    DashboardSelectorView(
-                        dashboardsState = deviceDashboards,
-                        onDashboardSelected = onDashboardSelected,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            )
-
-            state?.let {
-                DashboardView(
-                    modifier = Modifier.fillMaxSize().padding(all = 8.dp),
-                    viewState = state,
-                    onClickButton = onClickButton,
-                    submitTextField = submitTextField,
-                    onUpdateCheckBox = onUpdateCheckBox,
+    FloconFeature(
+        modifier = modifier
+    ) {
+        FloconPageTopBar(
+            modifier = Modifier.fillMaxWidth(),
+            selector = {
+                DashboardSelectorView(
+                    dashboardsState = deviceDashboards,
+                    onDashboardSelected = onDashboardSelected,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
+        )
+
+        state?.let {
+            DashboardView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.primary)
+                    .padding(all = 8.dp),
+                viewState = state,
+                onClickButton = onClickButton,
+                submitTextField = submitTextField,
+                onUpdateCheckBox = onUpdateCheckBox,
+            )
         }
     }
 }

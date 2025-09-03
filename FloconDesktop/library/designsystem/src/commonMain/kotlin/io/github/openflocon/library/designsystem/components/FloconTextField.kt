@@ -173,11 +173,13 @@ fun FloconTextFieldWithoutM3(
     suffix: @Composable (() -> Unit)? = null,
     enabled: Boolean = true,
     singleLine: Boolean = true,
+    readOnly: Boolean = false,
     isError: Boolean = false,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     textStyle: TextStyle = FloconTheme.typography.bodySmall,
     containerColor: Color = FloconTheme.colorPalette.primary,
     contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor)
@@ -190,6 +192,7 @@ fun FloconTextFieldWithoutM3(
         textStyle = textStyle.copy(color = contentColor),
         maxLines = maxLines,
         minLines = minLines,
+        readOnly = readOnly,
         cursorBrush = SolidColor(contentColor),
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
@@ -204,6 +207,7 @@ fun FloconTextFieldWithoutM3(
                     .clip(shape)
                     .background(containerColor)
                     .padding(horizontal = 4.dp)
+                    .padding(contentPadding)
             ) {
                 CompositionLocalProvider(LocalContentColor provides contentColor) {
                     if (leadingComponent != null) {
