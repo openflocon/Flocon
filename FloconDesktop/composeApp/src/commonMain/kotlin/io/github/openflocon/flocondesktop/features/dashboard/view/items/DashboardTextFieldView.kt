@@ -17,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
@@ -63,30 +62,17 @@ fun DashboardTextFieldView(
                 modifier = Modifier
                     .weight(1f)
             )
-            DashboardSendButton(
-                icon = Icons.AutoMirrored.Outlined.Send,
-                onClick = {
-                    submitTextField(rowItem.id, value)
-                },
-            )
-        }
-    }
-}
 
-@Composable
-private fun DashboardSendButton(
-    onClick: () -> Unit,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-) {
-    FloconIconTonalButton(
-        onClick = onClick,
-        containerColor = FloconTheme.colorPalette.secondary,
-        modifier = modifier
-    ) {
-        FloconIcon(
-            imageVector = icon
-        )
+            FloconIconTonalButton(
+                onClick = { submitTextField(rowItem.id, value) },
+                containerColor = FloconTheme.colorPalette.secondary,
+                modifier = modifier
+            ) {
+                FloconIcon(
+                    imageVector = Icons.AutoMirrored.Outlined.Send
+                )
+            }
+        }
     }
 }
 
