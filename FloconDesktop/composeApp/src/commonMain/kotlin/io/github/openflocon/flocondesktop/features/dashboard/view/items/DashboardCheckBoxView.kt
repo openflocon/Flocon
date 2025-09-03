@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -52,12 +53,13 @@ internal fun DashboardCheckBoxView(
                     text = rowItem.label,
                 )
             }
-            Checkbox(
+            FloconCheckbox(
                 checked = value,
                 onCheckedChange = {
                     value = it
                     onUpdateCheckBox(rowItem.id, it)
                 },
+                uncheckedColor = FloconTheme.colorPalette.secondary
             )
         }
     }
