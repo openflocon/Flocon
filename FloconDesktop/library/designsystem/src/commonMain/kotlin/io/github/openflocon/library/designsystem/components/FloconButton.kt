@@ -33,7 +33,7 @@ fun FloconButton(
         contentColor = FloconTheme.colorPalette.contentColorFor(containerColor),
         onClick = onClick,
         modifier = modifier,
-        shape = RoundedCornerShape(6.dp)
+        shape = FloconTheme.shapes.medium
     ) {
         ProvideTextStyle(FloconTheme.typography.labelLarge) {
             Row(
