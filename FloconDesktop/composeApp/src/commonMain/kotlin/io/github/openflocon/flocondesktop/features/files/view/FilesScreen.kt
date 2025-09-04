@@ -1,16 +1,20 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.files.FilesViewModel
@@ -18,7 +22,9 @@ import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.previewFilesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconFeature
+import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -54,20 +60,31 @@ private fun FilesScreen(
     onContextualAction: (FileUiModel, FileUiModel.ContextualAction.Action) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    FloconSurface(modifier = modifier) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            FilesTopBar(
-                modifier = Modifier.fillMaxWidth(),
-                current = state.current,
-                onBack = onNavigateUp,
-                onRefresh = onRefresh,
-                onDeleteContent = onDeleteContent,
-            )
+    val listState = rememberLazyListState()
+    val scrollAdapter = rememberFloconScrollbarAdapter(listState)
+
+    FloconFeature(
+        modifier = modifier.fillMaxSize()
+    ) {
+        FilesTopBar(
+            modifier = Modifier.fillMaxWidth(),
+            current = state.current,
+            onBack = onNavigateUp,
+            onRefresh = onRefresh,
+            onDeleteContent = onDeleteContent,
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(FloconTheme.shapes.medium)
+                .background(FloconTheme.colorPalette.primary)
+        ) {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(
-                    vertical = 12.dp,
-                ),
+                state = listState,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                contentPadding = PaddingValues(8.dp),
             ) {
                 itemsIndexed(state.files) { index, item ->
                     FileItemRow(
@@ -81,6 +98,10 @@ private fun FilesScreen(
                     }
                 }
             }
+            FloconVerticalScrollbar(
+                adapter = scrollAdapter,
+                modifier = Modifier.fillMaxHeight()
+            )
         }
     }
 }

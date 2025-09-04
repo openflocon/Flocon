@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.common.ui.ContextualItem
@@ -24,6 +25,7 @@ import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIcon
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -34,7 +36,7 @@ fun FileItemRow(
     modifier: Modifier = Modifier,
 ) {
     ContextualView(
-        file.contextualActions.map { action ->
+        items = file.contextualActions.map { action ->
             ContextualItem(
                 text = action.text,
                 onClick = {
@@ -47,29 +49,27 @@ fun FileItemRow(
         },
     ) {
         Row(
-            modifier =
-            modifier
-                .clickable {
-                    onClick(file)
-                }.padding(vertical = 8.dp, horizontal = 16.dp),
+            modifier = modifier
+                .clip(FloconTheme.shapes.medium)
+                .clickable { onClick(file) }
+                .padding(vertical = 8.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
+            FloconIcon(
                 imageVector = file.icon,
-                modifier = Modifier.size(24.dp),
-                tint = FloconTheme.colorPalette.onSurface,
-                contentDescription = null,
+                modifier = Modifier.size(24.dp)
             )
 
             Spacer(modifier = Modifier.width(16.dp))
 
             // Nom du fichier/dossier
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
                     text = file.name,
                     style = FloconTheme.typography.bodyLarge,
                     maxLines = 1,
-                    color = FloconTheme.colorPalette.onSurface,
                     overflow = TextOverflow.Ellipsis,
                 )
                 // Informations additionnelles (taille, date de modification)
@@ -92,7 +92,7 @@ fun FileItemRow(
                 Icon(
                     imageVector = Icons.Outlined.ChevronRight,
                     modifier = Modifier.size(24.dp),
-                    tint = FloconTheme.colorPalette.onSurface,
+                    tint = FloconTheme.colorPalette.onPrimary,
                     contentDescription = null,
                 )
             }
