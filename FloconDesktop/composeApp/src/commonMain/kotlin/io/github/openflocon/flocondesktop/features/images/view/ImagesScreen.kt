@@ -159,7 +159,9 @@ fun ImageDialog(model: ImagesUiModel, onDismiss: () -> Unit) {
     Dialog(
         onDismissRequest = onDismiss,
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
             SelectionContainer {
                 Column(
                     modifier = Modifier

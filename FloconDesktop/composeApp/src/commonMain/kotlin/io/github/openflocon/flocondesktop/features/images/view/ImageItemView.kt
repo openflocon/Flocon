@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.images.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,22 +33,20 @@ fun ImageItemView(
 ) {
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(FloconTheme.colorPalette.primary)
-            .clickable(onClick = {
-                onClick(model)
-            }),
+            .clip(FloconTheme.shapes.medium)
+            .border(1.dp, FloconTheme.colorPalette.secondary, FloconTheme.shapes.medium)
+            .clickable(onClick = { onClick(model) })
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(4f / 3f)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.Black),
+                .background(Color.Black)
         ) {
             if (isInPreview) {
                 Box(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .background(Color.Gray),
                 )
             } else {
@@ -65,8 +63,16 @@ fun ImageItemView(
                 .fillMaxWidth()
                 .padding(all = 12.dp),
         ) {
-            Text(text = model.downloadedAt, color = Color.White, fontSize = 14.sp)
-            Text(text = model.url, color = Color.Gray, fontSize = 10.sp)
+            Text(
+                text = model.downloadedAt,
+                color = FloconTheme.colorPalette.onPrimary,
+                fontSize = 14.sp
+            )
+            Text(
+                text = model.url,
+                color = FloconTheme.colorPalette.onPrimary.copy(alpha = .5f),
+                fontSize = 10.sp
+            )
         }
     }
 }

@@ -75,10 +75,10 @@ internal fun DashboardSelectorView(
 
                 DashboardView(
                     dashboard = dashboardsState.selected,
-                    textColor = FloconTheme.colorPalette.primary,
+                    textColor = FloconTheme.colorPalette.onSecondary,
                     modifier = Modifier
                         .clip(shape)
-                        .background(FloconTheme.colorPalette.onPrimary)
+                        .background(FloconTheme.colorPalette.secondary)
                         .clickable { expanded = true }
                         .padding(contentPadding),
                 )
@@ -87,17 +87,17 @@ internal fun DashboardSelectorView(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                 ) {
-                    dashboardsState.dashboards.forEach { Dashboard ->
+                    dashboardsState.dashboards.forEach { dashboard ->
                         DropdownMenuItem(
                             text = {
                                 DashboardView(
-                                    dashboard = Dashboard,
+                                    dashboard = dashboard,
                                     textColor = FloconTheme.colorPalette.onPrimary,
                                     modifier = Modifier.padding(all = 4.dp),
                                 )
                             },
                             onClick = {
-                                onDashboardSelected(Dashboard)
+                                onDashboardSelected(dashboard)
                                 expanded = false // Close the dropdown after selection
                             },
                             modifier = Modifier.fillMaxWidth(),
