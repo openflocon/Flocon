@@ -56,9 +56,12 @@ fun main() {
             position = savedState.windowPosition(),
         )
 
-        Desktop.getDesktop().setAboutHandler {
-            openAbout = true
+        with(Desktop.getDesktop()) {
+            if (isSupported(Desktop.Action.APP_ABOUT)) {
+                setAboutHandler { openAbout = true }
+            }
         }
+
 
         setSingletonImageLoaderFactory { context ->
             ImageLoader
