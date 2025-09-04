@@ -21,8 +21,6 @@ class SettingsViewModel(
 
     private val _adbPathInput = MutableStateFlow("")
     val adbPathInput = _adbPathInput.asStateFlow()
-    private val _displayAboutScreen = MutableStateFlow(false)
-    val displayAboutScreen = _displayAboutScreen.asStateFlow()
     val needsAdbSetup = initialSetupStateHolder.needsAdbSetup
 
     init {
@@ -32,14 +30,6 @@ class SettingsViewModel(
                 path?.let { _adbPathInput.value = it }
             }
         }
-    }
-
-    fun displayAboutScreen() {
-        _displayAboutScreen.value = true
-    }
-
-    fun hideAboutScreen() {
-        _displayAboutScreen.value = false
     }
 
     fun onAdbPathChanged(newPath: String) {
