@@ -40,8 +40,6 @@ import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
-import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
-import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.possibleExceptions
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.view.NetworkExceptionSelector
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.createEditable
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.editableToUi
@@ -51,12 +49,10 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.model.Mo
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.SelectedMockUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
-import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
-import java.util.UUID
 
 @Composable
 fun NetworkEditionWindow(
@@ -71,10 +67,12 @@ fun NetworkEditionWindow(
             size = DpSize(900.dp, 700.dp)
         )
     }
+
     key(windowState, instanceId) {
         FloconWindow(
             title = "Mock Edition",
             state = windowState,
+            alwaysOnTop = true,
             onCloseRequest = onCloseRequest,
         ) {
             FloconSurface {
@@ -117,12 +115,6 @@ fun MockEditorScreen(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        FloconDialogHeader(
-            modifier = Modifier
-                .fillMaxWidth(),
-            title = "Mock Edition"
-        )
-
         error?.let {
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -131,7 +123,8 @@ fun MockEditorScreen(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .weight(1f)
                 .verticalScroll(scrollState),
         ) {
@@ -198,7 +191,7 @@ fun MockEditorScreen(
                 )
 
                 Text(
-                    text = "Type :",
+                    text = "Type",
                     style = MaterialTheme.typography.titleMedium,
                 )
 
@@ -477,13 +470,13 @@ fun RowScope.Tab(
                 } else {
                     Color.White.copy(alpha = 0.1f)
                 },
-            ).clickable {
-                onSelected()
-            }.padding(vertical = 8.dp),
+            )
+            .clickable(onClick = onSelected)
+            .padding(vertical = 8.dp),
         text = text,
         textAlign = TextAlign.Center,
         style = FloconTheme.typography.bodyMedium,
-        color = if(isSelected) {
+        color = if (isSelected) {
             FloconTheme.colorPalette.primary
         } else {
             FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f)

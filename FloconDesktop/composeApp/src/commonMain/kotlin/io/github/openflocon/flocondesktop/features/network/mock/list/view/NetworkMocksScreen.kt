@@ -1,12 +1,14 @@
 package io.github.openflocon.flocondesktop.features.network.mock.list.view
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,9 +21,10 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.view.Net
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockNetworkLineUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.previewMockNetworkLineUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -73,20 +76,27 @@ private fun NetworkMocksContent(
     onAddItemClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.padding(8.dp)
+    ) {
         FloconDialogHeader(
             title = "Mocks",
-            modifier = Modifier.fillMaxWidth(),
             trailingContent = {
-                FloconButton(
+                FloconIconTonalButton(
                     onClick = onAddItemClicked,
                 ) {
-                    Text("Create")
+                    FloconIcon(
+                        imageVector = Icons.Outlined.Add
+                    )
                 }
             }
         )
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().height(400.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
         ) {
             items(mocks) {
                 MockLineView(
