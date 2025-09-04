@@ -36,11 +36,10 @@ internal fun AnalyticsSelectorView(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(12.dp)
-    val contentPadding =
-        PaddingValues(
-            horizontal = 8.dp,
-            vertical = 4.dp,
-        )
+    val contentPadding = PaddingValues(
+        horizontal = 8.dp,
+        vertical = 4.dp,
+    )
 
     Row(
         modifier = modifier,
@@ -62,11 +61,11 @@ internal fun AnalyticsSelectorView(
             AnalyticsStateUiModel.Empty -> {
                 Text(
                     modifier = Modifier
-                        .background(FloconTheme.colorPalette.primary, shape = shape)
+                        .background(FloconTheme.colorPalette.secondary, shape = shape)
                         .padding(contentPadding),
                     text = "No Analytics Found",
                     style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.onPrimary,
+                    color = FloconTheme.colorPalette.onSecondary,
                 )
             }
 
@@ -75,10 +74,10 @@ internal fun AnalyticsSelectorView(
 
                 AnalyticsView(
                     analytics = analyticsState.selected,
-                    textColor = FloconTheme.colorPalette.primary,
+                    textColor = FloconTheme.colorPalette.onSecondary,
                     modifier = Modifier
                         .clip(shape)
-                        .background(FloconTheme.colorPalette.onPrimary)
+                        .background(FloconTheme.colorPalette.secondary)
                         .clickable { expanded = true }
                         .padding(contentPadding),
                 )

@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -43,10 +42,7 @@ fun AnalyticsRowView(
         Column(
             modifier = modifier
                 .clip(shape = RoundedCornerShape(8.dp))
-                .background(color = FloconTheme.colorPalette.primary)
-                .clickable(onClick = {
-                    onAction(AnalyticsAction.OnClick(model))
-                })
+                .clickable(onClick = { onAction(AnalyticsAction.OnClick(model)) })
                 .padding(horizontal = 12.dp)
                 .padding(top = 8.dp, bottom = 10.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -72,20 +68,20 @@ fun AnalyticsRowView(
                     Row(
                         Modifier
                             .background(
-                                shape = RoundedCornerShape(20.dp),
-                                color = Color.White.copy(alpha = 0.1f),
+                                shape = FloconTheme.shapes.extraLarge,
+                                color = FloconTheme.colorPalette.secondary
                             )
                             .padding(horizontal = 12.dp, vertical = 1.dp),
                     ) {
                         Text(
                             text = it.name + " :",
                             style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
-                            color = FloconTheme.colorPalette.onPrimary,
+                            color = FloconTheme.colorPalette.onSecondary,
                         )
                         Text(
                             text = it.value,
                             style = FloconTheme.typography.titleSmall,
-                            color = FloconTheme.colorPalette.onPrimary,
+                            color = FloconTheme.colorPalette.onSecondary,
                         )
                     }
                 }
