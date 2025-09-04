@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,16 +26,15 @@ fun FloconPageTopBar(
     content: @Composable ColumnScope.(contentPadding: PaddingValues) -> Unit = {},
 ) {
     Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colorPalette.primary)
-            .padding(vertical = 8.dp)
+            .padding(all = 8.dp)
     ) {
         if (selector != null) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -43,9 +43,7 @@ fun FloconPageTopBar(
         }
         if (filterBar != null || actions != null) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
@@ -68,6 +66,6 @@ fun FloconPageTopBar(
                 }
             }
         }
-        content(PaddingValues(start = 12.dp, end = 12.dp))
+        content(PaddingValues())
     }
 }

@@ -84,7 +84,7 @@ private fun ColumnScope.MenuItems(
     onClickItem: (LeftPanelItem) -> Unit,
 ) {
     items.fastForEach { item ->
-        PannelView(
+        PanelView(
             modifier = Modifier
                 .height(PanelContentMinSize)
                 .fillMaxWidth(),

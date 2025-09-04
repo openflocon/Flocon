@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.theme.contentColorFor
 
 private val VerticalContentPadding = 4.dp
 private val HorizontalContentPadding = 8.dp
@@ -23,16 +25,17 @@ private val HorizontalContentPadding = 8.dp
 fun FloconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    containerColor: Color = FloconTheme.colorPalette.primary,
     content: @Composable RowScope.() -> Unit
 ) {
     FloconSurface(
-        color = FloconTheme.colorPalette.primary,
-        contentColor = FloconTheme.colorPalette.onPrimary,
+        color = containerColor,
+        contentColor = FloconTheme.colorPalette.contentColorFor(containerColor),
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(6.dp)
     ) {
-        CompositionLocalProvider(LocalTextStyle provides FloconTheme.typography.labelLarge) {
+        ProvideTextStyle(FloconTheme.typography.labelLarge) {
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,

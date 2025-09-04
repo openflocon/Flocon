@@ -17,8 +17,10 @@ fun FloconSwitch(
         checked = checked,
         onCheckedChange = onCheckedChange,
         colors = SwitchDefaults.colors(
-            checkedTrackColor = FloconTheme.colorPalette.onSecondary,
-            uncheckedTrackColor = FloconTheme.colorPalette.onTertiary
+            checkedTrackColor = FloconTheme.colorPalette.accent,
+            checkedThumbColor = FloconTheme.colorPalette.onAccent,
+            uncheckedThumbColor = FloconTheme.colorPalette.onSecondary,
+            uncheckedTrackColor = FloconTheme.colorPalette.secondary
         ),
         modifier = modifier.scale(0.5f)
     )
