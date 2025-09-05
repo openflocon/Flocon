@@ -32,8 +32,8 @@ fun FloconTextValue(
             text = value,
             style = FloconTheme.typography.labelSmall,
             modifier = Modifier.weight(1f)
-                .clip(RoundedCornerShape(4.dp))
-                .background(FloconTheme.colorPalette.surfaceVariant)
+                .clip(FloconTheme.shapes.small)
+                .background(FloconTheme.colorPalette.primary)
                 .padding(4.dp)
         )
     }

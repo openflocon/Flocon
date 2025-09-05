@@ -10,10 +10,14 @@ class SendCommandUseCase(
     private val settingsRepository: SettingsRepository
 ) {
 
-    suspend operator fun invoke(vararg args: String): Either<Throwable, String> = Either.catch {
+    suspend operator fun invoke(
+        deviceSerial: String,
+        vararg args: String
+    ): Either<Throwable, String> = Either.catch {
         return adbRepository.executeAdbCommand(
             adbPath = settingsRepository.adbPath.firstOrNull() ?: throw Throwable("error"),
-            command = args.joinToString(separator = " ")
+            command = args.joinToString(separator = " "),
+            deviceSerial = deviceSerial
         )
     }
 

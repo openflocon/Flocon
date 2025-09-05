@@ -1,6 +1,6 @@
 package io.github.openflocon.domain.deeplink.usecase
 
-import io.github.openflocon.domain.adb.ExecuteAdbCommandUseCase
+import io.github.openflocon.domain.adb.usecase.ExecuteAdbCommandUseCase
 import io.github.openflocon.domain.adb.model.AdbCommandTargetDomainModel
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 
