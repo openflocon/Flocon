@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.common.ui.window
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
@@ -13,18 +14,18 @@ import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 import io.github.openflocon.library.designsystem.components.escape.EscapeHandlerProvider
 import org.jetbrains.compose.resources.painterResource
 
-actual fun rememberFloconWindowState(
-    placement: WindowPlacement,
-    position: WindowPosition,
-    size: DpSize
-): FloconWindowState {
-    return FloconWindowStateDesktop(
-        WindowState(
-            placement = WindowPlacement.Floating,
-            position = WindowPosition(Alignment.Center),
-        )
-    )
-}
+//actual fun rememberFloconWindowState(
+//    placement: WindowPlacement,
+//    position: WindowPosition,
+//    size: DpSize
+//): FloconWindowState {
+//    return FloconWindowStateDesktop(
+//        WindowState(
+//            placement = WindowPlacement.Floating,
+//            position = WindowPosition(Alignment.Center),
+//        )
+//    )
+//}
 
 data class FloconWindowStateDesktop(
     val windowState: WindowState,
@@ -46,7 +47,7 @@ actual fun FloconWindow(
     state: FloconWindowState,
     onCloseRequest: () -> Unit,
     alwaysOnTop: Boolean,
-    content: @Composable () -> Unit,
+    content: @Composable FrameWindowScope.() -> Unit,
 ) {
     Window(
         title = title,
