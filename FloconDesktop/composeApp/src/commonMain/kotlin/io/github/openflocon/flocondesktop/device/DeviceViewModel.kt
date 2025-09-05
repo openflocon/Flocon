@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.device
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.openflocon.domain.adb.usecase.GetDeviceSerialUseCase
 import io.github.openflocon.domain.adb.usecase.SendCommandUseCase
 import io.github.openflocon.domain.common.getOrNull
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,8 +11,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class DeviceViewModel(
-    val deviceSerial: String,
-    val sendCommandUseCase: SendCommandUseCase
+    val deviceId: String,
+    val sendCommandUseCase: SendCommandUseCase,
+    val deviceSerialUseCase: GetDeviceSerialUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -29,9 +31,15 @@ internal class DeviceViewModel(
     )
     val uiState = _uiState.asStateFlow()
 
+    private var deviceSerial: String = ""
+
     init {
         onRefresh()
         deviceInfo()
+
+        viewModelScope.launch {
+            deviceSerial = deviceSerialUseCase(deviceId)
+        }
     }
 
     fun onAction(action: DeviceAction) {
@@ -49,9 +57,9 @@ internal class DeviceViewModel(
         viewModelScope.launch {
             _uiState.update { state ->
                 state.copy(
-                    cpu = main(sendCommandUseCase("shell", "dumpsys", "cpuinfo").getOrNull().orEmpty()),
-                    battery = sendCommandUseCase("shell", "dumpsys", "battery").getOrNull().orEmpty(),
-                    mem = sendCommandUseCase("shell", "dumpsys", "meminfo").getOrNull().orEmpty(),
+                    cpu = main(sendCommand("shell", "dumpsys", "cpuinfo")),
+                    battery = sendCommand("shell", "dumpsys", "battery"),
+                    mem = sendCommand("shell", "dumpsys", "meminfo")
                 )
             }
         }
@@ -61,14 +69,21 @@ internal class DeviceViewModel(
         viewModelScope.launch {
             _uiState.update { state ->
                 state.copy(
-                    model = sendCommandUseCase("shell", "getprop", "ro.product.model").getOrNull().orEmpty().replace("\n", ""),
-                    brand = sendCommandUseCase("shell", "getprop", "ro.product.brand").getOrNull().orEmpty().replace("\n", ""),
-                    versionRelease = sendCommandUseCase("shell", "getprop", "ro.build.version.release").getOrNull().orEmpty().replace("\n", ""),
-                    versionSdk = sendCommandUseCase("shell", "getprop", "ro.build.version.sdk").getOrNull().orEmpty().replace("\n", ""),
-                    serialNumber = sendCommandUseCase("shell", "getprop", "ro.serialno").getOrNull().orEmpty().replace("\n", ""),
+                    model = sendCommand("shell", "getprop", "ro.product.model"),
+                    brand = sendCommand("shell", "getprop", "ro.product.brand"),
+                    versionRelease = sendCommand("shell", "getprop", "ro.build.version.release"),
+                    versionSdk = sendCommand("shell", "getprop", "ro.build.version.sdk"),
+                    serialNumber = sendCommand("shell", "getprop", "ro.serialno")
                 )
             }
         }
+    }
+
+    private suspend fun sendCommand(vararg args: String): String {
+        return sendCommandUseCase(deviceSerial, *args)
+            .getOrNull()
+            .orEmpty()
+            .replace("\n", "")
     }
 
     data class ProcessCpuInfo(

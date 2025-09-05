@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DesktopAccessDisabled
 import androidx.compose.material.icons.filled.DesktopWindows
@@ -24,6 +23,11 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +50,8 @@ internal fun TopBarDeviceView(
     selected: Boolean = false,
     onDelete: (() -> Unit)? = null,
 ) {
+    var openDetail by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier
             .then(
@@ -120,15 +126,21 @@ internal fun TopBarDeviceView(
                     ),
                 )
             }
+            FloconIconButton(
+                onClick = { openDetail = true }
+            ) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.Details
+                )
+            }
             if (!selected && onDelete != null) {
                 Spacer(modifier = Modifier.weight(1f))
                 Box(
-                    Modifier.clip(RoundedCornerShape(4.dp))
-                        .background(
-                            Color.White.copy(alpha = 0.8f)
-                        ).padding(2.dp).clickable {
-                            onDelete()
-                        },
+                    Modifier
+                        .clip(FloconTheme.shapes.small)
+                        .background(Color.White.copy(alpha = 0.8f))
+                        .padding(2.dp)
+                        .clickable(onClick = onDelete),
                     contentAlignment = Alignment.Center,
                 ) {
                     FloconIcon(
@@ -138,6 +150,15 @@ internal fun TopBarDeviceView(
                     )
                 }
             }
+        }
+    }
+
+    if (openDetail) {
+        key(device.id) {
+            DeviceScreen(
+                deviceId = device.id,
+                onCloseRequest = { openDetail = false }
+            )
         }
     }
 }
