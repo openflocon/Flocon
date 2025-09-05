@@ -10,6 +10,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
@@ -19,18 +20,18 @@ import flocondesktop.composeapp.generated.resources.app_icon
 import io.github.openflocon.library.designsystem.components.escape.LocalEscapeHandlerStack
 import org.jetbrains.compose.resources.painterResource
 
-actual fun rememberFloconWindowState(
-    placement: WindowPlacement,
-    position: WindowPosition,
-    size: DpSize
-): FloconWindowState {
-    return FloconWindowStateDesktop(
-        WindowState(
-            placement = WindowPlacement.Floating,
-            position = WindowPosition(Alignment.Center),
-        )
-    )
-}
+//actual fun rememberFloconWindowState(
+//    placement: WindowPlacement,
+//    position: WindowPosition,
+//    size: DpSize
+//): FloconWindowState {
+//    return FloconWindowStateDesktop(
+//        WindowState(
+//            placement = WindowPlacement.Floating,
+//            position = WindowPosition(Alignment.Center),
+//        )
+//    )
+//}
 
 data class FloconWindowStateDesktop(
     val windowState: WindowState,
@@ -51,7 +52,7 @@ actual fun FloconWindow(
     state: FloconWindowState,
     onCloseRequest: () -> Unit,
     alwaysOnTop: Boolean,
-    content: @Composable () -> Unit,
+    content: @Composable FrameWindowScope.() -> Unit,
 ) {
     val handlers = remember { mutableStateListOf<() -> Boolean>() }
 

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
-import io.github.openflocon.flocondesktop.common.ui.window.rememberFloconWindowState
+import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconScrollableTabRow
@@ -33,7 +33,6 @@ import io.github.openflocon.library.designsystem.components.FloconTextValue
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import java.awt.Dimension
 
 @Composable
 internal fun DeviceScreen(
@@ -67,16 +66,16 @@ private fun Content(
     FloconWindow(
         title = "Device",
         onCloseRequest = onCloseRequest,
-        state = rememberFloconWindowState()
+        state = createFloconWindowState()
     ) {
-        window.minimumSize = Dimension(500, 500) // TODO
+//        window.minimumSize = Dimension(500, 500) // TODO
         FloconSurface(
             modifier = Modifier.fillMaxSize()
         ) {
             Scaffold(
                 topBar = {
                     Column(
-                        modifier = Modifier.background(FloconTheme.colorPalette.surfaceVariant.copy(alpha = 1f))
+                        modifier = Modifier.background(FloconTheme.colorPalette.primary.copy(alpha = 1f))
                     ) {
                         Header(
                             uiState = uiState,
@@ -98,7 +97,7 @@ private fun Content(
                         }
                     }
                 },
-                containerColor = FloconTheme.colorPalette.panel
+                containerColor = FloconTheme.colorPalette.primary
             ) {
                 Column(
                     modifier = Modifier
