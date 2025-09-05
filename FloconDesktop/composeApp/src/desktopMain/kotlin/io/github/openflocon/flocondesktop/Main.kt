@@ -1,11 +1,14 @@
 package io.github.openflocon.flocondesktop
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.MenuBar
@@ -23,12 +26,15 @@ import flocondesktop.composeapp.generated.resources.app_icon_small
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
 import io.github.openflocon.flocondesktop.about.AboutScreen
+import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
+import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_HEIGHT
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_WIDTH
 import io.github.openflocon.flocondesktop.window.WindowStateData
 import io.github.openflocon.flocondesktop.window.WindowStateSaver
 import io.github.openflocon.flocondesktop.window.size
 import io.github.openflocon.flocondesktop.window.windowPosition
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 import java.awt.Desktop
@@ -50,9 +56,12 @@ fun main() {
             position = savedState.windowPosition(),
         )
 
-        Desktop.getDesktop().setAboutHandler {
-            openAbout = true
+        with(Desktop.getDesktop()) {
+            if (isSupported(Desktop.Action.APP_ABOUT)) {
+                setAboutHandler { openAbout = true }
+            }
         }
+
 
         setSingletonImageLoaderFactory { context ->
             ImageLoader
@@ -86,8 +95,7 @@ fun main() {
             if (ACTIVATE_TRAY_NOTIFICATION) {
                 FloconTray()
             }
-            // TODO later
-//            FloconMenu()
+            FloconMenu()
 
             if (openAbout) {
                 AboutScreen(
@@ -100,27 +108,35 @@ fun main() {
 
 @Composable
 private fun FrameWindowScope.FloconMenu() {
-    var openSettings by remember { mutableStateOf(false) }
+    var openLicenses by remember { mutableStateOf(false) }
 
     MenuBar {
         Menu(
             text = "Settings"
         ) {
             Item(
-                text = "Open",
+                text = "Licences",
                 onClick = {
-                    openSettings = true
+                    openLicenses = true
                 }
             )
         }
     }
 
-    // TODO Later
-//    if (openSettings) {
-//        SettingsScreen(
-//            onCloseRequest = { openSettings = false }
-//        )
-//    }
+    if (openLicenses) {
+        FloconWindow(
+            title = "Licenses",
+            state = createFloconWindowState(),
+            alwaysOnTop = true,
+            onCloseRequest = { openLicenses = false },
+        ) {
+            io.github.openflocon.flocondesktop.main.ui.settings.AboutScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(FloconTheme.colorPalette.primary),
+            )
+        }
+    }
 }
 
 @Composable

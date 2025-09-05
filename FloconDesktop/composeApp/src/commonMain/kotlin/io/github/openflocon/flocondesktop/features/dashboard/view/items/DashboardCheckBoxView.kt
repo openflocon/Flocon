@@ -13,14 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun DashboardCheckBoxView(
-    rowItem: DashboardItemViewState.RowItem.CheckBox,
+    rowItem: DashboardContainerViewState.RowItem.CheckBox,
     value: Boolean,
     onCheckedChange: (value: Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
@@ -58,7 +58,7 @@ internal fun DashboardCheckBoxView(
 @Preview
 @Composable
 internal fun DashboardCheckBoxViewPreview() {
-    val rowItem = DashboardItemViewState.RowItem.CheckBox(
+    val rowItem = DashboardContainerViewState.RowItem.CheckBox(
         id = "button1",
         label = "Click Me",
         value = true,

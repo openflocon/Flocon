@@ -1,33 +1,22 @@
 package io.github.openflocon.flocondesktop.features.table.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
-import io.github.openflocon.flocondesktop.features.table.model.previewDeviceTableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
 
 @Composable
 internal fun TableSelectorView(
@@ -35,102 +24,48 @@ internal fun TableSelectorView(
     onTableSelected: (DeviceTableUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(12.dp)
-    val contentPadding =
-        PaddingValues(
-            horizontal = 8.dp,
-            vertical = 4.dp,
-        )
+    var expanded by remember { mutableStateOf(false) }
 
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = "Table : ",
-            color = FloconTheme.colorPalette.onPrimary,
-            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-        )
-
-        Spacer(modifier = Modifier.width(4.dp))
-
-        when (tablesState) {
-            TablesStateUiModel.Loading -> {
-                // hide
-            }
-
-            TablesStateUiModel.Empty -> {
-                Text(
-                    modifier = Modifier
-                        .background(FloconTheme.colorPalette.onPrimary, shape = shape)
-                        .padding(contentPadding),
-                    text = "No Table Found",
-                    style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.primary,
-                )
-            }
-
-            is TablesStateUiModel.WithContent -> {
-                var expanded by remember { mutableStateOf(false) }
-
-                TableView(
-                    table = tablesState.selected,
-                    textColor = FloconTheme.colorPalette.primary,
-                    modifier =
-                        Modifier
-                            .clip(shape)
-                            .background(FloconTheme.colorPalette.onPrimary)
-                            .clickable { expanded = true }
-                            .padding(contentPadding),
-                )
-
-                FloconDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    tablesState.tables.forEach { table ->
-                        DropdownMenuItem(
-                            text = {
-                                TableView(
-                                    table = table,
-                                    textColor = FloconTheme.colorPalette.onPrimary,
-                                    modifier = Modifier.padding(all = 4.dp),
-                                )
-                            },
-                            onClick = {
-                                onTableSelected(table)
-                                expanded = false // Close the dropdown after selection
-                            },
-                            modifier = Modifier.fillMaxWidth(),
+    FloconDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        onExpandRequest = {
+            if (tablesState is TablesStateUiModel.WithContent)
+                expanded = true
+        },
+        anchorContent = {
+            FloconButton(
+                onClick = {
+                    if (tablesState is TablesStateUiModel.WithContent)
+                        expanded = true
+                },
+                containerColor = FloconTheme.colorPalette.secondary
+            ) {
+                when (tablesState) {
+                    TablesStateUiModel.Empty -> Text("No database")
+                    TablesStateUiModel.Loading -> FloconLinearProgressIndicator()
+                    is TablesStateUiModel.WithContent -> {
+                        Text(text = tablesState.selected.name)
+                        FloconIcon(
+                            imageVector = Icons.Outlined.KeyboardArrowDown
                         )
                     }
                 }
             }
+        },
+        modifier = modifier
+    ) {
+        if (tablesState is TablesStateUiModel.WithContent) {
+            tablesState.tables
+                .forEach { table ->
+                    FloconDropdownMenuItem(
+                        text = table.name,
+                        onClick = {
+                            onTableSelected(table)
+                            expanded = false
+                        }
+                    )
+                }
         }
-    }
-}
-
-@Composable
-private fun TableView(
-    table: DeviceTableUiModel,
-    textColor: Color,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        modifier = modifier,
-        text = table.name,
-        color = textColor,
-        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-    )
-}
-
-@Preview
-@Composable
-private fun TableViewPreview() {
-    FloconTheme {
-        TableView(
-            table = previewDeviceTableUiModel(),
-            textColor = FloconTheme.colorPalette.primary,
-        )
     }
 }

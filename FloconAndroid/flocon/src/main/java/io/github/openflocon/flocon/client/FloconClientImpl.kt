@@ -3,6 +3,8 @@ package io.github.openflocon.flocon.client
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
+import android.widget.Toast
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconPlugin
@@ -27,7 +29,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 internal class FloconClientImpl(
-    appContext: Context,
+    private val appContext: Context,
 ) : FloconApp.Client {
 
     private val FLOCON_PORT = 9023
@@ -183,5 +185,11 @@ internal class FloconClientImpl(
                 message = floconMessage,
             )
         }
+    }
+
+    fun displayClearTextError() {
+
+        Toast.makeText(appContext, "Cannot start Flocon : ClearText Issue, see Logcat", Toast.LENGTH_LONG).show()
+        Log.e("Flocon", "Flocon uses ClearText communication to the server, it seems you already have a network-security-config setup on your project, please ensure you allowed cleartext communication on your debug app https://github.com/openflocon/Flocon?tab=readme-ov-file#-why-flocon-cant-see-your-device-calls-and-how-to-fix-it-")
     }
 }

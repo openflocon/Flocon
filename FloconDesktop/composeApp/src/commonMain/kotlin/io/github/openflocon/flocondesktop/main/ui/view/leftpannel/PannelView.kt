@@ -11,17 +11,19 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -31,7 +33,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun PannelView(
+fun PanelView(
     icon: ImageVector,
     text: String,
     isSelected: Boolean,
@@ -39,14 +41,31 @@ fun PannelView(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(8.dp)
+    val interactionSource = remember { MutableInteractionSource() }
+    val hovered by interactionSource.collectIsHoveredAsState()
+    val shape = FloconTheme.shapes.medium
     val shadow by animateDpAsState(
-        targetValue = if (isSelected) 6.dp else 0.dp,
+        targetValue = when {
+            isSelected -> 6.dp
+            hovered -> 2.dp
+            else -> 0.dp
+        },
         label = "shadow",
     )
     val color by animateColorAsState(
-        targetValue = if (isSelected) FloconTheme.colorPalette.primary else FloconTheme.colorPalette.surface,
+        targetValue = when {
+            isSelected -> FloconTheme.colorPalette.primary
+            hovered -> FloconTheme.colorPalette.secondary
+            else -> FloconTheme.colorPalette.surface
+        },
         label = "color",
+    )
+    val iconColor by animateColorAsState(
+        targetValue = when {
+            isSelected -> FloconTheme.colorPalette.onAccent
+            hovered -> FloconTheme.colorPalette.onSurface
+            else -> FloconTheme.colorPalette.onSurface
+        }
     )
 
     Row(
@@ -54,7 +73,7 @@ fun PannelView(
             .height(28.dp)
             .shadow(elevation = shadow, shape = shape, clip = true, ambientColor = color, spotColor = color)
             .background(color)
-            .clickable(onClick = onClick, interactionSource = null, indication = null)
+            .clickable(onClick = onClick, interactionSource = interactionSource, indication = null)
             .padding(horizontal = 12.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -63,7 +82,7 @@ fun PannelView(
                 .size(16.dp),
             imageVector = icon,
             contentDescription = "Description de mon image",
-            tint = FloconTheme.colorPalette.onSurface,
+            tint = iconColor,
         )
         AnimatedVisibility(
             expanded,
@@ -85,7 +104,7 @@ fun PannelView(
 @Preview
 private fun PannelViewPreview() {
     FloconTheme {
-        PannelView(
+        PanelView(
             icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = false,
@@ -99,7 +118,7 @@ private fun PannelViewPreview() {
 @Preview
 private fun PannelViewPreview_Selected() {
     FloconTheme {
-        PannelView(
+        PanelView(
             icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = true,

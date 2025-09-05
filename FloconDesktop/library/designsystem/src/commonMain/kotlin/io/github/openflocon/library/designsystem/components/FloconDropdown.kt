@@ -10,6 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,8 +35,9 @@ import com.composeunstyled.DropdownPanelAnchor
 import com.composeunstyled.Text
 import io.github.openflocon.library.designsystem.FloconTheme
 
-private val DropdownWidth = 300.dp
+private val DropdownWidth = 250.dp
 private val DropdownItemHeight = 30.dp
+private val DropdownItemHorizontalPadding = 4.dp
 
 @Composable
 fun FloconDropdownMenu(
@@ -77,7 +80,9 @@ fun FloconDropdownMenu(
             contentPadding = PaddingValues(2.dp),
             anchor = anchor,
             modifier = Modifier
-                .width(width = DropdownWidth)
+                .widthIn(min = DropdownWidth)
+                .width(IntrinsicSize.Max)
+                .padding(top = 8.dp)
                 .clip(FloconTheme.shapes.medium)
                 .background(FloconTheme.colorPalette.primary)
                 .border(
@@ -85,7 +90,6 @@ fun FloconDropdownMenu(
                     color = Color.White.copy(alpha = .5f), // TODO
                     shape = FloconTheme.shapes.medium
                 )
-                .padding(horizontal = 4.dp, vertical = 4.dp)
         ) {
             content()
         }
@@ -107,6 +111,7 @@ fun FloconDropdownMenuItem(
                 indication = LocalIndication.current,
                 interactionSource = interaction,
             )
+            .padding(horizontal = DropdownItemHorizontalPadding)
     ) {
         LeadingIcon(leadingIcon)
         Text(
@@ -134,6 +139,7 @@ fun FloconDropdownMenuItem(
                 indication = LocalIndication.current,
                 interactionSource = interaction,
             )
+            .padding(PaddingValues(horizontal = DropdownItemHorizontalPadding))
     ) {
         LeadingIcon(leadingIcon)
         Text(

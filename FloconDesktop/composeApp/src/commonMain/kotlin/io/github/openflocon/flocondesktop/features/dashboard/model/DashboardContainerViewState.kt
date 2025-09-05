@@ -1,12 +1,10 @@
 package io.github.openflocon.flocondesktop.features.dashboard.model
 
 import androidx.compose.ui.graphics.Color
-import io.github.openflocon.domain.dashboard.models.ContainerConfigDomainModel
-import io.github.openflocon.domain.dashboard.models.SectionContainerConfigDomainModel
 
-data class DashboardItemViewState(
+data class DashboardContainerViewState(
     val containerName: String,
-    val containerConfig: ContainerConfigDomainModel,
+    val containerConfig: ContainerConfig,
     val rows: List<RowItem>,
 ) {
     sealed interface RowItem {
@@ -15,20 +13,24 @@ data class DashboardItemViewState(
             val value: String,
             val color: Color?,
         ) : RowItem
+
         data class PlainText(
             val label: String,
             val value: String,
         ) : RowItem
+
         data class Button(
             val text: String,
             val id: String,
         ) : RowItem
+
         data class TextField(
             val label: String,
             val placeHolder: String?,
             override val value: String,
             override val id: String,
         ) : RowItem, InputItem
+
         data class CheckBox(
             val label: String,
             override val value: Boolean,
@@ -41,16 +43,30 @@ data class DashboardItemViewState(
         val id: String
         val value: Any
     }
+
+    sealed interface ContainerConfig {
+        data class Form(
+            val formId: String,
+            val submitText: String,
+        ) : ContainerConfig
+
+        object Section : ContainerConfig
+    }
 }
 
-fun previewDashboardItemViewState() = DashboardItemViewState(
+fun previewDashboardContainerViewState() = DashboardContainerViewState(
     containerName = "User",
-    containerConfig = SectionContainerConfigDomainModel,
+    containerConfig = DashboardContainerViewState.ContainerConfig.Section,
     rows = listOf(
-        DashboardItemViewState.RowItem.Text("username", "flo", color = null),
-        DashboardItemViewState.RowItem.Text("user.id", "1234567", color = Color.Red),
-        DashboardItemViewState.RowItem.CheckBox(label = "isEnabled", value = true, "id"),
-        DashboardItemViewState.RowItem.TextField(label = "change name", value = "florent", id = "id", placeHolder = "new name"),
-        DashboardItemViewState.RowItem.Button("click me", "id"),
+        DashboardContainerViewState.RowItem.Text("username", "flo", color = null),
+        DashboardContainerViewState.RowItem.Text("user.id", "1234567", color = Color.Red),
+        DashboardContainerViewState.RowItem.CheckBox(label = "isEnabled", value = true, "id"),
+        DashboardContainerViewState.RowItem.TextField(
+            label = "change name",
+            value = "florent",
+            id = "id",
+            placeHolder = "new name"
+        ),
+        DashboardContainerViewState.RowItem.Button("click me", "id"),
     ),
 )

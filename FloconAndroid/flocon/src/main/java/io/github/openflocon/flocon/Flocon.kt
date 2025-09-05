@@ -14,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 object Flocon : FloconApp() {
 
@@ -55,9 +56,15 @@ object Flocon : FloconApp() {
             // if success, just send a bonjour
             client.send("bonjour", method = "bonjour", body = "bonjour")
         } catch (t: Throwable) {
-            //t.printStackTrace()
-            delay(3_000)
-            start(client)
+            if(t.message?.contains("CLEARTEXT communication to localhost not permitted by network security policy") == true) {
+                withContext(Dispatchers.Main) {
+                    client.displayClearTextError()
+                }
+            } else {
+                //t.printStackTrace()
+                delay(3_000)
+                start(client)
+            }
         }
     }
 

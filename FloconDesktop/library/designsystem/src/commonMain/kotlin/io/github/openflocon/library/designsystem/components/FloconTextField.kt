@@ -27,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
@@ -173,11 +175,13 @@ fun FloconTextFieldWithoutM3(
     suffix: @Composable (() -> Unit)? = null,
     enabled: Boolean = true,
     singleLine: Boolean = true,
+    readOnly: Boolean = false,
     isError: Boolean = false,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     textStyle: TextStyle = FloconTheme.typography.bodySmall,
     containerColor: Color = FloconTheme.colorPalette.primary,
     contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor)
@@ -190,6 +194,7 @@ fun FloconTextFieldWithoutM3(
         textStyle = textStyle.copy(color = contentColor),
         maxLines = maxLines,
         minLines = minLines,
+        readOnly = readOnly,
         cursorBrush = SolidColor(contentColor),
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
@@ -200,10 +205,14 @@ fun FloconTextFieldWithoutM3(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
-                    .fillMaxWidth()
                     .clip(shape)
+                    .drawWithCache {
+                        val outline = shape.createOutline(size, layoutDirection, this)
+                        onDrawBehind { drawOutline(outline, color = containerColor) }
+                    }
                     .background(containerColor)
                     .padding(horizontal = 4.dp)
+                    .padding(contentPadding)
             ) {
                 CompositionLocalProvider(LocalContentColor provides contentColor) {
                     if (leadingComponent != null) {
@@ -213,8 +222,7 @@ fun FloconTextFieldWithoutM3(
                         prefix()
                     }
                     Box(
-                        contentAlignment = Alignment.CenterStart,
-                        modifier = Modifier.weight(1f)
+                        contentAlignment = Alignment.CenterStart
                     ) {
                         if (value.isEmpty() && placeholder != null) {
                             placeholder()

@@ -5,6 +5,7 @@ import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.ripple
@@ -13,6 +14,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.theme.FloconColorPaletteNew
 import io.github.openflocon.library.designsystem.theme.FloconShape
@@ -45,7 +47,7 @@ fun FloconTheme(
         isDarkTheme -> darkPalette
         else -> lightPalette
     }
-    val ripple = ripple()
+    val ripple = ripple(color = colorPalette.accent)
     val selectionTextColor = TextSelectionColors(
         handleColor = Color.White,
         backgroundColor = Color.White.copy(alpha = 0.5f)
@@ -83,6 +85,7 @@ fun FloconTheme(
             LocalFloconColorPalette provides colorPalette,
             LocalTextSelectionColors provides selectionTextColor,
             LocalScrollbarStyle provides scrollbarStyle,
+            LocalMinimumInteractiveComponentSize provides Dp.Unspecified,
             content = content
         )
     }
