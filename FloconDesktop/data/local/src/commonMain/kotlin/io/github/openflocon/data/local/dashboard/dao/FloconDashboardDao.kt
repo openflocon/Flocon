@@ -8,8 +8,8 @@ import androidx.room.Transaction
 import io.github.openflocon.data.local.dashboard.mapper.toEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
-import io.github.openflocon.data.local.dashboard.models.DashboardSectionEntity
-import io.github.openflocon.data.local.dashboard.models.DashboardWithSectionsAndElements
+import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardWithContainersAndElements
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
@@ -26,11 +26,11 @@ interface FloconDashboardDao {
         LIMIT 1
     """,
     )
-    fun observeDashboardWithSectionsAndElements(
+    fun observeDashboardWithContainersAndElements(
         deviceId: String,
         packageName: String,
         dashboardId: String,
-    ): Flow<DashboardWithSectionsAndElements?>
+    ): Flow<DashboardWithContainersAndElements?>
 
     @Transaction
     @Query(
@@ -50,7 +50,7 @@ interface FloconDashboardDao {
     suspend fun insertDashboard(dashboard: DashboardEntity): Long // Returns generated ID
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSections(sections: List<DashboardSectionEntity>): List<Long> // Returns generated IDs
+    suspend fun insertContainers(containers: List<DashboardContainerEntity>): List<Long> // Returns generated IDs
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDashboardElements(elements: List<DashboardElementEntity>)
@@ -80,25 +80,25 @@ interface FloconDashboardDao {
             ),
         )
 
-        // 3. Prepare sections with the new dashboardId, insert them, and get their new IDs
-        val insertedSectionsIds = insertSections(
-            sections = dashboard.sections
-                .mapIndexed { index, section ->
-                    section.toEntity(
+        // 3. Prepare containers with the new dashboardId, insert them, and get their new IDs
+        val insertedContainersIds = insertContainers(
+            containers = dashboard.containers
+                .mapIndexed { index, container ->
+                    container.toEntity(
                         dashboardId = dashboard.dashboardId,
                         index = index,
                     )
                 },
         )
 
-        // 4. Prepare elements with new sectionIds and insert them
+        // 4. Prepare elements with new containerIds and insert them
         val allElementsToInsert = mutableListOf<DashboardElementEntity>()
-        dashboard.sections.forEachIndexed { index, section ->
-            insertedSectionsIds.getOrNull(index)?.let { sectionId ->
-                section.elements.forEachIndexed { index, element ->
+        dashboard.containers.forEachIndexed { index, container ->
+            insertedContainersIds.getOrNull(index)?.let { containerId ->
+                container.elements.forEachIndexed { index, element ->
                     allElementsToInsert.add(
                         element.toEntity(
-                            sectionId = sectionId,
+                            containerId = containerId,
                             index = index,
                         ),
                     )

@@ -15,14 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun DashboardPlainTextView(
     modifier: Modifier = Modifier,
-    rowItem: DashboardItemViewState.RowItem.PlainText,
+    rowItem: DashboardContainerViewState.RowItem.PlainText,
 ) {
     SelectionContainer(
         modifier = modifier,
@@ -65,7 +65,7 @@ internal fun DashboardPlainTextView(
 @Preview
 @Composable
 internal fun DashboardPlainTextViewPreview() {
-    val rowItem = DashboardItemViewState.RowItem.PlainText(
+    val rowItem = DashboardContainerViewState.RowItem.PlainText(
         label = "label",
         value = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eget ullamcorper elit. Pellentesque turpis ex, cursus cursus urna sed, iaculis sagittis nisl. Curabitur vehicula nunc eu metus rhoncus placerat. Vivamus at placerat ligula. Morbi ullamcorper cursus tellus, vitae molestie lorem sollicitudin euismod. Sed ullamcorper, risus vitae facilisis tempor, elit leo accumsan purus, ut ultricies augue erat et justo. Duis efficitur mauris eu finibus tincidunt. Aenean magna libero, auctor quis turpis et, viverra porta lorem. Ut tempus odio sit amet vestibulum condimentum. Donec et augue quis arcu blandit sodales. In laoreet odio id turpis ultricies, eu ornare dui blandit. Morbi hendrerit velit turpis, eget ornare ex consequat id. Nullam rhoncus, libero et sollicitudin tristique, risus ipsum luctus neque, ultricies ullamcorper felis metus non turpis. Nullam sed accumsan sem, at fermentum tortor.",
     )
@@ -82,7 +82,7 @@ internal fun DashboardPlainTextViewPreview() {
 @Preview
 @Composable
 internal fun DashboardPlainTextViewPreview_json() {
-    val rowItem = DashboardItemViewState.RowItem.PlainText(
+    val rowItem = DashboardContainerViewState.RowItem.PlainText(
         label = "json",
         value = """
                                 {

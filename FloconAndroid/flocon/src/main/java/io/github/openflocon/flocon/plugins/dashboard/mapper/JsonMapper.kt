@@ -1,10 +1,14 @@
 package io.github.openflocon.flocon.plugins.dashboard.mapper
 
+import io.github.openflocon.flocon.plugins.dashboard.model.ContainerType
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback.*
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.ButtonConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.CheckBoxConfig
+import io.github.openflocon.flocon.plugins.dashboard.model.config.ContainerConfig
+import io.github.openflocon.flocon.plugins.dashboard.model.config.ElementConfig
+import io.github.openflocon.flocon.plugins.dashboard.model.config.FormConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.PlainTextConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.SectionConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.TextConfig
@@ -19,77 +23,127 @@ fun DashboardConfig.toJson(
 
     rootJson.put("dashboardId", id)
 
-    val sectionsJsonArray = JSONArray()
+    val containersJsonArray = JSONArray()
 
-    sections.forEach { section ->
-        val sectionJson = section.sectionToJson(
+    containers.forEach { container ->
+        val containerJson = container.toJson(
             dashboardId = id,
             registerCallback = registerCallback,
         )
-        sectionsJsonArray.put(sectionJson)
+        containersJsonArray.put(containerJson)
     }
 
-    rootJson.put("sections", sectionsJsonArray)
+    rootJson.put("containers", containersJsonArray)
     return rootJson
 }
 
-
-internal fun SectionConfig.sectionToJson(
+//  {
+//      "name" : "container name",
+//      "containerType" : "SECTION",
+//      "elements" : [ ... ],
+//      "containerConfig" : ...
+//  }
+internal fun ContainerConfig.toJson(
     registerCallback: (DashboardCallback) -> Unit,
     dashboardId: String,
-): JSONObject {
-    val sectionJson = JSONObject()
-    sectionJson.put("name", this.name)
+): JSONObject = JSONObject().apply {
 
-    val sectionArray = JSONArray()
-    elements.forEach {
-        val elementJson: JSONObject = when (it) {
-            is ButtonConfig -> {
-                val actionId = dashboardId + "_" + it.id
-                registerCallback(
-                    ButtonCallback(
-                        id = actionId,
-                        action = it.onClick,
-                    )
-                )
-                it.toJson(
-                    actionId = actionId,
-                )
-            }
+    val elementsJsonArray = JSONArray(elements.map { element ->
+        parseElementConfig(
+            element = element,
+            registerCallback = registerCallback,
+            dashboardId = dashboardId
+        )
+    })
 
-            is TextConfig -> it.toJson()
-            is PlainTextConfig -> it.toJson()
-            is TextFieldConfig -> {
-                val actionId = dashboardId + "_" + it.id
+    put("name", name)
+    put("elements", elementsJsonArray)
 
-                registerCallback(
-                    TextFieldCallback(
-                        id = actionId,
-                        action = it.onSubmitted,
-                    )
-                )
-                it.toJson(
-                    actionId = actionId
-                )
-            }
-
-            is CheckBoxConfig -> {
-                val actionId = dashboardId + "_" + it.id
-                registerCallback(
-                    CheckBoxCallback(
-                        id = actionId,
-                        action = it.onUpdated,
-                    )
-                )
-                it.toJson(
-                    actionId = actionId,
-                )
-            }
+    put(
+        "containerConfig",
+        when (this@toJson) {
+            is FormConfig -> this@toJson.toJson(dashboardId, registerCallback)
+            is SectionConfig -> this@toJson.toJson()
         }
-        sectionArray.put(elementJson)
+    )
+}
+
+private fun parseElementConfig(
+    element: ElementConfig,
+    registerCallback: (DashboardCallback) -> Unit,
+    dashboardId: String,
+): JSONObject = when (element) {
+    is ButtonConfig -> {
+        val actionId = createActionId(dashboardId, element.id)
+        registerCallback(
+            ButtonCallback(
+                id = actionId,
+                action = element.onClick,
+            )
+        )
+        element.toJson(
+            actionId = actionId,
+        )
     }
-    sectionJson.put("elements", sectionArray)
-    return sectionJson
+
+    is TextConfig -> element.toJson()
+    is PlainTextConfig -> element.toJson()
+    is TextFieldConfig -> {
+        val actionId = createActionId(dashboardId, element.id)
+
+        registerCallback(
+            TextFieldCallback(
+                id = actionId,
+                action = element.onSubmitted,
+            )
+        )
+        element.toJson(
+            actionId = actionId
+        )
+    }
+
+    is CheckBoxConfig -> {
+        val actionId = createActionId(dashboardId, element.id)
+        registerCallback(
+            CheckBoxCallback(
+                id = actionId,
+                action = element.onUpdated,
+            )
+        )
+        element.toJson(
+            actionId = actionId,
+        )
+    }
+}
+
+private fun createActionId(dashboardId: String, elementId: String) = dashboardId + "_" + elementId
+
+/** Form specific config*/
+private fun FormConfig.toJson(
+    dashboardId: String,
+    registerCallback: (DashboardCallback) -> Unit,
+): JSONObject {
+    val actionId = createActionId(dashboardId, id)
+
+    registerCallback(
+        FormCallback(
+            id = actionId,
+            actions = onSubmitted
+        )
+    )
+
+    return JSONObject().apply {
+        put("formId", actionId)
+        put("submitText", submitText)
+        put("containerType", containerType)
+    }
+}
+
+/** Section specific config */
+private fun SectionConfig.toJson(): JSONObject {
+    return JSONObject().apply {
+        put("containerType", containerType)
+    }
 }
 
 // {

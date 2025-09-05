@@ -1,8 +1,12 @@
 package com.flocon.data.remote.dashboard.datasource
 
 import com.flocon.data.remote.dashboard.mapper.toDomain
+import com.flocon.data.remote.dashboard.models.ContainerConfigDataModel
 import com.flocon.data.remote.dashboard.models.DashboardConfigDataModel
+import com.flocon.data.remote.dashboard.models.FormContainerConfigDataModel
+import com.flocon.data.remote.dashboard.models.SectionContainerConfigDataModel
 import com.flocon.data.remote.dashboard.models.ToDeviceCheckBoxValueChangedMessage
+import com.flocon.data.remote.dashboard.models.ToDeviceSubmittedFormMessage
 import com.flocon.data.remote.dashboard.models.ToDeviceSubmittedTextFieldMessage
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
@@ -13,12 +17,24 @@ import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import kotlin.uuid.ExperimentalUuidApi
 
 class ToDeviceDashboardDataSourceImpl(
     private val server: Server,
-    private val json: Json,
 ) : ToDeviceDashboardDataSource {
+
+    private val json = Json {
+        ignoreUnknownKeys = true
+        serializersModule = SerializersModule {
+            polymorphic(ContainerConfigDataModel::class) {
+                subclass(FormContainerConfigDataModel::class, FormContainerConfigDataModel.serializer())
+                subclass(SectionContainerConfigDataModel::class, SectionContainerConfigDataModel.serializer())
+            }
+        }
+    }
 
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun sendClickEvent(
@@ -32,6 +48,26 @@ class ToDeviceDashboardDataSourceImpl(
                 method = Protocol.ToDevice.Dashboard.Method.OnClick,
                 body = buttonId,
             ),
+        )
+    }
+
+    override suspend fun submitFormEvent(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        formId: String,
+        values: Map<String, String>
+    ) {
+        server.sendMessageToClient(
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
+            message = FloconOutgoingMessageDataModel(
+                plugin = Protocol.ToDevice.Dashboard.Plugin,
+                method = Protocol.ToDevice.Dashboard.Method.OnFormSubmitted,
+                body = Json.encodeToString(
+                    ToDeviceSubmittedFormMessage(
+                        id = formId,
+                        values = values,
+                    ),
+                )
+            )
         )
     }
 

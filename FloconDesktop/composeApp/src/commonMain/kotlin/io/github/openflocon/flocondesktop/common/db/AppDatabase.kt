@@ -11,7 +11,7 @@ import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
 import io.github.openflocon.data.local.dashboard.dao.FloconDashboardDao
 import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
-import io.github.openflocon.data.local.dashboard.models.DashboardSectionEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.data.local.database.dao.QueryDao
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkDao
@@ -34,17 +34,18 @@ import io.github.openflocon.data.local.network.models.mock.MockNetworkEntity
 import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.data.local.table.models.TableItemEntity
+import io.github.openflocon.flocondesktop.common.db.converters.DashboardConverters
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 52,
+    version = 54,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
         DashboardEntity::class,
-        DashboardSectionEntity::class,
+        DashboardContainerEntity::class,
         DashboardElementEntity::class,
         TableEntity::class,
         TableItemEntity::class,
@@ -61,6 +62,7 @@ import kotlinx.coroutines.Dispatchers
     ],
 )
 @TypeConverters(
+    DashboardConverters::class,
     MapStringsConverters::class,
     ListStringsConverters::class,
 )

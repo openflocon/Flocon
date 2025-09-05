@@ -18,6 +18,13 @@ interface DashboardRepository {
         buttonId: String,
     )
 
+    suspend fun submitFormEvent(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dashboardId: DashboardId,
+        formId: String,
+        values: Map<String, String>
+    )
+
     suspend fun submitTextFieldEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId,

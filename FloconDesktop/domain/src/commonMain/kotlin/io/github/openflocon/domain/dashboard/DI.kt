@@ -7,6 +7,7 @@ import io.github.openflocon.domain.dashboard.usecase.ObserveDeviceDashboardsUseC
 import io.github.openflocon.domain.dashboard.usecase.SelectCurrentDeviceDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.SendCheckBoxUpdateDeviceDeviceUseCase
 import io.github.openflocon.domain.dashboard.usecase.SendClickEventToDeviceDeviceUseCase
+import io.github.openflocon.domain.dashboard.usecase.SubmitFormToDeviceDeviceUseCase
 import io.github.openflocon.domain.dashboard.usecase.SubmitTextFieldToDeviceDeviceUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -15,6 +16,7 @@ internal val dashboardModule = module {
     factoryOf(::ObserveCurrentDeviceDashboardUseCase)
     factoryOf(::SendClickEventToDeviceDeviceUseCase)
     factoryOf(::SubmitTextFieldToDeviceDeviceUseCase)
+    factoryOf(::SubmitFormToDeviceDeviceUseCase)
     factoryOf(::SendCheckBoxUpdateDeviceDeviceUseCase)
 
     factoryOf(::GetCurrentDeviceSelectedDashboardUseCase)

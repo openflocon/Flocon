@@ -13,6 +13,12 @@ interface ToDeviceDashboardDataSource {
         buttonId: String,
     )
 
+    suspend fun submitFormEvent(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        formId: String,
+        values: Map<String, String>
+    )
+
     @OptIn(ExperimentalUuidApi::class)
     suspend fun submitTextFieldEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

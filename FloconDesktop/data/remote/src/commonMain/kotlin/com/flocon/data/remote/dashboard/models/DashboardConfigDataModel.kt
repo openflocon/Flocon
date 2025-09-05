@@ -1,18 +1,38 @@
 package com.flocon.data.remote.dashboard.models
 
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 @Serializable
 data class DashboardConfigDataModel(
     val dashboardId: String,
-    val sections: List<SectionConfigDataModel>,
+    val containers: List<DashboardContainerDataModel>,
 )
 
 @Serializable
-data class SectionConfigDataModel(
+data class DashboardContainerDataModel(
     val name: String,
     val elements: List<DashboardElementDataModel>,
+    val containerConfig: ContainerConfigDataModel
 )
+
+@OptIn(ExperimentalSerializationApi::class)
+@JsonClassDiscriminator("containerType")
+@Serializable
+sealed interface ContainerConfigDataModel
+
+@Serializable
+@SerialName("FORM")
+data class FormContainerConfigDataModel(
+    val formId: String,
+    val submitText: String,
+) : ContainerConfigDataModel
+
+@Serializable
+@SerialName("SECTION")
+data object SectionContainerConfigDataModel : ContainerConfigDataModel
 
 @Serializable
 data class DashboardElementDataModel(

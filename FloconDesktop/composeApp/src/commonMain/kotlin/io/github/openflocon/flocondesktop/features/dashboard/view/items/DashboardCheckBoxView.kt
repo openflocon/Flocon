@@ -7,31 +7,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun DashboardCheckBoxView(
-    rowItem: DashboardItemViewState.RowItem.CheckBox,
-    onUpdateCheckBox: (String, Boolean) -> Unit,
+    rowItem: DashboardContainerViewState.RowItem.CheckBox,
+    value: Boolean,
+    onCheckedChange: (value: Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var value by remember(rowItem.value) {
-        mutableStateOf(rowItem.value)
-    }
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -55,10 +48,7 @@ internal fun DashboardCheckBoxView(
             }
             FloconCheckbox(
                 checked = value,
-                onCheckedChange = {
-                    value = it
-                    onUpdateCheckBox(rowItem.id, it)
-                },
+                onCheckedChange = onCheckedChange,
                 uncheckedColor = FloconTheme.colorPalette.secondary
             )
         }
@@ -68,7 +58,7 @@ internal fun DashboardCheckBoxView(
 @Preview
 @Composable
 internal fun DashboardCheckBoxViewPreview() {
-    val rowItem = DashboardItemViewState.RowItem.CheckBox(
+    val rowItem = DashboardContainerViewState.RowItem.CheckBox(
         id = "button1",
         label = "Click Me",
         value = true,
@@ -77,7 +67,8 @@ internal fun DashboardCheckBoxViewPreview() {
         DashboardCheckBoxView(
             modifier = Modifier.background(FloconTheme.colorPalette.primary),
             rowItem = rowItem,
-            onUpdateCheckBox = { _, _ -> },
+            value = rowItem.value,
+            onCheckedChange = {},
         )
     }
 }

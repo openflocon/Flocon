@@ -1,23 +1,31 @@
 package io.github.openflocon.data.local.dashboard.mapper
 
-import io.github.openflocon.data.local.dashboard.models.DashboardWithSectionsAndElements
-import io.github.openflocon.data.local.dashboard.models.SectionWithElements
+import io.github.openflocon.data.local.dashboard.models.ContainerConfigEntity
+import io.github.openflocon.data.local.dashboard.models.ContainerWithElements
 import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardWithContainersAndElements
+import io.github.openflocon.data.local.dashboard.models.FormContainerConfigEntity
+import io.github.openflocon.data.local.dashboard.models.SectionContainerConfigEntity
+import io.github.openflocon.domain.dashboard.models.ContainerConfigDomainModel
+import io.github.openflocon.domain.dashboard.models.DashboardContainerDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
-import io.github.openflocon.domain.dashboard.models.DashboardSectionDomainModel
+import io.github.openflocon.domain.dashboard.models.FormContainerConfigDomainModel
+import io.github.openflocon.domain.dashboard.models.SectionContainerConfigDomainModel
 
-internal fun DashboardWithSectionsAndElements.toDomain(): DashboardDomainModel = DashboardDomainModel(
-    dashboardId = dashboard.dashboardId,
-    sections = sectionsWithElements.mapNotNull {
-        it.toDomain()
-    },
-)
+internal fun DashboardWithContainersAndElements.toDomain(): DashboardDomainModel =
+    DashboardDomainModel(
+        dashboardId = dashboard.dashboardId,
+        containers = containersWithElements.mapNotNull {
+            it.toDomain()
+        },
+    )
 
-internal fun SectionWithElements.toDomain(): DashboardSectionDomainModel? {
-    return DashboardSectionDomainModel(
-        name = this.section?.name ?: return null,
+internal fun ContainerWithElements.toDomain(): DashboardContainerDomainModel? {
+    return DashboardContainerDomainModel(
+        name = this.container?.name ?: return null,
         elements = elements.mapNotNull { it.toDomain() },
+        containerConfig = this.container.containerConfig.toDomain()
     )
 }
 
@@ -51,4 +59,9 @@ internal fun DashboardElementEntity.toDomain(): DashboardElementDomainModel? {
         )
     }
     return null
+}
+
+fun ContainerConfigEntity.toDomain(): ContainerConfigDomainModel = when (this) {
+    is FormContainerConfigEntity -> FormContainerConfigDomainModel(formId, submitText)
+    is SectionContainerConfigEntity -> SectionContainerConfigDomainModel
 }

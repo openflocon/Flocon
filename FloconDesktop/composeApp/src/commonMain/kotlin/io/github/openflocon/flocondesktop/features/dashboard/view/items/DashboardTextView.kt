@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -23,7 +23,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 internal fun DashboardTextView(
     modifier: Modifier = Modifier,
-    rowItem: DashboardItemViewState.RowItem.Text,
+    rowItem: DashboardContainerViewState.RowItem.Text,
 ) {
     SelectionContainer(
         modifier = modifier,
@@ -65,7 +65,7 @@ internal fun DashboardTextView(
 @Preview
 @Composable
 internal fun DashboardTextViewPreview() {
-    val rowItem = DashboardItemViewState.RowItem.Text(
+    val rowItem = DashboardContainerViewState.RowItem.Text(
         label = "label",
         value = "value",
         color = null,
@@ -83,7 +83,7 @@ internal fun DashboardTextViewPreview() {
 @Preview
 @Composable
 internal fun DashboardTextViewPreview_Red() {
-    val rowItem = DashboardItemViewState.RowItem.Text(
+    val rowItem = DashboardContainerViewState.RowItem.Text(
         label = "label",
         value = "value",
         color = Color.Red,

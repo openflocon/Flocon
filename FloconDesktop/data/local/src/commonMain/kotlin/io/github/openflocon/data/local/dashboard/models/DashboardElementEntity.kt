@@ -5,26 +5,25 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 
 @Entity(
     foreignKeys = [
         ForeignKey(
-            entity = DashboardSectionEntity::class,
+            entity = DashboardContainerEntity::class,
             parentColumns = ["id"],
-            childColumns = ["sectionId"],
+            childColumns = ["containerId"],
             onDelete = ForeignKey.CASCADE,
         ),
     ],
     indices = [
-        Index(value = ["sectionId"]),
-        Index(value = ["sectionId", "elementOrder"], unique = true),
+        Index(value = ["containerId"]),
+        Index(value = ["containerId", "elementOrder"], unique = true),
     ],
 )
 data class DashboardElementEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val sectionId: Long,
+    val containerId: Long,
 
     val elementOrder: Int,
 

@@ -3,14 +3,14 @@ package io.github.openflocon.data.local.dashboard.models
 import androidx.room.Embedded
 import androidx.room.Relation
 
-data class DashboardWithSectionsAndElements(
+data class DashboardWithContainersAndElements(
     @Embedded
     val dashboard: DashboardEntity,
 
     @Relation(
         parentColumn = "dashboardId",
         entityColumn = "dashboardId",
-        entity = DashboardSectionEntity::class,
+        entity = DashboardContainerEntity::class,
     )
-    val sectionsWithElements: List<SectionWithElements>,
+    val containersWithElements: List<ContainerWithElements>,
 )

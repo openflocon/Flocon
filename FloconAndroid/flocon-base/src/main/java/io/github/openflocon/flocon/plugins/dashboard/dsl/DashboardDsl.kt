@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.dashboard.dsl
 
+import io.github.openflocon.flocon.plugins.dashboard.builder.DashboardBuilder
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
 
 @DslMarker

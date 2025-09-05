@@ -13,14 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun DashboardButtonView(
     onClickButton: (String) -> Unit,
-    rowItem: DashboardItemViewState.RowItem.Button,
+    rowItem: DashboardContainerViewState.RowItem.Button,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
@@ -45,7 +45,7 @@ internal fun DashboardButtonView(
 @Preview
 @Composable
 internal fun DashboardButtonViewPreview() {
-    val rowItem = DashboardItemViewState.RowItem.Button(
+    val rowItem = DashboardContainerViewState.RowItem.Button(
         id = "button1",
         text = "Click Me",
     )
