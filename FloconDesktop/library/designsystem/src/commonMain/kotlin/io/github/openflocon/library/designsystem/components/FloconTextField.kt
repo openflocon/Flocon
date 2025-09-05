@@ -5,6 +5,7 @@ package io.github.openflocon.library.designsystem.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,15 +24,18 @@ import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
@@ -186,7 +190,10 @@ fun FloconTextFieldWithoutM3(
     containerColor: Color = FloconTheme.colorPalette.primary,
     contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor)
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     val shape = FloconTheme.shapes.medium
+    val borderColor = FloconTheme.colorPalette.accent
+    val isFocused by interactionSource.collectIsFocusedAsState()
 
     BasicTextField(
         value = value,
@@ -200,6 +207,7 @@ fun FloconTextFieldWithoutM3(
         keyboardOptions = keyboardOptions,
         enabled = enabled,
         singleLine = singleLine,
+        interactionSource = interactionSource,
         decorationBox = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -208,9 +216,20 @@ fun FloconTextFieldWithoutM3(
                     .clip(shape)
                     .drawWithCache {
                         val outline = shape.createOutline(size, layoutDirection, this)
-                        onDrawBehind { drawOutline(outline, color = containerColor) }
+
+                        onDrawBehind {
+                            drawOutline(outline, color = containerColor)
+                            if (isFocused) {
+                                drawRoundRect(
+                                    color = borderColor,
+                                    style = Stroke(
+                                        width = 2.dp.toPx()
+                                    ),
+                                    cornerRadius = CornerRadius(8.dp.toPx(), 8.dp.toPx())
+                                )
+                            }
+                        }
                     }
-                    .background(containerColor)
                     .padding(horizontal = 4.dp)
                     .padding(contentPadding)
             ) {

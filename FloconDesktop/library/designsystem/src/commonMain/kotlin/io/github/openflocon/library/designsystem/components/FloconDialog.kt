@@ -2,6 +2,7 @@
 
 package io.github.openflocon.library.designsystem.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,8 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -41,12 +41,15 @@ fun FloconDialog(
             modifier = modifier
                 .fillMaxWidth()
                 .heightIn(max = 400.dp)
-                .dropShadow(
-                    shape = FloconTheme.shapes.large,
-                    shadow = Shadow(
-                        radius = 16.dp,
-                        color = FloconTheme.colorPalette.accent
-                    )
+                .border(
+                    width = 1.dp,
+                    brush = Brush.sweepGradient(
+                        0f to FloconTheme.colorPalette.accent,
+                        .1f to FloconTheme.colorPalette.onAccent.copy(alpha = .5f),
+                        .3f to FloconTheme.colorPalette.accent,
+                        1f to FloconTheme.colorPalette.accent
+                    ),
+                    shape = FloconTheme.shapes.large
                 )
         ) {
             content()
