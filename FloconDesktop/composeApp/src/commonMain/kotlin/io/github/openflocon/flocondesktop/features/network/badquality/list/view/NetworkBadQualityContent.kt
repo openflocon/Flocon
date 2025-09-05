@@ -6,13 +6,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.badquality.list.model.NetworkBadQualityLineUiModel
-import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 
 @Composable
 fun NetworkBadQualityContent(
@@ -23,15 +25,17 @@ fun NetworkBadQualityContent(
     onAddItemClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier.padding(8.dp)
+    ) {
         FloconDialogHeader(
             title = "Network bad quality",
             modifier = Modifier.fillMaxWidth(),
             trailingContent = {
-                FloconButton(
+                FloconIconTonalButton(
                     onClick = onAddItemClicked,
                     content = {
-                        Text("Create")
+                        FloconIcon(Icons.Outlined.Add)
                     }
                 )
             },

@@ -78,7 +78,8 @@ private fun NetworkMocksContent(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.padding(8.dp)
+        modifier = modifier
+            .padding(8.dp)
     ) {
         FloconDialogHeader(
             title = "Mocks",

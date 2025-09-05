@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.mock.list.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,11 +37,22 @@ fun MockLineView(
     changeIsEnabled: (id: String, enabled: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val shape = FloconTheme.shapes.small
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(FloconTheme.shapes.small)
+            .clip(shape)
             .background(FloconTheme.colorPalette.primary)
+            .border(
+                1.dp,
+                if (item.isEnabled) {
+                    FloconTheme.colorPalette.accent
+                } else {
+                    Color.Transparent
+                },
+                shape
+            )
             .clickable(onClick = { onClicked(item.id) })
             .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),

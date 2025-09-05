@@ -18,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -39,6 +41,13 @@ fun FloconDialog(
             modifier = modifier
                 .fillMaxWidth()
                 .heightIn(max = 400.dp)
+                .dropShadow(
+                    shape = FloconTheme.shapes.large,
+                    shadow = Shadow(
+                        radius = 16.dp,
+                        color = FloconTheme.colorPalette.accent
+                    )
+                )
         ) {
             content()
         }
