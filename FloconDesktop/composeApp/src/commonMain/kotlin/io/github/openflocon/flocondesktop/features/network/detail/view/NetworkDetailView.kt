@@ -96,12 +96,12 @@ private fun Request(
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 12.dp  )
+            modifier = Modifier.padding(horizontal = 12.dp)
         ) {
             Column(
                 modifier = Modifier
                     .background(
-                        color = FloconTheme.colorPalette.primary,
+                        color = FloconTheme.colorPalette.secondary,
                         shape = RoundedCornerShape(12.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -110,11 +110,13 @@ private fun Request(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Full url",
                     value = state.fullUrl,
+                    contentColor = FloconTheme.colorPalette.onPrimary,
                     labelWidth = linesLabelWidth,
                 )
                 FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Method",
+                    contentColor = FloconTheme.colorPalette.onPrimary,
                     labelWidth = linesLabelWidth,
                 ) {
                     when (val m = state.method) {
@@ -123,10 +125,10 @@ private fun Request(
                             Text(
                                 text = m.name,
                                 style = FloconTheme.typography.bodySmall,
-                                color = FloconTheme.colorPalette.onSurface,
+                                color = FloconTheme.colorPalette.onSecondary,
                                 modifier = Modifier.weight(2f)
                                     .background(
-                                        color = FloconTheme.colorPalette.primary.copy(alpha = 0.8f),
+                                        color = FloconTheme.colorPalette.secondary.copy(alpha = 0.8f),
                                         shape = RoundedCornerShape(4.dp),
                                     )
                                     .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -137,6 +139,7 @@ private fun Request(
                 FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Status",
+                    contentColor = FloconTheme.colorPalette.onPrimary,
                     labelWidth = linesLabelWidth,
                 ) {
                     StatusView(
@@ -148,6 +151,7 @@ private fun Request(
                     label = "Request Time",
                     value = state.requestTimeFormatted,
                     labelWidth = linesLabelWidth,
+                    contentColor = FloconTheme.colorPalette.onPrimary
                 )
                 state.durationFormatted?.let {
                     FloconLineDescription(
@@ -155,6 +159,7 @@ private fun Request(
                         label = "Time",
                         value = it,
                         labelWidth = linesLabelWidth,
+                        contentColor = FloconTheme.colorPalette.onPrimary
                     )
                 }
             }
@@ -169,7 +174,7 @@ private fun Request(
                     Column(
                         modifier = Modifier
                             .background(
-                                color = FloconTheme.colorPalette.primary,
+                                color = FloconTheme.colorPalette.secondary,
                                 shape = RoundedCornerShape(12.dp),
                             )
                             .padding(12.dp)
@@ -178,12 +183,14 @@ private fun Request(
                             modifier = Modifier.fillMaxWidth(),
                             label = "Query name",
                             value = it.queryName,
+                            contentColor = FloconTheme.colorPalette.onSecondary,
                             labelWidth = linesLabelWidth,
                         )
                         FloconLineDescription(
                             modifier = Modifier.fillMaxWidth(),
                             label = "Type",
                             labelWidth = linesLabelWidth,
+                            contentColor = FloconTheme.colorPalette.onSecondary
                         ) {
                             MethodView(method = it.method)
                         }
@@ -202,7 +209,7 @@ private fun Request(
                     onAuthorizationClicked = { token -> onAction(NetworkAction.DisplayBearerJwt(token)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp)
+                        .padding(8.dp)
                 )
             }
             FloconSection(
@@ -229,6 +236,7 @@ private fun Request(
             ) {
                 FloconCodeBlock(
                     code = state.requestBody,
+                    containerColor = FloconTheme.colorPalette.secondary,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp)
@@ -265,6 +273,7 @@ private fun Response(
                     ) {
                         FloconCodeBlock(
                             code = response.issue,
+                            containerColor = FloconTheme.colorPalette.secondary,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(12.dp)
@@ -284,7 +293,7 @@ private fun Response(
                             onAuthorizationClicked = { token -> onAction(NetworkAction.DisplayBearerJwt(token)) },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(12.dp)
+                                .padding(8.dp)
                         )
                     }
                     FloconSection(
@@ -311,6 +320,7 @@ private fun Response(
                     ) {
                         FloconCodeBlock(
                             code = response.body,
+                            containerColor = FloconTheme.colorPalette.secondary,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(12.dp)
