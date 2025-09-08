@@ -175,35 +175,68 @@ private fun contextualActions(
                 )
             }
             add(
-                FloconContextMenuItem.Item(
-                    label = "Filter: Include this domain",
-                    onClick = {
-                        onActionCallback(
-                            NetworkAction.HeaderAction.FilterAction(
-                                OnFilterAction.TextFilter(
-                                    column = NetworkTextFilterColumns.Domain,
-                                    action = TextFilterAction.Include(text = state.domain, isRegex = false)
+                FloconContextMenuItem.SubMenu(
+                    label = "Filter Include",
+                    items = listOf(
+                        FloconContextMenuItem.Item(
+                            label = "Domain",
+                            onClick = {
+                                onActionCallback(
+                                    NetworkAction.HeaderAction.FilterAction(
+                                        OnFilterAction.TextFilter(
+                                            column = NetworkTextFilterColumns.Domain,
+                                            action = TextFilterAction.Include(text = state.domain, isRegex = false)
+                                        )
+                                    )
                                 )
-                            )
-                        )
-                    }
-                ),
-            )
-            add(
-                FloconContextMenuItem.Item(
-                    label = "Filter: Include this Query",
-                    onClick = {
-                        onActionCallback(
-                            NetworkAction.HeaderAction.FilterAction(
-                                OnFilterAction.TextFilter(
-                                    column = NetworkTextFilterColumns.Query,
-                                    action = TextFilterAction.Include(text = state.type.query, isRegex = false)
+                            }
+                        ),
+                        FloconContextMenuItem.Item(
+                            label = "Query",
+                            onClick = {
+                                onActionCallback(
+                                    NetworkAction.HeaderAction.FilterAction(
+                                        OnFilterAction.TextFilter(
+                                            column = NetworkTextFilterColumns.Query,
+                                            action = TextFilterAction.Include(text = state.type.query, isRegex = false)
+                                        )
+                                    )
                                 )
-                            )
-                        )
-                    }
-                ),
+                            }
+                        ),
+                    )
+                )
             )
+//            add(
+//                FloconContextMenuItem.Item(
+//                    label = "Filter: Include this domain",
+//                    onClick = {
+//                        onActionCallback(
+//                            NetworkAction.HeaderAction.FilterAction(
+//                                OnFilterAction.TextFilter(
+//                                    column = NetworkTextFilterColumns.Domain,
+//                                    action = TextFilterAction.Include(text = state.domain, isRegex = false)
+//                                )
+//                            )
+//                        )
+//                    }
+//                ),
+//            )
+//            add(
+//                FloconContextMenuItem.Item(
+//                    label = "Filter: Include this Query",
+//                    onClick = {
+//                        onActionCallback(
+//                            NetworkAction.HeaderAction.FilterAction(
+//                                OnFilterAction.TextFilter(
+//                                    column = NetworkTextFilterColumns.Query,
+//                                    action = TextFilterAction.Include(text = state.type.query, isRegex = false)
+//                                )
+//                            )
+//                        )
+//                    }
+//                ),
+//            )
             add(
                 FloconContextMenuItem.Item(
                     label = "Filter: Exclude this domain",

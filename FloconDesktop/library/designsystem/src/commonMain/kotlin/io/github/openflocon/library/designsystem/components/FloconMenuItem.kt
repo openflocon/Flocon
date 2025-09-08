@@ -30,12 +30,13 @@ private val DropdownItemHorizontalPadding = 4.dp
 fun FloconMenuItem(
     text: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     leadingIcon: ImageVector? = null
 ) {
     val interaction = remember { MutableInteractionSource() }
 
     FloconDropdownMenuItem(
-        modifier = Modifier
+        modifier = modifier
             .clickable(
                 onClick = onClick,
                 indication = LocalIndication.current,
