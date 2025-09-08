@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -22,6 +25,7 @@ fun FloconLineDescription(
     label: String,
     modifier: Modifier = Modifier,
     labelWidth: Dp? = null,
+    contentColor: Color = LocalContentColor.current,
     content: @Composable RowScope.() -> Unit,
 ) {
     Row(
@@ -29,24 +33,25 @@ fun FloconLineDescription(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(
-            text = label,
-            style = FloconTheme.typography.titleSmall,
-            color = FloconTheme.colorPalette.onSurface,
-            modifier = if (labelWidth != null) {
-                Modifier
-                    .width(labelWidth)
-                    .padding(end = 8.dp)
-            } else {
-                Modifier.weight(1f)
-            },
-        )
-        SelectionContainer(
-            modifier = Modifier
-                .weight(1f)
-                .wrapContentWidth(align = Alignment.Start)
-        ) {
-            content()
+        CompositionLocalProvider(LocalContentColor provides contentColor) {
+            Text(
+                text = label,
+                style = FloconTheme.typography.titleSmall,
+                modifier = if (labelWidth != null) {
+                    Modifier
+                        .width(labelWidth)
+                        .padding(end = 8.dp)
+                } else {
+                    Modifier.weight(1f)
+                },
+            )
+            SelectionContainer(
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentWidth(align = Alignment.Start)
+            ) {
+                content()
+            }
         }
     }
 }
@@ -56,17 +61,18 @@ fun FloconLineDescription(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
+    contentColor: Color = LocalContentColor.current,
     labelWidth: Dp? = null
 ) {
     FloconLineDescription(
         labelWidth = labelWidth,
         label = label,
+        contentColor = contentColor,
         modifier = modifier,
     ) {
         Text(
             text = value,
             style = FloconTheme.typography.bodyMedium,
-            color = FloconTheme.colorPalette.onSurface
         )
     }
 }
