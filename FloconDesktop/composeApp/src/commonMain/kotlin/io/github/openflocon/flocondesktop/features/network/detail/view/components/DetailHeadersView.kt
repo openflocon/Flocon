@@ -1,24 +1,15 @@
 package io.github.openflocon.flocondesktop.features.network.detail.view.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -38,7 +29,15 @@ fun DetailHeadersView(
     onAuthorizationClicked: (value: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = FloconTheme.colorPalette.secondary,
+                shape = FloconTheme.shapes.medium
+            )
+            .padding(8.dp)
+    ) {
         headers.fastForEachIndexed { index, item ->
             val isAuthBearer = item.name.equals(
                 "authorization",
@@ -50,15 +49,14 @@ fun DetailHeadersView(
                         label = item.name,
                         value = item.value,
                         labelWidth = labelWidth,
+                        contentColor = FloconTheme.colorPalette.onPrimary,
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     FloconButton(
-                        onClick = {
-                            onAuthorizationClicked(item.value)
-                        }
+                        onClick = { onAuthorizationClicked(item.value) }
                     ) {
-                        Text("Decode\nJWT", textAlign = TextAlign.Center, color = FloconTheme.colorPalette.surface)
+                        Text("Decode\nJWT", textAlign = TextAlign.Center, color = FloconTheme.colorPalette.onPrimary)
                     }
                 }
             } else {
@@ -70,7 +68,10 @@ fun DetailHeadersView(
                 )
             }
             if (index != headers.lastIndex) {
-                FloconHorizontalDivider(modifier = Modifier.fillMaxWidth())
+                FloconHorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = FloconTheme.colorPalette.secondary
+                )
             }
         }
     }

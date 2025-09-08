@@ -62,7 +62,7 @@ fun FloconSection(
             Text(
                 text = title,
                 style = FloconTheme.typography.titleMedium,
-                color = FloconTheme.colorPalette.primary,
+                color = FloconTheme.colorPalette.onPrimary,
                 modifier = Modifier.weight(1f)
             )
             actions?.invoke(this)
