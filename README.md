@@ -43,6 +43,16 @@ in your `Application.kt`
 Flocon.initialize(this)
 ```
 
+or in your .toml
+
+```toml
+[versions]
+flocon = "LASTEST_VERSION"
+
+[libraries]
+flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
+```
+
 Download & install the last `Desktop client`
 
 https://github.com/openflocon/Flocon/releases
