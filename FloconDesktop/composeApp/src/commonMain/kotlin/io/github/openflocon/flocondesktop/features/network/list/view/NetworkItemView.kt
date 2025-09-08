@@ -19,12 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
-import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
@@ -35,6 +33,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewNet
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -145,13 +144,13 @@ fun NetworkItemView(
 private fun contextualActions(
     onAction: (NetworkAction) -> Unit,
     state: NetworkItemViewState
-): List<ContextualItem> {
+): List<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
     return remember(state) {
         buildList {
             add(
-                ContextualItem(
-                    text = "Copy url",
+                FloconContextMenuItem.Item(
+                    label = "Copy url",
                     onClick = {
                         onActionCallback(NetworkAction.CopyUrl(state))
                     }
@@ -159,16 +158,16 @@ private fun contextualActions(
             )
             if (state.type !is NetworkItemViewState.NetworkTypeUi.Grpc) {
                 add(
-                    ContextualItem(
-                        text = "Copy cUrl",
+                    FloconContextMenuItem.Item(
+                        label = "Copy cUrl",
                         onClick = {
                             onActionCallback(NetworkAction.CopyCUrl(state))
                         }
                     ),
                 )
                 add(
-                    ContextualItem(
-                        text = "Create Mock",
+                    FloconContextMenuItem.Item(
+                        label = "Create Mock",
                         onClick = {
                             onActionCallback(NetworkAction.CreateMock(state))
                         }
@@ -176,8 +175,8 @@ private fun contextualActions(
                 )
             }
             add(
-                ContextualItem(
-                    text = "Filter: Include this domain",
+                FloconContextMenuItem.Item(
+                    label = "Filter: Include this domain",
                     onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
@@ -191,8 +190,8 @@ private fun contextualActions(
                 ),
             )
             add(
-                ContextualItem(
-                    text = "Filter: Include this Query",
+                FloconContextMenuItem.Item(
+                    label = "Filter: Include this Query",
                     onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
@@ -206,8 +205,8 @@ private fun contextualActions(
                 ),
             )
             add(
-                ContextualItem(
-                    text = "Filter: Exclude this domain",
+                FloconContextMenuItem.Item(
+                    label = "Filter: Exclude this domain",
                     onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
@@ -221,8 +220,8 @@ private fun contextualActions(
                 ),
             )
             add(
-                ContextualItem(
-                    text = "Filter: Exclude this Query",
+                FloconContextMenuItem.Item(
+                    label = "Filter: Exclude this Query",
                     onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
@@ -237,16 +236,16 @@ private fun contextualActions(
             )
 
             add(
-                ContextualItem(
-                    text = "Remove",
+                FloconContextMenuItem.Item(
+                    label = "Remove",
                     onClick = {
                         onActionCallback(NetworkAction.Remove(state))
                     }
                 ),
             )
             add(
-                ContextualItem(
-                    text = "Remove lines above ",
+                FloconContextMenuItem.Item(
+                    label = "Remove lines above ",
                     onClick = {
                         onActionCallback(NetworkAction.RemoveLinesAbove(state))
                     }

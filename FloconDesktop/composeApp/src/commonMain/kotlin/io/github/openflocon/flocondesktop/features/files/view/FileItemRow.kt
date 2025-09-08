@@ -19,12 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -37,8 +37,8 @@ fun FileItemRow(
 ) {
     ContextualView(
         items = file.contextualActions.map { action ->
-            ContextualItem(
-                text = action.text,
+            FloconContextMenuItem.Item(
+                label = action.text,
                 onClick = {
                     onContextualAction(
                         file,
