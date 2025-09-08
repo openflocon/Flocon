@@ -1,7 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -25,12 +23,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
@@ -262,25 +259,45 @@ fun NetworkScreen(
                 }
             }
         }
-        FloconPanel(
-            contentState = uiState.detailState,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(8.dp)
-                .clip(FloconTheme.shapes.medium)
-        ) {
-            NetworkDetailView(
-                state = it,
-                onAction = onAction,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .border(
-                        width = 1.dp,
-                        color = Color.White.copy(alpha = .5f),
-                        shape = FloconTheme.shapes.medium
-                    )
-            )
+
+        var rememberTarget by remember { mutableStateOf(uiState.detailState) }
+
+        LaunchedEffect(uiState.detailState) {
+            if (uiState.detailState != null && uiState.detailState != rememberTarget) {
+                rememberTarget = uiState.detailState
+            }
         }
+
+        FloconPanel(
+            expanded = uiState.detailState != null
+        ) {
+            rememberTarget?.let {
+                NetworkDetailView(
+                    state = it,
+                    onAction = onAction,
+                    modifier = Modifier.matchParentSize()
+                )
+            }
+        }
+//        FloconPanel(
+//            contentState = uiState.detailState,
+//            modifier = Modifier
+//                .align(Alignment.CenterEnd)
+//                .padding(8.dp)
+//                .clip(FloconTheme.shapes.medium)
+//        ) {
+//        NetworkDetailView(
+//            state = it,
+//            onAction = onAction,
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .border(
+//                    width = 1.dp,
+//                    color = Color.White.copy(alpha = .5f),
+//                    shape = FloconTheme.shapes.medium
+//                )
+//        )
+//        }
     }
 
     val states = remember { mutableStateMapOf<NetworkBodyDetailUi, FloconWindowState>() }
