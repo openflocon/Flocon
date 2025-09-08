@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.EaseOutExpo
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateTo
 import androidx.compose.animation.core.tween
@@ -123,5 +122,25 @@ fun FloconPanel(
                 content = content
             )
         }
+    }
+}
+
+@Composable // TODO Rename
+fun <T : Any?> FloconPanelNew(
+    contentState: T,
+    content: @Composable BoxScope.(T & Any) -> Unit
+) {
+    var rememberTarget by remember { mutableStateOf(contentState) }
+
+    LaunchedEffect(contentState) {
+        if (contentState != null && contentState != rememberTarget) {
+            rememberTarget = contentState
+        }
+    }
+
+    FloconPanel(
+        expanded = contentState != null
+    ) {
+        rememberTarget?.let { content(this, it) }
     }
 }
