@@ -1,5 +1,9 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
@@ -9,14 +13,20 @@ import io.github.openflocon.domain.sharedpreference.usecase.EditSharedPrefFieldU
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSharedPreferenceValuesUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.delegate.SharedPrefSelectorDelegate
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferenceToEdit
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SharedPreferencesViewModel(
@@ -26,6 +36,10 @@ class SharedPreferencesViewModel(
     private val observeCurrentDeviceSharedPreferenceValuesUseCase: ObserveCurrentDeviceSharedPreferenceValuesUseCase,
     private val editSharedPrefFieldUseCase: EditSharedPrefFieldUseCase,
 ) : ViewModel() {
+
+    private val _elementToEdit = MutableStateFlow<SharedPreferenceToEdit?>(null)
+    val elementToEdit = _elementToEdit.asStateFlow()
+
     val sharedPrefs: StateFlow<SharedPrefsStateUiModel> =
         sharedPrefSelectorDelegate.deviceSharedPrefs
     val rows: StateFlow<SharedPreferencesRowsStateUiModel> =
@@ -117,5 +131,21 @@ class SharedPreferencesViewModel(
                 }
             }
         }
+    }
+
+    fun onEditClicked(
+        row: SharedPreferencesRowUiModel,
+        stringValue: SharedPreferencesRowUiModel.Value.StringValue
+    ) {
+        _elementToEdit.update { SharedPreferenceToEdit(row, stringValue) }
+    }
+
+    fun cancelEdition() {
+        _elementToEdit.update { null }
+    }
+
+    fun onEditDone(row: SharedPreferencesRowUiModel, stringValue: String) {
+        onValueChanged(row, stringValue)
+        _elementToEdit.update { null }
     }
 }
