@@ -15,4 +15,36 @@ sealed class FloconContextMenuItem(
         val items: List<FloconContextMenuItem>
     ) : FloconContextMenuItem(label, onClick = {})
 
+    class Separator : FloconContextMenuItem(label = "", onClick = {})
+
+}
+
+class FloconContextMenuBuilder internal constructor() {
+    internal val list = mutableListOf<FloconContextMenuItem>()
+
+    fun item(label: String, onClick: () -> Unit) {
+        list.add(FloconContextMenuItem.Item(label, onClick))
+    }
+
+    fun subMenu(label: String, block: FloconContextMenuBuilder.() -> Unit) {
+        list.add(
+            FloconContextMenuItem.SubMenu(
+                label = label,
+                items = buildMenu(block)
+            )
+        )
+    }
+
+    fun separator() {
+        list.add(FloconContextMenuItem.Separator())
+    }
+
+}
+
+fun buildMenu(block: FloconContextMenuBuilder.() -> Unit): List<FloconContextMenuItem> {
+    val config = FloconContextMenuBuilder()
+
+    config.apply(block)
+
+    return config.list
 }

@@ -34,6 +34,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import io.github.openflocon.library.designsystem.common.buildMenu
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -147,100 +148,38 @@ private fun contextualActions(
 ): List<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
     return remember(state) {
-        buildList {
-            add(
-                FloconContextMenuItem.Item(
-                    label = "Copy url",
-                    onClick = {
-                        onActionCallback(NetworkAction.CopyUrl(state))
-                    }
-                ),
-            )
+        buildMenu {
+            item(label = "Copy URL", onClick = { onActionCallback(NetworkAction.CopyUrl(state)) })
             if (state.type !is NetworkItemViewState.NetworkTypeUi.Grpc) {
-                add(
-                    FloconContextMenuItem.Item(
-                        label = "Copy cUrl",
-                        onClick = {
-                            onActionCallback(NetworkAction.CopyCUrl(state))
-                        }
-                    ),
-                )
-                add(
-                    FloconContextMenuItem.Item(
-                        label = "Create Mock",
-                        onClick = {
-                            onActionCallback(NetworkAction.CreateMock(state))
-                        }
-                    ),
-                )
+                item(label = "Copy cUrl", onClick = { onActionCallback(NetworkAction.CopyCUrl(state)) })
+                item(label = "Create Mock", onClick = { onActionCallback(NetworkAction.CreateMock(state)) })
             }
-            add(
-                FloconContextMenuItem.SubMenu(
-                    label = "Filter Include",
-                    items = listOf(
-                        FloconContextMenuItem.Item(
-                            label = "Domain",
-                            onClick = {
-                                onActionCallback(
-                                    NetworkAction.HeaderAction.FilterAction(
-                                        OnFilterAction.TextFilter(
-                                            column = NetworkTextFilterColumns.Domain,
-                                            action = TextFilterAction.Include(text = state.domain, isRegex = false)
-                                        )
-                                    )
+            separator()
+            subMenu(label = "Filter") {
+                subMenu(label = "Include") {
+                    item(label = "Domain", onClick = {
+                        onActionCallback(
+                            NetworkAction.HeaderAction.FilterAction(
+                                OnFilterAction.TextFilter(
+                                    column = NetworkTextFilterColumns.Domain,
+                                    action = TextFilterAction.Include(text = state.domain, isRegex = false)
                                 )
-                            }
-                        ),
-                        FloconContextMenuItem.Item(
-                            label = "Query",
-                            onClick = {
-                                onActionCallback(
-                                    NetworkAction.HeaderAction.FilterAction(
-                                        OnFilterAction.TextFilter(
-                                            column = NetworkTextFilterColumns.Query,
-                                            action = TextFilterAction.Include(text = state.type.query, isRegex = false)
-                                        )
-                                    )
+                            )
+                        )
+                    })
+                    item(label = "Query", onClick = {
+                        onActionCallback(
+                            NetworkAction.HeaderAction.FilterAction(
+                                OnFilterAction.TextFilter(
+                                    column = NetworkTextFilterColumns.Query,
+                                    action = TextFilterAction.Include(text = state.type.query, isRegex = false)
                                 )
-                            }
-                        ),
-                    )
-                )
-            )
-//            add(
-//                FloconContextMenuItem.Item(
-//                    label = "Filter: Include this domain",
-//                    onClick = {
-//                        onActionCallback(
-//                            NetworkAction.HeaderAction.FilterAction(
-//                                OnFilterAction.TextFilter(
-//                                    column = NetworkTextFilterColumns.Domain,
-//                                    action = TextFilterAction.Include(text = state.domain, isRegex = false)
-//                                )
-//                            )
-//                        )
-//                    }
-//                ),
-//            )
-//            add(
-//                FloconContextMenuItem.Item(
-//                    label = "Filter: Include this Query",
-//                    onClick = {
-//                        onActionCallback(
-//                            NetworkAction.HeaderAction.FilterAction(
-//                                OnFilterAction.TextFilter(
-//                                    column = NetworkTextFilterColumns.Query,
-//                                    action = TextFilterAction.Include(text = state.type.query, isRegex = false)
-//                                )
-//                            )
-//                        )
-//                    }
-//                ),
-//            )
-            add(
-                FloconContextMenuItem.Item(
-                    label = "Filter: Exclude this domain",
-                    onClick = {
+                            )
+                        )
+                    })
+                }
+                subMenu("Exclude") {
+                    item("Domain", onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
@@ -249,13 +188,8 @@ private fun contextualActions(
                                 )
                             )
                         )
-                    }
-                ),
-            )
-            add(
-                FloconContextMenuItem.Item(
-                    label = "Filter: Exclude this Query",
-                    onClick = {
+                    })
+                    item(label = "Query", onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
@@ -264,26 +198,12 @@ private fun contextualActions(
                                 )
                             )
                         )
-                    }
-                ),
-            )
-
-            add(
-                FloconContextMenuItem.Item(
-                    label = "Remove",
-                    onClick = {
-                        onActionCallback(NetworkAction.Remove(state))
-                    }
-                ),
-            )
-            add(
-                FloconContextMenuItem.Item(
-                    label = "Remove lines above ",
-                    onClick = {
-                        onActionCallback(NetworkAction.RemoveLinesAbove(state))
-                    }
-                ),
-            )
+                    })
+                }
+            }
+            separator()
+            item(label = "Remove", onClick = { onActionCallback(NetworkAction.Remove(state)) })
+            item(label = "Remove lines above", onClick = { onActionCallback(NetworkAction.RemoveLinesAbove(state)) })
         }
     }
 }

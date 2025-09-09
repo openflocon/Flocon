@@ -31,7 +31,8 @@ fun FloconMenuItem(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    leadingIcon: ImageVector? = null
+    leadingIcon: ImageVector? = null,
+    trailingIcon: ImageVector? = null
 ) {
     val interaction = remember { MutableInteractionSource() }
 
@@ -44,11 +45,13 @@ fun FloconMenuItem(
             )
             .padding(horizontal = DropdownItemHorizontalPadding)
     ) {
-        LeadingIcon(leadingIcon)
+        FloconMenuIcon(leadingIcon)
         Text(
             text = text,
-            style = FloconTheme.typography.labelMedium
+            style = FloconTheme.typography.labelMedium,
+            modifier = Modifier.weight(1f)
         )
+        FloconMenuIcon(trailingIcon)
     }
 }
 
@@ -72,7 +75,7 @@ fun FloconMenuItem(
             )
             .padding(PaddingValues(horizontal = DropdownItemHorizontalPadding))
     ) {
-        LeadingIcon(leadingIcon)
+        FloconMenuIcon(leadingIcon)
         Text(
             text = text,
             style = FloconTheme.typography.labelMedium,
@@ -89,12 +92,13 @@ fun FloconMenuSeparator(
     modifier: Modifier = Modifier
 ) {
     FloconHorizontalDivider(
-        modifier = modifier.padding(horizontal = 4.dp)
+        modifier = modifier.padding(horizontal = 4.dp),
+        color = FloconTheme.colorPalette.secondary
     )
 }
 
 @Composable
-private fun LeadingIcon(
+private fun FloconMenuIcon(
     leadingIcon: ImageVector?
 ) {
     if (leadingIcon != null) {

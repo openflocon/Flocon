@@ -6,11 +6,15 @@ import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.ContextMenuRepresentation
 import androidx.compose.foundation.ContextMenuState
 import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,7 +60,8 @@ private fun Menu(
     offset: Offset,
     items: List<FloconContextMenuItem>,
     hide: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    interactionSource: MutableInteractionSource? = null
 ) {
     val position = rememberPopupPositionProviderAtPosition(offset)
 
@@ -71,7 +76,13 @@ private fun Menu(
             items.forEach { item ->
                 when (item) {
                     is FloconContextMenuItem.Item -> Item(item = item, hide = hide)
-                    is FloconContextMenuItem.SubMenu -> SubMenu(item = item, hide = hide)
+                    is FloconContextMenuItem.SubMenu -> SubMenu(
+                        item = item,
+                        hide = hide,
+                        parent = interactionSource
+                    )
+
+                    is FloconContextMenuItem.Separator -> FloconMenuSeparator()
                 }
             }
         }
@@ -95,15 +106,26 @@ private fun Item(
 @Composable
 private fun SubMenu(
     item: FloconContextMenuItem.SubMenu,
-    hide: () -> Unit
+    hide: () -> Unit,
+    parent: MutableInteractionSource?
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
+    val enter = remember { HoverInteraction.Enter() }
     var rect by remember { mutableStateOf(Rect.Zero) }
+
+    LaunchedEffect(hovered) {
+        if (hovered) {
+            parent?.emit(enter)
+        } else {
+            parent?.emit(HoverInteraction.Exit(enter))
+        }
+    }
 
     FloconMenuItem(
         text = item.label,
         onClick = {},
+        trailingIcon = Icons.Outlined.ChevronRight,
         modifier = Modifier
             .hoverable(interactionSource)
             .onGloballyPositioned {
@@ -116,6 +138,7 @@ private fun SubMenu(
             offset = rect.topRight,
             items = item.items,
             hide = hide,
+            interactionSource = interactionSource,
             modifier = Modifier
                 .hoverable(interactionSource)
                 .padding(start = 4.dp)
