@@ -8,7 +8,6 @@ interface NetworkLocalDataSource {
 
     fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        lite: Boolean,
     ): Flow<List<FloconNetworkCallDomainModel>>
 
     suspend fun getCalls(

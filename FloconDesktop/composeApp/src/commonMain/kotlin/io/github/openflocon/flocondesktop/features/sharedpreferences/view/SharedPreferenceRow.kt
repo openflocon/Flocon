@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -22,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesBooleanRowUiModel
@@ -40,6 +44,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun SharedPreferenceRowView(
     model: SharedPreferencesRowUiModel,
     onValueChanged: (row: SharedPreferencesRowUiModel, valueString: String) -> Unit,
+    onEditClicked: (row: SharedPreferencesRowUiModel, stringValue: SharedPreferencesRowUiModel.Value.StringValue) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -170,22 +175,48 @@ fun SharedPreferenceRowView(
             }
 
             is SharedPreferencesRowUiModel.Value.StringValue -> {
-                var value by remember(model.value) { mutableStateOf(model.value.value) }
-                Row(
-                    Modifier
-                        .weight(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    FloconTextField(
-                        value = value,
-                        onValueChange = { value = it },
-                        textStyle = FloconTheme.typography.bodySmall,
-                        modifier = Modifier.weight(1f)
-                    )
-                    SharedPreferenceSendButton(
-                        onClick = { onValueChanged(model, value) },
-                    )
+                val textValue = model.value.value
+                if(textValue.length > 80 || textValue.contains("\n")) {
+                    Row(
+                        Modifier
+                            .weight(1f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            text = textValue,
+                            maxLines = 5,
+                            style = FloconTheme.typography.bodySmall,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                                .background(FloconTheme.colorPalette.primary, RoundedCornerShape(8.dp))
+                                .padding(8.dp)
+                        )
+                        SharedPreferenceSendButton(
+                            icon = Icons.Default.Edit,
+                            onClick = {
+                                onEditClicked(model, model.value)
+                            },
+                        )
+                    }
+                } else {
+                    var value by remember(model.value) { mutableStateOf(model.value.value) }
+                    Row(
+                        Modifier
+                            .weight(1f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        FloconTextField(
+                            value = value,
+                            onValueChange = { value = it },
+                            textStyle = FloconTheme.typography.bodySmall,
+                            modifier = Modifier.weight(1f)
+                        )
+                        SharedPreferenceSendButton(
+                            onClick = { onValueChanged(model, value) },
+                        )
+                    }
                 }
             }
         }
@@ -215,6 +246,7 @@ private fun SharedPreferenceRowPreview() {
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesStringRowUiModel(),
             onValueChanged = { _, _ -> },
+            onEditClicked = { _, _ -> },
         )
     }
 }
@@ -227,6 +259,7 @@ private fun SharedPreferenceRowPreview_int() {
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesIntRowUiModel(),
             onValueChanged = { _, _ -> },
+            onEditClicked = { _, _ -> },
         )
     }
 }
@@ -239,6 +272,7 @@ private fun SharedPreferenceRowPreview_float() {
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesFloatRowUiModel(),
             onValueChanged = { _, _ -> },
+            onEditClicked = { _, _ -> },
         )
     }
 }
@@ -251,6 +285,7 @@ private fun SharedPreferenceRowPreview_boolean() {
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesBooleanRowUiModel(),
             onValueChanged = { _, _ -> },
+            onEditClicked = { _, _ -> },
         )
     }
 }
@@ -263,6 +298,7 @@ private fun SharedPreferenceRowPreview_long() {
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesLongRowUiModel(),
             onValueChanged = { _, _ -> },
+            onEditClicked = { _, _ -> },
         )
     }
 }

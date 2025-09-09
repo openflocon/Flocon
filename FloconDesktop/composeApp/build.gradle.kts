@@ -12,6 +12,14 @@ plugins {
     alias(libs.plugins.room)
     alias(libs.plugins.ktlint) // Ajout de Ktlint ici
     alias(libs.plugins.aboutLibraries)
+
+    alias(libs.plugins.buildconfig)
+}
+
+buildConfig {
+    packageName("io.github.openflocon.flocondesktop")
+
+    buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: "1.0.0")
 }
 
 kotlin {

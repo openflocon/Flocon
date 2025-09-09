@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package io.github.openflocon.library.designsystem
 
+import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -13,9 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
+import io.github.openflocon.library.designsystem.components.FloconMenuRepresentation
 import io.github.openflocon.library.designsystem.theme.FloconColorPaletteNew
 import io.github.openflocon.library.designsystem.theme.FloconShape
 import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
@@ -86,6 +91,7 @@ fun FloconTheme(
             LocalTextSelectionColors provides selectionTextColor,
             LocalScrollbarStyle provides scrollbarStyle,
             LocalMinimumInteractiveComponentSize provides Dp.Unspecified,
+            LocalContextMenuRepresentation provides FloconMenuRepresentation(),
             content = content
         )
     }

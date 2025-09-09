@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.about
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +24,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberWindowState
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon
+import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.common.utils.openInBrowser
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
@@ -62,10 +62,16 @@ internal fun AboutScreen(
                     style = FloconTheme.typography.titleSmall,
                     color = FloconTheme.colorPalette.onSurface
                 )
+                Text(
+                    text = BuildConfig.APP_VERSION,
+                    style = FloconTheme.typography.labelSmall,
+                    color = FloconTheme.colorPalette.onSurface
+                )
                 FloconTextButton(
                     onClick = {
                         openInBrowser(URI.create("https://github.com/openflocon/Flocon"))
-                    }
+                    },
+                    containerColor = FloconTheme.colorPalette.secondary
                 ) {
                     Text(
                         text = "GitHub"

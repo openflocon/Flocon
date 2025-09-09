@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,8 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesViewModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferenceToEdit
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
@@ -30,10 +33,12 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
+
 @Composable
 fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
     val viewModel: SharedPreferencesViewModel = koinViewModel()
     val deviceSharedPrefs by viewModel.sharedPrefs.collectAsStateWithLifecycle()
+    val elementToEdit by viewModel.elementToEdit.collectAsStateWithLifecycle()
     val rows by viewModel.rows.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
@@ -49,7 +54,23 @@ fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
         modifier = modifier,
         rows = rows,
         changeValue = viewModel::onValueChanged,
+        onEditClicked = { row, stringValue ->
+            viewModel.onEditClicked(row, stringValue)
+        },
     )
+
+    elementToEdit?.let {
+        SharedPreferenceEditScreen(
+            row = it.row,
+            stringValue = it.stringValue,
+            cancel = {
+                viewModel.cancelEdition()
+            },
+            save = { row, stringValue ->
+                viewModel.onEditDone(row, stringValue)
+            }
+        )
+    }
 }
 
 @Composable
@@ -58,6 +79,7 @@ fun SharedPrefScreen(
     onSharedPrefSelected: (DeviceSharedPrefUiModel) -> Unit,
     rows: SharedPreferencesRowsStateUiModel,
     changeValue: (SharedPreferencesRowUiModel, String) -> Unit,
+    onEditClicked: (row: SharedPreferencesRowUiModel, stringValue: SharedPreferencesRowUiModel.Value.StringValue) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var sharedPrefRows by remember { mutableStateOf<List<SharedPreferencesRowUiModel>>(emptyList()) }
@@ -100,6 +122,7 @@ fun SharedPrefScreen(
                                 model = it,
                                 modifier = Modifier.fillMaxWidth(),
                                 onValueChanged = changeValue,
+                                onEditClicked = onEditClicked,
                             )
                         }
                     }
@@ -118,6 +141,7 @@ private fun SharedPrefScreenPreview() {
             onSharedPrefSelected = {},
             rows = previewSharedPreferencesRowsStateUiModel(),
             changeValue = { _, _ -> },
+            onEditClicked = { _, _ -> },
         )
     }
 }

@@ -2,6 +2,10 @@ package io.github.openflocon.flocon.myapplication.sharedpreferences
 
 import android.content.Context
 import androidx.core.content.edit
+import org.json.JSONArray
+import org.json.JSONObject
+import java.util.UUID
+import kotlin.random.Random
 
 fun initializeSharedPreferences(context: Context) {
     context.getSharedPreferences("user_pref", Context.MODE_PRIVATE).apply {
@@ -19,4 +23,32 @@ fun initializeSharedPreferences(context: Context) {
         }
     }
 
+    context.getSharedPreferences("groups_pref", Context.MODE_PRIVATE).apply {
+        edit {
+            putString("group_one", generateUsersJson(3).toString(4))
+            putString("group_two", generateUsersJson(5).toString(4))
+            putString("group_three", generateUsersJson(10).toString(4))
+            putString("group_four", generateUsersJson(2).toString(4))
+        }
+    }
+}
+
+private fun generateUsersJson(number: Int) : JSONArray {
+    val usersArray = JSONArray()
+
+    for (i in 1..number) {
+        val randomUsername = "user_${UUID.randomUUID().toString().substring(0, 8)}"
+        val randomEmail = "$randomUsername@example.com"
+        val isActive = Random.nextBoolean()
+
+        val userObject = JSONObject()
+        userObject.put("id", i)
+        userObject.put("username", randomUsername)
+        userObject.put("email", randomEmail)
+        userObject.put("is_active", isActive)
+
+        usersArray.put(userObject)
+    }
+
+    return usersArray
 }

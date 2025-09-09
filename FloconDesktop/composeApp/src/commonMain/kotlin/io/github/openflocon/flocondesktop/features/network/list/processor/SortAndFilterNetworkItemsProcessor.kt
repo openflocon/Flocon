@@ -19,7 +19,7 @@ class SortAndFilterNetworkItemsProcessor {
         textFilters: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
     ): List<NetworkItemViewState> = items.asSequence()
         .filter { item ->
-            (filterState.query.isEmpty() || item.second.contains(filterState.query))
+            (filterState.query.isEmpty() || item.second.contains(filterState.query) || item.first.contains(filterState.query))
         }
         .filter { item ->
             item.second.method in allowedMethods
@@ -109,5 +109,19 @@ private fun TextFilterStateUiModel.FilterItem.filterByText(text: String): Boolea
         !filterResult
     } else {
         filterResult
+    }
+}
+
+/**
+ * lookup if the request or response body contains the text
+ */
+private fun FloconNetworkCallDomainModel.contains(text: String) : Boolean {
+    return request.body?.contains(text, ignoreCase = true) == true || response?.contains(text) == true
+}
+
+private fun FloconNetworkCallDomainModel.Response.contains(text: String) : Boolean {
+    return when(this) {
+        is FloconNetworkCallDomainModel.Response.Failure -> issue.contains(text, ignoreCase = true)
+        is FloconNetworkCallDomainModel.Response.Success -> body?.contains(text, ignoreCase = true) == true
     }
 }

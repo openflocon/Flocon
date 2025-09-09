@@ -11,4 +11,6 @@ plugins {
     alias(libs.plugins.aboutLibraries) apply false
     alias(libs.plugins.android.kotlin.multiplatform.library) apply false
     alias(libs.plugins.android.lint) apply false // Ajout de Ktlint
+
+    alias(libs.plugins.buildconfig) apply false
 }

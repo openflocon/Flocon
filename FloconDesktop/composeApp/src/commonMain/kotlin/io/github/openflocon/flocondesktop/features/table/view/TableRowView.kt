@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.table.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,12 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.table.model.TableAction
 import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.flocondesktop.features.table.model.previewTableRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -79,21 +78,21 @@ fun TableRowView(
 private fun contextualActions(
     onAction: (TableAction) -> Unit,
     state: TableRowUiModel
-): List<ContextualItem> {
+): List<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
     return remember(state) {
         buildList {
             add(
-                ContextualItem(
-                    text = "Remove",
+                FloconContextMenuItem.Item(
+                    label = "Remove",
                     onClick = {
                         onActionCallback(TableAction.Remove(state))
                     }
                 ),
             )
             add(
-                ContextualItem(
-                    text = "Remove lines above ",
+                FloconContextMenuItem.Item(
+                    label = "Remove lines above ",
                     onClick = {
                         onActionCallback(TableAction.RemoveLinesAbove(state))
                     }
