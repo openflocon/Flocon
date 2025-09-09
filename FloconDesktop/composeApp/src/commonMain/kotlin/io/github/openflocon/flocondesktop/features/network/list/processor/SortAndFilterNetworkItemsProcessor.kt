@@ -116,12 +116,12 @@ private fun TextFilterStateUiModel.FilterItem.filterByText(text: String): Boolea
  * lookup if the request or response body contains the text
  */
 private fun FloconNetworkCallDomainModel.contains(text: String) : Boolean {
-    return this.request.body?.contains(text, ignoreCase = true) == true || this.response?.contains(text) == true
+    return request.body?.contains(text, ignoreCase = true) == true || response?.contains(text) == true
 }
 
 private fun FloconNetworkCallDomainModel.Response.contains(text: String) : Boolean {
     return when(this) {
-        is FloconNetworkCallDomainModel.Response.Failure -> this.issue.contains(text, ignoreCase = true)
-        is FloconNetworkCallDomainModel.Response.Success -> this.body?.contains(text, ignoreCase = true) == true
+        is FloconNetworkCallDomainModel.Response.Failure -> issue.contains(text, ignoreCase = true)
+        is FloconNetworkCallDomainModel.Response.Success -> body?.contains(text, ignoreCase = true) == true
     }
 }
