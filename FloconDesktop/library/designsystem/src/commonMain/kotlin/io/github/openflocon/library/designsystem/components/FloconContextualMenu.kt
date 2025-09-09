@@ -10,6 +10,7 @@ import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronRight
@@ -24,11 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInParent
+import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.rememberPopupPositionProviderAtPosition
+import com.composeunstyled.currentWindowContainerSize
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import kotlin.math.roundToInt
 
 internal class FloconMenuRepresentation : ContextMenuRepresentation {
 
@@ -113,6 +118,11 @@ private fun SubMenu(
     val hovered by interactionSource.collectIsHoveredAsState()
     val enter = remember { HoverInteraction.Enter() }
     var rect by remember { mutableStateOf(Rect.Zero) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+    var boundsInWindow by remember { mutableStateOf(Rect.Zero) }
+    var padding by remember { mutableStateOf(PaddingValues(start = 4.dp)) }
+    val window = currentWindowContainerSize()
+    val density = LocalDensity.current
 
     LaunchedEffect(hovered) {
         if (hovered) {
@@ -130,18 +140,29 @@ private fun SubMenu(
             .hoverable(interactionSource)
             .onGloballyPositioned {
                 rect = it.boundsInParent()
+                boundsInWindow = it.boundsInWindow()
             }
     )
 
     if (hovered) {
         Menu(
-            offset = rect.topRight,
+            offset = offset,
             items = item.items,
             hide = hide,
             interactionSource = interactionSource,
             modifier = Modifier
                 .hoverable(interactionSource)
-                .padding(start = 4.dp)
+                .padding(paddingValues = padding)
+                .onGloballyPositioned {
+                    density.run {
+                        offset = if ((boundsInWindow.topRight.x.roundToInt() + it.size.width) > window.width.roundToPx()) {
+                            padding = PaddingValues(end = 4.dp)
+                            rect.topLeft - Offset(x = it.size.width.toFloat(), y = 0f)
+                        } else {
+                            rect.topRight
+                        }
+                    }
+                }
         )
     }
 }
