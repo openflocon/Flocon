@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
-import io.github.openflocon.data.local.network.models.FloconNetwockCallEntityLite
 import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
@@ -34,20 +33,6 @@ interface FloconNetworkDao {
     """,
     )
     suspend fun getRequests(ids: List<String>, deviceId: DeviceId, packageName: AppPackageName) : List<FloconNetworkCallEntity>
-
-    @Query(
-        """
-        SELECT * 
-        FROM FloconNetworkCallEntity 
-        WHERE deviceId = :deviceId 
-        AND packageName = :packageName
-        ORDER BY request_startTime ASC
-    """,
-    )
-    fun observeRequestsLite(
-        deviceId: String,
-        packageName: String,
-    ): Flow<List<FloconNetwockCallEntityLite>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertRequest(request: FloconNetworkCallEntity)

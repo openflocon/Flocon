@@ -5,10 +5,9 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkRepository {
-    // lite : exclude headers, sizes, body
+
     fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        lite: Boolean,
     ): Flow<List<FloconNetworkCallDomainModel>>
 
     fun observeRequest(
