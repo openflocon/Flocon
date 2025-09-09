@@ -21,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesViewModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferenceToEdit
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
@@ -32,16 +33,12 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
-@Immutable
-private data class ElementToEdit(
-    val row: SharedPreferencesRowUiModel,
-    val stringValue: SharedPreferencesRowUiModel.Value.StringValue,
-)
 
 @Composable
 fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
     val viewModel: SharedPreferencesViewModel = koinViewModel()
     val deviceSharedPrefs by viewModel.sharedPrefs.collectAsStateWithLifecycle()
+    val elementToEdit by viewModel.elementToEdit.collectAsStateWithLifecycle()
     val rows by viewModel.rows.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
@@ -51,8 +48,6 @@ fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
         }
     }
 
-    var elementToEdit by remember { mutableStateOf<ElementToEdit?>(null) }
-
     SharedPrefScreen(
         deviceSharedPrefs = deviceSharedPrefs,
         onSharedPrefSelected = viewModel::onSharedPrefsSelected,
@@ -60,7 +55,7 @@ fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
         rows = rows,
         changeValue = viewModel::onValueChanged,
         onEditClicked = { row, stringValue ->
-            elementToEdit = ElementToEdit(row, stringValue)
+            viewModel.onEditClicked(row, stringValue)
         },
     )
 
@@ -69,11 +64,10 @@ fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
             row = it.row,
             stringValue = it.stringValue,
             cancel = {
-                elementToEdit = null
+                viewModel.cancelEdition()
             },
             save = { row, stringValue ->
-                viewModel.onValueChanged(row, stringValue)
-                elementToEdit = null
+                viewModel.onEditDone(row, stringValue)
             }
         )
     }
