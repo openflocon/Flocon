@@ -28,9 +28,9 @@ fun DashboardTextFieldView(
     rowItem: DashboardContainerViewState.RowItem.TextField,
     value: String,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     onSubmit: () -> Unit = {},
     showSubmitButton: Boolean = true,
-    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
