@@ -19,12 +19,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.common.ui.ContextualItem
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -105,21 +105,21 @@ fun AnalyticsRowView(
 private fun contextualActions(
     onAction: (AnalyticsAction) -> Unit,
     state: AnalyticsRowUiModel
-): List<ContextualItem> {
+): List<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
     return remember(state) {
         buildList {
             add(
-                ContextualItem(
-                    text = "Remove",
+                FloconContextMenuItem.Item(
+                    label = "Remove",
                     onClick = {
                         onActionCallback(AnalyticsAction.Remove(state))
                     }
                 ),
             )
             add(
-                ContextualItem(
-                    text = "Remove lines above ",
+                FloconContextMenuItem.Item(
+                    label = "Remove lines above ",
                     onClick = {
                         onActionCallback(AnalyticsAction.RemoveLinesAbove(state))
                     }
