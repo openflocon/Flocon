@@ -103,7 +103,7 @@ class NetworkViewModel(
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
     private val items = combine(
-        observeHttpRequestsUseCase(lite = true),
+        observeHttpRequestsUseCase(),
         observeCurrentDeviceIdAndPackageNameUseCase(),
     ) { list, deviceIdAndPackageName ->
         list.map { networkCall ->

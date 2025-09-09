@@ -56,9 +56,8 @@ class NetworkRepositoryImpl(
 
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        lite: Boolean,
     ): Flow<List<FloconNetworkCallDomainModel>> = networkLocalDataSource
-        .observeRequests(deviceIdAndPackageName = deviceIdAndPackageName, lite = lite)
+        .observeRequests(deviceIdAndPackageName = deviceIdAndPackageName)
         .flowOn(dispatcherProvider.data)
 
     override suspend fun getRequests(
@@ -133,7 +132,9 @@ class NetworkRepositoryImpl(
     }
 
     override suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
-        networkLocalDataSource.clearDeviceCalls(deviceIdAndPackageName = deviceIdAndPackageName)
+        withContext(dispatcherProvider.data) {
+            networkLocalDataSource.clearDeviceCalls(deviceIdAndPackageName = deviceIdAndPackageName)
+        }
     }
 
     override suspend fun deleteRequest(
@@ -161,7 +162,9 @@ class NetworkRepositoryImpl(
     }
 
     override suspend fun clear() {
-        networkLocalDataSource.clear()
+        withContext(dispatcherProvider.data) {
+            networkLocalDataSource.clear()
+        }
     }
 
     fun toDomainForResponse(
