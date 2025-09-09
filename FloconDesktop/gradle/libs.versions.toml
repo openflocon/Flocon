@@ -33,6 +33,7 @@ runner = "1.7.0"
 core = "1.7.0"
 other-jsontree = "2.5.0"
 uiToolingPreviewDesktop = "1.8.2"
+buildconfig = "5.6.8"
 
 [libraries]
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
@@ -99,3 +100,5 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradle" }
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 android-lint = { id = "com.android.lint", version.ref = "agp" }
+
+buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
