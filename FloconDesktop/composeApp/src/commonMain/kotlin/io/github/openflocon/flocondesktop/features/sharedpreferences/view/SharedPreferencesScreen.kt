@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +17,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesViewModel
@@ -105,13 +109,18 @@ fun SharedPrefScreen(
                 )
             }
         )
+
         SelectionContainer {
             LazyColumn(
-                contentPadding = PaddingValues(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(FloconTheme.shapes.medium)
                     .background(FloconTheme.colorPalette.primary)
+                    .border(
+                        width = 1.dp,
+                        color = FloconTheme.colorPalette.secondary,
+                        shape = FloconTheme.shapes.medium
+                    )
             ) {
                 when (rows) {
                     SharedPreferencesRowsStateUiModel.Empty -> {}
