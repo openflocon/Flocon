@@ -6,6 +6,7 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.dashboard.usecase.ObserveCurrentDeviceDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.SendCheckBoxUpdateDeviceDeviceUseCase
 import io.github.openflocon.domain.dashboard.usecase.SendClickEventToDeviceDeviceUseCase
+import io.github.openflocon.domain.dashboard.usecase.SubmitFormToDeviceDeviceUseCase
 import io.github.openflocon.domain.dashboard.usecase.SubmitTextFieldToDeviceDeviceUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.dashboard.delegate.DashboardSelectorDelegate
@@ -23,6 +24,7 @@ import kotlinx.coroutines.launch
 class DashboardViewModel(
     private val observeCurrentDeviceDashboardUseCase: ObserveCurrentDeviceDashboardUseCase,
     private val sendClickEventToDeviceDeviceUseCase: SendClickEventToDeviceDeviceUseCase,
+    private val submitFormToDeviceDeviceUseCase: SubmitFormToDeviceDeviceUseCase,
     private val submitTextFieldToDeviceDeviceUseCase: SubmitTextFieldToDeviceDeviceUseCase,
     private val sendCheckBoxUpdateDeviceDeviceUseCase: SendCheckBoxUpdateDeviceDeviceUseCase,
     private val dashboardSelectorDelegate: DashboardSelectorDelegate,
@@ -59,6 +61,12 @@ class DashboardViewModel(
     fun onTextFieldSubmit(textFieldId: String, value: String) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             submitTextFieldToDeviceDeviceUseCase(textFieldId = textFieldId, value = value)
+        }
+    }
+
+    fun onFormSubmit(formId: String, values: Map<String, Any>) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            submitFormToDeviceDeviceUseCase(formId, values)
         }
     }
 

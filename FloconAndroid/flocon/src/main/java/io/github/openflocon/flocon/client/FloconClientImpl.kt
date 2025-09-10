@@ -8,7 +8,6 @@ import android.widget.Toast
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconPlugin
-import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.model.floconMessageFromServerFromJson
 import io.github.openflocon.flocon.model.toFloconMessageToServer
 import io.github.openflocon.flocon.plugins.SharedPreferences.FloconSharedPreferencesPluginImpl

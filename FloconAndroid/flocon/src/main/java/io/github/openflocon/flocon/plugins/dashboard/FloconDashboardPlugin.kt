@@ -7,6 +7,7 @@ import io.github.openflocon.flocon.plugins.dashboard.mapper.toJson
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.todevice.ToDeviceCheckBoxValueChangedMessage
+import io.github.openflocon.flocon.plugins.dashboard.model.todevice.ToDeviceSubmittedFormMessage
 import io.github.openflocon.flocon.plugins.dashboard.model.todevice.ToDeviceSubmittedTextFieldMessage
 import java.util.concurrent.ConcurrentHashMap
 
@@ -26,6 +27,14 @@ class FloconDashboardPluginImpl(
                 val id = messageFromServer.body
 
                 callbackMap[id]?.let { it as? DashboardCallback.ButtonCallback }?.action?.invoke()
+            }
+
+            Protocol.ToDevice.Dashboard.Method.OnFormSubmitted -> {
+                ToDeviceSubmittedFormMessage.fromJson(messageFromServer.body)?.let {
+                    callbackMap[it.id]?.let { it as? DashboardCallback.FormCallback }?.actions?.invoke(
+                        it.values
+                    )
+                }
             }
 
             Protocol.ToDevice.Dashboard.Method.OnTextFieldSubmitted -> {
