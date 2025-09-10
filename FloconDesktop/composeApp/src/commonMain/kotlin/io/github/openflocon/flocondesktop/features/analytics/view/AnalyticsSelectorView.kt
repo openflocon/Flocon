@@ -42,7 +42,7 @@ internal fun AnalyticsSelectorView(
                 containerColor = FloconTheme.colorPalette.secondary
             ) {
                 when (analyticsState) {
-                    AnalyticsStateUiModel.Empty -> Text("No database")
+                    AnalyticsStateUiModel.Empty -> Text("No analytics")
                     AnalyticsStateUiModel.Loading -> FloconLinearProgressIndicator()
                     is AnalyticsStateUiModel.WithContent -> {
                         Text(text = analyticsState.selected.name)

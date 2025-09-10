@@ -4,7 +4,7 @@ import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.network.list.mapper.formatTimestamp
 
-internal const val MAX_PROPERTIES_TO_SHOW = 10
+internal const val MAX_PROPERTIES_TO_SHOW = 7
 
 internal fun AnalyticsItemDomainModel.mapToUi(): AnalyticsRowUiModel = AnalyticsRowUiModel(
     id = itemId,
