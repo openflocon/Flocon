@@ -61,17 +61,18 @@ fun ImageItemView(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 12.dp),
+                .background(FloconTheme.colorPalette.surface)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
         ) {
             Text(
                 text = model.downloadedAt,
+                style = FloconTheme.typography.bodySmall,
                 color = FloconTheme.colorPalette.onPrimary,
-                fontSize = 14.sp
             )
             Text(
                 text = model.url,
+                style = FloconTheme.typography.bodySmall,
                 color = FloconTheme.colorPalette.onPrimary.copy(alpha = .5f),
-                fontSize = 10.sp
             )
         }
     }
