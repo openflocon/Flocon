@@ -42,7 +42,7 @@ internal fun SharedPrefSelectorView(
                 containerColor = FloconTheme.colorPalette.secondary
             ) {
                 when (sharedPrefsState) {
-                    SharedPrefsStateUiModel.Empty -> Text("No database")
+                    SharedPrefsStateUiModel.Empty -> Text("No SharedPreference")
                     SharedPrefsStateUiModel.Loading -> FloconLinearProgressIndicator()
                     is SharedPrefsStateUiModel.WithContent -> {
                         Text(text = sharedPrefsState.selected.name)
