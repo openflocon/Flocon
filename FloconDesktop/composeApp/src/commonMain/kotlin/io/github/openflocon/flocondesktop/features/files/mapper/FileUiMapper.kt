@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.files.mapper
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Drafts
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -25,7 +26,7 @@ fun FileDomainModel.toUi(): FileUiModel = FileUiModel(
     icon = if (this.isDirectory) {
         Icons.Outlined.Folder
     } else {
-        Icons.Outlined.Drafts
+        Icons.Outlined.Description
     },
     contextualActions = buildContextualActions(
         isConstant = this.path is FilePathDomainModel.Constants,

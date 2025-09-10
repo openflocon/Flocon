@@ -46,12 +46,12 @@ fun FilesTopBar(
             }
             Text(
                 text = current?.name.orEmpty(),
-                style = FloconTheme.typography.bodyLarge,
+                style = FloconTheme.typography.bodyMedium,
                 maxLines = 1,
                 color = FloconTheme.colorPalette.onPrimary,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 4.dp, horizontal = 12.dp),
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
             )
         },
         actions = {

@@ -50,7 +50,6 @@ fun FileItemRow(
     ) {
         Row(
             modifier = modifier
-                .clip(FloconTheme.shapes.medium)
                 .clickable { onClick(file) }
                 .padding(vertical = 8.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -62,29 +61,15 @@ fun FileItemRow(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Nom du fichier/dossier
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = file.name,
-                    style = FloconTheme.typography.bodyLarge,
+                    style = FloconTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                // Informations additionnelles (taille, date de modification)
-                // if (!file.isDirectory) {
-                //    Text(
-                //        text = "${viewModel.formatFileSize(file.size)}",
-                //        style = FloconTheme.typography.bodySmall,
-                //        color = FloconTheme.colorPalette.onSurfaceVariant
-                //    )
-                // }
-                // Text(
-                //    text = viewModel.formatLastModifiedDate(file.lastModified),
-                //    style = FloconTheme.typography.bodySmall,
-                //    color = FloconTheme.colorPalette.onSurfaceVariant
-                // )
             }
 
             // Flèche si c'est un dossier (pour indiquer qu'on peut y naviguer)
