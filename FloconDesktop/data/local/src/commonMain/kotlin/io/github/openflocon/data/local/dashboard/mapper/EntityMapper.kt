@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.dashboard.mapper
 
+import io.github.openflocon.data.local.dashboard.models.ContainerConfigEntity
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.data.local.dashboard.models.DashboardElementButton
 import io.github.openflocon.data.local.dashboard.models.DashboardElementCheckBox
@@ -8,11 +9,16 @@ import io.github.openflocon.data.local.dashboard.models.DashboardElementPlainTex
 import io.github.openflocon.data.local.dashboard.models.DashboardElementText
 import io.github.openflocon.data.local.dashboard.models.DashboardElementTextField
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
-import io.github.openflocon.data.local.dashboard.models.DashboardSectionEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
+import io.github.openflocon.data.local.dashboard.models.FormContainerConfigEntity
+import io.github.openflocon.data.local.dashboard.models.SectionContainerConfigEntity
+import io.github.openflocon.domain.dashboard.models.ContainerConfigDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardId
-import io.github.openflocon.domain.dashboard.models.DashboardSectionDomainModel
+import io.github.openflocon.domain.dashboard.models.DashboardContainerDomainModel
+import io.github.openflocon.domain.dashboard.models.FormContainerConfigDomainModel
+import io.github.openflocon.domain.dashboard.models.SectionContainerConfigDomainModel
 
 internal fun DashboardDomainModel.toEntity(deviceId: DeviceId, packageName: String): DashboardEntity = DashboardEntity(
     deviceId = deviceId,
@@ -20,20 +26,21 @@ internal fun DashboardDomainModel.toEntity(deviceId: DeviceId, packageName: Stri
     dashboardId = dashboardId,
 )
 
-internal fun DashboardSectionDomainModel.toEntity(
+internal fun DashboardContainerDomainModel.toEntity(
     dashboardId: DashboardId,
     index: Int,
-): DashboardSectionEntity = DashboardSectionEntity(
+): DashboardContainerEntity = DashboardContainerEntity(
     name = this.name,
     dashboardId = dashboardId,
-    sectionOrder = index,
+    containerOrder = index,
+    containerConfig = this.containerConfig.toEntity()
 )
 
 internal fun DashboardElementDomainModel.toEntity(
-    sectionId: Long,
+    containerId: Long,
     index: Int,
 ): DashboardElementEntity = DashboardElementEntity(
-    sectionId = sectionId,
+    containerId = containerId,
     elementOrder = index,
     button = (this as? DashboardElementDomainModel.Button)?.toButtonEntity(),
     text = (this as? DashboardElementDomainModel.Text)?.toTextEntity(),
@@ -74,3 +81,8 @@ internal fun DashboardElementDomainModel.CheckBox.toCheckBoxEntity() = Dashboard
     label = label,
     value = value,
 )
+
+fun ContainerConfigDomainModel.toEntity(): ContainerConfigEntity = when (this) {
+    is FormContainerConfigDomainModel -> FormContainerConfigEntity(formId, submitText)
+    is SectionContainerConfigDomainModel -> SectionContainerConfigEntity
+}

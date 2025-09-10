@@ -9,14 +9,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
-import io.github.openflocon.flocondesktop.features.dashboard.model.previewDashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.previewDashboardContainerViewState
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardButtonView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardCheckBoxView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardPlainTextView
@@ -24,15 +28,25 @@ import io.github.openflocon.flocondesktop.features.dashboard.view.items.Dashboar
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextView
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState.ContainerConfig
 
 @Composable
-fun DashboardItemView(
-    viewState: DashboardItemViewState,
+fun DashboardContainerView(
+    viewState: DashboardContainerViewState,
     onClickButton: (buttonId: String) -> Unit,
     submitTextField: (textFieldId: String, value: String) -> Unit,
+    submitForm: (formId: String, values: Map<String, Any>) -> Unit,
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var inputState by remember {
+        mutableStateOf(
+            viewState.rows
+                .filterIsInstance<DashboardContainerViewState.InputItem>()
+                .associate { it.id to it.value }
+        )
+    }
+
     Box(
         modifier = modifier
             .border(width = 1.dp, color = FloconTheme.colorPalette.secondary, shape = FloconTheme.shapes.medium)
@@ -46,7 +60,7 @@ fun DashboardItemView(
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp),
                 textAlign = TextAlign.Center,
-                text = viewState.sectionName,
+                text = viewState.containerName,
                 style = FloconTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                 ),
@@ -59,23 +73,39 @@ fun DashboardItemView(
             ) {
                 viewState.rows.fastForEach { rowItem ->
                     when (rowItem) {
-                        is DashboardItemViewState.RowItem.TextField -> {
+                        is DashboardContainerViewState.RowItem.TextField -> {
                             DashboardTextFieldView(
                                 modifier = Modifier.fillMaxWidth(),
                                 rowItem = rowItem,
-                                submitTextField = submitTextField,
+                                value = inputState[rowItem.id].toString(),
+                                onValueChange = {
+                                    inputState = inputState.toMutableMap().apply {
+                                        this[rowItem.id] = it
+                                    }
+                                },
+                                onSubmit = {
+                                    submitTextField(rowItem.id, inputState[rowItem.id].toString())
+                                },
+                                // A form only needs a single submit button, not on every textfield
+                                showSubmitButton = viewState.containerConfig !is ContainerConfig.Form
                             )
                         }
 
-                        is DashboardItemViewState.RowItem.CheckBox -> {
+                        is DashboardContainerViewState.RowItem.CheckBox -> {
                             DashboardCheckBoxView(
                                 modifier = Modifier.fillMaxWidth(),
                                 rowItem = rowItem,
-                                onUpdateCheckBox = onUpdateCheckBox,
+                                value = inputState[rowItem.id] as Boolean,
+                                onCheckedChange = {
+                                    inputState = inputState.toMutableMap().apply {
+                                        this[rowItem.id] = it
+                                    }
+                                    onUpdateCheckBox(rowItem.id, it)
+                                }
                             )
                         }
 
-                        is DashboardItemViewState.RowItem.Button -> {
+                        is DashboardContainerViewState.RowItem.Button -> {
                             DashboardButtonView(
                                 modifier = Modifier.fillMaxWidth(),
                                 onClickButton = onClickButton,
@@ -83,20 +113,37 @@ fun DashboardItemView(
                             )
                         }
 
-                        is DashboardItemViewState.RowItem.Text -> {
+                        is DashboardContainerViewState.RowItem.Text -> {
                             DashboardTextView(
                                 modifier = Modifier.fillMaxWidth(),
                                 rowItem = rowItem,
                             )
                         }
 
-                        is DashboardItemViewState.RowItem.PlainText -> {
+                        is DashboardContainerViewState.RowItem.PlainText -> {
                             DashboardPlainTextView(
                                 modifier = Modifier.fillMaxWidth(),
                                 rowItem = rowItem,
                             )
                         }
                     }
+                }
+
+                // Submit button for forms
+                if (viewState.containerConfig is ContainerConfig.Form) {
+                    DashboardButtonView(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClickButton = {
+                            submitForm(
+                                viewState.containerConfig.formId,
+                                inputState,
+                            )
+                        },
+                        rowItem = DashboardContainerViewState.RowItem.Button(
+                            id = "_",
+                            text = viewState.containerConfig.submitText,
+                        ),
+                    )
                 }
             }
         }
@@ -105,13 +152,14 @@ fun DashboardItemView(
 
 @Preview
 @Composable
-private fun DashboardItemViewPreview() {
+private fun DashboardContainerViewPreview() {
     FloconTheme {
         Box(modifier = Modifier.background(Color.White).padding(all = 8.dp)) {
-            DashboardItemView(
+            DashboardContainerView(
                 onClickButton = {},
-                viewState = previewDashboardItemViewState(),
+                viewState = previewDashboardContainerViewState(),
                 submitTextField = { _, _ -> },
+                submitForm = { _, _ -> },
                 onUpdateCheckBox = { _, _ -> },
                 modifier = Modifier.fillMaxWidth(),
             )

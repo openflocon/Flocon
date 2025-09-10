@@ -18,6 +18,7 @@ fun DashboardView(
     viewState: DashboardViewState,
     onClickButton: (buttonId: String) -> Unit,
     submitTextField: (textFieldId: String, value: String) -> Unit,
+    submitForm: (formId: String, values: Map<String, Any>) -> Unit,
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -28,11 +29,12 @@ fun DashboardView(
         verticalItemSpacing = 8.dp,
     ) {
         items(viewState.items) {
-            DashboardItemView(
+            DashboardContainerView(
                 modifier = Modifier.fillMaxWidth(),
                 viewState = it,
                 onClickButton = onClickButton,
                 submitTextField = submitTextField,
+                submitForm = submitForm,
                 onUpdateCheckBox = onUpdateCheckBox,
             )
         }
@@ -47,6 +49,7 @@ private fun DashboardViewPreview() {
             viewState = previewDashboardViewState(),
             onClickButton = {},
             submitTextField = { _, _ -> },
+            submitForm = { _, _ -> },
             onUpdateCheckBox = { _, _ -> },
         )
     }

@@ -11,15 +11,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardItemViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
@@ -29,13 +25,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DashboardTextFieldView(
-    rowItem: DashboardItemViewState.RowItem.TextField,
-    submitTextField: (id: String, value: String) -> Unit,
+    rowItem: DashboardContainerViewState.RowItem.TextField,
+    value: String,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onSubmit: () -> Unit = {},
+    showSubmitButton: Boolean = true,
 ) {
-    var value by remember(rowItem.value) {
-        mutableStateOf(rowItem.value)
-    }
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -55,7 +51,7 @@ fun DashboardTextFieldView(
         ) {
             FloconTextFieldWithoutM3(
                 value = value,
-                onValueChange = { value = it },
+                onValueChange = onValueChange,
                 placeholder = defaultPlaceHolder(rowItem.placeHolder?.takeIf(String::isNotEmpty)),
                 containerColor = FloconTheme.colorPalette.secondary,
                 contentPadding = PaddingValues(horizontal = 4.dp),
@@ -63,14 +59,16 @@ fun DashboardTextFieldView(
                     .weight(1f)
             )
 
-            FloconIconTonalButton(
-                onClick = { submitTextField(rowItem.id, value) },
-                containerColor = FloconTheme.colorPalette.secondary,
-                modifier = modifier
-            ) {
-                FloconIcon(
-                    imageVector = Icons.AutoMirrored.Outlined.Send
-                )
+            if (showSubmitButton) {
+                FloconIconTonalButton(
+                    onClick = onSubmit,
+                    containerColor = FloconTheme.colorPalette.secondary,
+                    modifier = modifier
+                ) {
+                    FloconIcon(
+                        imageVector = Icons.AutoMirrored.Outlined.Send
+                    )
+                }
             }
         }
     }
@@ -79,7 +77,7 @@ fun DashboardTextFieldView(
 @Preview
 @Composable
 internal fun DashboardTextFieldViewPreview_placeholder() {
-    val rowItem = DashboardItemViewState.RowItem.TextField(
+    val rowItem = DashboardContainerViewState.RowItem.TextField(
         id = "1",
         label = "label",
         placeHolder = "placeholder",
@@ -91,7 +89,8 @@ internal fun DashboardTextFieldViewPreview_placeholder() {
                 FloconTheme.colorPalette.primary,
             ),
             rowItem = rowItem,
-            submitTextField = { _, _ -> },
+            value = "",
+            onValueChange = {},
         )
     }
 }
@@ -99,7 +98,7 @@ internal fun DashboardTextFieldViewPreview_placeholder() {
 @Preview
 @Composable
 internal fun DashboardTextFieldViewPreview_withValue() {
-    val rowItem = DashboardItemViewState.RowItem.TextField(
+    val rowItem = DashboardContainerViewState.RowItem.TextField(
         id = "1",
         label = "label",
         placeHolder = "placeholder",
@@ -111,7 +110,8 @@ internal fun DashboardTextFieldViewPreview_withValue() {
                 FloconTheme.colorPalette.primary,
             ),
             rowItem = rowItem,
-            submitTextField = { _, _ -> },
+            value = "value",
+            onValueChange = {},
         )
     }
 }

@@ -1,14 +1,14 @@
 package io.github.openflocon.flocondesktop.features.dashboard.model
 
 data class DashboardViewState(
-    val items: List<DashboardItemViewState>,
+    val items: List<DashboardContainerViewState>,
 )
 
 fun previewDashboardViewState() = DashboardViewState(
     items = listOf(
-        previewDashboardItemViewState(),
-        previewDashboardItemViewState(),
-        previewDashboardItemViewState(),
-        previewDashboardItemViewState(),
+        previewDashboardContainerViewState(),
+        previewDashboardContainerViewState(),
+        previewDashboardContainerViewState(),
+        previewDashboardContainerViewState(),
     ),
 )

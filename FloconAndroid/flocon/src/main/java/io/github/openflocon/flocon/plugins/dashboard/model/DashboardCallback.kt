@@ -8,6 +8,11 @@ sealed interface DashboardCallback {
         val action: () -> Unit,
     ) : DashboardCallback
 
+    data class FormCallback(
+        override val id: String,
+        val actions: (Map<String, String>) -> Unit,
+    ) : DashboardCallback
+
     data class TextFieldCallback(
         override val id: String,
         val action: (String) -> Unit,

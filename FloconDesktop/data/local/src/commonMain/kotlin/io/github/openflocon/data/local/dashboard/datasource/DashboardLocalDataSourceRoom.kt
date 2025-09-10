@@ -29,7 +29,7 @@ class DashboardLocalDataSourceRoom(
     }
 
     override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> =
-        dashboardDao.observeDashboardWithSectionsAndElements(
+        dashboardDao.observeDashboardWithContainersAndElements(
             deviceId = deviceIdAndPackageName.deviceId,
             packageName = deviceIdAndPackageName.packageName,
             dashboardId = dashboardId,
