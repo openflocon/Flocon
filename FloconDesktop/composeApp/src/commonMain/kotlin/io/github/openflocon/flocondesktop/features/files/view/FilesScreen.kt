@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,6 +14,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -73,7 +75,7 @@ private fun FilesScreen(
             onRefresh = onRefresh,
             onDeleteContent = onDeleteContent,
         )
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
@@ -81,10 +83,9 @@ private fun FilesScreen(
         ) {
             LazyColumn(
                 state = listState,
+                contentPadding = PaddingValues(vertical = 4.dp),
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                contentPadding = PaddingValues(8.dp),
+                    .fillMaxSize(),
             ) {
                 itemsIndexed(state.files) { index, item ->
                     FileItemRow(
@@ -101,6 +102,7 @@ private fun FilesScreen(
             FloconVerticalScrollbar(
                 adapter = scrollAdapter,
                 modifier = Modifier.fillMaxHeight()
+                    .align(Alignment.TopEnd)
             )
         }
     }
