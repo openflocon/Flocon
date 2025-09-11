@@ -34,7 +34,7 @@ jobs:
 
       - name: Build with Gradle
         working-directory: FloconDesktop
-        run: ./gradlew packageDistributionForCurrentOS
+        run: ./gradlew packageDistributionForCurrentOS packageUberJarForCurrentOS
         env:
           PROJECT_VERSION_NAME: ${{ github.ref_name }}
 
@@ -59,6 +59,27 @@ jobs:
         with:
           name: windows-msi
           path: FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi
+
+      - name: Upload Linux Release Jar
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-jar
+          path: FloconDesktop/composeApp/build/compose/jars/*.jar
+
+      - name: Upload macOS Release Jar
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-jar
+          path: FloconDesktop/composeApp/build/compose/jars/*.jar
+
+      - name: Upload Windows Release Jar
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-jar
+          path: FloconDesktop/composeApp/build/compose/jars/*.jar
 
   release:
     needs: build
@@ -86,6 +107,21 @@ jobs:
         with:
           name: windows-msi
 
+      - name: Download Linux jar
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-jar
+      
+      - name: Download macOS jar
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-jar
+
+      - name: Download Windows jar
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-jar
+
       # List downloaded artifacts
       - name: Check downloaded artifacts
         run: ls -R
@@ -99,5 +135,6 @@ jobs:
             *.deb
             *.dmg
             *.msi
+            *.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
