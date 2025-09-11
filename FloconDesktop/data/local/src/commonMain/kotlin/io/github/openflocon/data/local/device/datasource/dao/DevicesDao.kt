@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
 import io.github.openflocon.domain.device.models.DeviceId
@@ -26,6 +27,9 @@ interface DevicesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDeviceApp(app: DeviceAppEntity)
+
+    @Update
+    suspend fun updateDeviceApp(app: DeviceAppEntity)
 
     @Query("DELETE FROM DeviceEntity")
     suspend fun clear()
