@@ -32,6 +32,7 @@ import io.github.openflocon.library.designsystem.components.FloconHorizontalDivi
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconLineDescription
 import io.github.openflocon.library.designsystem.components.FloconSection
+import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -44,6 +45,11 @@ fun NetworkDetailView(
 
     val linesLabelWidth: Dp = 130.dp
     val headersLabelWidth: Dp = 150.dp
+
+    EscapeHandler {
+        onAction(NetworkAction.ClosePanel)
+        true // consumed
+    }
 
     Column(
         modifier = modifier
@@ -83,7 +89,6 @@ private fun Request(
     headersLabelWidth: Dp,
     modifier: Modifier = Modifier,
 ) {
-
     FloconSection(
         title = "Request",
         initialValue = true,
