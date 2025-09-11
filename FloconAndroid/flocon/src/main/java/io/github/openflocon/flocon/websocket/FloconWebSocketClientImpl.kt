@@ -9,7 +9,6 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import java.io.EOFException
-import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -22,7 +21,7 @@ class FloconWebSocketClientImpl : FloconWebSocketClient {
 
     private var webSocket: WebSocket? = null
 
-    private val messagesToSend = ConcurrentLinkedQueue<String>()
+    private val queue = MessageQueue(capacity = 200)
 
     @Throws(Throwable::class)
     override suspend fun connect(
@@ -79,7 +78,7 @@ class FloconWebSocketClientImpl : FloconWebSocketClient {
         }
     }
 
-    override fun sendMessage(message: String): Boolean {
+    override suspend fun sendMessage(message: String): Boolean {
         // Once the connection is established, the main listener (socketListener)
         // will be used for messages, closures, etc.
         // We attach the main listener to the socket after a successful connection.
@@ -90,17 +89,17 @@ class FloconWebSocketClientImpl : FloconWebSocketClient {
             // In our case, the 'connectionListener' is disposable, and the 'socketListener' takes over implicitly.
         } ?: run {
             // if not connected yet, just append the message
-            messagesToSend.add(message)
+            queue.add(message)
         }
         FloconLogger.log("WEBSOCKET ----> send $message")
         return webSocket?.send(message) ?: false
     }
 
-    override fun sendPendingMessages() {
-        var message = messagesToSend.poll()
+    override suspend fun sendPendingMessages() {
+        var message = queue.poll()
         while (message != null) {
             sendMessage(message)
-            message = messagesToSend.poll()
+            message = queue.poll()
         }
     }
 
