@@ -9,6 +9,7 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateTo
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.Dp
@@ -73,7 +75,7 @@ fun <T : Any?> FloconPanel(
     )
 }
 
-private val PanelWidth = 400.dp
+private val PanelWidth = 500.dp
 
 @Composable
 fun FloconPanel(
@@ -116,9 +118,7 @@ fun FloconPanel(
                     .graphicsLayer {
                         this.translationX = translationX.value.toPx()
                     }
-                    .padding(12.dp)
-                    .dropShadow(FloconTheme.shapes.large, Shadow(8.dp, color = FloconTheme.colorPalette.accent))
-                    .clip(FloconTheme.shapes.large),
+                    .border(width = 1.dp, color = FloconTheme.colorPalette.surface),
                 content = content
             )
         }
