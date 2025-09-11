@@ -48,6 +48,7 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.max
 
 @Composable
 fun AnalyticsScreen(modifier: Modifier = Modifier) {
@@ -119,6 +120,10 @@ fun AnalyticsScreen(
                 }
             )
 
+            var widthPx by remember { mutableStateOf(0f) }
+            val density = LocalDensity.current.density
+            val dpWidth = (widthPx / density).dp
+
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -129,11 +134,10 @@ fun AnalyticsScreen(
                         color = FloconTheme.colorPalette.secondary,
                         shape = FloconTheme.shapes.medium
                     )
+                    .onSizeChanged {
+                        widthPx = max(widthPx, it.width.toFloat())
+                    }
             ) {
-                var widthPx by remember { mutableStateOf(0f) }
-                val density = LocalDensity.current.density
-                val dpWidth = (widthPx / density).dp
-
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -144,7 +148,7 @@ fun AnalyticsScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .onSizeChanged {
-                                widthPx = it.width.toFloat()
+                                widthPx = max(widthPx, it.width.toFloat())
                             },
                         contentPadding = PaddingValues(vertical = 8.dp),
                     ) {
