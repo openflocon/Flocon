@@ -54,7 +54,7 @@ class LocalDevicesDataSourceRoom(
             InsertResult.New
         } else if (appEntity.lastAppInstance != app.lastAppInstance) {
             // update the app instance if needed
-            dao.updateDeviceApp(
+            dao.insertDeviceApp(
                 app.toEntity(
                     deviceId = deviceId,
                 )

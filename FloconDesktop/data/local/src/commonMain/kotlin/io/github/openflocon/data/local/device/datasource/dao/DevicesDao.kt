@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
 import io.github.openflocon.domain.device.models.DeviceId
@@ -22,14 +23,11 @@ interface DevicesDao {
     @Query("SELECT * FROM DeviceEntity WHERE deviceId = :deviceId")
     suspend fun getDeviceById(deviceId: String): DeviceEntity?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insertDevice(device: DeviceEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insertDeviceApp(app: DeviceAppEntity)
-
-    @Update
-    suspend fun updateDeviceApp(app: DeviceAppEntity)
 
     @Query("DELETE FROM DeviceEntity")
     suspend fun clear()
