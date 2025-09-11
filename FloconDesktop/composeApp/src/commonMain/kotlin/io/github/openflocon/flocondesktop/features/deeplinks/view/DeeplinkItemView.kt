@@ -2,11 +2,17 @@ package io.github.openflocon.flocondesktop.features.deeplinks.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +26,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,14 +52,14 @@ fun DeeplinkItemView(
 
     Column(
         modifier = modifier
-            .padding(vertical = 4.dp)
-            .clip(FloconTheme.shapes.medium),
+            .padding(vertical = 4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         item.label?.let {
             Text(
                 text = item.label,
-                style = FloconTheme.typography.bodyMedium,
+                modifier = Modifier.padding(start = 4.dp),
+                style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 color = FloconTheme.colorPalette.onPrimary
             )
         }
@@ -63,7 +71,10 @@ fun DeeplinkItemView(
         ) {
             Row(
                 modifier = Modifier
-                    .weight(1f),
+                    .weight(1f)
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.surface)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 item.parts.fastForEach { part ->
@@ -78,10 +89,10 @@ fun DeeplinkItemView(
 
             FloconIconTonalButton(
                 onClick = { submit(item, values.toMap()) },
-                containerColor = FloconTheme.colorPalette.secondary
+                containerColor = FloconTheme.colorPalette.tertiary,
             ) {
                 FloconIcon(
-                    imageVector = Icons.AutoMirrored.Outlined.Send,
+                    imageVector = Icons.AutoMirrored.Filled.Send,
                 )
             }
         }
@@ -113,12 +124,10 @@ private fun TextFieldPart(
                 onFieldValueChangedCallback(part, value)
             }
 
-            FloconTextFieldWithoutM3(
+            DeeplinkTextField(
                 value = value,
                 onValueChange = { value = it },
-                placeholder = defaultPlaceHolder(part.label),
-                textStyle = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                containerColor = FloconTheme.colorPalette.secondary
+                label = part.label,
             )
         }
 
@@ -130,6 +139,42 @@ private fun TextFieldPart(
                 ),
             )
         }
+    }
+}
+
+@Composable
+private fun DeeplinkTextField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+) {
+    val isValueEmpty = value.isEmpty()
+    Box(
+        modifier = Modifier.background(
+            color = FloconTheme.colorPalette.primary,
+            shape = RoundedCornerShape(2.dp),
+        ).padding(horizontal = 2.dp, vertical = 2.dp)
+            .width(IntrinsicSize.Min),
+    ) {
+        Text(
+            text = label,
+            style = FloconTheme.typography.bodySmall,
+            color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
+            modifier = Modifier.graphicsLayer {
+                alpha = if (isValueEmpty) 1f else 0f
+            },
+        )
+
+        BasicTextField(
+            textStyle = FloconTheme.typography.bodySmall.copy(
+                color = FloconTheme.colorPalette.onSurface,
+                fontWeight = FontWeight.Bold,
+            ),
+            maxLines = 1,
+            value = value,
+            cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
+            onValueChange = onValueChange,
+        )
     }
 }
 
