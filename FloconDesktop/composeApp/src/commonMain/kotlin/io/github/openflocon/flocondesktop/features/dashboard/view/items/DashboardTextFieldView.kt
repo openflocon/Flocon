@@ -63,7 +63,6 @@ fun DashboardTextFieldView(
                 FloconIconTonalButton(
                     onClick = onSubmit,
                     containerColor = FloconTheme.colorPalette.secondary,
-                    modifier = modifier
                 ) {
                     FloconIcon(
                         imageVector = Icons.AutoMirrored.Outlined.Send
