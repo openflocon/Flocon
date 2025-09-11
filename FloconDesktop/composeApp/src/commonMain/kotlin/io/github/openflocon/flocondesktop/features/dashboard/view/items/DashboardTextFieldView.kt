@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
@@ -63,7 +64,6 @@ fun DashboardTextFieldView(
                 FloconIconTonalButton(
                     onClick = onSubmit,
                     containerColor = FloconTheme.colorPalette.secondary,
-                    modifier = modifier
                 ) {
                     FloconIcon(
                         imageVector = Icons.AutoMirrored.Outlined.Send

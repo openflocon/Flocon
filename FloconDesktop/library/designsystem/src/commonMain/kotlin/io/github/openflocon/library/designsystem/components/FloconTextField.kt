@@ -200,7 +200,7 @@ fun FloconTextFieldWithoutM3(
         keyboardOptions = keyboardOptions,
         enabled = enabled,
         singleLine = singleLine,
-        decorationBox = {
+        decorationBox = { innerTextField ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -222,12 +222,13 @@ fun FloconTextFieldWithoutM3(
                         prefix()
                     }
                     Box(
-                        contentAlignment = Alignment.CenterStart
+                        contentAlignment = Alignment.CenterStart,
+                        modifier = Modifier.weight(1f),
                     ) {
                         if (value.isEmpty() && placeholder != null) {
                             placeholder()
                         }
-                        it()
+                        innerTextField()
                     }
                     if (suffix != null) {
                         suffix()
