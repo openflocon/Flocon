@@ -1,13 +1,18 @@
 package io.github.openflocon.flocon.websocket
 
 import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.sync.Mutex
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import java.io.EOFException
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -19,6 +24,8 @@ class FloconWebSocketClientImpl : FloconWebSocketClient {
         .build()
 
     private var webSocket: WebSocket? = null
+
+    private val messagesToSend = ConcurrentLinkedQueue<String>()
 
     @Throws(Throwable::class)
     override suspend fun connect(
@@ -84,9 +91,20 @@ class FloconWebSocketClientImpl : FloconWebSocketClient {
             // OkHttp doesn't provide a direct method for this, so we have to handle it ourselves.
             // A simpler approach would be to use a single listener and check the connection state.
             // In our case, the 'connectionListener' is disposable, and the 'socketListener' takes over implicitly.
+        } ?: run {
+            // if not connected yet, just append the message
+            messagesToSend.add(message)
         }
         FloconLogger.log("WEBSOCKET ----> send $message")
         return webSocket?.send(message) ?: false
+    }
+
+    override fun sendPendingMessages() {
+        var message = messagesToSend.poll()
+        while (message != null) {
+            sendMessage(message)
+            message = messagesToSend.poll()
+        }
     }
 
     override fun disconnect() {
