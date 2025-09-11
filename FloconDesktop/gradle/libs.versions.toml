@@ -37,8 +37,8 @@ buildconfig = "5.6.8"
 paging = "3.3.2"
 
 # TODO Sort
-nav3Core = "1.0.0-alpha08"
-navEvent = "1.0.0-alpha07"
+nav3Core = "1.0.0-alpha09"
+navEvent = "1.0.0-alpha08"
 lifecycleViewmodelNav3 = "2.10.0-alpha03"
 kotlinxSerializationCore = "1.8.1"
 
