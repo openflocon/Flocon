@@ -4,21 +4,21 @@ import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNa
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.httpCode
-import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsByIdUseCase
+import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import kotlinx.coroutines.flow.firstOrNull
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class GenerateNetworkMockFromNetworkCallUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
-    private val observeHttpRequestsByIdUseCase: ObserveHttpRequestsByIdUseCase,
+    private val observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
 ) {
     @OptIn(ExperimentalUuidApi::class)
     suspend operator fun invoke(
         requestId: String,
     ): MockNetworkDomainModel? {
         return getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
-            observeHttpRequestsByIdUseCase(requestId = requestId).firstOrNull()
+            observeNetworkRequestsByIdUseCase(requestId = requestId).firstOrNull()
         }?.let { request ->
             MockNetworkDomainModel(
                 id = Uuid.random().toString(), // generate

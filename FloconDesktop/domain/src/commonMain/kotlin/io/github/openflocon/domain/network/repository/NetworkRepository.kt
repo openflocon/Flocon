@@ -32,4 +32,8 @@ interface NetworkRepository {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         ids: List<String>
     ) : List<FloconNetworkCallDomainModel>
+
+    suspend fun deleteOldRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    )
 }

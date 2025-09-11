@@ -90,6 +90,16 @@ class NetworkLocalDataSourceRoom(
         )
     }
 
+    override suspend fun deleteRequestOnDifferentSession(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ) {
+        floconNetworkDao.deleteRequestOnDifferentSession(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            appInstance = deviceIdAndPackageName.appInstance
+        )
+    }
+
     override suspend fun deleteRequestsBefore(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         callId: String
