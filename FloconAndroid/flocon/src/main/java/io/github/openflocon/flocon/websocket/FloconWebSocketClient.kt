@@ -10,6 +10,8 @@ interface FloconWebSocketClient {
         onClosed: () -> Unit,
     )
 
+    fun sendPendingMessages()
+
     fun sendMessage(message: String): Boolean
 
     fun disconnect()

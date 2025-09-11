@@ -55,6 +55,7 @@ object Flocon : FloconApp() {
             )
             // if success, just send a bonjour
             client.send("bonjour", method = "bonjour", body = "bonjour")
+            client.sendPendingMessages()
         } catch (t: Throwable) {
             if(t.message?.contains("CLEARTEXT communication to localhost not permitted by network security policy") == true) {
                 withContext(Dispatchers.Main) {
