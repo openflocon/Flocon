@@ -72,7 +72,8 @@ private fun DeeplinkScreen(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(all = 8.dp)
+                contentPadding = PaddingValues(all = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 itemsIndexed(deepLinks) { index, item ->
                     DeeplinkItemView(
@@ -80,9 +81,6 @@ private fun DeeplinkScreen(
                         item = item,
                         modifier = Modifier.fillMaxWidth(),
                     )
-                    if (index != deepLinks.lastIndex) {
-                        FloconHorizontalDivider(color = FloconTheme.colorPalette.secondary)
-                    }
                 }
             }
             FloconVerticalScrollbar(
