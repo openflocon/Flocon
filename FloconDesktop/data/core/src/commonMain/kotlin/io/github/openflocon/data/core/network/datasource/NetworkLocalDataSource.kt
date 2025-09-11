@@ -36,6 +36,8 @@ interface NetworkLocalDataSource {
 
     suspend fun deleteRequestsBefore(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, callId: String)
 
+    suspend fun deleteRequestOnDifferentSession(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
+
     suspend fun clear()
 
 }

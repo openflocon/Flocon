@@ -6,16 +6,16 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
-import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsByIdUseCase
-import io.github.openflocon.domain.network.usecase.ObserveHttpRequestsUseCase
-import io.github.openflocon.domain.network.usecase.RemoveHttpRequestUseCase
+import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
+import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
+import io.github.openflocon.domain.network.usecase.RemoveNetworkRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
+import io.github.openflocon.domain.network.usecase.RemoveOldSessionsNetworkRequestUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
@@ -50,12 +50,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class NetworkViewModel(
-    observeHttpRequestsUseCase: ObserveHttpRequestsUseCase,
-    private val observeHttpRequestsByIdUseCase: ObserveHttpRequestsByIdUseCase,
+    observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
+    private val observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
     private val generateCurlCommandUseCase: GenerateCurlCommandUseCase,
     private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase,
     private val removeHttpRequestsBeforeUseCase: RemoveHttpRequestsBeforeUseCase,
-    private val removeHttpRequestUseCase: RemoveHttpRequestUseCase,
+    private val removeNetworkRequestUseCase: RemoveNetworkRequestUseCase,
     private val mocksUseCase: ObserveNetworkMocksUseCase,
     private val badNetworkUseCase: ObserveAllNetworkBadQualitiesUseCase,
     private val dispatcherProvider: DispatcherProvider,
@@ -65,6 +65,7 @@ class NetworkViewModel(
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase,
     private val decodeJwtTokenUseCase: DecodeJwtTokenUseCase,
+    private val removeOldSessionsNetworkRequestUseCase: RemoveOldSessionsNetworkRequestUseCase,
 ) : ViewModel(headerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -94,7 +95,7 @@ class NetworkViewModel(
                 if (id == null) {
                     flowOf(null)
                 } else {
-                    observeHttpRequestsByIdUseCase(id)
+                    observeNetworkRequestsByIdUseCase(id)
                         .distinctUntilChanged()
                         .map { it?.let { toDetailUi(it) } }
                 }
@@ -103,7 +104,7 @@ class NetworkViewModel(
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
     private val items = combine(
-        observeHttpRequestsUseCase(),
+        observeNetworkRequestsUseCase(),
         observeCurrentDeviceIdAndPackageNameUseCase(),
     ) { list, deviceIdAndPackageName ->
         list.map { networkCall ->
@@ -219,7 +220,9 @@ class NetworkViewModel(
     }
 
     private fun onClearSession() {
-
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            removeOldSessionsNetworkRequestUseCase()
+        }
     }
 
     private fun onAutoScroll() {
@@ -319,7 +322,7 @@ class NetworkViewModel(
 
     private fun onCopyCUrl(action: NetworkAction.CopyCUrl) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
+            val domainModel = observeNetworkRequestsByIdUseCase(action.item.uuid).firstOrNull()
                 ?: return@launch
             val curl = generateCurlCommandUseCase(domainModel)
             copyToClipboard(curl)
@@ -328,7 +331,7 @@ class NetworkViewModel(
 
     private fun onCopyUrl(action: NetworkAction.CopyUrl) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            val domainModel = observeHttpRequestsByIdUseCase(action.item.uuid).firstOrNull()
+            val domainModel = observeNetworkRequestsByIdUseCase(action.item.uuid).firstOrNull()
                 ?: return@launch
             copyToClipboard(domainModel.request.url)
         }
@@ -336,7 +339,7 @@ class NetworkViewModel(
 
     private fun onRemove(action: NetworkAction.Remove) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            removeHttpRequestUseCase(requestId = action.item.uuid)
+            removeNetworkRequestUseCase(requestId = action.item.uuid)
         }
     }
 

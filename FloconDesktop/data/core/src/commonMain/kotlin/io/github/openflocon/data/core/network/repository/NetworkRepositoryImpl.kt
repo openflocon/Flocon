@@ -359,4 +359,12 @@ class NetworkRepositoryImpl(
         }
     }
 
+    override suspend fun deleteOldRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        withContext(dispatcherProvider.data) {
+            networkLocalDataSource.deleteRequestOnDifferentSession(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+            )
+        }
+    }
+
 }

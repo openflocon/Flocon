@@ -101,6 +101,20 @@ interface FloconNetworkDao {
         DELETE FROM FloconNetworkCallEntity
         WHERE deviceId = :deviceId
         AND packageName = :packageName
+        AND appInstance != :appInstance
+    """,
+    )
+    suspend fun deleteRequestOnDifferentSession(
+        deviceId: String,
+        packageName: String,
+        appInstance: Long,
+    )
+
+    @Query(
+        """
+        DELETE FROM FloconNetworkCallEntity
+        WHERE deviceId = :deviceId
+        AND packageName = :packageName
         AND request_startTime < (
             SELECT request_startTime 
             FROM FloconNetworkCallEntity 
