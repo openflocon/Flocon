@@ -25,7 +25,7 @@ fun FloconNavigation(
             override val navigationEventDispatcher: NavigationEventDispatcher = dispatcher
         }
     }
-
+    
     LocalNavigationEventDispatcherOwner.provides(parent)
 
     NavigationEventDispatcherOwner(parent = parent) {
