@@ -44,6 +44,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconPanel
+import io.github.openflocon.library.designsystem.components.FloconPanelNew
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -178,13 +179,13 @@ fun AnalyticsScreen(
                 )
             }
         }
-        FloconPanel(
+        FloconPanelNew(
             contentState = selectedItem,
-            modifier = Modifier.align(Alignment.CenterEnd),
         ) {
             AnalyticsDetailView(
                 modifier = Modifier.fillMaxSize(),
                 state = it,
+                closeRequested = { onAction(AnalyticsAction.ClosePanel) },
             )
         }
     }

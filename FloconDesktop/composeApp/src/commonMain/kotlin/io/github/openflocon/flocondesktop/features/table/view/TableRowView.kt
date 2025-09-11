@@ -51,7 +51,7 @@ fun TableRowView(
                             Modifier
                                 .width(columnsWidth)
                                 .padding(horizontal = 4.dp),
-                        style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                         color = FloconTheme.colorPalette.onPrimary,
                     )
                 }
@@ -64,7 +64,7 @@ fun TableRowView(
                             Modifier
                                 .width(columnsWidth)
                                 .padding(horizontal = 4.dp),
-                        style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Thin),
+                        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
                         color = FloconTheme.colorPalette.onPrimary,
                     )
                 }
