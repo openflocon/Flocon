@@ -56,7 +56,6 @@ import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
-import java.util.UUID
 
 @Composable
 fun NetworkEditionWindow(

@@ -9,6 +9,8 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon
+import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
+import io.github.openflocon.library.designsystem.components.escape.EscapeHandlerProvider
 import org.jetbrains.compose.resources.painterResource
 
 data class FloconWindowStateDesktop(
@@ -40,6 +42,8 @@ actual fun FloconWindow(
         alwaysOnTop = alwaysOnTop,
         onCloseRequest = onCloseRequest,
     ) {
-        content()
+        EscapeHandlerProvider {
+            content()
+        }
     }
 }
