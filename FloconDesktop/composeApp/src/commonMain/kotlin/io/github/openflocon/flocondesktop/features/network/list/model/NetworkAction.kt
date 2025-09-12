@@ -43,7 +43,7 @@ sealed interface NetworkAction {
 
     data object AutoScroll : NetworkAction
 
-    data object ClearSession : NetworkAction
+    data object ClearOldSession : NetworkAction
 
     sealed interface HeaderAction : NetworkAction {
         data class ClickOnSort(

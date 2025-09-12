@@ -201,7 +201,7 @@ fun NetworkScreen(
                         FloconDropdownMenuItem(
                             text = "Clear old sessions",
                             leadingIcon = Icons.Outlined.CleaningServices,
-                            onClick = { onAction(NetworkAction.ClearSession) }
+                            onClick = { onAction(NetworkAction.ClearOldSession) }
                         )
                     }
                 },
