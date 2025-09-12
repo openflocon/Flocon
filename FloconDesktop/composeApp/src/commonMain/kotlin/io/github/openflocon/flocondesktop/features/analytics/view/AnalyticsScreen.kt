@@ -125,7 +125,7 @@ fun AnalyticsScreen(
             val density = LocalDensity.current.density
             val dpWidth = (widthPx / density).dp
 
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
@@ -176,6 +176,7 @@ fun AnalyticsScreen(
                 FloconVerticalScrollbar(
                     adapter = scrollAdapter,
                     modifier = Modifier.fillMaxHeight()
+                        .align(Alignment.TopEnd)
                 )
             }
         }
