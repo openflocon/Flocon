@@ -59,8 +59,9 @@ https://github.com/openflocon/Flocon/releases
 
 ### 📡 Network Request Inspector
 
-<img width="1292" height="833" alt="Screenshot 2025-09-12 at 15 40 03" src="https://github.com/user-attachments/assets/c0f74bb4-85f3-4ced-b156-78dfae0189f3" />
 <img width="1291" height="834" alt="Screenshot 2025-09-12 at 15 39 55" src="https://github.com/user-attachments/assets/48f86fdf-f552-4f68-abe2-8d61229ccb27" />
+
+<img width="1292" height="833" alt="Screenshot 2025-09-12 at 15 40 03" src="https://github.com/user-attachments/assets/c0f74bb4-85f3-4ced-b156-78dfae0189f3" />
 
 Flocon captures **all outgoing network requests** made by the Android app — whether they’re simple REST API calls or complex multipart uploads — and displays them in an organized UI.
 
@@ -185,9 +186,9 @@ SingletonImageLoader.setSafe {
 
 ### 📊 Analytics Event Viewer
 
-<img width="1294" height="838" alt="Screenshot 2025-09-12 at 15 41 32" src="https://github.com/user-attachments/assets/b7be4f8d-afcb-4bbc-8da4-c09e1cd240a6" />
 <img width="1296" height="837" alt="Screenshot 2025-09-12 at 15 41 27" src="https://github.com/user-attachments/assets/e3f2a6ab-bf25-48ac-b9fe-8ea3f81206a1" />
 
+<img width="1294" height="838" alt="Screenshot 2025-09-12 at 15 41 32" src="https://github.com/user-attachments/assets/b7be4f8d-afcb-4bbc-8da4-c09e1cd240a6" />
 
 Flocon shows a real-time stream of **analytics events** emitted by your application. Whether you’re using Firebase Analytics, Segment, or a custom solution, the Flocon SDK can be plugged and forward these events to the desktop UI.
 
@@ -377,10 +378,6 @@ Flocon.deeplinks(
 ---
 
 # Grpc
-
-
-<img width="1202" height="776" alt="Screenshot 2025-08-02 at 16 28 49" src="https://github.com/user-attachments/assets/4efc9cec-1299-4a30-9c39-1d1626f55c05" />
-<img width="1201" height="775" alt="Screenshot 2025-08-02 at 16 34 04" src="https://github.com/user-attachments/assets/eeafb486-26f1-43c3-bc6f-0387f7d15229" />
 
 Similar to network inteceptions, Flocon works with grpc 
 
