@@ -40,7 +40,9 @@ fun MockLineView(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = Modifier.height(12.dp)
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .height(12.dp)
         ) {
             FloconSwitch(
                 checked = item.isEnabled,
