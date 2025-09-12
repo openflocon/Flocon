@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -112,7 +113,7 @@ fun SharedPrefScreen(
         SelectionContainer {
             val lazyListState = rememberLazyListState()
             val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
-            Row(
+            Box(
                 modifier = modifier.fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
                     .background(FloconTheme.colorPalette.primary)
@@ -125,7 +126,7 @@ fun SharedPrefScreen(
                 LazyColumn(
                     state = lazyListState,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxSize()
                 ) {
                     when (rows) {
                         SharedPreferencesRowsStateUiModel.Empty -> {}
@@ -144,7 +145,8 @@ fun SharedPrefScreen(
                 }
                 FloconVerticalScrollbar(
                     adapter = scrollAdapter,
-                    modifier = Modifier.fillMaxHeight(),
+                    modifier = Modifier.fillMaxHeight()
+                        .align(Alignment.TopEnd),
                 )
             }
         }
