@@ -48,8 +48,8 @@ private const val NOT_ENABLED_OPACITY = 0.3f
 fun HeaderLabelItem(
     text: String,
     modifier: Modifier = Modifier,
-    sortedBy: SortedByUiModel = SortedByUiModel.None, // TODO remove
-    filtered: Boolean = false, // TODO remove
+    sortedBy: SortedByUiModel,
+    filtered: Boolean,
     clickOnSort: (SortedByUiModel.Enabled) -> Unit,
     clickOnFilter: () -> Unit,
     labelAlignment: Alignment = Alignment.Center,
@@ -74,7 +74,7 @@ fun HeaderLabelItem(
                 .weight(1f)
                 .fillMaxHeight()
                 .clip(shape)
-                .background(if (filtered) FloconTheme.colorPalette.primary else Color.Transparent)
+                .background(if (filtered) FloconTheme.colorPalette.accent.copy(alpha = 0.3f) else Color.Transparent)
                 .clickable(onClick = clickOnFilter),
         ) {
             Text(

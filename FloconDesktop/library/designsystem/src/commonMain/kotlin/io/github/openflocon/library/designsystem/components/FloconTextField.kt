@@ -319,13 +319,18 @@ fun DefaultLabel(text: String) {
 }
 
 @Composable
-fun defaultPlaceHolder(text: String?): @Composable (() -> Unit)? = if (text.isNullOrEmpty())
+fun defaultPlaceHolder(text: String?, color: Color? = null): @Composable (() -> Unit)? = if (text.isNullOrEmpty())
     null
 else {
     {
+        val style =  FloconTheme.typography.bodySmall
         Text(
             text = text,
-            style = FloconTheme.typography.bodySmall
+            style = if(color != null) {
+                style.copy(color = color)
+            } else {
+                style
+            },
         )
     }
 }
