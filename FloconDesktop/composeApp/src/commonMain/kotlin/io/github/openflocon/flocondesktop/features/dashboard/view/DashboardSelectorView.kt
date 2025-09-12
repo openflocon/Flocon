@@ -42,7 +42,7 @@ internal fun DashboardSelectorView(
                 containerColor = FloconTheme.colorPalette.secondary
             ) {
                 when (dashboardsState) {
-                    DashboardsStateUiModel.Empty -> Text("No database")
+                    DashboardsStateUiModel.Empty -> Text("No dashboard")
                     DashboardsStateUiModel.Loading -> FloconLinearProgressIndicator()
                     is DashboardsStateUiModel.WithContent -> {
                         Text(text = dashboardsState.selected.id)

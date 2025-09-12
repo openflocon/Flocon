@@ -42,7 +42,7 @@ internal fun TableSelectorView(
                 containerColor = FloconTheme.colorPalette.secondary
             ) {
                 when (tablesState) {
-                    TablesStateUiModel.Empty -> Text("No database")
+                    TablesStateUiModel.Empty -> Text("No tables")
                     TablesStateUiModel.Loading -> FloconLinearProgressIndicator()
                     is TablesStateUiModel.WithContent -> {
                         Text(text = tablesState.selected.name)
