@@ -80,7 +80,7 @@ fun TextFilterDropdownContent(
                         text = "Includes",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 2.dp, horizontal = 12.dp),
+                            .padding(vertical = 2.dp, horizontal = 6.dp),
                         style = FloconTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
@@ -113,7 +113,7 @@ fun TextFilterDropdownContent(
                         text = "Excludes",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 2.dp, horizontal = 12.dp),
+                            .padding(vertical = 2.dp, horizontal = 6.dp),
                         style = FloconTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
@@ -217,9 +217,9 @@ private fun TextFilterFieldView(
                     value = "" // reset
                 },
             ),
-            placeholder = defaultPlaceHolder("By value"),
+            placeholder = defaultPlaceHolder("By value", color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.5f)),
             textStyle = FloconTheme.typography.bodySmall.copy(
-                color = FloconTheme.colorPalette.onSurface,
+                color = FloconTheme.colorPalette.onSecondary,
             ),
             trailingComponent = {
                 RegexFilterButton(
@@ -230,9 +230,10 @@ private fun TextFilterFieldView(
                     },
                 )
             },
-            containerColor = FloconTheme.colorPalette.primary,
+            containerColor = FloconTheme.colorPalette.secondary,
             modifier = Modifier
                 .weight(1f)
+                .padding(all = 2.dp)
         )
         FloconSmallIconButton(
             enabled = value.isNotEmpty(),
