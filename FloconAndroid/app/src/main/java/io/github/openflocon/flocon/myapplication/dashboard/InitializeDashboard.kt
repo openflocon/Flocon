@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.myapplication.dashboard
 
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -18,6 +19,7 @@ import io.github.openflocon.flocon.plugins.dashboard.dsl.checkBox
 import io.github.openflocon.flocon.plugins.dashboard.dsl.json
 import io.github.openflocon.flocon.plugins.dashboard.dsl.plainText
 import io.github.openflocon.flocon.plugins.dashboard.dsl.section
+import io.github.openflocon.flocon.plugins.dashboard.dsl.form
 import io.github.openflocon.flocon.plugins.dashboard.dsl.text
 import io.github.openflocon.flocon.plugins.dashboard.dsl.textField
 import kotlinx.coroutines.Dispatchers
@@ -151,6 +153,32 @@ fun initializeDashboard(activity: Activity) {
                                   "message": "Test data loaded successfully."
                                 }
                     """.trimIndent()
+            )
+        }
+    }
+
+    Flocon.dashboard(id = "form") {
+        form(
+            name = "Test form",
+            submitText = "Submit form test button",
+            onSubmitted = { values ->
+                values.forEach { (key, value) ->
+                    Log.e("TAG", "$key - $value")
+                    // input_1 - test
+                    // checkbox_1 - true
+                }
+            }
+        ) {
+            textField(
+                id = "input_1",
+                label = "Input field 1",
+                placeHolder = "placeholder",
+                value = "test"
+            )
+            checkBox(
+                id = "checkbox_1",
+                label = "Checkbox 1",
+                value = true,
             )
         }
     }
