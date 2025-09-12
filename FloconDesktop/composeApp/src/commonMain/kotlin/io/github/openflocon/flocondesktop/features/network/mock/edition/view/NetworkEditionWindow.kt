@@ -395,7 +395,7 @@ fun MockEditorScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp),
+                .padding(all = 8.dp),
         )
     }
 }

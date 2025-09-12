@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences.view
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
@@ -64,6 +66,7 @@ private fun SharedPreferenceEditScreenContent(
             )
             FloconDialogButtons(
                 onCancel = cancel,
+                modifier = Modifier.padding(all = 8.dp),
                 onValidate = {
                     save(row, value)
                 },
