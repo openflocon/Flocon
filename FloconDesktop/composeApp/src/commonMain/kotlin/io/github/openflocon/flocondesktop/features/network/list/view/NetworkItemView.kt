@@ -204,6 +204,7 @@ private fun contextualActions(
             separator()
             item(label = "Remove", onClick = { onActionCallback(NetworkAction.Remove(state)) })
             item(label = "Remove lines above", onClick = { onActionCallback(NetworkAction.RemoveLinesAbove(state)) })
+            item(label = "Clear old sessions", onClick = { onActionCallback(NetworkAction.ClearOldSession) })
         }
     }
 }
