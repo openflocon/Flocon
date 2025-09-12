@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 
 @Composable
 fun FloconDialog(
@@ -34,6 +35,10 @@ fun FloconDialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(),
     ) {
+        EscapeHandler {
+            onDismissRequest()
+            true
+        }
         FloconSurface(
             shape = RoundedCornerShape(10.dp),
             modifier = modifier
