@@ -1,9 +1,10 @@
 package io.github.openflocon.flocon.plugins.deeplinks
 
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
-import io.github.openflocon.flocon.plugins.deeplinks.model.Deeplink
+import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -11,7 +12,7 @@ internal class FloconDeeplinksPluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconDeeplinksPlugin {
 
-    private val deeplinks = java.util.concurrent.atomic.AtomicReference<List<Deeplink>?>(null)
+    private val deeplinks = java.util.concurrent.atomic.AtomicReference<List<DeeplinkModel>?>(null)
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
@@ -27,19 +28,23 @@ internal class FloconDeeplinksPluginImpl(
         }
     }
 
-    override fun registerDeeplinks(deeplinks: List<Deeplink>) {
-        val dashboardJson = toDeeplinksJson(deeplinks)
-
+    override fun registerDeeplinks(deeplinks: List<DeeplinkModel>) {
         this.deeplinks.set(deeplinks)
 
-        sender.send(
-            plugin = Protocol.FromDevice.Deeplink.Plugin,
-            method = Protocol.FromDevice.Deeplink.Method.GetDeeplinks,
-            body = dashboardJson.toString()
-        )
+        try {
+            val deeplinksJson = toDeeplinksJson(deeplinks)
+
+            sender.send(
+                plugin = Protocol.FromDevice.Deeplink.Plugin,
+                method = Protocol.FromDevice.Deeplink.Method.GetDeeplinks,
+                body = deeplinksJson.toString()
+            )
+        } catch (t: Throwable) {
+            FloconLogger.logError("deeplink mapping error", t)
+        }
     }
 
-    private fun toDeeplinksJson(deeplinks: List<Deeplink>): JSONObject {
+    private fun toDeeplinksJson(deeplinks: List<DeeplinkModel>): JSONObject {
         val jsonObject = JSONObject()
         val array = JSONArray()
         deeplinks.forEach { deeplink ->
@@ -51,6 +56,19 @@ internal class FloconDeeplinksPluginImpl(
                 deeplink.description?.let {
                     put("description", it)
                 }
+
+                val parametersArray = JSONArray()
+                deeplink.parameters.forEach { param ->
+                    parametersArray.put(JSONObject().apply {
+                        put("paramName", param.paramName)
+                        val autoCompleteArray = JSONArray()
+                        param.autoComplete.forEach { value ->
+                            autoCompleteArray.put(value)
+                        }
+                        put("autoComplete", autoCompleteArray)
+                    })
+                }
+                put("parameters", parametersArray)
             })
         }
         jsonObject.put("deeplinks", array)
