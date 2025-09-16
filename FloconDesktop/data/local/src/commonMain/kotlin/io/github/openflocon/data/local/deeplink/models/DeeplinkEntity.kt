@@ -28,4 +28,5 @@ data class DeeplinkEntity(
     val link: String,
     val label: String?,
     val description: String?,
+    val isHistory: Boolean,
 )

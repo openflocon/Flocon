@@ -11,6 +11,7 @@ import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainMo
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 
 class DeeplinkRepositoryImpl(
     private val localDeeplinkDataSource: DeeplinkLocalDataSource,
@@ -46,4 +47,40 @@ class DeeplinkRepositoryImpl(
 
     override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observe(deviceIdAndPackageName)
         .flowOn(dispatcherProvider.data)
+
+    override suspend fun getDeeplinkById(
+        deeplinkId: Long,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): DeeplinkDomainModel? {
+        return withContext(dispatcherProvider.data) {
+            localDeeplinkDataSource.getDeeplinkById(deeplinkId, deviceIdAndPackageName)
+        }
+    }
+
+    override fun observeHistory(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observeHistory(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
+
+    override suspend fun addToHistory(
+        item: DeeplinkDomainModel,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ) {
+        withContext(dispatcherProvider.data) {
+            localDeeplinkDataSource.addToHistory(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                item = item,
+            )
+        }
+    }
+
+    override suspend fun removeFromHistory(
+        deeplinkId: Long,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ) {
+        withContext(dispatcherProvider.data) {
+            localDeeplinkDataSource.removeFromHistory(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                deeplinkId = deeplinkId
+            )
+        }
+    }
 }
