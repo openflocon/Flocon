@@ -1,6 +1,5 @@
 package io.github.openflocon.flocon.plugins.dashboard.mapper
 
-import io.github.openflocon.flocon.plugins.dashboard.model.ContainerType
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback.*
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
@@ -16,7 +15,7 @@ import io.github.openflocon.flocon.plugins.dashboard.model.config.TextFieldConfi
 import org.json.JSONArray
 import org.json.JSONObject
 
-fun DashboardConfig.toJson(
+internal fun DashboardConfig.toJson(
     registerCallback: (DashboardCallback) -> Unit,
 ): JSONObject {
     val rootJson = JSONObject()

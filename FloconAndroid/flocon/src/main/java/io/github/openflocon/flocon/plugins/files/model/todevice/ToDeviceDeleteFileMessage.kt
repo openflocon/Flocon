@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.files.model.todevice
 import io.github.openflocon.flocon.FloconLogger
 import org.json.JSONObject
 
-data class ToDeviceDeleteFileMessage(
+internal data class ToDeviceDeleteFileMessage(
     val requestId: String,
     val parentPath: String,
     val filePath: String,

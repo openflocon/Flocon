@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice
 import org.json.JSONArray
 import org.json.JSONObject
 
-data class SharedPreferenceRowDataModel(
+internal data class SharedPreferenceRowDataModel(
     val key: String,
     val stringValue: String? = null,
     val intValue: Int? = null,

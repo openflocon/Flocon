@@ -1,6 +1,6 @@
 package io.github.openflocon.flocon.plugins.dashboard.model
 
-sealed interface DashboardCallback {
+internal sealed interface DashboardCallback {
     val id: String
 
     data class ButtonCallback(

@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.database.model.fromdevice
 import org.json.JSONArray
 import org.json.JSONObject
 
-data class DeviceDataBaseDataModel(
+internal data class DeviceDataBaseDataModel(
     val id: String,
     val name: String,
 ) {
@@ -17,7 +17,7 @@ data class DeviceDataBaseDataModel(
     }
 }
 
-fun listDeviceDataBaseDataModelToJson(items: List<DeviceDataBaseDataModel>) : JSONArray {
+internal fun listDeviceDataBaseDataModelToJson(items: List<DeviceDataBaseDataModel>) : JSONArray {
     val array = JSONArray()
     items.forEach {
         array.put(it.toJson())

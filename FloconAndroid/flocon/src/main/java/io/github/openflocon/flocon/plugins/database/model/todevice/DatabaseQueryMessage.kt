@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.database.model.todevice
 import io.github.openflocon.flocon.FloconLogger
 import org.json.JSONObject
 
-data class DatabaseQueryMessage(
+internal data class DatabaseQueryMessage(
     val query: String,
     val requestId: String,
     val database: String,

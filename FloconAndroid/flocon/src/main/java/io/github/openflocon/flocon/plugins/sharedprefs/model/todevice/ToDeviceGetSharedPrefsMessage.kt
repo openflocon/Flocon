@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.sharedprefs.model.todevice
 import io.github.openflocon.flocon.FloconLogger
 import org.json.JSONObject
 
-data class ToDeviceGetSharedPrefsMessage(
+internal data class ToDeviceGetSharedPrefsMessage(
     val requestId: String,
 ) {
     companion object {

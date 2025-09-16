@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.dashboard.model.todevice
 import io.github.openflocon.flocon.FloconLogger
 import org.json.JSONObject
 
-data class ToDeviceSubmittedTextFieldMessage(
+internal data class ToDeviceSubmittedTextFieldMessage(
     val id: String,
     val value: String,
 ) {

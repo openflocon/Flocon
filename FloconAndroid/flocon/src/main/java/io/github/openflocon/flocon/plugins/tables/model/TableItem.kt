@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.tables.model
 import org.json.JSONArray
 import org.json.JSONObject
 
-fun tableItemListToJson(items: Collection<TableItem>): JSONArray {
+internal fun tableItemListToJson(items: Collection<TableItem>): JSONArray {
     val array = JSONArray()
 
     items.forEach {

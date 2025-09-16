@@ -3,6 +3,7 @@ package io.github.openflocon.flocon.plugins.database
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.FloconPlugin
@@ -16,7 +17,7 @@ import io.github.openflocon.flocon.plugins.database.model.todevice.DatabaseQuery
 import java.io.File
 import java.util.Locale
 
-class FloconDatabasePluginImpl(
+internal class FloconDatabasePluginImpl(
     private val context: Context,
 ) : FloconDatabasePlugin {
 
@@ -38,14 +39,18 @@ class FloconDatabasePluginImpl(
                     databaseName = queryMessage.database,
                     query = queryMessage.query
                 )
-                sender.send(
-                    plugin = Protocol.FromDevice.Database.Plugin,
-                    method = Protocol.FromDevice.Database.Method.Query,
-                    body = QueryResultDataModel(
-                        requestId = queryMessage.requestId,
-                        result = result.toJson().toString(),
-                    ).toJson().toString(),
-                )
+                try {
+                    sender.send(
+                        plugin = Protocol.FromDevice.Database.Plugin,
+                        method = Protocol.FromDevice.Database.Method.Query,
+                        body = QueryResultDataModel(
+                            requestId = queryMessage.requestId,
+                            result = result.toJson().toString(),
+                        ).toJson().toString(),
+                    )
+                } catch (t: Throwable) {
+                    FloconLogger.logError("Database parsing error", t)
+                }
             }
         }
     }
@@ -56,11 +61,15 @@ class FloconDatabasePluginImpl(
 
     private fun sendAllDatabases(sender: FloconMessageSender) {
         val databases = getAllDataBases()
-        sender.send(
-            plugin = Protocol.FromDevice.Database.Plugin,
-            method = Protocol.FromDevice.Database.Method.GetDatabases,
-            body = listDeviceDataBaseDataModelToJson(databases).toString(),
-        )
+        try {
+            sender.send(
+                plugin = Protocol.FromDevice.Database.Plugin,
+                method = Protocol.FromDevice.Database.Method.GetDatabases,
+                body = listDeviceDataBaseDataModelToJson(databases).toString(),
+            )
+        } catch (t: Throwable) {
+            FloconLogger.logError("Database parsing error", t)
+        }
     }
 
     private fun getAllDataBases(): List<DeviceDataBaseDataModel> {

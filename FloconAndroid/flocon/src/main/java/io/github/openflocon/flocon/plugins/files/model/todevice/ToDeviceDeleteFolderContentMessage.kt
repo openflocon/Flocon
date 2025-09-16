@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.files.model.todevice
 import io.github.openflocon.flocon.FloconLogger
 import org.json.JSONObject
 
-data class ToDeviceDeleteFolderContentMessage(
+internal data class ToDeviceDeleteFolderContentMessage(
     val requestId: String,
     val path: String,
     val isConstantPath: Boolean, // ex: context.files / context.caches

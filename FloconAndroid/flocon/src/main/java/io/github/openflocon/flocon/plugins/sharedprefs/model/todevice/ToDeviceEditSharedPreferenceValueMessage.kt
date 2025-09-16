@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.sharedprefs.model.todevice
 import io.github.openflocon.flocon.FloconLogger
 import org.json.JSONObject
 
-data class ToDeviceEditSharedPreferenceValueMessage(
+internal data class ToDeviceEditSharedPreferenceValueMessage(
     val requestId: String,
     val sharedPreferenceName: String,
     val key: String,

@@ -6,8 +6,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.regex.Pattern
 
-
-fun parseMockResponses(jsonString: String): List<MockNetworkResponse> {
+internal fun parseMockResponses(jsonString: String): List<MockNetworkResponse> {
     val mockResponses = mutableListOf<MockNetworkResponse>()
     try {
         val jsonArray = JSONArray(jsonString)

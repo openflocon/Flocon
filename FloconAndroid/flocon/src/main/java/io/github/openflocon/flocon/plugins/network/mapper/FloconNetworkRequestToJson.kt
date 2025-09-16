@@ -4,7 +4,7 @@ import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallReques
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
 import org.json.JSONObject
 
-fun floconNetworkCallRequestToJson(network: FloconNetworkCallRequest): JSONObject {
+internal fun floconNetworkCallRequestToJson(network: FloconNetworkCallRequest): JSONObject {
     val json = JSONObject()
 
     with(network) {

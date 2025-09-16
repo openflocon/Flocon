@@ -2,7 +2,7 @@ package io.github.openflocon.flocon.plugins.device.model.fromdevice
 
 import org.json.JSONObject
 
-class RegisterDeviceDataModel(
+internal class RegisterDeviceDataModel(
     val serial: String,
 ) {
     fun toJson(): JSONObject {

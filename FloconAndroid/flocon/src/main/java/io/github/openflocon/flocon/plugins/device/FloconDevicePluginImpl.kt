@@ -1,22 +1,27 @@
 package io.github.openflocon.flocon.plugins.device
 
 import android.content.Context
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.device.model.fromdevice.RegisterDeviceDataModel
 
-class FloconDevicePluginImpl(
+internal class FloconDevicePluginImpl(
     private var sender: FloconMessageSender,
     private val context: Context,
 ) : FloconDevicePlugin {
 
     override fun registerWithSerial(serial: String) {
-        sender.send(
-            plugin = Protocol.FromDevice.Device.Plugin,
-            method = Protocol.FromDevice.Device.Method.RegisterDevice,
-            body = RegisterDeviceDataModel(serial).toJson().toString(),
-        )
+        try {
+            sender.send(
+                plugin = Protocol.FromDevice.Device.Plugin,
+                method = Protocol.FromDevice.Device.Method.RegisterDevice,
+                body = RegisterDeviceDataModel(serial).toJson().toString(),
+            )
+        } catch (t: Throwable) {
+            FloconLogger.logError("Device parsing error", t)
+        }
     }
 
     override fun onMessageReceived(
