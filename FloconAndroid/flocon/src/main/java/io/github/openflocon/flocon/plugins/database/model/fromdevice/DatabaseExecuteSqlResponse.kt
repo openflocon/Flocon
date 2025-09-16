@@ -31,7 +31,7 @@ internal sealed interface DatabaseExecuteSqlResponse {
     ) : DatabaseExecuteSqlResponse
 }
 
-fun DatabaseExecuteSqlResponse.toJson(): JSONObject {
+internal fun DatabaseExecuteSqlResponse.toJson(): JSONObject {
     val json = JSONObject()
     when (this) {
         is DatabaseExecuteSqlResponse.Error -> {
