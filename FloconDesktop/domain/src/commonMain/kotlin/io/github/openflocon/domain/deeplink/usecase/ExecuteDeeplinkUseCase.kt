@@ -41,6 +41,7 @@ class ExecuteDeeplinkUseCase(
                         label = null,
                         description = null,
                         id = 0, // will be created by the DB
+                        parameters = emptyList(),
                     )
                 )
             }

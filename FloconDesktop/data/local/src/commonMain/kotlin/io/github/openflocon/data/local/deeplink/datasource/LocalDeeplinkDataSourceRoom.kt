@@ -11,18 +11,24 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 
 internal class LocalDeeplinkDataSourceRoom(
     private val deeplinkDao: FloconDeeplinkDao,
+    private val json: Json,
 ) : DeeplinkLocalDataSource {
 
-    override suspend fun update(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel, deeplinks: List<DeeplinkDomainModel>) {
+    override suspend fun update(
+        deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel,
+        deeplinks: List<DeeplinkDomainModel>
+    ) {
         deeplinkDao.updateAll(
             deviceId = deviceIdAndPackageNameDomainModel.deviceId,
             packageName = deviceIdAndPackageNameDomainModel.packageName,
             deeplinks = toEntities(
                 deeplinks = deeplinks,
                 deviceIdAndPackageName = deviceIdAndPackageNameDomainModel,
+                json = json,
             ),
         )
     }
@@ -32,7 +38,7 @@ internal class LocalDeeplinkDataSourceRoom(
             deviceId = deviceIdAndPackageNameDomainModel.deviceId,
             packageName = deviceIdAndPackageNameDomainModel.packageName,
         )
-            .map { toDomainModels(it) }
+            .map { toDomainModels(it, json = json) }
             .distinctUntilChanged()
 
     override fun observeHistory(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
@@ -40,17 +46,20 @@ internal class LocalDeeplinkDataSourceRoom(
             deviceId = deviceIdAndPackageNameDomainModel.deviceId,
             packageName = deviceIdAndPackageNameDomainModel.packageName,
         )
-            .map { toDomainModels(it) }
+            .map { toDomainModels(it, json = json) }
             .distinctUntilChanged()
 
     override suspend fun addToHistory(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         item: DeeplinkDomainModel
     ) {
-        deeplinkDao.insert(deeplink = item.toEntity(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-            isHistory = true,
-        ))
+        deeplinkDao.insert(
+            deeplink = item.toEntity(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                isHistory = true,
+                json = json,
+            )
+        )
     }
 
     override suspend fun removeFromHistory(
@@ -70,9 +79,11 @@ internal class LocalDeeplinkDataSourceRoom(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     ): DeeplinkDomainModel? {
         return deeplinkDao.getById(
-                deviceId = deviceIdAndPackageName.deviceId,
-                packageName = deviceIdAndPackageName.packageName,
-                deeplinkId = deeplinkId,
-            )?.toDomainModel()
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            deeplinkId = deeplinkId,
+        )?.toDomainModel(
+            json = json,
+        )
     }
 }

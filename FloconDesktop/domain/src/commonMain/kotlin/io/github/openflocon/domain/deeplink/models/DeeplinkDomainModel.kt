@@ -5,4 +5,10 @@ data class DeeplinkDomainModel(
     val label: String?,
     val link: String,
     val description: String?,
-)
+    val parameters: List<Parameter>,
+) {
+    data class Parameter(
+        val paramName: String,
+        val autoComplete: List<String>,
+    )
+}

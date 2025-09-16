@@ -5,6 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
+import kotlinx.serialization.Serializable
 
 @Entity(
     indices = [
@@ -28,5 +29,12 @@ data class DeeplinkEntity(
     val link: String,
     val label: String?,
     val description: String?,
+    val parametersAsJson: String,
     val isHistory: Boolean,
+)
+
+@Serializable
+data class DeeplinkParameterEntity(
+    val paramName: String,
+    val autoComplete: List<String>,
 )
