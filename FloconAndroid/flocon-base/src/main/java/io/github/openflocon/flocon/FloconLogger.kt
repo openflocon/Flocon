@@ -3,7 +3,7 @@ package io.github.openflocon.flocon
 import android.util.Log
 
 object FloconLogger {
-    var enabled = true
+    var enabled = false
     private const val TAG = "FloconLogger"
     fun logError(text: String, throwable: Throwable?) {
         if(enabled) {
