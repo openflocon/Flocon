@@ -16,7 +16,7 @@ With Flocon, you gain deep access to critical app internals — such as
 
 and more — without needing root access or tedious ADB commands. It’s designed to accelerate development, QA, and debugging workflows.
 
-<img width="1202" height="776" alt="Screenshot 2025-08-02 at 16 28 49" src="https://github.com/user-attachments/assets/1cf6c1c8-9aa9-40a0-8275-5fbcbde5c92f" />
+<img width="1294" height="837" alt="Screenshot 2025-09-12 at 15 39 45" src="https://github.com/user-attachments/assets/3d585adb-6441-4cdb-ad25-69d771ad4ff6" />
 
 ---
 
@@ -59,9 +59,9 @@ https://github.com/openflocon/Flocon/releases
 
 ### 📡 Network Request Inspector
 
-<img width="1199" height="771" alt="Capture d’écran 2025-07-31 à 23 29 44" src="https://github.com/user-attachments/assets/c082c9d8-d41c-415d-8762-706c5fc24a2b" />
-<img width="1195" height="771" alt="Capture d’écran 2025-07-31 à 23 29 37" src="https://github.com/user-attachments/assets/59631b28-37f0-472e-8164-5ebe631fd60a" />
+<img width="1291" height="834" alt="Screenshot 2025-09-12 at 15 39 55" src="https://github.com/user-attachments/assets/48f86fdf-f552-4f68-abe2-8d61229ccb27" />
 
+<img width="1292" height="833" alt="Screenshot 2025-09-12 at 15 40 03" src="https://github.com/user-attachments/assets/c0f74bb4-85f3-4ced-b156-78dfae0189f3" />
 
 Flocon captures **all outgoing network requests** made by the Android app — whether they’re simple REST API calls or complex multipart uploads — and displays them in an organized UI.
 
@@ -77,6 +77,8 @@ For each request, you can inspect:
 This feature is invaluable for diagnosing backend issues, debugging unexpected API failures, and verifying request payloads and authentication headers.
 
 #### 🎭 HTTP Request Mocking
+
+<img width="1293" height="836" alt="Screenshot 2025-09-12 at 15 40 38" src="https://github.com/user-attachments/assets/3a529e3f-488e-4dba-aee1-fc6f70efcb08" />
 
 Beyond simple inspection, Flocon now allows you to mock HTTP requests. This powerful feature gives you full control over your app's network layer without needing to change any code. You can intercept specific network calls and provide custom responses, making it easy to test various scenarios.
 
@@ -121,9 +123,6 @@ val httpClient = HttpClient(OkHttp) { // works with all clients, not only OkHttp
 
 ### 🛰️ GraphQL Request Inspector
 
-<img width="1200" height="773" alt="Screenshot 2025-08-02 at 13 01 58" src="https://github.com/user-attachments/assets/d0c863b1-9c34-4cb9-b2f4-fac8dc250bee" />
-<img width="1199" height="944" alt="Screenshot 2025-08-02 at 13 04 28" src="https://github.com/user-attachments/assets/1621581a-e641-43cb-9087-dfa534e89c6d" />
-
 Flocon also supports **GraphQL** requests via a dedicated Apollo interceptor.
 
 Just like with REST, all outgoing GraphQL requests made through [Apollo Client](https://www.apollographql.com/docs/android/) are captured and displayed in Flocon’s interface — allowing you to debug your queries and mutations in real time.
@@ -145,8 +144,7 @@ ApolloClient.Builder()
 
 ### 🖼️ Downloaded Image Viewer
 
-<img width="1195" height="771" alt="Capture d’écran 2025-07-31 à 23 30 01" src="https://github.com/user-attachments/assets/d22940bb-f007-41a4-9878-ee1820f20816" />
-<img width="1202" height="773" alt="Capture d’écran 2025-07-31 à 23 29 50" src="https://github.com/user-attachments/assets/15506d35-1039-4934-8034-1174c3740f7a" />
+<img width="1297" height="838" alt="Screenshot 2025-09-12 at 15 40 53" src="https://github.com/user-attachments/assets/5f83ce95-0b03-4bfd-9d67-099c7b5ca5cc" />
 
 Flocon captures and displays **images downloaded by the Android app**, giving you a clear, visual representation of media fetched over the network — such as avatars, product thumbnails, banners, or any other images requested at runtime.
 
@@ -187,7 +185,10 @@ SingletonImageLoader.setSafe {
 ---
 
 ### 📊 Analytics Event Viewer
-<img width="1196" height="774" alt="Analytics" src="https://github.com/user-attachments/assets/6f485b4e-874b-4fdc-afab-752c4cd1ea3a" />
+
+<img width="1296" height="837" alt="Screenshot 2025-09-12 at 15 41 27" src="https://github.com/user-attachments/assets/e3f2a6ab-bf25-48ac-b9fe-8ea3f81206a1" />
+
+<img width="1294" height="838" alt="Screenshot 2025-09-12 at 15 41 32" src="https://github.com/user-attachments/assets/b7be4f8d-afcb-4bbc-8da4-c09e1cd240a6" />
 
 Flocon shows a real-time stream of **analytics events** emitted by your application. Whether you’re using Firebase Analytics, Segment, or a custom solution, the Flocon SDK can be plugged and forward these events to the desktop UI.
 
@@ -218,7 +219,8 @@ Flocon.analytics("firebase").logEvents(
 ---
 
 ### 🗝 SharedPreferences Explorer & Editor
-<img width="1197" height="768" alt="SharedPreferences" src="https://github.com/user-attachments/assets/c9fe264b-10d4-4f30-89e8-2d622b54899b" />
+
+<img width="1295" height="836" alt="Screenshot 2025-09-12 at 15 41 04" src="https://github.com/user-attachments/assets/03c3278b-dc2f-4943-ba17-b18030e204ea" />
 
 Flocon provides complete access to your app’s **SharedPreferences**, which often store user tokens, feature flags, configuration options, and more.
 
@@ -250,7 +252,7 @@ This makes it easy to debug persistent storage issues, verify migrations, or tes
 
 ### 📁 File Explorer
 
-<img width="1196" height="770" alt="Files" src="https://github.com/user-attachments/assets/d0317559-85f6-47ed-9cf3-11f07b020a09" />
+<img width="1295" height="838" alt="Screenshot 2025-09-12 at 15 41 20" src="https://github.com/user-attachments/assets/1c22c813-20c4-4e34-bcf8-6cc511deab21" />
 
 Flocon allows you to explore the **internal file storage** of your Android application — something that typically requires ADB and knowledge of Android's file system.
 
@@ -267,7 +269,8 @@ This feature is ideal for inspecting log files, cache data, downloaded assets, o
 
 ### 📈 Configurable Dashboards (from the mobile app)
 
-<img width="1203" height="770" alt="Dashboards" src="https://github.com/user-attachments/assets/d918c15c-72b2-412c-b97f-a409dcdf1737" />
+<img width="1027" height="561" alt="Screenshot 2025-09-12 at 15 45 05" src="https://github.com/user-attachments/assets/056feafc-fda9-46ff-aaf0-4b8a0801b72e" />
+<img width="373" height="312" alt="Screenshot 2025-09-12 at 15 44 57" src="https://github.com/user-attachments/assets/03b7ed4a-4de0-472d-87aa-850b33a3843f" />
 
 Your Android application can define and expose **custom dashboards**, which Flocon renders dynamically in the desktop interface.
 
@@ -339,7 +342,8 @@ Flocon.table("analytics").log(
 ---
 
 ### 🔗 Deeplink Launcher
-<img width="1201" height="772" alt="Deeplink" src="https://github.com/user-attachments/assets/bb09dd62-439f-466b-baac-f9253b0c9246" />
+
+<img width="1293" height="836" alt="Screenshot 2025-09-12 at 15 41 39" src="https://github.com/user-attachments/assets/eeaa30fb-6567-437a-96a4-dff44c6c6a54" />
 
 Flocon includes a **deeplink runner**, which lists all the deeplinks supported by your app (either auto-discovered or manually registered).
 
@@ -374,10 +378,6 @@ Flocon.deeplinks(
 ---
 
 # Grpc
-
-
-<img width="1202" height="776" alt="Screenshot 2025-08-02 at 16 28 49" src="https://github.com/user-attachments/assets/4efc9cec-1299-4a30-9c39-1d1626f55c05" />
-<img width="1201" height="775" alt="Screenshot 2025-08-02 at 16 34 04" src="https://github.com/user-attachments/assets/eeafb486-26f1-43c3-bc6f-0387f7d15229" />
 
 Similar to network inteceptions, Flocon works with grpc 
 
