@@ -1,14 +1,14 @@
-package io.github.openflocon.flocon.plugins.analytics.model
+package io.github.openflocon.flocon.plugins.analytics.mapper
 
+import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
 import org.json.JSONArray
 import org.json.JSONObject
 
-fun analyticsItemsToJson(items: Collection<AnalyticsItem>) : JSONArray {
+internal fun analyticsItemsToJson(item: AnalyticsItem) : JSONArray {
     val array = JSONArray()
+    // Flocon server is expecing an array of json elements
 
-    items.forEach {
-        array.put(it.toJson())
-    }
+    array.put(item.toJson())
 
     return array
 }

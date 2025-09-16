@@ -39,10 +39,6 @@ class AnalyticsRepositoryImpl(
                         deviceIdAndPackageName = deviceIdAndPackageName,
                         items = items,
                     )
-                    remoteAnalyticsDataSource.clearReceivedItem(
-                        deviceIdAndPackageName = deviceIdAndPackageName,
-                        items = items.map { it.itemId },
-                    )
                 }
             }
         }
