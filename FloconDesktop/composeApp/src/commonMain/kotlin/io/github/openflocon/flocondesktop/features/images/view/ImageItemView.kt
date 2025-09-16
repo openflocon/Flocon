@@ -3,8 +3,10 @@ package io.github.openflocon.flocondesktop.features.images.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,13 +14,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import coil3.size.SizeResolver
 import io.github.openflocon.flocondesktop.common.ui.isInPreview
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesUiModel
@@ -31,6 +44,7 @@ fun ImageItemView(
     onClick: (ImagesUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var size by remember(model) { mutableStateOf<Size?>(null) }
     Column(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
@@ -56,6 +70,25 @@ fun ImageItemView(
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize(),
                 )
+
+                val platformContext = LocalPlatformContext.current
+                LaunchedEffect(key1 = model.url) {
+                    val request = ImageRequest.Builder(platformContext)
+                        .data(model.url)
+                        .size(SizeResolver.ORIGINAL)
+                        .build()
+
+                    val imageLoader = SingletonImageLoader.get(platformContext)
+                    val result = imageLoader.execute(request)
+
+                    result.image?.let {
+                        size = Size(
+                            width = it.width.toFloat(),
+                            height = it.height.toFloat(),
+                        )
+                    }
+                }
+
             }
         }
         Column(
@@ -74,6 +107,32 @@ fun ImageItemView(
                 style = FloconTheme.typography.bodySmall,
                 color = FloconTheme.colorPalette.onPrimary.copy(alpha = .5f),
             )
+            size?.let {
+                Row(
+                    modifier = Modifier.padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        modifier = Modifier.background(
+                            FloconTheme.colorPalette.tertiary,
+                            shape = FloconTheme.shapes.extraLarge
+                        ).padding(horizontal = 4.dp, vertical = 1.dp),
+                        color = FloconTheme.colorPalette.onTertiary,
+                        text = "width:${it.width.toInt()}px",
+                        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                    )
+                    Text(
+                        modifier = Modifier.background(
+                            FloconTheme.colorPalette.tertiary,
+                            shape = FloconTheme.shapes.extraLarge
+                        ).padding(horizontal = 4.dp, vertical = 1.dp),
+                        color = FloconTheme.colorPalette.onTertiary,
+                        text = "height:${it.height.toInt()}px",
+                        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                    )
+                }
+            }
         }
     }
 }
