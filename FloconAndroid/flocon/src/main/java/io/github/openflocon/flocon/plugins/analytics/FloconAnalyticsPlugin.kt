@@ -1,14 +1,15 @@
 package io.github.openflocon.flocon.plugins.analytics
 
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
-import io.github.openflocon.flocon.plugins.analytics.model.analyticsItemsToJson
+import io.github.openflocon.flocon.plugins.analytics.mapper.analyticsItemsToJson
 import org.json.JSONArray
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class FloconAnalyticsPluginImpl(
+internal class FloconAnalyticsPluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconAnalyticsPlugin {
 
@@ -52,12 +53,16 @@ class FloconAnalyticsPluginImpl(
     }
 
     private fun sendAnalytics() {
-        analyticsMessages.takeIf { it.isNotEmpty() }?.let { toSend ->
-            sender.send(
-                plugin = Protocol.FromDevice.Analytics.Plugin,
-                method = Protocol.FromDevice.Analytics.Method.AddItems,
-                body = analyticsItemsToJson(toSend).toString()
-            )
+        analyticsMessages.takeIf { it.isNotEmpty() }?.forEach { toSend ->
+            try {
+                sender.send(
+                    plugin = Protocol.FromDevice.Analytics.Plugin,
+                    method = Protocol.FromDevice.Analytics.Method.AddItems,
+                    body = analyticsItemsToJson(toSend).toString()
+                )
+            } catch (t: Throwable) {
+                FloconLogger.logError("error on sendAnalytics", t)
+            }
         }
     }
 
