@@ -96,7 +96,6 @@ object Protocol {
             const val Plugin = "Analytics"
 
             object Method {
-                const val ClearItems = "ClearItems"
             }
         }
 
