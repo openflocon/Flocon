@@ -4,16 +4,17 @@ import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsPropertyDomainModel
 
-fun toAnalyticsDomain(entity: AnalyticsItemEntity): AnalyticsItemDomainModel = AnalyticsItemDomainModel(
-    analyticsTableId = entity.analyticsTableId,
-    itemId = entity.itemId,
-    createdAt = entity.createdAt,
-    eventName = entity.eventName,
-    properties = entity.propertiesValues.mapIndexedNotNull { index, value ->
+fun AnalyticsItemEntity.toAnalyticsDomain(): AnalyticsItemDomainModel = AnalyticsItemDomainModel(
+    analyticsTableId = analyticsTableId,
+    itemId = itemId,
+    createdAt = createdAt,
+    eventName = eventName,
+    properties = propertiesValues.mapIndexedNotNull { index, value ->
         AnalyticsPropertyDomainModel(
-            name = entity.propertiesColumnsNames.getOrNull(index)
+            name = propertiesColumnsNames.getOrNull(index)
                 ?: return@mapIndexedNotNull null,
             value = value,
         )
     },
+    appInstance = appInstance,
 )

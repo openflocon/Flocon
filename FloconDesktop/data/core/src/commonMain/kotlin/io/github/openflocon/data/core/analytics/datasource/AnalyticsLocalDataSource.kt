@@ -26,4 +26,6 @@ interface AnalyticsLocalDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsItemId: String
     )
+
+    suspend fun deleteRequestOnDifferentSession(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 }

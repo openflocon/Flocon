@@ -15,4 +15,5 @@ internal fun AnalyticsItemDomainModel.toEntity(
     packageName = deviceIdAndPackageName.packageName,
     propertiesValues = properties.map { it.value },
     propertiesColumnsNames = properties.map { it.name },
+    appInstance = deviceIdAndPackageName.appInstance,
 )

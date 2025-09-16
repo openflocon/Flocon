@@ -5,9 +5,13 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemsBeforeUseCase
+import io.github.openflocon.domain.analytics.usecase.RemoveOldSessionsAnalyticsUseCase
 import io.github.openflocon.domain.analytics.usecase.ResetCurrentDeviceSelectedAnalyticsUseCase
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.combines
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.network.usecase.RemoveOldSessionsNetworkRequestUseCase
 import io.github.openflocon.flocondesktop.features.analytics.delegate.AnalyticsSelectorDelegate
 import io.github.openflocon.flocondesktop.features.analytics.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
@@ -16,13 +20,12 @@ import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowU
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsScreenUiState
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -31,11 +34,13 @@ class AnalyticsViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val analyticsSelectorDelegate: AnalyticsSelectorDelegate,
+    observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     observeCurrentDeviceAnalyticsContentUseCase: ObserveCurrentDeviceAnalyticsContentUseCase,
     private val resetCurrentDeviceSelectedAnalyticsUseCase: ResetCurrentDeviceSelectedAnalyticsUseCase,
     private val removeAnalyticsItemUseCase: RemoveAnalyticsItemUseCase,
     private val removeAnalyticsItemsBeforeUseCase: RemoveAnalyticsItemsBeforeUseCase,
-) : ViewModel() {
+    private val removeOldSessionsAnalyticsUseCase: RemoveOldSessionsAnalyticsUseCase,
+    ) : ViewModel() {
 
     private val _screenState = MutableStateFlow<AnalyticsScreenUiState>(
         AnalyticsScreenUiState(
@@ -49,26 +54,28 @@ class AnalyticsViewModel(
     private val _selectedItem = MutableStateFlow<AnalyticsRowUiModel?>(null)
     val selectedItem = _selectedItem.asStateFlow()
 
-    val content: StateFlow<AnalyticsContentStateUiModel> =
+    val content: StateFlow<AnalyticsContentStateUiModel> = combines(
+        observeCurrentDeviceIdAndPackageNameUseCase(),
         observeCurrentDeviceAnalyticsContentUseCase()
-            .map {
-                if (it.isEmpty()) {
-                    AnalyticsContentStateUiModel.Empty
-                } else {
-                    AnalyticsContentStateUiModel.WithContent(
-                        rows = it.map { item ->
-                            item.mapToUi()
-                        },
+    ).mapLatest { (device, items) ->
+        if (items.isEmpty()) {
+            AnalyticsContentStateUiModel.Empty
+        } else {
+            AnalyticsContentStateUiModel.WithContent(
+                rows = items.map { item ->
+                    item.mapToUi(
+                        deviceIdAndPackageName = device
                     )
-                }
-            }
-            .flowOn(dispatcherProvider.viewModel)
-            .stateIn(
-                viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = AnalyticsContentStateUiModel.Loading,
+                },
             )
-
+        }
+    }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = AnalyticsContentStateUiModel.Loading,
+        )
 
 
     fun onVisible() {
@@ -91,12 +98,13 @@ class AnalyticsViewModel(
 
     fun onAction(action: AnalyticsAction) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            when(action) {
+            when (action) {
                 AnalyticsAction.ClosePanel -> {
                     _selectedItem.update {
                         null
                     }
                 }
+
                 is AnalyticsAction.OnClick -> {
                     _selectedItem.update {
                         if (it == action.item) {
@@ -106,13 +114,12 @@ class AnalyticsViewModel(
                         }
                     }
                 }
+
                 is AnalyticsAction.Remove -> removeAnalyticsItemUseCase(action.item.id)
                 is AnalyticsAction.RemoveLinesAbove -> removeAnalyticsItemsBeforeUseCase(action.item.id)
                 is AnalyticsAction.ToggleAutoScroll -> _screenState.update { it.copy(autoScroll = !it.autoScroll) }
                 is AnalyticsAction.InvertList -> _screenState.update { it.copy(invertList = action.value) }
-                is AnalyticsAction.ClearOldSession -> {
-                    // TODO
-                }
+                is AnalyticsAction.ClearOldSession -> removeOldSessionsAnalyticsUseCase()
             }
         }
     }

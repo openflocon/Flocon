@@ -6,6 +6,7 @@ import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceSelecte
 import io.github.openflocon.domain.analytics.usecase.ObserveDeviceAnalyticsUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemsBeforeUseCase
+import io.github.openflocon.domain.analytics.usecase.RemoveOldSessionsAnalyticsUseCase
 import io.github.openflocon.domain.analytics.usecase.ResetCurrentDeviceSelectedAnalyticsUseCase
 import io.github.openflocon.domain.analytics.usecase.SelectCurrentDeviceAnalyticsUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -20,4 +21,5 @@ internal val analyticsModule = module {
     factoryOf(::SelectCurrentDeviceAnalyticsUseCase)
     factoryOf(::RemoveAnalyticsItemUseCase)
     factoryOf(::RemoveAnalyticsItemsBeforeUseCase)
+    factoryOf(::RemoveOldSessionsAnalyticsUseCase)
 }

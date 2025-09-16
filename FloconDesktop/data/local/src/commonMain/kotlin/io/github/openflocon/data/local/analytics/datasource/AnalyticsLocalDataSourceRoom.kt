@@ -37,7 +37,7 @@ class AnalyticsLocalDataSourceRoom(
         packageName = deviceIdAndPackageName.packageName,
         analyticsTableId = analyticsTableId,
     )
-        .map { it.map { toAnalyticsDomain(it) } }
+        .map { it.map { it.toAnalyticsDomain() } }
         .flowOn(dispatcherProvider.data)
 
     override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
@@ -95,4 +95,12 @@ class AnalyticsLocalDataSourceRoom(
                     name = it,
                 )
             }
+
+    override suspend fun deleteRequestOnDifferentSession(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        analyticsDao.deleteRequestOnDifferentSession(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            appInstance = deviceIdAndPackageName.appInstance
+        )
+    }
 }

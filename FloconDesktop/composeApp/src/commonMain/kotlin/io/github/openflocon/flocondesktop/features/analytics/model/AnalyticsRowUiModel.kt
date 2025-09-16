@@ -9,6 +9,7 @@ data class AnalyticsRowUiModel(
     val eventName: String,
     val properties: List<PropertyUiModel>,
     val hasMoreProperties: Boolean,
+    val isFromOldAppInstance: Boolean,
 ) {
     @Immutable
     data class PropertyUiModel(
@@ -23,7 +24,7 @@ data class AnalyticsRowUiModel(
         properties.any { it.contains(text) }
 }
 
-fun previewAnalyticsRowUiModel() = AnalyticsRowUiModel(
+fun previewAnalyticsRowUiModel(isFromOldAppInstance: Boolean = false) = AnalyticsRowUiModel(
     id = "id",
     dateFormatted = "2023-01-01 00:00:00",
     eventName = "event_name",
@@ -31,4 +32,5 @@ fun previewAnalyticsRowUiModel() = AnalyticsRowUiModel(
         AnalyticsRowUiModel.PropertyUiModel("param$it", "value$it")
     },
     hasMoreProperties = true,
+    isFromOldAppInstance = isFromOldAppInstance,
 )

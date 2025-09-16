@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsRowUiModel
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -46,7 +48,12 @@ fun AnalyticsRowView(
             modifier = modifier
                 .height(IntrinsicSize.Min)
                 .clickable(onClick = { onAction(AnalyticsAction.OnClick(model)) })
-                .padding(vertical = 8.dp),
+                .padding(vertical = 8.dp)
+                .then(
+                    if (model.isFromOldAppInstance) {
+                        Modifier.alpha(0.4f)
+                    } else Modifier
+                ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -123,6 +130,14 @@ private fun contextualActions(
                     label = "Remove lines above ",
                     onClick = {
                         onActionCallback(AnalyticsAction.RemoveLinesAbove(state))
+                    }
+                ),
+            )
+            add(
+                FloconContextMenuItem.Item(
+                    label =  "Clear old sessions",
+                    onClick = {
+                        onActionCallback(AnalyticsAction.ClearOldSession)
                     }
                 ),
             )

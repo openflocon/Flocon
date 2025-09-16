@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
@@ -45,6 +46,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -103,10 +105,10 @@ class NetworkViewModel(
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
-    private val items = combine(
+    private val items = combines(
         observeNetworkRequestsUseCase(),
         observeCurrentDeviceIdAndPackageNameUseCase(),
-    ) { list, deviceIdAndPackageName ->
+    ).mapLatest { (list, deviceIdAndPackageName) ->
         list.map { networkCall ->
             networkCall to toUi(
                 networkCall = networkCall,
