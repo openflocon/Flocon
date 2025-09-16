@@ -13,5 +13,6 @@ internal fun DeeplinksReceivedDataModel.toDomain(): List<DeeplinkDomainModel> = 
         label = it.label,
         link = it.link,
         description = it.description,
+        id = 0, // will be created by the DB later
     )
 }

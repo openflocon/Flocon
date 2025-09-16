@@ -3,16 +3,21 @@ package io.github.openflocon.flocondesktop.features.deeplinks
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.deeplink.usecase.ExecuteDeeplinkUseCase
+import io.github.openflocon.domain.deeplink.usecase.ObserveCurrentDeviceDeeplinkHistoryUseCase
 import io.github.openflocon.domain.deeplink.usecase.ObserveCurrentDeviceDeeplinkUseCase
+import io.github.openflocon.domain.deeplink.usecase.RemoveFromDeeplinkHistoryUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.deeplinks.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -20,17 +25,37 @@ class DeepLinkViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val observeCurrentDeviceDeeplinkUseCase: ObserveCurrentDeviceDeeplinkUseCase,
+    private val observeCurrentDeviceDeeplinkHistoryUseCase: ObserveCurrentDeviceDeeplinkHistoryUseCase,
     private val executeDeeplinkUseCase: ExecuteDeeplinkUseCase,
+    private val removeFromDeeplinkHistoryUseCase: RemoveFromDeeplinkHistoryUseCase,
 ) : ViewModel() {
 
-    val deepLinks: StateFlow<List<DeeplinkViewState>> = observeCurrentDeviceDeeplinkUseCase()
-        .map { deepLinks -> mapToUi(deepLinks) }
+    val deepLinks: StateFlow<List<DeeplinkViewState>> = combines(
+        observeCurrentDeviceDeeplinkUseCase(),
+        observeCurrentDeviceDeeplinkHistoryUseCase()
+    )
+        .mapLatest { (deepLinks, history) -> mapToUi(
+            deepLinks = deepLinks,
+            history = history,
+        ) }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList(),
         )
+
+    fun removeFromHistory(viewState: DeeplinkViewState) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            removeFromDeeplinkHistoryUseCase(
+                deeplinkId = viewState.deeplinkId,
+            )
+            feedbackDisplayer.displayMessage(
+                "Deeplink removed from history",
+                type = FeedbackDisplayer.MessageType.Error,
+            )
+        }
+    }
 
     fun submit(viewState: DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
@@ -49,7 +74,7 @@ class DeepLinkViewModel(
                 }
             }
 
-            executeDeeplinkUseCase(deeplink = deeplink)
+            executeDeeplinkUseCase(deeplink = deeplink, deeplinkId = viewState.deeplinkId)
         }
     }
 }

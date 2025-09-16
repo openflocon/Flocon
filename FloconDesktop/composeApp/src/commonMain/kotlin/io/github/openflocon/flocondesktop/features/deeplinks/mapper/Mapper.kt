@@ -4,19 +4,34 @@ import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
 
-internal fun mapToUi(deepLinks: List<DeeplinkDomainModel>): List<DeeplinkViewState> = buildList {
-    addAll(
-        deepLinks.map {
-            mapToUi(it)
+data class DeeplinkItem(
+    val model: DeeplinkDomainModel,
+    val isHistory: Boolean,
+)
+
+internal fun mapToUi(
+    history: List<DeeplinkDomainModel>,
+    deepLinks: List<DeeplinkDomainModel>,
+): List<DeeplinkViewState> = buildList {
+    addAll(history.map { DeeplinkItem(model = it, isHistory = true) })
+    addAll(deepLinks.map { DeeplinkItem(model = it, isHistory = false) })
+}.distinctBy { it.model.link }
+    .map {
+        mapToUi(it.model, isHistory = it.isHistory)
+    }
+
+internal fun mapToUi(deepLink: DeeplinkDomainModel, isHistory: Boolean): DeeplinkViewState =
+    DeeplinkViewState(
+        label = deepLink.label,
+        description = deepLink.description,
+        deeplinkId = deepLink.id,
+        isHistory = isHistory,
+        parts = if (isHistory) {
+            listOf(DeeplinkPart.Text(deepLink.link))
+        } else {
+            parseDeeplinkString(deepLink.link)
         },
     )
-}
-
-internal fun mapToUi(deepLink: DeeplinkDomainModel): DeeplinkViewState = DeeplinkViewState(
-    label = deepLink.label,
-    description = deepLink.description,
-    parts = parseDeeplinkString(deepLink.link),
-)
 
 internal fun parseDeeplinkString(input: String): List<DeeplinkPart> {
     val regex = "\\[([^\\[\\]]*)\\]".toRegex() // Regex pour trouver [quelquechose]

@@ -38,6 +38,8 @@ private val freeformItem = DeeplinkViewState(
     parts = listOf(
         DeeplinkPart.TextField("freeform_link"),
     ),
+    deeplinkId = -1L,
+    isHistory = false,
 )
 
 @Composable

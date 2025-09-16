@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.deeplinks.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -37,6 +39,7 @@ fun DeeplinkScreen(modifier: Modifier = Modifier) {
     DeeplinkScreen(
         deepLinks = deepLinks,
         submit = viewModel::submit,
+        removeFromHistory = viewModel::removeFromHistory,
         modifier = modifier,
     )
 }
@@ -45,6 +48,7 @@ fun DeeplinkScreen(modifier: Modifier = Modifier) {
 private fun DeeplinkScreen(
     deepLinks: List<DeeplinkViewState>,
     submit: (DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) -> Unit,
+    removeFromHistory: (DeeplinkViewState) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -63,7 +67,7 @@ private fun DeeplinkScreen(
             }
         )
 
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
@@ -78,6 +82,7 @@ private fun DeeplinkScreen(
                 itemsIndexed(deepLinks) { index, item ->
                     DeeplinkItemView(
                         submit = submit,
+                        removeFromHistory = removeFromHistory,
                         item = item,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -86,6 +91,7 @@ private fun DeeplinkScreen(
             FloconVerticalScrollbar(
                 adapter = scrollAdapter,
                 modifier = Modifier.fillMaxHeight()
+                    .align(Alignment.TopEnd)
             )
         }
     }
@@ -103,6 +109,7 @@ private fun DeeplinkScreenPreview() {
             ),
             submit = { _, _ -> },
             modifier = Modifier.fillMaxSize(),
+            removeFromHistory = {},
         )
     }
 }
