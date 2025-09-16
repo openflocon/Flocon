@@ -214,7 +214,7 @@ class NetworkViewModel(
             )
 
             is NetworkAction.InvertList -> onInvertList(action)
-            NetworkAction.AutoScroll -> onAutoScroll()
+            NetworkAction.ToggleAutoScroll -> onAutoScroll()
             NetworkAction.ClearOldSession -> onClearSession()
         }
     }

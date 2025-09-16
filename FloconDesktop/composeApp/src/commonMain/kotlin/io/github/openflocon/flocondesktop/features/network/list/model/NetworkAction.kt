@@ -41,7 +41,7 @@ sealed interface NetworkAction {
 
     data class InvertList(val value: Boolean) : NetworkAction
 
-    data object AutoScroll : NetworkAction
+    data object ToggleAutoScroll : NetworkAction
 
     data object ClearOldSession : NetworkAction
 

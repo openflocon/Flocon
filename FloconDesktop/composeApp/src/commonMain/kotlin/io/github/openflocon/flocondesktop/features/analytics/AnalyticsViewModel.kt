@@ -2,7 +2,6 @@ package io.github.openflocon.flocondesktop.features.analytics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemsBeforeUseCase
@@ -14,9 +13,10 @@ import io.github.openflocon.flocondesktop.features.analytics.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsScreenUiState
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
-import io.github.openflocon.flocondesktop.features.network.list.mapper.formatTimestamp
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +37,14 @@ class AnalyticsViewModel(
     private val removeAnalyticsItemsBeforeUseCase: RemoveAnalyticsItemsBeforeUseCase,
 ) : ViewModel() {
 
-    val deviceAnalytics: StateFlow<AnalyticsStateUiModel> = analyticsSelectorDelegate.deviceAnalyticss
+    private val _screenState = MutableStateFlow<AnalyticsScreenUiState>(
+        AnalyticsScreenUiState(
+            autoScroll = false,
+            invertList = false,
+        )
+    )
+    val screenState = _screenState.asStateFlow()
+    val itemsState: StateFlow<AnalyticsStateUiModel> = analyticsSelectorDelegate.deviceAnalyticss
 
     private val _selectedItem = MutableStateFlow<AnalyticsRowUiModel?>(null)
     val selectedItem = _selectedItem.asStateFlow()
@@ -101,7 +108,13 @@ class AnalyticsViewModel(
                 }
                 is AnalyticsAction.Remove -> removeAnalyticsItemUseCase(action.item.id)
                 is AnalyticsAction.RemoveLinesAbove -> removeAnalyticsItemsBeforeUseCase(action.item.id)
+                is AnalyticsAction.ToggleAutoScroll -> _screenState.update { it.copy(autoScroll = !it.autoScroll) }
+                is AnalyticsAction.InvertList -> _screenState.update { it.copy(invertList = action.value) }
+                is AnalyticsAction.ClearOldSession -> {
+                    // TODO
+                }
             }
         }
     }
+
 }

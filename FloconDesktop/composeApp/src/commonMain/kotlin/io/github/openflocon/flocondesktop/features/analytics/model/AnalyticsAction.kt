@@ -14,4 +14,9 @@ sealed interface AnalyticsAction {
     ) : AnalyticsAction
 
     data object ClosePanel: AnalyticsAction
+
+    data object ClearOldSession : AnalyticsAction
+
+    data object ToggleAutoScroll : AnalyticsAction
+    data class InvertList(val value: Boolean) : AnalyticsAction
 }
