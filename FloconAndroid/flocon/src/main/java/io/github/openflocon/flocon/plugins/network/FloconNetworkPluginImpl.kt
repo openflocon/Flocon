@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference
 private const val FLOCON_NETWORK_MOCKS_JSON = "flocon_network_mocks.json"
 private const val FLOCON_NETWORK_BAD_CONFIG_JSON = "flocon_network_bad_config.json"
 
-class FloconNetworkPluginImpl(
+internal class FloconNetworkPluginImpl(
     private val context: Context,
     private var sender: FloconMessageSender,
     private val coroutineScope: CoroutineScope,
@@ -41,21 +41,29 @@ class FloconNetworkPluginImpl(
         get() = _badQualityConfig.get()
 
     override fun logRequest(request: FloconNetworkCallRequest) {
-        sender.send(
-            plugin = Protocol.FromDevice.Network.Plugin,
-            method = Protocol.FromDevice.Network.Method.LogNetworkCallRequest,
-            body = floconNetworkCallRequestToJson(request).toString(),
-        )
+        try {
+            sender.send(
+                plugin = Protocol.FromDevice.Network.Plugin,
+                method = Protocol.FromDevice.Network.Method.LogNetworkCallRequest,
+                body = floconNetworkCallRequestToJson(request).toString(),
+            )
+        } catch (t: Throwable) {
+            FloconLogger.logError("Network json mapping error", t)
+        }
     }
 
     override fun logResponse(response: FloconNetworkCallResponse) {
         coroutineScope.launch(Dispatchers.IO) {
             delay(200) // to be sure the request is handled before the response, in case of mocks or direct connection refused
-            sender.send(
-                plugin = Protocol.FromDevice.Network.Plugin,
-                method = Protocol.FromDevice.Network.Method.LogNetworkCallResponse,
-                body = floconNetworkCallResponseToJson(response).toString(),
-            )
+            try {
+                sender.send(
+                    plugin = Protocol.FromDevice.Network.Plugin,
+                    method = Protocol.FromDevice.Network.Method.LogNetworkCallResponse,
+                    body = floconNetworkCallResponseToJson(response).toString(),
+                )
+            } catch (t: Throwable) {
+                FloconLogger.logError("Network json mapping error", t)
+            }
         }
     }
 

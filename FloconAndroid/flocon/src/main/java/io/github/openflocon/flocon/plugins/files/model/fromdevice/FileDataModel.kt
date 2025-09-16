@@ -2,7 +2,7 @@ package io.github.openflocon.flocon.plugins.files.model.fromdevice
 
 import org.json.JSONObject
 
-data class FileDataModel(
+internal data class FileDataModel(
     val name: String,
     val isDirectory: Boolean,
     val path: String,

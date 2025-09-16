@@ -7,7 +7,7 @@ import io.github.openflocon.flocon.plugins.deeplinks.model.Deeplink
 import org.json.JSONArray
 import org.json.JSONObject
 
-class FloconDeeplinksPluginImpl(
+internal class FloconDeeplinksPluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconDeeplinksPlugin {
 

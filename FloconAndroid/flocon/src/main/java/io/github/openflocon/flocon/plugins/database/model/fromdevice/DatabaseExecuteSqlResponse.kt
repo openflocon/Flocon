@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.database.model.fromdevice
 import org.json.JSONArray
 import org.json.JSONObject
 
-sealed interface DatabaseExecuteSqlResponse {
+internal sealed interface DatabaseExecuteSqlResponse {
 
     // Case for successful SELECT queries
     data class Select(

@@ -5,7 +5,7 @@ import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
 import org.json.JSONArray
 import org.json.JSONObject
 
-fun toJsonObject(config: BadQualityConfig): JSONObject {
+internal fun toJsonObject(config: BadQualityConfig): JSONObject {
     val jsonObject = JSONObject()
 
     // Sérialisation de la configuration de latence

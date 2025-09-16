@@ -6,7 +6,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.collections.forEach
 
-data class SharedPreferencesDescriptor(
+internal data class SharedPreferencesDescriptor(
     val name: String,
     val mode: Int,
 ) {
@@ -15,7 +15,7 @@ data class SharedPreferencesDescriptor(
     }
 }
 
-fun listSharedPreferencesDescriptorToJson(items: List<SharedPreferencesDescriptor>) : JSONArray {
+internal fun listSharedPreferencesDescriptorToJson(items: List<SharedPreferencesDescriptor>) : JSONArray {
     val array = JSONArray()
     items.forEach {
         val jsonObject = JSONObject().apply {

@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.dashboard.model.todevice
 import io.github.openflocon.flocon.FloconLogger
 import org.json.JSONObject
 
-data class ToDeviceCheckBoxValueChangedMessage(
+internal data class ToDeviceCheckBoxValueChangedMessage(
     val id: String,
     val value: Boolean,
 ) {

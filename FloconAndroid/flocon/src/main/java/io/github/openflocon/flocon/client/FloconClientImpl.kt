@@ -10,7 +10,7 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.floconMessageFromServerFromJson
 import io.github.openflocon.flocon.model.toFloconMessageToServer
-import io.github.openflocon.flocon.plugins.SharedPreferences.FloconSharedPreferencesPluginImpl
+import io.github.openflocon.flocon.plugins.sharedprefs.FloconSharedPreferencesPluginImpl
 import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPluginImpl
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPluginImpl
 import io.github.openflocon.flocon.plugins.database.FloconDatabasePluginImpl

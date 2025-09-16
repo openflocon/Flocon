@@ -13,7 +13,7 @@ import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFo
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFilesMessage
 import java.io.File
 
-class FloconFilesPluginImpl(
+internal class FloconFilesPluginImpl(
     private val context: Context,
 ) : FloconFilesPlugin {
 
@@ -107,14 +107,18 @@ class FloconFilesPluginImpl(
             isConstantPath = isConstantPath,
         )
 
-        sender.send(
-            plugin = Protocol.FromDevice.Files.Plugin,
-            method = Protocol.FromDevice.Files.Method.ListFiles,
-            body = FilesResultDataModel(
-                requestId = requestId,
-                files = files,
-            ).toJson().toString(),
-        )
+        try {
+            sender.send(
+                plugin = Protocol.FromDevice.Files.Plugin,
+                method = Protocol.FromDevice.Files.Method.ListFiles,
+                body = FilesResultDataModel(
+                    requestId = requestId,
+                    files = files,
+                ).toJson().toString(),
+            )
+        } catch (t: Throwable) {
+            FloconLogger.logError("File parsing error", t)
+        }
     }
 
     override fun onConnectedToServer(sender: FloconMessageSender) {

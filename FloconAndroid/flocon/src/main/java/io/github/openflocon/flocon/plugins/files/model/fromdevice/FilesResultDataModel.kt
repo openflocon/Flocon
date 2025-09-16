@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.files.model.fromdevice
 import org.json.JSONArray
 import org.json.JSONObject
 
-data class FilesResultDataModel(
+internal data class FilesResultDataModel(
     val requestId: String,
     val files: List<FileDataModel>,
 ) {

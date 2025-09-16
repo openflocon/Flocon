@@ -4,7 +4,7 @@ import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.ext.toMap
 import org.json.JSONObject
 
-data class ToDeviceSubmittedFormMessage(
+internal data class ToDeviceSubmittedFormMessage(
     val id: String,
     val values: Map<String, String>
 ) {

@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.tables
 
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
@@ -8,7 +9,7 @@ import io.github.openflocon.flocon.plugins.tables.model.tableItemListToJson
 import org.json.JSONArray
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class FloconTablePluginImpl(
+internal class FloconTablePluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconTablePlugin {
 
@@ -53,11 +54,15 @@ class FloconTablePluginImpl(
 
     private fun sendTables() {
         tableMessages.takeIf { it.isNotEmpty() }?.let { toSend ->
-            sender.send(
-                plugin = Protocol.FromDevice.Table.Plugin,
-                method = Protocol.FromDevice.Table.Method.AddItems,
-                body = tableItemListToJson(tableMessages).toString()
-            )
+            try {
+                sender.send(
+                    plugin = Protocol.FromDevice.Table.Plugin,
+                    method = Protocol.FromDevice.Table.Method.AddItems,
+                    body = tableItemListToJson(tableMessages).toString()
+                )
+            } catch (t: Throwable) {
+                FloconLogger.logError("Table json mapping error", t)
+            }
         }
     }
 

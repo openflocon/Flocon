@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.dashboard
 
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
@@ -11,7 +12,7 @@ import io.github.openflocon.flocon.plugins.dashboard.model.todevice.ToDeviceSubm
 import io.github.openflocon.flocon.plugins.dashboard.model.todevice.ToDeviceSubmittedTextFieldMessage
 import java.util.concurrent.ConcurrentHashMap
 
-class FloconDashboardPluginImpl(
+internal class FloconDashboardPluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconDashboardPlugin {
 
@@ -71,11 +72,15 @@ class FloconDashboardPluginImpl(
 
         dashboards.put(dashboardConfig.id, dashboardConfig)
 
-        sender.send(
-            plugin = Protocol.FromDevice.Dashboard.Plugin,
-            method = Protocol.FromDevice.Dashboard.Method.Update,
-            body = dashboardJson.toString()
-        )
+        try {
+            sender.send(
+                plugin = Protocol.FromDevice.Dashboard.Plugin,
+                method = Protocol.FromDevice.Dashboard.Method.Update,
+                body = dashboardJson.toString()
+            )
+        } catch (t: Throwable) {
+            FloconLogger.logError("dashboard error", t)
+        }
     }
 }
 
