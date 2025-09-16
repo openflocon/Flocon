@@ -189,7 +189,7 @@ fun NetworkScreen(
                             checked = uiState.contentState.autoScroll,
                             text = "Auto scroll",
                             leadingIcon = Icons.Outlined.PlayCircle,
-                            onCheckedChange = { onAction(NetworkAction.AutoScroll) }
+                            onCheckedChange = { onAction(NetworkAction.ToggleAutoScroll) }
                         )
                         FloconDropdownMenuItem(
                             checked = uiState.contentState.invertList,
