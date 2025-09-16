@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 
-class FloconBroadcastReceiver : BroadcastReceiver() {
+internal class FloconBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         FloconLogger.log("Started detection broadcast receiver with: ${intent?.action}")
 

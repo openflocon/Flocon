@@ -2,7 +2,7 @@ package io.github.openflocon.flocon.model
 
 import org.json.JSONObject
 
-fun toFloconMessageToServer(
+internal fun toFloconMessageToServer(
     deviceName: String,
     deviceId: String,
     plugin: String,

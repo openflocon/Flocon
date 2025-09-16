@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.model
 import io.github.openflocon.flocon.FloconLogger
 import org.json.JSONObject
 
-fun floconMessageFromServerFromJson(
+internal fun floconMessageFromServerFromJson(
     message: String,
 ): FloconMessageFromServer? {
     return try {
