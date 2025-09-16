@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class FloconWebSocketClientImpl : FloconWebSocketClient {
+internal class FloconWebSocketClientImpl : FloconWebSocketClient {
 
     private val client = OkHttpClient.Builder()
         .readTimeout(0, TimeUnit.MILLISECONDS)

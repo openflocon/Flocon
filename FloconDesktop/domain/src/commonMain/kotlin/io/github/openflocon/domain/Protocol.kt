@@ -152,7 +152,6 @@ object Protocol {
             const val Plugin = "Table"
 
             object Method {
-                const val ClearItems = "ClearItems"
             }
         }
     }

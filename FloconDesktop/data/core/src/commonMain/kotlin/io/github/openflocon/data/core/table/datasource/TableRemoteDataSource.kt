@@ -5,8 +5,6 @@ import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainMo
 import io.github.openflocon.domain.table.models.TableDomainModel
 
 interface TableRemoteDataSource {
-    suspend fun clearReceivedItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, items: List<String>)
-
     fun getItems(message: FloconIncomingMessageDomainModel): List<TableDomainModel>
 
 }

@@ -14,20 +14,8 @@ import io.github.openflocon.domain.table.models.TableDomainModel
 import kotlinx.serialization.json.Json
 
 class TableRemoteDataSourceImpl(
-    private val server: Server,
     private val json: Json,
 ) : TableRemoteDataSource {
-
-    override suspend fun clearReceivedItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, items: List<String>) {
-        server.sendMessageToClient(
-            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
-            message = FloconOutgoingMessageDataModel(
-                plugin = Protocol.ToDevice.Table.Plugin,
-                method = Protocol.ToDevice.Table.Method.ClearItems,
-                body = Json.Default.encodeToString(items),
-            ),
-        )
-    }
 
     override fun getItems(message: FloconIncomingMessageDomainModel): List<TableDomainModel> = json.safeDecodeFromString<List<TableItemDataModel>>(message.body)
         ?.map { toDomain(it) }

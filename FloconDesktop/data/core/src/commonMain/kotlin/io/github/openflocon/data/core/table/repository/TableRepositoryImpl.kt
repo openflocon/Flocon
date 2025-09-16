@@ -39,10 +39,6 @@ class TableRepositoryImpl(
                         deviceIdAndPackageName = deviceIdAndPackageName,
                         tablePartialInfos = items,
                     )
-                    remoteTableDataSource.clearReceivedItem(
-                        deviceIdAndPackageName = deviceIdAndPackageName,
-                        items = items.flatMap { it.items.map { it.itemId } },
-                    )
                 }
             }
         }

@@ -6,73 +6,35 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.tables.model.TableItem
 import io.github.openflocon.flocon.plugins.tables.model.tableItemListToJson
-import org.json.JSONArray
-import java.util.concurrent.ConcurrentLinkedQueue
 
 internal class FloconTablePluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconTablePlugin {
 
-    private val tableMessages = ConcurrentLinkedQueue<TableItem>()
-
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
         sender: FloconMessageSender,
     ) {
-        when (messageFromServer.method) {
-            Protocol.ToDevice.Table.Method.ClearItems -> {
-                val items = readIds(messageFromServer.body)
-                if (items.isNotEmpty()) {
-                    clearItems(items.toSet())
-                }
-            }
-        }
-    }
-
-    private fun readIds(body: String): List<String> {
-        return try {
-            val array = JSONArray(body)
-            val items = mutableListOf<String>()
-            for (i in 0 until array.length()) {
-                items.add(array.getString(i))
-            }
-            items
-        } catch (t: Throwable) {
-            t.printStackTrace()
-            emptyList()
-        }
+        // no op
     }
 
     override fun onConnectedToServer(sender: FloconMessageSender) {
-        sendTables()
+        // no op
     }
 
     override fun registerTable(tableItem: TableItem) {
-        tableMessages.add(tableItem)
-        sendTables()
+        sendTable(tableItem)
     }
 
-    private fun sendTables() {
-        tableMessages.takeIf { it.isNotEmpty() }?.let { toSend ->
-            try {
-                sender.send(
-                    plugin = Protocol.FromDevice.Table.Plugin,
-                    method = Protocol.FromDevice.Table.Method.AddItems,
-                    body = tableItemListToJson(tableMessages).toString()
-                )
-            } catch (t: Throwable) {
-                FloconLogger.logError("Table json mapping error", t)
-            }
-        }
-    }
-
-    private fun clearItems(ids: Set<String>) {
-        val iterator = tableMessages.iterator()
-        while (iterator.hasNext()) {
-            val item = iterator.next()
-            if (item.id in ids) {
-                iterator.remove()
-            }
+    private fun sendTable(tableItem: TableItem) {
+        try {
+            sender.send(
+                plugin = Protocol.FromDevice.Table.Plugin,
+                method = Protocol.FromDevice.Table.Method.AddItems,
+                body = tableItemListToJson(listOf(tableItem)).toString() // desktop is expecting an array of table items
+            )
+        } catch (t: Throwable) {
+            FloconLogger.logError("Table json mapping error", t)
         }
     }
 }
