@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.analytics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.openflocon.domain.analytics.usecase.ExportAnalyticsToCsvUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemsBeforeUseCase
@@ -11,7 +12,6 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
-import io.github.openflocon.domain.network.usecase.RemoveOldSessionsNetworkRequestUseCase
 import io.github.openflocon.flocondesktop.features.analytics.delegate.AnalyticsSelectorDelegate
 import io.github.openflocon.flocondesktop.features.analytics.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
@@ -40,7 +40,8 @@ class AnalyticsViewModel(
     private val removeAnalyticsItemUseCase: RemoveAnalyticsItemUseCase,
     private val removeAnalyticsItemsBeforeUseCase: RemoveAnalyticsItemsBeforeUseCase,
     private val removeOldSessionsAnalyticsUseCase: RemoveOldSessionsAnalyticsUseCase,
-    ) : ViewModel() {
+    private val exportAnalyticsToCsv: ExportAnalyticsToCsvUseCase,
+) : ViewModel() {
 
     private val _screenState = MutableStateFlow<AnalyticsScreenUiState>(
         AnalyticsScreenUiState(
@@ -120,7 +121,25 @@ class AnalyticsViewModel(
                 is AnalyticsAction.ToggleAutoScroll -> _screenState.update { it.copy(autoScroll = !it.autoScroll) }
                 is AnalyticsAction.InvertList -> _screenState.update { it.copy(invertList = action.value) }
                 is AnalyticsAction.ClearOldSession -> removeOldSessionsAnalyticsUseCase()
+                is AnalyticsAction.ExportCsv -> onExportCsv()
             }
+        }
+    }
+
+    private fun onExportCsv() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            exportAnalyticsToCsv().fold(
+                doOnFailure = {
+                    feedbackDisplayer.displayMessage(
+                        "Error while exporting csv"
+                    )
+                },
+                doOnSuccess = { path ->
+                    feedbackDisplayer.displayMessage(
+                        "Csv exported at $path"
+                    )
+                }
+            )
         }
     }
 
