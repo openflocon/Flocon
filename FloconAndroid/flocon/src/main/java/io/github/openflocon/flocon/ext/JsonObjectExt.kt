@@ -6,7 +6,7 @@ import org.json.JSONException
 import org.json.JSONObject
 
 /** Convert JSONObject to Map<String, String> */
-fun JSONObject.toMap(): Map<String, String> {
+internal fun JSONObject.toMap(): Map<String, String> {
     val map = mutableMapOf<String, String>()
     val keys = this.keys()
     while (keys.hasNext()) {
