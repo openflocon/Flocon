@@ -25,6 +25,7 @@ data class AnalyticsItemEntity(
     val analyticsTableId: String,
     val deviceId: String,
     val packageName: String,
+    val appInstance: Long, // the start time of the mobile app
     val createdAt: Long,
     val eventName: String,
     val propertiesColumnsNames: List<String>,

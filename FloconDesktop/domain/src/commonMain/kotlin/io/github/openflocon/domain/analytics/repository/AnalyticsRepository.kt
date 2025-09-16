@@ -23,4 +23,6 @@ interface AnalyticsRepository {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsItemId: String
     )
+
+    suspend fun deleteOldSessions(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 }

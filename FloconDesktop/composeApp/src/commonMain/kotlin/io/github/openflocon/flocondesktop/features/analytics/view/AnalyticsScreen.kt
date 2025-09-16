@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -45,6 +46,7 @@ import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyt
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
+import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
@@ -161,14 +163,12 @@ fun AnalyticsScreen(
                             leadingIcon = Icons.AutoMirrored.Outlined.List,
                             onCheckedChange = { onAction(AnalyticsAction.InvertList(it)) }
                         )
-                        /* TODO
                         FloconDropdownSeparator()
                         FloconDropdownMenuItem(
                             text = "Clear old sessions",
                             leadingIcon = Icons.Outlined.CleaningServices,
                             onClick = { onAction(AnalyticsAction.ClearOldSession) }
                         )
-                         */
                     }
                 }
             )

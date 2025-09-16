@@ -116,4 +116,10 @@ class AnalyticsRepositoryImpl(
             )
         }
     }
+
+    override suspend fun deleteOldSessions(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        withContext(dispatcherProvider.data) {
+            analyticsLocalDataSource.deleteRequestOnDifferentSession(deviceIdAndPackageName = deviceIdAndPackageName)
+        }
+    }
 }
