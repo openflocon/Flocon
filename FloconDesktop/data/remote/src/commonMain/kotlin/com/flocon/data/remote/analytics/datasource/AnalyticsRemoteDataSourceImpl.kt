@@ -17,17 +17,6 @@ class AnalyticsRemoteDataSourceImpl(
     private val json: Json,
 ) : AnalyticsRemoteDataSource {
 
-    override suspend fun clearReceivedItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, items: List<String>) {
-        server.sendMessageToClient(
-            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
-            message = FloconOutgoingMessageDataModel(
-                plugin = Protocol.ToDevice.Analytics.Plugin,
-                method = Protocol.ToDevice.Analytics.Method.ClearItems,
-                body = Json.Default.encodeToString(items),
-            ),
-        )
-    }
-
     override fun getItems(message: FloconIncomingMessageDomainModel): List<AnalyticsItemDomainModel> = decodeAddItems(message).takeIf { it.isNotEmpty() }
         ?.let { list -> list.map { toDomain(it) } }
         ?.takeIf { it.isNotEmpty() }

@@ -6,8 +6,6 @@ import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainMo
 
 interface AnalyticsRemoteDataSource {
 
-    suspend fun clearReceivedItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, items: List<String>)
-
     fun getItems(message: FloconIncomingMessageDomainModel): List<AnalyticsItemDomainModel>
 
 }

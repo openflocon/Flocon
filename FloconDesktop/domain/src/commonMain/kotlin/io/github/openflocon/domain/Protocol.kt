@@ -91,14 +91,6 @@ object Protocol {
 
     object ToDevice {
 
-        object Analytics {
-            const val Plugin = "Analytics"
-
-            object Method {
-                const val ClearItems = "ClearItems"
-            }
-        }
-
         object Dashboard {
             const val Plugin = "Dashboard"
 
