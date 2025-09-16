@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.CleaningServices
+import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -144,13 +145,11 @@ fun AnalyticsScreen(
                 },
                 actions = {
                     FloconOverflow {
-                        /* TODO
                         FloconDropdownMenuItem(
                             text = "Export CSV",
                             leadingIcon = Icons.Outlined.ImportExport,
-                            onClick = { onAction(NetworkAction.ExportCsv) }
+                            onClick = { onAction(AnalyticsAction.ExportCsv) }
                         )
-                         */
                         FloconDropdownMenuItem(
                             checked = screenState.autoScroll,
                             text = "Auto scroll",

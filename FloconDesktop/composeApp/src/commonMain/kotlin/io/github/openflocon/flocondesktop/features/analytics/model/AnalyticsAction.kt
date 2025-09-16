@@ -18,5 +18,8 @@ sealed interface AnalyticsAction {
     data object ClearOldSession : AnalyticsAction
 
     data object ToggleAutoScroll : AnalyticsAction
+
     data class InvertList(val value: Boolean) : AnalyticsAction
+
+    data object ExportCsv: AnalyticsAction
 }
