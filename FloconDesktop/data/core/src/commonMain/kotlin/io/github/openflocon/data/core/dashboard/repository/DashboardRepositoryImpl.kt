@@ -54,8 +54,7 @@ class DashboardRepositoryImpl(
         dashboardLocalDataSource.observeDashboard(
             deviceIdAndPackageName = deviceIdAndPackageName,
             dashboardId = dashboardId,
-        )
-            .flowOn(dispatcherProvider.data)
+        ).flowOn(dispatcherProvider.data)
 
     override suspend fun sendClickEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -130,10 +129,26 @@ class DashboardRepositoryImpl(
     override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> =
         deviceDashboardsDataSource.observeSelectedDeviceDashboard(
             deviceIdAndPackageName = deviceIdAndPackageName,
-        )
+        ).flowOn(dispatcherProvider.data)
 
     override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> =
         dashboardLocalDataSource.observeDeviceDashboards(
             deviceIdAndPackageName = deviceIdAndPackageName,
-        )
+        ).flowOn(dispatcherProvider.data)
+
+    override suspend fun deleteDashboard(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dashboardId: DashboardId
+    ) {
+        withContext(dispatcherProvider.data) {
+            dashboardLocalDataSource.deleteDashboard(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                dashboardId = dashboardId,
+            )
+            deviceDashboardsDataSource.deleteDashboard(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                dashboardId = dashboardId,
+            )
+        }
+    }
 }

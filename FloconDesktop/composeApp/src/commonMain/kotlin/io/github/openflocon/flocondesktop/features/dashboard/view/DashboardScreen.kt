@@ -1,9 +1,12 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -16,7 +19,9 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardView
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconFeature
+import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -41,6 +46,8 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         submitTextField = viewModel::onTextFieldSubmit,
         submitForm = viewModel::onFormSubmit,
         onUpdateCheckBox = viewModel::onUpdateCheckBox,
+        deleteCurrentDashboard = viewModel::deleteCurrentDashboard,
+        onDeleteClicked = viewModel::onDeleteClicked,
     )
 }
 
@@ -49,6 +56,8 @@ fun DashboardScreen(
     state: DashboardViewState?,
     deviceDashboards: DashboardsStateUiModel,
     onDashboardSelected: (DeviceDashboardUiModel) -> Unit,
+    onDeleteClicked: (DeviceDashboardUiModel) -> Unit,
+    deleteCurrentDashboard: () -> Unit,
     onClickButton: (buttonId: String) -> Unit,
     submitTextField: (textFieldId: String, value: String) -> Unit,
     submitForm: (formId: String, formValues: Map<String, Any>) -> Unit,
@@ -65,7 +74,20 @@ fun DashboardScreen(
                     dashboardsState = deviceDashboards,
                     onDashboardSelected = onDashboardSelected,
                     modifier = Modifier.fillMaxWidth(),
+                    onDeleteClicked = onDeleteClicked,
                 )
+            },
+            filterBar = {
+                Box(modifier = Modifier.weight(1f)) // to have actions on the right
+            },
+            actions = {
+                FloconOverflow {
+                    FloconDropdownMenuItem(
+                        text = "Delete Dashboards",
+                        leadingIcon = Icons.Outlined.Delete,
+                        onClick = { deleteCurrentDashboard() }
+                    )
+                }
             }
         )
 

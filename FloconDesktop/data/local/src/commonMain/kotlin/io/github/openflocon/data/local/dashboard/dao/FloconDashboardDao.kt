@@ -11,6 +11,8 @@ import io.github.openflocon.data.local.dashboard.models.DashboardEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardWithContainersAndElements
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
+import io.github.openflocon.domain.dashboard.models.DashboardId
+import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
 
@@ -110,4 +112,17 @@ interface FloconDashboardDao {
             insertDashboardElements(allElementsToInsert)
         }
     }
+
+    @Query(
+        """
+        DELETE FROM DashboardEntity 
+        WHERE deviceId = :deviceId AND dashboardId = :dashboardId
+        AND packageName = :packageName
+        """,
+    )
+    suspend fun deleteDashboard(
+        deviceId: String,
+        packageName: String,
+        dashboardId: String,
+    )
 }

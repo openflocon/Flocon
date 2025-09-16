@@ -3,6 +3,9 @@ package io.github.openflocon.flocondesktop.features.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.dashboard.models.DashboardId
+import io.github.openflocon.domain.dashboard.usecase.DeleteCurrentDeviceSelectedDashboardUseCase
+import io.github.openflocon.domain.dashboard.usecase.DeleteDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.ObserveCurrentDeviceDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.SendCheckBoxUpdateDeviceDeviceUseCase
 import io.github.openflocon.domain.dashboard.usecase.SendClickEventToDeviceDeviceUseCase
@@ -30,6 +33,8 @@ class DashboardViewModel(
     private val dashboardSelectorDelegate: DashboardSelectorDelegate,
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
+    private val deleteCurrentDeviceSelectedDashboardUseCase: DeleteCurrentDeviceSelectedDashboardUseCase,
+    private val deleteDashboardUseCase: DeleteDashboardUseCase,
 ) : ViewModel(dashboardSelectorDelegate) {
 
     val deviceDashboards: StateFlow<DashboardsStateUiModel> = dashboardSelectorDelegate.deviceDashboards
@@ -78,5 +83,19 @@ class DashboardViewModel(
 
     fun onDashboardSelected(selected: DeviceDashboardUiModel) {
         dashboardSelectorDelegate.onDashboardSelected(selected.id)
+    }
+
+    fun deleteCurrentDashboard() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            deleteCurrentDeviceSelectedDashboardUseCase()
+            feedbackDisplayer.displayMessage("Dashboard removed")
+        }
+    }
+
+    fun onDeleteClicked(dashboard: DeviceDashboardUiModel) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            deleteDashboardUseCase(dashboard.id)
+            feedbackDisplayer.displayMessage("Dashboard removed")
+        }
     }
 }
