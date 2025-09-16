@@ -11,7 +11,7 @@ fun initializeDeeplinks() {
             "flocon://user/[userId]",
             label = "User",
             parameters = {
-                "userId" withAutoComplete listOf("Notification", "AppStart", "HomeScreen")
+                "userId" withAutoComplete listOf("Florent", "David", "Guillaume")
             }
         )
         deeplink(

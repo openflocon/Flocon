@@ -38,7 +38,7 @@ object Protocol {
         }
 
         object Deeplink {
-            const val Plugin = "DeeplinkModel"
+            const val Plugin = "Deeplink"
 
             object Method {
                 const val GetDeeplinks = "GetDeeplinks"

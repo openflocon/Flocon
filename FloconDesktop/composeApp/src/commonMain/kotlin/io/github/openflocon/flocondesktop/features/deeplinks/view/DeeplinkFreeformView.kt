@@ -36,7 +36,7 @@ private val freeformItem = DeeplinkViewState(
     description = null,
     label = null,
     parts = listOf(
-        DeeplinkPart.TextField("freeform_link"),
+        DeeplinkPart.TextField("freeform_link", autoComplete = null),
     ),
     deeplinkId = -1L,
     isHistory = false,
@@ -76,7 +76,7 @@ fun DeeplinkFreeformItemView(
                     submit(
                         freeformItem,
                         mapOf(
-                            DeeplinkPart.TextField("freeform_link") to value,
+                            DeeplinkPart.TextField("freeform_link", autoComplete = null) to value,
                         ),
                     )
                 },

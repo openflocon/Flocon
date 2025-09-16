@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.view
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,13 +9,16 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.MenuAnchorType.Companion.PrimaryEditable
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
@@ -95,7 +96,7 @@ fun DeeplinkItemView(
 
             if (item.isHistory) {
                 FloconIconTonalButton(
-                    onClick = {  removeFromHistory(item) },
+                    onClick = { removeFromHistory(item) },
                     containerColor = FloconTheme.colorPalette.tertiary,
                 ) {
                     FloconIcon(
@@ -127,6 +128,7 @@ fun DeeplinkItemView(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TextFieldPart(
     part: DeeplinkPart,
@@ -136,16 +138,54 @@ private fun TextFieldPart(
         is DeeplinkPart.TextField -> {
             val onFieldValueChangedCallback by rememberUpdatedState(onFieldValueChanged)
             var value by remember { mutableStateOf("") }
+            var isExpanded by remember { mutableStateOf(false) }
 
             LaunchedEffect(part, value) {
                 onFieldValueChangedCallback(part, value)
             }
 
-            DeeplinkTextField(
-                value = value,
-                onValueChange = { value = it },
-                label = part.label,
-            )
+            val filteredAutoComplete = remember(value, part.autoComplete) {
+                part.autoComplete?.filter { it.contains(value, ignoreCase = true) }
+            }
+            ExposedDropdownMenuBox(
+                expanded = isExpanded,
+                onExpandedChange = { isExpanded = it },
+            ) {
+                DeeplinkTextField(
+                    value = value,
+                    onValueChange = {
+                        value = it
+                        isExpanded = filteredAutoComplete?.isNotEmpty() == true
+                    },
+                    modifier = Modifier.menuAnchor(PrimaryEditable),
+                    label = part.label,
+                )
+
+                // The dropdown menu
+                if (filteredAutoComplete?.isNotEmpty() == true) {
+                    ExposedDropdownMenu(
+                        modifier = Modifier.widthIn(min = 200.dp),
+                        expanded = isExpanded,
+                        onDismissRequest = { isExpanded = false },
+                    ) {
+                        filteredAutoComplete.forEach { item ->
+                            Text(
+                                text = item,
+                                style = FloconTheme.typography.bodySmall,
+                                modifier = Modifier
+                                    .clickable {
+                                        value = item
+                                        isExpanded = false
+                                    }
+                                    .padding(
+                                        vertical = 4.dp,
+                                        horizontal = 8.dp,
+                                    )
+                            )
+                        }
+                    }
+                }
+            }
         }
 
         is DeeplinkPart.Text -> {
@@ -161,13 +201,14 @@ private fun TextFieldPart(
 
 @Composable
 private fun DeeplinkTextField(
+    modifier: Modifier = Modifier,
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
 ) {
     val isValueEmpty = value.isEmpty()
     Box(
-        modifier = Modifier.background(
+        modifier = modifier.background(
             color = FloconTheme.colorPalette.primary,
             shape = RoundedCornerShape(2.dp),
         ).padding(horizontal = 2.dp, vertical = 2.dp)

@@ -29,11 +29,11 @@ internal fun mapToUi(deepLink: DeeplinkDomainModel, isHistory: Boolean): Deeplin
         parts = if (isHistory) {
             listOf(DeeplinkPart.Text(deepLink.link))
         } else {
-            parseDeeplinkString(deepLink.link)
+            parseDeeplinkString(deepLink.link, deepLink = deepLink)
         },
     )
 
-internal fun parseDeeplinkString(input: String): List<DeeplinkPart> {
+internal fun parseDeeplinkString(input: String, deepLink: DeeplinkDomainModel): List<DeeplinkPart> {
     val regex = "\\[([^\\[\\]]*)\\]".toRegex() // Regex pour trouver [quelquechose]
     val result = mutableListOf<DeeplinkPart>()
     var lastIndex = 0
@@ -51,7 +51,10 @@ internal fun parseDeeplinkString(input: String): List<DeeplinkPart> {
         }
 
         // 2. Ajouter la partie "TextField"
-        result.add(DeeplinkPart.TextField(value))
+        result.add(DeeplinkPart.TextField(
+            label = value,
+            autoComplete = deepLink.parameters.find { it.paramName == value }?.autoComplete)
+        )
 
         lastIndex = range.last + 1
     }
