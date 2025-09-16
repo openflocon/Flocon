@@ -18,20 +18,22 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.readReason
 import io.ktor.websocket.readText
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.Json
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.time.Duration.Companion.seconds
 
 class ServerJvm : Server {
-    private val _receivedMessages = MutableSharedFlow<FloconIncomingMessageDataModel>()
-    override val receivedMessages = _receivedMessages.asSharedFlow()
+    private val _receivedMessages = Channel<FloconIncomingMessageDataModel>()
+    override val receivedMessages = _receivedMessages.receiveAsFlow()
 
     private var server: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? =
         null
@@ -79,7 +81,7 @@ class ServerJvm : Server {
                                             _activeSessions.update {
                                                 it + (device to currentSession)
                                             }
-                                            _receivedMessages.emit(floconIncomingMessageDataModel)
+                                            _receivedMessages.send(floconIncomingMessageDataModel)
                                         } catch (e: Exception) {
                                             Logger.e(e) { "Error parsing JSON message: ${e.message}" }
                                             // Optionally send an error back to the client

@@ -1,10 +1,9 @@
-package io.github.openflocon.domain.deeplink.models
+package io.github.openflocon.flocon.plugins.deeplinks.model
 
-data class DeeplinkDomainModel(
-    val id: Long,
-    val label: String?,
+data class DeeplinkModel(
     val link: String,
-    val description: String?,
+    val label: String? = null,
+    val description: String? = null,
     val parameters: List<Parameter>,
 ) {
     data class Parameter(
