@@ -15,17 +15,14 @@ import kotlinx.coroutines.withContext
 
 class DashboardLocalDataSourceRoom(
     private val dashboardDao: FloconDashboardDao,
-    private val dispatcherProvider: DispatcherProvider,
 ) : DashboardLocalDataSource {
 
     override suspend fun saveDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboard: DashboardDomainModel) {
-        withContext(dispatcherProvider.data) {
             dashboardDao.saveFullDashboard(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
                 dashboard = dashboard,
             )
-        }
     }
 
     override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> =
@@ -36,12 +33,21 @@ class DashboardLocalDataSourceRoom(
         )
             .map { it?.toDomain() }
             .distinctUntilChanged()
-            .flowOn(dispatcherProvider.data)
 
     override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> =
         dashboardDao.observeDeviceDashboards(
             deviceId = deviceIdAndPackageName.deviceId,
             packageName = deviceIdAndPackageName.packageName,
         )
-            .flowOn(dispatcherProvider.data)
+
+    override suspend fun deleteDashboard(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dashboardId: DashboardId
+    ) {
+        dashboardDao.deleteDashboard(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            dashboardId = dashboardId,
+        )
+    }
 }

@@ -68,11 +68,13 @@ fun FloconDropdownMenu(
 fun FloconDropdownMenuItem(
     text: String,
     onClick: () -> Unit,
+    secondaryAction: (@Composable () -> Unit)? = null,
     leadingIcon: ImageVector? = null
 ) {
     FloconMenuItem(
         text = text,
         onClick = onClick,
+        secondaryAction = secondaryAction,
         leadingIcon = leadingIcon
     )
 }

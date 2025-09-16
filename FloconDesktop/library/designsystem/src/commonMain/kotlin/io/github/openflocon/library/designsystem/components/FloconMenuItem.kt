@@ -33,6 +33,7 @@ fun FloconMenuItem(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    secondaryAction: (@Composable () -> Unit)? = null,
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = null
 ) {
@@ -55,6 +56,7 @@ fun FloconMenuItem(
             style = FloconTheme.typography.labelMedium,
             modifier = Modifier.weight(1f)
         )
+        secondaryAction?.invoke()
         trailingIcon?.let { FloconMenuIcon(trailingIcon) }
     }
 }

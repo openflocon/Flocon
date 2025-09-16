@@ -1,5 +1,7 @@
 package io.github.openflocon.domain.dashboard
 
+import io.github.openflocon.domain.dashboard.usecase.DeleteCurrentDeviceSelectedDashboardUseCase
+import io.github.openflocon.domain.dashboard.usecase.DeleteDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.GetCurrentDeviceSelectedDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.ObserveCurrentDeviceDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.ObserveCurrentDeviceSelectedDashboardUseCase
@@ -23,4 +25,7 @@ internal val dashboardModule = module {
     factoryOf(::ObserveCurrentDeviceSelectedDashboardUseCase)
     factoryOf(::ObserveDeviceDashboardsUseCase)
     factoryOf(::SelectCurrentDeviceDashboardUseCase)
+
+    factoryOf(::DeleteDashboardUseCase)
+    factoryOf(::DeleteCurrentDeviceSelectedDashboardUseCase)
 }

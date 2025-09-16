@@ -23,4 +23,12 @@ class DeviceDashboardsDataSourceInMemory : DeviceDashboardsDataSource {
         }
     }
 
+    override fun deleteDashboard(dashboardId: DashboardId, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        selectedDeviceDashboards.update {
+            if(it[deviceIdAndPackageName] == dashboardId) {
+                it - deviceIdAndPackageName
+            } else it
+        }
+    }
+
 }

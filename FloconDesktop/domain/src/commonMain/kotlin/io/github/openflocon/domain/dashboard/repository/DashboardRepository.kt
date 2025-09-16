@@ -38,4 +38,9 @@ interface DashboardRepository {
         checkBoxId: String,
         value: Boolean,
     )
+
+    suspend fun deleteDashboard(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dashboardId: DashboardId
+    )
 }

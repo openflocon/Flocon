@@ -13,4 +13,8 @@ interface DeviceDashboardsDataSource {
         dashboardId: DashboardId,
     )
 
+    fun deleteDashboard(
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    )
 }
