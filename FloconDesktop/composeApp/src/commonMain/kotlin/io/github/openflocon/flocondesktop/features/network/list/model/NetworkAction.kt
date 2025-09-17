@@ -45,6 +45,10 @@ sealed interface NetworkAction {
 
     data object ClearOldSession : NetworkAction
 
+    data object Up : NetworkAction
+
+    data object Down : NetworkAction
+
     sealed interface HeaderAction : NetworkAction {
         data class ClickOnSort(
             val type: NetworkColumnsTypeUiModel,

@@ -43,7 +43,7 @@ class AnalyticsViewModel(
     private val exportAnalyticsToCsv: ExportAnalyticsToCsvUseCase,
 ) : ViewModel() {
 
-    private val _screenState = MutableStateFlow<AnalyticsScreenUiState>(
+    private val _screenState = MutableStateFlow(
         AnalyticsScreenUiState(
             autoScroll = false,
             invertList = false,

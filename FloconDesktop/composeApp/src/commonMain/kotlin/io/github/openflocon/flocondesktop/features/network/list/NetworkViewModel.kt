@@ -14,8 +14,8 @@ import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCas
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
-import io.github.openflocon.domain.network.usecase.RemoveNetworkRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
+import io.github.openflocon.domain.network.usecase.RemoveNetworkRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveOldSessionsNetworkRequestUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
@@ -218,7 +218,41 @@ class NetworkViewModel(
             is NetworkAction.InvertList -> onInvertList(action)
             NetworkAction.ToggleAutoScroll -> onAutoScroll()
             NetworkAction.ClearOldSession -> onClearSession()
+            NetworkAction.Down -> onDown()
+            NetworkAction.Up -> onUp()
         }
+    }
+
+    private fun onUp() {
+        val state = uiState.value
+        val selectedItem = state.contentState.selectedRequestId
+        val index = state.items.indexOfFirst { it.uuid == selectedItem }
+            .takeIf { it != -1 }
+            ?: return
+        val nextRequest = state.items.getOrNull(
+            if (state.contentState.invertList)
+                index + 1
+            else
+                index - 1
+        ) ?: return
+
+        contentState.update { it.copy(selectedRequestId = nextRequest.uuid) }
+    }
+
+    private fun onDown() {
+        val state = uiState.value
+        val selectedItem = state.contentState.selectedRequestId
+        val index = state.items.indexOfFirst { it.uuid == selectedItem }
+            .takeIf { it != -1 }
+            ?: return
+        val nextRequest = state.items.getOrNull(
+            if (state.contentState.invertList)
+                index - 1
+            else
+                index + 1
+        ) ?: return
+
+        contentState.update { it.copy(selectedRequestId = nextRequest.uuid) }
     }
 
     private fun onClearSession() {

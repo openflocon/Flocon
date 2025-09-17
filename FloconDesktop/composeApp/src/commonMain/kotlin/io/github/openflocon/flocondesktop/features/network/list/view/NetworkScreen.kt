@@ -25,6 +25,11 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
@@ -99,6 +104,22 @@ fun NetworkScreen(
                 enabled = uiState.detailState != null,
                 onClick = { onAction(NetworkAction.ClosePanel) },
             )
+            .onPreviewKeyEvent { event ->
+                if (event.type != KeyEventType.KeyDown)
+                    return@onPreviewKeyEvent false
+
+                when (event.key) {
+                    Key.DirectionUp -> {
+                        onAction(NetworkAction.Up)
+                        true
+                    }
+                    Key.DirectionDown -> {
+                        onAction(NetworkAction.Down)
+                        true
+                    }
+                    else -> false
+                }
+            }
     ) {
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
@@ -238,6 +259,7 @@ fun NetworkScreen(
                     ) {
                         NetworkItemView(
                             state = it,
+                            selected = it.uuid == uiState.contentState.selectedRequestId,
                             columnWidths = columnWidths,
                             onAction = onAction,
                             modifier = Modifier
