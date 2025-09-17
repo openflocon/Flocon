@@ -51,7 +51,7 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownSepara
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
-import io.github.openflocon.library.designsystem.components.FloconPanelNew
+import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -99,11 +99,12 @@ fun AnalyticsScreen(
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
-    when(content) {
+    when (content) {
         is AnalyticsContentStateUiModel.Empty,
         is AnalyticsContentStateUiModel.Loading -> {
             // no op
         }
+
         is AnalyticsContentStateUiModel.WithContent -> {
             LaunchedEffect(screenState.autoScroll, content.rows.size) {
                 if (screenState.autoScroll && content.rows.lastIndex != -1) {
@@ -113,134 +114,130 @@ fun AnalyticsScreen(
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        FloconFeature(
-            modifier = modifier
-                .clickable(
-                    interactionSource = null,
-                    indication = null,
-                    enabled = selectedItem != null,
-                    onClick = { onAction(AnalyticsAction.ClosePanel) }
-                )
-        ) {
-            FloconPageTopBar(
-                modifier = Modifier.fillMaxWidth(),
-                selector = {
-                    AnalyticsSelectorView(
-                        analyticsState = itemsState,
-                        onAnalyticsSelected = onAnalyticsSelected,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                },
-                filterBar = {
-                    AnalyticsFilterBar(
-                        analyticsItems = content.items(),
-                        onResetClicked = onResetClicked,
-                        onItemsChange = {
-                            analyticsItems = it
-                        },
-                    )
-                },
-                actions = {
-                    FloconOverflow {
-                        FloconDropdownMenuItem(
-                            text = "Export CSV",
-                            leadingIcon = Icons.Outlined.ImportExport,
-                            onClick = { onAction(AnalyticsAction.ExportCsv) }
-                        )
-                        FloconDropdownMenuItem(
-                            checked = screenState.autoScroll,
-                            text = "Auto scroll",
-                            leadingIcon = Icons.Outlined.PlayCircle,
-                            onCheckedChange = { onAction(AnalyticsAction.ToggleAutoScroll) }
-                        )
-                        FloconDropdownMenuItem(
-                            checked = screenState.invertList,
-                            text = "Invert list",
-                            leadingIcon = Icons.AutoMirrored.Outlined.List,
-                            onCheckedChange = { onAction(AnalyticsAction.InvertList(it)) }
-                        )
-                        FloconDropdownSeparator()
-                        FloconDropdownMenuItem(
-                            text = "Clear old sessions",
-                            leadingIcon = Icons.Outlined.CleaningServices,
-                            onClick = { onAction(AnalyticsAction.ClearOldSession) }
-                        )
-                    }
-                }
+    FloconFeature(
+        modifier = modifier
+            .clickable(
+                interactionSource = null,
+                indication = null,
+                enabled = selectedItem != null,
+                onClick = { onAction(AnalyticsAction.ClosePanel) }
             )
+    ) {
+        FloconPageTopBar(
+            modifier = Modifier.fillMaxWidth(),
+            selector = {
+                AnalyticsSelectorView(
+                    analyticsState = itemsState,
+                    onAnalyticsSelected = onAnalyticsSelected,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
+            filterBar = {
+                AnalyticsFilterBar(
+                    analyticsItems = content.items(),
+                    onResetClicked = onResetClicked,
+                    onItemsChange = {
+                        analyticsItems = it
+                    },
+                )
+            },
+            actions = {
+                FloconOverflow {
+                    FloconDropdownMenuItem(
+                        text = "Export CSV",
+                        leadingIcon = Icons.Outlined.ImportExport,
+                        onClick = { onAction(AnalyticsAction.ExportCsv) }
+                    )
+                    FloconDropdownMenuItem(
+                        checked = screenState.autoScroll,
+                        text = "Auto scroll",
+                        leadingIcon = Icons.Outlined.PlayCircle,
+                        onCheckedChange = { onAction(AnalyticsAction.ToggleAutoScroll) }
+                    )
+                    FloconDropdownMenuItem(
+                        checked = screenState.invertList,
+                        text = "Invert list",
+                        leadingIcon = Icons.AutoMirrored.Outlined.List,
+                        onCheckedChange = { onAction(AnalyticsAction.InvertList(it)) }
+                    )
+                    FloconDropdownSeparator()
+                    FloconDropdownMenuItem(
+                        text = "Clear old sessions",
+                        leadingIcon = Icons.Outlined.CleaningServices,
+                        onClick = { onAction(AnalyticsAction.ClearOldSession) }
+                    )
+                }
+            }
+        )
 
-            var widthPx by remember { mutableStateOf(0f) }
-            val density = LocalDensity.current.density
-            val dpWidth = (widthPx / density).dp
+        var widthPx by remember { mutableStateOf(0f) }
+        val density = LocalDensity.current.density
+        val dpWidth = (widthPx / density).dp
 
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(FloconTheme.shapes.medium)
+                .background(FloconTheme.colorPalette.primary)
+                .border(
+                    width = 1.dp,
+                    color = FloconTheme.colorPalette.secondary,
+                    shape = FloconTheme.shapes.medium
+                )
+                .onSizeChanged {
+                    widthPx = max(widthPx, it.width.toFloat())
+                }
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary)
-                    .border(
-                        width = 1.dp,
-                        color = FloconTheme.colorPalette.secondary,
-                        shape = FloconTheme.shapes.medium
-                    )
-                    .onSizeChanged {
-                        widthPx = max(widthPx, it.width.toFloat())
-                    }
+                    .horizontalScroll(rememberScrollState())
             ) {
-                Box(
+                LazyColumn(
+                    state = listState,
+                    reverseLayout = screenState.invertList,
                     modifier = Modifier
                         .fillMaxSize()
-                        .horizontalScroll(rememberScrollState())
+                        .onSizeChanged {
+                            widthPx = max(widthPx, it.width.toFloat())
+                        },
+                    contentPadding = PaddingValues(vertical = 8.dp),
                 ) {
-                    LazyColumn(
-                        state = listState,
-                        reverseLayout = screenState.invertList,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .onSizeChanged {
-                                widthPx = max(widthPx, it.width.toFloat())
-                            },
-                        contentPadding = PaddingValues(vertical = 8.dp),
-                    ) {
-                        when (content) {
-                            is AnalyticsContentStateUiModel.Empty -> {}
-                            is AnalyticsContentStateUiModel.Loading -> {}
-                            is AnalyticsContentStateUiModel.WithContent -> {
-                                itemsIndexed(analyticsItems) { index, item ->
-                                    AnalyticsRowView(
-                                        model = item,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        onAction = onAction,
+                    when (content) {
+                        is AnalyticsContentStateUiModel.Empty -> {}
+                        is AnalyticsContentStateUiModel.Loading -> {}
+                        is AnalyticsContentStateUiModel.WithContent -> {
+                            itemsIndexed(analyticsItems) { index, item ->
+                                AnalyticsRowView(
+                                    model = item,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onAction = onAction,
+                                )
+                                if (index != analyticsItems.lastIndex) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.width(dpWidth)
                                     )
-                                    if (index != analyticsItems.lastIndex) {
-                                        HorizontalDivider(
-                                            modifier = Modifier.width(dpWidth)
-                                        )
-                                    }
                                 }
                             }
                         }
                     }
                 }
-                FloconVerticalScrollbar(
-                    adapter = scrollAdapter,
-                    modifier = Modifier.fillMaxHeight()
-                        .align(Alignment.TopEnd)
-                )
             }
-        }
-        FloconPanelNew(
-            contentState = selectedItem,
-        ) {
-            AnalyticsDetailView(
-                modifier = Modifier.fillMaxSize(),
-                state = it,
-                closeRequested = { onAction(AnalyticsAction.ClosePanel) },
+            FloconVerticalScrollbar(
+                adapter = scrollAdapter,
+                modifier = Modifier.fillMaxHeight()
+                    .align(Alignment.TopEnd)
             )
         }
+    }
+    FloconPanel(
+        contentState = selectedItem,
+        onClose = { onAction(AnalyticsAction.ClosePanel) },
+    ) {
+        AnalyticsDetailView(
+            modifier = Modifier.fillMaxSize(),
+            state = it
+        )
     }
 }
 

@@ -2,7 +2,6 @@ package io.github.openflocon.flocondesktop.features.analytics.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -16,8 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -30,22 +27,14 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
-import io.github.openflocon.library.designsystem.components.FloconIconButton
-import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 
 @Composable
 fun AnalyticsDetailView(
-    modifier: Modifier = Modifier,
     state: AnalyticsRowUiModel,
-    closeRequested: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
     val linesLabelWidth: Dp = 130.dp
-
-    EscapeHandler {
-        closeRequested()
-        true // consume
-    }
 
     SelectionContainer(
         modifier
@@ -56,15 +45,6 @@ fun AnalyticsDetailView(
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopEnd
-            ) {
-                FloconIconButton(
-                    imageVector = Icons.Outlined.Close,
-                    onClick = { closeRequested() },
-                )
-            }
             AnalyticsDetailLineTextView(
                 modifier = Modifier.fillMaxWidth(),
                 label = "Name",
