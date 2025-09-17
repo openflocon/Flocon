@@ -3,7 +3,6 @@ package io.github.openflocon.flocondesktop.features.table.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -64,6 +63,7 @@ fun TableScreen(modifier: Modifier = Modifier) {
             viewModel.onNotVisible()
         }
     }
+
     TableScreen(
         deviceTables = deviceTables,
         onTableSelected = viewModel::onTableSelected,
@@ -90,88 +90,84 @@ fun TableScreen(
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        FloconFeature(
-            modifier = modifier
-                .clickable(
-                    interactionSource = null,
-                    indication = null,
-                    enabled = selectedItem != null,
-                    onClick = { onTableAction(TableAction.ClosePanel) }
-                )
-        ) {
-            FloconPageTopBar(
-                modifier = Modifier.fillMaxWidth(),
-                selector = {
-                    TableSelectorView(
-                        tablesState = deviceTables,
-                        onTableSelected = onTableSelected,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                },
-                filterBar = {
-                    TableFilterBar(
-                        tableItems = content.items(),
-                        onResetClicked = onResetClicked,
-                        onItemsChange = { tableItems = it },
-                    )
-                }
+    FloconFeature(
+        modifier = modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = null,
+                indication = null,
+                enabled = selectedItem != null,
+                onClick = { onTableAction(TableAction.ClosePanel) }
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary)
+    ) {
+        FloconPageTopBar(
+            modifier = Modifier.fillMaxWidth(),
+            selector = {
+                TableSelectorView(
+                    tablesState = deviceTables,
+                    onTableSelected = onTableSelected,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
+            filterBar = {
+                TableFilterBar(
+                    tableItems = content.items(),
+                    onResetClicked = onResetClicked,
+                    onItemsChange = { tableItems = it },
+                )
+            }
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(FloconTheme.shapes.medium)
+                .background(FloconTheme.colorPalette.primary)
+        ) {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(all = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(all = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    when (content) {
-                        is TableContentStateUiModel.Empty -> {}
-                        is TableContentStateUiModel.Loading -> {}
-                        is TableContentStateUiModel.WithContent -> {
-                            itemsIndexed(tableItems) { index, item ->
-                                TableRowView(
-                                    model = item,
-                                    columnsWidth = columnsWidth,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    onAction = onTableAction,
+                when (content) {
+                    is TableContentStateUiModel.Empty -> {}
+                    is TableContentStateUiModel.Loading -> {}
+                    is TableContentStateUiModel.WithContent -> {
+                        itemsIndexed(tableItems) { index, item ->
+                            TableRowView(
+                                model = item,
+                                columnsWidth = columnsWidth,
+                                modifier = Modifier.fillMaxWidth(),
+                                onAction = onTableAction,
+                            )
+                            if (index < tableItems.lastIndex) {
+                                HorizontalDivider(
+                                    modifier =
+                                        Modifier.fillMaxWidth()
+                                            .padding(top = 4.dp),
                                 )
-                                if (index < tableItems.lastIndex) {
-                                    HorizontalDivider(
-                                        modifier =
-                                            Modifier.fillMaxWidth()
-                                                .padding(top = 4.dp),
-                                    )
-                                }
                             }
                         }
                     }
                 }
-                FloconVerticalScrollbar(
-                    adapter = scrollAdapter,
-                    modifier = Modifier.fillMaxHeight()
-                )
             }
-        }
-        FloconPanel(
-            contentState = selectedItem,
-            modifier = Modifier.align(Alignment.CenterEnd),
-        ) {
-            TableDetailView(
-                modifier =
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxHeight()
-                        .width(500.dp),
-                state = it,
+            FloconVerticalScrollbar(
+                adapter = scrollAdapter,
+                modifier = Modifier.fillMaxHeight()
             )
         }
+    }
+    FloconPanel(
+        contentState = selectedItem,
+        onClose = { onTableAction(TableAction.ClosePanel) }
+    ) {
+        TableDetailView(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .fillMaxHeight()
+                .width(500.dp),
+            state = it,
+        )
     }
 }
 

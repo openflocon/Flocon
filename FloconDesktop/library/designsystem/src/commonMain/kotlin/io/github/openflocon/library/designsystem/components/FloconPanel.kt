@@ -1,22 +1,21 @@
 package io.github.openflocon.library.designsystem.components
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.EaseOutExpo
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateTo
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,61 +25,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 import kotlinx.coroutines.launch
 
 private const val AnimDuration = 500
-
-@Composable
-fun <T : Any?> FloconPanel(
-    contentState: T,
-    modifier: Modifier = Modifier,
-    fromStart: Boolean = false,
-    content: @Composable AnimatedContentScope.(T & Any) -> Unit
-) {
-    AnimatedContent(
-        targetState = contentState,
-        transitionSpec = {
-            val tween = tween<IntOffset>(AnimDuration, easing = EaseOutExpo)
-
-            if (fromStart) {
-                slideIntoContainer(SlideDirection.End, tween)
-                    .togetherWith(slideOutOfContainer(SlideDirection.Start, tween))
-            } else {
-                slideIntoContainer(SlideDirection.Start, tween)
-                    .togetherWith(slideOutOfContainer(SlideDirection.End, tween))
-            }
-        },
-        contentAlignment = Alignment.TopEnd,
-        contentKey = { it != null },
-        modifier = modifier
-            .fillMaxHeight()
-            .requiredWidth(500.dp),
-        content = {
-            if (it != null) {
-                content(it)
-            } else {
-                Box(modifier = Modifier.fillMaxSize())
-            }
-        }
-    )
-}
-
 private val PanelWidth = 500.dp
 
 @Composable
 fun FloconPanel(
     expanded: Boolean,
     onDismissRequest: (() -> Unit)? = null,
+    onClose: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
     var innerExpanded by remember { mutableStateOf(expanded) }
@@ -102,6 +64,13 @@ fun FloconPanel(
         }
     }
 
+    if (onClose != null) {
+        EscapeHandler {
+            onClose()
+            true
+        }
+    }
+
     if (innerExpanded) {
         Popup(
             onDismissRequest = {
@@ -111,23 +80,44 @@ fun FloconPanel(
             },
             alignment = Alignment.CenterEnd
         ) {
-            Box(
+            Row(
                 modifier = Modifier
-                    .width(PanelWidth)
                     .fillMaxHeight()
-                    .graphicsLayer {
-                        this.translationX = translationX.value.toPx()
+            ) {
+                if (onClose != null) {
+                    Box(
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        FloconIconTonalButton(
+                            onClick = onClose,
+                            modifier = Modifier
+                                .graphicsLayer {
+                                    this.alpha = 1f - translationX.value.div(PanelWidth)
+                                }
+                        ) {
+                            FloconIcon(Icons.Outlined.Close)
+                        }
                     }
-                    .border(width = 1.dp, color = FloconTheme.colorPalette.surface),
-                content = content
-            )
+                }
+                Box(
+                    modifier = Modifier
+                        .width(PanelWidth)
+                        .fillMaxHeight()
+                        .graphicsLayer {
+                            this.translationX = translationX.value.toPx()
+                        }
+                        .border(width = 1.dp, color = FloconTheme.colorPalette.surface),
+                    content = content
+                )
+            }
         }
     }
 }
 
-@Composable // TODO Rename
-fun <T : Any?> FloconPanelNew(
+@Composable
+fun <T : Any?> FloconPanel(
     contentState: T,
+    onClose: (() -> Unit)? = null,
     content: @Composable BoxScope.(T & Any) -> Unit
 ) {
     var rememberTarget by remember { mutableStateOf(contentState) }
@@ -139,7 +129,8 @@ fun <T : Any?> FloconPanelNew(
     }
 
     FloconPanel(
-        expanded = contentState != null
+        expanded = contentState != null,
+        onClose = onClose
     ) {
         rememberTarget?.let { content(this, it) }
     }
