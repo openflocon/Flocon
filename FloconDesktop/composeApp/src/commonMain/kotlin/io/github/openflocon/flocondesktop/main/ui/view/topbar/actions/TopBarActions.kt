@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ internal fun TopBarActions(
     recordState: RecordVideoStateUiModel,
     devicesState: DevicesStateUiModel,
     onRecordClicked: () -> Unit,
+    onRestartClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -27,6 +29,13 @@ internal fun TopBarActions(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        TopBarButton(
+            active = false,
+            imageVector = Icons.Outlined.RestartAlt,
+            contentDescription = "restart",
+            onClicked = onRestartClicked,
+            isEnabled = devicesState.deviceSelected?.isActive == true,
+        )
         TopBarButton(
             active = recordState == RecordVideoStateUiModel.Recording,
             imageVector = when (recordState) {

@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.plugins.device
 
 import android.content.Context
+import com.jakewharton.processphoenix.ProcessPhoenix
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
@@ -38,6 +39,10 @@ internal class FloconDevicePluginImpl(
                         body = icon,
                     )
                 }
+            }
+
+            Protocol.ToDevice.Device.Method.RestartApp -> {
+                ProcessPhoenix.triggerRebirth(context)
             }
         }
     }

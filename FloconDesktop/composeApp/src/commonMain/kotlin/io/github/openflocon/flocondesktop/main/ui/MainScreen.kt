@@ -91,6 +91,7 @@ fun MainScreen(
             onClickLeftPanelItem = viewModel::onClickLeftPanelItem,
             onTakeScreenshotClicked = viewModel::onTakeScreenshotClicked,
             onRecordClicked = viewModel::onRecordClicked,
+            onRestartClicked = viewModel::onRestartClicked,
         )
     }
 }
@@ -109,6 +110,7 @@ private fun MainScreen(
     onTakeScreenshotClicked: () -> Unit,
     recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
+    onRestartClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(true) }
@@ -135,6 +137,7 @@ private fun MainScreen(
             onTakeScreenshotClicked = onTakeScreenshotClicked,
             recordState = recordState,
             onRecordClicked = onRecordClicked,
+            onRestartClicked = onRestartClicked,
         )
         Box(
             modifier = Modifier

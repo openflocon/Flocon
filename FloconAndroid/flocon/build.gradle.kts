@@ -37,7 +37,7 @@ dependencies {
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-
+    implementation(libs.jakewharton.process.phoenix)
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     api(project(":flocon-base"))

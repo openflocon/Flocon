@@ -50,6 +50,7 @@ fun MainScreenTopBar(
     onTakeScreenshotClicked: () -> Unit,
     recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
+    onRestartClicked: () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -72,6 +73,7 @@ fun MainScreenTopBar(
             onTakeScreenshotClicked = onTakeScreenshotClicked,
             recordState = recordState,
             onRecordClicked = onRecordClicked,
+            onRestartClicked = onRestartClicked,
             devicesState = devicesState,
         )
     }
