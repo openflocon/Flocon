@@ -37,6 +37,12 @@ internal fun DashboardElementEntity.toDomain(): DashboardElementDomainModel? {
             color = it.color,
         )
     }
+    this.label?.let {
+        return DashboardElementDomainModel.Label(
+            label = it.label,
+            color = it.color,
+        )
+    }
     this.button?.let {
         return DashboardElementDomainModel.Button(
             text = it.text,

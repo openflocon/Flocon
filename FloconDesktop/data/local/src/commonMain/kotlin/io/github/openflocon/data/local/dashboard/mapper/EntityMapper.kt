@@ -10,6 +10,7 @@ import io.github.openflocon.data.local.dashboard.models.DashboardElementText
 import io.github.openflocon.data.local.dashboard.models.DashboardElementTextField
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardElementLabel
 import io.github.openflocon.data.local.dashboard.models.FormContainerConfigEntity
 import io.github.openflocon.data.local.dashboard.models.SectionContainerConfigEntity
 import io.github.openflocon.domain.dashboard.models.ContainerConfigDomainModel
@@ -47,6 +48,7 @@ internal fun DashboardElementDomainModel.toEntity(
     textField = (this as? DashboardElementDomainModel.TextField)?.toTextFieldEntity(),
     checkBox = (this as? DashboardElementDomainModel.CheckBox)?.toCheckBoxEntity(),
     plainText = (this as? DashboardElementDomainModel.PlainText)?.toPlainTextEntity(),
+    label = (this as? DashboardElementDomainModel.Label)?.toLabelEntity(),
 )
 
 internal fun DashboardElementDomainModel.Button.toButtonEntity() = DashboardElementButton(
@@ -67,6 +69,11 @@ internal fun DashboardElementDomainModel.PlainText.toPlainTextEntity() = Dashboa
         DashboardElementDomainModel.PlainText.Type.Text -> "text"
         DashboardElementDomainModel.PlainText.Type.Json -> "json"
     },
+)
+
+internal fun DashboardElementDomainModel.Label.toLabelEntity() = DashboardElementLabel(
+    label = label,
+    color = color,
 )
 
 internal fun DashboardElementDomainModel.TextField.toTextFieldEntity() = DashboardElementTextField(

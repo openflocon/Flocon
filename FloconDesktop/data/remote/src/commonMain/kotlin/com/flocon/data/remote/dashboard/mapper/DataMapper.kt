@@ -7,6 +7,7 @@ import com.flocon.data.remote.dashboard.models.DashboardConfigDataModel
 import com.flocon.data.remote.dashboard.models.DashboardElementDataModel
 import com.flocon.data.remote.dashboard.models.DashboardContainerDataModel
 import com.flocon.data.remote.dashboard.models.FormContainerConfigDataModel
+import com.flocon.data.remote.dashboard.models.LabelConfigDataModel
 import com.flocon.data.remote.dashboard.models.SectionContainerConfigDataModel
 import com.flocon.data.remote.dashboard.models.TextConfigDataModel
 import com.flocon.data.remote.dashboard.models.TextFieldConfigDataModel
@@ -43,6 +44,9 @@ fun toDomain(model: DashboardElementDataModel): DashboardElementDomainModel? {
     model.checkBox?.let {
         return toDomain(it)
     }
+    model.label?.let {
+        return toDomain(it)
+    }
     return null
 }
 
@@ -54,6 +58,11 @@ fun toDomain(model: ButtonConfigDataModel): DashboardElementDomainModel.Button =
 fun toDomain(model: TextConfigDataModel): DashboardElementDomainModel.Text = DashboardElementDomainModel.Text(
     label = model.label,
     value = model.value,
+    color = model.color,
+)
+
+fun toDomain(model: LabelConfigDataModel): DashboardElementDomainModel.Label = DashboardElementDomainModel.Label(
+    label = model.label,
     color = model.color,
 )
 

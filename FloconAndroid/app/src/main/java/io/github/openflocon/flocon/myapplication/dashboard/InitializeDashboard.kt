@@ -19,6 +19,7 @@ import io.github.openflocon.flocon.plugins.dashboard.dsl.checkBox
 import io.github.openflocon.flocon.plugins.dashboard.dsl.json
 import io.github.openflocon.flocon.plugins.dashboard.dsl.plainText
 import io.github.openflocon.flocon.plugins.dashboard.dsl.section
+import io.github.openflocon.flocon.plugins.dashboard.dsl.label
 import io.github.openflocon.flocon.plugins.dashboard.dsl.form
 import io.github.openflocon.flocon.plugins.dashboard.dsl.text
 import io.github.openflocon.flocon.plugins.dashboard.dsl.textField
@@ -55,6 +56,7 @@ fun initializeDashboard(activity: Activity) {
                         text(label = "username", value = user.userName)
                         text(label = "fullName", value = user.fullName, color = Color.Red.toArgb())
                         text(label = "user id", value = user.id)
+                        label(label = "actions :")
                         button(
                             text = "Change User Id",
                             id = "changeUserId",

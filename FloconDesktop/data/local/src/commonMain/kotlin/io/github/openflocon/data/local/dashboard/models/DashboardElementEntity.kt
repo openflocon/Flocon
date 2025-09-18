@@ -31,6 +31,8 @@ data class DashboardElementEntity(
     val button: DashboardElementButton?,
     @Embedded(prefix = "text_")
     val text: DashboardElementText?,
+    @Embedded(prefix = "label_")
+    val label: DashboardElementLabel?,
     @Embedded(prefix = "plainText_")
     val plainText: DashboardElementPlainText?,
     @Embedded(prefix = "textField_")
@@ -47,6 +49,11 @@ data class DashboardElementButton(
 data class DashboardElementText(
     val label: String,
     val value: String,
+    val color: Int?,
+)
+
+data class DashboardElementLabel(
+    val label: String,
     val color: Int?,
 )
 

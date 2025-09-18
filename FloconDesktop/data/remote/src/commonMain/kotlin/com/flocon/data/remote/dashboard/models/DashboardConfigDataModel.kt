@@ -41,6 +41,7 @@ data class DashboardElementDataModel(
     val plainText: PlainTextConfigDataModel? = null,
     val textField: TextFieldConfigDataModel? = null,
     val checkBox: CheckBoxConfigDataModel? = null,
+    val label: LabelConfigDataModel? = null,
 )
 
 @Serializable
@@ -68,6 +69,12 @@ data class CheckBoxConfigDataModel(
 data class TextConfigDataModel(
     val label: String,
     val value: String,
+    val color: Int? = null,
+)
+
+@Serializable
+data class LabelConfigDataModel(
+    val label: String,
     val color: Int? = null,
 )
 

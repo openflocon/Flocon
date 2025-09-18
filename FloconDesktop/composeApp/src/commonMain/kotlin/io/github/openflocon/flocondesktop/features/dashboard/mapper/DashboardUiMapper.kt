@@ -29,6 +29,11 @@ internal fun DashboardDomainModel.toUi(): DashboardViewState = DashboardViewStat
                         color = element.color?.let { Color(it) },
                     )
 
+                    is DashboardElementDomainModel.Label -> DashboardContainerViewState.RowItem.Label(
+                        label = element.label,
+                        color = element.color?.let { Color(it) },
+                    )
+
                     is DashboardElementDomainModel.PlainText -> DashboardContainerViewState.RowItem.PlainText(
                         label = element.label,
                         value = when (element.type) {

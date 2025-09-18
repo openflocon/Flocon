@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 57,
-    "identityHash": "199ff9143e67e2835e684bbb78dfd493",
+    "identityHash": "a2acc6cf6a63fbbec5b693fc10a7792a",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -411,7 +411,7 @@
       },
       {
         "tableName": "DashboardElementEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `containerId` INTEGER NOT NULL, `elementOrder` INTEGER NOT NULL, `button_text` TEXT, `button_actionId` TEXT, `text_label` TEXT, `text_value` TEXT, `text_color` INTEGER, `plainText_label` TEXT, `plainText_value` TEXT, `plainText_type` TEXT, `textField_actionId` TEXT, `textField_label` TEXT, `textField_value` TEXT, `textField_placeHolder` TEXT, `checkBox_actionId` TEXT, `checkBox_label` TEXT, `checkBox_value` INTEGER, FOREIGN KEY(`containerId`) REFERENCES `DashboardContainerEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `containerId` INTEGER NOT NULL, `elementOrder` INTEGER NOT NULL, `button_text` TEXT, `button_actionId` TEXT, `text_label` TEXT, `text_value` TEXT, `text_color` INTEGER, `label_label` TEXT, `label_color` INTEGER, `plainText_label` TEXT, `plainText_value` TEXT, `plainText_type` TEXT, `textField_actionId` TEXT, `textField_label` TEXT, `textField_value` TEXT, `textField_placeHolder` TEXT, `checkBox_actionId` TEXT, `checkBox_label` TEXT, `checkBox_value` INTEGER, FOREIGN KEY(`containerId`) REFERENCES `DashboardContainerEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -454,6 +454,16 @@
           {
             "fieldPath": "text.color",
             "columnName": "text_color",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "label.label",
+            "columnName": "label_label",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "label.color",
+            "columnName": "label_color",
             "affinity": "INTEGER"
           },
           {
@@ -1370,7 +1380,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '199ff9143e67e2835e684bbb78dfd493')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a2acc6cf6a63fbbec5b693fc10a7792a')"
     ]
   }
 }

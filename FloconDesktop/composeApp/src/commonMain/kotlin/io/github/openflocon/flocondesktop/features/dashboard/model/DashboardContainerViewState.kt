@@ -14,6 +14,11 @@ data class DashboardContainerViewState(
             val color: Color?,
         ) : RowItem
 
+        data class Label(
+            val label: String,
+            val color: Color?,
+        ) : RowItem
+
         data class PlainText(
             val label: String,
             val value: String,
