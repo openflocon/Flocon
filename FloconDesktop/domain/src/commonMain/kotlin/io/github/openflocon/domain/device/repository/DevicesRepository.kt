@@ -40,5 +40,10 @@ interface DevicesRepository {
         deviceId : DeviceId,
         packageName : AppPackageName,
     )
+
+    suspend fun rebootApp(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    )
+
     suspend fun clear()
 }

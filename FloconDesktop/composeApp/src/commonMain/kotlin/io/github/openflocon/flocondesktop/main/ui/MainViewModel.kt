@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.main.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
@@ -35,6 +36,7 @@ class MainViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val takeScreenshotUseCase : TakeScreenshotUseCase,
+    private val restartAppUseCase : RestartAppUseCase,
     private val recordVideoDelegate: RecordVideoDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel(
@@ -100,6 +102,12 @@ class MainViewModel(
     fun onRecordClicked() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             recordVideoDelegate.toggleRecording()
+        }
+    }
+
+    fun onRestartClicked() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            restartAppUseCase()
         }
     }
 

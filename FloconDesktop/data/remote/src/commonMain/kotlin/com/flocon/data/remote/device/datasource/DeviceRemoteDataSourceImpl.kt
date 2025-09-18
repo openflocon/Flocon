@@ -43,4 +43,15 @@ class DeviceRemoteDataSourceImpl(
             ),
         )
     }
+
+    override suspend fun rebootApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        server.sendMessageToClient(
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
+            message = FloconOutgoingMessageDataModel(
+                plugin = Protocol.ToDevice.Device.Plugin,
+                method = Protocol.ToDevice.Device.Method.RebootApp,
+                body = "",
+            ),
+        )
+    }
 }
