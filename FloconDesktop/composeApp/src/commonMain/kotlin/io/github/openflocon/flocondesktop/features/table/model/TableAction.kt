@@ -8,4 +8,6 @@ sealed interface TableAction {
     data class RemoveLinesAbove(
         val item: TableRowUiModel
     ) : TableAction
+
+    data object ExportCsv : TableAction
 }
