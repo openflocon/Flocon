@@ -12,6 +12,7 @@ import io.github.openflocon.flocondesktop.features.network.list.mapper.formatTim
 import io.github.openflocon.flocondesktop.features.table.delegate.TableSelectorDelegate
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableAction
+import io.github.openflocon.flocondesktop.features.table.model.TableColumnsUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
@@ -36,9 +37,6 @@ class TableViewModel(
 ) : ViewModel() {
     val deviceTables: StateFlow<TablesStateUiModel> = tableSelectorDelegate.deviceTables
 
-    private val _selectedItem = MutableStateFlow<TableRowUiModel?>(null)
-    val selectedItem = _selectedItem.asStateFlow()
-
     val content: StateFlow<TableContentStateUiModel> =
         observeCurrentDeviceTableContentUseCase()
             .map {
@@ -46,16 +44,16 @@ class TableViewModel(
                     TableContentStateUiModel.Empty
                 } else {
                     TableContentStateUiModel.WithContent(
+                        columns = TableColumnsUiModel(buildList {
+                            add("time")
+                            addAll(it.columns)
+                        }),
                         rows = it.items.map { item ->
                             TableRowUiModel(
                                 id = item.itemId,
                                 values = buildList {
                                     add(formatTimestamp(item.createdAt))
                                     addAll(item.values)
-                                },
-                                columns = buildList {
-                                    add("time")
-                                    addAll(item.columns)
                                 },
                             )
                         },
@@ -90,20 +88,8 @@ class TableViewModel(
     fun onTableAction(action: TableAction) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
-                is TableAction.OnClick -> {
-                    _selectedItem.update {
-                        if (it == action.item) {
-                            null
-                        } else {
-                            action.item
-                        }
-                    }
-                }
                 is TableAction.Remove -> removeTableItemUseCase(action.item.id)
                 is TableAction.RemoveLinesAbove -> removeTableItemsBeforeUseCase(action.item.id)
-                TableAction.ClosePanel -> {
-                    _selectedItem.update { null }
-                }
             }
         }
     }

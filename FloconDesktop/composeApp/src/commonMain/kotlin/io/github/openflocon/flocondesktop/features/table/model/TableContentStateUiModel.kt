@@ -12,6 +12,7 @@ sealed interface TableContentStateUiModel {
 
     @Immutable
     data class WithContent(
+        val columns: TableColumnsUiModel,
         val rows: List<TableRowUiModel>,
     ) : TableContentStateUiModel
 }
@@ -24,6 +25,7 @@ fun TableContentStateUiModel.items(): List<TableRowUiModel> = when (this) {
 }
 
 fun previewTableContentStateUiModel(): TableContentStateUiModel = TableContentStateUiModel.WithContent(
+    columns = previewTableColumnsUiModel(),
     rows = listOf(
         previewTableRowUiModel(),
         previewTableRowUiModel(),

@@ -30,12 +30,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.table.TableViewModel
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableAction
+import io.github.openflocon.flocondesktop.features.table.model.TableColumnsUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
@@ -45,7 +48,6 @@ import io.github.openflocon.flocondesktop.features.table.model.previewTablesStat
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
-import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -56,7 +58,6 @@ fun TableScreen(modifier: Modifier = Modifier) {
     val viewModel: TableViewModel = koinViewModel()
     val deviceTables by viewModel.deviceTables.collectAsStateWithLifecycle()
     val rows by viewModel.content.collectAsStateWithLifecycle()
-    val selectedItem by viewModel.selectedItem.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
         viewModel.onVisible()
@@ -69,7 +70,6 @@ fun TableScreen(modifier: Modifier = Modifier) {
         deviceTables = deviceTables,
         onTableSelected = viewModel::onTableSelected,
         content = rows,
-        selectedItem = selectedItem,
         onResetClicked = viewModel::onResetClicked,
         modifier = modifier,
         onTableAction = viewModel::onTableAction,
@@ -82,7 +82,6 @@ fun TableScreen(
     onTableSelected: (DeviceTableUiModel) -> Unit,
     content: TableContentStateUiModel,
     onResetClicked: () -> Unit,
-    selectedItem: TableRowUiModel?,
     onTableAction: (TableAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -94,12 +93,6 @@ fun TableScreen(
     FloconFeature(
         modifier = modifier
             .fillMaxSize()
-            .clickable(
-                interactionSource = null,
-                indication = null,
-                enabled = selectedItem != null,
-                onClick = { onTableAction(TableAction.ClosePanel) }
-            )
     ) {
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
@@ -127,9 +120,33 @@ fun TableScreen(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(all = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
+                stickyHeader {
+                    when (content) {
+                        is TableContentStateUiModel.Empty -> {}
+                        is TableContentStateUiModel.Loading -> {}
+                        is TableContentStateUiModel.WithContent -> {
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                                    .background(FloconTheme.colorPalette.secondary)
+                                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                            ) {
+                                content.columns.columns.fastForEach { column ->
+                                    Text(
+                                        text = column,
+                                        modifier =
+                                            Modifier
+                                                .width(columnsWidth)
+                                                .padding(horizontal = 4.dp),
+                                        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                                        color = FloconTheme.colorPalette.onSecondary,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
                 when (content) {
                     is TableContentStateUiModel.Empty -> {}
                     is TableContentStateUiModel.Loading -> {}
@@ -159,85 +176,6 @@ fun TableScreen(
             )
         }
     }
-    FloconPanel(
-        contentState = selectedItem,
-        onClose = { onTableAction(TableAction.ClosePanel) }
-    ) {
-        TableDetailView(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .fillMaxHeight()
-                .width(500.dp),
-            state = it,
-        )
-    }
-}
-
-@Composable
-fun TableDetailView(modifier: Modifier = Modifier, state: TableRowUiModel) {
-    val scrollState = rememberScrollState()
-    val linesLabelWidth: Dp = 130.dp
-    SelectionContainer(
-        modifier
-            .background(FloconTheme.colorPalette.primary)
-            .verticalScroll(scrollState) // Rendre le contenu défilable
-            .padding(all = 18.dp),
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            state.values.forEachIndexed { index, value ->
-                TableDetailLineTextView(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = state.columns.getOrNull(index) ?: "",
-                    value = value,
-                    labelWidth = linesLabelWidth,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun TableDetailLineTextView(
-    label: String,
-    value: String,
-    labelWidth: Dp,
-    modifier: Modifier = Modifier,
-) {
-    TableDetailLineView(
-        labelWidth = labelWidth,
-        label = label,
-        modifier = modifier,
-    ) {
-        Text(
-            text = value,
-            style = FloconTheme.typography.bodyMedium, // Body text for the URL
-            color = FloconTheme.colorPalette.onPrimary, // Primary text color
-            modifier = Modifier.weight(1f), // Takes remaining space
-        )
-    }
-}
-
-@Composable
-fun TableDetailLineView(
-    label: String,
-    labelWidth: Dp,
-    modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit,
-) {
-    Row(
-        modifier = modifier.padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = label,
-            style = FloconTheme.typography.titleSmall, // Slightly smaller title for details
-            color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f), // Muted label color
-            modifier = Modifier.width(labelWidth).padding(end = 8.dp),
-        )
-        content()
-    }
 }
 
 @Composable
@@ -248,7 +186,6 @@ private fun TableScreenPreview() {
             deviceTables = previewTablesStateUiModel(),
             onTableSelected = {},
             onResetClicked = {},
-            selectedItem = null,
             content = previewTableContentStateUiModel(),
             onTableAction = {},
             modifier = Modifier.fillMaxSize(),
