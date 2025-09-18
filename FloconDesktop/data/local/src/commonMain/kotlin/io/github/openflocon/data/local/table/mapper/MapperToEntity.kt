@@ -14,6 +14,7 @@ internal fun TableDomainModel.toEntity(
 )
 
 internal fun TableDomainModel.TableItem.toEntity(
+    columns: List<String>,
     tableId: Long,
 ): TableItemEntity = TableItemEntity(
     tableId = tableId,

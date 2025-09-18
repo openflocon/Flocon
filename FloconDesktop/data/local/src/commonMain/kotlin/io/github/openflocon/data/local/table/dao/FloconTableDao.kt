@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Upsert
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.data.local.table.models.TableItemEntity
 import io.github.openflocon.domain.device.models.DeviceId
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 interface FloconTableDao {
 
     @Transaction
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Upsert
     suspend fun insertTable(table: TableEntity): Long
 
     @Query(

@@ -38,9 +38,11 @@ internal class TableLocalDataSourceRoom(
 
                 tableDao.insertTableItems(
                     tableInfo.items.mapIndexedNotNull { index, item ->
+                        val columns = tableInfo.columns
                         tableInfo.items.getOrNull(index)?.let { columnName ->
                             item.toEntity(
                                 tableId = tableId,
+                                columns = columns,
                             )
                         }
                     },
@@ -60,12 +62,12 @@ internal class TableLocalDataSourceRoom(
                     ).map { tableItem ->
                         TableDomainModel(
                             name = table.name,
+                            columns = tableItem.firstOrNull()?.columnsNames ?: emptyList(),
                             items = tableItem.map {
                                 TableDomainModel.TableItem(
                                     itemId = it.itemId,
                                     createdAt = it.createdAt,
                                     values = it.values,
-                                    columns = it.columnsNames,
                                 )
                             },
                         )
