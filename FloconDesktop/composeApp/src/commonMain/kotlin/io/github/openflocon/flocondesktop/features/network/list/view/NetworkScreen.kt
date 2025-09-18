@@ -2,7 +2,6 @@ package io.github.openflocon.flocondesktop.features.network.list.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -26,6 +25,11 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
@@ -54,7 +58,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
-import io.github.openflocon.library.designsystem.components.FloconPanelNew
+import io.github.openflocon.library.designsystem.components.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -91,52 +95,65 @@ fun NetworkScreen(
         }
     }
 
-    Box(
-        modifier = modifier.fillMaxSize()
+    FloconFeature(
+        modifier = modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = null,
+                indication = null,
+                enabled = uiState.detailState != null,
+                onClick = { onAction(NetworkAction.ClosePanel) },
+            )
+            .onPreviewKeyEvent { event ->
+                if (event.type != KeyEventType.KeyDown)
+                    return@onPreviewKeyEvent false
+
+                when (event.key) {
+                    Key.DirectionUp -> {
+                        onAction(NetworkAction.Up)
+                        true
+                    }
+                    Key.DirectionDown -> {
+                        onAction(NetworkAction.Down)
+                        true
+                    }
+                    else -> false
+                }
+            }
     ) {
-        FloconFeature(
-            modifier = Modifier
-                .matchParentSize()
-                .clickable(
-                    interactionSource = null,
-                    indication = null,
-                    enabled = uiState.detailState != null,
-                    onClick = { onAction(NetworkAction.ClosePanel) },
+        FloconPageTopBar(
+            modifier = Modifier.fillMaxWidth(),
+            filterBar = {
+                FilterBar(
+                    placeholderText = "Filter route",
+                    onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
+                    modifier = Modifier.fillMaxWidth(.7f),
                 )
-        ) {
-            FloconPageTopBar(
-                modifier = Modifier.fillMaxWidth(),
-                filterBar = {
-                    FilterBar(
-                        placeholderText = "Filter route",
-                        onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
-                        modifier = Modifier.fillMaxWidth(.7f),
+            },
+            actions = {
+                FloconIconToggleButton(
+                    value = uiState.filterState.hasMocks,
+                    tooltip = "Mocks",
+                    onValueChange = { onAction(NetworkAction.OpenMocks) }
+                ) {
+                    FloconIcon(
+                        imageVector = Icons.Outlined.WifiTethering
                     )
-                },
-                actions = {
-                    FloconIconToggleButton(
-                        value = uiState.filterState.hasMocks,
-                        tooltip = "Mocks",
-                        onValueChange = { onAction(NetworkAction.OpenMocks) }
-                    ) {
-                        FloconIcon(
-                            imageVector = Icons.Outlined.WifiTethering
-                        )
-                    }
-                    FloconIconToggleButton(
-                        value = uiState.filterState.hasBadNetwork,
-                        tooltip = "Bad network",
-                        onValueChange = { onAction(NetworkAction.OpenBadNetworkQuality) }
-                    ) {
-                        FloconIcon(
-                            imageVector = Icons.Outlined.SignalWifiStatusbarConnectedNoInternet4
-                        )
-                    }
-                    FloconIconButton(
-                        imageVector = Icons.Outlined.Delete,
-                        onClick = { onAction(NetworkAction.Reset) }
+                }
+                FloconIconToggleButton(
+                    value = uiState.filterState.hasBadNetwork,
+                    tooltip = "Bad network",
+                    onValueChange = { onAction(NetworkAction.OpenBadNetworkQuality) }
+                ) {
+                    FloconIcon(
+                        imageVector = Icons.Outlined.SignalWifiStatusbarConnectedNoInternet4
                     )
-                    // TODO Later
+                }
+                FloconIconButton(
+                    imageVector = Icons.Outlined.Delete,
+                    onClick = { onAction(NetworkAction.Reset) }
+                )
+                // TODO Later
 //                    FloconDropdownMenu(
 //                        expanded = expandedColumn,
 //                        anchorContent = {
@@ -179,94 +196,94 @@ fun NetworkScreen(
 //                            onCheckedChange = {}
 //                        )
 //                    }
-                    FloconOverflow {
-                        FloconDropdownMenuItem(
-                            text = "Export CSV",
-                            leadingIcon = Icons.Outlined.ImportExport,
-                            onClick = { onAction(NetworkAction.ExportCsv) }
-                        )
-                        FloconDropdownMenuItem(
-                            checked = uiState.contentState.autoScroll,
-                            text = "Auto scroll",
-                            leadingIcon = Icons.Outlined.PlayCircle,
-                            onCheckedChange = { onAction(NetworkAction.ToggleAutoScroll) }
-                        )
-                        FloconDropdownMenuItem(
-                            checked = uiState.contentState.invertList,
-                            text = "Invert list",
-                            leadingIcon = Icons.AutoMirrored.Outlined.List,
-                            onCheckedChange = { onAction(NetworkAction.InvertList(it)) }
-                        )
-                        FloconDropdownSeparator()
-                        FloconDropdownMenuItem(
-                            text = "Clear old sessions",
-                            leadingIcon = Icons.Outlined.CleaningServices,
-                            onClick = { onAction(NetworkAction.ClearOldSession) }
-                        )
-                    }
-                },
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary)
-            ) {
-                NetworkItemHeaderView(
-                    columnWidths = columnWidths,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(FloconTheme.colorPalette.primary),
-                    clickOnSort = { type, sort ->
-                        onAction(NetworkAction.HeaderAction.ClickOnSort(type, sort))
-                    },
-                    onFilterAction = {
-                        onAction(NetworkAction.HeaderAction.FilterAction(it))
-                    },
-                    state = uiState.headerState,
-                )
-                FloconHorizontalDivider()
-                Row(
-                    Modifier.fillMaxSize()
-                ) {
-                    LazyColumn(
-                        state = lazyListState,
-                        reverseLayout = uiState.contentState.invertList,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f)
-                    ) {
-                        items(
-                            items = uiState.items,
-                            key = NetworkItemViewState::uuid,
-                        ) {
-                            NetworkItemView(
-                                state = it,
-                                columnWidths = columnWidths,
-                                onAction = onAction,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .animateItem(),
-                            )
-                        }
-                    }
-                    FloconVerticalScrollbar(
-                        adapter = scrollAdapter,
-                        modifier = Modifier.fillMaxHeight(),
+                FloconOverflow {
+                    FloconDropdownMenuItem(
+                        text = "Export CSV",
+                        leadingIcon = Icons.Outlined.ImportExport,
+                        onClick = { onAction(NetworkAction.ExportCsv) }
+                    )
+                    FloconDropdownMenuItem(
+                        checked = uiState.contentState.autoScroll,
+                        text = "Auto scroll",
+                        leadingIcon = Icons.Outlined.PlayCircle,
+                        onCheckedChange = { onAction(NetworkAction.ToggleAutoScroll) }
+                    )
+                    FloconDropdownMenuItem(
+                        checked = uiState.contentState.invertList,
+                        text = "Invert list",
+                        leadingIcon = Icons.AutoMirrored.Outlined.List,
+                        onCheckedChange = { onAction(NetworkAction.InvertList(it)) }
+                    )
+                    FloconDropdownSeparator()
+                    FloconDropdownMenuItem(
+                        text = "Clear old sessions",
+                        leadingIcon = Icons.Outlined.CleaningServices,
+                        onClick = { onAction(NetworkAction.ClearOldSession) }
                     )
                 }
+            },
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(FloconTheme.shapes.medium)
+                .background(FloconTheme.colorPalette.primary)
+        ) {
+            NetworkItemHeaderView(
+                columnWidths = columnWidths,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(FloconTheme.colorPalette.primary),
+                clickOnSort = { type, sort ->
+                    onAction(NetworkAction.HeaderAction.ClickOnSort(type, sort))
+                },
+                onFilterAction = {
+                    onAction(NetworkAction.HeaderAction.FilterAction(it))
+                },
+                state = uiState.headerState,
+            )
+            FloconHorizontalDivider()
+            Row(
+                Modifier.fillMaxSize()
+            ) {
+                LazyColumn(
+                    state = lazyListState,
+                    reverseLayout = uiState.contentState.invertList,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                ) {
+                    items(
+                        items = uiState.items,
+                        key = NetworkItemViewState::uuid,
+                    ) {
+                        NetworkItemView(
+                            state = it,
+                            selected = it.uuid == uiState.contentState.selectedRequestId,
+                            columnWidths = columnWidths,
+                            onAction = onAction,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateItem(),
+                        )
+                    }
+                }
+                FloconVerticalScrollbar(
+                    adapter = scrollAdapter,
+                    modifier = Modifier.fillMaxHeight(),
+                )
             }
         }
-
-        FloconPanelNew(
-            contentState = uiState.detailState
-        ) {
-            NetworkDetailView(
-                state = it,
-                onAction = onAction,
-                modifier = Modifier.matchParentSize()
-            )
-        }
+    }
+    FloconPanel(
+        contentState = uiState.detailState,
+        onClose = { onAction(NetworkAction.ClosePanel) }
+    ) {
+        NetworkDetailView(
+            state = it,
+            onAction = onAction,
+            modifier = Modifier.matchParentSize()
+        )
     }
 
     val states = remember { mutableStateMapOf<NetworkBodyDetailUi, FloconWindowState>() }

@@ -92,12 +92,6 @@ private fun Request(
     FloconSection(
         title = "Request",
         initialValue = true,
-        actions = {
-            FloconIconButton(
-                imageVector = Icons.Outlined.Close,
-                onClick = { onAction(NetworkAction.ClosePanel) },
-            )
-        },
         modifier = modifier.fillMaxWidth()
     ) {
         Column(

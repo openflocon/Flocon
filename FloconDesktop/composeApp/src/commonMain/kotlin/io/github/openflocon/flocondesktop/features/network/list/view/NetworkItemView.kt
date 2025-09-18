@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +41,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun NetworkItemView(
     state: NetworkItemViewState,
+    selected: Boolean,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
     columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
@@ -66,6 +68,17 @@ fun NetworkItemView(
                     } else Modifier,
                 )
                 .clickable(onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) })
+                .then(
+                    if (selected) {
+                        Modifier.border(
+                            width = 1.dp,
+                            color = FloconTheme.colorPalette.accent,
+                            shape = FloconTheme.shapes.medium
+                        )
+                    } else {
+                        Modifier
+                    }
+                )
                 .padding(horizontal = 4.dp, vertical = 4.dp),
             // Inner padding for content
             verticalAlignment = Alignment.CenterVertically,
@@ -222,6 +235,7 @@ private fun ItemViewPreview() {
     MaterialTheme {
         NetworkItemView(
             modifier = Modifier.fillMaxWidth(),
+            selected = false,
             state = previewNetworkItemViewState(),
             onAction = {},
         )
