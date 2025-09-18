@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.table
 
+import io.github.openflocon.domain.table.usecase.ExportTableToCsvUseCase
 import io.github.openflocon.domain.table.usecase.GetCurrentDeviceSelectedTableUseCase
 import io.github.openflocon.domain.table.usecase.ObserveCurrentDeviceSelectedTableUseCase
 import io.github.openflocon.domain.table.usecase.ObserveCurrentDeviceTableContentUseCase
@@ -20,4 +21,5 @@ internal val tableModule = module {
     factoryOf(::ResetCurrentDeviceSelectedTableUseCase)
     factoryOf(::RemoveTableItemsBeforeUseCase)
     factoryOf(::RemoveTableItemUseCase)
+    factoryOf(::ExportTableToCsvUseCase)
 }

@@ -1,13 +1,9 @@
 package io.github.openflocon.flocondesktop.features.table.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,9 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,14 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.table.TableViewModel
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableAction
-import io.github.openflocon.flocondesktop.features.table.model.TableColumnsUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
@@ -46,7 +40,9 @@ import io.github.openflocon.flocondesktop.features.table.model.items
 import io.github.openflocon.flocondesktop.features.table.model.previewTableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.model.previewTablesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconFeature
+import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
@@ -72,7 +68,7 @@ fun TableScreen(modifier: Modifier = Modifier) {
         content = rows,
         onResetClicked = viewModel::onResetClicked,
         modifier = modifier,
-        onTableAction = viewModel::onTableAction,
+        onAction = viewModel::onAction,
     )
 }
 
@@ -82,7 +78,7 @@ fun TableScreen(
     onTableSelected: (DeviceTableUiModel) -> Unit,
     content: TableContentStateUiModel,
     onResetClicked: () -> Unit,
-    onTableAction: (TableAction) -> Unit,
+    onAction: (TableAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val columnsWidth = 150.dp
@@ -109,6 +105,15 @@ fun TableScreen(
                     onResetClicked = onResetClicked,
                     onItemsChange = { tableItems = it },
                 )
+            },
+            actions = {
+                FloconOverflow {
+                    FloconDropdownMenuItem(
+                        text = "Export CSV",
+                        leadingIcon = Icons.Outlined.ImportExport,
+                        onClick = { onAction(TableAction.ExportCsv) }
+                    )
+                }
             }
         )
         Box(
@@ -156,7 +161,7 @@ fun TableScreen(
                                 model = item,
                                 columnsWidth = columnsWidth,
                                 modifier = Modifier.fillMaxWidth(),
-                                onAction = onTableAction,
+                                onAction = onAction,
                             )
                             if (index < tableItems.lastIndex) {
                                 HorizontalDivider(
@@ -187,7 +192,7 @@ private fun TableScreenPreview() {
             onTableSelected = {},
             onResetClicked = {},
             content = previewTableContentStateUiModel(),
-            onTableAction = {},
+            onAction = {},
             modifier = Modifier.fillMaxSize(),
         )
     }

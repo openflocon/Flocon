@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.table.usecase.ExportTableToCsvUseCase
 import io.github.openflocon.domain.table.usecase.ObserveCurrentDeviceTableContentUseCase
 import io.github.openflocon.domain.table.usecase.RemoveTableItemUseCase
 import io.github.openflocon.domain.table.usecase.RemoveTableItemsBeforeUseCase
@@ -16,14 +17,11 @@ import io.github.openflocon.flocondesktop.features.table.model.TableColumnsUiMod
 import io.github.openflocon.flocondesktop.features.table.model.TableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TableViewModel(
@@ -34,6 +32,7 @@ class TableViewModel(
     private val resetCurrentDeviceSelectedTableUseCase: ResetCurrentDeviceSelectedTableUseCase,
     private val removeTableItemUseCase: RemoveTableItemUseCase,
     private val removeTableItemsBeforeUseCase: RemoveTableItemsBeforeUseCase,
+    private val exportTableToCsv: ExportTableToCsvUseCase,
 ) : ViewModel() {
     val deviceTables: StateFlow<TablesStateUiModel> = tableSelectorDelegate.deviceTables
 
@@ -85,12 +84,31 @@ class TableViewModel(
         }
     }
 
-    fun onTableAction(action: TableAction) {
+    fun onAction(action: TableAction) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
                 is TableAction.Remove -> removeTableItemUseCase(action.item.id)
                 is TableAction.RemoveLinesAbove -> removeTableItemsBeforeUseCase(action.item.id)
+                is TableAction.ExportCsv -> onExportCsv()
             }
         }
     }
+
+    private fun onExportCsv() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            exportTableToCsv().fold(
+                doOnFailure = {
+                    feedbackDisplayer.displayMessage(
+                        "Error while exporting csv"
+                    )
+                },
+                doOnSuccess = { path ->
+                    feedbackDisplayer.displayMessage(
+                        "Csv exported at $path"
+                    )
+                }
+            )
+        }
+    }
+
 }
