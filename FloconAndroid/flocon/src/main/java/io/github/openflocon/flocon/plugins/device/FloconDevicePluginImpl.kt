@@ -41,7 +41,7 @@ internal class FloconDevicePluginImpl(
                 }
             }
 
-            Protocol.ToDevice.Device.Method.RebootApp -> {
+            Protocol.ToDevice.Device.Method.RestartApp -> {
                 ProcessPhoenix.triggerRebirth(context)
             }
         }

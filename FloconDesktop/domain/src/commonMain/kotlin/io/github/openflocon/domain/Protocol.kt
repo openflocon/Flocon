@@ -116,7 +116,7 @@ object Protocol {
 
             object Method {
                 const val GetAppIcon = "getAppIcon"
-                const val RebootApp = "rebootApp"
+                const val RestartApp = "restartApp"
             }
         }
 

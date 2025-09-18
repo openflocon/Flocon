@@ -10,7 +10,7 @@ class RestartAppUseCase(
     suspend operator fun invoke() {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return
 
-        devicesRepository.rebootApp(
+        devicesRepository.restartApp(
             current
         )
     }

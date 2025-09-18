@@ -10,5 +10,5 @@ interface RemoteDeviceDataSource {
     fun getDeviceSerial(message: FloconIncomingMessageDomainModel) : String?
     suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
-    suspend fun rebootApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
+    suspend fun restartApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 }

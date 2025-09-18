@@ -244,11 +244,11 @@ class DevicesRepositoryImpl(
         // no op
     }
 
-    override suspend fun rebootApp(
+    override suspend fun restartApp(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ) {
         withContext(dispatcherProvider.data) {
-            remoteDeviceDataSource.rebootApp(
+            remoteDeviceDataSource.restartApp(
                 deviceIdAndPackageName = deviceIdAndPackageName,
             )
         }
