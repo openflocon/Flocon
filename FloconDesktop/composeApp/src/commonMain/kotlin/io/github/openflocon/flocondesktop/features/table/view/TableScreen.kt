@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.table.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -117,7 +118,7 @@ fun TableScreen(
                 )
             }
         )
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
@@ -154,6 +155,7 @@ fun TableScreen(
             FloconVerticalScrollbar(
                 adapter = scrollAdapter,
                 modifier = Modifier.fillMaxHeight()
+                    .align(Alignment.TopEnd)
             )
         }
     }
