@@ -19,7 +19,6 @@ import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainMo
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 import kotlin.uuid.ExperimentalUuidApi
 
 class ToDeviceDashboardDataSourceImpl(
@@ -113,7 +112,7 @@ class ToDeviceDashboardDataSourceImpl(
         )
     }
 
-    override fun getItem(message: FloconIncomingMessageDomainModel): DashboardDomainModel? = decode(message)?.let { toDomain(it) }
+    override fun getItem(message: FloconIncomingMessageDomainModel): DashboardDomainModel? = decode(message)?.let { it.toDomain() }
 
     private fun decode(message: FloconIncomingMessageDomainModel): DashboardConfigDataModel? = try {
         json.decodeFromString<DashboardConfigDataModel>(message.body)

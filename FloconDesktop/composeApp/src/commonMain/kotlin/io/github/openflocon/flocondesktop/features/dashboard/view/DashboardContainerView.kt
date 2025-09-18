@@ -29,6 +29,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.view.items.Dashboar
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState.ContainerConfig
+import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardLabelView
 
 @Composable
 fun DashboardContainerView(
@@ -115,6 +116,13 @@ fun DashboardContainerView(
 
                         is DashboardContainerViewState.RowItem.Text -> {
                             DashboardTextView(
+                                modifier = Modifier.fillMaxWidth(),
+                                rowItem = rowItem,
+                            )
+                        }
+
+                        is DashboardContainerViewState.RowItem.Label -> {
+                            DashboardLabelView(
                                 modifier = Modifier.fillMaxWidth(),
                                 rowItem = rowItem,
                             )

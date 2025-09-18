@@ -7,6 +7,7 @@ import com.flocon.data.remote.dashboard.models.DashboardConfigDataModel
 import com.flocon.data.remote.dashboard.models.DashboardElementDataModel
 import com.flocon.data.remote.dashboard.models.DashboardContainerDataModel
 import com.flocon.data.remote.dashboard.models.FormContainerConfigDataModel
+import com.flocon.data.remote.dashboard.models.LabelConfigDataModel
 import com.flocon.data.remote.dashboard.models.SectionContainerConfigDataModel
 import com.flocon.data.remote.dashboard.models.TextConfigDataModel
 import com.flocon.data.remote.dashboard.models.TextFieldConfigDataModel
@@ -17,57 +18,65 @@ import io.github.openflocon.domain.dashboard.models.DashboardContainerDomainMode
 import io.github.openflocon.domain.dashboard.models.FormContainerConfigDomainModel
 import io.github.openflocon.domain.dashboard.models.SectionContainerConfigDomainModel
 
-fun toDomain(model: DashboardConfigDataModel): DashboardDomainModel = DashboardDomainModel(
-    dashboardId = model.dashboardId,
-    containers = model.containers.map {
-        toDomain(it)
+fun DashboardConfigDataModel.toDomain(): DashboardDomainModel = DashboardDomainModel(
+    dashboardId = dashboardId,
+    containers = containers.map {
+        it.toDomain()
     },
 )
 
-fun toDomain(model: DashboardContainerDataModel): DashboardContainerDomainModel = DashboardContainerDomainModel(
-    name = model.name,
-    elements = model.elements.mapNotNull { toDomain(it) },
-    containerConfig = model.containerConfig.toDomain()
+fun DashboardContainerDataModel.toDomain(): DashboardContainerDomainModel = DashboardContainerDomainModel(
+    name = name,
+    elements = elements.mapNotNull { it.toDomain() },
+    containerConfig = containerConfig.toDomain()
 )
 
-fun toDomain(model: DashboardElementDataModel): DashboardElementDomainModel? {
-    model.text?.let {
-        return toDomain(it)
+fun DashboardElementDataModel.toDomain(): DashboardElementDomainModel? {
+    text?.let {
+        return it.toDomain()
     }
-    model.button?.let {
-        return toDomain(it)
+    button?.let {
+        return it.toDomain()
     }
-    model.textField?.let {
-        return toDomain(it)
+    textField?.let {
+        return it.toDomain()
     }
-    model.checkBox?.let {
-        return toDomain(it)
+    checkBox?.let {
+        return it.toDomain()
+    }
+    label?.let {
+        return it.toDomain()
     }
     return null
 }
 
-fun toDomain(model: ButtonConfigDataModel): DashboardElementDomainModel.Button = DashboardElementDomainModel.Button(
-    text = model.text,
-    id = model.id,
+fun ButtonConfigDataModel.toDomain(): DashboardElementDomainModel.Button = DashboardElementDomainModel.Button(
+    text = text,
+    id = id,
 )
 
-fun toDomain(model: TextConfigDataModel): DashboardElementDomainModel.Text = DashboardElementDomainModel.Text(
-    label = model.label,
-    value = model.value,
-    color = model.color,
+fun TextConfigDataModel.toDomain(): DashboardElementDomainModel.Text = DashboardElementDomainModel.Text(
+    label = label,
+    value = value,
+    color = color,
 )
 
-fun toDomain(model: TextFieldConfigDataModel): DashboardElementDomainModel.TextField = DashboardElementDomainModel.TextField(
-    value = model.value,
-    label = model.label,
-    placeHolder = model.placeHolder,
-    id = model.id,
+fun LabelConfigDataModel.toDomain(): DashboardElementDomainModel.Label = DashboardElementDomainModel.Label(
+    label = label,
+    color = color,
 )
 
-fun toDomain(model: CheckBoxConfigDataModel): DashboardElementDomainModel.CheckBox = DashboardElementDomainModel.CheckBox(
-    value = model.value,
-    label = model.label,
-    id = model.id,
+fun TextFieldConfigDataModel.toDomain(): DashboardElementDomainModel.TextField = DashboardElementDomainModel.TextField(
+    value = value,
+    label = label,
+    placeHolder = placeHolder,
+    id = id,
+)
+
+fun CheckBoxConfigDataModel.toDomain(): DashboardElementDomainModel.CheckBox = DashboardElementDomainModel.CheckBox(
+    value = value,
+    label = label,
+    id = id,
 )
 
 fun ContainerConfigDataModel.toDomain(): ContainerConfigDomainModel = when (this) {

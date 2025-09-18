@@ -8,6 +8,7 @@ import io.github.openflocon.flocon.plugins.dashboard.model.config.CheckBoxConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.ContainerConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.ElementConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.FormConfig
+import io.github.openflocon.flocon.plugins.dashboard.model.config.LabelConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.PlainTextConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.SectionConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.TextConfig
@@ -85,6 +86,7 @@ private fun parseElementConfig(
         )
     }
 
+    is LabelConfig -> element.toJson()
     is TextConfig -> element.toJson()
     is PlainTextConfig -> element.toJson()
     is TextFieldConfig -> {
@@ -156,6 +158,22 @@ internal fun ButtonConfig.toJson(actionId: String): JSONObject {
         put("button", JSONObject().apply {
             put("text", text)
             put("id", actionId)
+        })
+    }
+}
+
+// {
+//     "label" : {
+//         "label": "user id",
+//     }
+// }
+internal fun LabelConfig.toJson(): JSONObject {
+    return JSONObject().apply {
+        put("label", JSONObject().apply {
+            put("label", label)
+            color?.let {
+                put("color", it)
+            }
         })
     }
 }

@@ -12,6 +12,11 @@ sealed interface DashboardElementDomainModel {
         val color: Int?,
     ) : DashboardElementDomainModel
 
+    data class Label(
+        val label: String,
+        val color: Int?,
+    ) : DashboardElementDomainModel
+
     data class PlainText(
         val label: String,
         val value: String,
