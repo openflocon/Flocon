@@ -59,7 +59,8 @@ class DeepLinkViewModel(
 
     fun submit(viewState: DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            if (viewState.parts.count { it is DeeplinkPart.TextField } != values.values.filterNot { it.isBlank() }.size) {
+            val numberOfTextFields = viewState.parts.count { it is DeeplinkPart.TextField }
+            if (numberOfTextFields != values.values.filterNot { it.isBlank() }.size) {
                 feedbackDisplayer.displayMessage(
                     "All deeplink parts should be filled",
                     type = FeedbackDisplayer.MessageType.Error,
@@ -74,7 +75,11 @@ class DeepLinkViewModel(
                 }
             }
 
-            executeDeeplinkUseCase(deeplink = deeplink, deeplinkId = viewState.deeplinkId)
+            executeDeeplinkUseCase(
+                deeplink = deeplink,
+                deeplinkId = viewState.deeplinkId,
+                saveIntoHistory = viewState.deeplinkId == -1L || numberOfTextFields != 0
+            )
         }
     }
 }

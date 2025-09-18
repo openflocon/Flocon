@@ -12,7 +12,7 @@ class ExecuteDeeplinkUseCase(
     private val addToDeeplinkHistoryUseCase: AddToDeeplinkHistoryUseCase,
     private val deeplinkRepository: DeeplinkRepository,
 ) {
-    suspend operator fun invoke(deeplink: String, deeplinkId: Long) {
+    suspend operator fun invoke(deeplink: String, deeplinkId: Long, saveIntoHistory: Boolean) {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return
 
         // must been done before executing the deeplink, because the new launch overrides the list of deeplinks in the DB
@@ -26,24 +26,26 @@ class ExecuteDeeplinkUseCase(
             target = AdbCommandTargetDomainModel.Device(current.deviceId),
             command = "shell am start -W -a android.intent.action.VIEW -d \"$deeplink\" ${current.packageName}",
         ).alsoSuccess {
-            originalModel?.let { model ->
-                // from an existing deeplink
-                addToDeeplinkHistoryUseCase(
-                    item = model.copy(
-                        link = deeplink,
+            if(saveIntoHistory) {
+                originalModel?.let { model ->
+                    // from an existing deeplink
+                    addToDeeplinkHistoryUseCase(
+                        item = model.copy(
+                            link = deeplink,
+                        )
                     )
-                )
-            } ?: run {
-                // from freeform
-                addToDeeplinkHistoryUseCase(
-                    item = DeeplinkDomainModel(
-                        link = deeplink,
-                        label = null,
-                        description = null,
-                        id = 0, // will be created by the DB
-                        parameters = emptyList(),
+                } ?: run {
+                    // from freeform
+                    addToDeeplinkHistoryUseCase(
+                        item = DeeplinkDomainModel(
+                            link = deeplink,
+                            label = null,
+                            description = null,
+                            id = 0, // will be created by the DB
+                            parameters = emptyList(),
+                        )
                     )
-                )
+                }
             }
         }
     }
