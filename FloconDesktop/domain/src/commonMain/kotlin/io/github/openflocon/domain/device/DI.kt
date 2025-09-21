@@ -20,6 +20,8 @@ import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.StartRecordingVideoUseCase
 import io.github.openflocon.domain.device.usecase.StopRecordingVideoUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
+import io.github.openflocon.domain.device.usecase.fps.ObserveDeviceIsDisplayingFpsUseCase
+import io.github.openflocon.domain.device.usecase.fps.SetDisplayFpsUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -44,4 +46,6 @@ internal val deviceModule = module {
     factoryOf(::ObserveIsCurrentDeviceIAndAppIsActiveUseCase)
     factoryOf(::ObserveIsCurrentIsActiveUseCase)
     factoryOf(::RestartAppUseCase)
+    factoryOf(::ObserveDeviceIsDisplayingFpsUseCase)
+    factoryOf(::SetDisplayFpsUseCase)
 }

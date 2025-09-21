@@ -6,6 +6,7 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPlugin
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPlugin
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPlugin
+import io.github.openflocon.flocon.plugins.device.startActivityTracker
 import io.github.openflocon.flocon.plugins.tables.FloconTablePlugin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +32,8 @@ object Flocon : FloconApp() {
 
     override fun initialize(context: Context) {
         val app = context.applicationContext
+        startActivityTracker(context)
+
         val newClient = FloconClientImpl(app)
         _client = newClient
         isInitialized.value = true

@@ -7,11 +7,25 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.device.model.fromdevice.RegisterDeviceDataModel
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+
+private val FLOCON_DISPLAY_FPS_CONFIG = "flocon_display_fps_config.json"
 
 internal class FloconDevicePluginImpl(
     private var sender: FloconMessageSender,
     private val context: Context,
 ) : FloconDevicePlugin {
+
+    private val fpsOverlay : FpsOverlay by lazy {
+        FpsOverlay(context)
+    }
+
+    init {
+        val displayFps = loadDisplayFps()
+        setupDisplayFps(displayFps)
+    }
 
     override fun registerWithSerial(serial: String) {
         try {
@@ -22,6 +36,14 @@ internal class FloconDevicePluginImpl(
             )
         } catch (t: Throwable) {
             FloconLogger.logError("Device parsing error", t)
+        }
+    }
+
+    private fun setupDisplayFps(display: Boolean) {
+        if(display) {
+            fpsOverlay.start()
+        } else {
+            fpsOverlay.stop()
         }
     }
 
@@ -44,10 +66,50 @@ internal class FloconDevicePluginImpl(
             Protocol.ToDevice.Device.Method.RestartApp -> {
                 ProcessPhoenix.triggerRebirth(context)
             }
+
+            Protocol.ToDevice.Device.Method.DisplayFps -> {
+                val display = messageFromServer.body.toBoolean()
+                println("FLOCON_FLOCON : display fps : $display")
+                saveDisplayFps(display)
+                setupDisplayFps(display)
+            }
         }
     }
 
     override fun onConnectedToServer(sender: FloconMessageSender) {
         // no op
     }
+
+    private fun loadDisplayFps(): Boolean {
+        return try {
+            val file = File(context.filesDir, FLOCON_DISPLAY_FPS_CONFIG)
+            if (!file.exists()) {
+                return false
+            }
+
+            val text = FileInputStream(file).use {
+                it.readBytes().toString(Charsets.UTF_8)
+            }
+            return text == "true"
+        } catch (t: Throwable) {
+            FloconLogger.logError("issue in loadDisplayFps", t)
+            false
+        }
+    }
+
+    private fun saveDisplayFps(displayFps: Boolean) {
+        try {
+            val file = File(context.filesDir, FLOCON_DISPLAY_FPS_CONFIG)
+            if (!displayFps) {
+                file.delete()
+            } else {
+                FileOutputStream(file).use {
+                    it.write("true".toByteArray())
+                }
+            }
+        } catch (t: Throwable) {
+            FloconLogger.logError("issue in saveDisplayFps", t)
+        }
+    }
+
 }

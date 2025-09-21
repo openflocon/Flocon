@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.myapplication
 
+import android.app.Application
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity

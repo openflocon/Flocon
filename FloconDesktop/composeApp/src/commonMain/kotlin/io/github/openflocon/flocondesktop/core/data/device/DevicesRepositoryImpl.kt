@@ -253,4 +253,37 @@ class DevicesRepositoryImpl(
             )
         }
     }
+
+    override suspend fun sendDisplayFps(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        display: Boolean,
+    ) {
+        withContext(dispatcherProvider.data) {
+            remoteDeviceDataSource.sendDisplayFps(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                display = display,
+            )
+        }
+    }
+
+    override suspend fun getIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) : Boolean {
+        return  withContext(dispatcherProvider.data) {
+            localCurrentDeviceDataSource.getIsDeviceDisplayingFps(deviceIdAndPackageName)
+        }
+    }
+
+    override suspend fun saveIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, value: Boolean) {
+        return  withContext(dispatcherProvider.data) {
+            localCurrentDeviceDataSource.saveIsDeviceDisplayingFps(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                value = value,
+            )
+        }
+    }
+
+    override suspend fun observeIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) : Flow<Boolean> {
+        return  withContext(dispatcherProvider.data) {
+            localCurrentDeviceDataSource.observeIsDeviceDisplayingFps(deviceIdAndPackageName)
+        }
+    }
 }
