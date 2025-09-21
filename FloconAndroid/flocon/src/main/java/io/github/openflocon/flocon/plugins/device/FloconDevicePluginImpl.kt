@@ -7,6 +7,10 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.device.model.fromdevice.RegisterDeviceDataModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -18,9 +22,8 @@ internal class FloconDevicePluginImpl(
     private val context: Context,
 ) : FloconDevicePlugin {
 
-    private val fpsOverlay : FpsOverlay by lazy {
-        FpsOverlay(context)
-    }
+    private val fpsScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private val fpsOverlay = FpsDisplayer(context)
 
     init {
         val displayFps = loadDisplayFps()
@@ -40,10 +43,12 @@ internal class FloconDevicePluginImpl(
     }
 
     private fun setupDisplayFps(display: Boolean) {
-        if(display) {
-            fpsOverlay.start()
-        } else {
-            fpsOverlay.stop()
+        fpsScope.launch {
+            if (display) {
+                fpsOverlay.start()
+            } else {
+                fpsOverlay.stop()
+            }
         }
     }
 

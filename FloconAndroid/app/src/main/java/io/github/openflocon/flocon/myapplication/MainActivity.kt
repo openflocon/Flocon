@@ -57,8 +57,6 @@ class MainActivity : ComponentActivity() {
         initializeSharedPreferences(applicationContext)
         initializeDatabases(context = applicationContext)
 
-        FloconLogger.enabled = true
-        Flocon.initialize(this)
         initializeDeeplinks()
 
         val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)

@@ -32,7 +32,6 @@ object Flocon : FloconApp() {
 
     override fun initialize(context: Context) {
         val app = context.applicationContext
-        startActivityTracker(context)
 
         val newClient = FloconClientImpl(app)
         _client = newClient
