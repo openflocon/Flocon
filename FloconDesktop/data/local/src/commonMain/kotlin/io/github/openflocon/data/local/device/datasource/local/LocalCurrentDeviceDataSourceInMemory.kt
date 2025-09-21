@@ -21,7 +21,6 @@ class LocalCurrentDeviceDataSourceInMemory : LocalCurrentDeviceDataSource {
     private val connectedDevicesForSession = MutableStateFlow(emptySet<DeviceId>())
     private val connectedDevicesAndAppsForSession = MutableStateFlow(emptySet<DeviceIdAndPackageNameDomainModel>())
     private val currentDeviceApp = MutableStateFlow(emptyMap<DeviceId, AppPackageName>())
-    private val isDeviceDisplayingFps = MutableStateFlow(emptyMap<DeviceIdAndPackageNameDomainModel, Boolean>())
 
     override suspend fun getCurrentDeviceId(): DeviceId? {
         return _currentDeviceId.value
@@ -63,20 +62,6 @@ class LocalCurrentDeviceDataSourceInMemory : LocalCurrentDeviceDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ) {
         connectedDevicesAndAppsForSession.update { it + deviceIdAndPackageName }
-    }
-
-    override suspend fun getIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Boolean {
-        return isDeviceDisplayingFps.value[deviceIdAndPackageName] ?: false
-    }
-
-    override fun observeIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> {
-        return isDeviceDisplayingFps.map { it[deviceIdAndPackageName] ?: false }
-    }
-
-    override suspend fun saveIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, value: Boolean) {
-        isDeviceDisplayingFps.update {
-            it + (deviceIdAndPackageName to value)
-        }
     }
 
     override suspend fun deleteApp(deviceId: DeviceId, packageName: AppPackageName) {

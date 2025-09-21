@@ -16,6 +16,27 @@ internal fun TopBarButton(
     isEnabled: Boolean,
     onClicked: () -> Unit,
 ) {
+    TopBarButton(
+        active = active,
+        contentDescription = contentDescription,
+        isEnabled = isEnabled,
+        onClicked = onClicked,
+    ) {
+        FloconIcon(
+            imageVector = imageVector,
+            modifier = Modifier.size(18.dp)
+        )
+    }
+}
+
+@Composable
+internal fun TopBarButton(
+    active: Boolean,
+    contentDescription: String,
+    isEnabled: Boolean,
+    onClicked: () -> Unit,
+    content: @Composable () -> Unit,
+) {
     FloconIconToggleButton(
         value = active,
         onValueChange = { onClicked() },
@@ -23,9 +44,6 @@ internal fun TopBarButton(
         enabled = isEnabled,
         tooltip = contentDescription
     ) {
-        FloconIcon(
-            imageVector = imageVector,
-            modifier = Modifier.size(18.dp)
-        )
+        content()
     }
 }

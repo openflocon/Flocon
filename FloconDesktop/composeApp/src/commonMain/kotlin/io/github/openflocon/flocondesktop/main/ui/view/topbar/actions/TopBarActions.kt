@@ -9,12 +9,15 @@ import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.Videocam
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.RecordVideoStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 internal fun TopBarActions(
@@ -41,13 +44,14 @@ internal fun TopBarActions(
         )
         TopBarButton(
             active = displayingFps,
-            imageVector = Icons.Outlined.AutofpsSelect,
             contentDescription = "display fps",
             onClicked = {
                 toggleDisplayingFps(!displayingFps)
             },
             isEnabled = devicesState.deviceSelected?.isActive == true,
-        )
+        ) {
+            Text("FPS", style = FloconTheme.typography.bodySmall.copy(fontSize = 8.sp))
+        }
         TopBarButton(
             active = recordState == RecordVideoStateUiModel.Recording,
             imageVector = when (recordState) {

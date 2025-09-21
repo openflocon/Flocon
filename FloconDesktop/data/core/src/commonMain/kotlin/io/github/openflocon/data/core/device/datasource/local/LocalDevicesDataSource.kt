@@ -5,6 +5,7 @@ import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 
@@ -26,6 +27,12 @@ interface LocalDevicesDataSource {
     // region apps icons
     suspend fun saveAppIcon(deviceId: DeviceId, appPackageName: AppPackageName, iconEncoded: String)
     suspend fun hasAppIcon(deviceId: DeviceId, appPackageName: AppPackageName) : Boolean
+    // endregion
+
+    // fps
+    suspend fun getIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Boolean
+    suspend fun saveIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, value: Boolean)
+    fun observeIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean>
     // endregion
 
     suspend fun delete(deviceId: DeviceId)

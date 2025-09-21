@@ -26,12 +26,6 @@ interface LocalCurrentDeviceDataSource {
     )
     // endregion
 
-    // fps
-    suspend fun getIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Boolean
-    suspend fun saveIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, value: Boolean)
-    fun observeIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean>
-    // endregion
-
     suspend fun delete(deviceId: DeviceId)
     suspend fun deleteApp(deviceId: DeviceId, packageName: AppPackageName)
     suspend fun clear()

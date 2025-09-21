@@ -241,7 +241,13 @@ class DevicesRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         isNewDevice: Boolean,
     ) {
-        // no op
+        // update displays fps
+        sendDisplayFps(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            display = getIsDeviceDisplayingFps(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+            ),
+        )
     }
 
     override suspend fun restartApp(
@@ -268,13 +274,13 @@ class DevicesRepositoryImpl(
 
     override suspend fun getIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) : Boolean {
         return  withContext(dispatcherProvider.data) {
-            localCurrentDeviceDataSource.getIsDeviceDisplayingFps(deviceIdAndPackageName)
+            localDevicesDataSource.getIsDeviceDisplayingFps(deviceIdAndPackageName)
         }
     }
 
     override suspend fun saveIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, value: Boolean) {
         return  withContext(dispatcherProvider.data) {
-            localCurrentDeviceDataSource.saveIsDeviceDisplayingFps(
+            localDevicesDataSource.saveIsDeviceDisplayingFps(
                 deviceIdAndPackageName = deviceIdAndPackageName,
                 value = value,
             )
@@ -283,7 +289,7 @@ class DevicesRepositoryImpl(
 
     override suspend fun observeIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) : Flow<Boolean> {
         return  withContext(dispatcherProvider.data) {
-            localCurrentDeviceDataSource.observeIsDeviceDisplayingFps(deviceIdAndPackageName)
+            localDevicesDataSource.observeIsDeviceDisplayingFps(deviceIdAndPackageName)
         }
     }
 }
