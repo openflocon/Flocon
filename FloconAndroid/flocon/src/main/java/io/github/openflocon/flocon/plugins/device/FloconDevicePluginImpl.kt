@@ -74,7 +74,6 @@ internal class FloconDevicePluginImpl(
 
             Protocol.ToDevice.Device.Method.DisplayFps -> {
                 val display = messageFromServer.body.toBoolean()
-                println("FLOCON_FLOCON : display fps : $display")
                 saveDisplayFps(display)
                 setupDisplayFps(display)
             }
