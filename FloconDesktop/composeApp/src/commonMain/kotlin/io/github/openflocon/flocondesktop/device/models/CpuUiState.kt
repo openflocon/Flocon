@@ -9,7 +9,13 @@ data class CpuUiState(
 
 @Immutable
 data class CpuItem(
-    val name: String
+    val cpuUsage: Double,
+    val pId: Int,
+    val packageName: String,
+    val userPercentage: Double,
+    val kernelPercentage: Double,
+    val minorFaults: Int?,
+    val majorFaults: Int?
 )
 
 fun previewCpuUiState() = CpuUiState(

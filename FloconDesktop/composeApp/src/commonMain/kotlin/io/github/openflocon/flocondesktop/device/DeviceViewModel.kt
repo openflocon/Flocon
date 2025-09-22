@@ -7,6 +7,7 @@ import io.github.openflocon.domain.adb.usecase.SendCommandUseCase
 import io.github.openflocon.domain.common.getOrNull
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.device.models.ContentUiState
+import io.github.openflocon.flocondesktop.device.models.CpuItem
 import io.github.openflocon.flocondesktop.device.models.CpuUiState
 import io.github.openflocon.flocondesktop.device.models.DeviceUiState
 import io.github.openflocon.flocondesktop.device.models.InfoUiState
@@ -105,8 +106,10 @@ internal class DeviceViewModel(
     }
 
     private fun onRefresh() {
+        refreshCpu()
         viewModelScope.launch {
-//            _uiState.update { state ->
+
+        //            _uiState.update { state ->
 //                state.copy(
 //                    cpu = main(sendCommand("shell", "dumpsys", "cpuinfo")),
 //                    battery = sendCommand("shell", "dumpsys", "battery"),
@@ -173,112 +176,41 @@ internal class DeviceViewModel(
             .removeSuffix("\n")
     }
 
-    data class ProcessCpuInfo(
-        val pid: Int,
-        val cpuPercent: Double,
-        val name: String
-    )
+    private fun refreshCpu() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val output = sendCommand("shell", "dumpsys", "cpuinfo")
+            val regex = CPU_REGEX.toRegex()
+            val items = output.lineSequence()
+                .mapNotNull { regex.find(it) }
+                .mapNotNull {
+                    try {
+                        val packageName = it.groupValues[2].split("/")
 
-    data class GlobalCpuLoad(
-        val load1m: Double,
-        val load5m: Double,
-        val load15m: Double
-    )
-
-    fun parseCpuInfoOutput(output: String): Pair<GlobalCpuLoad?, List<ProcessCpuInfo>> {
-        val processes = mutableListOf<ProcessCpuInfo>()
-        var globalLoad: GlobalCpuLoad? = null
-
-        // Regex pour capturer les lignes de processus.
-        // Similaire à la version Python, peut nécessiter des ajustements.
-        // Groupes : 1: CPU%, 2: PID, 3: Name
-        val processLineRegex = Regex(
-            """^\s*([\d.]+)[k%]?\s+""" + // CPU % (ex: "10.0", "0.0k", "5%")
-                """(?:\S+\s+)*?""" +       // Skip other columns non-greedily
-                """(\d+)\s+""" +           // PID
-                """(?:[a-zA-Z0-9_/.-]+\s+)*?""" + // More potential intermediate columns
-                """([a-zA-Z0-9_.-]+(?:[:][a-zA-Z0-9_.-]+)?(?:\s*\[.*?])?)$""" // Process name/package
-        )
-
-        val loadAverageRegex = Regex("""Load: (\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)""")
-
-        output.lines().forEach { line ->
-            // Recherche de la ligne de charge globale
-            loadAverageRegex.find(line)?.let { matchResult ->
-                try {
-                    globalLoad = GlobalCpuLoad(
-                        load1m = matchResult.groupValues[1].toDouble(),
-                        load5m = matchResult.groupValues[2].toDouble(),
-                        load15m = matchResult.groupValues[3].toDouble()
-                    )
-                    return@forEach // Similaire à 'continue' dans une boucle classique
-                } catch (e: NumberFormatException) {
-                    // Gérer le cas où la conversion en Double échoue
-                }
-            }
-
-
-            // Recherche des lignes de processus
-            processLineRegex.find(line)?.let { matchResult ->
-                try {
-                    val cpuPercentStr = matchResult.groupValues[1].replace("k", "")
-                    val cpuPercent = cpuPercentStr.toDouble()
-                    val pid = matchResult.groupValues[2].toInt()
-                    val name = matchResult.groupValues[3].trim()
-
-                    // Ignorer les lignes qui ne sont pas de vrais processus
-                    if (name.equals("Name", ignoreCase = true) || name.equals("PID", ignoreCase = true)) {
-                        return@forEach
+                        CpuItem(
+                            cpuUsage = it.groupValues[1].toDoubleOrNull() ?: return@mapNotNull null,
+                            packageName = packageName[1],
+                            pId = packageName[0].toIntOrNull() ?: return@mapNotNull null,
+                            userPercentage = it.groupValues[3].toDoubleOrNull() ?: return@mapNotNull null,
+                            kernelPercentage = it.groupValues[4].toDoubleOrNull() ?: return@mapNotNull null,
+                            minorFaults = it.groupValues[5].toIntOrNull(),
+                            majorFaults = it.groupValues[6].toIntOrNull()
+                        )
+                    } catch (e: NumberFormatException) {
+                        // Handle parsing errors gracefully (e.g., log the error)
+                        null
                     }
-
-                    processes.add(ProcessCpuInfo(pid, cpuPercent, name))
-                } catch (e: NumberFormatException) {
-                    // println("Skipping line due to NumberFormatException: $line -> ${e.message}")
-                } catch (e: IndexOutOfBoundsException) {
-                    // println("Skipping line due to IndexOutOfBoundsException (regex group not found): $line")
                 }
-            }
+                .sortedBy(CpuItem::cpuUsage)
+                .distinctBy(CpuItem::packageName)
+                .toList()
+
+            cpuState.update { it.copy(list = items) }
         }
-
-        return globalLoad to processes.sortedByDescending { it.cpuPercent }
-    }
-
-    fun main(cpuOutput: String?): String {
-        println("Récupération des informations CPU...\n")
-
-        if (cpuOutput != null) {
-            val (globalLoad, processList) = parseCpuInfoOutput(cpuOutput)
-
-            return buildString {
-                globalLoad?.let {
-                    appendLine("Charge CPU globale (Load Average):")
-                    appendLine("  1 min: %.2f".format(it.load1m))
-                    appendLine("  5 min: %.2f".format(it.load5m))
-                    appendLine(" 15 min: %.2f".format(it.load15m))
-                    appendLine("-".repeat(30))
-                }
-
-                if (processList.isNotEmpty()) {
-                    appendLine("%-8s %-7s %s".format("CPU%", "PID", "Nom du Processus"))
-                    appendLine("%-8s %-7s %s".format("----", "---", "----------------"))
-                    processList.forEach { proc ->
-                        appendLine("%-8.1f %-7d %s".format(proc.cpuPercent, proc.pid, proc.name))
-                    }
-                } else {
-                    appendLine("Aucun processus n'a pu être parsé.")
-                    appendLine("\nSortie brute pour débogage (premiers 1000 caractères):")
-                    appendLine(cpuOutput.take(1000))
-                }
-            }
-        } else {
-            println("Impossible de récupérer la sortie de dumpsys cpuinfo.")
-        }
-
-        return ""
     }
 
     companion object {
         private const val PERMISSION_PREFIX = "android.permission."
+        private const val CPU_REGEX = """(\d+(?:\.\d+)?)%\s+([^:]+):\s+(\d+(?:\.\d+)?)%\s+user\s+\+\s+(\d+(?:\.\d+)?)%\s+kernel\s+/ faults:\s+(\d+)\s+minor\s+(\d+)\s+major"""
     }
 
 }
