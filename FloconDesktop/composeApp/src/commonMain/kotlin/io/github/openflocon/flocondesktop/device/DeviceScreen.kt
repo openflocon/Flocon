@@ -20,11 +20,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
+import io.github.openflocon.flocondesktop.device.models.DeviceUiState
+import io.github.openflocon.flocondesktop.device.models.previewDeviceUiState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
@@ -63,12 +66,12 @@ private fun Content(
 ) {
     val pagerState = rememberPagerState { 2 }
 
-    LaunchedEffect(uiState.selectedIndex) {
-        pagerState.animateScrollToPage(uiState.selectedIndex)
+    LaunchedEffect(uiState.contentState.selectedIndex) {
+        pagerState.animateScrollToPage(uiState.contentState.selectedIndex)
     }
 
     FloconWindow(
-        title = "Device",
+        title = "Device - ${uiState.infoState.model}",
         onCloseRequest = onCloseRequest,
         state = createFloconWindowState()
     ) {
@@ -86,18 +89,18 @@ private fun Content(
                             onAction = onAction
                         )
                         FloconScrollableTabRow(
-                            selectedTabIndex = uiState.selectedIndex,
+                            selectedTabIndex = uiState.contentState.selectedIndex,
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             FloconTab(
                                 text = "Info",
-                                selected = true,
+                                selected = uiState.contentState.selectedIndex == 0,
                                 onClick = { onAction(DeviceAction.SelectTab(0)) },
                                 selectedContentColor = FloconTheme.colorPalette.onSurface
                             )
                             FloconTab(
                                 text = "Permission",
-                                selected = true,
+                                selected = uiState.contentState.selectedIndex == 1,
                                 onClick = { onAction(DeviceAction.SelectTab(1)) },
                                 selectedContentColor = FloconTheme.colorPalette.onSurface
                             )
@@ -112,8 +115,8 @@ private fun Content(
                 HorizontalPager(
                     state = pagerState,
                     userScrollEnabled = false,
-                    contentPadding = PaddingValues(16.dp),
-                    pageSpacing = 16.dp,
+                    contentPadding = PaddingValues(8.dp),
+                    pageSpacing = 8.dp,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(it)
@@ -142,7 +145,7 @@ private fun Header(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "${uiState.model} (${uiState.serialNumber})",
+            text = "${uiState.infoState.model} (${uiState.infoState.serialNumber})",
             style = FloconTheme.typography.headlineSmall,
             modifier = Modifier
                 .weight(1f)
@@ -160,15 +163,16 @@ private fun InfoPage(
     uiState: DeviceUiState
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxSize()
     ) {
-        FloconTextValue("Brand", uiState.brand)
-        FloconTextValue("CPU", uiState.cpu)
-        FloconTextValue("Memory", uiState.mem)
-        FloconTextValue("Battery", uiState.battery)
-        FloconTextValue("Serial number", uiState.serialNumber)
-        FloconTextValue("Version - Release", uiState.versionRelease)
-        FloconTextValue("Version - Sdk", uiState.versionSdk)
+        FloconTextValue("Brand", uiState.infoState.brand)
+//        FloconTextValue("CPU", uiState.cpu)
+//        FloconTextValue("Memory", uiState.mem)
+        FloconTextValue("Battery", uiState.infoState.battery)
+        FloconTextValue("Serial number", uiState.infoState.serialNumber)
+        FloconTextValue("Version - Release", uiState.infoState.versionRelease)
+        FloconTextValue("Version - Sdk", uiState.infoState.versionSdk)
     }
 }
 
@@ -181,13 +185,15 @@ private fun PermissionPage(
         modifier = Modifier.fillMaxSize()
     ) {
         items(
-            items = uiState.permissions,
+            items = uiState.permissionState.list,
             key = { it.name }
         ) {
             Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clip(FloconTheme.shapes.medium)
                     .clickable(onClick = {
 //                        onAction(
 //                            DeviceAction.ChangePermission(
@@ -196,18 +202,17 @@ private fun PermissionPage(
 //                            )
 //                        )
                     })
+                    .padding(4.dp)
             ) {
                 Text(
                     text = it.name,
+                    style = FloconTheme.typography.labelSmall,
                     modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = it.status
                 )
                 FloconCheckbox(
                     checked = it.granted,
-                    uncheckedColor = FloconTheme.colorPalette.secondary,
-                    onCheckedChange = {}
+                    onCheckedChange = null,
+                    uncheckedColor = FloconTheme.colorPalette.primary,
                 )
             }
         }
