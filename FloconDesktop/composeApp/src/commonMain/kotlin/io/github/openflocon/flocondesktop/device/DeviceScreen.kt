@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
+import io.github.openflocon.flocondesktop.device.models.CpuItem
 import io.github.openflocon.flocondesktop.device.models.DeviceUiState
 import io.github.openflocon.flocondesktop.device.models.previewDeviceUiState
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -64,7 +65,7 @@ private fun Content(
     onCloseRequest: () -> Unit,
     onAction: (DeviceAction) -> Unit
 ) {
-    val pagerState = rememberPagerState { 2 }
+    val pagerState = rememberPagerState { 3 }
 
     LaunchedEffect(uiState.contentState.selectedIndex) {
         pagerState.animateScrollToPage(uiState.contentState.selectedIndex)
@@ -99,9 +100,15 @@ private fun Content(
                                 selectedContentColor = FloconTheme.colorPalette.onSurface
                             )
                             FloconTab(
-                                text = "Permission",
+                                text = "Cpu",
                                 selected = uiState.contentState.selectedIndex == 1,
                                 onClick = { onAction(DeviceAction.SelectTab(1)) },
+                                selectedContentColor = FloconTheme.colorPalette.onSurface
+                            )
+                            FloconTab(
+                                text = "Permission",
+                                selected = uiState.contentState.selectedIndex == 2,
+                                onClick = { onAction(DeviceAction.SelectTab(2)) },
                                 selectedContentColor = FloconTheme.colorPalette.onSurface
                             )
                         }
@@ -123,7 +130,12 @@ private fun Content(
                 ) { index ->
                     when (index) {
                         0 -> InfoPage(uiState)
-                        1 -> PermissionPage(
+                        1 -> CpuPage(
+                            uiState = uiState,
+                            onAction = onAction
+                        )
+
+                        2 -> PermissionPage(
                             uiState = uiState,
                             onAction = onAction
                         )
@@ -173,6 +185,71 @@ private fun InfoPage(
         FloconTextValue("Serial number", uiState.infoState.serialNumber)
         FloconTextValue("Version - Release", uiState.infoState.versionRelease)
         FloconTextValue("Version - Sdk", uiState.infoState.versionSdk)
+    }
+}
+
+@Composable
+private fun CpuPage(
+    uiState: DeviceUiState,
+    onAction: (DeviceAction) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(
+            items = uiState.cpuState.list,
+            key = CpuItem::packageName
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(FloconTheme.shapes.medium)
+                    .padding(4.dp)
+            ) {
+                Text(
+                    text = it.cpuUsage.toString(),
+                    style = FloconTheme.typography.labelSmall,
+                    modifier = Modifier.weight(.1f)
+                )
+                Text(
+                    text = it.userPercentage.toString(),
+                    style = FloconTheme.typography.labelSmall,
+                    modifier = Modifier.weight(.1f)
+                )
+                Text(
+                    text = it.kernelPercentage.toString(),
+                    style = FloconTheme.typography.labelSmall,
+                    modifier = Modifier.weight(.1f)
+                )
+                Text(
+                    text = it.pId.toString(),
+                    style = FloconTheme.typography.labelSmall,
+                    modifier = Modifier.weight(.1f)
+                )
+                Text(
+                    text = it.packageName,
+                    style = FloconTheme.typography.labelSmall,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = it.userPercentage.toString(),
+                    style = FloconTheme.typography.labelSmall,
+                    modifier = Modifier.weight(.1f)
+                )
+                Text(
+                    text = it.majorFaults.toString(),
+                    style = FloconTheme.typography.labelSmall,
+                    modifier = Modifier.weight(.1f)
+                )
+                Text(
+                    text = it.minorFaults.toString(),
+                    style = FloconTheme.typography.labelSmall,
+                    modifier = Modifier.weight(.1f)
+                )
+            }
+        }
     }
 }
 
