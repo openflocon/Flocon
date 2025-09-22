@@ -10,14 +10,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.theme.contentColorFor
 
 @Composable
 fun FloconTextValue(
     label: String,
     value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    valueContainerColor: Color = FloconTheme.colorPalette.primary
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -32,12 +35,13 @@ fun FloconTextValue(
         SelectionContainer(
             modifier = Modifier.weight(1f)
                 .clip(FloconTheme.shapes.small)
-                .background(FloconTheme.colorPalette.primary)
+                .background(valueContainerColor)
                 .padding(4.dp)
         ) {
             Text(
                 text = value,
-                style = FloconTheme.typography.labelSmall
+                style = FloconTheme.typography.labelSmall,
+                color = FloconTheme.colorPalette.contentColorFor(valueContainerColor)
             )
         }
     }
