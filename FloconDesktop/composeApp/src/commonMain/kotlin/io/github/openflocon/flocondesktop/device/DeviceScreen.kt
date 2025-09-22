@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.device
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,10 +7,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Text
@@ -20,17 +18,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
-import io.github.openflocon.flocondesktop.device.models.CpuItem
 import io.github.openflocon.flocondesktop.device.models.DeviceUiState
 import io.github.openflocon.flocondesktop.device.models.previewDeviceUiState
+import io.github.openflocon.flocondesktop.device.pages.CpuPage
+import io.github.openflocon.flocondesktop.device.pages.InfoPage
+import io.github.openflocon.flocondesktop.device.pages.PermissionPage
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconScaffold
@@ -129,14 +127,14 @@ private fun Content(
                         .padding(it)
                 ) { index ->
                     when (index) {
-                        0 -> InfoPage(uiState)
+                        0 -> InfoPage(uiState.infoState)
                         1 -> CpuPage(
-                            uiState = uiState,
+                            state = uiState.cpuState,
                             onAction = onAction
                         )
 
                         2 -> PermissionPage(
-                            uiState = uiState,
+                            state = uiState.permissionState,
                             onAction = onAction
                         )
 
@@ -156,143 +154,27 @@ private fun Header(
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = "${uiState.infoState.model} (${uiState.infoState.serialNumber})",
-            style = FloconTheme.typography.headlineSmall,
+        Column(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxWidth()
                 .padding(16.dp)
-        )
+                .weight(1f)
+        ) {
+            Text(
+                text = uiState.infoState.model,
+                style = FloconTheme.typography.headlineSmall
+            )
+            SelectionContainer {
+                Text(
+                    text = uiState.infoState.serialNumber,
+                    style = FloconTheme.typography.labelSmall
+                )
+            }
+        }
         FloconIconButton(
             imageVector = Icons.Outlined.Refresh,
             onClick = { onAction(DeviceAction.Refresh) }
         )
-    }
-}
-
-@Composable
-private fun InfoPage(
-    uiState: DeviceUiState
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.fillMaxSize()
-    ) {
-        FloconTextValue("Brand", uiState.infoState.brand)
-//        FloconTextValue("CPU", uiState.cpu)
-//        FloconTextValue("Memory", uiState.mem)
-        FloconTextValue("Battery", uiState.infoState.battery)
-        FloconTextValue("Serial number", uiState.infoState.serialNumber)
-        FloconTextValue("Version - Release", uiState.infoState.versionRelease)
-        FloconTextValue("Version - Sdk", uiState.infoState.versionSdk)
-    }
-}
-
-@Composable
-private fun CpuPage(
-    uiState: DeviceUiState,
-    onAction: (DeviceAction) -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(
-            items = uiState.cpuState.list,
-            key = CpuItem::packageName
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(FloconTheme.shapes.medium)
-                    .padding(4.dp)
-            ) {
-                Text(
-                    text = it.cpuUsage.toString(),
-                    style = FloconTheme.typography.labelSmall,
-                    modifier = Modifier.weight(.1f)
-                )
-                Text(
-                    text = it.userPercentage.toString(),
-                    style = FloconTheme.typography.labelSmall,
-                    modifier = Modifier.weight(.1f)
-                )
-                Text(
-                    text = it.kernelPercentage.toString(),
-                    style = FloconTheme.typography.labelSmall,
-                    modifier = Modifier.weight(.1f)
-                )
-                Text(
-                    text = it.pId.toString(),
-                    style = FloconTheme.typography.labelSmall,
-                    modifier = Modifier.weight(.1f)
-                )
-                Text(
-                    text = it.packageName,
-                    style = FloconTheme.typography.labelSmall,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = it.userPercentage.toString(),
-                    style = FloconTheme.typography.labelSmall,
-                    modifier = Modifier.weight(.1f)
-                )
-                Text(
-                    text = it.majorFaults.toString(),
-                    style = FloconTheme.typography.labelSmall,
-                    modifier = Modifier.weight(.1f)
-                )
-                Text(
-                    text = it.minorFaults.toString(),
-                    style = FloconTheme.typography.labelSmall,
-                    modifier = Modifier.weight(.1f)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun PermissionPage(
-    uiState: DeviceUiState,
-    onAction: (DeviceAction) -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(
-            items = uiState.permissionState.list,
-            key = { it.name }
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(FloconTheme.shapes.medium)
-                    .clickable(onClick = {
-//                        onAction(
-//                            DeviceAction.ChangePermission(
-//                                permissions = it.permissions,
-//                                granted = it.granted
-//                            )
-//                        )
-                    })
-                    .padding(4.dp)
-            ) {
-                Text(
-                    text = it.name,
-                    style = FloconTheme.typography.labelSmall,
-                    modifier = Modifier.weight(1f)
-                )
-                FloconCheckbox(
-                    checked = it.granted,
-                    onCheckedChange = null,
-                    uncheckedColor = FloconTheme.colorPalette.primary,
-                )
-            }
-        }
     }
 }
 

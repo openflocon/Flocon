@@ -78,8 +78,6 @@ internal class DeviceViewModel(
             deviceSerial = deviceSerialUseCase(deviceId)
 
             onRefresh()
-            deviceInfo()
-            fetchPermission()
         }
     }
 
@@ -98,6 +96,7 @@ internal class DeviceViewModel(
             } else {
                 grantPermission(action.permission)
             }
+            fetchPermission()
         }
     }
 
@@ -107,15 +106,11 @@ internal class DeviceViewModel(
 
     private fun onRefresh() {
         refreshCpu()
+        deviceInfo()
+        fetchPermission()
         viewModelScope.launch {
-
-        //            _uiState.update { state ->
-//                state.copy(
-//                    cpu = main(sendCommand("shell", "dumpsys", "cpuinfo")),
-//                    battery = sendCommand("shell", "dumpsys", "battery"),
+        //                    battery = sendCommand("shell", "dumpsys", "battery"),
 //                    mem = sendCommand("shell", "dumpsys", "meminfo")
-//                )
-//            }
         }
     }
 
@@ -138,7 +133,7 @@ internal class DeviceViewModel(
             val packageName = currentDeviceAppsUseCase()?.packageName ?: return@launch
             val command = sendCommand("shell", "dumpsys", "package", packageName)
             val permissions = command.lines()
-                .dropWhile { !it.contains("install permissions:") }
+                .dropWhile { !it.contains("runtime permissions:") }
                 .drop(1)
                 .takeWhile { it.contains("granted=") }
                 .map { it.trim() }
@@ -200,7 +195,7 @@ internal class DeviceViewModel(
                         null
                     }
                 }
-                .sortedBy(CpuItem::cpuUsage)
+                .sortedByDescending(CpuItem::cpuUsage)
                 .distinctBy(CpuItem::packageName)
                 .toList()
 
