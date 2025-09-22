@@ -13,7 +13,16 @@ data class DeviceUiState(
     val serialNumber: String,
     val battery: String,
     val cpu: String,
-    val mem: String
+    val mem: String,
+
+    val permissions: List<PermissionUiState>
+)
+
+@Immutable
+data class PermissionUiState(
+    val name: String,
+    val status: String,
+    val granted: Boolean
 )
 
 internal fun previewDeviceUiState() = DeviceUiState(
@@ -26,5 +35,6 @@ internal fun previewDeviceUiState() = DeviceUiState(
     serialNumber = "",
     battery = "",
     cpu = "",
-    mem = ""
+    mem = "",
+    permissions = emptyList()
 )

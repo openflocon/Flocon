@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.adb.usecase.GetDeviceSerialUseCase
 import io.github.openflocon.domain.adb.usecase.SendCommandUseCase
 import io.github.openflocon.domain.common.getOrNull
+import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -13,7 +15,8 @@ import kotlinx.coroutines.launch
 internal class DeviceViewModel(
     val deviceId: String,
     val sendCommandUseCase: SendCommandUseCase,
-    val deviceSerialUseCase: GetDeviceSerialUseCase
+    val deviceSerialUseCase: GetDeviceSerialUseCase,
+    val currentDeviceAppsUseCase: GetCurrentDeviceIdAndPackageNameUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -26,7 +29,8 @@ internal class DeviceViewModel(
             serialNumber = "",
             battery = "",
             cpu = "",
-            mem = ""
+            mem = "",
+            permissions = emptyList()
         )
     )
     val uiState = _uiState.asStateFlow()
@@ -34,11 +38,12 @@ internal class DeviceViewModel(
     private var deviceSerial: String = ""
 
     init {
-        onRefresh()
-        deviceInfo()
-
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             deviceSerial = deviceSerialUseCase(deviceId)
+
+            onRefresh()
+            deviceInfo()
+            fetchPermission()
         }
     }
 
@@ -46,6 +51,17 @@ internal class DeviceViewModel(
         when (action) {
             is DeviceAction.SelectTab -> onSelect(action)
             DeviceAction.Refresh -> onRefresh()
+            is DeviceAction.ChangePermission -> onChangePermission(action)
+        }
+    }
+
+    private fun onChangePermission(action: DeviceAction.ChangePermission) {
+        viewModelScope.launch {
+            if (action.granted) {
+                revokePermission(action.permissions)
+            } else {
+                grantPermission(action.permissions)
+            }
         }
     }
 
@@ -79,11 +95,52 @@ internal class DeviceViewModel(
         }
     }
 
+    private fun fetchPermission() {
+        viewModelScope.launch {
+            val packageName = currentDeviceAppsUseCase()?.packageName ?: return@launch
+            val command = sendCommand("shell", "cmd", "appops", "get", packageName)
+            val permissions = command.lines()
+                .mapNotNull { line ->
+                    val list = line.split(":")
+
+                    PermissionUiState(
+                        name = list.getOrNull(0) ?: return@mapNotNull null,
+                        status = list.getOrNull(1) ?: return@mapNotNull null,
+                        granted = false
+                    )
+                }
+                .sortedBy(PermissionUiState::name)
+
+//            val granted = sendCommand("shell", "dumpsys", "package", packageName, "|", "grep", "permission")
+//            val permissions = Permissions.entries
+//                .map { permissions ->
+//                    PermissionUiState(
+//                        permissions = permissions,
+//                        granted = granted.contains(permissions.value)
+//                    )
+//                }
+
+            _uiState.update { it.copy(permissions = permissions) }
+        }
+    }
+
+    private suspend fun grantPermission(permissions: Permissions) {
+        val packageName = currentDeviceAppsUseCase() ?: return
+
+        sendCommand("shell", "pm", "grant", packageName.packageName, permissions.value)
+    }
+
+    private suspend fun revokePermission(permissions: Permissions) {
+        val packageName = currentDeviceAppsUseCase() ?: return
+
+        sendCommand("shell", "pm", "revoke", packageName.packageName, permissions.value)
+    }
+
     private suspend fun sendCommand(vararg args: String): String {
         return sendCommandUseCase(deviceSerial, *args)
             .getOrNull()
             .orEmpty()
-            .replace("\n", "")
+            .removeSuffix("\n")
     }
 
     data class ProcessCpuInfo(
@@ -189,6 +246,5 @@ internal class DeviceViewModel(
 
         return ""
     }
-
 
 }

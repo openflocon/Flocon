@@ -1,18 +1,19 @@
 package io.github.openflocon.flocondesktop.device
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,7 +26,10 @@ import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.FloconScrollableTabRow
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTab
@@ -72,48 +76,56 @@ private fun Content(
         FloconSurface(
             modifier = Modifier.fillMaxSize()
         ) {
-            Scaffold(
+            FloconScaffold(
                 topBar = {
                     Column(
-                        modifier = Modifier.background(FloconTheme.colorPalette.primary.copy(alpha = 1f))
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Header(
                             uiState = uiState,
                             onAction = onAction
                         )
                         FloconScrollableTabRow(
-                            selectedTabIndex = uiState.selectedIndex
+                            selectedTabIndex = uiState.selectedIndex,
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             FloconTab(
                                 text = "Info",
                                 selected = true,
-                                onClick = { onAction(DeviceAction.SelectTab(0)) }
+                                onClick = { onAction(DeviceAction.SelectTab(0)) },
+                                selectedContentColor = FloconTheme.colorPalette.onSurface
                             )
                             FloconTab(
                                 text = "Permission",
                                 selected = true,
-                                onClick = { onAction(DeviceAction.SelectTab(1)) }
+                                onClick = { onAction(DeviceAction.SelectTab(1)) },
+                                selectedContentColor = FloconTheme.colorPalette.onSurface
                             )
                         }
+                        FloconHorizontalDivider(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = FloconTheme.colorPalette.primary
+                        )
                     }
-                },
-                containerColor = FloconTheme.colorPalette.primary
+                }
             ) {
-                Column(
+                HorizontalPager(
+                    state = pagerState,
+                    userScrollEnabled = false,
+                    contentPadding = PaddingValues(16.dp),
+                    pageSpacing = 16.dp,
                     modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .padding(16.dp)
+                        .fillMaxSize()
                         .padding(it)
-                ) {
-                    HorizontalPager(
-                        state = pagerState,
-                        userScrollEnabled = false
-                    ) { index ->
-                        when (index) {
-                            0 -> InfoPage(uiState)
-                            1 -> PermissionPage()
-                            else -> Unit
-                        }
+                ) { index ->
+                    when (index) {
+                        0 -> InfoPage(uiState)
+                        1 -> PermissionPage(
+                            uiState = uiState,
+                            onAction = onAction
+                        )
+
+                        else -> Unit
                     }
                 }
             }
@@ -161,8 +173,45 @@ private fun InfoPage(
 }
 
 @Composable
-private fun PermissionPage() {
-
+private fun PermissionPage(
+    uiState: DeviceUiState,
+    onAction: (DeviceAction) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(
+            items = uiState.permissions,
+            key = { it.name }
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = {
+//                        onAction(
+//                            DeviceAction.ChangePermission(
+//                                permissions = it.permissions,
+//                                granted = it.granted
+//                            )
+//                        )
+                    })
+            ) {
+                Text(
+                    text = it.name,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = it.status
+                )
+                FloconCheckbox(
+                    checked = it.granted,
+                    uncheckedColor = FloconTheme.colorPalette.secondary,
+                    onCheckedChange = {}
+                )
+            }
+        }
+    }
 }
 
 @Composable
