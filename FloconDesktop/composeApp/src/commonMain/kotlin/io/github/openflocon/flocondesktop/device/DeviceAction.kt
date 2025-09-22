@@ -6,4 +6,6 @@ internal sealed interface DeviceAction {
 
     data object Refresh : DeviceAction
 
+    data class ChangePermission(val permissions: Permissions, val granted: Boolean) : DeviceAction
+
 }
