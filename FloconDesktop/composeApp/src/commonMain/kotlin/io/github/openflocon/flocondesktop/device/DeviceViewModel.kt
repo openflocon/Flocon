@@ -6,9 +6,18 @@ import io.github.openflocon.domain.adb.usecase.GetDeviceSerialUseCase
 import io.github.openflocon.domain.adb.usecase.SendCommandUseCase
 import io.github.openflocon.domain.common.getOrNull
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
+import io.github.openflocon.flocondesktop.device.models.ContentUiState
+import io.github.openflocon.flocondesktop.device.models.CpuUiState
+import io.github.openflocon.flocondesktop.device.models.DeviceUiState
+import io.github.openflocon.flocondesktop.device.models.InfoUiState
+import io.github.openflocon.flocondesktop.device.models.MemoryUiState
+import io.github.openflocon.flocondesktop.device.models.PermissionItem
+import io.github.openflocon.flocondesktop.device.models.PermissionUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -19,21 +28,47 @@ internal class DeviceViewModel(
     val currentDeviceAppsUseCase: GetCurrentDeviceIdAndPackageNameUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        DeviceUiState(
-            selectedIndex = 0,
+    private val contentState = MutableStateFlow(ContentUiState(selectedIndex = 0))
+    private val infoState = MutableStateFlow(
+        InfoUiState(
             model = "",
             brand = "",
             versionRelease = "",
             versionSdk = "",
             serialNumber = "",
-            battery = "",
-            cpu = "",
-            mem = "",
-            permissions = emptyList()
+            battery = ""
         )
     )
-    val uiState = _uiState.asStateFlow()
+    private val memoryState = MutableStateFlow(MemoryUiState(emptyList()))
+    private val cpuState = MutableStateFlow(CpuUiState(emptyList()))
+    private val permissionState = MutableStateFlow(PermissionUiState(emptyList()))
+
+    val uiState = combine(
+        contentState,
+        infoState,
+        memoryState,
+        cpuState,
+        permissionState
+    ) { content, info, memory, cpu, permission ->
+        DeviceUiState(
+            contentState = content,
+            infoState = info,
+            memoryState = memory,
+            cpuState = cpu,
+            permissionState = permission
+        )
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = DeviceUiState(
+                contentState = contentState.value,
+                infoState = infoState.value,
+                memoryState = memoryState.value,
+                cpuState = cpuState.value,
+                permissionState = permissionState.value
+            )
+        )
 
     private var deviceSerial: String = ""
 
@@ -58,32 +93,32 @@ internal class DeviceViewModel(
     private fun onChangePermission(action: DeviceAction.ChangePermission) {
         viewModelScope.launch {
             if (action.granted) {
-                revokePermission(action.permissions)
+                revokePermission(action.permission)
             } else {
-                grantPermission(action.permissions)
+                grantPermission(action.permission)
             }
         }
     }
 
     private fun onSelect(action: DeviceAction.SelectTab) {
-        _uiState.update { it.copy(selectedIndex = action.index) }
+        contentState.update { it.copy(selectedIndex = action.index) }
     }
 
     private fun onRefresh() {
         viewModelScope.launch {
-            _uiState.update { state ->
-                state.copy(
-                    cpu = main(sendCommand("shell", "dumpsys", "cpuinfo")),
-                    battery = sendCommand("shell", "dumpsys", "battery"),
-                    mem = sendCommand("shell", "dumpsys", "meminfo")
-                )
-            }
+//            _uiState.update { state ->
+//                state.copy(
+//                    cpu = main(sendCommand("shell", "dumpsys", "cpuinfo")),
+//                    battery = sendCommand("shell", "dumpsys", "battery"),
+//                    mem = sendCommand("shell", "dumpsys", "meminfo")
+//                )
+//            }
         }
     }
 
     private fun deviceInfo() {
         viewModelScope.launch {
-            _uiState.update { state ->
+            infoState.update { state ->
                 state.copy(
                     model = sendCommand("shell", "getprop", "ro.product.model"),
                     brand = sendCommand("shell", "getprop", "ro.product.brand"),
@@ -98,42 +133,37 @@ internal class DeviceViewModel(
     private fun fetchPermission() {
         viewModelScope.launch {
             val packageName = currentDeviceAppsUseCase()?.packageName ?: return@launch
-            val command = sendCommand("shell", "cmd", "appops", "get", packageName)
+            val command = sendCommand("shell", "dumpsys", "package", packageName)
             val permissions = command.lines()
+                .dropWhile { !it.contains("install permissions:") }
+                .drop(1)
+                .takeWhile { it.contains("granted=") }
+                .map { it.trim() }
+                .filter { it.startsWith(PERMISSION_PREFIX) }
                 .mapNotNull { line ->
                     val list = line.split(":")
 
-                    PermissionUiState(
-                        name = list.getOrNull(0) ?: return@mapNotNull null,
-                        status = list.getOrNull(1) ?: return@mapNotNull null,
-                        granted = false
+                    PermissionItem(
+                        name = list.getOrNull(0)?.removePrefix(PERMISSION_PREFIX) ?: return@mapNotNull null,
+                        granted = list.getOrNull(1)?.contains("granted=true") ?: return@mapNotNull null,
                     )
                 }
-                .sortedBy(PermissionUiState::name)
+                .sortedBy(PermissionItem::name)
 
-//            val granted = sendCommand("shell", "dumpsys", "package", packageName, "|", "grep", "permission")
-//            val permissions = Permissions.entries
-//                .map { permissions ->
-//                    PermissionUiState(
-//                        permissions = permissions,
-//                        granted = granted.contains(permissions.value)
-//                    )
-//                }
-
-            _uiState.update { it.copy(permissions = permissions) }
+            permissionState.update { it.copy(list = permissions) }
         }
     }
 
-    private suspend fun grantPermission(permissions: Permissions) {
+    private suspend fun grantPermission(permission: String) {
         val packageName = currentDeviceAppsUseCase() ?: return
 
-        sendCommand("shell", "pm", "grant", packageName.packageName, permissions.value)
+        sendCommand("shell", "pm", "grant", packageName.packageName, "${PERMISSION_PREFIX}$permission")
     }
 
-    private suspend fun revokePermission(permissions: Permissions) {
+    private suspend fun revokePermission(permission: String) {
         val packageName = currentDeviceAppsUseCase() ?: return
 
-        sendCommand("shell", "pm", "revoke", packageName.packageName, permissions.value)
+        sendCommand("shell", "pm", "revoke", packageName.packageName, "$PERMISSION_PREFIX$permission")
     }
 
     private suspend fun sendCommand(vararg args: String): String {
@@ -245,6 +275,10 @@ internal class DeviceViewModel(
         }
 
         return ""
+    }
+
+    companion object {
+        private const val PERMISSION_PREFIX = "android.permission."
     }
 
 }
