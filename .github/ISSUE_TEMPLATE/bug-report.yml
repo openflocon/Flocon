@@ -30,6 +30,7 @@ body:
       label: What platform are you seeing the problem on?
       multiple: false
       options:
+        - Mobile
         - Linux
         - MacOS
         - Windows

@@ -1,0 +1,25 @@
+name: Feature Request
+description: File a feature request.
+title: "[Feature]: "
+labels: ["enhancement"]
+type: "feature"
+body:
+  - type: markdown
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What do you want to see in Flocon?
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: What platform are you seeing the problem on?
+      multiple: false
+      options:
+        - Mobile
+        - Linux
+        - MacOS
+        - Windows
+    validations:
+      required: false
