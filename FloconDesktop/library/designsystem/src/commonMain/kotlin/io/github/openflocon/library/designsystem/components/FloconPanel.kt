@@ -125,7 +125,8 @@ fun <T : Any?> FloconPanel(
 
     FloconPanel(
         expanded = contentState != null,
-        onClose = onClose
+        onClose = onClose,
+        onDismissRequest = onClose
     ) {
         rememberTarget?.let { content(this, it) }
     }
