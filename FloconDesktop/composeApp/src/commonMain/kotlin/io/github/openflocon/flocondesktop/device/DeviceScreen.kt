@@ -23,10 +23,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
+import io.github.openflocon.flocondesktop.device.models.BatteryUiState
 import io.github.openflocon.flocondesktop.device.models.DeviceUiState
 import io.github.openflocon.flocondesktop.device.models.previewDeviceUiState
+import io.github.openflocon.flocondesktop.device.pages.BatteryPage
 import io.github.openflocon.flocondesktop.device.pages.CpuPage
 import io.github.openflocon.flocondesktop.device.pages.InfoPage
+import io.github.openflocon.flocondesktop.device.pages.MemoryPage
 import io.github.openflocon.flocondesktop.device.pages.PermissionPage
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
@@ -63,7 +66,7 @@ private fun Content(
     onCloseRequest: () -> Unit,
     onAction: (DeviceAction) -> Unit
 ) {
-    val pagerState = rememberPagerState { 3 }
+    val pagerState = rememberPagerState { 5 }
 
     LaunchedEffect(uiState.contentState.selectedIndex) {
         pagerState.animateScrollToPage(uiState.contentState.selectedIndex)
@@ -104,9 +107,21 @@ private fun Content(
                                 selectedContentColor = FloconTheme.colorPalette.onSurface
                             )
                             FloconTab(
-                                text = "Permission",
+                                text = "Memory",
                                 selected = uiState.contentState.selectedIndex == 2,
                                 onClick = { onAction(DeviceAction.SelectTab(2)) },
+                                selectedContentColor = FloconTheme.colorPalette.onSurface
+                            )
+                            FloconTab(
+                                text = "Permission",
+                                selected = uiState.contentState.selectedIndex == 3,
+                                onClick = { onAction(DeviceAction.SelectTab(3)) },
+                                selectedContentColor = FloconTheme.colorPalette.onSurface
+                            )
+                            FloconTab(
+                                text = "Battery",
+                                selected = uiState.contentState.selectedIndex == 4,
+                                onClick = { onAction(DeviceAction.SelectTab(4)) },
                                 selectedContentColor = FloconTheme.colorPalette.onSurface
                             )
                         }
@@ -132,10 +147,14 @@ private fun Content(
                             state = uiState.cpuState,
                             onAction = onAction
                         )
+                        2 -> MemoryPage(state = uiState.memoryState)
 
-                        2 -> PermissionPage(
+                        3 -> PermissionPage(
                             state = uiState.permissionState,
                             onAction = onAction
+                        )
+                        4 -> BatteryPage(
+                            state = uiState.batteryState
                         )
 
                         else -> Unit
