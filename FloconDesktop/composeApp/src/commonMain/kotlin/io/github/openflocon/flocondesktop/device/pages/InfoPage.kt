@@ -49,8 +49,6 @@ private fun General(
                 value = state.brand,
                 valueContainerColor = FloconTheme.colorPalette.secondary
             )
-//        FloconTextValue("CPU", uiState.cpu)
-//        FloconTextValue("Memory", uiState.mem)
             FloconTextValue(
                 label = "Battery",
                 value = state.battery,
