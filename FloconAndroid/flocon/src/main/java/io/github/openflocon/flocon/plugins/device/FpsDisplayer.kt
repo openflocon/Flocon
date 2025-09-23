@@ -33,25 +33,16 @@ class FpsDisplayer(context: Context) {
     private var frameCallback: Choreographer.FrameCallback? = null
     private var lastFrameTime = System.nanoTime()
     private var frameCount = 0
-    private var fps = 60f // Valeur par défaut plus réaliste
+    private var fps = 60f
 
-    /**
-     * Initialise le tracking des activités - à appeler très tôt dans l'application
-     * Cette méthode peut être appelée avant même qu'une activité existe
-     */
     init {
-        // Enregistrer les callbacks d'activité pour tracker dès maintenant
         application.registerActivityLifecycleCallbacks(activityCallbacks)
     }
 
     fun start() {
         if (isStarted) return
         isStarted = true
-
-        // Commencer le calcul FPS
         startFpsCalculation()
-
-        // Ajouter le FPS à l'activité actuelle si elle existe
         getCurrentActivity()?.let { activity ->
             addFpsToActivity(activity)
         }
@@ -60,17 +51,10 @@ class FpsDisplayer(context: Context) {
     fun stop() {
         if (!isStarted) return
         isStarted = false
-
-        // Arrêter le calcul FPS
         stopFpsCalculation()
-
-        // Supprimer tous les FPS views
         cleanupViews()
     }
 
-    /**
-     * Nettoie complètement le FpsDisplayer - à appeler lors de la destruction de l'app
-     */
     fun destroy() {
         stop()
         application.unregisterActivityLifecycleCallbacks(activityCallbacks)
@@ -82,21 +66,16 @@ class FpsDisplayer(context: Context) {
         lastFrameTime = System.nanoTime()
         frameCount = 0
 
-        // Utiliser Choreographer pour compter les vrais frames
         frameCallback = object : Choreographer.FrameCallback {
             override fun doFrame(frameTimeNanos: Long) {
                 frameCount++
-
                 val currentTime = System.nanoTime()
                 val timeDiff = currentTime - lastFrameTime
 
-                // Calculer FPS chaque seconde
-                if (timeDiff >= 1_000_000_000L) { // 1 seconde en nanosecondes
+                if (timeDiff >= 1_000_000_000L) {
                     fps = frameCount * 1_000_000_000f / timeDiff
                     frameCount = 0
                     lastFrameTime = currentTime
-
-                    // Mettre à jour l'affichage
                     updateAllFpsViews()
                 }
 
@@ -108,12 +87,11 @@ class FpsDisplayer(context: Context) {
 
         choreographer.postFrameCallback(frameCallback!!)
 
-        // Runnable pour mise à jour périodique de l'affichage (au cas où pas de frames)
         fpsRunnable = object : Runnable {
             override fun run() {
                 updateAllFpsViews()
                 if (isStarted) {
-                    handler.postDelayed(this, 1000) // Mise à jour toutes les secondes
+                    handler.postDelayed(this, 1000)
                 }
             }
         }
@@ -129,7 +107,6 @@ class FpsDisplayer(context: Context) {
     }
 
     private fun updateAllFpsViews() {
-        // Nettoyer les références mortes
         val iterator = activityFpsViews.entries.iterator()
         while (iterator.hasNext()) {
             val entry = iterator.next()
@@ -141,7 +118,6 @@ class FpsDisplayer(context: Context) {
                 continue
             }
 
-            // Mise à jour sur le thread principal
             handler.post {
                 textView.text = "FPS: ${String.format("%.1f", fps)}"
             }
@@ -167,15 +143,12 @@ class FpsDisplayer(context: Context) {
     }
 
     private fun addFpsToActivity(activity: Activity) {
-        // Vérifier si on a déjà une vue pour cette activité
         if (findFpsViewForActivity(activity) != null) return
 
         val rootView = activity.findViewById<ViewGroup>(android.R.id.content)
         if (rootView != null && rootView.childCount > 0) {
-            // La vue est déjà disponible
             createAndAddFpsView(activity, rootView)
         } else {
-            // Attendre que la vue soit disponible
             rootView?.viewTreeObserver?.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
                     rootView.viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -211,16 +184,14 @@ class FpsDisplayer(context: Context) {
                 FrameLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 gravity = Gravity.TOP or Gravity.END
-                setMargins(0, 50, 16, 0) // Marge pour éviter la barre de statut
+                setMargins(0, 50, 16, 0)
             }
 
-            // Si le rootView n'est pas un FrameLayout, on l'enveloppe
             when (rootView) {
                 is FrameLayout -> {
                     rootView.addView(fpsTextView, layoutParams)
                 }
                 else -> {
-                    // Créer un overlay FrameLayout
                     val overlay = FrameLayout(activity)
                     overlay.addView(fpsTextView, layoutParams)
                     rootView.addView(overlay, ViewGroup.LayoutParams(
@@ -230,11 +201,9 @@ class FpsDisplayer(context: Context) {
                 }
             }
 
-            // Stocker avec des WeakReferences
             activityFpsViews[WeakReference(activity)] = WeakReference(fpsTextView)
 
         } catch (e: Exception) {
-            // En cas d'erreur, utiliser un WindowManager overlay
             addFpsAsWindowOverlay(activity)
         }
     }
@@ -265,7 +234,6 @@ class FpsDisplayer(context: Context) {
 
             windowManager.addView(fpsTextView, layoutParams)
 
-            // Stocker avec des WeakReferences
             activityFpsViews[WeakReference(activity)] = WeakReference(fpsTextView)
 
         } catch (e: Exception) {
@@ -294,7 +262,6 @@ class FpsDisplayer(context: Context) {
             when (parent) {
                 is ViewGroup -> parent.removeView(fpsView)
                 else -> {
-                    // Si c'est un overlay de WindowManager
                     try {
                         val windowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                         windowManager.removeView(fpsView)
@@ -315,13 +282,10 @@ class FpsDisplayer(context: Context) {
         override fun onActivityStarted(activity: Activity) {}
 
         override fun onActivityResumed(activity: Activity) {
-            // Mettre à jour l'activité courante
             currentActivityRef = WeakReference(activity)
 
             if (isStarted) {
-                // Petit délai pour s'assurer que la vue est prête
                 handler.postDelayed({
-                    // Vérifier que l'activité est toujours valide
                     if (currentActivityRef?.get() == activity) {
                         addFpsToActivity(activity)
                     }
@@ -331,8 +295,6 @@ class FpsDisplayer(context: Context) {
 
         override fun onActivityPaused(activity: Activity) {
             removeFpsFromActivity(activity)
-
-            // Si c'est l'activité courante qui se met en pause
             if (currentActivityRef?.get() == activity) {
                 currentActivityRef = null
             }
@@ -344,8 +306,6 @@ class FpsDisplayer(context: Context) {
 
         override fun onActivityDestroyed(activity: Activity) {
             removeFpsFromActivity(activity)
-
-            // Si c'est l'activité courante qui est détruite
             if (currentActivityRef?.get() == activity) {
                 currentActivityRef = null
             }
