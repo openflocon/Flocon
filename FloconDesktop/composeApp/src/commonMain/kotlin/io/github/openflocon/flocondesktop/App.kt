@@ -1,5 +1,9 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package io.github.openflocon.flocondesktop
 
+import androidx.compose.foundation.ComposeFoundationFlags
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
@@ -30,6 +34,8 @@ import org.koin.dsl.module
 
 @Composable
 fun App() {
+    ComposeFoundationFlags.isNewContextMenuEnabled = true
+
     KoinApplication(
         application = {
             modules(
