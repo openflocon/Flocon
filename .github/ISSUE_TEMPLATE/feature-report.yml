@@ -10,15 +10,3 @@ body:
       label: What do you want to see in Flocon?
     validations:
       required: true
-  - type: dropdown
-    id: platform
-    attributes:
-      label: What platform are you seeing the problem on?
-      multiple: false
-      options:
-        - Mobile
-        - Linux
-        - MacOS
-        - Windows
-    validations:
-      required: false
