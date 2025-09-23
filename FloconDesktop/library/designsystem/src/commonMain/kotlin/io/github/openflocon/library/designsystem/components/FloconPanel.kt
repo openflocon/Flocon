@@ -6,12 +6,10 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateTo
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -25,13 +23,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 import kotlinx.coroutines.launch
@@ -65,13 +59,6 @@ fun FloconPanel(
         }
     }
 
-    if (onClose != null) {
-        EscapeHandler {
-            onClose()
-            true
-        }
-    }
-
     if (innerExpanded) {
         FloconPopup(
             onDismissRequest = {
@@ -81,6 +68,13 @@ fun FloconPanel(
             },
             alignment = Alignment.CenterEnd
         ) {
+            if (onClose != null) {
+                EscapeHandler {
+                    onClose()
+                    true
+                }
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxHeight()

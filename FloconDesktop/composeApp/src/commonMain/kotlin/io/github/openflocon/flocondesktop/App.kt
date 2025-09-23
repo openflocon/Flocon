@@ -25,7 +25,6 @@ import io.github.openflocon.flocondesktop.main.di.mainModule
 import io.github.openflocon.flocondesktop.main.ui.MainScreen
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
-import io.github.openflocon.library.designsystem.components.escape.EscapeHandlerProvider
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.module.dsl.singleOf
@@ -55,24 +54,22 @@ fun App() {
             )
         },
     ) {
-        EscapeHandlerProvider {
-            FloconTheme {
-                val appViewModel: AppViewModel = koinViewModel()
+        FloconTheme {
+            val appViewModel: AppViewModel = koinViewModel()
 
-                FloconSurface(
-                    modifier = Modifier
-                        .safeContentPadding()
-                        .fillMaxSize()
+            FloconSurface(
+                modifier = Modifier
+                    .safeContentPadding()
+                    .fillMaxSize()
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        MainScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
-                        FeedbackDisplayerView()
-                    }
+                    MainScreen(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                    )
+                    FeedbackDisplayerView()
                 }
             }
         }
