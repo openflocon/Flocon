@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 import kotlinx.coroutines.launch
@@ -72,7 +73,7 @@ fun FloconPanel(
     }
 
     if (innerExpanded) {
-        Popup(
+        FloconPopup(
             onDismissRequest = {
                 if (onDismissRequest != null) {
                     scope.launch { hide() }
