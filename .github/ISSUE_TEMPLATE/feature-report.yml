@@ -4,7 +4,6 @@ title: "[Feature]: "
 labels: ["enhancement"]
 type: "feature"
 body:
-  - type: markdown
   - type: textarea
     id: what-happened
     attributes:
