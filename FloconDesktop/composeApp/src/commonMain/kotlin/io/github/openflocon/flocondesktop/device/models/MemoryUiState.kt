@@ -9,7 +9,9 @@ data class MemoryUiState(
 
 @Immutable
 data class MemoryItem(
-    val name: String
+    val memoryUsage: String,
+    val processName: String,
+    val pid: Int
 )
 
 fun previewMemoryUiState() = MemoryUiState(

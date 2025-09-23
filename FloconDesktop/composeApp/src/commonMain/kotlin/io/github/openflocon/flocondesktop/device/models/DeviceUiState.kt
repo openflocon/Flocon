@@ -8,7 +8,8 @@ data class DeviceUiState(
     val infoState: InfoUiState,
     val cpuState: CpuUiState,
     val memoryState: MemoryUiState,
-    val permissionState: PermissionUiState
+    val permissionState: PermissionUiState,
+    val batteryState: BatteryUiState
 )
 
 internal fun previewDeviceUiState() = DeviceUiState(
@@ -16,5 +17,6 @@ internal fun previewDeviceUiState() = DeviceUiState(
     cpuState = previewCpuUiState(),
     memoryState = previewMemoryUiState(),
     infoState = previewInfoUiState(),
-    permissionState = previewPermissionUiState()
+    permissionState = previewPermissionUiState(),
+    batteryState = previewBatteryUiState()
 )
