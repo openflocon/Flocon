@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
+import io.github.openflocon.domain.device.usecase.fps.ObserveDeviceIsDisplayingFpsUseCase
+import io.github.openflocon.domain.device.usecase.fps.SetDisplayFpsUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
 import io.github.openflocon.flocondesktop.main.ui.delegates.DevicesDelegate
@@ -39,6 +41,8 @@ class MainViewModel(
     private val restartAppUseCase : RestartAppUseCase,
     private val recordVideoDelegate: RecordVideoDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
+    private val observeDeviceIsDisplayingFpsUseCase: ObserveDeviceIsDisplayingFpsUseCase,
+    private val setDisplayFpsUseCase: SetDisplayFpsUseCase,
 ) : ViewModel(
     devicesDelegate,
     recordVideoDelegate,
@@ -70,6 +74,8 @@ class MainViewModel(
 
     val devicesState: StateFlow<DevicesStateUiModel> = devicesDelegate.devicesState
     val appsState: StateFlow<AppsStateUiModel> = devicesDelegate.appsState
+    val displayingFps: StateFlow<Boolean> = observeDeviceIsDisplayingFpsUseCase()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     fun onDeviceSelected(device: DeviceItemUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
@@ -108,6 +114,12 @@ class MainViewModel(
     fun onRestartClicked() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             restartAppUseCase()
+        }
+    }
+
+    fun toggleDisplayingFps(value: Boolean) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            setDisplayFpsUseCase(value)
         }
     }
 

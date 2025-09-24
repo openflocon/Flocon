@@ -75,6 +75,7 @@ fun MainScreen(
     val devicesState by viewModel.devicesState.collectAsStateWithLifecycle()
     val appsState by viewModel.appsState.collectAsStateWithLifecycle()
     val recordState by viewModel.recordState.collectAsStateWithLifecycle()
+    val displayingFps by viewModel.displayingFps.collectAsStateWithLifecycle()
 
     Box(modifier = modifier) {
         MainScreen(
@@ -83,6 +84,7 @@ fun MainScreen(
             devicesState = devicesState,
             appsState = appsState,
             recordState = recordState,
+            displayingFps = displayingFps,
             onDeviceSelected = viewModel::onDeviceSelected,
             deleteDevice = viewModel::deleteDevice,
             deleteApp = viewModel::deleteApp,
@@ -92,6 +94,7 @@ fun MainScreen(
             onTakeScreenshotClicked = viewModel::onTakeScreenshotClicked,
             onRecordClicked = viewModel::onRecordClicked,
             onRestartClicked = viewModel::onRestartClicked,
+            toggleDisplayingFps = viewModel::toggleDisplayingFps,
         )
     }
 }
@@ -103,6 +106,7 @@ private fun MainScreen(
     onClickLeftPanelItem: (LeftPanelItem) -> Unit,
     devicesState: DevicesStateUiModel,
     appsState: AppsStateUiModel,
+    displayingFps: Boolean,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     deleteDevice: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
@@ -111,6 +115,7 @@ private fun MainScreen(
     recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
+    toggleDisplayingFps: (newValue: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(true) }
@@ -136,8 +141,10 @@ private fun MainScreen(
             deleteApp = deleteApp,
             onTakeScreenshotClicked = onTakeScreenshotClicked,
             recordState = recordState,
+            displayingFps = displayingFps,
             onRecordClicked = onRecordClicked,
             onRestartClicked = onRestartClicked,
+            toggleDisplayingFps = toggleDisplayingFps,
         )
         Box(
             modifier = Modifier

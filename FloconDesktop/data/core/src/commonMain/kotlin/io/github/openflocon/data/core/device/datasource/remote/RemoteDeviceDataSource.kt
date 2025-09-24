@@ -11,4 +11,8 @@ interface RemoteDeviceDataSource {
     suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     suspend fun restartApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
+    suspend fun sendDisplayFps(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        display: Boolean
+    )
 }

@@ -18,6 +18,7 @@ import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkDao
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
 import io.github.openflocon.data.local.device.datasource.dao.DevicesDao
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
+import io.github.openflocon.data.local.device.datasource.model.DeviceDisplayFpsEntity
 import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
 import io.github.openflocon.data.local.files.dao.FloconFileDao
 import io.github.openflocon.data.local.files.models.FileEntity
@@ -40,7 +41,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 58,
+    version = 59,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -59,6 +60,7 @@ import kotlinx.coroutines.Dispatchers
         BadQualityConfigEntity::class,
         DeviceEntity::class,
         DeviceAppEntity::class,
+        DeviceDisplayFpsEntity::class,
     ],
 )
 @TypeConverters(

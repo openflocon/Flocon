@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.myapplication
 
+import android.app.Application
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -56,8 +57,6 @@ class MainActivity : ComponentActivity() {
         initializeSharedPreferences(applicationContext)
         initializeDatabases(context = applicationContext)
 
-        FloconLogger.enabled = true
-        Flocon.initialize(this)
         initializeDeeplinks()
 
         val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)

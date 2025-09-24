@@ -49,8 +49,10 @@ fun MainScreenTopBar(
     deleteApp: (DeviceAppUiModel) -> Unit,
     onTakeScreenshotClicked: () -> Unit,
     recordState: RecordVideoStateUiModel,
+    displayingFps: Boolean,
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
+    toggleDisplayingFps: (newValue: Boolean) -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -75,6 +77,8 @@ fun MainScreenTopBar(
             onRecordClicked = onRecordClicked,
             onRestartClicked = onRestartClicked,
             devicesState = devicesState,
+            displayingFps = displayingFps,
+            toggleDisplayingFps = toggleDisplayingFps,
         )
     }
 }
