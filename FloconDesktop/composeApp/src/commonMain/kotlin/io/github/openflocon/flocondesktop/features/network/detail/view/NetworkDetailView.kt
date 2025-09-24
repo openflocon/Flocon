@@ -46,10 +46,10 @@ fun NetworkDetailView(
     val linesLabelWidth: Dp = 130.dp
     val headersLabelWidth: Dp = 150.dp
 
-    EscapeHandler {
-        onAction(NetworkAction.ClosePanel)
-        true // consumed
-    }
+//    EscapeHandler {
+//        onAction(NetworkAction.ClosePanel)
+//        true // consumed
+//    }
 
     Column(
         modifier = modifier

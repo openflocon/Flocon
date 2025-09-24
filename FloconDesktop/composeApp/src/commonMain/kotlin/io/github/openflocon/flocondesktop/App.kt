@@ -1,5 +1,9 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package io.github.openflocon.flocondesktop
 
+import androidx.compose.foundation.ComposeFoundationFlags
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
@@ -21,7 +25,6 @@ import io.github.openflocon.flocondesktop.main.di.mainModule
 import io.github.openflocon.flocondesktop.main.ui.MainScreen
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
-import io.github.openflocon.library.designsystem.components.escape.EscapeHandlerProvider
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.module.dsl.singleOf
@@ -30,6 +33,8 @@ import org.koin.dsl.module
 
 @Composable
 fun App() {
+    ComposeFoundationFlags.isNewContextMenuEnabled = true
+
     KoinApplication(
         application = {
             modules(
@@ -49,24 +54,22 @@ fun App() {
             )
         },
     ) {
-        EscapeHandlerProvider {
-            FloconTheme {
-                val appViewModel: AppViewModel = koinViewModel()
+        FloconTheme {
+            val appViewModel: AppViewModel = koinViewModel()
 
-                FloconSurface(
-                    modifier = Modifier
-                        .safeContentPadding()
-                        .fillMaxSize()
+            FloconSurface(
+                modifier = Modifier
+                    .safeContentPadding()
+                    .fillMaxSize()
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        MainScreen(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        )
-                        FeedbackDisplayerView()
-                    }
+                    MainScreen(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                    )
+                    FeedbackDisplayerView()
                 }
             }
         }
