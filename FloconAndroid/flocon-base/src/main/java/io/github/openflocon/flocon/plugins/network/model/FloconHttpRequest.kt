@@ -19,4 +19,5 @@ data class FloconNetworkResponse(
     val headers: Map<String, String>,
     val requestHeaders: Map<String, String>?, // we might receive the request headers later if the interceptor is at first position in the http interceptor chain
     val error: String?,
+    val isImage: Boolean,
 )

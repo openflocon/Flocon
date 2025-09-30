@@ -133,6 +133,7 @@ private class LoggingClientCallListener<RespT>(
                             grpcStatus = null,
                             error = cause.message ?: cause.javaClass.simpleName,
                             requestHeaders = null,
+                            isImage = false,
                         ),
                     )
                 } ?: run {
@@ -148,6 +149,7 @@ private class LoggingClientCallListener<RespT>(
                             grpcStatus = status.code.toString(),
                             error = null,
                             requestHeaders = null,
+                            isImage = false,
                         ),
                     )
                 }

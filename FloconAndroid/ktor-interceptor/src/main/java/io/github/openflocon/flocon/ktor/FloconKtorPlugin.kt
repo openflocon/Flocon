@@ -8,8 +8,10 @@ import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkResponse
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.api.createClientPlugin
+import io.ktor.client.request.HttpRequest
 import io.ktor.client.request.HttpSendPipeline
 import io.ktor.client.statement.HttpReceivePipeline
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.contentType
 import io.ktor.util.AttributeKey
@@ -18,9 +20,23 @@ import io.ktor.utils.io.toByteArray
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
-val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
+
+data class FloconNetworkIsImageParams(
+    val request: HttpRequest,
+    val response: HttpResponse,
+    val responseContentType: String?,
+)
+
+class FloconKtorPluginConfig {
+    var isImage: (param: FloconNetworkIsImageParams) -> Boolean = {
+        it.responseContentType?.startsWith("image/") == true
+    }
+}
+
+val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPluginConfig) {
 
     val theClient = client
+    val isImageCallback = pluginConfig.isImage
 
     // Intercept requests
     client.sendPipeline.intercept(HttpSendPipeline.Monitoring) {
@@ -98,6 +114,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
                 grpcStatus = null,
                 error = t.message ?: t.javaClass.simpleName,
                 requestHeaders = requestHeadersMap,
+                isImage = false,
             )
 
             floconNetworkPlugin.logResponse(
@@ -118,7 +135,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
         val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin ?: return@intercept
 
         val call = response.call
-        val request = call.request
+        val request: HttpRequest = call.request
 
         val floconCallId = request.attributes.getOrNull(FLOCON_CALL_ID_KEY) ?: return@intercept
         val startTime = request.attributes.getOrNull(FLOCON_START_TIME_KEY) ?: return@intercept
@@ -148,6 +165,13 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin") {
             grpcStatus = null,
             error = null,
             requestHeaders = requestHeadersMap,
+            isImage = isImageCallback(
+                FloconNetworkIsImageParams(
+                    request = request,
+                    response = response,
+                    responseContentType = contentType,
+                )
+            ),
         )
 
         floconNetworkPlugin.logResponse(
