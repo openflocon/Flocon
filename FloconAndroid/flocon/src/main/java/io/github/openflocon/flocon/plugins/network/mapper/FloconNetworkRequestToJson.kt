@@ -43,6 +43,7 @@ fun floconNetworkCallResponseToJson(network: FloconNetworkCallResponse): JSONObj
             json.put("requestHeaders", JSONObject(requestHeaders))
         }
         json.put("responseSize", response.size)
+        json.put("isImage", response.isImage)
         response.error?.let { json.put("responseError", it) }
     }
 

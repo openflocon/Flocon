@@ -54,6 +54,7 @@ private fun FloconNetworkResponseEmbedded.toDomainModel(): FloconNetworkCallDoma
             headers = responseHeaders,
             byteSize = responseByteSize,
             durationMs = durationMs,
+            isImage = isImage,
             specificInfos = when {
                 graphql != null -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl(
                     httpCode = graphql.responseHttpCode,

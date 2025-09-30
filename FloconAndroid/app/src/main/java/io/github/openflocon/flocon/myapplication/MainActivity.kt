@@ -50,7 +50,9 @@ class MainActivity : ComponentActivity() {
 
         val okHttpClient = OkHttpClient()
             .newBuilder()
-            .addInterceptor(FloconOkhttpInterceptor())
+            .addInterceptor(FloconOkhttpInterceptor(isImage = {
+                it.request.url.toString().contains("picsum")
+            }))
             .build()
 
         initializeSharedPreferences(applicationContext)

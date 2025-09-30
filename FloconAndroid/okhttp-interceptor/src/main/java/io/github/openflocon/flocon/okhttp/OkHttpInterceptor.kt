@@ -1,27 +1,28 @@
 package io.github.openflocon.flocon.okhttp
 
 import io.github.openflocon.flocon.FloconApp
-import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
-import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkResponse
-import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
 import okhttp3.Interceptor
 import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.util.UUID
-import kotlin.random.Random
 
-class FloconOkhttpInterceptor() : Interceptor {
+data class FloconNetworkIsImageParams(
+    val request: Request,
+    val response: Response,
+    val responseContentType: String?,
+)
+
+class FloconOkhttpInterceptor(
+    private val isImage: ((FloconNetworkIsImageParams) -> Boolean)? = null,
+) : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -122,7 +123,13 @@ class FloconOkhttpInterceptor() : Interceptor {
             val responseHeadersMap =
                 response.headers.toMultimap().mapValues { it.value.joinToString(",") }
 
-            val isImage = responseContentType?.toString()?.startsWith("image/") == true
+            val isImage = responseContentType?.toString()?.startsWith("image/") == true || (isImage?.invoke(
+                FloconNetworkIsImageParams(
+                    request = request,
+                    response = response,
+                    responseContentType = responseContentType?.toString(),
+                )
+            ) == true)
 
             val requestHeadersMapUpToDate =
                 response.request.headers.toMultimap().mapValues { it.value.joinToString(",") }
@@ -136,6 +143,7 @@ class FloconOkhttpInterceptor() : Interceptor {
                 grpcStatus = null,
                 error = null,
                 requestHeaders = requestHeadersMapUpToDate,
+                isImage = isImage,
             )
 
             floconNetworkPlugin.logResponse(
@@ -166,6 +174,7 @@ class FloconOkhttpInterceptor() : Interceptor {
                 grpcStatus = null,
                 error = e.message ?: e.javaClass.simpleName,
                 requestHeaders = null,
+                isImage = false,
             )
 
             floconNetworkPlugin.logResponse(

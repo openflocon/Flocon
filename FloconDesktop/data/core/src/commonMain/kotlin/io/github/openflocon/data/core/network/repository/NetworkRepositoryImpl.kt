@@ -16,6 +16,7 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.getContentType
+import io.github.openflocon.domain.network.models.isImage
 import io.github.openflocon.domain.network.repository.NetworkBadQualityRepository
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
 import io.github.openflocon.domain.network.repository.NetworkMocksRepository
@@ -118,7 +119,7 @@ class NetworkRepositoryImpl(
                             }
                             toDomainForResponse(receivedResponse = response, request = request)
                         }?.let { call ->
-                            if (call.response?.getContentType()?.startsWith("image/") == true) {
+                            if (call.response?.isImage() == true) {
                                 networkImageRepository.onImageReceived(deviceIdAndPackageName = deviceIdAndPackageName, call = call)
                             }
                             networkLocalDataSource.save(

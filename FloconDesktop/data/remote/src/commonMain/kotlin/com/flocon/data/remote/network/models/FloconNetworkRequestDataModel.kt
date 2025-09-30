@@ -4,6 +4,7 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import kotlinx.serialization.Serializable
+import kotlin.Boolean
 
 @Serializable
 data class FloconNetworkRequestDataModel(
@@ -38,6 +39,7 @@ data class FloconNetworkResponseDataModel(
     val responseSize: Long? = null,
     val responseGrpcStatus: String? = null,
     val responseError: String? = null,
+    val isImage: Boolean = false,
 
     // if we have delayed headers (if the flocon-interceptor is before others)
     val requestHeaders: Map<String, String>? = null,
@@ -69,6 +71,7 @@ internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnl
                         httpCode = responseHttpCode!!,
                     )
                 },
+                isImage = isImage,
             )
         }
         FloconNetworkResponseOnlyDomainModel(
