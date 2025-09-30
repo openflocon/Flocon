@@ -1,5 +1,6 @@
 package io.github.openflocon.library.designsystem.components
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -26,6 +27,16 @@ actual fun FloconVerticalScrollbar(
 
 @Composable
 actual fun rememberFloconScrollbarAdapter(scrollState: LazyListState): FloconScrollAdapter {
+    val adapter = rememberScrollbarAdapter(scrollState)
+    return remember(adapter) {
+        FloconScrollAdapterDesktop(
+            adapter
+        )
+    }
+}
+
+@Composable
+actual fun rememberFloconScrollbarAdapter(scrollState: ScrollState): FloconScrollAdapter {
     val adapter = rememberScrollbarAdapter(scrollState)
     return remember(adapter) {
         FloconScrollAdapterDesktop(
