@@ -131,6 +131,10 @@ compose.desktop {
                 iconFile.set(project.file("src/desktopMain/resources/files/flocon_big.icns"))
                 bundleID = "io.github.openflocon.flocon"
                 dockName = "Flocon"
+                // Universal build (x64 + arm64)
+                macOptions {
+                    bundleArch = "universal" // ou "x64" / "arm64"
+                }
             }
             linux {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon_small.png"))
