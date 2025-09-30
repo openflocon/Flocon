@@ -6,6 +6,7 @@
   :grpc:grpc-interceptor:assembleRelease \
   :grpc:grpc-interceptor-lite:assembleRelease \
   :okhttp-interceptor:assembleRelease \
+  :okhttp-interceptor-no-op:assembleRelease \
   :ktor-interceptor:assembleRelease
 
 ./gradlew \
@@ -16,5 +17,6 @@
   :grpc:grpc-interceptor:publishToMavenLocal \
   :grpc:grpc-interceptor-lite:publishToMavenLocal \
   :okhttp-interceptor:publishToMavenLocal \
+  :okhttp-interceptor-no-op:publishToMavenLocal \
   :ktor-interceptor:publishToMavenLocal \
   -Psigning.required=false
