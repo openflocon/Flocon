@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 59,
-    "identityHash": "c17cfeb311bd6bc49fd744f70c80f6d7",
+    "version": 60,
+    "identityHash": "715d92d7ffb1eed413a9c628fd3c2687",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -1381,11 +1381,55 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "DeviceDisplayFpsEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `displaysFps` INTEGER NOT NULL, PRIMARY KEY(`deviceId`, `packageName`), FOREIGN KEY(`deviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displaysFps",
+            "columnName": "displaysFps",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "deviceId",
+            "packageName"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "DeviceEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId"
+            ],
+            "referencedColumns": [
+              "deviceId"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c17cfeb311bd6bc49fd744f70c80f6d7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '715d92d7ffb1eed413a9c628fd3c2687')"
     ]
   }
 }

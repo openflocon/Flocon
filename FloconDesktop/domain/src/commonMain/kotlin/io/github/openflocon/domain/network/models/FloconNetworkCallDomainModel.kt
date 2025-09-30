@@ -40,6 +40,7 @@ data class FloconNetworkCallDomainModel(
             val headers: Map<String, String>,
             val byteSize: Long,
             val specificInfos: SpecificInfos,
+            val isImage: Boolean
         ) : Response {
             sealed interface SpecificInfos {
                 data class Http(
@@ -72,6 +73,14 @@ fun FloconNetworkCallDomainModel.httpCode(): Int? {
         is FloconNetworkCallDomainModel.Response.Failure -> null
         is FloconNetworkCallDomainModel.Response.Success -> this.response.specificInfos.httpCode()
         null -> null
+    }
+}
+
+fun FloconNetworkCallDomainModel.Response.isImage(): Boolean {
+    return when(this) {
+        is FloconNetworkCallDomainModel.Response.Failure -> false
+        is FloconNetworkCallDomainModel.Response.Success -> this.isImage
+        null -> false
     }
 }
 

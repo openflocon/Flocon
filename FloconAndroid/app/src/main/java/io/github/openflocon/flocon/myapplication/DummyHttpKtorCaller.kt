@@ -37,7 +37,11 @@ object DummyHttpKtorCaller {
     }
 
     val okHttpClient = HttpClient(OkHttp) {
-        install(FloconKtorPlugin)
+        install(FloconKtorPlugin) {
+            //isImage = {
+            //    it.responseContentType?.startsWith("image/") == true
+            //}
+        }
     }
 
     fun call() {

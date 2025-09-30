@@ -41,7 +41,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 59,
+    version = 60,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
