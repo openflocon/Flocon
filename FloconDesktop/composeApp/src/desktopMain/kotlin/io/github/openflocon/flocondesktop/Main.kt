@@ -3,12 +3,16 @@ package io.github.openflocon.flocondesktop
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.MenuBar
@@ -35,7 +39,7 @@ import io.github.openflocon.flocondesktop.window.WindowStateSaver
 import io.github.openflocon.flocondesktop.window.size
 import io.github.openflocon.flocondesktop.window.windowPosition
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
+import io.github.openflocon.library.designsystem.components.escape.LocalEscapeHandlerStack
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 import java.awt.Desktop
@@ -63,7 +67,6 @@ fun main() {
             }
         }
 
-
         setSingletonImageLoaderFactory { context ->
             ImageLoader
                 .Builder(context)
@@ -71,6 +74,8 @@ fun main() {
                     add(KtorNetworkFetcherFactory())
                 }.build()
         }
+
+        val handlers = remember { mutableStateListOf<() -> Boolean>() }
 
         Window(
             state = windowState,
@@ -88,20 +93,29 @@ fun main() {
 
                 exitApplication()
             },
+            onPreviewKeyEvent = {
+                when (it.key) {
+                    Key.Escape -> handlers.lastOrNull()?.invoke() ?: false
+
+                    else -> false
+                }
+            },
             title = "Flocon",
             icon = painterResource(Res.drawable.app_icon_small), // Remove black behind icon
         ) {
-            window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
-            App()
-            if (ACTIVATE_TRAY_NOTIFICATION) {
-                FloconTray()
-            }
-            FloconMenu()
+            CompositionLocalProvider(LocalEscapeHandlerStack provides handlers) {
+                window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
+                App()
+                if (ACTIVATE_TRAY_NOTIFICATION) {
+                    FloconTray()
+                }
+                FloconMenu()
 
-            if (openAbout) {
-                AboutScreen(
-                    onCloseRequest = { openAbout = false }
-                )
+                if (openAbout) {
+                    AboutScreen(
+                        onCloseRequest = { openAbout = false }
+                    )
+                }
             }
         }
     }
