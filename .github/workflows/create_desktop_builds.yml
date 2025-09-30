@@ -45,8 +45,7 @@ jobs:
       - name: Rename macOS arm64 dmg
         if: matrix.os == 'macos-latest'
         run: |
-          mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg \
-             FloconDesktop/composeApp/build/compose/binaries/main/dmg/macos-arm64.dmg
+          mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg FloconDesktop/composeApp/build/compose/binaries/main/dmg/macos-arm64.dmg
 
       - name: Upload macOS arm64 artifact
         if: matrix.os == 'macos-latest'
@@ -58,8 +57,7 @@ jobs:
       - name: Rename macOS x64 dmg
         if: matrix.os == 'macos-13'
         run: |
-          mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg \
-             FloconDesktop/composeApp/build/compose/binaries/main/dmg/macos-x64.dmg
+          mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg FloconDesktop/composeApp/build/compose/binaries/main/dmg/macos-x64.dmg
 
       - name: Upload macOS x64 artifact
         if: matrix.os == 'macos-13'
