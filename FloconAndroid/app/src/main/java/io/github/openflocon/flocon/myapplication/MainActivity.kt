@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
         val okHttpClient = OkHttpClient()
             .newBuilder()
             .addInterceptor(FloconOkhttpInterceptor(isImage = {
-                /*it.responseContentType?.startsWith("image/") == true || */it.request.url.toString().contains("picsum")
+                it.request.url.toString().contains("picsum")
             }))
             .build()
 
