@@ -20,12 +20,8 @@ data class FloconNetworkIsImageParams(
     val responseContentType: String?,
 )
 
-private val defaultIsImage : (FloconNetworkIsImageParams) -> Boolean = {
-    it.responseContentType?.startsWith("image/") == true
-}
-
 class FloconOkhttpInterceptor(
-    private val isImage: (FloconNetworkIsImageParams) -> Boolean = defaultIsImage,
+    private val isImage: ((FloconNetworkIsImageParams) -> Boolean)? = null,
 ) : Interceptor {
 
     @Throws(IOException::class)
@@ -127,13 +123,13 @@ class FloconOkhttpInterceptor(
             val responseHeadersMap =
                 response.headers.toMultimap().mapValues { it.value.joinToString(",") }
 
-            val isImage = isImage(
+            val isImage = responseContentType?.toString()?.startsWith("image/") == true || (isImage?.invoke(
                 FloconNetworkIsImageParams(
                     request = request,
                     response = response,
                     responseContentType = responseContentType?.toString(),
                 )
-            )
+            ) == true)
 
             val requestHeadersMapUpToDate =
                 response.request.headers.toMultimap().mapValues { it.value.joinToString(",") }

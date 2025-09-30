@@ -28,9 +28,7 @@ data class FloconNetworkIsImageParams(
 )
 
 class FloconKtorPluginConfig {
-    var isImage: (param: FloconNetworkIsImageParams) -> Boolean = {
-        it.responseContentType?.startsWith("image/") == true
-    }
+    var isImage: ((param: FloconNetworkIsImageParams) -> Boolean)? = null
 }
 
 val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPluginConfig) {
@@ -151,10 +149,17 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
         val responseHeadersMap =
             response.headers.entries().associate { it.key to it.value.joinToString(",") }
         val contentType = response.contentType()?.toString()
-        val isImage = contentType?.startsWith("image/") == true
 
         val requestHeadersMap =
             request.headers.entries().associate { it.key to it.value.joinToString(",") }
+
+        val isImage = contentType?.startsWith("image/") == true || isImageCallback?.invoke(
+            FloconNetworkIsImageParams(
+                request = request,
+                response = response,
+                responseContentType = contentType,
+            )
+        ) == true
 
         val floconCallResponse = FloconNetworkResponse(
             httpCode = response.status.value,
@@ -165,13 +170,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
             grpcStatus = null,
             error = null,
             requestHeaders = requestHeadersMap,
-            isImage = isImageCallback(
-                FloconNetworkIsImageParams(
-                    request = request,
-                    response = response,
-                    responseContentType = contentType,
-                )
-            ),
+            isImage = isImage,
         )
 
         floconNetworkPlugin.logResponse(
