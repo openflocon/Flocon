@@ -6,11 +6,14 @@ on:
 
 jobs:
   build:
-    runs-on: macOS-latest
-    # runs-on: ${{ matrix.os }}
-    # strategy:
-    #   matrix:
-    #     os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-13   # runner Intel (x64)
+            arch: x64
+            jdk_url: "https://corretto.aws/downloads/latest/amazon-corretto-17-x64-macos-jdk.pkg"
+          - os: macos-latest 
 
     steps:
       - name: Checkout source
@@ -39,34 +42,19 @@ jobs:
         env:
           PROJECT_VERSION_NAME: "1.0.0"
 
-      # 5. Upload OS-specific artifacts
-      # - name: Upload Linux artifact
-      #   if: matrix.os == 'ubuntu-latest'
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: linux-deb
-      #     path: FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb
-
-      - name: Upload macOS artifact
-        #if: matrix.os == 'macos-latest'
+      - name: Upload macOS arm64 artifact
+        if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: macos-dmg
+          name: macos-arm64-dmg
           path: FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg
 
-      - name: Upload macOS jar artifact
-        #if: matrix.os == 'macos-latest'
+      - name: Upload macOS x64 artifact
+        if: matrix.os == 'macos-13'
         uses: actions/upload-artifact@v4
         with:
-          name: macos-jar
-          path: FloconDesktop/composeApp/build/compose/jars/*.jar
-
-      # - name: Upload Windows artifact
-      #   if: matrix.os == 'windows-latest'
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: windows-msi
-      #     path: FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi
+          name: macos-x64-dmg
+          path: FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg
 
   release:
     needs: build
@@ -78,23 +66,12 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      # 2. Download artifacts from all platforms
-      # - name: Download Linux artifact
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: linux-deb
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-arm64-dmg
 
       - name: Download macOS artifact
         uses: actions/download-artifact@v4
         with:
-          name: macos-dmg
-
-      - name: Download macOS jar
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-jar
-
-      #- name: Download Windows artifact
-      #  uses: actions/download-artifact@v4
-      #  with:
-      #    name: windows-msi
+          name: macos-x64-dmg

@@ -9,7 +9,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: macos-13 # runner Intel (x64)
+            arch: x64
+            jdk_url: "https://corretto.aws/downloads/latest/amazon-corretto-17-x64-macos-jdk.pkg"
+          - os: macos-latest 
+          - os: ubuntu-latest
+          - os: windows-latest
 
     steps:
       - name: Checkout source
@@ -46,11 +52,18 @@ jobs:
           name: linux-deb
           path: FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb
 
-      - name: Upload macOS artifact
+      - name: Upload macOS arm64 artifact
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: macos-dmg
+          name: macos-arm64-dmg
+          path: FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg
+
+      - name: Upload macOS x64 artifact
+        if: matrix.os == 'macos-13'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-x64-dmg
           path: FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg
 
       - name: Upload Windows artifact
@@ -67,11 +80,18 @@ jobs:
           name: linux-jar
           path: FloconDesktop/composeApp/build/compose/jars/*.jar
 
-      - name: Upload macOS Release Jar
+      - name: Upload macOS arm64 Release Jar
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: macos-jar
+          name: macos-arm64-jar
+          path: FloconDesktop/composeApp/build/compose/jars/*.jar
+
+      - name: Upload macOS x64 Release Jar
+        if: matrix.os == 'macos-13'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-x64-jar
           path: FloconDesktop/composeApp/build/compose/jars/*.jar
 
       - name: Upload Windows Release Jar
@@ -97,10 +117,15 @@ jobs:
         with:
           name: linux-deb
 
-      - name: Download macOS artifact
+      - name: Download macOS arm64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: macos-dmg
+          name: macos-arm64-dmg
+
+      - name: Download macOS x64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-x64-dmg
 
       - name: Download Windows artifact
         uses: actions/download-artifact@v4
@@ -112,10 +137,15 @@ jobs:
         with:
           name: linux-jar
       
-      - name: Download macOS jar
+      - name: Download macOS arm64 jar
         uses: actions/download-artifact@v4
         with:
-          name: macos-jar
+          name: macos-arm64-jar
+
+      - name: Download macOS x64 jar
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-x64-jar
 
       - name: Download Windows jar
         uses: actions/download-artifact@v4
