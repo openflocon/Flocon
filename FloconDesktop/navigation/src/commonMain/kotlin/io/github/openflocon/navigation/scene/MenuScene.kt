@@ -1,14 +1,8 @@
 package io.github.openflocon.navigation.scene
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
@@ -23,18 +17,18 @@ enum class Menu {
 class MenuScene(
     override val key: String,
     override val previousEntries: List<NavEntry<FloconRoute>>,
-    private val entry: NavEntry<FloconRoute>
+    private val entry: NavEntry<FloconRoute>,
+    private val menuContent: @Composable () -> Unit,
+    private val expander: @Composable (() -> Unit)? = null
 ) : Scene<FloconRoute> {
     override val entries: List<NavEntry<FloconRoute>> = listOf(entry)
     override val content: @Composable (() -> Unit) = {
-        Row {
-            Box(
-                modifier = Modifier
-                    .width(300.dp)
-                    .fillMaxHeight()
-                    .background(Color.Blue)
-            )
-            entry.Content()
+        Box {
+            Row {
+                menuContent()
+                entry.Content()
+            }
+            expander?.invoke()
         }
     }
 
@@ -43,7 +37,10 @@ class MenuScene(
     }
 }
 
-class MenuSceneStrategy : SceneStrategy<FloconRoute> {
+class MenuSceneStrategy(
+    private val menuContent: @Composable () -> Unit,
+    private val expander: @Composable (() -> Unit)? = null
+) : SceneStrategy<FloconRoute> {
 
     @Composable
     override fun calculateScene(
@@ -56,7 +53,9 @@ class MenuSceneStrategy : SceneStrategy<FloconRoute> {
             MenuScene(
                 key = MenuScene.MENU_KEY,
                 previousEntries = entries.dropLast(1),
-                entry = lastEntry
+                entry = lastEntry,
+                menuContent = menuContent,
+                expander = expander
             )
         } else {
             null
