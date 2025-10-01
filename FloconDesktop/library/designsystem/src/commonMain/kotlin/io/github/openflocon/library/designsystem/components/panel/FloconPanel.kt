@@ -1,4 +1,4 @@
-package io.github.openflocon.library.designsystem.components
+package io.github.openflocon.library.designsystem.components.panel
 
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.EaseOutExpo
@@ -12,61 +12,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
-import io.github.openflocon.library.designsystem.theme.FloconShape
-import kotlinx.coroutines.launch
-
-typealias PanelContent = (@Composable BoxScope.() -> Unit)
-
-@Immutable
-class FloconPanelHandler() {
-    val content = mutableStateOf<PanelContent?>(null)
-
-    fun display(content: PanelContent) {
-        this.content.value = content
-    }
-
-    fun hide() {
-        this.content.value = null
-    }
-}
-
-@Composable
-fun rememberFloconPanelHandler() = remember { FloconPanelHandler() }
-
-@Composable
-fun FloconPanelDisplayer(
-    handler: FloconPanelHandler,
-    modifier: Modifier = Modifier,
-) {
-    val content by handler.content
-    Box(modifier, contentAlignment = Alignment.TopEnd) {
-        content?.invoke(this)
-    }
-}
-
-val LocalFloconPanelHandler = staticCompositionLocalOf<FloconPanelHandler> {
-    error("FloconPanelHandler not provided via CompositionLocalProvider")
-}
+import io.github.openflocon.library.designsystem.components.panel.LocalFloconPanelController
 
 private const val AnimDuration = 500
 private val PanelWidth = 500.dp
@@ -79,12 +42,10 @@ fun FloconPanel(
 ) {
     var innerExpanded by remember { mutableStateOf(expanded) }
     val translationX = remember { AnimationState(typeConverter = Dp.VectorConverter, PanelWidth) }
-    val scope = rememberCoroutineScope()
 
     suspend fun hide() {
         translationX.animateTo(PanelWidth, animationSpec = tween(AnimDuration, easing = EaseOutExpo))
         innerExpanded = false
-        //onDismissRequest?.invoke()
     }
 
     LaunchedEffect(expanded) {
@@ -96,11 +57,11 @@ fun FloconPanel(
         }
     }
 
-    val floconPanelHandler = LocalFloconPanelHandler.current
+    val floconPanelController = LocalFloconPanelController.current
 
     if (innerExpanded) {
         DisposableEffect(Unit) {
-            floconPanelHandler.display {
+            floconPanelController.display {
                 if (onClose != null) {
                     EscapeHandler {
                         onClose()
@@ -123,7 +84,9 @@ fun FloconPanel(
                                         this.alpha = 1f - translationX.value.div(PanelWidth)
                                     }
                             ) {
-                                FloconIcon(Icons.Outlined.Close)
+                                FloconIcon(
+                                    Icons.Outlined.Close
+                                )
                             }
                         }
                     }
@@ -139,7 +102,7 @@ fun FloconPanel(
                     )
                 }
             }
-            onDispose { floconPanelHandler.hide() }
+            onDispose { floconPanelController.hide() }
         }
     }
 }
@@ -161,7 +124,6 @@ fun <T : Any?> FloconPanel(
     FloconPanel(
         expanded = contentState != null,
         onClose = onClose,
-        //onDismissRequest = onClose
     ) {
         rememberTarget?.let { content(this, it) }
     }

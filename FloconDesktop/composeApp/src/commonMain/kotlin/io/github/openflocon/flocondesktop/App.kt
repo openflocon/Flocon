@@ -7,7 +7,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -29,10 +28,10 @@ import io.github.openflocon.flocondesktop.features.featuresModule
 import io.github.openflocon.flocondesktop.main.di.mainModule
 import io.github.openflocon.flocondesktop.main.ui.MainScreen
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconPanelDisplayer
 import io.github.openflocon.library.designsystem.components.FloconSurface
-import io.github.openflocon.library.designsystem.components.LocalFloconPanelHandler
-import io.github.openflocon.library.designsystem.components.rememberFloconPanelHandler
+import io.github.openflocon.library.designsystem.components.panel.FloconPanelDisplayer
+import io.github.openflocon.library.designsystem.components.panel.LocalFloconPanelController
+import io.github.openflocon.library.designsystem.components.panel.rememberFloconPanelController
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -66,7 +65,7 @@ fun App() {
         val fontSizeMultiplier by koinInject<ObserveFontSizeMultiplierUseCase>()()
             .collectAsStateWithLifecycle()
 
-        val panelHandler = rememberFloconPanelHandler()
+        val panelHandler = rememberFloconPanelController()
 
         FloconTheme(
             fontSizeMultiplier = fontSizeMultiplier
@@ -78,7 +77,7 @@ fun App() {
                     .safeContentPadding()
                     .fillMaxSize()
             ) {
-                CompositionLocalProvider(LocalFloconPanelHandler provides panelHandler) {
+                CompositionLocalProvider(LocalFloconPanelController provides panelHandler) {
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
