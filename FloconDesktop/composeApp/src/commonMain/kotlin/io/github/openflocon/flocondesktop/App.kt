@@ -7,7 +7,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -27,7 +29,10 @@ import io.github.openflocon.flocondesktop.features.featuresModule
 import io.github.openflocon.flocondesktop.main.di.mainModule
 import io.github.openflocon.flocondesktop.main.ui.MainScreen
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPanelDisplayer
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.LocalFloconPanelHandler
+import io.github.openflocon.library.designsystem.components.rememberFloconPanelHandler
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -61,6 +66,8 @@ fun App() {
         val fontSizeMultiplier by koinInject<ObserveFontSizeMultiplierUseCase>()()
             .collectAsStateWithLifecycle()
 
+        val panelHandler = rememberFloconPanelHandler()
+
         FloconTheme(
             fontSizeMultiplier = fontSizeMultiplier
         ) {
@@ -71,14 +78,20 @@ fun App() {
                     .safeContentPadding()
                     .fillMaxSize()
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    MainScreen(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    )
-                    FeedbackDisplayerView()
+                CompositionLocalProvider(LocalFloconPanelHandler provides panelHandler) {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        MainScreen(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
+                        FloconPanelDisplayer(
+                            handler = panelHandler,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        FeedbackDisplayerView()
+                    }
                 }
             }
         }
