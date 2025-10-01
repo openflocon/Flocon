@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.analytics.mapper
 
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
+import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
-import io.github.openflocon.flocondesktop.features.network.list.mapper.formatTimestamp
 
 internal const val MAX_PROPERTIES_TO_SHOW = 7
 

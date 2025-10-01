@@ -4,14 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
-import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import io.github.openflocon.domain.images.usecase.ObserveImagesUseCase
 import io.github.openflocon.domain.images.usecase.ResetCurrentDeviceImagesUseCase
 import io.github.openflocon.flocondesktop.features.images.mapper.filterBy
 import io.github.openflocon.flocondesktop.features.images.mapper.toUi
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
-import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
-import io.github.openflocon.flocondesktop.features.network.list.mapper.formatTimestamp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -34,6 +34,8 @@ fun FloconNetworkCallDomainModel.toEntity(
             requestBody = request.body,
             requestByteSize = request.byteSize,
             isMocked = request.isMocked,
+            startTimeFormatted = request.startTimeFormatted,
+            byteSizeFormatted = request.byteSizeFormatted,
             graphql = when (val s = this.request.specificInfos) {
                 is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> NetworkCallGraphQlRequestEmbedded(
                     query = s.query,
@@ -57,15 +59,19 @@ fun FloconNetworkCallDomainModel.toEntity(
                         responseHeaders = emptyMap(),
                         responseByteSize = 0,
                         isImage = false,
+                        durationFormatted = networkResponse.durationFormatted,
+                        responseByteSizeFormatted = null,
                     )
                 }
                 is FloconNetworkCallDomainModel.Response.Success -> {
                     FloconNetworkResponseEmbedded(
                         durationMs = networkResponse.durationMs,
+                        durationFormatted = networkResponse.durationFormatted,
                         responseContentType = networkResponse.contentType,
                         responseBody = networkResponse.body,
                         responseHeaders = networkResponse.headers,
                         responseByteSize = networkResponse.byteSize,
+                        responseByteSizeFormatted = networkResponse.byteSizeFormatted,
                         responseError = null,
                         isImage = networkResponse.isImage,
                         graphql = when (val s = networkResponse.specificInfos) {

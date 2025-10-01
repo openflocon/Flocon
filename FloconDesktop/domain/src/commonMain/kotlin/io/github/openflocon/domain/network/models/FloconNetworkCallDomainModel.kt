@@ -12,10 +12,12 @@ data class FloconNetworkCallDomainModel(
     data class Request(
         val url: String,
         val startTime: Long,
+        val startTimeFormatted: String,
         val method: String,
         val headers: Map<String, String>,
         val body: String?,
         val byteSize: Long,
+        val byteSizeFormatted: String,
         val isMocked: Boolean,
         val specificInfos: SpecificInfos,
     ) {
@@ -32,13 +34,16 @@ data class FloconNetworkCallDomainModel(
     sealed interface Response {
 
         val durationMs: Double
+        val durationFormatted: String
 
         data class Success(
             override val durationMs: Double,
+            override val durationFormatted: String,
             val contentType: String? = null,
             val body: String? = null,
             val headers: Map<String, String>,
             val byteSize: Long,
+            val byteSizeFormatted: String,
             val specificInfos: SpecificInfos,
             val isImage: Boolean
         ) : Response {
@@ -57,6 +62,7 @@ data class FloconNetworkCallDomainModel(
         }
         data class Failure(
             override val durationMs: Double,
+            override val durationFormatted: String,
             val issue: String,
         ) : Response
     }
@@ -88,6 +94,14 @@ fun FloconNetworkCallDomainModel.byteSize(): Long? {
     return when(this.response) {
         is FloconNetworkCallDomainModel.Response.Failure -> null
         is FloconNetworkCallDomainModel.Response.Success -> this.response.byteSize
+        null -> null
+    }
+}
+
+fun FloconNetworkCallDomainModel.responseByteSizeFormatted(): String? {
+    return when(this.response) {
+        is FloconNetworkCallDomainModel.Response.Failure -> null
+        is FloconNetworkCallDomainModel.Response.Success -> this.response.byteSizeFormatted
         null -> null
     }
 }
