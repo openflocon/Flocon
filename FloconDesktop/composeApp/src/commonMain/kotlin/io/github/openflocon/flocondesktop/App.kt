@@ -65,7 +65,7 @@ fun App() {
         val fontSizeMultiplier by koinInject<ObserveFontSizeMultiplierUseCase>()()
             .collectAsStateWithLifecycle()
 
-        val panelHandler = rememberFloconPanelController()
+        val panelController = rememberFloconPanelController()
 
         FloconTheme(
             fontSizeMultiplier = fontSizeMultiplier
@@ -77,7 +77,7 @@ fun App() {
                     .safeContentPadding()
                     .fillMaxSize()
             ) {
-                CompositionLocalProvider(LocalFloconPanelController provides panelHandler) {
+                CompositionLocalProvider(LocalFloconPanelController provides panelController) {
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
@@ -86,7 +86,7 @@ fun App() {
                                 .fillMaxSize(),
                         )
                         FloconPanelDisplayer(
-                            handler = panelHandler,
+                            handler = panelController,
                             modifier = Modifier.fillMaxSize()
                         )
                         FeedbackDisplayerView()
