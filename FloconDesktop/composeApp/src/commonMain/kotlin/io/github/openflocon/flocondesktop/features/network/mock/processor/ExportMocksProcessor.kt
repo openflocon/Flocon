@@ -23,8 +23,13 @@ sealed interface ExportResult {
 
 class ExportMocksProcessor(
     private val observeNetworkMocksUseCase : ObserveNetworkMocksUseCase,
-    private val json: Json,
 ) {
+
+    private val json = Json {
+        ignoreUnknownKeys = true
+        prettyPrint = true
+    }
+
     suspend operator fun invoke() : ExportResult {
         val mocks = observeNetworkMocksUseCase().firstOrNull() ?: return ExportResult.Failure(Throwable("no mocks to export"))
 

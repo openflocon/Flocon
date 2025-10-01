@@ -15,9 +15,13 @@ sealed interface ImportResult {
     data class Failure(val error: Throwable) : ImportResult
 }
 
-class ImportMocksProcessor(
-    private val json: Json,
-) {
+class ImportMocksProcessor {
+
+    private val json = Json {
+        ignoreUnknownKeys = true
+        prettyPrint = true
+    }
+
     suspend operator fun invoke(): ImportResult {
         val selectedFile = showOpenFileDialog(dialogName = "Importer les Mocks JSON")
 
