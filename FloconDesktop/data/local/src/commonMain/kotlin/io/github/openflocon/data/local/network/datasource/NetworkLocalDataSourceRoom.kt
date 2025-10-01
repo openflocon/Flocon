@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.network.datasource
 
+import androidx.room.RoomRawQuery
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.mapper.toDomainModel
@@ -19,10 +20,49 @@ class NetworkLocalDataSourceRoom(
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Flow<List<FloconNetworkCallDomainModel>> = floconNetworkDao.let {
-        it.observeRequests(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
+        observeRequestsRaw(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            sortedBy = Sorted(
+                column = Sorted.Column.RequestStartTimeFormatted,
+                asc = true,
+            )
         ).map { entities -> entities.mapNotNull(FloconNetworkCallEntity::toDomainModel) }
+    }
+
+    data class Sorted(
+        val column: Column,
+        val asc: Boolean,
+    ) {
+        enum class Column(val value: String) {
+            RequestStartTimeFormatted("request_startTimeFormatted"),
+            Method("request_method"),
+            Query("request_url"),
+            Duration("response_durationFormatted"),
+            // Status("request_url"),
+        }
+    }
+
+    private fun observeRequestsRaw(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sortedBy: Sorted?,
+    ): Flow<List<FloconNetworkCallEntity>> {
+        val safeColumnName = sortedBy?.column?.value ?: "request_startTime"
+
+        val sortOrder = if (sortedBy == null || sortedBy.asc) "ASC" else "DESC"
+
+        val sqlQuery = """
+            SELECT * FROM FloconNetworkCallEntity 
+            WHERE deviceId = ? 
+            AND packageName = ? 
+            ORDER BY $safeColumnName $sortOrder
+        """.trimIndent()
+
+        val roomQuery = RoomRawQuery(sqlQuery, onBindStatement = {
+            it.bindText(1, deviceIdAndPackageName.deviceId)
+            it.bindText(2, deviceIdAndPackageName.packageName)
+        })
+
+        return floconNetworkDao.observeRequestsRaw(roomQuery)
     }
 
     override suspend fun getCalls(
