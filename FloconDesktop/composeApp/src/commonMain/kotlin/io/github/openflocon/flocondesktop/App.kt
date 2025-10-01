@@ -113,8 +113,15 @@ fun App() {
                 }
             }
 
-            FloconNavigation {
-                networkNavigation()
+            FloconSurface(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                FloconNavigation(
+                    navigationState = navigationState,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    networkNavigation()
+                }
             }
 //            Box(
 //                Modifier
