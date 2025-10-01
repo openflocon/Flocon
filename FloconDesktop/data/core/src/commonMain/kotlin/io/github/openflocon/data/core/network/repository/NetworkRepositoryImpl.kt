@@ -222,11 +222,9 @@ class NetworkRepositoryImpl(
     }
 
     override suspend fun getMock(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         id: String,
     ): MockNetworkDomainModel? = withContext(dispatcherProvider.data) {
         networkMocksLocalDataSource.getMock(
-            deviceIdAndPackageName = deviceIdAndPackageName,
             id = id,
         )
     }
@@ -255,25 +253,33 @@ class NetworkRepositoryImpl(
         ).flowOn(dispatcherProvider.data)
 
     override suspend fun deleteMock(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         id: String,
     ) = withContext(dispatcherProvider.data) {
         networkMocksLocalDataSource.deleteMock(
-            deviceIdAndPackageName = deviceIdAndPackageName,
             id = id,
         )
     }
 
     override suspend fun updateMockIsEnabled(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         id: String,
         isEnabled: Boolean,
     ) = withContext(dispatcherProvider.data) {
         networkMocksLocalDataSource.updateMockIsEnabled(
-            deviceIdAndPackageName = deviceIdAndPackageName,
             id = id,
             isEnabled = isEnabled,
         )
+    }
+
+    override suspend fun updateMockDevice(
+        mockId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?,
+    ) {
+        withContext(dispatcherProvider.data) {
+            networkMocksLocalDataSource.updateMockDevice(
+                mockId = mockId,
+                deviceIdAndPackageName = deviceIdAndPackageName,
+            )
+        }
     }
 
     override suspend fun setupBadNetworkQuality(

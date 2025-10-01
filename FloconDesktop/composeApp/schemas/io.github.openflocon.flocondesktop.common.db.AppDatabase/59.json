@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 59,
-    "identityHash": "c17cfeb311bd6bc49fd744f70c80f6d7",
+    "identityHash": "7f70a11a732a153d24bd94f4c2bd7262",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -1082,7 +1082,7 @@
       },
       {
         "tableName": "MockNetworkEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mockId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `response` TEXT NOT NULL, `expectation_urlPattern` TEXT NOT NULL, `expectation_method` TEXT NOT NULL, PRIMARY KEY(`mockId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mockId` TEXT NOT NULL, `deviceId` TEXT, `packageName` TEXT, `isEnabled` INTEGER NOT NULL, `response` TEXT NOT NULL, `expectation_urlPattern` TEXT NOT NULL, `expectation_method` TEXT NOT NULL, PRIMARY KEY(`mockId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "mockId",
@@ -1093,14 +1093,12 @@
           {
             "fieldPath": "deviceId",
             "columnName": "deviceId",
-            "affinity": "TEXT",
-            "notNull": true
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "packageName",
             "columnName": "packageName",
-            "affinity": "TEXT",
-            "notNull": true
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "isEnabled",
@@ -1385,7 +1383,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c17cfeb311bd6bc49fd744f70c80f6d7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7f70a11a732a153d24bd94f4c2bd7262')"
     ]
   }
 }

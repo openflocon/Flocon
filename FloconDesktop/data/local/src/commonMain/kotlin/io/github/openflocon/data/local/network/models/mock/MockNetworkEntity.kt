@@ -23,8 +23,8 @@ import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 data class MockNetworkEntity(
     @PrimaryKey
     val mockId: String,
-    val deviceId: String,
-    val packageName: String,
+    val deviceId: String?,
+    val packageName: String?,
     val isEnabled: Boolean,
     @Embedded(prefix = "expectation_")
     val expectation: MockNetworkExpectationEmbedded,

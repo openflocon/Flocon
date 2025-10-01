@@ -5,6 +5,7 @@ import java.util.UUID
 data class MockNetworkUiModel(
     val id: String?,
     val isEnabled: Boolean, // not displayed
+    val isShared: Boolean, // not displayed
     val expectation: Expectation,
     val response: Response,
 ) {
@@ -32,6 +33,7 @@ data class MockNetworkUiModel(
 data class EditableMockNetworkUiModel(
     val id: String?,
     val isEnabled: Boolean, // not visible
+    val isShared: Boolean,
     val expectation: Expectation,
     val delay: Long,
     val responseType: ResponseType,
