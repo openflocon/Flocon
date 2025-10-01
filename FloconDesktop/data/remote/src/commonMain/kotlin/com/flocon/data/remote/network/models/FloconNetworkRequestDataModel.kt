@@ -1,5 +1,7 @@
 package com.flocon.data.remote.network.models
 
+import io.github.openflocon.domain.common.ByteFormatter
+import io.github.openflocon.domain.common.time.formatDuration
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
@@ -50,18 +52,22 @@ internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnl
         val callId = floconCallId!!
         val durationMs = durationMs ?: 0.0
 
+        val durationFormatted = formatDuration(durationMs)
+
         val response = if (responseError != null) {
             FloconNetworkCallDomainModel.Response.Failure(
                 durationMs = durationMs,
                 issue = responseError,
+                durationFormatted = durationFormatted,
             )
         } else {
+            val responseSize = responseSize ?: 0L
             FloconNetworkCallDomainModel.Response.Success(
                 durationMs = durationMs,
                 contentType = responseContentType,
                 body = responseBody,
                 headers = responseHeaders.orEmpty(),
-                byteSize = responseSize ?: 0L,
+                byteSize = responseSize,
                 specificInfos = when (floconNetworkType) {
                     "grpc" -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc(
                         grpcStatus = responseGrpcStatus!!,
@@ -72,6 +78,8 @@ internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnl
                     )
                 },
                 isImage = isImage,
+                durationFormatted = durationFormatted,
+                byteSizeFormatted = ByteFormatter.formatBytes(responseSize)
             )
         }
         FloconNetworkResponseOnlyDomainModel(

@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.images.mapper
 
+import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
-import io.github.openflocon.flocondesktop.features.network.list.mapper.formatTimestamp
 
 
 internal fun List<DeviceImageDomainModel>.filterBy(filter: String) : List<DeviceImageDomainModel> {

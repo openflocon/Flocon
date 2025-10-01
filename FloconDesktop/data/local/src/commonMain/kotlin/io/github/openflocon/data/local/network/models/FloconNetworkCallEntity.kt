@@ -51,6 +51,8 @@ data class FloconNetworkRequestEmbedded(
     val url: String,
     val method: String,
     val startTime: Long,
+    val startTimeFormatted: String,
+    val byteSizeFormatted: String,
     val requestHeaders: Map<String, String>,
     val requestBody: String?,
     val requestByteSize: Long,
@@ -62,10 +64,12 @@ data class FloconNetworkRequestEmbedded(
 
 data class FloconNetworkResponseEmbedded(
     val durationMs: Double,
+    val durationFormatted: String,
     val responseContentType: String?,
     val responseBody: String?,
     val responseHeaders: Map<String, String>,
     val responseByteSize: Long,
+    val responseByteSizeFormatted: String?,
     val responseError: String?,
     val isImage: Boolean,
 

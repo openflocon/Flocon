@@ -1,13 +1,11 @@
 package io.github.openflocon.flocondesktop.features.network.detail.mapper
 
+import io.github.openflocon.domain.common.time.formatDuration
+import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
-import io.github.openflocon.domain.network.models.httpCode
-import io.github.openflocon.flocondesktop.common.ui.ByteFormatter
 import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailHeaderUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
-import io.github.openflocon.flocondesktop.features.network.list.mapper.formatDuration
-import io.github.openflocon.flocondesktop.features.network.list.mapper.formatTimestamp
 import io.github.openflocon.flocondesktop.features.network.list.mapper.getMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.mapper.loadingStatus
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toGraphQlNetworkStatusUi
@@ -21,12 +19,12 @@ fun toDetailUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState = 
     fullUrl = request.request.url,
     method = toDetailMethodUi(request),
     status = toDetailHttpStatusUi(request),
-    requestTimeFormatted = request.request.startTime.let { formatTimestamp(it) },
-    durationFormatted = request.response?.durationMs?.let { formatDuration(it) },
+    requestTimeFormatted = request.request.startTimeFormatted,
+    durationFormatted = request.response?.durationFormatted,
     // request
     requestBody = httpBodyToUi(request.request.body),
     requestHeaders = toNetworkHeadersUi(request.request.headers),
-    requestSize = ByteFormatter.formatBytes(request.request.byteSize),
+    requestSize = request.request.byteSizeFormatted,
     // response
     response = request.response?.let {
         when(it) {
@@ -35,7 +33,7 @@ fun toDetailUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState = 
             )
             is FloconNetworkCallDomainModel.Response.Success -> NetworkDetailViewState.Response.Success(
                 body = httpBodyToUi(it.body),
-                size = ByteFormatter.formatBytes(it.byteSize),
+                size = it.byteSizeFormatted,
                 headers = toNetworkHeadersUi(it.headers),
             )
 

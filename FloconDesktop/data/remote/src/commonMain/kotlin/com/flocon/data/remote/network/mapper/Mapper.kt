@@ -6,6 +6,8 @@ import com.flocon.data.remote.network.models.MockNetworkResponseDataModel
 import io.github.openflocon.data.core.network.graphql.model.GraphQlExtracted
 import io.github.openflocon.data.core.network.graphql.model.GraphQlRequestBody
 import io.github.openflocon.data.core.network.graphql.model.GraphQlResponseBody
+import io.github.openflocon.domain.common.ByteFormatter
+import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.device.models.AppInstance
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
@@ -13,32 +15,35 @@ import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.serialization.json.Json
 import kotlin.uuid.ExperimentalUuidApi
 
-fun listToRemote(mocks: List<MockNetworkDomainModel>): List<MockNetworkResponseDataModel> = mocks.map { toRemote(it) }
+fun listToRemote(mocks: List<MockNetworkDomainModel>): List<MockNetworkResponseDataModel> =
+    mocks.map { toRemote(it) }
 
-fun toRemote(mock: MockNetworkDomainModel): MockNetworkResponseDataModel = MockNetworkResponseDataModel(
-    expectation = MockNetworkResponseDataModel.Expectation(
-        urlPattern = mock.expectation.urlPattern,
-        method = mock.expectation.method,
-    ),
-    response = when (val r = mock.response) {
-        is MockNetworkDomainModel.Response.Body -> MockNetworkResponseDataModel.Response(
-            httpCode = r.httpCode,
-            body = r.body,
-            mediaType = r.mediaType,
-            delay = r.delay,
-            headers = r.headers,
-            errorException = null,
-        )
-        is MockNetworkDomainModel.Response.Exception -> MockNetworkResponseDataModel.Response(
-            httpCode = null,
-            body = null,
-            mediaType = null,
-            delay = r.delay,
-            headers = null,
-            errorException = r.classPath,
-        )
-    },
-)
+fun toRemote(mock: MockNetworkDomainModel): MockNetworkResponseDataModel =
+    MockNetworkResponseDataModel(
+        expectation = MockNetworkResponseDataModel.Expectation(
+            urlPattern = mock.expectation.urlPattern,
+            method = mock.expectation.method,
+        ),
+        response = when (val r = mock.response) {
+            is MockNetworkDomainModel.Response.Body -> MockNetworkResponseDataModel.Response(
+                httpCode = r.httpCode,
+                body = r.body,
+                mediaType = r.mediaType,
+                delay = r.delay,
+                headers = r.headers,
+                errorException = null,
+            )
+
+            is MockNetworkDomainModel.Response.Exception -> MockNetworkResponseDataModel.Response(
+                httpCode = null,
+                body = null,
+                mediaType = null,
+                delay = r.delay,
+                headers = null,
+                errorException = r.classPath,
+            )
+        },
+    )
 
 @OptIn(ExperimentalUuidApi::class)
 fun toDomain(
@@ -49,19 +54,25 @@ fun toDomain(
 
     val callId = decoded.floconCallId!!
 
+    val requestSize = decoded.requestSize ?: 0L
+    val startTime = decoded.startTime!!
+
     val request = FloconNetworkCallDomainModel.Request(
         url = decoded.url!!,
-        startTime = decoded.startTime!!,
+        startTime = startTime,
+        startTimeFormatted = formatTimestamp(startTime),
         method = decoded.method!!,
         headers = decoded.requestHeaders!!,
         body = decoded.requestBody,
-        byteSize = decoded.requestSize ?: 0L,
+        byteSize = requestSize,
+        byteSizeFormatted = ByteFormatter.formatBytes(requestSize),
         isMocked = decoded.isMocked ?: false,
         specificInfos = when {
             graphQl != null -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
                 query = graphQl.request.requestBody.query,
                 operationType = graphQl.request.operationType,
             )
+
             decoded.floconNetworkType == "grpc" -> FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc
             else -> FloconNetworkCallDomainModel.Request.SpecificInfos.Http
         },
@@ -128,31 +139,33 @@ fun computeIsGraphQlSuccess(
     return response?.errors?.takeUnless { it.isEmpty() } == null
 }
 
-fun toRemote(domain: BadQualityConfigDomainModel): BadQualityConfigDataModel = BadQualityConfigDataModel(
-    latency = with(domain.latency) {
-        BadQualityConfigDataModel.LatencyConfig(
-            latencyTriggerProbability = triggerProbability,
-            minLatencyMs = minLatencyMs,
-            maxLatencyMs = maxLatencyMs,
-        )
-    },
-    errorProbability = domain.errorProbability,
-    errors = domain.errors.map {
-        when (val t = it.type) {
-            is BadQualityConfigDomainModel.Error.Type.Body -> BadQualityConfigDataModel.Error(
-                weight = it.weight,
-                errorCode = t.httpCode,
-                errorBody = t.body,
-                errorContentType = t.contentType,
-                errorException = null,
+fun toRemote(domain: BadQualityConfigDomainModel): BadQualityConfigDataModel =
+    BadQualityConfigDataModel(
+        latency = with(domain.latency) {
+            BadQualityConfigDataModel.LatencyConfig(
+                latencyTriggerProbability = triggerProbability,
+                minLatencyMs = minLatencyMs,
+                maxLatencyMs = maxLatencyMs,
             )
-            is BadQualityConfigDomainModel.Error.Type.Exception -> BadQualityConfigDataModel.Error(
-                weight = it.weight,
-                errorException = t.classPath,
-                errorCode = null,
-                errorBody = null,
-                errorContentType = null,
-            )
-        }
-    },
-)
+        },
+        errorProbability = domain.errorProbability,
+        errors = domain.errors.map {
+            when (val t = it.type) {
+                is BadQualityConfigDomainModel.Error.Type.Body -> BadQualityConfigDataModel.Error(
+                    weight = it.weight,
+                    errorCode = t.httpCode,
+                    errorBody = t.body,
+                    errorContentType = t.contentType,
+                    errorException = null,
+                )
+
+                is BadQualityConfigDomainModel.Error.Type.Exception -> BadQualityConfigDataModel.Error(
+                    weight = it.weight,
+                    errorException = t.classPath,
+                    errorCode = null,
+                    errorBody = null,
+                    errorContentType = null,
+                )
+            }
+        },
+    )

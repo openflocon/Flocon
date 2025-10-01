@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.common.ui
+package io.github.openflocon.domain.common
 
 import kotlin.math.log10
 import kotlin.math.pow
