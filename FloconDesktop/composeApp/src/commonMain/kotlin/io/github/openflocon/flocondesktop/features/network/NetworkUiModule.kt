@@ -5,6 +5,8 @@ import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.list.processor.SortAndFilterNetworkItemsProcessor
 import io.github.openflocon.flocondesktop.features.network.mock.NetworkMocksViewModel
+import io.github.openflocon.flocondesktop.features.network.mock.processor.ExportMocksProcessor
+import io.github.openflocon.flocondesktop.features.network.mock.processor.ImportMocksProcessor
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf
@@ -17,6 +19,8 @@ internal val networkModule = module {
     factoryOf(::SortAndFilterNetworkItemsProcessor)
 
     viewModelOf(::NetworkMocksViewModel)
+    factoryOf(::ExportMocksProcessor)
+    factoryOf(::ImportMocksProcessor)
 
     viewModelOf(::BadQualityNetworkViewModel)
 }
