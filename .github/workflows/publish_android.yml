@@ -23,6 +23,7 @@ jobs:
               :flocon:publishToMavenCentral \
               :flocon-no-op:publishToMavenCentral \
               :okhttp-interceptor:publishToMavenCentral \
+              :okhttp-interceptor-no-op:publishToMavenCentral \
               :grpc:grpc-interceptor-base:publishToMavenCentral \
               :grpc:grpc-interceptor-lite:publishToMavenCentral \
               :grpc:grpc-interceptor:publishToMavenCentral \

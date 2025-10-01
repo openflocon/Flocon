@@ -25,6 +25,7 @@ import io.github.openflocon.domain.network.usecase.mocks.GetNetworkMockByIdUseCa
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.SetupNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.UpdateNetworkMockIsEnabledUseCase
+import io.github.openflocon.domain.network.usecase.mocks.UpdateNetworkMocksDeviceUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -50,6 +51,7 @@ internal val networkModule = module {
     factoryOf(::GetNetworkMockByIdUseCase)
     factoryOf(::GenerateNetworkMockFromNetworkCallUseCase)
     factoryOf(::UpdateNetworkMockIsEnabledUseCase)
+    factoryOf(::UpdateNetworkMocksDeviceUseCase)
     // bad quality
     factoryOf(::ObserveNetworkBadQualityUseCase)
     factoryOf(::SaveNetworkBadQualityUseCase)

@@ -18,8 +18,8 @@ fun MockNetworkDomainModel.toEntity(
         return null
     }
     return MockNetworkEntity(
-        deviceId = deviceInfo.deviceId,
-        packageName = deviceInfo.packageName,
+        deviceId = if(isShared) null else deviceInfo.deviceId,
+        packageName = if(isShared) null else deviceInfo.packageName,
         mockId = id,
         isEnabled = isEnabled,
         expectation = MockNetworkExpectationEmbedded(
@@ -64,6 +64,7 @@ fun MockNetworkEntity.toDomain(
             method = expectation.method,
         ),
         response = response,
+        isShared = deviceId == null || packageName == null,
     )
 }
 

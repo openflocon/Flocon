@@ -1,5 +1,6 @@
 package io.github.openflocon.library.designsystem.components
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
@@ -9,6 +10,9 @@ interface FloconScrollAdapter
 
 @Composable
 expect fun rememberFloconScrollbarAdapter(scrollState: LazyListState) : FloconScrollAdapter
+
+@Composable
+expect fun rememberFloconScrollbarAdapter(scrollState: ScrollState): FloconScrollAdapter
 
 @Composable
 expect fun rememberFloconScrollbarAdapter(scrollState: LazyGridState): FloconScrollAdapter

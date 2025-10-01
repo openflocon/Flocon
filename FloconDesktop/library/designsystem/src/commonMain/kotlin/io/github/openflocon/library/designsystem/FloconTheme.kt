@@ -29,6 +29,7 @@ import io.github.openflocon.library.designsystem.theme.darkPalette
 import io.github.openflocon.library.designsystem.theme.lightPalette
 import io.github.openflocon.library.designsystem.theme.materialDarkScheme
 import io.github.openflocon.library.designsystem.theme.materialLightScheme
+import io.github.openflocon.library.designsystem.theme.multiplyFontSizeBy
 
 object FloconTheme {
 
@@ -45,6 +46,7 @@ object FloconTheme {
 
 @Composable
 fun FloconTheme(
+    fontSizeMultiplier: Float = 1f,
     isDarkTheme: Boolean = isSystemInDarkTheme(), // TODO Add setting and override
     content: @Composable () -> Unit
 ) {
@@ -78,7 +80,7 @@ fun FloconTheme(
     )
 
     MaterialTheme(
-        typography = typography,
+        typography = typography.multiplyFontSizeBy(fontSizeMultiplier),
         colorScheme = if (isDarkTheme) {
             materialDarkScheme(colorPalette)
         } else {

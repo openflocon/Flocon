@@ -28,13 +28,10 @@ class NetworkMocksLocalDataSourceImpl(
     }
 
     override suspend fun getMock(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         id: String
     ): MockNetworkDomainModel? {
         return dao.getMock(
-            deviceIdAndPackageName.deviceId,
-            deviceIdAndPackageName.packageName,
-            id
+            mockId = id
         )?.toDomain(
             json = json,
         )
@@ -69,26 +66,31 @@ class NetworkMocksLocalDataSourceImpl(
     }
 
     override suspend fun deleteMock(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         id: String,
     ) {
         dao.deleteMock(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
             mockId = id,
         )
     }
 
     override suspend fun updateMockIsEnabled(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         id: String,
         isEnabled: Boolean
     ) {
         dao.updateMockIsEnabled(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
             mockId = id,
             isEnabled = isEnabled,
+        )
+    }
+
+    override suspend fun updateMockDevice(
+        mockId: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?
+    ) {
+        dao.updateMockDevice(
+            mockId = mockId,
+            deviceId = deviceIdAndPackageName?.deviceId,
+            packageName = deviceIdAndPackageName?.packageName,
         )
     }
 }

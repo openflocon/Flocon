@@ -5,6 +5,7 @@ data class MockNetworkDomainModel(
     val isEnabled: Boolean,
     val expectation: Expectation,
     val response: Response,
+    val isShared: Boolean,
 ) {
     data class Expectation(
         val urlPattern: String, // a regex

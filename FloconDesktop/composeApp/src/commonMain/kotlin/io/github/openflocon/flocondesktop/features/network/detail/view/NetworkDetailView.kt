@@ -1,20 +1,25 @@
 package io.github.openflocon.flocondesktop.features.network.detail.view
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -32,7 +37,8 @@ import io.github.openflocon.library.designsystem.components.FloconHorizontalDivi
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconLineDescription
 import io.github.openflocon.library.designsystem.components.FloconSection
-import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
+import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -41,7 +47,9 @@ fun NetworkDetailView(
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val scrollState = rememberScrollState()
+    val scrollState: ScrollState = rememberScrollState()
+
+    val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
 
     val linesLabelWidth: Dp = 130.dp
     val headersLabelWidth: Dp = 150.dp
@@ -51,32 +59,41 @@ fun NetworkDetailView(
 //        true // consumed
 //    }
 
-    Column(
-        modifier = modifier
+    Box(
+        modifier
             .background(FloconTheme.colorPalette.primary)
-            .verticalScroll(scrollState)
-            .padding(vertical = 8.dp, horizontal = 4.dp),
     ) {
-        Request(
-            modifier = Modifier
-                .fillMaxWidth(),
-            state = state,
-            onAction = onAction,
-            linesLabelWidth = linesLabelWidth,
-            headersLabelWidth = headersLabelWidth,
-        )
-        FloconHorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 12.dp)
-                .padding(vertical = 8.dp),
-        )
-        Response(
-            modifier = Modifier
-                .fillMaxWidth(),
-            state = state,
-            onAction = onAction,
-            headersLabelWidth = headersLabelWidth,
+        Column(
+            modifier = Modifier.fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(vertical = 8.dp, horizontal = 4.dp),
+        ) {
+            Request(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                state = state,
+                onAction = onAction,
+                linesLabelWidth = linesLabelWidth,
+                headersLabelWidth = headersLabelWidth,
+            )
+            FloconHorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp)
+                    .padding(vertical = 8.dp),
+            )
+            Response(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                state = state,
+                onAction = onAction,
+                headersLabelWidth = headersLabelWidth,
+            )
+        }
+        FloconVerticalScrollbar(
+            adapter = scrollAdapter,
+            modifier = Modifier.fillMaxHeight()
+                .align(Alignment.TopEnd)
         )
     }
 }
@@ -205,7 +222,13 @@ private fun Request(
                 DetailHeadersView(
                     headers = state.requestHeaders,
                     labelWidth = headersLabelWidth,
-                    onAuthorizationClicked = { token -> onAction(NetworkAction.DisplayBearerJwt(token)) },
+                    onAuthorizationClicked = { token ->
+                        onAction(
+                            NetworkAction.DisplayBearerJwt(
+                                token
+                            )
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
@@ -289,7 +312,13 @@ private fun Response(
                         DetailHeadersView(
                             headers = response.headers,
                             labelWidth = headersLabelWidth,
-                            onAuthorizationClicked = { token -> onAction(NetworkAction.DisplayBearerJwt(token)) },
+                            onAuthorizationClicked = { token ->
+                                onAction(
+                                    NetworkAction.DisplayBearerJwt(
+                                        token
+                                    )
+                                )
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp)

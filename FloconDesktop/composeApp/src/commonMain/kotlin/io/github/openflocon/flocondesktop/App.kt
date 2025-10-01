@@ -8,12 +8,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flocon.data.remote.dataRemoteModule
 import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.domainModule
+import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUseCase
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
 import io.github.openflocon.flocondesktop.app.AppViewModel
 import io.github.openflocon.flocondesktop.app.di.appModule
@@ -25,7 +29,11 @@ import io.github.openflocon.flocondesktop.main.di.mainModule
 import io.github.openflocon.flocondesktop.main.ui.MainScreen
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.panel.FloconPanelDisplayer
+import io.github.openflocon.library.designsystem.components.panel.LocalFloconPanelController
+import io.github.openflocon.library.designsystem.components.panel.rememberFloconPanelController
 import org.koin.compose.KoinApplication
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -54,7 +62,14 @@ fun App() {
             )
         },
     ) {
-        FloconTheme {
+        val fontSizeMultiplier by koinInject<ObserveFontSizeMultiplierUseCase>()()
+            .collectAsStateWithLifecycle()
+
+        val panelController = rememberFloconPanelController()
+
+        FloconTheme(
+            fontSizeMultiplier = fontSizeMultiplier
+        ) {
             val appViewModel: AppViewModel = koinViewModel()
 
             FloconSurface(
@@ -62,14 +77,20 @@ fun App() {
                     .safeContentPadding()
                     .fillMaxSize()
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    MainScreen(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    )
-                    FeedbackDisplayerView()
+                CompositionLocalProvider(LocalFloconPanelController provides panelController) {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        MainScreen(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
+                        FloconPanelDisplayer(
+                            panelController = panelController,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        FeedbackDisplayerView()
+                    }
                 }
             }
         }

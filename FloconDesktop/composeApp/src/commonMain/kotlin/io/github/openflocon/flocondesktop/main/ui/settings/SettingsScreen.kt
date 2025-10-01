@@ -2,7 +2,6 @@ package io.github.openflocon.flocondesktop.main.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,11 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconSection
+import io.github.openflocon.library.designsystem.components.FloconSlider
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -39,79 +41,106 @@ fun SettingsScreen(
     val viewModel: SettingsViewModel = koinViewModel()
     val needsAdbSetup by viewModel.needsAdbSetup.collectAsState()
     val adbPathText by viewModel.adbPathInput.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Box(modifier = modifier) {
-        SettingsScreen(
-            modifier = Modifier.fillMaxSize(),
-            adbPathText = adbPathText,
-            onAdbPathChanged = viewModel::onAdbPathChanged,
-            saveAdbPath = viewModel::saveAdbPath,
-            testAdbPath = viewModel::testAdbPath,
-            needsAdbSetup = needsAdbSetup,
-        )
-    }
+    SettingsScreen(
+        uiState = uiState,
+        modifier = modifier.fillMaxSize(),
+        adbPathText = adbPathText,
+        onAdbPathChanged = viewModel::onAdbPathChanged,
+        saveAdbPath = viewModel::saveAdbPath,
+        testAdbPath = viewModel::testAdbPath,
+        onAction = viewModel::onAction,
+        needsAdbSetup = needsAdbSetup,
+    )
 }
 
-// Main composable for the screen, incorporating the filter bar
 @Composable
 private fun SettingsScreen(
+    uiState: SettingsUiState,
     adbPathText: String,
     onAdbPathChanged: (String) -> Unit,
     saveAdbPath: () -> Unit,
     testAdbPath: () -> Unit,
     needsAdbSetup: Boolean,
+    onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     FloconFeature(
         modifier = modifier.fillMaxSize()
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary)
-                .padding(all = 8.dp)
+        FloconSection(
+            title = "Adb Path",
+            initialValue = true
         ) {
-            if (needsAdbSetup) {
-                Text(
-                    text = "Please setup ADB first, this field is mandatory",
-                    color = FloconTheme.colorPalette.onError,
-                    style = FloconTheme.typography.bodySmall,
-                )
-            } else {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    FloconIcon(
-                        imageVector = Icons.Outlined.Check,
-                        tint = FloconTheme.colorPalette.onAccent,
-                        modifier = Modifier.size(16.dp)
-                    )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.primary)
+                    .padding(all = 8.dp)
+            ) {
+                if (needsAdbSetup) {
                     Text(
-                        text = "ADB configuraton is valid",
-                        color = FloconTheme.colorPalette.onAccent,
-                        style = FloconTheme.typography.bodySmall
+                        text = "Please setup ADB first, this field is mandatory",
+                        color = FloconTheme.colorPalette.onError,
+                        style = FloconTheme.typography.bodySmall,
+                    )
+                } else {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        FloconIcon(
+                            imageVector = Icons.Outlined.Check,
+                            tint = FloconTheme.colorPalette.onAccent,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = "ADB configuraton is valid",
+                            color = FloconTheme.colorPalette.onAccent,
+                            style = FloconTheme.typography.bodySmall
+                        )
+                    }
+                }
+                FloconTextFieldWithoutM3(
+                    value = adbPathText,
+                    onValueChange = onAdbPathChanged,
+                    placeholder = defaultPlaceHolder("Eg: /Users/youruser/Library/Android/sdk/platform-tools/adb"),
+                    containerColor = FloconTheme.colorPalette.secondary,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    SettingsButton(
+                        text = "Save",
+                        onClick = saveAdbPath
+                    )
+                    SettingsButton(
+                        onClick = testAdbPath,
+                        text = "Test",
                     )
                 }
             }
-            FloconTextFieldWithoutM3(
-                value = adbPathText,
-                onValueChange = onAdbPathChanged,
-                placeholder = defaultPlaceHolder("Eg: /Users/youruser/Library/Android/sdk/platform-tools/adb"),
-                containerColor = FloconTheme.colorPalette.secondary,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+        }
+        FloconSection(
+            title = "Appearance",
+            initialValue = true
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.primary)
+                    .padding(all = 8.dp)
             ) {
-                SettingsButton(
-                    text = "Save",
-                    onClick = saveAdbPath
-                )
-                SettingsButton(
-                    onClick = testAdbPath,
-                    text = "Test",
+                FloconSlider(
+                    value = uiState.fontSizeMultiplier,
+                    onValueChange = { onAction(SettingsAction.FontSizeMultiplierChange(it)) },
+                    valueRange = 0.2f..5f,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -142,6 +171,7 @@ private fun SettingsScreenPreview() {
     FloconTheme {
         var adbPath by remember { mutableStateOf("/usr/local/bin/adb") }
         SettingsScreen(
+            uiState = previewSettingsUiState(),
             adbPathText = adbPath,
             onAdbPathChanged = { adbPath = it },
             saveAdbPath = {
@@ -151,6 +181,7 @@ private fun SettingsScreenPreview() {
                 Logger.d { "Test ADB FilePathDomainModel: $adbPath" }
             },
             modifier = Modifier.fillMaxSize(),
+            onAction = {},
             needsAdbSetup = false,
         )
     }
@@ -162,11 +193,13 @@ private fun SettingsScreenPreview_needsAdbSetup() {
     FloconTheme {
         var adbPath by remember { mutableStateOf("/usr/local/bin/adb") }
         SettingsScreen(
+            uiState = previewSettingsUiState(),
             adbPathText = adbPath,
             onAdbPathChanged = { adbPath = it },
             saveAdbPath = { Logger.d { "Save ADB FilePathDomainModel: $adbPath" } },
             testAdbPath = { Logger.d { "Test ADB FilePathDomainModel: $adbPath" } },
             modifier = Modifier.fillMaxSize(),
+            onAction = {},
             needsAdbSetup = true,
         )
     }

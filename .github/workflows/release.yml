@@ -52,6 +52,16 @@ jobs:
           name: linux-deb
           path: FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb
 
+      - name: Rename macOS x64 dmg
+        if: matrix.os == 'macos-13'
+        run: |
+          mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg FloconDesktop/composeApp/build/compose/binaries/main/dmg/macos-x64.dmg
+
+      - name: Rename macOS arm64 dmg
+        if: matrix.os == 'macos-latest'
+        run: |
+          mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg FloconDesktop/composeApp/build/compose/binaries/main/dmg/macos-arm64.dmg
+
       - name: Upload macOS arm64 artifact
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
