@@ -1,11 +1,34 @@
 package io.github.openflocon.flocondesktop
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.scene.SinglePaneSceneStrategy
 import com.flocon.data.remote.dataRemoteModule
 import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
@@ -20,12 +43,16 @@ import io.github.openflocon.flocondesktop.features.featuresModule
 import io.github.openflocon.flocondesktop.features.network.NetworkRoute
 import io.github.openflocon.flocondesktop.features.network.networkNavigation
 import io.github.openflocon.flocondesktop.main.di.mainModule
+import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.LeftPanelView
+import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.PanelMaxWidth
+import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.PanelMinWidth
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.FloconNavigationState
 import io.github.openflocon.navigation.navigationModule
-import kotlinx.coroutines.delay
+import io.github.openflocon.navigation.scene.MenuSceneStrategy
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -58,16 +85,62 @@ fun App() {
         FloconTheme {
             val appViewModel: AppViewModel = koinViewModel()
             val navigationState = koinInject<FloconNavigationState>()
+            val leftPanelState by appViewModel.leftPanelState.collectAsStateWithLifecycle()
+            var expanded by remember { mutableStateOf(true) }
+            val width by animateDpAsState(targetValue = if (expanded) PanelMaxWidth else PanelMinWidth)
+            var windowSize by remember { mutableStateOf(IntSize.Zero) }
+            val position by animateDpAsState(
+                targetValue = if (expanded) PanelMaxWidth else PanelMinWidth,
+            )
+            val rotate by animateFloatAsState(targetValue = if (expanded) 180f else 0f)
 
             LaunchedEffect(Unit) {
                 navigationState.navigate(NetworkRoute)
             }
 
             FloconSurface(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .onGloballyPositioned {
+                        windowSize = it.size // TODO Add windowsize lib
+                    },
             ) {
                 FloconNavigation(
                     navigationState = navigationState,
+                    sceneStrategy = MenuSceneStrategy(
+                        menuContent = {
+                            LeftPanelView(
+                                state = leftPanelState,
+                                onClickItem = {},
+                                modifier = Modifier
+                                    .width(width)
+                                    .fillMaxHeight(),
+                                expanded = expanded
+                            )
+                        },
+                        expander = {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .width(20.dp)
+                                    .height(60.dp)
+                                    .graphicsLayer {
+                                        translationX = position.toPx() - size.width / 2 - 8.dp.toPx()
+                                        translationY = (windowSize.height / 2) - (size.height / 2)
+                                    }
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(FloconTheme.colorPalette.primary)
+                                    .clickable(onClick = { expanded = !expanded }),
+                            ) {
+                                FloconIcon(
+                                    imageVector = Icons.Outlined.ChevronRight,
+                                    tint = Color.LightGray,
+                                    modifier = Modifier.rotate(rotate),
+                                )
+                            }
+                        }
+                    )
+                        .then(SinglePaneSceneStrategy()),
                     modifier = Modifier.fillMaxSize()
                 ) {
                     networkNavigation()
