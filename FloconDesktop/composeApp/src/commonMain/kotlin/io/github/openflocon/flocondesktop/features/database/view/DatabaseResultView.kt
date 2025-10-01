@@ -64,23 +64,6 @@ fun DatabaseResultView(
                             color = color,
                             shape = FloconTheme.shapes.medium
                         )
-                        .drawBehind {
-                            result.columns
-                                .fastForEachIndexed { index, column ->
-                                    val x = columnsWidth.toPx() * index.plus(1)
-
-                                    drawLine(
-                                        color = color,
-                                        start = Offset(x = x, y = 0f),
-                                        end = Offset(x = x, y = size.height),
-                                        strokeWidth = 1.dp.toPx()
-                                    )
-                                    drawRect(
-                                        color = color,
-                                        size = size.copy(height = 32.dp.toPx())
-                                    )
-                                }
-                        }
                         .horizontalScroll(rememberScrollState())
                 ) {
                     stickyHeader {
