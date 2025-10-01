@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.device
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,7 +23,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
-import io.github.openflocon.flocondesktop.device.models.BatteryUiState
 import io.github.openflocon.flocondesktop.device.models.DeviceUiState
 import io.github.openflocon.flocondesktop.device.models.previewDeviceUiState
 import io.github.openflocon.flocondesktop.device.pages.BatteryPage
@@ -38,7 +37,6 @@ import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.FloconScrollableTabRow
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTab
-import io.github.openflocon.library.designsystem.components.FloconTextValue
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -66,10 +64,11 @@ private fun Content(
     onCloseRequest: () -> Unit,
     onAction: (DeviceAction) -> Unit
 ) {
-    val pagerState = rememberPagerState { 5 }
+    val tabs = remember { DeviceTab.entries }
+    val pagerState = rememberPagerState { tabs.size }
 
-    LaunchedEffect(uiState.contentState.selectedIndex) {
-        pagerState.animateScrollToPage(uiState.contentState.selectedIndex)
+    LaunchedEffect(uiState.contentState.selectedTab) {
+        pagerState.animateScrollToPage(uiState.contentState.selectedTab.ordinal)
     }
 
     FloconWindow(
@@ -91,39 +90,17 @@ private fun Content(
                             onAction = onAction
                         )
                         FloconScrollableTabRow(
-                            selectedTabIndex = uiState.contentState.selectedIndex,
+                            selectedTabIndex = uiState.contentState.selectedTab.ordinal,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            FloconTab(
-                                text = "Info",
-                                selected = uiState.contentState.selectedIndex == 0,
-                                onClick = { onAction(DeviceAction.SelectTab(0)) },
-                                selectedContentColor = FloconTheme.colorPalette.onSurface
-                            )
-                            FloconTab(
-                                text = "Cpu",
-                                selected = uiState.contentState.selectedIndex == 1,
-                                onClick = { onAction(DeviceAction.SelectTab(1)) },
-                                selectedContentColor = FloconTheme.colorPalette.onSurface
-                            )
-                            FloconTab(
-                                text = "Memory",
-                                selected = uiState.contentState.selectedIndex == 2,
-                                onClick = { onAction(DeviceAction.SelectTab(2)) },
-                                selectedContentColor = FloconTheme.colorPalette.onSurface
-                            )
-                            FloconTab(
-                                text = "Permission",
-                                selected = uiState.contentState.selectedIndex == 3,
-                                onClick = { onAction(DeviceAction.SelectTab(3)) },
-                                selectedContentColor = FloconTheme.colorPalette.onSurface
-                            )
-                            FloconTab(
-                                text = "Battery",
-                                selected = uiState.contentState.selectedIndex == 4,
-                                onClick = { onAction(DeviceAction.SelectTab(4)) },
-                                selectedContentColor = FloconTheme.colorPalette.onSurface
-                            )
+                            tabs.forEach { tab ->
+                                FloconTab(
+                                    text = tab.title,
+                                    selected = uiState.contentState.selectedTab == tab,
+                                    onClick = { onAction(DeviceAction.SelectTab(tab)) },
+                                    selectedContentColor = FloconTheme.colorPalette.onSurface
+                                )
+                            }
                         }
                         FloconHorizontalDivider(
                             modifier = Modifier.fillMaxWidth(),
@@ -141,23 +118,12 @@ private fun Content(
                         .fillMaxSize()
                         .padding(it)
                 ) { index ->
-                    when (index) {
-                        0 -> InfoPage(uiState.infoState)
-                        1 -> CpuPage(
-                            state = uiState.cpuState,
-                            onAction = onAction
-                        )
-                        2 -> MemoryPage(state = uiState.memoryState)
-
-                        3 -> PermissionPage(
-                            state = uiState.permissionState,
-                            onAction = onAction
-                        )
-                        4 -> BatteryPage(
-                            state = uiState.batteryState
-                        )
-
-                        else -> Unit
+                    when (tabs[index]) {
+                        DeviceTab.INFORMATION -> InfoPage(uiState.infoState)
+                        DeviceTab.BATTERY -> BatteryPage(uiState.batteryState)
+                        DeviceTab.CPU -> CpuPage(uiState.cpuState, onAction)
+                        DeviceTab.MEMORY -> MemoryPage(uiState.memoryState)
+                        DeviceTab.PERMISSION -> PermissionPage(uiState.permissionState, onAction)
                     }
                 }
             }
