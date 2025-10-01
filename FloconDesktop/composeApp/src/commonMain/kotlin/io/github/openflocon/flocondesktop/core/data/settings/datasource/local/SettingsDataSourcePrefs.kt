@@ -6,7 +6,6 @@ import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,18 +14,19 @@ import kotlinx.coroutines.flow.stateIn
 
 expect fun createSettings(): ObservableSettings
 
-class SettingsDataSourcePrefs : SettingsDataSource {
+class SettingsDataSourcePrefs(
+    applicationScope: CoroutineScope
+) : SettingsDataSource {
     private val settings = createSettings()
 
     private val flowSettings = settings.toFlowSettings()
-    private val scope = CoroutineScope(Dispatchers.Default)
 
     override val adbPath: Flow<String?> = flowSettings.getStringOrNullFlow(ADB_PATH)
     override val fontSizeMultiplier: StateFlow<Float> = settings.toFlowSettings()
         .getFloatOrNullFlow(FONT_SIZE_MULTIPLIER)
         .filterNotNull()
         .stateIn(
-            scope = scope,
+            scope = applicationScope,
             started = SharingStarted.Lazily,
             initialValue = 1f
         )
