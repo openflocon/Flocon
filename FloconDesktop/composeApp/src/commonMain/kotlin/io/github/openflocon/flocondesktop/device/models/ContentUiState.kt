@@ -1,12 +1,13 @@
 package io.github.openflocon.flocondesktop.device.models
 
 import androidx.compose.runtime.Immutable
+import io.github.openflocon.flocondesktop.device.DeviceTab
 
 @Immutable
 data class ContentUiState(
-    val selectedIndex: Int
+    val selectedTab: DeviceTab
 )
 
 fun previewContentUiState() = ContentUiState(
-    selectedIndex = 0
+    selectedTab = DeviceTab.INFORMATION
 )
