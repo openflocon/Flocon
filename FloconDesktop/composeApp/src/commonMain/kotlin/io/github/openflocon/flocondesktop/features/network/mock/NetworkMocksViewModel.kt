@@ -19,6 +19,11 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.model.Mo
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.SelectedMockUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.list.mapper.toLineUi
+import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMockAction
+import io.github.openflocon.flocondesktop.features.network.mock.processor.ExportMocksProcessor
+import io.github.openflocon.flocondesktop.features.network.mock.processor.ExportResult
+import io.github.openflocon.flocondesktop.features.network.mock.processor.ImportMocksProcessor
+import io.github.openflocon.flocondesktop.features.network.mock.processor.ImportResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -36,6 +41,8 @@ class NetworkMocksViewModel(
     private val updateNetworkMocksDeviceUseCase: UpdateNetworkMocksDeviceUseCase,
     private val addNetworkMocksUseCase: AddNetworkMocksUseCase,
     private val deleteNetworkMocksUseCase: DeleteNetworkMocksUseCase,
+    private val exportMocksProcessor: ExportMocksProcessor,
+    private val importMocksProcessor: ImportMocksProcessor,
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel() {
@@ -61,19 +68,62 @@ class NetworkMocksViewModel(
         }
     }
 
-    fun deleteMock(id: String) {
+    fun onAction(action: NetworkMockAction)  {
+        when(action) {
+            is NetworkMockAction.ChangeIsEnabled -> changeIsEnabled(
+                id = action.id,
+                enabled = action.enabled
+            )
+            is NetworkMockAction.ChangeIsShared -> changeIsShared(
+                id = action.id,
+                isShared = action.isShared
+            )
+            is NetworkMockAction.OnAddItemClicked -> createNewMock()
+            is NetworkMockAction.OnDeleteClicked -> deleteMock(id = action.id)
+            is NetworkMockAction.OnItemClicked -> clickOnMock(id = action.id)
+            is NetworkMockAction.OnExportClicked -> exportMocks()
+            is NetworkMockAction.OnImportClicked -> importMocks()
+        }
+    }
+
+    private fun deleteMock(id: String) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             deleteNetworkMocksUseCase(id)
         }
     }
 
-    fun changeIsEnabled(id: String, enabled: Boolean) {
+    private fun exportMocks() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            when(val result = exportMocksProcessor()) {
+                is ExportResult.Cancelled -> { /* no op */ }
+                is ExportResult.Failure -> feedbackDisplayer.displayMessage(result.error.message ?: "error")
+                is ExportResult.Success -> feedbackDisplayer.displayMessage("Export successful")
+            }
+        }
+    }
+
+    private fun importMocks() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            when(val result = importMocksProcessor()) {
+                is ImportResult.Cancelled -> { /* no op */ }
+                is ImportResult.Failure -> feedbackDisplayer.displayMessage(result.error.message ?: "error")
+                is ImportResult.Success -> {
+                    result.mocks.forEach {
+                        addNetworkMocksUseCase(it)
+                    }
+                    feedbackDisplayer.displayMessage("Import successful")
+                }
+            }
+        }
+    }
+
+    private fun changeIsEnabled(id: String, enabled: Boolean) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             updateNetworkMockIsEnabledUseCase(id = id, isEnabled = enabled)
         }
     }
 
-    fun changeIsShared(id: String, isShared: Boolean) {
+    private fun changeIsShared(id: String, isShared: Boolean) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             updateNetworkMocksDeviceUseCase(id = id, when(isShared){
                 true -> MockDeviceTarget.AllDevicesAndApps
@@ -91,13 +141,13 @@ class NetworkMocksViewModel(
         }
     }
 
-    fun clickOnMock(id: String) {
+    private fun clickOnMock(id: String) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             getNetworkMock(id)?.let { openEdition(it) }
         }
     }
 
-    fun createNewMock() {
+    private fun createNewMock() {
         editionWindow.update {
             MockEditionWindowUiModel(
                 SelectedMockUiModel.Creation,
