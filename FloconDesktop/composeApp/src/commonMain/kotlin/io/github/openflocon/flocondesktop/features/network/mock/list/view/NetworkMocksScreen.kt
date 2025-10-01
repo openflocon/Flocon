@@ -1,8 +1,14 @@
 package io.github.openflocon.flocondesktop.features.network.mock.list.view
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.network.mock.NetworkMocksViewModel
@@ -49,6 +56,7 @@ fun NetworkMocksWindow(
                 onAddItemClicked = viewModel::createNewMock,
                 onDeleteClicked = viewModel::deleteMock,
                 changeIsEnabled = viewModel::changeIsEnabled,
+                changeIsShared = viewModel::changeIsShared,
             )
         }
 
@@ -70,6 +78,7 @@ private fun NetworkMocksContent(
     onItemClicked: (id: String) -> Unit,
     onDeleteClicked: (id: String) -> Unit,
     changeIsEnabled: (id: String, enabled: Boolean) -> Unit,
+    changeIsShared: (id: String, isShared: Boolean) -> Unit,
     onAddItemClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -85,6 +94,7 @@ private fun NetworkMocksContent(
                 }
             }
         )
+        MocksHeaderView(Modifier.fillMaxWidth())
         LazyColumn(
             modifier = Modifier.fillMaxWidth().height(400.dp),
         ) {
@@ -94,6 +104,7 @@ private fun NetworkMocksContent(
                     onClicked = onItemClicked,
                     onDeleteClicked = onDeleteClicked,
                     changeIsEnabled = changeIsEnabled,
+                    changeIsShared = changeIsShared,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -113,6 +124,7 @@ private fun NetworkMocksContentPreview() {
             onDeleteClicked = {},
             onAddItemClicked = {},
             changeIsEnabled = { _, _ -> },
+            changeIsShared = { _, _ -> },
         )
     }
 }

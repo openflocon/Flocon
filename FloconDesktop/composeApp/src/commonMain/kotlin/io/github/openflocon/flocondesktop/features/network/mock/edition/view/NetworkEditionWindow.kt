@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,8 +41,6 @@ import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
-import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
-import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.possibleExceptions
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.view.NetworkExceptionSelector
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.createEditable
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.editableToUi
@@ -50,6 +49,7 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.model.He
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.SelectedMockUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconSurface
@@ -379,23 +379,34 @@ fun MockEditorScreen(
                 }
             }
         }
-        FloconDialogButtons(
-            onCancel = onCancel,
-            onValidate = {
-                editableToUi(mock).fold(
-                    doOnFailure = {
-                        error = "Some fields are required"
-                    },
-                    doOnSuccess = {
-                        onSave(it)
-                        error = null
-                    },
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 8.dp),
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(all = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            FloconCheckbox(
+                checked = mock.isShared,
+                onCheckedChange = {
+                    mock = mock.copy(isShared = it)
+                }
+            )
+            Text("Shared across apps & devices", style = FloconTheme.typography.bodySmall, color = FloconTheme.colorPalette.onSurface)
+            Spacer(modifier = Modifier.weight(1f))
+            FloconDialogButtons(
+                onCancel = onCancel,
+                onValidate = {
+                    editableToUi(mock).fold(
+                        doOnFailure = {
+                            error = "Some fields are required"
+                        },
+                        doOnSuccess = {
+                            onSave(it)
+                            error = null
+                        },
+                    )
+                },
+            )
+        }
     }
 }
 
@@ -482,7 +493,7 @@ fun RowScope.Tab(
         text = text,
         textAlign = TextAlign.Center,
         style = FloconTheme.typography.bodyMedium,
-        color = if(isSelected) {
+        color = if (isSelected) {
             FloconTheme.colorPalette.primary
         } else {
             FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f)

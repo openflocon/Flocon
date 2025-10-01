@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.network.models.MockDeviceTarget
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.usecase.mocks.AddNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.DeleteNetworkMocksUseCase
@@ -11,6 +12,7 @@ import io.github.openflocon.domain.network.usecase.mocks.GenerateNetworkMockFrom
 import io.github.openflocon.domain.network.usecase.mocks.GetNetworkMockByIdUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.UpdateNetworkMockIsEnabledUseCase
+import io.github.openflocon.domain.network.usecase.mocks.UpdateNetworkMocksDeviceUseCase
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockEditionWindowUiModel
@@ -31,6 +33,7 @@ class NetworkMocksViewModel(
     private val getNetworkMock: GetNetworkMockByIdUseCase,
     private val generateNetworkMockFromNetworkCall: GenerateNetworkMockFromNetworkCallUseCase,
     private val updateNetworkMockIsEnabledUseCase: UpdateNetworkMockIsEnabledUseCase,
+    private val updateNetworkMocksDeviceUseCase: UpdateNetworkMocksDeviceUseCase,
     private val addNetworkMocksUseCase: AddNetworkMocksUseCase,
     private val deleteNetworkMocksUseCase: DeleteNetworkMocksUseCase,
     private val dispatcherProvider: DispatcherProvider,
@@ -70,8 +73,17 @@ class NetworkMocksViewModel(
         }
     }
 
+    fun changeIsShared(id: String, isShared: Boolean) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            updateNetworkMocksDeviceUseCase(id = id, when(isShared){
+                true -> MockDeviceTarget.AllDevicesAndApps
+                false -> MockDeviceTarget.SpecificToCurrentDeviceAndApp
+            })
+        }
+    }
+
     private fun openEdition(item: MockNetworkDomainModel) {
-        val mock = toUi(item)
+        val mock = item.toUi()
         editionWindow.update {
             MockEditionWindowUiModel(
                 SelectedMockUiModel.Edition(mock),
@@ -101,7 +113,7 @@ class NetworkMocksViewModel(
 
     fun addMock(uiModel: MockNetworkUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            addNetworkMocksUseCase(toDomain(uiModel))
+            addNetworkMocksUseCase(uiModel.toDomain())
             // close
             editionWindow.update {
                 null

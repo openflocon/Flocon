@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +23,7 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.model.Mo
 import io.github.openflocon.flocondesktop.features.network.mock.edition.view.MockNetworkMethodView
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockNetworkLineUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconSwitch
@@ -33,6 +35,7 @@ fun MockLineView(
     onClicked: (id: String) -> Unit,
     onDeleteClicked: (id: String) -> Unit,
     changeIsEnabled: (id: String, enabled: Boolean) -> Unit,
+    changeIsShared: (id: String, shared: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -42,7 +45,9 @@ fun MockLineView(
         Box(
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .height(12.dp)
+                .width(50.dp)
+                .height(12.dp),
+            contentAlignment = Alignment.Center,
         ) {
             FloconSwitch(
                 checked = item.isEnabled,
@@ -75,6 +80,19 @@ fun MockLineView(
                     .padding(horizontal = 8.dp, vertical = 6.dp),
             )
 
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .height(12.dp)
+            ) {
+                FloconCheckbox(
+                    checked = item.isShared,
+                    onCheckedChange = {
+                        changeIsShared(item.id, !item.isShared)
+                    }
+                )
+            }
+
             FloconIconButton(
                 imageVector = Icons.Filled.Delete,
                 onClick = {
@@ -96,10 +114,12 @@ private fun MockLineViewPreview() {
                     urlPattern = ".*",
                     isEnabled = true,
                     method = MockNetworkMethodUi.GET,
+                    isShared = false,
                 ),
                 onClicked = {},
                 onDeleteClicked = {},
                 changeIsEnabled = { _, _ -> },
+                changeIsShared = { _, _ -> },
             )
         }
     }
@@ -116,10 +136,12 @@ private fun MockLineViewPreview_url() {
                     urlPattern = "http://.*youtube.*v=.*",
                     isEnabled = false,
                     method = MockNetworkMethodUi.ALL,
+                    isShared = false,
                 ),
                 onClicked = {},
                 onDeleteClicked = {},
                 changeIsEnabled = { _, _ -> },
+                changeIsShared = { _, _ -> },
             )
         }
     }
@@ -136,10 +158,12 @@ private fun MockLineViewPreview_url_patch() {
                     urlPattern = "http://.*youtube.*v=.*",
                     isEnabled = true,
                     method = MockNetworkMethodUi.PATCH,
+                    isShared = true,
                 ),
                 onClicked = {},
                 onDeleteClicked = {},
                 changeIsEnabled = { _, _ -> },
+                changeIsShared = { _, _ -> },
             )
         }
     }
