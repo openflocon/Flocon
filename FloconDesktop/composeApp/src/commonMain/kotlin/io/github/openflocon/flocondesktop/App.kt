@@ -86,7 +86,7 @@ fun App() {
                                 .fillMaxSize(),
                         )
                         FloconPanelDisplayer(
-                            handler = panelController,
+                            panelController = panelController,
                             modifier = Modifier.fillMaxSize()
                         )
                         FeedbackDisplayerView()

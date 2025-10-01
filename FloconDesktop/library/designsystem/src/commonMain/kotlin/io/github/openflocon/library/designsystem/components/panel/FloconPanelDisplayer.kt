@@ -8,10 +8,10 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun FloconPanelDisplayer(
-    handler: FloconPanelController,
+    panelController: FloconPanelController,
     modifier: Modifier = Modifier,
 ) {
-    val content by handler.content
+    val content by panelController.content
     Box(modifier, contentAlignment = Alignment.TopEnd) {
         content?.invoke(this)
     }
