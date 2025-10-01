@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import com.flocon.data.remote.dataRemoteModule
 import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
@@ -20,9 +21,11 @@ import io.github.openflocon.flocondesktop.features.network.NetworkRoute
 import io.github.openflocon.flocondesktop.features.network.networkNavigation
 import io.github.openflocon.flocondesktop.main.di.mainModule
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.FloconNavigationState
 import io.github.openflocon.navigation.navigationModule
+import kotlinx.coroutines.delay
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -60,8 +63,15 @@ fun App() {
                 navigationState.navigate(NetworkRoute)
             }
 
-            FloconNavigation {
-                networkNavigation()
+            FloconSurface(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                FloconNavigation(
+                    navigationState = navigationState,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    networkNavigation()
+                }
             }
 //            Box(
 //                Modifier
