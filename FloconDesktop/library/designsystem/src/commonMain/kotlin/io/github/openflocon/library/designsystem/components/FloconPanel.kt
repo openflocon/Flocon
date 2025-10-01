@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,9 +40,11 @@ typealias PanelContent = (@Composable BoxScope.() -> Unit)
 @Immutable
 class FloconPanelHandler() {
     val content = mutableStateOf<PanelContent?>(null)
+
     fun display(content: PanelContent) {
         this.content.value = content
     }
+
     fun hide() {
         this.content.value = null
     }
@@ -61,8 +64,8 @@ fun FloconPanelDisplayer(
     }
 }
 
-val LocalFloconPanelHandler = staticCompositionLocalOf {
-    FloconPanelHandler()
+val LocalFloconPanelHandler = staticCompositionLocalOf<FloconPanelHandler> {
+    error("FloconPanelHandler not provided via CompositionLocalProvider")
 }
 
 private const val AnimDuration = 500
@@ -71,7 +74,6 @@ private val PanelWidth = 500.dp
 @Composable
 fun FloconPanel(
     expanded: Boolean,
-    onDismissRequest: (() -> Unit)? = null,
     onClose: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
@@ -82,7 +84,7 @@ fun FloconPanel(
     suspend fun hide() {
         translationX.animateTo(PanelWidth, animationSpec = tween(AnimDuration, easing = EaseOutExpo))
         innerExpanded = false
-        onDismissRequest?.invoke()
+        //onDismissRequest?.invoke()
     }
 
     LaunchedEffect(expanded) {
@@ -94,45 +96,50 @@ fun FloconPanel(
         }
     }
 
-    if (innerExpanded) {
-        LocalFloconPanelHandler.current.display {
-            if (onClose != null) {
-                EscapeHandler {
-                    onClose()
-                    true
-                }
-            }
+    val floconPanelHandler = LocalFloconPanelHandler.current
 
-            Row(
-                modifier = Modifier
-                    .fillMaxHeight()
-            ) {
+    if (innerExpanded) {
+        DisposableEffect(Unit) {
+            floconPanelHandler.display {
                 if (onClose != null) {
-                    Box(
-                        modifier = Modifier.padding(8.dp)
-                    ) {
-                        FloconIconTonalButton(
-                            onClick = onClose,
-                            modifier = Modifier
-                                .graphicsLayer {
-                                    this.alpha = 1f - translationX.value.div(PanelWidth)
-                                }
-                        ) {
-                            FloconIcon(Icons.Outlined.Close)
-                        }
+                    EscapeHandler {
+                        onClose()
+                        true
                     }
                 }
-                Box(
+
+                Row(
                     modifier = Modifier
-                        .width(PanelWidth)
                         .fillMaxHeight()
-                        .graphicsLayer {
-                            this.translationX = translationX.value.toPx()
+                ) {
+                    if (onClose != null) {
+                        Box(
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            FloconIconTonalButton(
+                                onClick = onClose,
+                                modifier = Modifier
+                                    .graphicsLayer {
+                                        this.alpha = 1f - translationX.value.div(PanelWidth)
+                                    }
+                            ) {
+                                FloconIcon(Icons.Outlined.Close)
+                            }
                         }
-                        .border(width = 1.dp, color = FloconTheme.colorPalette.surface),
-                    content = content
-                )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .width(PanelWidth)
+                            .fillMaxHeight()
+                            .graphicsLayer {
+                                this.translationX = translationX.value.toPx()
+                            }
+                            .border(width = 1.dp, color = FloconTheme.colorPalette.surface),
+                        content = content
+                    )
+                }
             }
+            onDispose { floconPanelHandler.hide() }
         }
     }
 }
@@ -154,7 +161,7 @@ fun <T : Any?> FloconPanel(
     FloconPanel(
         expanded = contentState != null,
         onClose = onClose,
-        onDismissRequest = onClose
+        //onDismissRequest = onClose
     ) {
         rememberTarget?.let { content(this, it) }
     }
