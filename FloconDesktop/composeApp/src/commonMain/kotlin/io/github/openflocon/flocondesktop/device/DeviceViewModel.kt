@@ -31,7 +31,7 @@ internal class DeviceViewModel(
     val currentDeviceAppsUseCase: GetCurrentDeviceIdAndPackageNameUseCase
 ) : ViewModel() {
 
-    private val contentState = MutableStateFlow(ContentUiState(selectedIndex = 0))
+    private val contentState = MutableStateFlow(ContentUiState(selectedTab = DeviceTab.entries.first()))
     private val infoState = MutableStateFlow(
         InfoUiState(
             model = "",
@@ -128,7 +128,7 @@ internal class DeviceViewModel(
     }
 
     private fun onSelect(action: DeviceAction.SelectTab) {
-        contentState.update { it.copy(selectedIndex = action.index) }
+        contentState.update { it.copy(selectedTab = action.selected) }
     }
 
     private fun onRefresh() {
