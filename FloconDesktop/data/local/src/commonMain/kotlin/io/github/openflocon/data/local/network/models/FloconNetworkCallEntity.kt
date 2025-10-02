@@ -58,6 +58,10 @@ data class FloconNetworkRequestEmbedded(
     val requestByteSize: Long,
     val isMocked: Boolean,
 
+    val domainFormatted: String, // for sorting & filtering
+    val methodFormatted: String, // for sorting & filtering
+    val queryFormatted: String, // for sorting & filtering
+
     @Embedded(prefix = "graphql_")
     val graphql: NetworkCallGraphQlRequestEmbedded?,
 )
@@ -72,6 +76,7 @@ data class FloconNetworkResponseEmbedded(
     val responseByteSizeFormatted: String?,
     val responseError: String?,
     val isImage: Boolean,
+    val status: String,
 
     @Embedded(prefix = "graphql_")
     val graphql: NetworkCallGraphQlResponseEmbedded?,

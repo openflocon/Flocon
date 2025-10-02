@@ -8,8 +8,6 @@ import io.github.openflocon.data.local.network.models.graphql.NetworkCallGraphQl
 import io.github.openflocon.data.local.network.models.graphql.NetworkCallGraphQlResponseEmbedded
 import io.github.openflocon.data.local.network.models.grpc.NetworkCallGrpcResponseEmbedded
 import io.github.openflocon.data.local.network.models.http.NetworkCallHttpResponseEmbedded
-import io.github.openflocon.domain.device.models.AppInstance
-import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 
@@ -43,7 +41,10 @@ fun FloconNetworkCallDomainModel.toEntity(
                 )
 
                 else -> null
-            }
+            },
+            domainFormatted = request.domainFormatted,
+            queryFormatted = request.queryFormatted,
+            methodFormatted = request.methodFormatted,
         ),
         response = response?.let { networkResponse ->
             when(networkResponse) {
@@ -61,6 +62,7 @@ fun FloconNetworkCallDomainModel.toEntity(
                         isImage = false,
                         durationFormatted = networkResponse.durationFormatted,
                         responseByteSizeFormatted = null,
+                        status = networkResponse.statusFormatted,
                     )
                 }
                 is FloconNetworkCallDomainModel.Response.Success -> {
@@ -74,6 +76,7 @@ fun FloconNetworkCallDomainModel.toEntity(
                         responseByteSizeFormatted = networkResponse.byteSizeFormatted,
                         responseError = null,
                         isImage = networkResponse.isImage,
+                        status = networkResponse.statusFormatted,
                         graphql = when (val s = networkResponse.specificInfos) {
                             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> NetworkCallGraphQlResponseEmbedded(
                                 responseHttpCode = s.httpCode,

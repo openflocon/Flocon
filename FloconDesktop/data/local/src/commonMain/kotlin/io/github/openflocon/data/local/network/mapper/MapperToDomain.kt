@@ -31,6 +31,9 @@ private fun FloconNetworkCallEntity.toRequestDomainModel(): FloconNetworkCallDom
         isMocked = request.isMocked,
         startTimeFormatted = request.startTimeFormatted,
         byteSizeFormatted = request.byteSizeFormatted,
+        domainFormatted = request.domainFormatted,
+        queryFormatted = request.queryFormatted,
+        methodFormatted = request.methodFormatted,
         specificInfos = when (type) {
             FloconNetworkCallType.HTTP -> FloconNetworkCallDomainModel.Request.SpecificInfos.Http
             FloconNetworkCallType.GRAPHQL -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
@@ -49,6 +52,7 @@ private fun FloconNetworkResponseEmbedded.toDomainModel(): FloconNetworkCallDoma
             durationMs = durationMs,
             issue = responseError,
             durationFormatted = durationFormatted,
+            statusFormatted = status,
         )
     } else {
         FloconNetworkCallDomainModel.Response.Success(
@@ -60,6 +64,7 @@ private fun FloconNetworkResponseEmbedded.toDomainModel(): FloconNetworkCallDoma
             durationFormatted = durationFormatted,
             byteSizeFormatted = responseByteSizeFormatted ?: "",
             isImage = isImage,
+            statusFormatted = status,
             specificInfos = when {
                 graphql != null -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl(
                     httpCode = graphql.responseHttpCode,
