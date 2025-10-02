@@ -50,7 +50,7 @@ fun toDomain(
     decoded: FloconNetworkRequestDataModel,
     appInstance: AppInstance,
 ): FloconNetworkCallDomainModel? = try {
-    val graphQl: GraphQlExtracted? = extractGraphQl(decoded)
+    val graphQl = extractGraphQl(decoded)
 
     val callId = decoded.floconCallId!!
 
