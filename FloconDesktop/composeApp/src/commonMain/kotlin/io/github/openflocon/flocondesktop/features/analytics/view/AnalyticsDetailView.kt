@@ -54,7 +54,7 @@ fun AnalyticsDetailView(
             )
             AnalyticsDetailLineTextView(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Time",
+                label = "DurationFormatted",
                 value = state.dateFormatted,
                 labelWidth = linesLabelWidth,
                 withDivider = false,

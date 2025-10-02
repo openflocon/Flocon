@@ -36,7 +36,7 @@ private fun List<FloconNetworkCallDomainModel>.exportToCsv(file: File) {
         "Type",
         "URL",
         "Method",
-        "Start Time",
+        "Start DurationFormatted",
         "Duration (ms)",
         "Status",
         "Http Code",

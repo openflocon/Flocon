@@ -167,7 +167,7 @@ fun NetworkScreen(
 //                    ) {
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = "Request Time",
+//                            text = "Request DurationFormatted",
 //                            onCheckedChange = {}
 //                        )
 //                        FloconDropdownMenuItem(
@@ -192,7 +192,7 @@ fun NetworkScreen(
 //                        )
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = "Time",
+//                            text = "DurationFormatted",
 //                            onCheckedChange = {}
 //                        )
 //                    }

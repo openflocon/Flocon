@@ -164,7 +164,7 @@ private fun Request(
                 }
                 FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Request Time",
+                    label = "Request DurationFormatted",
                     value = state.requestTimeFormatted,
                     labelWidth = linesLabelWidth,
                     contentColor = FloconTheme.colorPalette.onPrimary
@@ -172,7 +172,7 @@ private fun Request(
                 state.durationFormatted?.let {
                     FloconLineDescription(
                         modifier = Modifier.fillMaxWidth(),
-                        label = "Time",
+                        label = "DurationFormatted",
                         value = it,
                         labelWidth = linesLabelWidth,
                         contentColor = FloconTheme.colorPalette.onPrimary

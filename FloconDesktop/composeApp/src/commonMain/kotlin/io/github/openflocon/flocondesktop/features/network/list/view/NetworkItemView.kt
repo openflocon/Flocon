@@ -139,7 +139,7 @@ fun NetworkItemView(
                 modifier = Modifier.width(columnWidths.statusCodeWidth), // Apply fixed width to the StatusView composable
             )
 
-            // Time - Fixed width from data class
+            // DurationFormatted - Fixed width from data class
             Box(
                 modifier = Modifier.width(columnWidths.timeWidth),
                 contentAlignment = Alignment.Center,

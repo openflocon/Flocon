@@ -8,10 +8,9 @@ import io.github.openflocon.data.local.network.mapper.toEntity
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.NetworkSortedBy
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 class NetworkLocalDataSourceRoom(
     private val floconNetworkDao: FloconNetworkDao,
@@ -19,34 +18,22 @@ class NetworkLocalDataSourceRoom(
 
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sortedBy: NetworkSortedBy?,
     ): Flow<List<FloconNetworkCallDomainModel>> = floconNetworkDao.let {
         observeRequestsRaw(
             deviceIdAndPackageName = deviceIdAndPackageName,
-            sortedBy = Sorted(
-                column = Sorted.Column.RequestStartTimeFormatted,
+            sortedBy = NetworkSortedBy(
+                column = NetworkSortedBy.Column.RequestStartTimeFormatted,
                 asc = true,
             )
         ).map { entities -> entities.mapNotNull(FloconNetworkCallEntity::toDomainModel) }
     }
 
-    data class Sorted(
-        val column: Column,
-        val asc: Boolean,
-    ) {
-        enum class Column(val value: String) {
-            RequestStartTimeFormatted("request_startTimeFormatted"),
-            Method("request_method"),
-            Query("request_url"),
-            Duration("response_durationFormatted"),
-            // Status("request_url"),
-        }
-    }
-
     private fun observeRequestsRaw(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        sortedBy: Sorted?,
+        sortedBy: NetworkSortedBy?,
     ): Flow<List<FloconNetworkCallEntity>> {
-        val safeColumnName = sortedBy?.column?.value ?: "request_startTime"
+        val safeColumnName = sortedBy?.column?.roomColumnName() ?: "request_startTime"
 
         val sortOrder = if (sortedBy == null || sortedBy.asc) "ASC" else "DESC"
 
@@ -154,4 +141,14 @@ class NetworkLocalDataSourceRoom(
     override suspend fun clear() {
         floconNetworkDao.clearAll()
     }
+}
+
+
+fun NetworkSortedBy.Column.roomColumnName(): String = when (this) {
+    NetworkSortedBy.Column.RequestStartTimeFormatted -> "request_startTimeFormatted"
+    NetworkSortedBy.Column.Method -> "request_method"
+    NetworkSortedBy.Column.Domain -> "request_domain" // todo parse before
+    NetworkSortedBy.Column.Query -> "request_query" // TODO parse before
+    NetworkSortedBy.Column.Status -> "status" // todo parse before,
+    NetworkSortedBy.Column.DurationFormatted -> "response_durationFormatted"
 }
