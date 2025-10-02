@@ -54,4 +54,15 @@ class DeviceRemoteDataSourceImpl(
             ),
         )
     }
+
+    override suspend fun sendDisplayFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, display: Boolean) {
+        server.sendMessageToClient(
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
+            message = FloconOutgoingMessageDataModel(
+                plugin = Protocol.ToDevice.Device.Plugin,
+                method = Protocol.ToDevice.Device.Method.DisplayFps,
+                body = display.toString(),
+            ),
+        )
+    }
 }

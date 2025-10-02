@@ -7,8 +7,10 @@ import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
+import io.github.openflocon.data.local.device.datasource.model.DeviceDisplayFpsEntity
 import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -88,4 +90,27 @@ interface DevicesDao {
 
     @Query("DELETE FROM DeviceAppEntity WHERE deviceId = :deviceId AND packageName = :packageName")
     suspend fun deleteApp(deviceId: String, packageName: String)
+
+    @Query(
+        """
+        SELECT * FROM DeviceDisplayFpsEntity
+        WHERE deviceId = :deviceId AND packageName = :packageName
+        LIMIT 1
+     """
+    )
+    suspend fun getIsDeviceDisplayingFps(deviceId: String, packageName: String): DeviceDisplayFpsEntity?
+
+    @Upsert
+    suspend fun saveIsDeviceDisplayingFps(
+        displayFps : DeviceDisplayFpsEntity
+    )
+
+    @Query(
+        """
+        SELECT * FROM DeviceDisplayFpsEntity
+        WHERE deviceId = :deviceId AND packageName = :packageName
+        LIMIT 1
+     """
+    )
+    fun observeIsDeviceDisplayingFps(deviceId: String, packageName: String): Flow<DeviceDisplayFpsEntity?>
 }

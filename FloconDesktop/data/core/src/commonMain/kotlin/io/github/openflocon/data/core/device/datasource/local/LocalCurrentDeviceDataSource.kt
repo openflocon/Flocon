@@ -29,4 +29,5 @@ interface LocalCurrentDeviceDataSource {
     suspend fun delete(deviceId: DeviceId)
     suspend fun deleteApp(deviceId: DeviceId, packageName: AppPackageName)
     suspend fun clear()
+
 }

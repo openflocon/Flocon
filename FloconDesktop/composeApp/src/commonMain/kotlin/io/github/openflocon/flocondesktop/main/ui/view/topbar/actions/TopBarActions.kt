@@ -3,17 +3,21 @@ package io.github.openflocon.flocondesktop.main.ui.view.topbar.actions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AutofpsSelect
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.Videocam
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.RecordVideoStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 internal fun TopBarActions(
@@ -22,6 +26,8 @@ internal fun TopBarActions(
     devicesState: DevicesStateUiModel,
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
+    displayingFps: Boolean,
+    toggleDisplayingFps: (newValue: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -36,6 +42,16 @@ internal fun TopBarActions(
             onClicked = onRestartClicked,
             isEnabled = devicesState.deviceSelected?.isActive == true,
         )
+        TopBarButton(
+            active = displayingFps,
+            contentDescription = "display fps",
+            onClicked = {
+                toggleDisplayingFps(!displayingFps)
+            },
+            isEnabled = devicesState.deviceSelected?.isActive == true,
+        ) {
+            Text("FPS", style = FloconTheme.typography.bodySmall.copy(fontSize = 8.sp))
+        }
         TopBarButton(
             active = recordState == RecordVideoStateUiModel.Recording,
             imageVector = when (recordState) {

@@ -5,10 +5,12 @@ import io.github.openflocon.data.core.device.datasource.local.model.InsertResult
 import io.github.openflocon.data.local.device.datasource.dao.DevicesDao
 import io.github.openflocon.data.local.device.datasource.mapper.toDomainModel
 import io.github.openflocon.data.local.device.datasource.mapper.toEntity
+import io.github.openflocon.data.local.device.datasource.model.DeviceDisplayFpsEntity
 import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -115,6 +117,33 @@ class LocalDevicesDataSourceRoom(
 
     override suspend fun deleteApp(deviceId: DeviceId, packageName: AppPackageName) {
         return dao.deleteApp(deviceId = deviceId, packageName = packageName)
+    }
+
+    override suspend fun getIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Boolean {
+        return dao.getIsDeviceDisplayingFps(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+        )?.displaysFps ?: false
+    }
+
+    override suspend fun saveIsDeviceDisplayingFps(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        value: Boolean
+    ) {
+        dao.saveIsDeviceDisplayingFps(
+            displayFps = DeviceDisplayFpsEntity(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+                displaysFps = value,
+            )
+        )
+    }
+
+    override fun observeIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> {
+        return dao.observeIsDeviceDisplayingFps(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+        ).map { it?.displaysFps ?: false }
     }
 
     override suspend fun clear() {

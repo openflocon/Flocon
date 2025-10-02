@@ -45,5 +45,18 @@ interface DevicesRepository {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     )
 
+    // region fps
+    suspend fun sendDisplayFps(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        display: Boolean
+    )
+    suspend fun getIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Boolean
+    suspend fun saveIsDeviceDisplayingFps(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        value: Boolean
+    )
+    suspend fun observeIsDeviceDisplayingFps(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean>
+    // endregion
+
     suspend fun clear()
 }
