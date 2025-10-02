@@ -29,15 +29,6 @@ class NetworkLocalDataSourceRoom(
         ).map { entities -> entities.mapNotNull(FloconNetworkCallEntity::toDomainModel) }
     }
 
-    /*
-        fun contains(text: String): Boolean = type.contains(text) ||
-        domain.contains(text, ignoreCase = true) ||
-        timeFormatted?.contains(text, ignoreCase = true) == true ||
-        dateFormatted.contains(text, ignoreCase = true) ||
-        status.text.contains(text, ignoreCase = true) ||
-        method.text.contains(text, ignoreCase = true)
-     */
-
     private fun observeRequestsRaw(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
