@@ -6,7 +6,7 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 
 internal fun failureStatus() = "Exception"
 
-fun getStatus(specificInfos: FloconNetworkCallDomainModel.Response.Success.SpecificInfos): String =
+internal fun extractStatus(specificInfos: FloconNetworkCallDomainModel.Response.Success.SpecificInfos): String =
     when (val s = specificInfos) {
         is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toGraphQlNetworkStatus(isSuccess = s.isSuccess)
         is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> toNetworkStatus(s.httpCode)

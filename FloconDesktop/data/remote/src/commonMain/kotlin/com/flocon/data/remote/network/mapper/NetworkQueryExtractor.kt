@@ -2,7 +2,7 @@ package com.flocon.data.remote.network.mapper
 
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 
-fun extractQueryFormatted(
+internal fun extractQueryFormatted(
     requestUrl: String,
     requestMethod: String,
     specificInfos: FloconNetworkCallDomainModel.Request.SpecificInfos,
