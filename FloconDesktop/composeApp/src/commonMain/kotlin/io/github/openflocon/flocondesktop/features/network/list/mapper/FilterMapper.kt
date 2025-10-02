@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.list.mapper
 
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
-import io.github.openflocon.domain.network.models.NetworkSortedBy
+import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.NetworkColumnsTypeUiModel
@@ -33,18 +33,18 @@ fun itemToUI(item: TextFilterStateDomainModel.FilterItem): TextFilterStateUiMode
 )
 
 
-internal fun HeaderDelegate.Sorted?.toDomain(): NetworkSortedBy? {
+internal fun HeaderDelegate.Sorted?.toDomain(): NetworkSortDomainModel? {
     val column = when(this?.column) {
-        NetworkColumnsTypeUiModel.RequestTime -> NetworkSortedBy.Column.RequestStartTimeFormatted
-        NetworkColumnsTypeUiModel.Method -> NetworkSortedBy.Column.Method
-        NetworkColumnsTypeUiModel.Domain -> NetworkSortedBy.Column.Domain
-        NetworkColumnsTypeUiModel.Query -> NetworkSortedBy.Column.Query
-        NetworkColumnsTypeUiModel.Status -> NetworkSortedBy.Column.Status
-        NetworkColumnsTypeUiModel.Time -> NetworkSortedBy.Column.Duration
+        NetworkColumnsTypeUiModel.RequestTime -> NetworkSortDomainModel.Column.RequestStartTimeFormatted
+        NetworkColumnsTypeUiModel.Method -> NetworkSortDomainModel.Column.Method
+        NetworkColumnsTypeUiModel.Domain -> NetworkSortDomainModel.Column.Domain
+        NetworkColumnsTypeUiModel.Query -> NetworkSortDomainModel.Column.Query
+        NetworkColumnsTypeUiModel.Status -> NetworkSortDomainModel.Column.Status
+        NetworkColumnsTypeUiModel.Time -> NetworkSortDomainModel.Column.Duration
         null -> return null
     }
     val asc = this.sort == SortedByUiModel.Enabled.Ascending
-    return NetworkSortedBy(
+    return NetworkSortDomainModel(
         column = column,
         asc = asc,
     )

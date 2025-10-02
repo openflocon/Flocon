@@ -15,8 +15,8 @@ import io.github.openflocon.domain.network.models.BadQualityConfigId
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
-import io.github.openflocon.domain.network.models.NetworkSortedBy
-import io.github.openflocon.domain.network.models.getContentType
+import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
+import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.network.models.isImage
 import io.github.openflocon.domain.network.repository.NetworkBadQualityRepository
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
@@ -58,11 +58,13 @@ class NetworkRepositoryImpl(
 
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        sortedBy: NetworkSortedBy?,
+        sortedBy: NetworkSortDomainModel?,
+        filter: NetworkFilterDomainModel,
     ): Flow<List<FloconNetworkCallDomainModel>> = networkLocalDataSource
         .observeRequests(
             deviceIdAndPackageName = deviceIdAndPackageName,
             sortedBy = sortedBy,
+            filter = filter,
         )
         .flowOn(dispatcherProvider.data)
 

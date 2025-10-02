@@ -2,7 +2,8 @@ package io.github.openflocon.domain.network.usecase
 
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
-import io.github.openflocon.domain.network.models.NetworkSortedBy
+import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
+import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.network.repository.NetworkRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -14,7 +15,8 @@ class ObserveNetworkRequestsUseCase(
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
     operator fun invoke(
-        sortedBy: NetworkSortedBy?,
+        sortedBy: NetworkSortDomainModel?,
+        filter: NetworkFilterDomainModel,
     ): Flow<List<FloconNetworkCallDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
         .flatMapLatest { current ->
             if (current == null) {
@@ -23,6 +25,7 @@ class ObserveNetworkRequestsUseCase(
                 networkRepository.observeRequests(
                     deviceIdAndPackageName = current,
                     sortedBy = sortedBy,
+                    filter = filter,
                 )
             }
         }
