@@ -14,12 +14,15 @@ data class FloconNetworkCallDomainModel(
         val startTime: Long,
         val startTimeFormatted: String,
         val method: String,
+        val methodFormatted: String,
         val headers: Map<String, String>,
         val body: String?,
         val byteSize: Long,
         val byteSizeFormatted: String,
         val isMocked: Boolean,
         val specificInfos: SpecificInfos,
+        val domainFormatted: String, // extracted from url
+        val queryFormatted: String, // extracted from url
     ) {
         sealed interface SpecificInfos {
             data object Http: SpecificInfos
@@ -35,6 +38,7 @@ data class FloconNetworkCallDomainModel(
 
         val durationMs: Double
         val durationFormatted: String
+        val statusFormatted: String // extracted from response
 
         data class Success(
             override val durationMs: Double,
@@ -45,7 +49,8 @@ data class FloconNetworkCallDomainModel(
             val byteSize: Long,
             val byteSizeFormatted: String,
             val specificInfos: SpecificInfos,
-            val isImage: Boolean
+            val isImage: Boolean,
+            override val statusFormatted: String, // extracted from response
         ) : Response {
             sealed interface SpecificInfos {
                 data class Http(
@@ -64,6 +69,7 @@ data class FloconNetworkCallDomainModel(
             override val durationMs: Double,
             override val durationFormatted: String,
             val issue: String,
+            override val statusFormatted: String, // extracted from response
         ) : Response
     }
 }
