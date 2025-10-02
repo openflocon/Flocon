@@ -12,6 +12,7 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
+import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
@@ -87,11 +88,12 @@ class NetworkViewModel(
     )
 
     private val _filterText = mutableStateOf("")
-    val filterText : State<String> = _filterText
+    val filterText: State<String> = _filterText
 
     private val filterUiState = combine(
         mocksUseCase().map { it.any(MockNetworkDomainModel::isEnabled) }.distinctUntilChanged(),
-        badNetworkUseCase().map { it.any(BadQualityConfigDomainModel::isEnabled) }.distinctUntilChanged()
+        badNetworkUseCase().map { it.any(BadQualityConfigDomainModel::isEnabled) }
+            .distinctUntilChanged()
     ) { mockEnabled, badNetworkEnabled ->
         TopBarUiState(
             hasBadNetwork = badNetworkEnabled,
@@ -116,11 +118,25 @@ class NetworkViewModel(
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
-    private val networkItems: Flow<List<FloconNetworkCallDomainModel>> = headerDelegate.sorted.flatMapLatest { sorted ->
-        observeNetworkRequestsUseCase(
-            sortedBy = sorted?.toDomain(),
-        )
-    }
+    private val sortAndFilter = combines(
+        headerDelegate.sorted.map { it?.toDomain() }.distinctUntilChanged(),
+        snapshotFlow { _filterText.value }
+            .map { it.takeIf { it.isNotBlank() } }
+            .map {
+                NetworkFilterDomainModel(
+                    filterOnAllColumns = it
+                )
+            }
+            .distinctUntilChanged()
+    )
+
+    private val networkItems: Flow<List<FloconNetworkCallDomainModel>> =
+        sortAndFilter.flatMapLatest { (sorted, filter) ->
+            observeNetworkRequestsUseCase(
+                sortedBy = sorted,
+                filter = filter,
+            )
+        }
 
     private val items = combines(
         networkItems,
@@ -157,14 +173,12 @@ class NetworkViewModel(
         items,
         contentState,
         filterConfig,
-        snapshotFlow { _filterText.value },
-    ) { items, content, config, filterText ->
+    ) { items, content, config ->
         sortAndFilterNetworkItemsProcessor(
             items = items,
             filterState = config.filterState,
             allowedMethods = config.allowedMethods,
             textFilters = config.textFilters,
-            filterText = filterText,
         )
     }
         .flowOn(dispatcherProvider.viewModel.limitedParallelism(1))

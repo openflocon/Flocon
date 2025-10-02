@@ -11,13 +11,9 @@ class SortAndFilterNetworkItemsProcessor {
     operator fun invoke(
         items: List<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>>,
         filterState: TopBarUiState,
-        filterText: String,
         allowedMethods: List<NetworkMethodUi>,
         textFilters: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
     ): List<NetworkItemViewState> = items.asSequence()
-        .filter { item ->
-            (filterText.isEmpty() || item.second.contains(filterText) || item.first.contains(filterText))
-        }
         .filter { item ->
             item.second.method in allowedMethods
         }

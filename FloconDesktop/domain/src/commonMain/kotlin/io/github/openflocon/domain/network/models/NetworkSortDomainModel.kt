@@ -1,6 +1,6 @@
 package io.github.openflocon.domain.network.models
 
-data class NetworkSortedBy(
+data class NetworkSortDomainModel(
     val column: Column,
     val asc: Boolean,
 ) {
