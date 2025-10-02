@@ -57,6 +57,16 @@ fun toDomain(
     val requestSize = decoded.requestSize ?: 0L
     val startTime = decoded.startTime!!
 
+    val specificInfos = when {
+        graphQl != null -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
+            query = graphQl.request.requestBody.query,
+            operationType = graphQl.request.operationType,
+        )
+
+        decoded.floconNetworkType == "grpc" -> FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc
+        else -> FloconNetworkCallDomainModel.Request.SpecificInfos.Http
+    }
+
     val request = FloconNetworkCallDomainModel.Request(
         url = decoded.url!!,
         startTime = startTime,
@@ -67,15 +77,20 @@ fun toDomain(
         byteSize = requestSize,
         byteSizeFormatted = ByteFormatter.formatBytes(requestSize),
         isMocked = decoded.isMocked ?: false,
-        specificInfos = when {
-            graphQl != null -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
-                query = graphQl.request.requestBody.query,
-                operationType = graphQl.request.operationType,
-            )
-
-            decoded.floconNetworkType == "grpc" -> FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc
-            else -> FloconNetworkCallDomainModel.Request.SpecificInfos.Http
-        },
+        specificInfos = specificInfos,
+        domainFormatted = extractDomain(
+            requestUrl = decoded.url,
+            specificInfos = specificInfos,
+        ),
+        methodFormatted = extractMethod(
+            requestMethod = decoded.method,
+            specificInfos = specificInfos,
+        ),
+        queryFormatted = extractQueryFormatted(
+            requestUrl = decoded.url,
+            requestMethod = decoded.method,
+            specificInfos = specificInfos,
+        ),
     )
 
     FloconNetworkCallDomainModel(

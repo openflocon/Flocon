@@ -1,5 +1,7 @@
 package com.flocon.data.remote.network.models
 
+import com.flocon.data.remote.network.mapper.failureStatus
+import com.flocon.data.remote.network.mapper.extractStatus
 import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.common.time.formatDuration
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
@@ -59,27 +61,32 @@ internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnl
                 durationMs = durationMs,
                 issue = responseError,
                 durationFormatted = durationFormatted,
+                statusFormatted = failureStatus(),
             )
         } else {
             val responseSize = responseSize ?: 0L
+
+            val specificInfos = when (floconNetworkType) {
+                "grpc" -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc(
+                    grpcStatus = responseGrpcStatus!!,
+                )
+                // otherwise tread like http
+                else -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http(
+                    httpCode = responseHttpCode!!,
+                )
+            }
+
             FloconNetworkCallDomainModel.Response.Success(
                 durationMs = durationMs,
                 contentType = responseContentType,
                 body = responseBody,
                 headers = responseHeaders.orEmpty(),
                 byteSize = responseSize,
-                specificInfos = when (floconNetworkType) {
-                    "grpc" -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc(
-                        grpcStatus = responseGrpcStatus!!,
-                    )
-                    // otherwise tread like http
-                    else -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http(
-                        httpCode = responseHttpCode!!,
-                    )
-                },
+                specificInfos = specificInfos,
                 isImage = isImage,
                 durationFormatted = durationFormatted,
-                byteSizeFormatted = ByteFormatter.formatBytes(responseSize)
+                byteSizeFormatted = ByteFormatter.formatBytes(responseSize),
+                statusFormatted = extractStatus(specificInfos)
             )
         }
         FloconNetworkResponseOnlyDomainModel(

@@ -5,20 +5,18 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkIte
 
 fun toTypeUi(call: FloconNetworkCallDomainModel): NetworkItemViewState.NetworkTypeUi = when (val s = call.request.specificInfos) {
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> NetworkItemViewState.NetworkTypeUi.GraphQl(
-        queryName = s.query,
+        queryName = call.request.queryFormatted,
     )
 
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> {
-        val query = extractPath(call.request.url)
         NetworkItemViewState.NetworkTypeUi.Url(
-            query = query,
-            method = call.request.method,
+            query = call.request.queryFormatted,
         )
     }
 
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> {
         NetworkItemViewState.NetworkTypeUi.Grpc(
-            method = call.request.method,
+            method = call.request.queryFormatted,
         )
     }
 }
