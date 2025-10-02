@@ -22,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,15 +66,18 @@ import io.github.openflocon.library.designsystem.components.rememberFloconScroll
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
+
 @Composable
 fun NetworkScreen(
     modifier: Modifier = Modifier
 ) {
     val viewModel: NetworkViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val filterText = viewModel.filterText
 
     NetworkScreen(
         uiState = uiState,
+        filterText = filterText,
         onAction = viewModel::onAction,
         modifier = modifier,
     )
@@ -81,6 +86,7 @@ fun NetworkScreen(
 @Composable
 fun NetworkScreen(
     uiState: NetworkUiState,
+    filterText: State<String>,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -125,6 +131,7 @@ fun NetworkScreen(
             modifier = Modifier.fillMaxWidth(),
             filterBar = {
                 FilterBar(
+                    filterText = filterText,
                     placeholderText = "Filter route",
                     onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
                     modifier = Modifier.fillMaxWidth(.7f),
@@ -357,6 +364,7 @@ private fun NetworkScreenPreview() {
         NetworkScreen(
             uiState = uiState,
             onAction = {},
+            filterText = mutableStateOf(""),
         )
     }
 }

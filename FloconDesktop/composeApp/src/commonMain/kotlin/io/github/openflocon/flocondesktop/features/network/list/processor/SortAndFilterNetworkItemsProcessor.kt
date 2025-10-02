@@ -2,23 +2,21 @@ package io.github.openflocon.flocondesktop.features.network.list.processor
 
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
-import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
-import io.github.openflocon.flocondesktop.features.network.list.model.FilterUiState
+import io.github.openflocon.flocondesktop.features.network.list.model.TopBarUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
-import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
-import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.NetworkColumnsTypeUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
 
 class SortAndFilterNetworkItemsProcessor {
     operator fun invoke(
         items: List<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>>,
-        filterState: FilterUiState,
+        filterState: TopBarUiState,
+        filterText: String,
         allowedMethods: List<NetworkMethodUi>,
         textFilters: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
     ): List<NetworkItemViewState> = items.asSequence()
         .filter { item ->
-            (filterState.query.isEmpty() || item.second.contains(filterState.query) || item.first.contains(filterState.query))
+            (filterText.isEmpty() || item.second.contains(filterText) || item.first.contains(filterText))
         }
         .filter { item ->
             item.second.method in allowedMethods
