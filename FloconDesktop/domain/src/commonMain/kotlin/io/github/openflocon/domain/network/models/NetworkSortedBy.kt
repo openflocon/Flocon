@@ -7,9 +7,9 @@ data class NetworkSortedBy(
     enum class Column {
         RequestStartTimeFormatted,
         Method,
-        Domain, // todo parse before
-        Query, // TODO parse before
-        Status, // todo parse before,
+        Domain,
+        Query,
+        Status,
         DurationFormatted
     }
 }

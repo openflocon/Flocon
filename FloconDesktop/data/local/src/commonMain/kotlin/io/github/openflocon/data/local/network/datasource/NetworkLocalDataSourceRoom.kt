@@ -146,9 +146,9 @@ class NetworkLocalDataSourceRoom(
 
 fun NetworkSortedBy.Column.roomColumnName(): String = when (this) {
     NetworkSortedBy.Column.RequestStartTimeFormatted -> "request_startTimeFormatted"
-    NetworkSortedBy.Column.Method -> "request_method"
-    NetworkSortedBy.Column.Domain -> "request_domain" // todo parse before
-    NetworkSortedBy.Column.Query -> "request_query" // TODO parse before
-    NetworkSortedBy.Column.Status -> "status" // todo parse before,
+    NetworkSortedBy.Column.Method -> "request_methodFormatted"
+    NetworkSortedBy.Column.Domain -> "request_domainFormatted"
+    NetworkSortedBy.Column.Query -> "request_queryFormatted"
+    NetworkSortedBy.Column.Status -> "response_statusFormatted"
     NetworkSortedBy.Column.DurationFormatted -> "response_durationFormatted"
 }
