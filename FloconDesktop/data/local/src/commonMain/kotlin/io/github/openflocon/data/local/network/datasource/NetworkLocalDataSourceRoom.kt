@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.network.datasource
 
+import androidx.room.RoomRawQuery
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.mapper.toDomainModel
@@ -7,10 +8,9 @@ import io.github.openflocon.data.local.network.mapper.toEntity
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.NetworkSortedBy
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 class NetworkLocalDataSourceRoom(
     private val floconNetworkDao: FloconNetworkDao,
@@ -18,11 +18,35 @@ class NetworkLocalDataSourceRoom(
 
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sortedBy: NetworkSortedBy?,
     ): Flow<List<FloconNetworkCallDomainModel>> = floconNetworkDao.let {
-        it.observeRequests(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
+        observeRequestsRaw(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            sortedBy = sortedBy,
         ).map { entities -> entities.mapNotNull(FloconNetworkCallEntity::toDomainModel) }
+    }
+
+    private fun observeRequestsRaw(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sortedBy: NetworkSortedBy?,
+    ): Flow<List<FloconNetworkCallEntity>> {
+        val safeColumnName = sortedBy?.column?.roomColumnName() ?: "request_startTime"
+
+        val sortOrder = if (sortedBy == null || sortedBy.asc) "ASC" else "DESC"
+
+        val sqlQuery = """
+            SELECT * FROM FloconNetworkCallEntity 
+            WHERE deviceId = ? 
+            AND packageName = ? 
+            ORDER BY $safeColumnName $sortOrder
+        """.trimIndent()
+
+        val roomQuery = RoomRawQuery(sqlQuery, onBindStatement = {
+            it.bindText(1, deviceIdAndPackageName.deviceId)
+            it.bindText(2, deviceIdAndPackageName.packageName)
+        })
+
+        return floconNetworkDao.observeRequestsRaw(roomQuery)
     }
 
     override suspend fun getCalls(
@@ -114,4 +138,14 @@ class NetworkLocalDataSourceRoom(
     override suspend fun clear() {
         floconNetworkDao.clearAll()
     }
+}
+
+
+private fun NetworkSortedBy.Column.roomColumnName(): String = when (this) {
+    NetworkSortedBy.Column.RequestStartTimeFormatted -> "request_startTimeFormatted"
+    NetworkSortedBy.Column.Method -> "request_methodFormatted"
+    NetworkSortedBy.Column.Domain -> "request_domainFormatted"
+    NetworkSortedBy.Column.Query -> "request_queryFormatted"
+    NetworkSortedBy.Column.Status -> "response_statusFormatted"
+    NetworkSortedBy.Column.Duration -> "response_durationMs"
 }

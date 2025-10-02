@@ -7,7 +7,9 @@ import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
+import io.github.openflocon.domain.network.models.NetworkSortedBy
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
@@ -25,12 +27,15 @@ import io.github.openflocon.flocondesktop.features.network.body.model.MockDispla
 import io.github.openflocon.flocondesktop.features.network.detail.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
+import io.github.openflocon.flocondesktop.features.network.list.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.list.model.FilterUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
+import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
+import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.NetworkColumnsTypeUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
 import io.github.openflocon.flocondesktop.features.network.list.processor.SortAndFilterNetworkItemsProcessor
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
@@ -105,8 +110,14 @@ class NetworkViewModel(
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
+    private val networkItems: Flow<List<FloconNetworkCallDomainModel>> = headerDelegate.sorted.flatMapLatest { sorted ->
+        observeNetworkRequestsUseCase(
+            sortedBy = sorted?.toDomain(),
+        )
+    }
+
     private val items = combines(
-        observeNetworkRequestsUseCase(),
+        networkItems,
         observeCurrentDeviceIdAndPackageNameUseCase(),
     ).mapLatest { (list, deviceIdAndPackageName) ->
         list.map { networkCall ->
@@ -119,20 +130,17 @@ class NetworkViewModel(
 
     data class FilterConfig(
         val filterState: FilterUiState,
-        val sorted: HeaderDelegate.Sorted?,
         val allowedMethods: List<NetworkMethodUi>,
         val textFilters: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
     )
 
     private val filterConfig = combine(
         filterUiState,
-        headerDelegate.sorted,
         headerDelegate.allowedMethods(),
         headerDelegate.textFiltersState,
-    ) { filterState, sorted, allowedMethods, textFilters ->
+    ) { filterState, allowedMethods, textFilters ->
         FilterConfig(
             filterState = filterState,
-            sorted = sorted,
             allowedMethods = allowedMethods,
             textFilters = textFilters,
         )
@@ -147,7 +155,6 @@ class NetworkViewModel(
         sortAndFilterNetworkItemsProcessor(
             items = items,
             filterState = config.filterState,
-            sorted = config.sorted,
             allowedMethods = config.allowedMethods,
             textFilters = config.textFilters
         )

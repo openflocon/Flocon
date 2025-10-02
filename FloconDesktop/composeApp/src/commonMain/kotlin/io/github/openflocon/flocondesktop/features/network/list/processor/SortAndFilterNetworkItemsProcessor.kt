@@ -14,7 +14,6 @@ class SortAndFilterNetworkItemsProcessor {
     operator fun invoke(
         items: List<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>>,
         filterState: FilterUiState,
-        sorted: HeaderDelegate.Sorted?,
         allowedMethods: List<NetworkMethodUi>,
         textFilters: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
     ): List<NetworkItemViewState> = items.asSequence()
@@ -29,43 +28,8 @@ class SortAndFilterNetworkItemsProcessor {
                 textFilter.filter(column, item)
             }
         }
-        .let {
-            sort(it, sorted)
-        }
         .map { it.second }
         .toList()
-}
-
-private fun sort(
-    sequence: Sequence<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>>,
-    sorted: HeaderDelegate.Sorted?,
-): Sequence<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>> {
-    if (sorted == null) {
-        return sequence
-    }
-
-    val comparator = when (sorted.column) {
-        NetworkColumnsTypeUiModel.RequestTime -> compareBy<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>> { it.first.request.startTime }
-        NetworkColumnsTypeUiModel.Method -> compareBy { it.second.method.text }
-        NetworkColumnsTypeUiModel.Domain -> compareBy { it.second.domain }
-        NetworkColumnsTypeUiModel.Query -> compareBy { it.second.type.text }
-        NetworkColumnsTypeUiModel.Status -> compareBy { it.second.status.text }
-        NetworkColumnsTypeUiModel.Time -> compareBy { it.first.response?.durationMs }
-    }
-
-    val sortedComparator = when (sorted.sort) {
-        is SortedByUiModel.Enabled.Ascending -> comparator
-        is SortedByUiModel.Enabled.Descending -> comparator.reversed()
-    }
-
-    return sequence.sortedWith(sortedComparator)
-}
-
-private fun TextFilterStateUiModel.filter(
-    column: NetworkTextFilterColumns,
-    items: List<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>>,
-): List<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>> = items.filter { item ->
-    filter(column, item)
 }
 
 private fun TextFilterStateUiModel.filter(

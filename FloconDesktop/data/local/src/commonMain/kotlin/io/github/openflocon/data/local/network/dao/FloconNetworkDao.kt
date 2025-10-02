@@ -4,9 +4,12 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -21,6 +24,9 @@ interface FloconNetworkDao {
     """,
     )
     fun observeRequests(deviceId: String, packageName: String): Flow<List<FloconNetworkCallEntity>>
+
+    @RawQuery(observedEntities = [FloconNetworkCallEntity::class])
+    fun observeRequestsRaw(query: RoomRawQuery): Flow<List<FloconNetworkCallEntity>>
 
     @Query(
         """

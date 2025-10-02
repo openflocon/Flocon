@@ -2,12 +2,14 @@ package io.github.openflocon.domain.network.repository
 
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.network.models.NetworkSortedBy
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkRepository {
 
     fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sortedBy: NetworkSortedBy?,
     ): Flow<List<FloconNetworkCallDomainModel>>
 
     fun observeRequest(
