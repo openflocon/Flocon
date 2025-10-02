@@ -102,7 +102,7 @@ fun NetworkItemHeaderView(
             )
         }
         HeaderDropdown(
-            label = "DurationFormatted",
+            label = "Time",
             filtered = state.time.isFiltered(),
             sortedBy = state.time.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Time, it) },
