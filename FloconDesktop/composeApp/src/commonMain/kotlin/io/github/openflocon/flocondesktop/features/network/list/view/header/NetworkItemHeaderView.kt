@@ -40,7 +40,7 @@ fun NetworkItemHeaderView(
         verticalAlignment = Alignment.Bottom,
     ) {
         HeaderDropdown(
-            label = "Request DurationFormatted",
+            label = "Request Time",
             filtered = state.requestTime.isFiltered(),
             sortedBy = state.requestTime.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.RequestTime, it) },
