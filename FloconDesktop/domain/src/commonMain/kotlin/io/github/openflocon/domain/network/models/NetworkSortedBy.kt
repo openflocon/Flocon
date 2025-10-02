@@ -10,6 +10,6 @@ data class NetworkSortedBy(
         Domain,
         Query,
         Status,
-        DurationFormatted
+        Duration
     }
 }

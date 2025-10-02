@@ -22,10 +22,7 @@ class NetworkLocalDataSourceRoom(
     ): Flow<List<FloconNetworkCallDomainModel>> = floconNetworkDao.let {
         observeRequestsRaw(
             deviceIdAndPackageName = deviceIdAndPackageName,
-            sortedBy = NetworkSortedBy(
-                column = NetworkSortedBy.Column.RequestStartTimeFormatted,
-                asc = true,
-            )
+            sortedBy = sortedBy,
         ).map { entities -> entities.mapNotNull(FloconNetworkCallEntity::toDomainModel) }
     }
 
@@ -144,11 +141,11 @@ class NetworkLocalDataSourceRoom(
 }
 
 
-fun NetworkSortedBy.Column.roomColumnName(): String = when (this) {
+private fun NetworkSortedBy.Column.roomColumnName(): String = when (this) {
     NetworkSortedBy.Column.RequestStartTimeFormatted -> "request_startTimeFormatted"
     NetworkSortedBy.Column.Method -> "request_methodFormatted"
     NetworkSortedBy.Column.Domain -> "request_domainFormatted"
     NetworkSortedBy.Column.Query -> "request_queryFormatted"
     NetworkSortedBy.Column.Status -> "response_statusFormatted"
-    NetworkSortedBy.Column.DurationFormatted -> "response_durationFormatted"
+    NetworkSortedBy.Column.Duration -> "response_durationMs"
 }

@@ -40,7 +40,7 @@ internal fun HeaderDelegate.Sorted?.toDomain(): NetworkSortedBy? {
         NetworkColumnsTypeUiModel.Domain -> NetworkSortedBy.Column.Domain
         NetworkColumnsTypeUiModel.Query -> NetworkSortedBy.Column.Query
         NetworkColumnsTypeUiModel.Status -> NetworkSortedBy.Column.Status
-        NetworkColumnsTypeUiModel.Time -> NetworkSortedBy.Column.DurationFormatted
+        NetworkColumnsTypeUiModel.Time -> NetworkSortedBy.Column.Duration
         null -> return null
     }
     val asc = this.sort == SortedByUiModel.Enabled.Ascending

@@ -130,20 +130,17 @@ class NetworkViewModel(
 
     data class FilterConfig(
         val filterState: FilterUiState,
-        val sorted: HeaderDelegate.Sorted?,
         val allowedMethods: List<NetworkMethodUi>,
         val textFilters: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
     )
 
     private val filterConfig = combine(
         filterUiState,
-        headerDelegate.sorted,
         headerDelegate.allowedMethods(),
         headerDelegate.textFiltersState,
-    ) { filterState, sorted, allowedMethods, textFilters ->
+    ) { filterState, allowedMethods, textFilters ->
         FilterConfig(
             filterState = filterState,
-            sorted = sorted,
             allowedMethods = allowedMethods,
             textFilters = textFilters,
         )
@@ -158,7 +155,6 @@ class NetworkViewModel(
         sortAndFilterNetworkItemsProcessor(
             items = items,
             filterState = config.filterState,
-            sorted = config.sorted,
             allowedMethods = config.allowedMethods,
             textFilters = config.textFilters
         )
