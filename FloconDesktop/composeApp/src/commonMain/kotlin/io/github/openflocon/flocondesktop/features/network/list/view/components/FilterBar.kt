@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -33,15 +34,32 @@ fun FilterBar(
     onTextChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var filterText by remember { mutableStateOf("") }
+    val filterText = remember { mutableStateOf("") }
+    FilterBar(
+        filterText = filterText,
+        onTextChange = {
+            filterText.value = it
+            onTextChange(it)
+        },
+        placeholderText = placeholderText,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun FilterBar(
+    placeholderText: String,
+    filterText: State<String>,
+    onTextChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val onTextChangedCallback by rememberUpdatedState(onTextChange)
-    val displayClearButton by remember { derivedStateOf { filterText.isNotEmpty() } }
+    val displayClearButton by remember { derivedStateOf { filterText.value.isNotEmpty() } }
 
     FloconTextFieldWithoutM3(
-        value = filterText,
+        value = filterText.value,
         onValueChange = {
-            filterText = it
-            onTextChangedCallback(filterText)
+            onTextChangedCallback(it)
         },
         placeholder = defaultPlaceHolder(placeholderText),
         leadingComponent = {
@@ -63,7 +81,6 @@ fun FilterBar(
                         .size(16.dp)
                         .clickable(
                             onClick = {
-                                filterText = ""
                                 onTextChangedCallback("")
                             },
                             indication = null,

@@ -12,7 +12,7 @@ data class NetworkUiState(
     val items: List<NetworkItemViewState>,
     val contentState: ContentUiState,
     val detailState: NetworkDetailViewState?,
-    val filterState: FilterUiState,
+    val filterState: TopBarUiState,
     val headerState: NetworkHeaderUiState,
 )
 
@@ -20,6 +20,6 @@ fun previewNetworkUiState() = NetworkUiState(
     items = emptyList(),
     detailState = null,
     contentState = previewContentUiState(),
-    filterState = previewFilterUiState(),
+    filterState = previewTopBarUiState(),
     headerState = previewNetworkHeaderUiState(),
 )

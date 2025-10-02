@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.list
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
@@ -9,7 +12,6 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
-import io.github.openflocon.domain.network.models.NetworkSortedBy
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
@@ -29,13 +31,11 @@ import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkD
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
-import io.github.openflocon.flocondesktop.features.network.list.model.FilterUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
-import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
-import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.NetworkColumnsTypeUiModel
+import io.github.openflocon.flocondesktop.features.network.list.model.TopBarUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
 import io.github.openflocon.flocondesktop.features.network.list.processor.SortAndFilterNetworkItemsProcessor
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
@@ -86,15 +86,21 @@ class NetworkViewModel(
         ),
     )
 
-    private val _filterUiState = MutableStateFlow(FilterUiState(query = "", hasBadNetwork = false, hasMocks = false))
+    private val _filterText = mutableStateOf("")
+    val filterText : State<String> = _filterText
+
     private val filterUiState = combine(
-        _filterUiState,
-        mocksUseCase().map { it.any(MockNetworkDomainModel::isEnabled) },
-        badNetworkUseCase().map { it.any(BadQualityConfigDomainModel::isEnabled) }
-    ) { state, mockEnabled, badNetworkEnabled ->
-        state.copy(hasMocks = mockEnabled, hasBadNetwork = badNetworkEnabled)
-    }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _filterUiState.value)
+        mocksUseCase().map { it.any(MockNetworkDomainModel::isEnabled) }.distinctUntilChanged(),
+        badNetworkUseCase().map { it.any(BadQualityConfigDomainModel::isEnabled) }.distinctUntilChanged()
+    ) { mockEnabled, badNetworkEnabled ->
+        TopBarUiState(
+            hasBadNetwork = badNetworkEnabled,
+            hasMocks = mockEnabled,
+        )
+    }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5_000),
+        TopBarUiState(hasBadNetwork = false, hasMocks = false)
+    )
 
     private val detailState: StateFlow<NetworkDetailViewState?> =
         contentState.map { it.selectedRequestId }
@@ -129,7 +135,7 @@ class NetworkViewModel(
     }
 
     data class FilterConfig(
-        val filterState: FilterUiState,
+        val filterState: TopBarUiState,
         val allowedMethods: List<NetworkMethodUi>,
         val textFilters: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
     )
@@ -150,13 +156,15 @@ class NetworkViewModel(
     private val filteredItems: Flow<List<NetworkItemViewState>> = combine(
         items,
         contentState,
-        filterConfig
-    ) { items, content, config ->
+        filterConfig,
+        snapshotFlow { _filterText.value },
+    ) { items, content, config, filterText ->
         sortAndFilterNetworkItemsProcessor(
             items = items,
             filterState = config.filterState,
             allowedMethods = config.allowedMethods,
-            textFilters = config.textFilters
+            textFilters = config.textFilters,
+            filterText = filterText,
         )
     }
         .flowOn(dispatcherProvider.viewModel.limitedParallelism(1))
@@ -393,9 +401,7 @@ class NetworkViewModel(
     }
 
     private fun onFilterQuery(action: NetworkAction.FilterQuery) {
-        _filterUiState.update { state ->
-            state.copy(query = action.query)
-        }
+        _filterText.value = action.query
     }
 
     private fun onExportCsv() {
