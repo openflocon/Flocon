@@ -52,7 +52,7 @@ private fun FloconNetworkResponseEmbedded.toDomainModel(): FloconNetworkCallDoma
             durationMs = durationMs,
             issue = responseError,
             durationFormatted = durationFormatted,
-            statusFormatted = status,
+            statusFormatted = statusFormatted,
         )
     } else {
         FloconNetworkCallDomainModel.Response.Success(
@@ -64,7 +64,7 @@ private fun FloconNetworkResponseEmbedded.toDomainModel(): FloconNetworkCallDoma
             durationFormatted = durationFormatted,
             byteSizeFormatted = responseByteSizeFormatted ?: "",
             isImage = isImage,
-            statusFormatted = status,
+            statusFormatted = statusFormatted,
             specificInfos = when {
                 graphql != null -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl(
                     httpCode = graphql.responseHttpCode,

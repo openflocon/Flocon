@@ -62,7 +62,7 @@ fun FloconNetworkCallDomainModel.toEntity(
                         isImage = false,
                         durationFormatted = networkResponse.durationFormatted,
                         responseByteSizeFormatted = null,
-                        status = networkResponse.statusFormatted,
+                        statusFormatted = networkResponse.statusFormatted,
                     )
                 }
                 is FloconNetworkCallDomainModel.Response.Success -> {
@@ -76,7 +76,7 @@ fun FloconNetworkCallDomainModel.toEntity(
                         responseByteSizeFormatted = networkResponse.byteSizeFormatted,
                         responseError = null,
                         isImage = networkResponse.isImage,
-                        status = networkResponse.statusFormatted,
+                        statusFormatted = networkResponse.statusFormatted,
                         graphql = when (val s = networkResponse.specificInfos) {
                             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> NetworkCallGraphQlResponseEmbedded(
                                 responseHttpCode = s.httpCode,

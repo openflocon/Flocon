@@ -76,7 +76,7 @@ data class FloconNetworkResponseEmbedded(
     val responseByteSizeFormatted: String?,
     val responseError: String?,
     val isImage: Boolean,
-    val status: String,
+    val statusFormatted: String,
 
     @Embedded(prefix = "graphql_")
     val graphql: NetworkCallGraphQlResponseEmbedded?,
