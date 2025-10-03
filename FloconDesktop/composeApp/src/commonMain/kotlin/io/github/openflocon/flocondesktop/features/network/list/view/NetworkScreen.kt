@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +34,10 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.PagingSourceFactory
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -44,6 +50,9 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAct
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewGraphQlItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
@@ -62,6 +71,7 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.panel.FloconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -272,7 +282,7 @@ fun NetworkScreen(
                 ) {
                     items(
                         count = rows.itemCount,
-                        key = rows.itemKey { it.uuid } ,
+                        key = rows.itemKey { it.uuid },
                     ) { index ->
                         val item = rows[index]
                         if (item != null) {
@@ -362,34 +372,35 @@ fun NetworkScreen(
 private fun selectPreviousRow(
     rows: LazyPagingItems<NetworkItemViewState>,
     uiState: NetworkUiState
-): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
-    .takeIf { it != -1 }
-    ?.let { selectedIndex ->
-        val newIndex = if (uiState.contentState.invertList)
-            selectedIndex + 1
-        else
-            selectedIndex - 1
-        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
-    }?.let {
-        rows[it]
-    }
+): NetworkItemViewState? =
+    rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
+        .takeIf { it != -1 }
+        ?.let { selectedIndex ->
+            val newIndex = if (uiState.contentState.invertList)
+                selectedIndex + 1
+            else
+                selectedIndex - 1
+            newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+        }?.let {
+            rows[it]
+        }
 
 private fun selectNextRow(
     rows: LazyPagingItems<NetworkItemViewState>,
     uiState: NetworkUiState
-): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
-    .takeIf { it != -1 }
-    ?.let { selectedIndex ->
-        val newIndex = if (uiState.contentState.invertList)
-            selectedIndex - 1
-        else
-            selectedIndex + 1
-        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
-    }?.let {
-        rows[it]
-    }
+): NetworkItemViewState? =
+    rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
+        .takeIf { it != -1 }
+        ?.let { selectedIndex ->
+            val newIndex = if (uiState.contentState.invertList)
+                selectedIndex - 1
+            else
+                selectedIndex + 1
+            newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+        }?.let {
+            rows[it]
+        }
 
-/*
 @Composable
 @Preview
 private fun NetworkScreenPreview() {
@@ -406,12 +417,15 @@ private fun NetworkScreenPreview() {
         }
         val uiState = previewNetworkUiState()
 
+        val fakeRows = remember(rows) {
+            MutableStateFlow(PagingData.from(rows))
+        }.collectAsLazyPagingItems()
+
         NetworkScreen(
             uiState = uiState,
-            rows = rows,
+            rows = fakeRows,
             onAction = {},
             filterText = mutableStateOf(""),
         )
     }
 }
-*/
