@@ -19,6 +19,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutinesCore)
             implementation(libs.kotlinx.serializationJson)
+            implementation(libs.androidx.paging.common)
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

@@ -1,5 +1,6 @@
 package io.github.openflocon.data.core.network.datasource
 
+import androidx.paging.PagingData
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
@@ -18,7 +19,7 @@ interface NetworkLocalDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
         filter: NetworkFilterDomainModel,
-    ): Flow<List<FloconNetworkCallDomainModel>>
+    ): Flow<PagingData<FloconNetworkCallDomainModel>>
 
     suspend fun getCalls(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
