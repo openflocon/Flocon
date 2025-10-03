@@ -14,7 +14,6 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel.Filters
-import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
@@ -35,12 +34,10 @@ import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderD
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.TopBarUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
-import io.github.openflocon.flocondesktop.features.network.list.processor.FilterNetworkItemsProcessor
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.Flow
@@ -58,6 +55,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.collections.map
 
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
@@ -71,7 +69,6 @@ class NetworkViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val headerDelegate: HeaderDelegate,
-    private val filterNetworkItemsProcessor: FilterNetworkItemsProcessor,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase,
     private val decodeJwtTokenUseCase: DecodeJwtTokenUseCase,
@@ -121,12 +118,14 @@ class NetworkViewModel(
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
     private val filter = combines(
-        snapshotFlow { _filterText.value }.map { it.takeIf { it.isNotBlank() } },
-        headerDelegate.textFiltersState.map { it.toDomain() }
-    ).map { (textFilters, filterOnAllColumns) ->
+        snapshotFlow { _filterText.value }.map { it.takeIf { it.isNotBlank() } }.distinctUntilChanged(),
+        headerDelegate.textFiltersState.map { it.toDomain() }.distinctUntilChanged(),
+        headerDelegate.allowedMethods().map { items -> methodsToDomain(items) }.distinctUntilChanged(),
+    ).map { (textFilters, filterOnAllColumns, methods) ->
         NetworkFilterDomainModel(
             filterOnAllColumns = textFilters,
-            filters = filterOnAllColumns,
+            textsFilters = filterOnAllColumns,
+            methodFilter = methods,
         )
     }
 
@@ -135,59 +134,24 @@ class NetworkViewModel(
         filter,
     ).distinctUntilChanged()
 
-    private val networkItems: Flow<List<FloconNetworkCallDomainModel>> =
+    private val items = combines(
         sortAndFilter.flatMapLatest { (sorted, filter) ->
             observeNetworkRequestsUseCase(
                 sortedBy = sorted,
                 filter = filter,
             )
-        }
-
-    private val items = combines(
-        networkItems,
+        },
         observeCurrentDeviceIdAndPackageNameUseCase(),
     ).mapLatest { (list, deviceIdAndPackageName) ->
         list.map { networkCall ->
-            networkCall to toUi(
-                networkCall = networkCall,
+            networkCall.toUi(
                 deviceIdAndPackageName = deviceIdAndPackageName
             )
-        } // keep the domain for the filter
+        }
     }
-
-    data class FilterConfig(
-        val filterState: TopBarUiState,
-        val allowedMethods: List<NetworkMethodUi>,
-        val textFilters: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
-    )
-
-    private val filterConfig = combine(
-        filterUiState,
-        headerDelegate.allowedMethods(),
-        headerDelegate.textFiltersState,
-    ) { filterState, allowedMethods, textFilters ->
-        FilterConfig(
-            filterState = filterState,
-            allowedMethods = allowedMethods,
-            textFilters = textFilters,
-        )
-    }
-        .distinctUntilChanged()
-
-    private val filteredItems: Flow<List<NetworkItemViewState>> = combine(
-        items,
-        filterConfig,
-    ) { items, config ->
-        filterNetworkItemsProcessor(
-            items = items,
-            allowedMethods = config.allowedMethods,
-        )
-    }
-        .flowOn(dispatcherProvider.viewModel.limitedParallelism(1))
-        .distinctUntilChanged()
 
     val uiState = combine(
-        filteredItems,
+        items,
         contentState,
         detailState,
         filterUiState,
@@ -422,7 +386,7 @@ class NetworkViewModel(
 
     private fun onExportCsv() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            filteredItems.firstOrNull()?.let {
+            items.firstOrNull()?.let {
                 val ids = it.map { it.uuid }
                 exportNetworkCallsToCsv(ids).fold(
                     doOnFailure = {
@@ -471,4 +435,8 @@ private fun TextFilterStateUiModel.FilterItem.toDomain(): NetworkFilterDomainMod
             text = text,
         )
     } else null
+}
+
+private fun methodsToDomain(items: List<NetworkMethodUi>) : List<String>? {
+    return items.map { it.text }.takeIf { it.isNotEmpty() }
 }

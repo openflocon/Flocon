@@ -2,7 +2,8 @@ package io.github.openflocon.domain.network.models
 
 data class NetworkFilterDomainModel(
     val filterOnAllColumns: String?,
-    val filters: List<Filters>?,
+    val textsFilters: List<Filters>?,
+    val methodFilter: List<String>?,
 ) {
     data class Filters(
         val column: NetworkTextFilterColumns,
