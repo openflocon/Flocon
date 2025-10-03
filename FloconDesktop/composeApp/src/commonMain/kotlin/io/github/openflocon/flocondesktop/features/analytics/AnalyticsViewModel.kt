@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.analytics
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.analytics.usecase.ExportAnalyticsToCsvUseCase
+import io.github.openflocon.domain.analytics.usecase.ObserveAnalyticsByIdUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemsBeforeUseCase
@@ -13,10 +14,11 @@ import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.analytics.delegate.AnalyticsSelectorDelegate
+import io.github.openflocon.flocondesktop.features.analytics.mapper.mapToDetailUi
 import io.github.openflocon.flocondesktop.features.analytics.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsContentStateUiModel
-import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsScreenUiState
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
@@ -24,7 +26,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -41,6 +46,7 @@ class AnalyticsViewModel(
     private val removeAnalyticsItemsBeforeUseCase: RemoveAnalyticsItemsBeforeUseCase,
     private val removeOldSessionsAnalyticsUseCase: RemoveOldSessionsAnalyticsUseCase,
     private val exportAnalyticsToCsv: ExportAnalyticsToCsvUseCase,
+    private val observeAnalyticsByIdUseCase: ObserveAnalyticsByIdUseCase,
 ) : ViewModel() {
 
     private val _screenState = MutableStateFlow(
@@ -52,8 +58,24 @@ class AnalyticsViewModel(
     val screenState = _screenState.asStateFlow()
     val itemsState: StateFlow<AnalyticsStateUiModel> = analyticsSelectorDelegate.deviceAnalyticss
 
-    private val _selectedItem = MutableStateFlow<AnalyticsRowUiModel?>(null)
-    val selectedItem = _selectedItem.asStateFlow()
+    private val _selectedItemId = MutableStateFlow<String?>(null)
+    val selectedItem: StateFlow<AnalyticsDetailUiModel?> = combines(
+        _selectedItemId,
+        observeCurrentDeviceIdAndPackageNameUseCase(),
+    ).flatMapLatest { (id, device) ->
+        if (id == null)
+            flowOf(null)
+        else
+            observeAnalyticsByIdUseCase(id)
+                .map {
+                    it?.mapToDetailUi(device)
+                }
+    }.flowOn(dispatcherProvider.viewModel)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null,
+        )
 
     val content: StateFlow<AnalyticsContentStateUiModel> = combines(
         observeCurrentDeviceIdAndPackageNameUseCase(),
@@ -101,17 +123,18 @@ class AnalyticsViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
                 AnalyticsAction.ClosePanel -> {
-                    _selectedItem.update {
+                    _selectedItemId.update {
                         null
                     }
                 }
 
                 is AnalyticsAction.OnClick -> {
-                    _selectedItem.update {
-                        if (it == action.item) {
+                    val newId = action.item.id
+                    _selectedItemId.update {
+                        if (it == newId) {
                             null
                         } else {
-                            action.item
+                            newId
                         }
                     }
                 }

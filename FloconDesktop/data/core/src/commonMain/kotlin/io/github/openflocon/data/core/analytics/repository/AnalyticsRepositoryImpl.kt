@@ -57,8 +57,17 @@ class AnalyticsRepositoryImpl(
     ): Flow<List<AnalyticsItemDomainModel>> = analyticsLocalDataSource.observe(
         deviceIdAndPackageName = deviceIdAndPackageName,
         analyticsTableId = analyticsTableId,
-    )
-        .flowOn(dispatcherProvider.data)
+    ).flowOn(dispatcherProvider.data)
+
+    override fun observeAnalyticsById(
+        id: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<AnalyticsItemDomainModel?> {
+        return analyticsLocalDataSource.observeById(
+            id = id,
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        ).flowOn(dispatcherProvider.data)
+    }
 
     override suspend fun deleteAnalytics(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
