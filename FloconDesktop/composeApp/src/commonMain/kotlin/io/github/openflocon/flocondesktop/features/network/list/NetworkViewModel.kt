@@ -38,7 +38,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMet
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.TopBarUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
-import io.github.openflocon.flocondesktop.features.network.list.processor.SortAndFilterNetworkItemsProcessor
+import io.github.openflocon.flocondesktop.features.network.list.processor.FilterNetworkItemsProcessor
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.Flow
@@ -69,7 +69,7 @@ class NetworkViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val headerDelegate: HeaderDelegate,
-    private val sortAndFilterNetworkItemsProcessor: SortAndFilterNetworkItemsProcessor,
+    private val filterNetworkItemsProcessor: FilterNetworkItemsProcessor,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase,
     private val decodeJwtTokenUseCase: DecodeJwtTokenUseCase,
@@ -174,7 +174,7 @@ class NetworkViewModel(
         contentState,
         filterConfig,
     ) { items, content, config ->
-        sortAndFilterNetworkItemsProcessor(
+        filterNetworkItemsProcessor(
             items = items,
             filterState = config.filterState,
             allowedMethods = config.allowedMethods,
