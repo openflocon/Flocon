@@ -405,25 +405,23 @@ private fun selectNextRow(
 @Preview
 private fun NetworkScreenPreview() {
     FloconTheme {
-        val rows = remember {
-            listOf(
-                previewNetworkItemViewState(),
-                previewNetworkItemViewState(),
-                previewGraphQlItemViewState(),
-                previewNetworkItemViewState(),
-                previewGraphQlItemViewState(),
-                previewNetworkItemViewState(),
-            )
-        }
         val uiState = previewNetworkUiState()
-
-        val fakeRows = remember(rows) {
-            MutableStateFlow(PagingData.from(rows))
+        val rows = remember {
+            MutableStateFlow(PagingData.from(
+                listOf(
+                    previewNetworkItemViewState(),
+                    previewNetworkItemViewState(),
+                    previewGraphQlItemViewState(),
+                    previewNetworkItemViewState(),
+                    previewGraphQlItemViewState(),
+                    previewNetworkItemViewState(),
+                )
+            ))
         }.collectAsLazyPagingItems()
 
         NetworkScreen(
             uiState = uiState,
-            rows = fakeRows,
+            rows = rows,
             onAction = {},
             filterText = mutableStateOf(""),
         )
