@@ -8,6 +8,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface NetworkRepository {
 
+    suspend fun getRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sortedBy: NetworkSortDomainModel?,
+        filter: NetworkFilterDomainModel
+    ): List<FloconNetworkCallDomainModel>
+
     fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,

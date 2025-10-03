@@ -8,6 +8,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface NetworkLocalDataSource {
 
+    suspend fun getRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sortedBy: NetworkSortDomainModel?,
+        filter: NetworkFilterDomainModel
+    ): List<FloconNetworkCallDomainModel>
+
     fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
@@ -43,5 +49,4 @@ interface NetworkLocalDataSource {
     suspend fun deleteRequestOnDifferentSession(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     suspend fun clear()
-
 }
