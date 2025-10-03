@@ -18,23 +18,36 @@ class NetworkLocalDataSourceRoom(
     private val floconNetworkDao: FloconNetworkDao,
 ) : NetworkLocalDataSource {
 
+    override suspend fun getRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sortedBy: NetworkSortDomainModel?,
+        filter: NetworkFilterDomainModel,
+    ): List<FloconNetworkCallDomainModel> = floconNetworkDao.getRequestsRaw(
+        generateNetworkRequestsRawQuery(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            sortedBy = sortedBy,
+            filter = filter,
+        )
+    ).mapNotNull(FloconNetworkCallEntity::toDomainModel)
+
+
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
         filter: NetworkFilterDomainModel,
-    ): Flow<List<FloconNetworkCallDomainModel>> = floconNetworkDao.let {
-        observeRequestsRaw(
+    ): Flow<List<FloconNetworkCallDomainModel>> = floconNetworkDao.observeRequestsRaw(
+        generateNetworkRequestsRawQuery(
             deviceIdAndPackageName = deviceIdAndPackageName,
             sortedBy = sortedBy,
             filter = filter,
-        ).map { entities -> entities.mapNotNull(FloconNetworkCallEntity::toDomainModel) }
-    }
+        )
+    ).map { entities -> entities.mapNotNull(FloconNetworkCallEntity::toDomainModel) }
 
-    private fun observeRequestsRaw(
+    private fun generateNetworkRequestsRawQuery(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
         filter: NetworkFilterDomainModel,
-    ): Flow<List<FloconNetworkCallEntity>> {
+    ): RoomRawQuery {
         val safeColumnName = sortedBy?.column?.roomColumnName() ?: "request_startTime"
 
         val sortOrder = if (sortedBy == null || sortedBy.asc) "ASC" else "DESC"
@@ -132,7 +145,7 @@ class NetworkLocalDataSourceRoom(
             }
         })
 
-        return floconNetworkDao.observeRequestsRaw(roomQuery)
+        return roomQuery
     }
 
     override suspend fun getCalls(
