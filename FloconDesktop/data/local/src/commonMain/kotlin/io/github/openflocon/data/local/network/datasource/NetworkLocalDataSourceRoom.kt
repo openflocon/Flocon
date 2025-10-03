@@ -71,7 +71,7 @@ class NetworkLocalDataSourceRoom(
                 appendLine(")")
             }
 
-            filter.filters?.forEach { filter ->
+            filter.textsFilters?.forEach { filter ->
                 filter.includedFilters.takeIf { it.isNotEmpty() }?.let { included ->
                     appendLine("AND (")
                     included.forEachIndexed { includedFilterIndex, filterItem ->
@@ -96,6 +96,19 @@ class NetworkLocalDataSourceRoom(
                     }
                     appendLine(")")
                 }
+            }
+
+            filter.methodFilter?.takeIf { it.isNotEmpty() }?.let { methodFilter ->
+                appendLine("AND (")
+                methodFilter.forEachIndexed { includedFilterIndex, filterItem ->
+                    appendLine("\trequest_methodFormatted LIKE ? COLLATE NOCASE")
+                    args.add("%${filterItem}%")
+
+                    if (includedFilterIndex != methodFilter.lastIndex) {
+                        appendLine("\tOR")
+                    }
+                }
+                appendLine(")")
             }
 
             appendLine("ORDER BY $safeColumnName $sortOrder")
