@@ -10,6 +10,7 @@ import io.github.openflocon.domain.analytics.models.AnalyticsTableId
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -36,9 +37,21 @@ class AnalyticsLocalDataSourceRoom(
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
         analyticsTableId = analyticsTableId,
-    )
-        .map { it.map { it.toAnalyticsDomain() } }
-        .flowOn(dispatcherProvider.data)
+    ).map { it.map { it.toAnalyticsDomain() } }
+        .distinctUntilChanged()
+
+    override fun observeById(
+        id: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<AnalyticsItemDomainModel?> {
+        return analyticsDao.observeAnalyticsItemById(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            analyticsItemId = id,
+        ).map {
+            it?.toAnalyticsDomain()
+        }.distinctUntilChanged()
+    }
 
     override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
         analyticsDao.observeAnalyticsTableIdsForDevice(
@@ -52,7 +65,7 @@ class AnalyticsLocalDataSourceRoom(
                         name = it,
                     )
                 }
-            }
+            }.distinctUntilChanged()
 
     override suspend fun delete(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsId: AnalyticsIdentifierDomainModel) {
         analyticsDao.deleteAnalyticsContent(

@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.analytics.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -24,68 +25,81 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 
 @Composable
 fun AnalyticsDetailView(
-    state: AnalyticsRowUiModel,
+    state: AnalyticsDetailUiModel,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
     val linesLabelWidth: Dp = 130.dp
+    val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
 
-    SelectionContainer(
+    Box(
         modifier
             .background(FloconTheme.colorPalette.primary)
-            .verticalScroll(scrollState)
-            .padding(all = 18.dp),
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
+        SelectionContainer(
+            modifier = Modifier.fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(all = 18.dp),
         ) {
-            AnalyticsDetailLineTextView(
-                modifier = Modifier.fillMaxWidth(),
-                label = "Name",
-                value = state.eventName,
-                labelWidth = linesLabelWidth,
-                withDivider = false,
-            )
-            AnalyticsDetailLineTextView(
-                modifier = Modifier.fillMaxWidth(),
-                label = "Time",
-                value = state.dateFormatted,
-                labelWidth = linesLabelWidth,
-                withDivider = false,
-            )
-
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        width = 1.dp,
-                        color = FloconTheme.colorPalette.secondary,
-                        shape = FloconTheme.shapes.medium
-                    )
+                modifier = Modifier.fillMaxSize(),
             ) {
-                state.properties.forEachIndexed { index, property ->
-                    AnalyticsDetailLineTextView(
-                        modifier = Modifier.fillMaxWidth(),
-                        label = property.name,
-                        value = property.value,
-                        labelWidth = linesLabelWidth,
-                        withDivider = true,
-                    )
-                    if (index != state.properties.lastIndex) {
-                        FloconHorizontalDivider(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = FloconTheme.colorPalette.secondary
+                AnalyticsDetailLineTextView(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = "Name",
+                    value = state.eventName,
+                    labelWidth = linesLabelWidth,
+                    withDivider = false,
+                )
+                AnalyticsDetailLineTextView(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = "Time",
+                    value = state.dateFormatted,
+                    labelWidth = linesLabelWidth,
+                    withDivider = false,
+                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = 1.dp,
+                            color = FloconTheme.colorPalette.secondary,
+                            shape = FloconTheme.shapes.medium
                         )
+                ) {
+                    state.properties.forEachIndexed { index, property ->
+                        AnalyticsDetailLineTextView(
+                            modifier = Modifier.fillMaxWidth(),
+                            label = property.name,
+                            value = property.value,
+                            labelWidth = linesLabelWidth,
+                            withDivider = true,
+                        )
+                        if (index != state.properties.lastIndex) {
+                            FloconHorizontalDivider(
+                                modifier = Modifier.fillMaxWidth(),
+                                color = FloconTheme.colorPalette.secondary
+                            )
+                        }
                     }
                 }
             }
         }
+        FloconVerticalScrollbar(
+            adapter = scrollAdapter,
+            modifier = Modifier.fillMaxHeight()
+                .align(Alignment.TopEnd)
+        )
     }
 }
 
