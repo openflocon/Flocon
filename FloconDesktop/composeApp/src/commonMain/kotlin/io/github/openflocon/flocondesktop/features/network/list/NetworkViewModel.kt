@@ -214,47 +214,9 @@ class NetworkViewModel(
             is NetworkAction.InvertList -> onInvertList(action)
             NetworkAction.ToggleAutoScroll -> onAutoScroll()
             NetworkAction.ClearOldSession -> onClearSession()
-            NetworkAction.Down -> onDown()
-            NetworkAction.Up -> onUp()
+            is NetworkAction.Down -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
+            is NetworkAction.Up -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
         }
-    }
-
-    private fun onUp() {
-        val state = uiState.value
-        val selectedItem = state.contentState.selectedRequestId
-
-        val items = items.value
-
-        val index = items.indexOfFirst { it.uuid == selectedItem }
-            .takeIf { it != -1 }
-            ?: return
-        val nextRequest = items.getOrNull(
-            if (state.contentState.invertList)
-                index + 1
-            else
-                index - 1
-        ) ?: return
-
-        contentState.update { it.copy(selectedRequestId = nextRequest.uuid) }
-    }
-
-    private fun onDown() {
-        val state = uiState.value
-        val selectedItem = state.contentState.selectedRequestId
-
-        val items = items.value
-
-        val index = items.indexOfFirst { it.uuid == selectedItem }
-            .takeIf { it != -1 }
-            ?: return
-        val nextRequest = items.getOrNull(
-            if (state.contentState.invertList)
-                index - 1
-            else
-                index + 1
-        ) ?: return
-
-        contentState.update { it.copy(selectedRequestId = nextRequest.uuid) }
     }
 
     private fun onClearSession() {
