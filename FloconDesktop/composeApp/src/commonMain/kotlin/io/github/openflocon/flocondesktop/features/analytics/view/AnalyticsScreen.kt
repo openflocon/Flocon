@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsViewModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsContentStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsScreenUiState
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
@@ -91,7 +92,7 @@ fun AnalyticsScreen(
     onAnalyticsSelected: (DeviceAnalyticsUiModel) -> Unit,
     content: AnalyticsContentStateUiModel,
     onResetClicked: () -> Unit,
-    selectedItem: AnalyticsRowUiModel?,
+    selectedItem: AnalyticsDetailUiModel?,
     onAction: (AnalyticsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
