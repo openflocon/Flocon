@@ -175,7 +175,7 @@ private fun contextualActions(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
                                     column = NetworkTextFilterColumns.Domain,
-                                    action = TextFilterAction.Include(text = state.domain, isRegex = false)
+                                    action = TextFilterAction.Include(text = state.domain)
                                 )
                             )
                         )
@@ -185,7 +185,7 @@ private fun contextualActions(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
                                     column = NetworkTextFilterColumns.Query,
-                                    action = TextFilterAction.Include(text = state.type.query, isRegex = false)
+                                    action = TextFilterAction.Include(text = state.type.query)
                                 )
                             )
                         )
@@ -197,7 +197,7 @@ private fun contextualActions(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
                                     column = NetworkTextFilterColumns.Domain,
-                                    action = TextFilterAction.Exclude(text = state.domain, isRegex = false)
+                                    action = TextFilterAction.Exclude(text = state.domain)
                                 )
                             )
                         )
@@ -207,7 +207,7 @@ private fun contextualActions(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
                                     column = NetworkTextFilterColumns.Query,
-                                    action = TextFilterAction.Exclude(text = state.type.query, isRegex = false)
+                                    action = TextFilterAction.Exclude(text = state.type.query)
                                 )
                             )
                         )

@@ -4,16 +4,16 @@ import io.github.openflocon.data.core.network.datasource.NetworkFilterLocalDataS
 import io.github.openflocon.data.local.network.dao.NetworkFilterDao
 import io.github.openflocon.data.local.network.mapper.textFilterToDomain
 import io.github.openflocon.data.local.network.mapper.textFilterToEntity
-import io.github.openflocon.domain.device.models.AppPackageName
-import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 
 class NetworkFilterLocalDataSourceRoom(
     private val networkFilterDao: NetworkFilterDao,
+    private val json: Json,
 ) : NetworkFilterLocalDataSource {
 
     override suspend fun get(
@@ -23,9 +23,9 @@ class NetworkFilterLocalDataSourceRoom(
         deviceId = deviceAndApp.deviceId,
         packageName = deviceAndApp.packageName,
         column = column,
-    )?.let {
-        textFilterToDomain(it)
-    }
+    )?.textFilterToDomain(
+        json = json,
+    )
 
     override fun observe(
         deviceAndApp: DeviceIdAndPackageNameDomainModel,
@@ -34,7 +34,9 @@ class NetworkFilterLocalDataSourceRoom(
         packageName = deviceAndApp.packageName,
     ).map {
         it.associate {
-            it.columnName to textFilterToDomain(it)
+            it.columnName to it.textFilterToDomain(
+                json = json,
+            )
         }
     }
 
@@ -49,6 +51,7 @@ class NetworkFilterLocalDataSourceRoom(
                 packageName = deviceAndApp.packageName,
                 column = column,
                 domain = newValue,
+                json = json,
             ),
         )
     }

@@ -17,7 +17,6 @@ data class TextFilterStateUiModel(
         val text: String,
         val isActive: Boolean,
         val isExcluded: Boolean,
-        val isRegex: Boolean,
     )
 
     override val isActive: Boolean = allFilters.isNotEmpty() && isEnabled && allFilters.any { it.isActive }
@@ -34,11 +33,11 @@ data class TextFilterStateUiModel(
 fun previewTextFilterState() = TextFilterStateUiModel(
     isEnabled = true,
     includedFilters = listOf(
-        FilterItem(text = "toInclude", isExcluded = false, isActive = true, isRegex = false),
-        FilterItem(text = "toInclude2", isExcluded = false, isActive = true, isRegex = true),
+        FilterItem(text = "toInclude", isExcluded = false, isActive = true),
+        FilterItem(text = "toInclude2", isExcluded = false, isActive = true),
     ),
     excludedFilters = listOf(
-        FilterItem(text = "toExclude", isExcluded = true, isActive = true, isRegex = false),
-        FilterItem(text = "toExclude2", isExcluded = true, isActive = false, isRegex = true),
+        FilterItem(text = "toExclude", isExcluded = true, isActive = true),
+        FilterItem(text = "toExclude2", isExcluded = true, isActive = false),
     ),
 )
