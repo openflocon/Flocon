@@ -10,6 +10,7 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -69,6 +70,24 @@ class NetworkLocalDataSourceRoom(
                 }
                 appendLine(")")
             }
+
+            filter.filters?.let {
+                it.forEach { filter ->
+                    appendLine("AND (")
+
+                    val included = filter.includedFilters
+                    filter.includedFilters.forEachIndexed { includedFilterIndex, filterItem ->
+                        appendLine("${filter.column.roomColumnName()} LIKE ? COLLATE NOCASE")
+                        args.add("%${filterItem.text}%")
+
+                        if(includedFilterIndex != included.lastIndex) {
+                            appendLine("OR")
+                        }
+                    }
+                    appendLine(")")
+                }
+            }
+
             appendLine("ORDER BY $safeColumnName $sortOrder")
         }.trimIndent()
 
@@ -182,6 +201,14 @@ class NetworkLocalDataSourceRoom(
     }
 }
 
+// TODO maybe merge with NetworkSortDomainModel.Column
+private fun NetworkTextFilterColumns.roomColumnName(): String = when (this) {
+    NetworkTextFilterColumns.RequestTime -> "request_startTimeFormatted"
+    NetworkTextFilterColumns.Domain -> "request_domainFormatted"
+    NetworkTextFilterColumns.Query -> "request_queryFormatted"
+    NetworkTextFilterColumns.Status -> "response_statusFormatted"
+    NetworkTextFilterColumns.Time -> "response_durationMs"
+}
 
 private fun NetworkSortDomainModel.Column.roomColumnName(): String = when (this) {
     NetworkSortDomainModel.Column.RequestStartTimeFormatted -> "request_startTimeFormatted"

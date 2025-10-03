@@ -13,6 +13,8 @@ import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
+import io.github.openflocon.domain.network.models.NetworkFilterDomainModel.Filters
+import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
@@ -118,17 +120,20 @@ class NetworkViewModel(
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
+    private val filter = combines(
+        snapshotFlow { _filterText.value }.map { it.takeIf { it.isNotBlank() } },
+        headerDelegate.textFiltersState.map { it.toDomain() }
+    ).map { (textFilters, filterOnAllColumns) ->
+        NetworkFilterDomainModel(
+            filterOnAllColumns = textFilters,
+            filters = filterOnAllColumns,
+        )
+    }
+
     private val sortAndFilter = combines(
         headerDelegate.sorted.map { it?.toDomain() }.distinctUntilChanged(),
-        snapshotFlow { _filterText.value }
-            .map { it.takeIf { it.isNotBlank() } }
-            .map {
-                NetworkFilterDomainModel(
-                    filterOnAllColumns = it
-                )
-            }
-            .distinctUntilChanged()
-    )
+        filter,
+    ).distinctUntilChanged()
 
     private val networkItems: Flow<List<FloconNetworkCallDomainModel>> =
         sortAndFilter.flatMapLatest { (sorted, filter) ->
@@ -437,4 +442,37 @@ class NetworkViewModel(
             }
         }
     }
+}
+
+private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters>? {
+    return buildList {
+        this@toDomain.forEach { (column, filter) ->
+            if (filter.isEnabled) {
+                val includedFilters = filter.includedFilters.mapNotNull {
+                    it.toDomain()
+                }
+                val excludedFilters = filter.excludedFilters.mapNotNull {
+                    it.toDomain()
+                }
+                if (includedFilters.isNotEmpty() || excludedFilters.isNotEmpty()) {
+                    add(
+                        Filters(
+                            column = column,
+                            includedFilters = includedFilters,
+                            excludedFilters = excludedFilters,
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun TextFilterStateUiModel.FilterItem.toDomain(): NetworkFilterDomainModel.Filters.FilterItem? {
+    return if(isActive) {
+        NetworkFilterDomainModel.Filters.FilterItem(
+            text = text,
+            isRegex = isRegex,
+        )
+    } else null
 }

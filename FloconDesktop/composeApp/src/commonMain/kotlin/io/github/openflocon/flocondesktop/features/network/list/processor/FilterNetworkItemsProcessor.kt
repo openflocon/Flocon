@@ -69,16 +69,18 @@ private fun TextFilterStateUiModel.filterByText(text: String?): Boolean {
         return false // Excluded, so it fails the filter immediately.
     }
 
+    return true
+
     // --- Step 2: Inclusion Check ---
 
-    // 5. If there are no inclusion filters, the item passes (as it wasn't excluded).
-    if (includedFilters.isEmpty()) {
-        return true
-    }
-
-    // 6. If not excluded, check if the text matches AT LEAST ONE inclusion filter.
-    // If ANY non-excluded filter matches, the item is kept (return true).
-    return includedFilters.any { it.matches(text) }
+    //// 5. If there are no inclusion filters, the item passes (as it wasn't excluded).
+    //if (includedFilters.isEmpty()) {
+    //    return true
+    //}
+//
+    //// 6. If not excluded, check if the text matches AT LEAST ONE inclusion filter.
+    //// If ANY non-excluded filter matches, the item is kept (return true).
+    //return includedFilters.any { it.matches(text) }
 }
 
 private fun TextFilterStateUiModel.FilterItem.matches(text: String): Boolean {
