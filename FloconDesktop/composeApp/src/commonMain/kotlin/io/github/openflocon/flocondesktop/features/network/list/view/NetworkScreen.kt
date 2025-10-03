@@ -304,7 +304,8 @@ fun NetworkScreen(
         deletedJson.forEach { states.remove(it) }
         addedJson.forEach {
             states.put(
-                it, createFloconWindowState(),
+                it,
+                createFloconWindowState(),
             )
         }
     }
