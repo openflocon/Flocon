@@ -77,14 +77,14 @@ fun NetworkScreen(
 ) {
     val viewModel: NetworkViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val filterText = viewModel.filterText
     val items: LazyPagingItems<NetworkItemViewState> = viewModel.items.collectAsLazyPagingItems()
+    val filterText = viewModel.filterText
 
     NetworkScreen(
         uiState = uiState,
+        rows = items,
         filterText = filterText,
         onAction = viewModel::onAction,
-        items = items,
         modifier = modifier,
     )
 }
@@ -92,8 +92,8 @@ fun NetworkScreen(
 @Composable
 fun NetworkScreen(
     uiState: NetworkUiState,
+    rows: LazyPagingItems<NetworkItemViewState>,
     filterText: State<String>,
-    items: LazyPagingItems<NetworkItemViewState>,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -101,9 +101,9 @@ fun NetworkScreen(
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
     val columnWidths: NetworkItemColumnWidths = remember { NetworkItemColumnWidths() } // Default widths provided
 
-    LaunchedEffect(uiState.contentState.autoScroll, items.itemCount) {
-        if (uiState.contentState.autoScroll && items.itemCount != -1) {
-            lazyListState.animateScrollToItem(items.itemCount)
+    LaunchedEffect(uiState.contentState.autoScroll, rows.itemCount) {
+        if (uiState.contentState.autoScroll && rows.itemCount != -1) {
+            lazyListState.animateScrollToItem(rows.itemCount)
         }
     }
 
@@ -267,10 +267,10 @@ fun NetworkScreen(
                         .weight(1f)
                 ) {
                     items(
-                        count = items.itemCount,
-                        key = items.itemKey { it.uuid } ,
+                        count = rows.itemCount,
+                        key = rows.itemKey { it.uuid } ,
                     ) { index ->
-                        val item = items[index]
+                        val item = rows[index]
                         if (item != null) {
                             NetworkItemView(
                                 state = item,
@@ -361,7 +361,7 @@ fun NetworkScreen(
 @Preview
 private fun NetworkScreenPreview() {
     FloconTheme {
-        val items = remember {
+        val rows = remember {
             listOf(
                 previewNetworkItemViewState(),
                 previewNetworkItemViewState(),
@@ -370,11 +370,12 @@ private fun NetworkScreenPreview() {
                 previewGraphQlItemViewState(),
                 previewNetworkItemViewState(),
             )
-        },
+        }
         val uiState = previewNetworkUiState()
+
         NetworkScreen(
             uiState = uiState,
-            items =
+            rows = rows,
             onAction = {},
             filterText = mutableStateOf(""),
         )
