@@ -12,17 +12,16 @@ fun textFilterItemToEntity(item: TextFilterStateDomainModel.FilterItem): FilterI
     text = item.text,
     isActive = item.isActive,
     isExcluded = item.isExcluded,
-    isRegex = item.isRegex,
 )
 
 fun textFilterItemToDomain(item: FilterItemSavedEntity): TextFilterStateDomainModel.FilterItem = TextFilterStateDomainModel.FilterItem(
     text = item.text,
     isActive = item.isActive,
     isExcluded = item.isExcluded,
-    isRegex = item.isRegex,
 )
 
 fun textFilterToEntity(
+    json: Json,
     deviceId: DeviceId,
     packageName: AppPackageName,
     column: NetworkTextFilterColumns,
@@ -36,16 +35,16 @@ fun textFilterToEntity(
         packageName = packageName,
         columnName = column,
         isEnabled = domain.isEnabled,
-        itemsAsJson = Json.encodeToString(itemsEntity),
+        itemsAsJson = json.encodeToString(itemsEntity),
     )
 }
 
-fun textFilterToDomain(
-    entity: NetworkFilterEntity,
+fun NetworkFilterEntity.textFilterToDomain(
+    json: Json,
 ): TextFilterStateDomainModel {
-    val itemsEntity = Json.decodeFromString<List<FilterItemSavedEntity>>(entity.itemsAsJson)
+    val itemsEntity = json.decodeFromString<List<FilterItemSavedEntity>>(itemsAsJson)
     return TextFilterStateDomainModel(
-        isEnabled = entity.isEnabled,
+        isEnabled = isEnabled,
         items = itemsEntity.map {
             textFilterItemToDomain(it)
         },

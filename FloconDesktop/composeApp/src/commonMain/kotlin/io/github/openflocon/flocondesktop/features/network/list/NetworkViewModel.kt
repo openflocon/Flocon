@@ -472,7 +472,6 @@ private fun TextFilterStateUiModel.FilterItem.toDomain(): NetworkFilterDomainMod
     return if(isActive) {
         NetworkFilterDomainModel.Filters.FilterItem(
             text = text,
-            isRegex = isRegex,
         )
     } else null
 }

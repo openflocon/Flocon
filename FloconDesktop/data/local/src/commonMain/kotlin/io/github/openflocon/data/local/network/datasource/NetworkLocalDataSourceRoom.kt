@@ -64,24 +64,34 @@ class NetworkLocalDataSourceRoom(
                 columns.forEachIndexed { index, column ->
                     appendLine("$column LIKE ? COLLATE NOCASE")
                     args.add("%$filterText%")
-                    if(index != columns.lastIndex) {
+                    if (index != columns.lastIndex) {
                         appendLine("OR")
                     }
                 }
                 appendLine(")")
             }
 
-            filter.filters?.let {
-                it.forEach { filter ->
+            filter.filters?.forEach { filter ->
+                filter.includedFilters.takeIf { it.isNotEmpty() }?.let { included ->
                     appendLine("AND (")
-
-                    val included = filter.includedFilters
-                    filter.includedFilters.forEachIndexed { includedFilterIndex, filterItem ->
-                        appendLine("${filter.column.roomColumnName()} LIKE ? COLLATE NOCASE")
+                    included.forEachIndexed { includedFilterIndex, filterItem ->
+                        appendLine("\t${filter.column.roomColumnName()} LIKE ? COLLATE NOCASE")
                         args.add("%${filterItem.text}%")
 
-                        if(includedFilterIndex != included.lastIndex) {
-                            appendLine("OR")
+                        if (includedFilterIndex != included.lastIndex) {
+                            appendLine("\tOR")
+                        }
+                    }
+                    appendLine(")")
+                }
+                filter.excludedFilters.takeIf { it.isNotEmpty() }?.let { excluded ->
+                    appendLine("AND (")
+                    excluded.forEachIndexed { excludedFilterIndex, filterItem ->
+                        appendLine("\t${filter.column.roomColumnName()} NOT LIKE ? COLLATE NOCASE")
+                        args.add("%${filterItem.text}%")
+
+                        if (excludedFilterIndex != excluded.lastIndex) {
+                            appendLine("\tAND")
                         }
                     }
                     appendLine(")")
@@ -93,13 +103,15 @@ class NetworkLocalDataSourceRoom(
 
         val roomQuery = RoomRawQuery(sqlQuery, onBindStatement = {
             args.forEachIndexed { index, item ->
-                when(item) {
+                when (item) {
                     is String -> {
                         it.bindText(index + 1, item)
                     }
+
                     is Int -> {
                         it.bindInt(index + 1, item)
                     }
+
                     is Long -> {
                         it.bindLong(index + 1, item)
                     }
@@ -134,7 +146,7 @@ class NetworkLocalDataSourceRoom(
     override suspend fun getCall(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         callId: String,
-    ): FloconNetworkCallDomainModel?  {
+    ): FloconNetworkCallDomainModel? {
         return floconNetworkDao
             .getCallById(
                 deviceId = deviceIdAndPackageName.deviceId,

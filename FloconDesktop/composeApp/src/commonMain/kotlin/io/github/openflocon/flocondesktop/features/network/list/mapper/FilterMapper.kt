@@ -22,14 +22,12 @@ fun itemToDomain(item: TextFilterStateUiModel.FilterItem): TextFilterStateDomain
     text = item.text,
     isActive = item.isActive,
     isExcluded = item.isExcluded,
-    isRegex = item.isRegex,
 )
 
 fun itemToUI(item: TextFilterStateDomainModel.FilterItem): TextFilterStateUiModel.FilterItem = TextFilterStateUiModel.FilterItem(
     text = item.text,
     isActive = item.isActive,
     isExcluded = item.isExcluded,
-    isRegex = item.isRegex,
 )
 
 

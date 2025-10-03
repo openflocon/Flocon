@@ -11,7 +11,6 @@ data class NetworkFilterDomainModel(
     ) {
         data class FilterItem(
             val text: String,
-            val isRegex: Boolean,
         )
     }
 }
