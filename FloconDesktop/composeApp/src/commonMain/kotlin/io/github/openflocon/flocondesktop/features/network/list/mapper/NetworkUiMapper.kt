@@ -4,23 +4,21 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.responseByteSizeFormatted
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
-import io.ktor.http.Url
 
-fun toUi(
-    networkCall: FloconNetworkCallDomainModel,
+fun FloconNetworkCallDomainModel.toUi(
     deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?
 ): NetworkItemViewState {
     return NetworkItemViewState(
-        uuid = networkCall.callId,
-        dateFormatted = networkCall.request.startTimeFormatted,
-        timeFormatted = networkCall.response?.durationFormatted,
-        requestSize = networkCall.request.byteSizeFormatted,
-        responseSize = networkCall.responseByteSizeFormatted(),
-        domain = networkCall.request.domainFormatted,
-        type = toTypeUi(networkCall),
-        method = getMethodUi(networkCall),
-        status = getStatusUi(networkCall),
-        isMocked = networkCall.request.isMocked,
-        isFromOldAppInstance = deviceIdAndPackageName?.appInstance?.let { it != networkCall.appInstance } ?: false
+        uuid = callId,
+        dateFormatted = request.startTimeFormatted,
+        timeFormatted = response?.durationFormatted,
+        requestSize = request.byteSizeFormatted,
+        responseSize = responseByteSizeFormatted(),
+        domain = request.domainFormatted,
+        type = toTypeUi(this),
+        method = getMethodUi(this),
+        status = getStatusUi(this),
+        isMocked = request.isMocked,
+        isFromOldAppInstance = deviceIdAndPackageName?.appInstance?.let { it != appInstance } ?: false
     )
 }
