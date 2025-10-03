@@ -10,6 +10,7 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -63,24 +64,54 @@ class NetworkLocalDataSourceRoom(
                 columns.forEachIndexed { index, column ->
                     appendLine("$column LIKE ? COLLATE NOCASE")
                     args.add("%$filterText%")
-                    if(index != columns.lastIndex) {
+                    if (index != columns.lastIndex) {
                         appendLine("OR")
                     }
                 }
                 appendLine(")")
             }
+
+            filter.filters?.forEach { filter ->
+                filter.includedFilters.takeIf { it.isNotEmpty() }?.let { included ->
+                    appendLine("AND (")
+                    included.forEachIndexed { includedFilterIndex, filterItem ->
+                        appendLine("\t${filter.column.roomColumnName()} LIKE ? COLLATE NOCASE")
+                        args.add("%${filterItem.text}%")
+
+                        if (includedFilterIndex != included.lastIndex) {
+                            appendLine("\tOR")
+                        }
+                    }
+                    appendLine(")")
+                }
+                filter.excludedFilters.takeIf { it.isNotEmpty() }?.let { excluded ->
+                    appendLine("AND (")
+                    excluded.forEachIndexed { excludedFilterIndex, filterItem ->
+                        appendLine("\t${filter.column.roomColumnName()} NOT LIKE ? COLLATE NOCASE")
+                        args.add("%${filterItem.text}%")
+
+                        if (excludedFilterIndex != excluded.lastIndex) {
+                            appendLine("\tAND")
+                        }
+                    }
+                    appendLine(")")
+                }
+            }
+
             appendLine("ORDER BY $safeColumnName $sortOrder")
         }.trimIndent()
 
         val roomQuery = RoomRawQuery(sqlQuery, onBindStatement = {
             args.forEachIndexed { index, item ->
-                when(item) {
+                when (item) {
                     is String -> {
                         it.bindText(index + 1, item)
                     }
+
                     is Int -> {
                         it.bindInt(index + 1, item)
                     }
+
                     is Long -> {
                         it.bindLong(index + 1, item)
                     }
@@ -115,7 +146,7 @@ class NetworkLocalDataSourceRoom(
     override suspend fun getCall(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         callId: String,
-    ): FloconNetworkCallDomainModel?  {
+    ): FloconNetworkCallDomainModel? {
         return floconNetworkDao
             .getCallById(
                 deviceId = deviceIdAndPackageName.deviceId,
@@ -182,6 +213,14 @@ class NetworkLocalDataSourceRoom(
     }
 }
 
+// TODO maybe merge with NetworkSortDomainModel.Column
+private fun NetworkTextFilterColumns.roomColumnName(): String = when (this) {
+    NetworkTextFilterColumns.RequestTime -> "request_startTimeFormatted"
+    NetworkTextFilterColumns.Domain -> "request_domainFormatted"
+    NetworkTextFilterColumns.Query -> "request_queryFormatted"
+    NetworkTextFilterColumns.Status -> "response_statusFormatted"
+    NetworkTextFilterColumns.Time -> "response_durationMs"
+}
 
 private fun NetworkSortDomainModel.Column.roomColumnName(): String = when (this) {
     NetworkSortDomainModel.Column.RequestStartTimeFormatted -> "request_startTimeFormatted"

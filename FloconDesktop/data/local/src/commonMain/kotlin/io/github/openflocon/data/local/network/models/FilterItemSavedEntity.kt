@@ -7,5 +7,4 @@ data class FilterItemSavedEntity(
     val text: String,
     val isActive: Boolean,
     val isExcluded: Boolean,
-    val isRegex: Boolean,
 )

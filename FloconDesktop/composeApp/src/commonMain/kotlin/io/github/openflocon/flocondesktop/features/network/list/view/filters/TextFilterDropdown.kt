@@ -58,11 +58,11 @@ fun TextFilterDropdownContent(
         modifier = modifier.fillMaxWidth()
     ) {
         TextFilterFieldView(
-            submitTextField = { text, toInclude, isRegex ->
+            submitTextField = { text, toInclude ->
                 if (toInclude) {
-                    textFilterAction.invoke(TextFilterAction.Include(text, isRegex = isRegex))
+                    textFilterAction.invoke(TextFilterAction.Include(text))
                 } else {
-                    textFilterAction.invoke(TextFilterAction.Exclude(text, isRegex = isRegex))
+                    textFilterAction.invoke(TextFilterAction.Exclude(text))
                 }
             },
             modifier = Modifier
@@ -196,11 +196,10 @@ private fun FilterItemView(
 
 @Composable
 private fun TextFilterFieldView(
-    submitTextField: (value: String, toInclude: Boolean, isRegex: Boolean) -> Unit,
+    submitTextField: (value: String, toInclude: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var value by remember { mutableStateOf("") }
-    var isRegex by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier,
@@ -213,7 +212,7 @@ private fun TextFilterFieldView(
             keyboardActions = KeyboardActions(
                 onDone = {
                     // default action -> add as "include filter"
-                    submitTextField(value, true, isRegex)
+                    submitTextField(value, true)
                     value = "" // reset
                 },
             ),
@@ -221,15 +220,6 @@ private fun TextFilterFieldView(
             textStyle = FloconTheme.typography.bodySmall.copy(
                 color = FloconTheme.colorPalette.onSecondary,
             ),
-            trailingComponent = {
-                RegexFilterButton(
-                    modifier = Modifier.size(24.dp),
-                    isRegex = isRegex,
-                    onClick = {
-                        isRegex = !isRegex
-                    },
-                )
-            },
             containerColor = FloconTheme.colorPalette.secondary,
             modifier = Modifier
                 .weight(1f)
@@ -238,7 +228,7 @@ private fun TextFilterFieldView(
         FloconSmallIconButton(
             enabled = value.isNotEmpty(),
             onClick = {
-                submitTextField(value, true, isRegex)
+                submitTextField(value, true)
                 value = "" // reset
             }
         ) {
@@ -247,7 +237,7 @@ private fun TextFilterFieldView(
         FloconSmallIconButton(
             enabled = value.isNotEmpty(),
             onClick = {
-                submitTextField(value, false, isRegex)
+                submitTextField(value, false)
                 value = "" // reset
             }
         ) {
@@ -277,30 +267,6 @@ private fun TextFilterButton(
             contentDescription = null,
             tint = Color.Black,
             modifier = Modifier.fillMaxSize(),
-        )
-    }
-}
-
-
-@Composable
-private fun RegexFilterButton(
-    onClick: () -> Unit,
-    isRegex: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .size(20.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .graphicsLayer { alpha = if (isRegex) 1f else 0.5f }
-            .background(Color.White)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            ".*",
-            fontSize = 11.sp,
-            color = FloconTheme.colorPalette.surface,
         )
     }
 }
