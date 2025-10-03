@@ -5,7 +5,6 @@ import com.flocon.data.remote.network.models.FloconNetworkRequestDataModel
 import com.flocon.data.remote.network.models.MockNetworkResponseDataModel
 import io.github.openflocon.data.core.network.graphql.model.GraphQlExtracted
 import io.github.openflocon.data.core.network.graphql.model.GraphQlRequestBody
-import io.github.openflocon.data.core.network.graphql.model.GraphQlResponseBody
 import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.device.models.AppInstance
@@ -14,7 +13,6 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.serialization.json.Json
 import java.net.URI
-import java.net.URL
 import java.net.URLDecoder
 import kotlin.uuid.ExperimentalUuidApi
 
