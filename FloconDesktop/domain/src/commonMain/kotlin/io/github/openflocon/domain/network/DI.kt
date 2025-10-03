@@ -4,6 +4,7 @@ import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkFilterUseCase
+import io.github.openflocon.domain.network.usecase.GetNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkFilterUseCase
@@ -31,6 +32,7 @@ import org.koin.dsl.module
 
 internal val networkModule = module {
     factoryOf(::ObserveNetworkRequestsUseCase)
+    factoryOf(::GetNetworkRequestsUseCase)
     factoryOf(::ObserveNetworkRequestsByIdUseCase)
     factoryOf(::GenerateCurlCommandUseCase)
     factoryOf(::ResetCurrentDeviceHttpRequestsUseCase)

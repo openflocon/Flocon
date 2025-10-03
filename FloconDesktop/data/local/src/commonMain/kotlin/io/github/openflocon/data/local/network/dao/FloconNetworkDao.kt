@@ -14,16 +14,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FloconNetworkDao {
-    @Query(
-        """
-        SELECT * 
-        FROM FloconNetworkCallEntity 
-        WHERE deviceId = :deviceId 
-        AND packageName = :packageName
-        ORDER BY request_startTime ASC
-    """,
-    )
-    fun observeRequests(deviceId: String, packageName: String): Flow<List<FloconNetworkCallEntity>>
+
+    @RawQuery(observedEntities = [FloconNetworkCallEntity::class])
+    suspend fun getRequestsRaw(query: RoomRawQuery): List<FloconNetworkCallEntity>
 
     @RawQuery(observedEntities = [FloconNetworkCallEntity::class])
     fun observeRequestsWithPaging(query: RoomRawQuery): PagingSource<Int, FloconNetworkCallEntity>

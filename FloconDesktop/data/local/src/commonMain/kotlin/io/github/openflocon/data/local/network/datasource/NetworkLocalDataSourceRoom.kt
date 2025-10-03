@@ -9,6 +9,7 @@ import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.mapper.toDomainModel
 import io.github.openflocon.data.local.network.mapper.toEntity
+import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
@@ -21,6 +22,19 @@ class NetworkLocalDataSourceRoom(
     private val floconNetworkDao: FloconNetworkDao,
 ) : NetworkLocalDataSource {
 
+    override suspend fun getRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sortedBy: NetworkSortDomainModel?,
+        filter: NetworkFilterDomainModel,
+    ): List<FloconNetworkCallDomainModel> = floconNetworkDao.getRequestsRaw(
+        generateNetworkRequestsRawQuery(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            sortedBy = sortedBy,
+            filter = filter,
+        )
+    ).mapNotNull(FloconNetworkCallEntity::toDomainModel)
+
+
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
@@ -32,7 +46,7 @@ class NetworkLocalDataSourceRoom(
             ),
             pagingSourceFactory = {
                 floconNetworkDao.observeRequestsWithPaging(
-                    generateRawQuery(
+                    generateNetworkRequestsRawQuery(
                         deviceIdAndPackageName = deviceIdAndPackageName,
                         sortedBy = sortedBy,
                         filter = filter,
@@ -45,7 +59,7 @@ class NetworkLocalDataSourceRoom(
             }
     }
 
-    private fun generateRawQuery(
+    private fun generateNetworkRequestsRawQuery(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
         filter: NetworkFilterDomainModel,

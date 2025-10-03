@@ -70,6 +70,19 @@ class NetworkRepositoryImpl(
 
     override suspend fun getRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sortedBy: NetworkSortDomainModel?,
+        filter: NetworkFilterDomainModel,
+    ): List<FloconNetworkCallDomainModel> = withContext(dispatcherProvider.data) {
+        networkLocalDataSource
+            .getRequests(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                sortedBy = sortedBy,
+                filter = filter,
+            )
+    }
+
+    override suspend fun getRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         ids: List<String>
     ): List<FloconNetworkCallDomainModel> {
         return withContext(dispatcherProvider.data) {
