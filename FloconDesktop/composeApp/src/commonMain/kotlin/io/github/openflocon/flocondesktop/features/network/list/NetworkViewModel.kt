@@ -176,14 +176,11 @@ class NetworkViewModel(
 
     private val filteredItems: Flow<List<NetworkItemViewState>> = combine(
         items,
-        contentState,
         filterConfig,
-    ) { items, content, config ->
+    ) { items, config ->
         filterNetworkItemsProcessor(
             items = items,
-            filterState = config.filterState,
             allowedMethods = config.allowedMethods,
-            textFilters = config.textFilters,
         )
     }
         .flowOn(dispatcherProvider.viewModel.limitedParallelism(1))
