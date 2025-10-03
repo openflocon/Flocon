@@ -75,9 +75,7 @@ kotlin {
             implementation(projects.data.core)
 
             implementation(projects.domain)
-
-            implementation(compose.desktop.currentOs)
-
+            
             implementation(projects.library.designsystem)
             implementation(libs.kermit)
         }

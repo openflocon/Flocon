@@ -26,7 +26,7 @@ interface FloconNetworkDao {
     fun observeRequests(deviceId: String, packageName: String): Flow<List<FloconNetworkCallEntity>>
 
     @RawQuery(observedEntities = [FloconNetworkCallEntity::class])
-    fun observeRequestsRaw(query: RoomRawQuery): PagingSource<Int, FloconNetworkCallEntity>
+    fun observeRequestsWithPaging(query: RoomRawQuery): PagingSource<Int, FloconNetworkCallEntity>
 
     @Query(
         """

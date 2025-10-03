@@ -3,14 +3,12 @@ package io.github.openflocon.data.local.network.datasource
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.PagingSource
 import androidx.paging.map
 import androidx.room.RoomRawQuery
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.mapper.toDomainModel
 import io.github.openflocon.data.local.network.mapper.toEntity
-import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
@@ -18,7 +16,6 @@ import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import androidx.paging.PagingState
 
 class NetworkLocalDataSourceRoom(
     private val floconNetworkDao: FloconNetworkDao,
@@ -31,16 +28,14 @@ class NetworkLocalDataSourceRoom(
     ): Flow<PagingData<FloconNetworkCallDomainModel>> {
         return Pager(
             config = PagingConfig(
-                pageSize = 5,
+                pageSize = 20,
             ),
             pagingSourceFactory = {
-                floconNetworkDao.observeRequestsRaw(
+                floconNetworkDao.observeRequestsWithPaging(
                     generateRawQuery(
                         deviceIdAndPackageName = deviceIdAndPackageName,
                         sortedBy = sortedBy,
                         filter = filter,
-                        //limit = limit,
-                        //offset = offset
                     )
                 )
             }
@@ -263,57 +258,3 @@ private fun NetworkSortDomainModel.Column.roomColumnName(): String = when (this)
     NetworkSortDomainModel.Column.Status -> "response_statusFormatted"
     NetworkSortDomainModel.Column.Duration -> "response_durationMs"
 }
-
-/*
-class RawQueryPagingSource(
-    private val floconNetworkDao: FloconNetworkDao,
-    private val createQuery: (limit: Int, offset: Int) -> RoomRawQuery,
-) : PagingSource<Int, FloconNetworkCallEntity>() {
-
-    // Définition de la clé initiale (position dans la liste)
-    override fun getRefreshKey(state: PagingState<Int, FloconNetworkCallEntity>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(state.config.pageSize)
-                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(state.config.pageSize)
-        }
-    }
-
-    // Logique de chargement des pages
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, FloconNetworkCallEntity> {
-        return try {
-            // Clé de page : index de début (offset)
-            val offset = params.key ?: 0 // Si key est null, on commence au début
-
-            // Nombre d'éléments à charger (limit)
-            val limit = params.loadSize
-
-            // 1. Générer la requête SQL avec LIMIT et OFFSET
-            val rawQueryWithPagination = createQuery(limit, offset)
-
-            // 2. Exécuter la requête via un DAO @RawQuery.
-            // ATTENTION : Cette méthode DAO doit être modifiée pour ne pas retourner un Flow<List<...>>
-            // mais une List<...> simple, et devrait être suspendue pour être appelée ici.
-            // Nous allons supposer que vous avez une fonction DAO simple :
-            // @RawQuery(observedEntities = [FloconNetworkCallEntity::class])
-            // suspend fun getRequestsRaw(query: SupportSQLiteQuery): List<FloconNetworkCallEntity>
-            val entities = floconNetworkDao.observeRequestsRaw(rawQueryWithPagination)
-
-            // Calcul de la clé de la page suivante
-            val nextKey = if (entities.isEmpty()) {
-                null
-            } else {
-                offset + entities.size
-            }
-
-            // Retourner le résultat
-            LoadResult.Page(
-                data = entities,
-                prevKey = if (offset == 0) null else offset - params.loadSize, // Key de la page précédente
-                nextKey = nextKey
-            )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-        }
-    }
-}
- */
