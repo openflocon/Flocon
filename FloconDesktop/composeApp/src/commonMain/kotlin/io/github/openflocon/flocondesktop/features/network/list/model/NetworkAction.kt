@@ -45,9 +45,13 @@ sealed interface NetworkAction {
 
     data object ClearOldSession : NetworkAction
 
-    data object Up : NetworkAction
+    data class Up(
+        val itemIdToSelect: String,
+    ) : NetworkAction
 
-    data object Down : NetworkAction
+    data class Down(
+        val itemIdToSelect: String,
+    ) : NetworkAction
 
     sealed interface HeaderAction : NetworkAction {
         data class ClickOnSort(

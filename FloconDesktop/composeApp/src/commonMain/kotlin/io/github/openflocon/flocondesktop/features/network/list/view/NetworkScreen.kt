@@ -21,9 +21,9 @@ import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoIn
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -64,8 +64,8 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
-import io.github.openflocon.library.designsystem.components.panel.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.panel.FloconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -99,7 +99,8 @@ fun NetworkScreen(
 ) {
     val lazyListState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
-    val columnWidths: NetworkItemColumnWidths = remember { NetworkItemColumnWidths() } // Default widths provided
+    val columnWidths: NetworkItemColumnWidths =
+        remember { NetworkItemColumnWidths() } // Default widths provided
 
     LaunchedEffect(uiState.contentState.autoScroll, rows.itemCount) {
         if (uiState.contentState.autoScroll && rows.itemCount != -1) {
@@ -122,13 +123,22 @@ fun NetworkScreen(
 
                 when (event.key) {
                     Key.DirectionUp -> {
-                        onAction(NetworkAction.Up)
+                        selectPreviousRow(rows, uiState)
+                            ?.let {
+                                onAction(NetworkAction.Up(it.uuid))
+                            }
+
                         true
                     }
+
                     Key.DirectionDown -> {
-                        onAction(NetworkAction.Down)
+                        selectNextRow(rows, uiState)
+                            ?.let {
+                                onAction(NetworkAction.Down(it.uuid))
+                            }
                         true
                     }
+
                     else -> false
                 }
             }
@@ -355,8 +365,35 @@ fun NetworkScreen(
     }
 }
 
-/*
+private fun selectPreviousRow(
+    rows: List<NetworkItemViewState>,
+    uiState: NetworkUiState
+): NetworkItemViewState? = rows.indexOfFirst { it.uuid == uiState.contentState.selectedRequestId }
+    .takeIf { it != -1 }
+    ?.let { selectedIndex ->
+        rows.getOrNull(
+            if (uiState.contentState.invertList)
+                selectedIndex + 1
+            else
+                selectedIndex - 1
+        )
+    }
 
+private fun selectNextRow(
+    rows: List<NetworkItemViewState>,
+    uiState: NetworkUiState
+): NetworkItemViewState? = rows.indexOfFirst { it.uuid == uiState.contentState.selectedRequestId }
+    .takeIf { it != -1 }
+    ?.let { selectedIndex ->
+        rows.getOrNull(
+            if (uiState.contentState.invertList)
+                selectedIndex - 1
+            else
+                selectedIndex + 1
+        )
+    }
+
+/*
 @Composable
 @Preview
 private fun NetworkScreenPreview() {
