@@ -358,7 +358,6 @@ class NetworkViewModel(
     }
 
     private fun onExportCsv() {
-        /*
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val sortAndFilter = sortAndFilter.firstOrNull() ?: return@launch
             getNetworkRequestsUseCase(
@@ -380,7 +379,6 @@ class NetworkViewModel(
                 )
             }
         }
-         */
     }
 }
 
