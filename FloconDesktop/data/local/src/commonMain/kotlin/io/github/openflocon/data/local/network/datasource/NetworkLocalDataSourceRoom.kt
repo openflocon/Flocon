@@ -4,7 +4,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
-import androidx.paging.filter
 import androidx.paging.map
 import androidx.room.RoomRawQuery
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
@@ -30,38 +29,31 @@ class NetworkLocalDataSourceRoom(
         sortedBy: NetworkSortDomainModel?,
         filter: NetworkFilterDomainModel,
     ): Flow<PagingData<FloconNetworkCallDomainModel>> {
-        val pagingSourceFactory = {
-            RawQueryPagingSource(
-                floconNetworkDao = floconNetworkDao,
-                createQuery = { limit, offset -> // Le lambda qui construit la requête
-                    observeRequestsRaw(
-                        deviceIdAndPackageName = deviceIdAndPackageName,
-                        sortedBy = sortedBy,
-                        filter = filter,
-                        limit = limit,
-                        offset = offset
-                    )
-                }
-            )
-        }
-
         return Pager(
             config = PagingConfig(
                 pageSize = 5,
             ),
-            pagingSourceFactory = pagingSourceFactory
+            pagingSourceFactory = {
+                floconNetworkDao.observeRequestsRaw(
+                    generateRawQuery(
+                        deviceIdAndPackageName = deviceIdAndPackageName,
+                        sortedBy = sortedBy,
+                        filter = filter,
+                        //limit = limit,
+                        //offset = offset
+                    )
+                )
+            }
         ).flow
             .map { pagingData ->
                 pagingData.map { entity -> entity.toDomainModel()!! } // TODO
             }
     }
 
-    private fun observeRequestsRaw(
+    private fun generateRawQuery(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
         filter: NetworkFilterDomainModel,
-        limit: Int, // <-- Ajout de LIMIT
-        offset: Int, // <-- Ajout de OFFSET
     ): RoomRawQuery {
         val safeColumnName = sortedBy?.column?.roomColumnName() ?: "request_startTime"
 
@@ -140,14 +132,7 @@ class NetworkLocalDataSourceRoom(
             }
 
             appendLine("ORDER BY $safeColumnName $sortOrder")
-
-            // Ajout de la pagination
-            appendLine("LIMIT ?") // Ajout de LIMIT
-            appendLine("OFFSET ?") // Ajout de OFFSET
         }.trimIndent()
-
-        args.add(limit)
-        args.add(offset)
 
         val roomQuery = RoomRawQuery(sqlQuery, onBindStatement = {
             args.forEachIndexed { index, item ->
@@ -279,6 +264,7 @@ private fun NetworkSortDomainModel.Column.roomColumnName(): String = when (this)
     NetworkSortDomainModel.Column.Duration -> "response_durationMs"
 }
 
+/*
 class RawQueryPagingSource(
     private val floconNetworkDao: FloconNetworkDao,
     private val createQuery: (limit: Int, offset: Int) -> RoomRawQuery,
@@ -330,3 +316,4 @@ class RawQueryPagingSource(
         }
     }
 }
+ */

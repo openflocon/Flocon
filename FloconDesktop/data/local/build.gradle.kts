@@ -27,6 +27,7 @@ kotlin {
             implementation(libs.koin.core)
 
             implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.room.paging)
 
             implementation(projects.domain)
             implementation(projects.data.core)

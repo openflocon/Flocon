@@ -62,6 +62,7 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
             implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.room.paging)
             implementation(libs.sqlite.bundled)
             implementation(libs.aboutlibraries.core)
             implementation(libs.aboutlibraries.compose.m3) // Material 3

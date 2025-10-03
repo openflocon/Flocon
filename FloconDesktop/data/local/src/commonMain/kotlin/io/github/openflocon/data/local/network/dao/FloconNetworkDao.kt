@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.network.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -25,7 +26,7 @@ interface FloconNetworkDao {
     fun observeRequests(deviceId: String, packageName: String): Flow<List<FloconNetworkCallEntity>>
 
     @RawQuery(observedEntities = [FloconNetworkCallEntity::class])
-    suspend fun observeRequestsRaw(query: RoomRawQuery): List<FloconNetworkCallEntity>
+    fun observeRequestsRaw(query: RoomRawQuery): PagingSource<Int, FloconNetworkCallEntity>
 
     @Query(
         """
