@@ -73,10 +73,12 @@ fun NetworkScreen(
 ) {
     val viewModel: NetworkViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val items by viewModel.items.collectAsStateWithLifecycle()
     val filterText = viewModel.filterText
 
     NetworkScreen(
         uiState = uiState,
+        rows = items,
         filterText = filterText,
         onAction = viewModel::onAction,
         modifier = modifier,
@@ -86,6 +88,7 @@ fun NetworkScreen(
 @Composable
 fun NetworkScreen(
     uiState: NetworkUiState,
+    rows: List<NetworkItemViewState>,
     filterText: State<String>,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -95,9 +98,9 @@ fun NetworkScreen(
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
     val columnWidths: NetworkItemColumnWidths = remember { NetworkItemColumnWidths() } // Default widths provided
 
-    LaunchedEffect(uiState.contentState.autoScroll, uiState.items) {
-        if (uiState.contentState.autoScroll && uiState.items.lastIndex != -1) {
-            lazyListState.animateScrollToItem(uiState.items.lastIndex)
+    LaunchedEffect(uiState.contentState.autoScroll, rows.size) {
+        if (uiState.contentState.autoScroll && rows.lastIndex != -1) {
+            lazyListState.animateScrollToItem(rows.lastIndex)
         }
     }
 
@@ -261,7 +264,7 @@ fun NetworkScreen(
                         .weight(1f)
                 ) {
                     items(
-                        items = uiState.items,
+                        items = rows,
                         key = NetworkItemViewState::uuid,
                     ) {
                         NetworkItemView(
@@ -348,21 +351,21 @@ fun NetworkScreen(
 @Preview
 private fun NetworkScreenPreview() {
     FloconTheme {
-        val uiState = previewNetworkUiState().copy(
-            items = remember {
-                listOf(
-                    previewNetworkItemViewState(),
-                    previewNetworkItemViewState(),
-                    previewGraphQlItemViewState(),
-                    previewNetworkItemViewState(),
-                    previewGraphQlItemViewState(),
-                    previewNetworkItemViewState(),
-                )
-            },
-        )
+        val rows = remember {
+            listOf(
+                previewNetworkItemViewState(),
+                previewNetworkItemViewState(),
+                previewGraphQlItemViewState(),
+                previewNetworkItemViewState(),
+                previewGraphQlItemViewState(),
+                previewNetworkItemViewState(),
+            )
+        }
+        val uiState = previewNetworkUiState()
 
         NetworkScreen(
             uiState = uiState,
+            rows = rows,
             onAction = {},
             filterText = mutableStateOf(""),
         )

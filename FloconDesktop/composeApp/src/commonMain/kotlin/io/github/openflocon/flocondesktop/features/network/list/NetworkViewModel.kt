@@ -10,7 +10,6 @@ import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
-import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel.Filters
@@ -40,7 +39,6 @@ import io.github.openflocon.flocondesktop.features.network.list.model.TopBarUiSt
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.common.copyToClipboard
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -55,7 +53,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.collections.map
 
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
@@ -118,9 +115,11 @@ class NetworkViewModel(
             .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
 
     private val filter = combines(
-        snapshotFlow { _filterText.value }.map { it.takeIf { it.isNotBlank() } }.distinctUntilChanged(),
+        snapshotFlow { _filterText.value }.map { it.takeIf { it.isNotBlank() } }
+            .distinctUntilChanged(),
         headerDelegate.textFiltersState.map { it.toDomain() }.distinctUntilChanged(),
-        headerDelegate.allowedMethods().map { items -> methodsToDomain(items) }.distinctUntilChanged(),
+        headerDelegate.allowedMethods().map { items -> methodsToDomain(items) }
+            .distinctUntilChanged(),
     ).map { (textFilters, filterOnAllColumns, methods) ->
         NetworkFilterDomainModel(
             filterOnAllColumns = textFilters,
@@ -134,7 +133,7 @@ class NetworkViewModel(
         filter,
     ).distinctUntilChanged()
 
-    private val items = combines(
+    val items = combines(
         sortAndFilter.flatMapLatest { (sorted, filter) ->
             observeNetworkRequestsUseCase(
                 sortedBy = sorted,
@@ -148,17 +147,20 @@ class NetworkViewModel(
                 deviceIdAndPackageName = deviceIdAndPackageName
             )
         }
-    }
+    }.flowOn(dispatcherProvider.viewModel)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList(),
+        )
 
     val uiState = combine(
-        items,
         contentState,
         detailState,
         filterUiState,
         headerDelegate.headerUiState,
-    ) { items, content, detail, filter, header ->
+    ) { content, detail, filter, header ->
         NetworkUiState(
-            items = items,
             contentState = content,
             detailState = detail,
             filterState = filter,
@@ -170,7 +172,6 @@ class NetworkViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = NetworkUiState(
-                items = emptyList(),
                 detailState = detailState.value,
                 contentState = contentState.value,
                 filterState = filterUiState.value,
@@ -221,10 +222,13 @@ class NetworkViewModel(
     private fun onUp() {
         val state = uiState.value
         val selectedItem = state.contentState.selectedRequestId
-        val index = state.items.indexOfFirst { it.uuid == selectedItem }
+
+        val items = items.value
+
+        val index = items.indexOfFirst { it.uuid == selectedItem }
             .takeIf { it != -1 }
             ?: return
-        val nextRequest = state.items.getOrNull(
+        val nextRequest = items.getOrNull(
             if (state.contentState.invertList)
                 index + 1
             else
@@ -237,10 +241,13 @@ class NetworkViewModel(
     private fun onDown() {
         val state = uiState.value
         val selectedItem = state.contentState.selectedRequestId
-        val index = state.items.indexOfFirst { it.uuid == selectedItem }
+
+        val items = items.value
+
+        val index = items.indexOfFirst { it.uuid == selectedItem }
             .takeIf { it != -1 }
             ?: return
-        val nextRequest = state.items.getOrNull(
+        val nextRequest = items.getOrNull(
             if (state.contentState.invertList)
                 index - 1
             else
@@ -430,13 +437,13 @@ private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): Li
 }
 
 private fun TextFilterStateUiModel.FilterItem.toDomain(): NetworkFilterDomainModel.Filters.FilterItem? {
-    return if(isActive) {
+    return if (isActive) {
         NetworkFilterDomainModel.Filters.FilterItem(
             text = text,
         )
     } else null
 }
 
-private fun methodsToDomain(items: List<NetworkMethodUi>) : List<String>? {
+private fun methodsToDomain(items: List<NetworkMethodUi>): List<String>? {
     return items.map { it.text }.takeIf { it.isNotEmpty() }
 }
