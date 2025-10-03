@@ -25,16 +25,16 @@ interface FloconAnalyticsDao {
         SELECT * 
         FROM AnalyticsItemEntity 
         WHERE deviceId = :deviceId
-        AND analyticsTableId = :analyticsTableId 
+        AND itemId = :analyticsItemId 
         AND packageName = :packageName
         LIMIT 1
     """,
     )
-    fun observeAnalytics(
-        deviceId: DeviceId,
+    fun observeAnalyticsItemById(
+        deviceId: String,
         packageName: String,
-        analyticsTableId: String,
-    ): Flow<AnalyticsItemEntity?>
+        analyticsItemId: String,
+    ) : Flow<AnalyticsItemEntity?>
 
     @Query(
         """

@@ -24,13 +24,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 
 @Composable
 fun AnalyticsDetailView(
-    state: AnalyticsRowUiModel,
+    state: AnalyticsDetailUiModel,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()

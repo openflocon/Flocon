@@ -2,6 +2,7 @@ package io.github.openflocon.domain.analytics
 
 import io.github.openflocon.domain.analytics.usecase.ExportAnalyticsToCsvUseCase
 import io.github.openflocon.domain.analytics.usecase.GetCurrentDeviceSelectedAnalyticsUseCase
+import io.github.openflocon.domain.analytics.usecase.ObserveAnalyticsByIdUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceSelectedAnalyticsUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveDeviceAnalyticsUseCase
@@ -24,4 +25,5 @@ internal val analyticsModule = module {
     factoryOf(::RemoveAnalyticsItemsBeforeUseCase)
     factoryOf(::RemoveOldSessionsAnalyticsUseCase)
     factoryOf(::ExportAnalyticsToCsvUseCase)
+    factoryOf(::ObserveAnalyticsByIdUseCase)
 }
