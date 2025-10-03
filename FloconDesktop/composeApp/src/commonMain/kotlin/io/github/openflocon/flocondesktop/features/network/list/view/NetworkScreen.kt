@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.network.list.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -33,6 +34,9 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
@@ -74,11 +78,13 @@ fun NetworkScreen(
     val viewModel: NetworkViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val filterText = viewModel.filterText
+    val items: LazyPagingItems<NetworkItemViewState> = viewModel.items.collectAsLazyPagingItems()
 
     NetworkScreen(
         uiState = uiState,
         filterText = filterText,
         onAction = viewModel::onAction,
+        items = items,
         modifier = modifier,
     )
 }
@@ -87,17 +93,17 @@ fun NetworkScreen(
 fun NetworkScreen(
     uiState: NetworkUiState,
     filterText: State<String>,
+    items: LazyPagingItems<NetworkItemViewState>,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
     val lazyListState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
     val columnWidths: NetworkItemColumnWidths = remember { NetworkItemColumnWidths() } // Default widths provided
 
-    LaunchedEffect(uiState.contentState.autoScroll, uiState.items) {
-        if (uiState.contentState.autoScroll && uiState.items.lastIndex != -1) {
-            lazyListState.animateScrollToItem(uiState.items.lastIndex)
+    LaunchedEffect(uiState.contentState.autoScroll, items.itemCount) {
+        if (uiState.contentState.autoScroll && items.itemCount != -1) {
+            lazyListState.animateScrollToItem(items.itemCount)
         }
     }
 
@@ -261,18 +267,23 @@ fun NetworkScreen(
                         .weight(1f)
                 ) {
                     items(
-                        items = uiState.items,
-                        key = NetworkItemViewState::uuid,
-                    ) {
-                        NetworkItemView(
-                            state = it,
-                            selected = it.uuid == uiState.contentState.selectedRequestId,
-                            columnWidths = columnWidths,
-                            onAction = onAction,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .animateItem(),
-                        )
+                        count = items.itemCount,
+                        key = items.itemKey { it.uuid } ,
+                    ) { index ->
+                        val item = items[index]
+                        if (item != null) {
+                            NetworkItemView(
+                                state = item,
+                                selected = item.uuid == uiState.contentState.selectedRequestId,
+                                columnWidths = columnWidths,
+                                onAction = onAction,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem(),
+                            )
+                        } else {
+                            Box(Modifier) // TODO placeholder
+                        }
                     }
                 }
                 FloconVerticalScrollbar(
@@ -344,27 +355,29 @@ fun NetworkScreen(
     }
 }
 
+/*
+
 @Composable
 @Preview
 private fun NetworkScreenPreview() {
     FloconTheme {
-        val uiState = previewNetworkUiState().copy(
-            items = remember {
-                listOf(
-                    previewNetworkItemViewState(),
-                    previewNetworkItemViewState(),
-                    previewGraphQlItemViewState(),
-                    previewNetworkItemViewState(),
-                    previewGraphQlItemViewState(),
-                    previewNetworkItemViewState(),
-                )
-            },
-        )
-
+        val items = remember {
+            listOf(
+                previewNetworkItemViewState(),
+                previewNetworkItemViewState(),
+                previewGraphQlItemViewState(),
+                previewNetworkItemViewState(),
+                previewGraphQlItemViewState(),
+                previewNetworkItemViewState(),
+            )
+        },
+        val uiState = previewNetworkUiState()
         NetworkScreen(
             uiState = uiState,
+            items =
             onAction = {},
             filterText = mutableStateOf(""),
         )
     }
 }
+*/

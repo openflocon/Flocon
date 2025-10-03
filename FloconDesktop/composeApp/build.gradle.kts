@@ -65,6 +65,8 @@ kotlin {
             implementation(libs.sqlite.bundled)
             implementation(libs.aboutlibraries.core)
             implementation(libs.aboutlibraries.compose.m3) // Material 3
+            implementation(libs.androidx.paging.common)
+            implementation(libs.androidx.paging.compose)
 
             // TODO Remove
             implementation(projects.data.remote)

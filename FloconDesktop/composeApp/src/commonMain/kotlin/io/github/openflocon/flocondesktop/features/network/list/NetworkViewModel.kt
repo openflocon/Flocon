@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
@@ -34,6 +37,7 @@ import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderD
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.TopBarUiState
@@ -134,31 +138,31 @@ class NetworkViewModel(
         filter,
     ).distinctUntilChanged()
 
-    private val items = combines(
-        sortAndFilter.flatMapLatest { (sorted, filter) ->
-            observeNetworkRequestsUseCase(
-                sortedBy = sorted,
-                filter = filter,
-            )
-        },
-        observeCurrentDeviceIdAndPackageNameUseCase(),
-    ).mapLatest { (list, deviceIdAndPackageName) ->
-        list.map { networkCall ->
-            networkCall.toUi(
-                deviceIdAndPackageName = deviceIdAndPackageName
-            )
+    val items: Flow<PagingData<NetworkItemViewState>> = observeCurrentDeviceIdAndPackageNameUseCase()
+        .flatMapLatest { deviceIdAndPackageName ->
+            sortAndFilter.flatMapLatest { (sorted, filter) ->
+                observeNetworkRequestsUseCase(
+                    sortedBy = sorted,
+                    filter = filter,
+                ).map { networkCallPagingData ->
+                    networkCallPagingData.map {
+                        it.toUi(
+                            deviceIdAndPackageName = deviceIdAndPackageName
+                        )
+                    }
+                }
+            }
         }
-    }
+        .flowOn(dispatcherProvider.viewModel)
+        .cachedIn(viewModelScope)
 
     val uiState = combine(
-        items,
         contentState,
         detailState,
         filterUiState,
         headerDelegate.headerUiState,
-    ) { items, content, detail, filter, header ->
+    ) { content, detail, filter, header ->
         NetworkUiState(
-            items = items,
             contentState = content,
             detailState = detail,
             filterState = filter,
@@ -170,7 +174,6 @@ class NetworkViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = NetworkUiState(
-                items = emptyList(),
                 detailState = detailState.value,
                 contentState = contentState.value,
                 filterState = filterUiState.value,
@@ -219,9 +222,10 @@ class NetworkViewModel(
     }
 
     private fun onUp() {
+        /*
         val state = uiState.value
         val selectedItem = state.contentState.selectedRequestId
-        val index = state.items.indexOfFirst { it.uuid == selectedItem }
+        val index = items.indexOfFirst { it.uuid == selectedItem }
             .takeIf { it != -1 }
             ?: return
         val nextRequest = state.items.getOrNull(
@@ -232,9 +236,11 @@ class NetworkViewModel(
         ) ?: return
 
         contentState.update { it.copy(selectedRequestId = nextRequest.uuid) }
+         */
     }
 
     private fun onDown() {
+        /*
         val state = uiState.value
         val selectedItem = state.contentState.selectedRequestId
         val index = state.items.indexOfFirst { it.uuid == selectedItem }
@@ -248,6 +254,7 @@ class NetworkViewModel(
         ) ?: return
 
         contentState.update { it.copy(selectedRequestId = nextRequest.uuid) }
+         */
     }
 
     private fun onClearSession() {
@@ -385,6 +392,7 @@ class NetworkViewModel(
     }
 
     private fun onExportCsv() {
+        /*
         viewModelScope.launch(dispatcherProvider.viewModel) {
             items.firstOrNull()?.let {
                 val ids = it.map { it.uuid }
@@ -402,6 +410,7 @@ class NetworkViewModel(
                 )
             }
         }
+         */
     }
 }
 
@@ -429,9 +438,9 @@ private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): Li
     }
 }
 
-private fun TextFilterStateUiModel.FilterItem.toDomain(): NetworkFilterDomainModel.Filters.FilterItem? {
+private fun TextFilterStateUiModel.FilterItem.toDomain(): Filters.FilterItem? {
     return if(isActive) {
-        NetworkFilterDomainModel.Filters.FilterItem(
+        Filters.FilterItem(
             text = text,
         )
     } else null

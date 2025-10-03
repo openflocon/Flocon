@@ -60,7 +60,7 @@ class NetworkRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
         filter: NetworkFilterDomainModel,
-    ): Flow<List<FloconNetworkCallDomainModel>> = networkLocalDataSource
+    ) = networkLocalDataSource
         .observeRequests(
             deviceIdAndPackageName = deviceIdAndPackageName,
             sortedBy = sortedBy,

@@ -34,6 +34,7 @@ core = "1.7.0"
 other-jsontree = "2.5.0"
 uiToolingPreviewDesktop = "1.8.2"
 buildconfig = "5.6.8"
+paging = "3.3.0"
 
 [libraries]
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
@@ -85,6 +86,9 @@ androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }
 
 other-jsontree = { module = "com.sebastianneubauer.jsontree:jsontree", version.ref = "other-jsontree"}
 ui-tooling-preview-desktop = { module = "org.jetbrains.compose.ui:ui-tooling-preview-desktop", version.ref = "uiToolingPreviewDesktop" }
+
+androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version = "3.4.0-alpha04" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
