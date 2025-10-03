@@ -7,7 +7,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkIte
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
 
-class SortAndFilterNetworkItemsProcessor {
+class FilterNetworkItemsProcessor {
     operator fun invoke(
         items: List<Pair<FloconNetworkCallDomainModel, NetworkItemViewState>>,
         filterState: TopBarUiState,
@@ -18,8 +18,12 @@ class SortAndFilterNetworkItemsProcessor {
             item.second.method in allowedMethods
         }
         .filter { item ->
-            textFilters.filter { it.value.isActive }.all { (column, textFilter) ->
-                textFilter.filter(column, item)
+            val filters = textFilters.filter { it.value.isActive }
+            if(filters.isEmpty()) true
+            else {
+                filters.any { (column, textFilter) ->
+                    textFilter.filter(column, item)
+                }
             }
         }
         .map { it.second }
@@ -41,32 +45,47 @@ private fun TextFilterStateUiModel.filter(
 }
 
 private fun TextFilterStateUiModel.filterByText(text: String?): Boolean {
-    if (text == null)
-        return true // accepts if text is null
-
-    for (filter in this.allFilters) {
-        if (!filter.filterByText(text))
-            return false
+    // 1. If text is null, it always passes the filter (default behavior).
+    if (text == null) {
+        return true
     }
 
-    return true
+    val activeFilters = this.allFilters.filter { it.isActive }
+
+    // 2. If there are no active filters, it always passes.
+    if (activeFilters.isEmpty()) {
+        return true
+    }
+
+    val (excludedFilters, includedFilters) = activeFilters.partition { it.isExcluded }
+
+    // --- Step 1: Exclusion Check ---
+
+    // 4. Check if the text matches ANY exclusion filter.
+    // If ANY active 'isExcluded' filter matches, the item MUST be rejected (return false).
+    val isExcluded = excludedFilters.any { it.matches(text) }
+
+    if (isExcluded) {
+        return false // Excluded, so it fails the filter immediately.
+    }
+
+    // --- Step 2: Inclusion Check ---
+
+    // 5. If there are no inclusion filters, the item passes (as it wasn't excluded).
+    if (includedFilters.isEmpty()) {
+        return true
+    }
+
+    // 6. If not excluded, check if the text matches AT LEAST ONE inclusion filter.
+    // If ANY non-excluded filter matches, the item is kept (return true).
+    return includedFilters.any { it.matches(text) }
 }
 
-private fun TextFilterStateUiModel.FilterItem.filterByText(text: String): Boolean {
-    if (!this.isActive)
-        return true
-
-    // Crée une instance de Regex en fonction de 'isRegex'
-    val filterResult = if (this.isRegex) {
+private fun TextFilterStateUiModel.FilterItem.matches(text: String): Boolean {
+    return if (this.isRegex) {
         Regex(this.text, setOf(RegexOption.IGNORE_CASE)).containsMatchIn(text)
     } else {
         text.contains(this.text, ignoreCase = true)
-    }
-
-    return if (this.isExcluded) {
-        !filterResult
-    } else {
-        filterResult
     }
 }
 
