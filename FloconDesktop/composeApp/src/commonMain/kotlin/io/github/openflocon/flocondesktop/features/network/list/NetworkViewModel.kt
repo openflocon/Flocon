@@ -17,6 +17,7 @@ import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
+import io.github.openflocon.domain.network.usecase.GetNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
@@ -56,6 +57,7 @@ import kotlinx.coroutines.launch
 
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
+    private val getNetworkRequestsUseCase: GetNetworkRequestsUseCase,
     private val observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
     private val generateCurlCommandUseCase: GenerateCurlCommandUseCase,
     private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase,
@@ -214,47 +216,9 @@ class NetworkViewModel(
             is NetworkAction.InvertList -> onInvertList(action)
             NetworkAction.ToggleAutoScroll -> onAutoScroll()
             NetworkAction.ClearOldSession -> onClearSession()
-            NetworkAction.Down -> onDown()
-            NetworkAction.Up -> onUp()
+            is NetworkAction.Down -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
+            is NetworkAction.Up -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
         }
-    }
-
-    private fun onUp() {
-        val state = uiState.value
-        val selectedItem = state.contentState.selectedRequestId
-
-        val items = items.value
-
-        val index = items.indexOfFirst { it.uuid == selectedItem }
-            .takeIf { it != -1 }
-            ?: return
-        val nextRequest = items.getOrNull(
-            if (state.contentState.invertList)
-                index + 1
-            else
-                index - 1
-        ) ?: return
-
-        contentState.update { it.copy(selectedRequestId = nextRequest.uuid) }
-    }
-
-    private fun onDown() {
-        val state = uiState.value
-        val selectedItem = state.contentState.selectedRequestId
-
-        val items = items.value
-
-        val index = items.indexOfFirst { it.uuid == selectedItem }
-            .takeIf { it != -1 }
-            ?: return
-        val nextRequest = items.getOrNull(
-            if (state.contentState.invertList)
-                index - 1
-            else
-                index + 1
-        ) ?: return
-
-        contentState.update { it.copy(selectedRequestId = nextRequest.uuid) }
     }
 
     private fun onClearSession() {
@@ -393,8 +357,12 @@ class NetworkViewModel(
 
     private fun onExportCsv() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            items.firstOrNull()?.let {
-                val ids = it.map { it.uuid }
+            val sortAndFilter = sortAndFilter.firstOrNull() ?: return@launch
+            getNetworkRequestsUseCase(
+                sortedBy = sortAndFilter.first,
+                filter = sortAndFilter.second,
+            ).let {
+                val ids = it.map { it.callId }
                 exportNetworkCallsToCsv(ids).fold(
                     doOnFailure = {
                         feedbackDisplayer.displayMessage(
