@@ -1,5 +1,9 @@
 package io.github.openflocon.data.local.network.datasource
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import androidx.room.RoomRawQuery
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
@@ -35,13 +39,25 @@ class NetworkLocalDataSourceRoom(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
         filter: NetworkFilterDomainModel,
-    ): Flow<List<FloconNetworkCallDomainModel>> = floconNetworkDao.observeRequestsRaw(
-        generateNetworkRequestsRawQuery(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-            sortedBy = sortedBy,
-            filter = filter,
-        )
-    ).map { entities -> entities.mapNotNull(FloconNetworkCallEntity::toDomainModel) }
+    ): Flow<PagingData<FloconNetworkCallDomainModel>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+            ),
+            pagingSourceFactory = {
+                floconNetworkDao.observeRequestsWithPaging(
+                    generateNetworkRequestsRawQuery(
+                        deviceIdAndPackageName = deviceIdAndPackageName,
+                        sortedBy = sortedBy,
+                        filter = filter,
+                    )
+                )
+            }
+        ).flow
+            .map { pagingData ->
+                pagingData.map { entity -> entity.toDomainModel() }
+            }
+    }
 
     private fun generateNetworkRequestsRawQuery(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

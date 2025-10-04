@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
@@ -34,12 +37,14 @@ import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderD
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.TopBarUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -135,26 +140,23 @@ class NetworkViewModel(
         filter,
     ).distinctUntilChanged()
 
-    val items = combines(
-        sortAndFilter.flatMapLatest { (sorted, filter) ->
-            observeNetworkRequestsUseCase(
-                sortedBy = sorted,
-                filter = filter,
-            )
-        },
-        observeCurrentDeviceIdAndPackageNameUseCase(),
-    ).mapLatest { (list, deviceIdAndPackageName) ->
-        list.map { networkCall ->
-            networkCall.toUi(
-                deviceIdAndPackageName = deviceIdAndPackageName
-            )
+    val items: Flow<PagingData<NetworkItemViewState>> = observeCurrentDeviceIdAndPackageNameUseCase()
+        .flatMapLatest { deviceIdAndPackageName ->
+            sortAndFilter.flatMapLatest { (sorted, filter) ->
+                observeNetworkRequestsUseCase(
+                    sortedBy = sorted,
+                    filter = filter,
+                ).map { networkCallPagingData ->
+                    networkCallPagingData.map {
+                        it.toUi(
+                            deviceIdAndPackageName = deviceIdAndPackageName
+                        )
+                    }
+                }
+            }
         }
-    }.flowOn(dispatcherProvider.viewModel)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList(),
-        )
+        .flowOn(dispatcherProvider.viewModel)
+        .cachedIn(viewModelScope)
 
     val uiState = combine(
         contentState,
@@ -406,7 +408,7 @@ private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): Li
 
 private fun TextFilterStateUiModel.FilterItem.toDomain(): NetworkFilterDomainModel.Filters.FilterItem? {
     return if (isActive) {
-        NetworkFilterDomainModel.Filters.FilterItem(
+        Filters.FilterItem(
             text = text,
         )
     } else null

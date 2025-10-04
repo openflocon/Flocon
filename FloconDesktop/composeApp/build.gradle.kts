@@ -62,9 +62,12 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
             implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.room.paging)
             implementation(libs.sqlite.bundled)
             implementation(libs.aboutlibraries.core)
             implementation(libs.aboutlibraries.compose.m3) // Material 3
+            implementation(libs.androidx.paging.common)
+            implementation(libs.androidx.paging.compose)
 
             // TODO Remove
             implementation(projects.data.remote)
@@ -72,7 +75,7 @@ kotlin {
             implementation(projects.data.core)
 
             implementation(projects.domain)
-
+            
             implementation(projects.library.designsystem)
             implementation(libs.kermit)
         }
