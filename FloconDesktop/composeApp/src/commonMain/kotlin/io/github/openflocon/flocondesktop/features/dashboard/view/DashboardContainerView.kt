@@ -40,7 +40,7 @@ fun DashboardContainerView(
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var inputState by remember {
+    var inputState by remember(viewState) {
         mutableStateOf(
             viewState.rows
                 .filterIsInstance<DashboardContainerViewState.InputItem>()
