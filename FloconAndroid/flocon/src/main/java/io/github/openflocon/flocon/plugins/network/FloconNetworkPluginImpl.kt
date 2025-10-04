@@ -67,6 +67,16 @@ internal class FloconNetworkPluginImpl(
         }
     }
 
+    override fun logWebSocket(
+        event: WebSocketEvent,
+        message: String?,
+        error: Throwable?
+    ) {
+        FloconLogger.log(
+            "websocket_websocket : $event ${message ?: error?.message ?: ""}"
+        )
+    }
+
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
         sender: FloconMessageSender
