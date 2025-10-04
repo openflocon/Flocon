@@ -2,7 +2,9 @@ package io.github.openflocon.flocon.plugins.network.mapper
 
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
+import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
 import org.json.JSONObject
+import java.util.UUID
 
 internal fun floconNetworkCallRequestToJson(network: FloconNetworkCallRequest): JSONObject {
     val json = JSONObject()
@@ -45,6 +47,38 @@ fun floconNetworkCallResponseToJson(network: FloconNetworkCallResponse): JSONObj
         json.put("responseSize", response.size)
         json.put("isImage", response.isImage)
         response.error?.let { json.put("responseError", it) }
+    }
+
+    return json
+}
+
+
+internal fun floconNetworkWebSocketEventToJson(
+    webSocketEvent: FloconWebSocketEvent,
+): JSONObject {
+    val json = JSONObject()
+
+    with(webSocketEvent) {
+        json.put("id", UUID.randomUUID().toString())
+        json.put("event", when(event) {
+            FloconWebSocketEvent.Event.Closed -> "closed"
+            FloconWebSocketEvent.Event.Closing -> "closing"
+            FloconWebSocketEvent.Event.Error -> "error"
+            FloconWebSocketEvent.Event.ReceiveMessage -> "receiveMessage"
+            FloconWebSocketEvent.Event.SendMessage -> "sendMessage"
+            FloconWebSocketEvent.Event.Open -> "open"
+        })
+        // json.put("isMocked", isMocked)
+
+        json.put("url", websocketUrl)
+        json.put("timestamp", webSocketEvent.timeStamp)
+
+        webSocketEvent.message?.let {
+            json.put("message", it)
+        }
+        webSocketEvent.error?.message?.let {
+            json.put("error", it)
+        }
     }
 
     return json

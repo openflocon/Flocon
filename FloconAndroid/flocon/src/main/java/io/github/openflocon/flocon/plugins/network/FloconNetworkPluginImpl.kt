@@ -7,6 +7,7 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallRequestToJson
 import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallResponseToJson
+import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkWebSocketEventToJson
 import io.github.openflocon.flocon.plugins.network.mapper.parseBadQualityConfig
 import io.github.openflocon.flocon.plugins.network.mapper.parseMockResponses
 import io.github.openflocon.flocon.plugins.network.mapper.toJsonObject
@@ -14,6 +15,7 @@ import io.github.openflocon.flocon.plugins.network.mapper.writeMockResponsesToJs
 import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
+import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
 import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,13 +70,20 @@ internal class FloconNetworkPluginImpl(
     }
 
     override fun logWebSocket(
-        event: WebSocketEvent,
-        message: String?,
-        error: Throwable?
+        event: FloconWebSocketEvent,
     ) {
-        FloconLogger.log(
-            "websocket_websocket : $event ${message ?: error?.message ?: ""}"
-        )
+        coroutineScope.launch(Dispatchers.IO) {
+            delay(200) // to be sure the request is handled before the response, in case of mocks or direct connection refused
+            try {
+                sender.send(
+                    plugin = Protocol.FromDevice.Network.Plugin,
+                    method = Protocol.FromDevice.Network.Method.LogWebSocketEvent,
+                    body = floconNetworkWebSocketEventToJson(event).toString(),
+                )
+            } catch (t: Throwable) {
+                FloconLogger.logError("Network json mapping error", t)
+            }
+        }
     }
 
     override fun onMessageReceived(
