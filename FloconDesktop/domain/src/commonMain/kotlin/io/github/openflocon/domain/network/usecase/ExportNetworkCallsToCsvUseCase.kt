@@ -104,6 +104,7 @@ private fun List<FloconNetworkCallDomainModel>.exportToCsv(file: File) {
             is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> "HTTP"
             is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> "GraphQL"
             is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> "gRPC"
+            is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "websocket"
         }
 
         val dataList = listOf(

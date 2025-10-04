@@ -45,6 +45,7 @@ enum class FloconNetworkCallType {
     HTTP,
     GRAPHQL,
     GRPC,
+    WEBSOCKET,
 }
 
 data class FloconNetworkRequestEmbedded(

@@ -23,6 +23,7 @@ fun FloconNetworkCallDomainModel.toEntity(
             is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> FloconNetworkCallType.HTTP
             is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> FloconNetworkCallType.GRAPHQL
             is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> FloconNetworkCallType.GRPC
+            is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> FloconNetworkCallType.WEBSOCKET
         },
         request = FloconNetworkRequestEmbedded(
             url = request.url,

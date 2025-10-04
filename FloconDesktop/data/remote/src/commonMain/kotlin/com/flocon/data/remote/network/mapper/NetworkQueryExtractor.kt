@@ -10,4 +10,5 @@ internal fun extractQueryFormatted(
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> s.query
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> extractPath(requestUrl)
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> requestMethod
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "websocket_extractQueryFormatted"// not called
 }

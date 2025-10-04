@@ -6,6 +6,7 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailHeaderUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
+import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState.Method.*
 import io.github.openflocon.flocondesktop.features.network.list.mapper.getMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.mapper.loadingStatus
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toGraphQlNetworkStatusUi
@@ -95,11 +96,15 @@ fun toNetworkHeadersUi(headers: Map<String, String>?): List<NetworkDetailHeaderU
 } ?: emptyList()
 
 fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState.Method = when (request.request.specificInfos) {
-    is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> NetworkDetailViewState.Method.MethodName(
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> MethodName(
         name = request.request.method,
     )
 
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Http,
-    -> NetworkDetailViewState.Method.Http(toHttpMethodUi(request.request.method))
+    -> Http(toHttpMethodUi(request.request.method))
+
+    FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> MethodName(
+        name = request.request.method, // TODO
+    )
 }

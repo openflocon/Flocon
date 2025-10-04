@@ -415,5 +415,5 @@ private fun TextFilterStateUiModel.FilterItem.toDomain(): NetworkFilterDomainMod
 }
 
 private fun methodsToDomain(items: List<NetworkMethodUi>): List<String>? {
-    return items.map { it.text }.takeIf { it.isNotEmpty() }
+    return items.map { it.text }.takeIf { it.isNotEmpty() }?.takeIf { it.size != NetworkMethodUi.all().size } // returns null if we accept all
 }

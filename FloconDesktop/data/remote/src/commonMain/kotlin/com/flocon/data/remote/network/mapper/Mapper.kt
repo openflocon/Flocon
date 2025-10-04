@@ -2,6 +2,7 @@ package com.flocon.data.remote.network.mapper
 
 import com.flocon.data.remote.network.models.BadQualityConfigDataModel
 import com.flocon.data.remote.network.models.FloconNetworkRequestDataModel
+import com.flocon.data.remote.network.models.FloconNetworkWebSocketEvent
 import com.flocon.data.remote.network.models.MockNetworkResponseDataModel
 import io.github.openflocon.data.core.network.graphql.model.GraphQlExtracted
 import io.github.openflocon.data.core.network.graphql.model.GraphQlRequestBody
@@ -12,6 +13,7 @@ import io.github.openflocon.domain.device.models.AppInstance
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
+import io.ktor.server.util.url
 import kotlinx.serialization.json.Json
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -184,3 +186,45 @@ fun toRemote(domain: BadQualityConfigDomainModel): BadQualityConfigDataModel =
             }
         },
     )
+
+
+@OptIn(ExperimentalUuidApi::class)
+fun FloconNetworkWebSocketEvent.toDomain(
+    appInstance: AppInstance,
+): FloconNetworkCallDomainModel? {
+    return try {
+        val callId = id!!
+        val startTime = timestamp!!
+
+        val specificInfos = FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket
+
+        val method = "websocket"
+        val body = message ?: error ?: event ?: ""
+
+        val request = FloconNetworkCallDomainModel.Request(
+            url = url!!,
+            startTime = startTime,
+            startTimeFormatted = formatTimestamp(startTime),
+            method = method,
+            headers = emptyMap(),
+            body = body,
+            byteSize = 0L, // TODO
+            byteSizeFormatted = ByteFormatter.formatBytes(0L), // TODO
+            isMocked = false, // TODO ?
+            specificInfos = specificInfos,
+            domainFormatted = url,
+            methodFormatted = method,
+            queryFormatted = body,
+        )
+
+        FloconNetworkCallDomainModel(
+            callId = callId,
+            appInstance = appInstance,
+            request = request,
+            response = null, // for now it's null
+        )
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        null
+    }
+}

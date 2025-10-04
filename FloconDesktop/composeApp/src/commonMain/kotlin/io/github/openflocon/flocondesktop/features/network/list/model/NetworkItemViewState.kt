@@ -53,6 +53,13 @@ data class NetworkItemViewState(
             override fun contains(text: String): Boolean = method.contains(text, ignoreCase = true)
             override val text = method
         }
+
+        @Immutable
+        data class WebSocket(
+            override val text: String,
+        ) : NetworkTypeUi {
+            override fun contains(text: String): Boolean = text.contains(text, ignoreCase = true)
+        }
     }
 }
 

@@ -41,6 +41,7 @@ private fun FloconNetworkCallEntity.toRequestDomainModel(): FloconNetworkCallDom
             }
 
             FloconNetworkCallType.GRPC -> FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc
+            FloconNetworkCallType.WEBSOCKET -> FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket
         },
     )
 

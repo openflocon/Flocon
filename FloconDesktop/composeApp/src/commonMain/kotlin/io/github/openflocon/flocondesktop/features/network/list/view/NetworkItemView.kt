@@ -227,6 +227,7 @@ private val NetworkItemViewState.NetworkTypeUi.query: String
         is NetworkItemViewState.NetworkTypeUi.GraphQl -> queryName
         is NetworkItemViewState.NetworkTypeUi.Grpc -> method
         is NetworkItemViewState.NetworkTypeUi.Url -> query
+        is NetworkItemViewState.NetworkTypeUi.WebSocket -> text
     }
 
 @Composable

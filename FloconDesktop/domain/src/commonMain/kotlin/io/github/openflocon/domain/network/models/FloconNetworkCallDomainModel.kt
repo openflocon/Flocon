@@ -26,6 +26,7 @@ data class FloconNetworkCallDomainModel(
     ) {
         sealed interface SpecificInfos {
             data object Http: SpecificInfos
+            data object WebSocket: SpecificInfos
             data class GraphQl(
                 val query: String,
                 val operationType: String,

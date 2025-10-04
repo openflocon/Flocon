@@ -68,6 +68,7 @@ object Protocol {
             object Method {
                 const val LogNetworkCallRequest = "logNetworkCallRequest"
                 const val LogNetworkCallResponse = "logNetworkCallResponse"
+                const val LogWebSocketEvent = "logWebSocketEvent"
             }
         }
 
