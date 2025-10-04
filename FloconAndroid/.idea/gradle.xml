@@ -20,6 +20,7 @@
             <option value="$PROJECT_DIR$/grpc/grpc-interceptor-lite" />
             <option value="$PROJECT_DIR$/ktor-interceptor" />
             <option value="$PROJECT_DIR$/okhttp-interceptor" />
+            <option value="$PROJECT_DIR$/okhttp-interceptor-no-op" />
           </set>
         </option>
       </GradleProjectSettings>

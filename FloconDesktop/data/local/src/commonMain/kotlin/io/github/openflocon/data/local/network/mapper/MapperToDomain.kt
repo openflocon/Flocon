@@ -6,18 +6,13 @@ import io.github.openflocon.data.local.network.models.FloconNetworkResponseEmbed
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 
 
-fun FloconNetworkCallEntity.toDomainModel(): FloconNetworkCallDomainModel? {
-    return try {
-        FloconNetworkCallDomainModel(
-            callId = callId,
-            appInstance = appInstance,
-            request = toRequestDomainModel(),
-            response = response?.toDomainModel(),
-        )
-    } catch (t: Throwable) {
-        t.printStackTrace()
-        return null
-    }
+fun FloconNetworkCallEntity.toDomainModel(): FloconNetworkCallDomainModel {
+    return FloconNetworkCallDomainModel(
+        callId = callId,
+        appInstance = appInstance,
+        request = toRequestDomainModel(),
+        response = response?.toDomainModel(),
+    )
 }
 
 private fun FloconNetworkCallEntity.toRequestDomainModel(): FloconNetworkCallDomainModel.Request =
@@ -36,10 +31,14 @@ private fun FloconNetworkCallEntity.toRequestDomainModel(): FloconNetworkCallDom
         methodFormatted = request.methodFormatted,
         specificInfos = when (type) {
             FloconNetworkCallType.HTTP -> FloconNetworkCallDomainModel.Request.SpecificInfos.Http
-            FloconNetworkCallType.GRAPHQL -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
-                query = request.graphql!!.query,
-                operationType = request.graphql.operationType,
-            )
+            FloconNetworkCallType.GRAPHQL -> {
+                request.graphql?.let { requestGraphQl ->
+                    FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
+                        query = requestGraphQl.query,
+                        operationType = requestGraphQl.operationType,
+                    )
+                } ?: FloconNetworkCallDomainModel.Request.SpecificInfos.Http
+            }
 
             FloconNetworkCallType.GRPC -> FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc
         },
@@ -47,7 +46,7 @@ private fun FloconNetworkCallEntity.toRequestDomainModel(): FloconNetworkCallDom
 
 
 private fun FloconNetworkResponseEmbedded.toDomainModel(): FloconNetworkCallDomainModel.Response? {
-    return if(responseError != null) {
+    return if (responseError != null) {
         FloconNetworkCallDomainModel.Response.Failure(
             durationMs = durationMs,
             issue = responseError,
@@ -70,12 +69,15 @@ private fun FloconNetworkResponseEmbedded.toDomainModel(): FloconNetworkCallDoma
                     httpCode = graphql.responseHttpCode,
                     isSuccess = graphql.isSuccess,
                 )
+
                 grpc != null -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc(
                     grpcStatus = grpc.responseStatus,
                 )
+
                 http != null -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http(
                     httpCode = http.responseHttpCode,
                 )
+
                 else -> return null
             }
         )
