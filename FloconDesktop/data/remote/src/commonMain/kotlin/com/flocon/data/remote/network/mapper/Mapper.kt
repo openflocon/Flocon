@@ -196,10 +196,12 @@ fun FloconNetworkWebSocketEvent.toDomain(
         val callId = id!!
         val startTime = timestamp!!
 
-        val specificInfos = FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket
+        val specificInfos = FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket(
+            event = event!!,
+        )
 
         val method = "websocket"
-        val body = message ?: error ?: event ?: ""
+        val body = message ?: error ?: event
 
         val request = FloconNetworkCallDomainModel.Request(
             url = url!!,

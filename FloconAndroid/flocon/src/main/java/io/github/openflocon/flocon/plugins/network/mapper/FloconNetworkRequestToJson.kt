@@ -64,8 +64,8 @@ internal fun floconNetworkWebSocketEventToJson(
             FloconWebSocketEvent.Event.Closed -> "closed"
             FloconWebSocketEvent.Event.Closing -> "closing"
             FloconWebSocketEvent.Event.Error -> "error"
-            FloconWebSocketEvent.Event.ReceiveMessage -> "receiveMessage"
-            FloconWebSocketEvent.Event.SendMessage -> "sendMessage"
+            FloconWebSocketEvent.Event.ReceiveMessage -> "received"
+            FloconWebSocketEvent.Event.SendMessage -> "sent"
             FloconWebSocketEvent.Event.Open -> "open"
         })
         // json.put("isMocked", isMocked)

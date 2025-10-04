@@ -65,6 +65,13 @@ data class FloconNetworkRequestEmbedded(
 
     @Embedded(prefix = "graphql_")
     val graphql: NetworkCallGraphQlRequestEmbedded?,
+
+    @Embedded(prefix = "websocket_")
+    val websocket: NetworkCallWebSocketRequestEmbedded?,
+)
+
+data class NetworkCallWebSocketRequestEmbedded(
+    val event: String,
 )
 
 data class FloconNetworkResponseEmbedded(

@@ -3,7 +3,6 @@ package io.github.openflocon.flocondesktop.features.network.list.mapper
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState.NetworkTypeUi
-import io.ktor.client.plugins.websocket.WebSockets
 
 fun toTypeUi(call: FloconNetworkCallDomainModel): NetworkItemViewState.NetworkTypeUi = when (val s = call.request.specificInfos) {
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> NetworkTypeUi.GraphQl(
@@ -22,7 +21,7 @@ fun toTypeUi(call: FloconNetworkCallDomainModel): NetworkItemViewState.NetworkTy
         )
     }
 
-    FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> NetworkTypeUi.WebSocket(
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> NetworkTypeUi.WebSocket(
         text = call.request.queryFormatted,
     )
 }

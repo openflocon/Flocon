@@ -104,7 +104,7 @@ fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewSt
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Http,
     -> Http(toHttpMethodUi(request.request.method))
 
-    FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> MethodName(
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> MethodName(
         name = request.request.method, // TODO
     )
 }
