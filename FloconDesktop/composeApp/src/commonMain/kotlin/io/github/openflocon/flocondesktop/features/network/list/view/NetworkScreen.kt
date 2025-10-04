@@ -296,7 +296,7 @@ fun NetworkScreen(
                                     .animateItem(),
                             )
                         } else {
-                            Box(Modifier) // TODO placeholder
+                            Box(Modifier) // display nothing during load
                         }
                     }
                 }

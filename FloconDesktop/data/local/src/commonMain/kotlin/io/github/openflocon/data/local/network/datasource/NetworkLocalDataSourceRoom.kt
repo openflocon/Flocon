@@ -55,7 +55,7 @@ class NetworkLocalDataSourceRoom(
             }
         ).flow
             .map { pagingData ->
-                pagingData.map { entity -> entity.toDomainModel()!! } // TODO
+                pagingData.map { entity -> entity.toDomainModel() }
             }
     }
 
