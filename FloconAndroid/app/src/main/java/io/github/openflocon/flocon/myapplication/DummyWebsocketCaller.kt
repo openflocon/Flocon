@@ -1,6 +1,5 @@
 package io.github.openflocon.flocon.myapplication
 
-import io.github.openflocon.flocon.okhttp.websocket.FloconWebSocketListener
 import io.github.openflocon.flocon.okhttp.websocket.sendWithFlocon
 import okhttp3.OkHttpClient
 import okhttp3.Request
