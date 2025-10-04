@@ -21,11 +21,13 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutinesCore)
             implementation(libs.kotlinx.serializationJson)
+            implementation(libs.androidx.paging.common)
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
 
             implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.room.paging)
 
             implementation(projects.domain)
             implementation(projects.data.core)

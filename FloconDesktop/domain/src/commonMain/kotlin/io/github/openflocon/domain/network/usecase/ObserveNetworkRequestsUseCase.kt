@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.network.usecase
 
+import androidx.paging.PagingData
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
@@ -17,10 +18,10 @@ class ObserveNetworkRequestsUseCase(
     operator fun invoke(
         sortedBy: NetworkSortDomainModel?,
         filter: NetworkFilterDomainModel,
-    ): Flow<List<FloconNetworkCallDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
+    ): Flow<PagingData<FloconNetworkCallDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
         .flatMapLatest { current ->
             if (current == null) {
-                flowOf(emptyList())
+                flowOf(PagingData.empty())
             } else {
                 networkRepository.observeRequests(
                     deviceIdAndPackageName = current,
