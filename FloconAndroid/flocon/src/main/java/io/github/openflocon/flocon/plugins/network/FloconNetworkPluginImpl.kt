@@ -73,7 +73,6 @@ internal class FloconNetworkPluginImpl(
         event: FloconWebSocketEvent,
     ) {
         coroutineScope.launch(Dispatchers.IO) {
-            delay(200) // to be sure the request is handled before the response, in case of mocks or direct connection refused
             try {
                 sender.send(
                     plugin = Protocol.FromDevice.Network.Plugin,
