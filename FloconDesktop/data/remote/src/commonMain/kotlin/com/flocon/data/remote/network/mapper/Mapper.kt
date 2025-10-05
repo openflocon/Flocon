@@ -7,7 +7,6 @@ import com.flocon.data.remote.network.models.FloconNetworkWebSocketEvent
 import com.flocon.data.remote.network.models.MockNetworkResponseDataModel
 import io.github.openflocon.data.core.network.graphql.model.GraphQlExtracted
 import io.github.openflocon.data.core.network.graphql.model.GraphQlRequestBody
-import io.github.openflocon.data.core.network.graphql.model.GraphQlResponseBody
 import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.device.models.AppInstance
@@ -16,6 +15,8 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.ktor.server.util.url
 import kotlinx.serialization.json.Json
+import java.net.URI
+import java.net.URLDecoder
 import kotlin.uuid.ExperimentalUuidApi
 
 fun listToRemote(mocks: List<MockNetworkDomainModel>): List<MockNetworkResponseDataModel> =
@@ -61,10 +62,16 @@ fun toDomain(
     val startTime = decoded.startTime!!
 
     val specificInfos = when {
-        graphQl != null -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
-            query = graphQl.request.requestBody.query,
-            operationType = graphQl.request.operationType,
-        )
+        graphQl != null -> when(graphQl) {
+            is GraphQlExtracted.WithBody -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
+                query = graphQl.requestBody.query,
+                operationType = graphQl.operationType,
+            )
+            is GraphQlExtracted.PersistedQuery -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
+                query = graphQl.queryName,
+                operationType = graphQl.operationType,
+            )
+        }
 
         decoded.floconNetworkType == "grpc" -> FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc
         else -> FloconNetworkCallDomainModel.Request.SpecificInfos.Http
@@ -113,14 +120,14 @@ private val graphQlParser = Json {
 
 // maybe use graphql-java
 fun extractGraphQl(decoded: FloconNetworkRequestDataModel): GraphQlExtracted? {
-    val request = decoded.requestBody?.let {
+    decoded.requestBody?.let {
         try {
             val requestBody = graphQlParser.decodeFromString<GraphQlRequestBody>(it)
 
             val queryName = extractOperationName(requestBody.query)
             val operationType = extractOperationType(requestBody.query)
 
-            GraphQlExtracted.Request(
+            return GraphQlExtracted.WithBody(
                 requestBody = requestBody,
                 queryName = queryName,
                 operationType = operationType ?: return null,
@@ -130,11 +137,32 @@ fun extractGraphQl(decoded: FloconNetworkRequestDataModel): GraphQlExtracted? {
         }
     }
 
-    return if (request != null) {
-        GraphQlExtracted(
-            request = request,
-        )
-    } else null
+    // case with query params (persisted query)
+    decoded.url?.let { urlString ->
+        try {
+            val uri = URI(urlString)
+            val queryParams = uri.query
+                ?.split("&")
+                ?.associate {
+                    val (k, v) = it.split("=")
+                    k to URLDecoder.decode(v, "UTF-8")
+                } ?: emptyMap()
+
+            val queryName = queryParams["operationName"]
+            val extensions = queryParams["extensions"]
+
+            if (queryName != null && extensions?.contains("persistedQuery") == true) {
+                return GraphQlExtracted.PersistedQuery(
+                    queryName = queryName,
+                    operationType = "persistedQuery",
+                )
+            } else null
+        } catch (t: Throwable) {
+            null
+        }
+    }
+
+    return null
 }
 
 fun extractOperationType(query: String): String? {
@@ -147,14 +175,6 @@ private fun extractOperationName(query: String): String? {
     val regex = Regex("""\b(query|mutation|subscription)\s+(\w+)""")
     val matchResult = regex.find(query.trim())
     return matchResult?.groups?.get(2)?.value
-}
-
-fun computeIsGraphQlSuccess(
-    responseHttpCode: Int,
-    response: GraphQlResponseBody?,
-): Boolean {
-    if (responseHttpCode !in 200..299) return false
-    return response?.errors?.takeUnless { it.isEmpty() } == null
 }
 
 fun toRemote(domain: BadQualityConfigDomainModel): BadQualityConfigDataModel =
