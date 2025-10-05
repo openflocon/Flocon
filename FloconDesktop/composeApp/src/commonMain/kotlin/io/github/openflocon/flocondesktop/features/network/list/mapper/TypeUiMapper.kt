@@ -23,5 +23,12 @@ fun toTypeUi(call: FloconNetworkCallDomainModel): NetworkItemViewState.NetworkTy
 
     is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> NetworkTypeUi.WebSocket(
         text = call.request.queryFormatted,
+        icon = getWebsocketEmoji(s.event),
     )
+}
+
+private fun getWebsocketEmoji(event: String): NetworkTypeUi.WebSocket.IconType? = when (event) {
+    "sent" -> NetworkTypeUi.WebSocket.IconType.Up
+    "received" -> NetworkTypeUi.WebSocket.IconType.Down
+    else -> null
 }

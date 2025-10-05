@@ -12,14 +12,16 @@ data class NetworkDetailViewState(
     val durationFormatted: String?,
 
     val method: Method,
+    val statusLabel: String,
     val status: NetworkStatusUi,
 
     val graphQlSection: GraphQlSection?,
 
     // request
+    val requestBodyTitle: String,
     val requestBody: String,
     val requestSize: String,
-    val requestHeaders: List<NetworkDetailHeaderUi>,
+    val requestHeaders: List<NetworkDetailHeaderUi>?,
     // response
     val response: Response?,
 ) {
@@ -29,7 +31,7 @@ data class NetworkDetailViewState(
         data class Success(
             val body: String,
             val size: String,
-            val headers: List<NetworkDetailHeaderUi>,
+            val headers: List<NetworkDetailHeaderUi>?,
         ) : Response
         @Immutable
         data class Error(
