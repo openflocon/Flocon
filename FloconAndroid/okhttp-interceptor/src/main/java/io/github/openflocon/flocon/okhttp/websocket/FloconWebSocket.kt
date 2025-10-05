@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.okhttp.websocket
 
 import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.plugins.network.floconLogWebSocketEvent
 import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -16,10 +17,9 @@ object FloconWebSocket {
         error: Throwable? = null,
     ) {
         val size = message?.toByteArray()?.size?.toLong()
-        FloconApp.instance?.client?.networkPlugin?.logWebSocket(
+        floconLogWebSocketEvent(
             FloconWebSocketEvent(
                 websocketUrl = webSocket.request().url.toString(),
-                timeStamp = System.currentTimeMillis(),
                 event = event,
                 message = message,
                 error = error,
