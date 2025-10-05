@@ -25,4 +25,6 @@ interface NetworkRemoteDataSource {
     fun getCallId(message: FloconIncomingMessageDomainModel): FloconNetworkCallIdDomainModel?
 
     fun getResponseData(message: FloconIncomingMessageDomainModel): FloconNetworkResponseOnlyDomainModel?
+
+    fun getWebSocketData(message: FloconIncomingMessageDomainModel): FloconNetworkCallDomainModel?
 }

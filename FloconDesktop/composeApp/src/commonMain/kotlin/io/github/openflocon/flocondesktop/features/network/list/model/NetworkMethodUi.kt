@@ -50,6 +50,11 @@ sealed interface NetworkMethodUi {
         override val icon = null
     }
 
+    data object WebSocket : NetworkMethodUi {
+        override val text = "WebSocket"
+        override val icon = null
+    }
+
     data class OTHER(
         override val text: String,
         override val icon: DrawableResource?,
@@ -68,6 +73,7 @@ sealed interface NetworkMethodUi {
             GraphQl.QUERY,
             GraphQl.MUTATION,
             Grpc,
+            WebSocket,
             OTHER(text = "Other", icon = null),
         )
     }

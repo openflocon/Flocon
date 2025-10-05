@@ -9,6 +9,7 @@ internal fun extractMethod(
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> specificInfos.operationType.lowercase()
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> toHttpMethodUi(requestMethod)
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> "grpc"
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "websocket_extractMethod" // not called
 }
 
 private fun toHttpMethodUi(httpMethod: String) = httpMethod.lowercase()

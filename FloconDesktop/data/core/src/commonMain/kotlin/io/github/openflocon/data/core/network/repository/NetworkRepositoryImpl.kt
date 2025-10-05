@@ -108,6 +108,16 @@ class NetworkRepositoryImpl(
     ) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
+                Protocol.FromDevice.Network.Method.LogWebSocketEvent -> {
+                    networkRemoteDataSource.getWebSocketData(message)
+                        ?.let { wenSocketEvent ->
+                            networkLocalDataSource.save(
+                                deviceIdAndPackageName = deviceIdAndPackageName,
+                                call = wenSocketEvent,
+                            )
+                        }
+                }
+
                 Protocol.FromDevice.Network.Method.LogNetworkCallRequest -> {
                     networkRemoteDataSource.getRequestData(message)
                         ?.let { call ->

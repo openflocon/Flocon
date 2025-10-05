@@ -1,7 +1,9 @@
 package com.flocon.data.remote.network.mapper
 
+import com.flocon.data.remote.network.mapper.extractDomain
 import com.flocon.data.remote.network.models.BadQualityConfigDataModel
 import com.flocon.data.remote.network.models.FloconNetworkRequestDataModel
+import com.flocon.data.remote.network.models.FloconNetworkWebSocketEvent
 import com.flocon.data.remote.network.models.MockNetworkResponseDataModel
 import io.github.openflocon.data.core.network.graphql.model.GraphQlExtracted
 import io.github.openflocon.data.core.network.graphql.model.GraphQlRequestBody
@@ -11,6 +13,7 @@ import io.github.openflocon.domain.device.models.AppInstance
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
+import io.ktor.server.util.url
 import kotlinx.serialization.json.Json
 import java.net.URI
 import java.net.URLDecoder
@@ -204,3 +207,48 @@ fun toRemote(domain: BadQualityConfigDomainModel): BadQualityConfigDataModel =
             }
         },
     )
+
+
+@OptIn(ExperimentalUuidApi::class)
+fun FloconNetworkWebSocketEvent.toDomain(
+    appInstance: AppInstance,
+): FloconNetworkCallDomainModel? {
+    return try {
+        val callId = id!!
+        val startTime = timestamp!!
+
+        val specificInfos = FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket(
+            event = event!!,
+        )
+
+        val method = "websocket"
+        val body = message ?: error ?: event
+        val size = size ?: 0L
+
+        val request = FloconNetworkCallDomainModel.Request(
+            url = url!!,
+            startTime = startTime,
+            startTimeFormatted = formatTimestamp(startTime),
+            method = method,
+            headers = emptyMap(),
+            body = body,
+            byteSize = size,
+            byteSizeFormatted = ByteFormatter.formatBytes(size),
+            isMocked = false, // TODO ?
+            specificInfos = specificInfos,
+            domainFormatted = extractDomain(url, specificInfos),
+            methodFormatted = method,
+            queryFormatted = body,
+        )
+
+        FloconNetworkCallDomainModel(
+            callId = callId,
+            appInstance = appInstance,
+            request = request,
+            response = null, // no response for websocket
+        )
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        null
+    }
+}

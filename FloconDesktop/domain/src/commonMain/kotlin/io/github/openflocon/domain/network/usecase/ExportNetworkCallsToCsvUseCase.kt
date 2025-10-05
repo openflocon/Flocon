@@ -55,7 +55,10 @@ private fun List<FloconNetworkCallDomainModel>.exportToCsv(file: File) {
         val status = when (call.response) {
             is FloconNetworkCallDomainModel.Response.Success -> "Success"
             is FloconNetworkCallDomainModel.Response.Failure -> "Failure"
-            null -> "Pending"
+            null -> when(val s = call.request.specificInfos) {
+                is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> s.event
+                else -> "Pending"
+            }
         }
         val httpCode = when (call.response) {
             is FloconNetworkCallDomainModel.Response.Success -> call.response.specificInfos.httpCode().toString()
@@ -104,6 +107,7 @@ private fun List<FloconNetworkCallDomainModel>.exportToCsv(file: File) {
             is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> "HTTP"
             is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> "GraphQL"
             is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> "gRPC"
+            is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "websocket"
         }
 
         val dataList = listOf(

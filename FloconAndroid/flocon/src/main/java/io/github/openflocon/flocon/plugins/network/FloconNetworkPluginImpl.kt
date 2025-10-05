@@ -7,6 +7,7 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallRequestToJson
 import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallResponseToJson
+import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkWebSocketEventToJson
 import io.github.openflocon.flocon.plugins.network.mapper.parseBadQualityConfig
 import io.github.openflocon.flocon.plugins.network.mapper.parseMockResponses
 import io.github.openflocon.flocon.plugins.network.mapper.toJsonObject
@@ -14,6 +15,7 @@ import io.github.openflocon.flocon.plugins.network.mapper.writeMockResponsesToJs
 import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
+import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
 import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,6 +62,22 @@ internal class FloconNetworkPluginImpl(
                     plugin = Protocol.FromDevice.Network.Plugin,
                     method = Protocol.FromDevice.Network.Method.LogNetworkCallResponse,
                     body = floconNetworkCallResponseToJson(response).toString(),
+                )
+            } catch (t: Throwable) {
+                FloconLogger.logError("Network json mapping error", t)
+            }
+        }
+    }
+
+    override fun logWebSocket(
+        event: FloconWebSocketEvent,
+    ) {
+        coroutineScope.launch(Dispatchers.IO) {
+            try {
+                sender.send(
+                    plugin = Protocol.FromDevice.Network.Plugin,
+                    method = Protocol.FromDevice.Network.Method.LogWebSocketEvent,
+                    body = floconNetworkWebSocketEventToJson(event).toString(),
                 )
             } catch (t: Throwable) {
                 FloconLogger.logError("Network json mapping error", t)

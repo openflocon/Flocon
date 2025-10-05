@@ -22,7 +22,17 @@ fun getStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = ne
             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> toGrpcNetworkStatusUi(networkCall)
         }
     }
-} ?: loadingStatus()
+} ?: when(val s = networkCall.request.specificInfos) {
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> loadingStatus()
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> {
+        NetworkStatusUi(
+            text = s.event,
+            status = if(s.event == "error") NetworkStatusUi.Status.ERROR else NetworkStatusUi.Status.SUCCESS,
+        )
+    }
+}
 
 fun toNetworkStatusUi(code: Int): NetworkStatusUi = NetworkStatusUi(
     text = code.toString(),

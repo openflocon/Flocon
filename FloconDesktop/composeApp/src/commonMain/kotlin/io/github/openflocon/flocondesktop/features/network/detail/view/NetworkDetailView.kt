@@ -154,7 +154,7 @@ private fun Request(
                 }
                 FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Status",
+                    label = state.statusLabel,
                     contentColor = FloconTheme.colorPalette.onPrimary,
                     labelWidth = linesLabelWidth,
                 ) {
@@ -214,28 +214,30 @@ private fun Request(
                 }
             }
 
-            FloconSection(
-                title = "Request - Headers",
-                initialValue = true,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                DetailHeadersView(
-                    headers = state.requestHeaders,
-                    labelWidth = headersLabelWidth,
-                    onAuthorizationClicked = { token ->
-                        onAction(
-                            NetworkAction.DisplayBearerJwt(
-                                token
+            state.requestHeaders?.let {
+                FloconSection(
+                    title = "Request - Headers",
+                    initialValue = true,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    DetailHeadersView(
+                        headers = state.requestHeaders,
+                        labelWidth = headersLabelWidth,
+                        onAuthorizationClicked = { token ->
+                            onAction(
+                                NetworkAction.DisplayBearerJwt(
+                                    token
+                                )
                             )
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    )
+                }
             }
             FloconSection(
-                title = "Request - Body",
+                title = state.requestBodyTitle,
                 initialValue = true,
                 actions = {
                     FloconIconButton(
@@ -304,25 +306,27 @@ private fun Response(
                 }
 
                 is NetworkDetailViewState.Response.Success -> {
-                    FloconSection(
-                        title = "Response - Headers",
-                        initialValue = true,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        DetailHeadersView(
-                            headers = response.headers,
-                            labelWidth = headersLabelWidth,
-                            onAuthorizationClicked = { token ->
-                                onAction(
-                                    NetworkAction.DisplayBearerJwt(
-                                        token
+                    response.headers?.let {
+                        FloconSection(
+                            title = "Response - Headers",
+                            initialValue = true,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            DetailHeadersView(
+                                headers = response.headers,
+                                labelWidth = headersLabelWidth,
+                                onAuthorizationClicked = { token ->
+                                    onAction(
+                                        NetworkAction.DisplayBearerJwt(
+                                            token
+                                        )
                                     )
-                                )
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            )
+                        }
                     }
                     FloconSection(
                         title = "Response - Body",
@@ -369,6 +373,7 @@ private fun NetworkDetailViewPreview() {
                 callId = "",
                 fullUrl = "http://www.google.com",
                 method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
+                statusLabel = "Status",
                 status =
                     NetworkStatusUi(
                         text = "200",
@@ -380,6 +385,7 @@ private fun NetworkDetailViewPreview() {
                         previewNetworkDetailHeaderUi(),
                         previewNetworkDetailHeaderUi(),
                     ),
+                requestBodyTitle = "Request - Body",
                 requestBody =
                     """
                         {

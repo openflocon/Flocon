@@ -42,6 +42,9 @@ val deleteMethodText = Color(0xFFDC3545)
 val otherMethodBackground = Color(0xFF6C757D).copy(alpha = 0.3f) // Muted gray for OTHER
 val otherMethodText = Color(0xFF6C757D)
 
+val websocketMethodBackground = Color(0xFF17A2B8).copy(alpha = 0.3f) // Muted cyan for WEBSOCKET
+val websocketMethodText = Color(0xFF17A2B8)
+
 private val graphQlQueryMethodBackground =
     Color(0XAAE235A9).copy(alpha = 0.8f) // Muted gray for OTHER
 private val graphQlQueryMethodText = Color(0XAAFFFFFF)
@@ -66,6 +69,7 @@ fun MethodView(
             is NetworkMethodUi.GraphQl.QUERY -> graphQlQueryMethodBackground to graphQlQueryMethodText
             is NetworkMethodUi.GraphQl.MUTATION -> graphQlQueryMethodBackground to graphQlQueryMethodText
             is NetworkMethodUi.Grpc -> grpcMethodBackground to grpcMethodText
+            is NetworkMethodUi.WebSocket -> websocketMethodBackground to websocketMethodText
         }
 
     NetworkTag(

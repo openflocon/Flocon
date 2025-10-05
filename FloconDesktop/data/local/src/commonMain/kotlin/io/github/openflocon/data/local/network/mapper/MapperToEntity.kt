@@ -4,6 +4,7 @@ import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.data.local.network.models.FloconNetworkCallType
 import io.github.openflocon.data.local.network.models.FloconNetworkRequestEmbedded
 import io.github.openflocon.data.local.network.models.FloconNetworkResponseEmbedded
+import io.github.openflocon.data.local.network.models.NetworkCallWebSocketRequestEmbedded
 import io.github.openflocon.data.local.network.models.graphql.NetworkCallGraphQlRequestEmbedded
 import io.github.openflocon.data.local.network.models.graphql.NetworkCallGraphQlResponseEmbedded
 import io.github.openflocon.data.local.network.models.grpc.NetworkCallGrpcResponseEmbedded
@@ -23,6 +24,7 @@ fun FloconNetworkCallDomainModel.toEntity(
             is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> FloconNetworkCallType.HTTP
             is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> FloconNetworkCallType.GRAPHQL
             is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> FloconNetworkCallType.GRPC
+            is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> FloconNetworkCallType.WEBSOCKET
         },
         request = FloconNetworkRequestEmbedded(
             url = request.url,
@@ -38,6 +40,13 @@ fun FloconNetworkCallDomainModel.toEntity(
                 is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> NetworkCallGraphQlRequestEmbedded(
                     query = s.query,
                     operationType = s.operationType,
+                )
+
+                else -> null
+            },
+            websocket = when (val s = this.request.specificInfos) {
+                is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> NetworkCallWebSocketRequestEmbedded(
+                    event = s.event,
                 )
 
                 else -> null
