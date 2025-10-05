@@ -202,6 +202,7 @@ fun FloconNetworkWebSocketEvent.toDomain(
 
         val method = "websocket"
         val body = message ?: error ?: event
+        val size = size ?: 0L
 
         val request = FloconNetworkCallDomainModel.Request(
             url = url!!,
@@ -210,8 +211,8 @@ fun FloconNetworkWebSocketEvent.toDomain(
             method = method,
             headers = emptyMap(),
             body = body,
-            byteSize = 0L, // TODO
-            byteSizeFormatted = ByteFormatter.formatBytes(0L), // TODO
+            byteSize = size,
+            byteSizeFormatted = ByteFormatter.formatBytes(size),
             isMocked = false, // TODO ?
             specificInfos = specificInfos,
             domainFormatted = url,

@@ -72,6 +72,7 @@ internal fun floconNetworkWebSocketEventToJson(
 
         json.put("url", websocketUrl)
         json.put("timestamp", webSocketEvent.timeStamp)
+        json.put("size", webSocketEvent.size)
 
         webSocketEvent.message?.let {
             json.put("message", it)
