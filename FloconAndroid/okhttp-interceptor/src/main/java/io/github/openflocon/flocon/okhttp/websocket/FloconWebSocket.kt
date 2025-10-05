@@ -28,22 +28,22 @@ object FloconWebSocket {
         )
     }
 
-    fun send(webSocket: WebSocket, text: String) {
+    fun send(webSocket: WebSocket, text: String) : Boolean {
         log(
             webSocket = webSocket,
             event = FloconWebSocketEvent.Event.SendMessage,
             message = text,
         )
-        webSocket.send(text = text)
+        return webSocket.send(text = text)
     }
 
-    fun send(webSocket: WebSocket, bytes: ByteString) {
+    fun send(webSocket: WebSocket, bytes: ByteString) : Boolean {
         log(
             webSocket = webSocket,
             event = FloconWebSocketEvent.Event.SendMessage,
             message = bytes.toString(), // not sure
         )
-        webSocket.send(bytes = bytes)
+        return webSocket.send(bytes = bytes)
     }
 
     data class Listener(val listener: WebSocketListener) : WebSocketListener() {
