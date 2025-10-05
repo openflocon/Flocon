@@ -224,7 +224,7 @@ fun FloconNetworkWebSocketEvent.toDomain(
             callId = callId,
             appInstance = appInstance,
             request = request,
-            response = null, // for now it's null
+            response = null, // no response for websocket
         )
     } catch (t: Throwable) {
         t.printStackTrace()
