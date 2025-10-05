@@ -191,7 +191,7 @@ private fun contextualActions(
     return remember(state) {
         buildMenu {
             item(label = "Copy URL", onClick = { onActionCallback(NetworkAction.CopyUrl(state)) })
-            if (state.type !is NetworkItemViewState.NetworkTypeUi.Grpc) {
+            if (state.type !is NetworkItemViewState.NetworkTypeUi.Grpc && state.type !is NetworkItemViewState.NetworkTypeUi.WebSocket) {
                 item(
                     label = "Copy cUrl",
                     onClick = { onActionCallback(NetworkAction.CopyCUrl(state)) })
