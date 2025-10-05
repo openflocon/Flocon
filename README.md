@@ -7,7 +7,7 @@ It allows developers to connect an Android device to their computer and launch a
 `Flocon Desktop is a Kotlin Multiplatform project structured similarly to an Android app, using ViewModels, Room, Ktor, and Coroutines. The project is open to contributions — feel free to submit a pull request!`
 
 With Flocon, you gain deep access to critical app internals — such as
-- network requests (http, images, grpc, graphql)
+- network requests (http, images, grpc, graphql, websockets)
 - mock network calls
 - local storage (sharedpref, databases, app files)
 - analytics events (and custom events)
@@ -119,6 +119,85 @@ val httpClient = HttpClient(OkHttp) { // works with all clients, not only OkHttp
     install(FloconKtorPlugin)
     ...
 }
+```
+
+### 💬 Inspect Websockets
+
+<img width="1442" height="572" alt="Screenshot 2025-10-04 at 23 44 57" src="https://github.com/user-attachments/assets/49cef28f-87c9-4af7-a929-63d428d99f9e" />
+
+Flocon doesn’t stop at HTTP — it also captures **all WebSocket communications** made by your Android app.  
+This allows you to inspect real-time data exchanges between your app and the server with full visibility.
+
+For each WebSocket connection, you can inspect:
+
+- Connection URL  
+- **Sent and received frames** (text, binary, ping/pong)  
+- **Timestamps** and message order  
+- **Payloads**  
+- **Closes**
+
+With this feature, you can:
+
+- Debug real-time features like chat, live feeds, or multiplayer updates  
+- Verify the exact content of messages exchanged  
+- Diagnose disconnection or synchronization issues  
+- Mock or replay WebSocket messages to test client resilience  
+
+#### With OkHttp3
+
+Flocon-Okhttp-Interceptor has built-in websocket methods (⚠️ it's not possible through interceptors ⚠️) 
+
+To log outgoing messages 
+```kotlin
+webSocket.sendWithFlocon("\"$text\"") // extension method that log to Flocon and performs the send
+```
+
+To log incoming messages 
+```kotlin
+val request = Request.Builder()
+       .url("wss://.......")
+       .build()
+val listener = object : WebSocketListener() {
+      // your listener
+}
+
+webSocket = client.newWebSocket(
+      request,
+      listener.listenWithFlocon(), // extension method that wraps an existing WebSocketListener
+    )
+}
+```
+
+#### 🧰 Manually 
+
+If you are using other websockets libs than okhttp, you can easily forward events to FloconWebSocket
+
+To log outgoing messages 
+```kotlin
+val message = "hello"
+
+webSocket.send(message)
+
+floconLogWebSocketEvent(
+    FloconWebSocketEvent(
+        websocketUrl = "ws://..."
+        event = FloconWebSocketEvent.Event.SendMessage,
+        message = message,
+    )
+)
+```
+
+To log incoming messages 
+```kotlin
+myCustomWebSocket.onReceived {
+    floconLogWebSocketEvent(
+        FloconWebSocketEvent(
+        websocketUrl = "ws://..."
+        event = FloconWebSocketEvent.Event.ReceiveMessage,
+        message = it,
+    )
+    // handle your message
+)
 ```
 
 ### 🛰️ GraphQL Request Inspector
