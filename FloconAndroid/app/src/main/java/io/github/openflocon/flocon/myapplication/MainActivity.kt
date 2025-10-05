@@ -37,6 +37,7 @@ import io.github.openflocon.flocon.plugins.tables.table
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
+import java.util.UUID
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
@@ -63,6 +64,8 @@ class MainActivity : ComponentActivity() {
         initializeDeeplinks()
 
         val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)
+        val dummyWebsocketCaller = DummyWebsocketCaller(client = okHttpClient)
+        GlobalScope.launch { dummyWebsocketCaller.connectToWebsocket() }
         val graphQlTester = GraphQlTester(client = okHttpClient)
         initializeImages(context = this, okHttpClient = okHttpClient)
         initializeDashboard(this)
@@ -110,6 +113,13 @@ class MainActivity : ComponentActivity() {
                                 }
                             ) {
                                 Text("ktor test")
+                            }
+                            Button(
+                                onClick = {
+                                    dummyWebsocketCaller.send(UUID.randomUUID().toString())
+                                }
+                            ) {
+                                Text("websocket test")
                             }
                             Button(
                                 onClick = {

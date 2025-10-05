@@ -4,10 +4,12 @@ import com.flocon.data.remote.common.safeDecodeFromString
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.network.mapper.listToRemote
+import com.flocon.data.remote.network.mapper.toDomain
 import com.flocon.data.remote.network.mapper.toRemote
 import com.flocon.data.remote.network.models.FloconNetworkCallIdDataModel
 import com.flocon.data.remote.network.models.FloconNetworkRequestDataModel
 import com.flocon.data.remote.network.models.FloconNetworkResponseDataModel
+import com.flocon.data.remote.network.models.FloconNetworkWebSocketEvent
 import com.flocon.data.remote.network.models.toDomain
 import com.flocon.data.remote.server.Server
 import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
@@ -68,4 +70,8 @@ class NetworkRemoteDataSourceImpl(
 
     override fun getResponseData(message: FloconIncomingMessageDomainModel): FloconNetworkResponseOnlyDomainModel? = json.safeDecodeFromString<FloconNetworkResponseDataModel>(message.body)
         ?.let(FloconNetworkResponseDataModel::toDomain)
+
+    override fun getWebSocketData(message: FloconIncomingMessageDomainModel): FloconNetworkCallDomainModel? = json.safeDecodeFromString<FloconNetworkWebSocketEvent>(message.body)
+        ?.let { it.toDomain(appInstance = message.appInstance) }
+
 }
