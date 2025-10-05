@@ -16,6 +16,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
+      - name: Check release # be sure op and no-op versions are building
+        working-directory: FloconAndroid
+        run: ./gradlew :app:assemble
       - name: Publish to MavenCentral
         run: |
             ./gradlew \
