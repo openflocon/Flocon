@@ -10,7 +10,7 @@ internal fun extractDomain(
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> extractDomainAndPath(requestUrl)
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> extractDomain(requestUrl)
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> requestUrl
-    is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "websocket_extractDomain" // not called
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> extractDomainAndPath(requestUrl)
 }
 
 private fun extractDomain(url: String): String {

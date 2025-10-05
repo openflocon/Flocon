@@ -1,5 +1,6 @@
 package com.flocon.data.remote.network.mapper
 
+import com.flocon.data.remote.network.mapper.extractDomain
 import com.flocon.data.remote.network.models.BadQualityConfigDataModel
 import com.flocon.data.remote.network.models.FloconNetworkRequestDataModel
 import com.flocon.data.remote.network.models.FloconNetworkWebSocketEvent
@@ -215,7 +216,7 @@ fun FloconNetworkWebSocketEvent.toDomain(
             byteSizeFormatted = ByteFormatter.formatBytes(size),
             isMocked = false, // TODO ?
             specificInfos = specificInfos,
-            domainFormatted = url,
+            domainFormatted = extractDomain(url, specificInfos),
             methodFormatted = method,
             queryFormatted = body,
         )
