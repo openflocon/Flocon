@@ -7,7 +7,18 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import kotlinx.coroutines.flow.Flow
 
 interface AnalyticsRepository {
-    fun observeAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsTableId: AnalyticsTableId): Flow<List<AnalyticsItemDomainModel>>
+    fun observeAnalytics(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsTableId: AnalyticsTableId,
+        filter: String?,
+    ): Flow<List<AnalyticsItemDomainModel>>
+
+    suspend fun getAnalytics(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsTableId: AnalyticsTableId,
+        filter: String?,
+    ): List<AnalyticsItemDomainModel>
+
     suspend fun deleteAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsId: AnalyticsIdentifierDomainModel)
     fun observeAnalyticsById(id: String, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsItemDomainModel?>
 

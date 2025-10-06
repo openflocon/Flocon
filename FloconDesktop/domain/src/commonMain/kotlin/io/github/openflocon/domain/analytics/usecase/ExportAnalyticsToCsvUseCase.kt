@@ -16,10 +16,12 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 class ExportAnalyticsToCsvUseCase(
-    private val observeCurrentDeviceAnalyticsContentUseCase: ObserveCurrentDeviceAnalyticsContentUseCase,
+    private val getCurrentDeviceAnalyticsContentUseCase: GetCurrentDeviceAnalyticsContentUseCase,
 ) {
     suspend operator fun invoke() : Either<Throwable, String> {
-        val items = observeCurrentDeviceAnalyticsContentUseCase().firstOrNull() ?: return Failure(
+        val items = getCurrentDeviceAnalyticsContentUseCase(
+            filter = null,
+        ).takeIf { it.isNotEmpty() } ?: return Failure(
             Throwable("no analytics to export")
         )
 

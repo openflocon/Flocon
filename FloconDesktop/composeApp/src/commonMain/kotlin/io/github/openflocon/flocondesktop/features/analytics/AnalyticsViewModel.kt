@@ -79,7 +79,9 @@ class AnalyticsViewModel(
 
     val content: StateFlow<AnalyticsContentStateUiModel> = combines(
         observeCurrentDeviceIdAndPackageNameUseCase(),
-        observeCurrentDeviceAnalyticsContentUseCase()
+        observeCurrentDeviceAnalyticsContentUseCase(
+            filter = null, // TODO
+        )
     ).mapLatest { (device, items) ->
         if (items.isEmpty()) {
             AnalyticsContentStateUiModel.Empty

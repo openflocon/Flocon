@@ -54,10 +54,24 @@ class AnalyticsRepositoryImpl(
     override fun observeAnalytics(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId,
+        filter: String?,
     ): Flow<List<AnalyticsItemDomainModel>> = analyticsLocalDataSource.observe(
         deviceIdAndPackageName = deviceIdAndPackageName,
         analyticsTableId = analyticsTableId,
+        filter = filter,
     ).flowOn(dispatcherProvider.data)
+
+    override suspend fun getAnalytics(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsTableId: AnalyticsTableId,
+        filter: String?,
+    ): List<AnalyticsItemDomainModel> = withContext(dispatcherProvider.data) {
+        analyticsLocalDataSource.getItems(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            analyticsTableId = analyticsTableId,
+            filter = filter,
+        )
+    }
 
     override fun observeAnalyticsById(
         id: String,

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 64,
-    "identityHash": "42335237b7b0f3787d4fc83d4b735ced",
+    "identityHash": "ec8cd271367936e543805a9e402c8bb8",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -980,7 +980,7 @@
       },
       {
         "tableName": "AnalyticsItemEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`itemId` TEXT NOT NULL, `analyticsTableId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `appInstance` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `eventName` TEXT NOT NULL, `propertiesColumnsNames` TEXT NOT NULL, `propertiesValues` TEXT NOT NULL, PRIMARY KEY(`itemId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`itemId` TEXT NOT NULL, `analyticsTableId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `appInstance` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `createdAtFormatted` TEXT NOT NULL, `eventName` TEXT NOT NULL, `propertiesColumnsNames` TEXT NOT NULL, `propertiesValues` TEXT NOT NULL, PRIMARY KEY(`itemId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "itemId",
@@ -1016,6 +1016,12 @@
             "fieldPath": "createdAt",
             "columnName": "createdAt",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAtFormatted",
+            "columnName": "createdAtFormatted",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -1433,7 +1439,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '42335237b7b0f3787d4fc83d4b735ced')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ec8cd271367936e543805a9e402c8bb8')"
     ]
   }
 }

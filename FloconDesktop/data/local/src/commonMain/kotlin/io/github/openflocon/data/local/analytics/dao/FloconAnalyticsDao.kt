@@ -69,6 +69,13 @@ interface FloconAnalyticsDao {
         WHERE analyticsTableId = :analyticsTableId 
         AND deviceId = :deviceId
         AND packageName = :packageName
+        -- Optional filter
+        AND (:filter IS NULL 
+            OR eventName LIKE '%' || :filter || '%' 
+            OR createdAtFormatted LIKE '%' || :filter || '%' 
+            OR propertiesColumnsNames LIKE '%' || :filter || '%' 
+            OR propertiesValues LIKE '%' || :filter || '%'
+        )
         ORDER BY createdAt ASC
     """,
     )
@@ -76,7 +83,32 @@ interface FloconAnalyticsDao {
         deviceId: DeviceId,
         packageName: String,
         analyticsTableId: String,
+        filter: String?,
     ): Flow<List<AnalyticsItemEntity>>
+
+    @Query(
+        """
+        SELECT * 
+        FROM AnalyticsItemEntity 
+        WHERE analyticsTableId = :analyticsTableId 
+        AND deviceId = :deviceId
+        AND packageName = :packageName
+        -- Optional filter
+        AND (:filter IS NULL 
+            OR eventName LIKE '%' || :filter || '%' 
+            OR createdAtFormatted LIKE '%' || :filter || '%' 
+            OR propertiesColumnsNames LIKE '%' || :filter || '%' 
+            OR propertiesValues LIKE '%' || :filter || '%'
+        )
+        ORDER BY createdAt ASC
+    """,
+    )
+    suspend fun getAnalyticsItems(
+        deviceId: DeviceId,
+        packageName: String,
+        analyticsTableId: String,
+        filter: String?,
+    ): List<AnalyticsItemEntity>
 
     @Query(
         """

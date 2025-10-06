@@ -27,6 +27,7 @@ data class AnalyticsItemEntity(
     val packageName: String,
     val appInstance: Long, // the start time of the mobile app
     val createdAt: Long,
+    val createdAtFormatted: String, // for filtering
     val eventName: String,
     val propertiesColumnsNames: List<String>,
     val propertiesValues: List<String>,

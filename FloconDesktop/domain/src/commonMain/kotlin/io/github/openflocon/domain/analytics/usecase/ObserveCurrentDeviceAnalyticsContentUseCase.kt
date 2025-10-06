@@ -13,7 +13,9 @@ class ObserveCurrentDeviceAnalyticsContentUseCase(
     private val analyticsRepository: AnalyticsRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<List<AnalyticsItemDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
+    operator fun invoke(
+        filter: String?,
+    ): Flow<List<AnalyticsItemDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
         .flatMapLatest { deviceIdAndPackageName ->
             if (deviceIdAndPackageName == null) {
                 flowOf(emptyList())
@@ -27,6 +29,7 @@ class ObserveCurrentDeviceAnalyticsContentUseCase(
                             analyticsRepository.observeAnalytics(
                                 deviceIdAndPackageName = deviceIdAndPackageName,
                                 analyticsTableId = selectedAnalytics.id,
+                                filter = filter,
                             )
                         }
                     }
