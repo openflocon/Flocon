@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.analytics.usecase
 
+import androidx.paging.PagingData
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.repository.AnalyticsRepository
@@ -15,16 +16,16 @@ class ObserveCurrentDeviceAnalyticsContentUseCase(
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
         filter: String?,
-    ): Flow<List<AnalyticsItemDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
+    ): Flow<PagingData<AnalyticsItemDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
         .flatMapLatest { deviceIdAndPackageName ->
             if (deviceIdAndPackageName == null) {
-                flowOf(emptyList())
+                flowOf(PagingData.empty())
             } else {
                 analyticsRepository
                     .observeSelectedDeviceAnalytics(deviceIdAndPackageName = deviceIdAndPackageName)
                     .flatMapLatest { selectedAnalytics ->
                         if (selectedAnalytics == null) {
-                            flowOf(emptyList())
+                            flowOf(PagingData.empty())
                         } else {
                             analyticsRepository.observeAnalytics(
                                 deviceIdAndPackageName = deviceIdAndPackageName,

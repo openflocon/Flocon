@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.analytics.repository
 
+import androidx.paging.PagingData
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
@@ -11,7 +12,7 @@ interface AnalyticsRepository {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId,
         filter: String?,
-    ): Flow<List<AnalyticsItemDomainModel>>
+    ): Flow<PagingData<AnalyticsItemDomainModel>>
 
     suspend fun getAnalytics(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
