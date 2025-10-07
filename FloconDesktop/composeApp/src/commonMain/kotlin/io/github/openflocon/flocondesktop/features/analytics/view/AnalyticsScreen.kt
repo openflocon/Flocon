@@ -35,16 +35,18 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsViewModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
-import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsScreenUiState
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
-import io.github.openflocon.flocondesktop.features.analytics.model.items
-import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsContentStateUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsScreenUiState
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -53,9 +55,10 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownSepara
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
-import io.github.openflocon.library.designsystem.components.panel.FloconPanel
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.panel.FloconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.max
@@ -65,7 +68,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
     val viewModel: AnalyticsViewModel = koinViewModel()
     val itemsState by viewModel.itemsState.collectAsStateWithLifecycle()
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
-    val rows by viewModel.content.collectAsStateWithLifecycle()
+    val rows = viewModel.rows.collectAsLazyPagingItems()
     val filterText = viewModel.filterText
     val selectedItem by viewModel.selectedItem.collectAsStateWithLifecycle()
 
@@ -79,7 +82,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
         screenState = screenState,
         itemsState = itemsState,
         onAnalyticsSelected = viewModel::onAnalyticsSelected,
-        content = rows,
+        rows = rows,
         selectedItem = selectedItem,
         onResetClicked = viewModel::onResetClicked,
         modifier = modifier,
@@ -97,7 +100,7 @@ fun AnalyticsScreen(
     onAnalyticsSelected: (DeviceAnalyticsUiModel) -> Unit,
     onFilterTextChanged: (String) -> Unit,
     onResetClicked: () -> Unit,
-    content: AnalyticsContentStateUiModel,
+    rows: LazyPagingItems<AnalyticsRowUiModel>,
     selectedItem: AnalyticsDetailUiModel?,
     onAction: (AnalyticsAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -105,18 +108,10 @@ fun AnalyticsScreen(
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
-    when (content) {
-        is AnalyticsContentStateUiModel.Empty,
-        is AnalyticsContentStateUiModel.Loading -> {
-            // no op
-        }
 
-        is AnalyticsContentStateUiModel.WithContent -> {
-            LaunchedEffect(screenState.autoScroll, content.rows.size) {
-                if (screenState.autoScroll && content.rows.lastIndex != -1) {
-                    listState.animateScrollToItem(content.rows.lastIndex)
-                }
-            }
+    LaunchedEffect(screenState.autoScroll, rows.itemCount) {
+        if (screenState.autoScroll && rows.itemSnapshotList.lastIndex != -1) {
+            listState.animateScrollToItem(rows.itemSnapshotList.lastIndex)
         }
     }
 
@@ -208,22 +203,24 @@ fun AnalyticsScreen(
                         },
                     contentPadding = PaddingValues(vertical = 8.dp),
                 ) {
-                    when (content) {
-                        is AnalyticsContentStateUiModel.Empty -> {}
-                        is AnalyticsContentStateUiModel.Loading -> {}
-                        is AnalyticsContentStateUiModel.WithContent -> {
-                            itemsIndexed(content.rows) { index, item ->
-                                AnalyticsRowView(
-                                    model = item,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    onAction = onAction,
+                    items(
+                        count = rows.itemCount,
+                        key = rows.itemKey { it.id },
+                    ) { index ->
+                        val item = rows[index]
+                        if (item != null) {
+                            AnalyticsRowView(
+                                model = item,
+                                modifier = Modifier.fillMaxWidth(),
+                                onAction = onAction,
+                            )
+                            if (index != rows.itemSnapshotList.lastIndex) {
+                                HorizontalDivider(
+                                    modifier = Modifier.width(dpWidth)
                                 )
-                                if (index != content.rows.lastIndex) {
-                                    HorizontalDivider(
-                                        modifier = Modifier.width(dpWidth)
-                                    )
-                                }
                             }
+                        } else {
+                            Box(Modifier) // display nothing during load
                         }
                     }
                 }
@@ -249,12 +246,19 @@ fun AnalyticsScreen(
 @Composable
 @Preview
 private fun AnalyticsScreenPreview() {
+    val rows = remember {
+        flowOf(PagingData.from(listOf(
+            previewAnalyticsRowUiModel(),
+            previewAnalyticsRowUiModel(),
+            previewAnalyticsRowUiModel(),
+        )))
+    }.collectAsLazyPagingItems()
     FloconTheme {
         AnalyticsScreen(
             itemsState = previewAnalyticsStateUiModel(),
             onAnalyticsSelected = {},
             selectedItem = null,
-            content = previewAnalyticsContentStateUiModel(),
+            rows = rows,
             onAction = {},
             modifier = Modifier.fillMaxSize(),
             screenState = previewAnalyticsScreenUiState(),

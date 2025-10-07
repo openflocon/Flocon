@@ -1,5 +1,6 @@
 package io.github.openflocon.data.core.analytics.datasource
 
+import androidx.paging.PagingData
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
@@ -13,7 +14,7 @@ interface AnalyticsLocalDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId,
         filter: String?,
-    ): Flow<List<AnalyticsItemDomainModel>>
+    ): Flow<PagingData<AnalyticsItemDomainModel>>
 
     suspend fun getItems(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

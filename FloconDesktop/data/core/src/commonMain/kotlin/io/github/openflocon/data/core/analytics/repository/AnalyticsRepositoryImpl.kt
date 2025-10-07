@@ -1,5 +1,6 @@
 package io.github.openflocon.data.core.analytics.repository
 
+import androidx.paging.PagingData
 import io.github.openflocon.data.core.analytics.datasource.AnalyticsLocalDataSource
 import io.github.openflocon.data.core.analytics.datasource.AnalyticsRemoteDataSource
 import io.github.openflocon.data.core.analytics.datasource.DeviceAnalyticsDataSource
@@ -55,7 +56,7 @@ class AnalyticsRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId,
         filter: String?,
-    ): Flow<List<AnalyticsItemDomainModel>> = analyticsLocalDataSource.observe(
+    ): Flow<PagingData<AnalyticsItemDomainModel>> = analyticsLocalDataSource.observe(
         deviceIdAndPackageName = deviceIdAndPackageName,
         analyticsTableId = analyticsTableId,
         filter = filter,

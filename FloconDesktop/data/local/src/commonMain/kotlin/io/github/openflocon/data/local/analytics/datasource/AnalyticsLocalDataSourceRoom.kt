@@ -1,9 +1,14 @@
 package io.github.openflocon.data.local.analytics.datasource
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import io.github.openflocon.data.core.analytics.datasource.AnalyticsLocalDataSource
 import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
 import io.github.openflocon.data.local.analytics.mapper.toAnalyticsDomain
 import io.github.openflocon.data.local.analytics.mapper.toEntity
+import io.github.openflocon.data.local.network.mapper.toDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
@@ -34,13 +39,24 @@ class AnalyticsLocalDataSourceRoom(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId,
         filter: String?,
-    ): Flow<List<AnalyticsItemDomainModel>> = analyticsDao.observeAnalyticsItems(
-        deviceId = deviceIdAndPackageName.deviceId,
-        packageName = deviceIdAndPackageName.packageName,
-        analyticsTableId = analyticsTableId,
-        filter = filter,
-    ).map { it.map { it.toAnalyticsDomain() } }
-        .distinctUntilChanged()
+    ): Flow<PagingData<AnalyticsItemDomainModel>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+            ),
+            pagingSourceFactory = {
+                analyticsDao.observeAnalyticsItems(
+                    deviceId = deviceIdAndPackageName.deviceId,
+                    packageName = deviceIdAndPackageName.packageName,
+                    analyticsTableId = analyticsTableId,
+                    filter = filter,
+                )
+            }
+        ).flow
+            .map { pagingData ->
+                pagingData.map { entity -> entity.toAnalyticsDomain() }
+            }
+    }
 
     override suspend fun getItems(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

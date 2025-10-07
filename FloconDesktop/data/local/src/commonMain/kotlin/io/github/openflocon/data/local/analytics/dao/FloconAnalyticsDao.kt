@@ -1,11 +1,13 @@
 package io.github.openflocon.data.local.analytics.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
+import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.device.models.AppInstance
 import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
@@ -84,7 +86,7 @@ interface FloconAnalyticsDao {
         packageName: String,
         analyticsTableId: String,
         filter: String?,
-    ): Flow<List<AnalyticsItemEntity>>
+    ): PagingSource<Int, AnalyticsItemEntity>
 
     @Query(
         """

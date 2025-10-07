@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import io.github.openflocon.domain.analytics.usecase.ExportAnalyticsToCsvUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveAnalyticsByIdUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
@@ -20,12 +23,13 @@ import io.github.openflocon.flocondesktop.features.analytics.delegate.AnalyticsS
 import io.github.openflocon.flocondesktop.features.analytics.mapper.mapToDetailUi
 import io.github.openflocon.flocondesktop.features.analytics.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
-import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsContentStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
+import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsScreenUiState
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
 import io.github.openflocon.library.designsystem.common.asState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -84,33 +88,24 @@ class AnalyticsViewModel(
             initialValue = null,
         )
 
-    val content: StateFlow<AnalyticsContentStateUiModel> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { device ->
-        snapshotFlow { _filterText.value }
-            .flatMapLatest { filter ->
-                observeCurrentDeviceAnalyticsContentUseCase(
-                    filter = filter.takeIf { it.isNotBlank() },
-                )
-            }
-        .mapLatest { items ->
-            if (items.isEmpty()) {
-                AnalyticsContentStateUiModel.Empty
-            } else {
-                AnalyticsContentStateUiModel.WithContent(
-                    rows = items.map { item ->
-                        item.mapToUi(
-                            deviceIdAndPackageName = device
-                        )
-                    },
-                )
-            }
-        }
-    }
-        .flowOn(dispatcherProvider.viewModel)
-        .stateIn(
-            viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = AnalyticsContentStateUiModel.Loading,
-        )
+    val rows: Flow<PagingData<AnalyticsRowUiModel>> =
+        observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { device ->
+            snapshotFlow { _filterText.value }
+                .flatMapLatest { filter ->
+                    observeCurrentDeviceAnalyticsContentUseCase(
+                        filter = filter.takeIf { it.isNotBlank() },
+                    ).map { pagingData ->
+                        pagingData.map {
+                            it.mapToUi(
+                                deviceIdAndPackageName = device
+                            )
+                        }
+                    }
+                }
+        }.flowOn(dispatcherProvider.viewModel)
+            .cachedIn(
+                viewModelScope,
+            )
 
 
     fun onVisible() {
