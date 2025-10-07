@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Dataset
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -88,40 +91,50 @@ fun DatabaseScreen(
             DatabasesAndTablesView(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(280.dp),
+                    .width(300.dp),
                 state = deviceDataBases,
                 onDatabaseSelected = onDatabaseSelected,
             )
             Spacer(modifier = Modifier.width(12.dp))
-            Column(Modifier.fillMaxSize()) {
-                FloconPageTopBar(
-                    modifier = Modifier.fillMaxWidth(),
-                ) { contentPadding ->
-                    DatabaseQueryView(
-                        query = query,
-                        updateQuery = { query = it },
-                        executeQuery = executeQuery,
-                        clearQuery = clearQuery,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
+            when(deviceDataBases) {
+                DatabasesStateUiModel.Empty -> Unit
+                DatabasesStateUiModel.Loading -> {
+                    Box(Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
                 }
+                is DatabasesStateUiModel.WithContent -> {
+                    Column(Modifier.fillMaxSize()) {
+                        FloconPageTopBar(
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { contentPadding ->
+                            DatabaseQueryView(
+                                query = query,
+                                updateQuery = { query = it },
+                                executeQuery = executeQuery,
+                                clearQuery = clearQuery,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                        }
 
-                recentQueries.takeIf { it.isNotEmpty() }
-                    ?.let {
-                        DatabaseQueriesView(
-                            queries = recentQueries,
-                            onClickQuery = {
-                                query = it
-                            },
-                            modifier = Modifier.fillMaxWidth()
+                        recentQueries.takeIf { it.isNotEmpty() }
+                            ?.let {
+                                DatabaseQueriesView(
+                                    queries = recentQueries,
+                                    onClickQuery = {
+                                        query = it
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+
+                        DatabaseContentView(
+                            state = state,
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     }
-
-                DatabaseContentView(
-                    state = state,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                }
             }
         }
     }
@@ -143,6 +156,16 @@ fun DatabasesAndTablesView(
                 .padding(all = 4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            Text(
+                "Databases",
+                color = FloconTheme.colorPalette.onSurface,
+                style = FloconTheme.typography.bodySmall.copy(
+                    fontWeight = FontWeight.Bold,
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            )
             when (state) {
                 DatabasesStateUiModel.Empty -> Unit
                 DatabasesStateUiModel.Loading -> Unit
