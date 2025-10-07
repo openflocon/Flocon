@@ -23,6 +23,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +66,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
     val itemsState by viewModel.itemsState.collectAsStateWithLifecycle()
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val rows by viewModel.content.collectAsStateWithLifecycle()
+    val filterText = viewModel.filterText
     val selectedItem by viewModel.selectedItem.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
@@ -82,21 +84,24 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
         onResetClicked = viewModel::onResetClicked,
         modifier = modifier,
         onAction = viewModel::onAction,
+        filterText = filterText,
+        onFilterTextChanged = viewModel::onFilterTextChanged,
     )
 }
 
 @Composable
 fun AnalyticsScreen(
+    filterText: State<String>,
     screenState: AnalyticsScreenUiState,
     itemsState: AnalyticsStateUiModel,
     onAnalyticsSelected: (DeviceAnalyticsUiModel) -> Unit,
-    content: AnalyticsContentStateUiModel,
+    onFilterTextChanged: (String) -> Unit,
     onResetClicked: () -> Unit,
+    content: AnalyticsContentStateUiModel,
     selectedItem: AnalyticsDetailUiModel?,
     onAction: (AnalyticsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var analyticsItems by remember { mutableStateOf<List<AnalyticsRowUiModel>>(emptyList()) }
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
@@ -135,11 +140,10 @@ fun AnalyticsScreen(
             },
             filterBar = {
                 AnalyticsFilterBar(
-                    analyticsItems = content.items(),
+                    onFilterTextChanged = onFilterTextChanged,
+                    filterText = filterText,
                     onResetClicked = onResetClicked,
-                    onItemsChange = {
-                        analyticsItems = it
-                    },
+                    modifier = Modifier.fillMaxWidth(),
                 )
             },
             actions = {
@@ -208,13 +212,13 @@ fun AnalyticsScreen(
                         is AnalyticsContentStateUiModel.Empty -> {}
                         is AnalyticsContentStateUiModel.Loading -> {}
                         is AnalyticsContentStateUiModel.WithContent -> {
-                            itemsIndexed(analyticsItems) { index, item ->
+                            itemsIndexed(content.rows) { index, item ->
                                 AnalyticsRowView(
                                     model = item,
                                     modifier = Modifier.fillMaxWidth(),
                                     onAction = onAction,
                                 )
-                                if (index != analyticsItems.lastIndex) {
+                                if (index != content.rows.lastIndex) {
                                     HorizontalDivider(
                                         modifier = Modifier.width(dpWidth)
                                     )
@@ -249,12 +253,14 @@ private fun AnalyticsScreenPreview() {
         AnalyticsScreen(
             itemsState = previewAnalyticsStateUiModel(),
             onAnalyticsSelected = {},
-            onResetClicked = {},
             selectedItem = null,
             content = previewAnalyticsContentStateUiModel(),
             onAction = {},
             modifier = Modifier.fillMaxSize(),
             screenState = previewAnalyticsScreenUiState(),
+            onFilterTextChanged = {},
+            onResetClicked = {},
+            filterText = mutableStateOf(""),
         )
     }
 }

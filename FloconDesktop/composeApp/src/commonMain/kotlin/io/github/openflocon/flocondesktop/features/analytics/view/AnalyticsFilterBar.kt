@@ -17,48 +17,33 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import androidx.compose.runtime.State
 
 @Composable
 fun AnalyticsFilterBar(
-    analyticsItems: List<AnalyticsRowUiModel>,
-    onItemsChange: (List<AnalyticsRowUiModel>) -> Unit,
+    filterText: State<String>,
+    onFilterTextChanged: (String) -> Unit,
     onResetClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var filterText by remember {
-        mutableStateOf("")
-    }
-    val onItemsChangeCallback by rememberUpdatedState(onItemsChange)
-    val filteredAnalyticsItems: List<AnalyticsRowUiModel> =
-        remember(analyticsItems, filterText) {
-            if (filterText.isBlank()) {
-                analyticsItems
-            } else {
-                analyticsItems.filter {
-                    it.contains(filterText)
-                }
-            }
-        }
-
-    LaunchedEffect(filteredAnalyticsItems) {
-        onItemsChangeCallback(filteredAnalyticsItems)
-    }
-
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         FilterBar(
+            filterText = filterText,
             placeholderText = "Filter",
             modifier = Modifier.weight(1f),
             onTextChange = {
-                filterText = it
+                onFilterTextChanged(it)
             },
         )
         FloconIconButton(
             imageVector = Icons.Outlined.Delete,
-            onClick = onResetClicked,
+            onClick = {
+                onResetClicked()
+            },
         )
     }
 }

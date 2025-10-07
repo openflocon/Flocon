@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.analytics
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.analytics.usecase.ExportAnalyticsToCsvUseCase
@@ -22,6 +25,7 @@ import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDeta
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsScreenUiState
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
+import io.github.openflocon.library.designsystem.common.asState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -48,6 +52,9 @@ class AnalyticsViewModel(
     private val exportAnalyticsToCsv: ExportAnalyticsToCsvUseCase,
     private val observeAnalyticsByIdUseCase: ObserveAnalyticsByIdUseCase,
 ) : ViewModel() {
+
+    private val _filterText = mutableStateOf("")
+    val filterText : State<String> = _filterText.asState()
 
     private val _screenState = MutableStateFlow(
         AnalyticsScreenUiState(
@@ -77,20 +84,25 @@ class AnalyticsViewModel(
             initialValue = null,
         )
 
-    val content: StateFlow<AnalyticsContentStateUiModel> = combines(
-        observeCurrentDeviceIdAndPackageNameUseCase(),
-        observeCurrentDeviceAnalyticsContentUseCase()
-    ).mapLatest { (device, items) ->
-        if (items.isEmpty()) {
-            AnalyticsContentStateUiModel.Empty
-        } else {
-            AnalyticsContentStateUiModel.WithContent(
-                rows = items.map { item ->
-                    item.mapToUi(
-                        deviceIdAndPackageName = device
-                    )
-                },
-            )
+    val content: StateFlow<AnalyticsContentStateUiModel> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { device ->
+        snapshotFlow { _filterText.value }
+            .flatMapLatest { filter ->
+                observeCurrentDeviceAnalyticsContentUseCase(
+                    filter = filter.takeIf { it.isNotBlank() },
+                )
+            }
+        .mapLatest { items ->
+            if (items.isEmpty()) {
+                AnalyticsContentStateUiModel.Empty
+            } else {
+                AnalyticsContentStateUiModel.WithContent(
+                    rows = items.map { item ->
+                        item.mapToUi(
+                            deviceIdAndPackageName = device
+                        )
+                    },
+                )
+            }
         }
     }
         .flowOn(dispatcherProvider.viewModel)
@@ -117,6 +129,10 @@ class AnalyticsViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             resetCurrentDeviceSelectedAnalyticsUseCase()
         }
+    }
+
+    fun onFilterTextChanged(value: String) {
+        _filterText.value = value
     }
 
     fun onAction(action: AnalyticsAction) {
@@ -151,7 +167,9 @@ class AnalyticsViewModel(
 
     private fun onExportCsv() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            exportAnalyticsToCsv().fold(
+            exportAnalyticsToCsv(
+                filter = _filterText.value.takeIf { it.isNotBlank() }
+            ).fold(
                 doOnFailure = {
                     feedbackDisplayer.displayMessage(
                         "Error while exporting csv"

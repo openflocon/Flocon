@@ -8,6 +8,7 @@ fun AnalyticsItemEntity.toAnalyticsDomain(): AnalyticsItemDomainModel = Analytic
     analyticsTableId = analyticsTableId,
     itemId = itemId,
     createdAt = createdAt,
+    createdAtFormatted = createdAtFormatted,
     eventName = eventName,
     properties = propertiesValues.mapIndexedNotNull { index, value ->
         AnalyticsPropertyDomainModel(

@@ -6,6 +6,7 @@ data class AnalyticsItemDomainModel(
     val itemId: String,
     val analyticsTableId: String,
     val createdAt: Long,
+    val createdAtFormatted: String,
     val eventName: String,
     val properties: List<AnalyticsPropertyDomainModel>,
     val appInstance: AppInstance,

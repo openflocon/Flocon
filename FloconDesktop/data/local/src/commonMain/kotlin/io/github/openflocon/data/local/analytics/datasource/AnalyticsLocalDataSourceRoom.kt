@@ -32,13 +32,26 @@ class AnalyticsLocalDataSourceRoom(
 
     override fun observe(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        analyticsTableId: AnalyticsTableId
+        analyticsTableId: AnalyticsTableId,
+        filter: String?,
     ): Flow<List<AnalyticsItemDomainModel>> = analyticsDao.observeAnalyticsItems(
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
         analyticsTableId = analyticsTableId,
+        filter = filter,
     ).map { it.map { it.toAnalyticsDomain() } }
         .distinctUntilChanged()
+
+    override suspend fun getItems(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        analyticsTableId: AnalyticsTableId,
+        filter: String?,
+    ): List<AnalyticsItemDomainModel> = analyticsDao.getAnalyticsItems(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        analyticsTableId = analyticsTableId,
+        filter = filter,
+    ).let { it.map { it.toAnalyticsDomain() } }
 
     override fun observeById(
         id: String,
