@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
 import io.github.openflocon.domain.database.usecase.ObserveLastSuccessQueriesUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
@@ -86,8 +87,8 @@ class DatabaseViewModel(
         is DatabaseExecuteSqlResponseDomainModel.UpdateDelete -> QueryResultUiModel.Text("Done, affected=$affectedCount")
     }
 
-    fun onDatabaseSelected(database: DeviceDataBaseUiModel) {
-        databaseSelectorDelegate.onDatabaseSelected(database)
+    fun onDatabaseSelected(databaseId: DeviceDataBaseId) {
+        databaseSelectorDelegate.onDatabaseSelected(databaseId)
     }
 
     fun onVisible() {
