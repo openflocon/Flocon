@@ -141,7 +141,6 @@ With this feature, you can:
 - Debug real-time features like chat, live feeds, or multiplayer updates  
 - Verify the exact content of messages exchanged  
 - Diagnose disconnection or synchronization issues  
-- Mock or replay WebSocket messages to test client resilience  
 
 #### With OkHttp3
 
