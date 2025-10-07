@@ -18,9 +18,11 @@ import kotlin.math.roundToInt
 class ExportAnalyticsToCsvUseCase(
     private val getCurrentDeviceAnalyticsContentUseCase: GetCurrentDeviceAnalyticsContentUseCase,
 ) {
-    suspend operator fun invoke() : Either<Throwable, String> {
+    suspend operator fun invoke(
+        filter: String?,
+    ) : Either<Throwable, String> {
         val items = getCurrentDeviceAnalyticsContentUseCase(
-            filter = null,
+            filter = filter,
         ).takeIf { it.isNotEmpty() } ?: return Failure(
             Throwable("no analytics to export")
         )

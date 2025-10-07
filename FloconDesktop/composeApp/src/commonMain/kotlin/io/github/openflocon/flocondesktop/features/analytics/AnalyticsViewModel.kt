@@ -167,7 +167,9 @@ class AnalyticsViewModel(
 
     private fun onExportCsv() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            exportAnalyticsToCsv().fold(
+            exportAnalyticsToCsv(
+                filter = _filterText.value.takeIf { it.isNotBlank() }
+            ).fold(
                 doOnFailure = {
                     feedbackDisplayer.displayMessage(
                         "Error while exporting csv"
