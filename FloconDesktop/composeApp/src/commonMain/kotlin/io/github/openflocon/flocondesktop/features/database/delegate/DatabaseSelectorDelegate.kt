@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.database.delegate
 
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
+import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.usecase.AskForDeviceDatabasesUseCase
 import io.github.openflocon.domain.database.usecase.ObserveCurrentDeviceSelectedDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDeviceDatabaseUseCase
@@ -54,9 +55,9 @@ class DatabaseSelectorDelegate(
         name = database.name,
     )
 
-    fun onDatabaseSelected(database: DeviceDataBaseUiModel) {
+    fun onDatabaseSelected(databaseId: DeviceDataBaseId) {
         coroutineScope.launch(dispatcherProvider.viewModel) {
-            selectCurrentDeviceDatabaseUseCase(database.id)
+            selectCurrentDeviceDatabaseUseCase(databaseId)
         }
     }
 
