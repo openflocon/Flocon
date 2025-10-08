@@ -11,19 +11,22 @@ class ExecuteDatabaseQueryUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val getCurrentDeviceSelectedDatabaseUseCase: GetCurrentDeviceSelectedDatabaseUseCase,
 ) {
-    suspend operator fun invoke(query: String): Either<Throwable, DatabaseExecuteSqlResponseDomainModel> {
+    suspend operator fun invoke(
+        query: String,
+        databaseId: String?
+    ): Either<Throwable, DatabaseExecuteSqlResponseDomainModel> {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("no current device"))
-        val database = getCurrentDeviceSelectedDatabaseUseCase() ?: return Failure(Throwable("no selected database"))
+        val databaseId = databaseId ?: getCurrentDeviceSelectedDatabaseUseCase()?.id ?: return Failure(Throwable("no selected database"))
 
         return databaseRepository.executeQuery(
             deviceIdAndPackageName = current,
-            databaseId = database.id,
+            databaseId = databaseId,
             query = query,
         )
             .alsoSuccess {
                 databaseRepository.saveSuccessQuery(
                     deviceIdAndPackageName = current,
-                    databaseId = database.id,
+                    databaseId = databaseId,
                     query = query,
                 )
             }
