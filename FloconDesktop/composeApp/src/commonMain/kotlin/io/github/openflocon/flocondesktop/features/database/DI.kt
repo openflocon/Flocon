@@ -7,5 +7,6 @@ import org.koin.dsl.module
 
 internal val databaseModule = module {
     viewModelOf(::DatabaseViewModel)
+    viewModelOf(::DatabaseTabViewModel)
     factoryOf(::DatabaseSelectorDelegate)
 }

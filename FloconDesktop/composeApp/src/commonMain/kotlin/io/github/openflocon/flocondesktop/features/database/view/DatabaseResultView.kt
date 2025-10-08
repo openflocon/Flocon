@@ -35,13 +35,13 @@ fun DatabaseResultView(
     result: QueryResultUiModel?,
     modifier: Modifier = Modifier,
 ) {
-    val columnsWidth = 150.dp
+    val columnsWidth = 200.dp
 
     if (result == null) {
         return
     }
 
-    SelectionContainer {
+    SelectionContainer(modifier) {
         when (result) {
             is QueryResultUiModel.Text -> {
                 Text(
@@ -70,6 +70,7 @@ fun DatabaseResultView(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .background(FloconTheme.colorPalette.primary)
                                 .height(32.dp)
                                 .padding(horizontal = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -79,7 +80,7 @@ fun DatabaseResultView(
                                     Text(
                                         item,
                                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                        color = FloconTheme.colorPalette.onSecondary,
+                                        color = FloconTheme.colorPalette.onPrimary,
                                         modifier = Modifier
                                             .width(columnsWidth)
                                             .padding(all = 4.dp),
