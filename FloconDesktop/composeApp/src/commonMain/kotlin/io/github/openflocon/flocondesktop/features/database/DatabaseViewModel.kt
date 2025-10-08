@@ -91,6 +91,9 @@ class DatabaseViewModel(
 
     private fun createTab(tab: DatabaseTabState) {
         _selectedTab.update { tab }
-        _tabs.update { it + tab }
+        _tabs.update {
+            if(it.contains(tab)) it // nothing
+            else it + tab
+        }
     }
 }
