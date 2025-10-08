@@ -45,11 +45,13 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabasesState
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.customClickable
 
 @Composable
 fun DatabasesAndTablesView(
     modifier: Modifier,
     state: DatabasesStateUiModel,
+    onTableDoubleClicked: (TableUiModel) -> Unit,
     onDatabaseSelected: (id: DeviceDataBaseId) -> Unit,
 ) {
     Surface(
@@ -67,7 +69,7 @@ fun DatabasesAndTablesView(
             Text(
                 "Databases",
                 color = FloconTheme.colorPalette.onSurface,
-                style = FloconTheme.typography.bodySmall.copy(
+                style = FloconTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Bold,
                 ),
                 maxLines = 1,
@@ -82,7 +84,8 @@ fun DatabasesAndTablesView(
                         DatabaseItemView(
                             state = it,
                             onSelect = onDatabaseSelected,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            onTableDoubleClicked = onTableDoubleClicked,
                         )
                     }
                 }
@@ -95,6 +98,7 @@ fun DatabasesAndTablesView(
 private fun DatabaseItemView(
     state: DeviceDataBaseUiModel,
     onSelect: (id: DeviceDataBaseId) -> Unit,
+    onTableDoubleClicked: (TableUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val (background, textColor) = if (state.isSelected) {
@@ -122,7 +126,7 @@ private fun DatabaseItemView(
             Text(
                 state.name,
                 color = textColor,
-                style = FloconTheme.typography.bodySmall,
+                style = FloconTheme.typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -130,7 +134,11 @@ private fun DatabaseItemView(
         state.tables?.let { tables ->
             Column(modifier = Modifier.fillMaxWidth()) {
                 tables.fastForEach {
-                    TableItemView(it, modifier = Modifier.fillMaxWidth())
+                    TableItemView(
+                        item = it,
+                        modifier = Modifier.fillMaxWidth(),
+                        onTableDoubleClicked = onTableDoubleClicked,
+                    )
                 }
             }
         }
@@ -138,20 +146,25 @@ private fun DatabaseItemView(
 }
 
 @Composable
-fun TableItemView(item: TableUiModel, modifier: Modifier = Modifier) {
+fun TableItemView(
+    item: TableUiModel,
+    modifier: Modifier = Modifier,
+    onTableDoubleClicked: (TableUiModel) -> Unit,
+) {
     var isOpened by remember(item.name) { mutableStateOf(false) }
     Column(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth()
+                .clip(RoundedCornerShape(4.dp))
                 .combinedClickable(
                     onClick = {
                         isOpened = !isOpened
                     },
                     onDoubleClick = {
-                        // TODO
+                        onTableDoubleClicked(item)
                     }
                 )
-                .padding(start = 12.dp)
+                .padding(horizontal = 12.dp)
                 .padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -173,7 +186,7 @@ fun TableItemView(item: TableUiModel, modifier: Modifier = Modifier) {
             )
             Text(
                 item.name,
-                style = FloconTheme.typography.bodySmall,
+                style = FloconTheme.typography.bodyMedium,
                 color = color,
             )
         }
@@ -188,17 +201,12 @@ fun TableItemView(item: TableUiModel, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ColumnView(model: TableUiModel.ColumnUiModel, modifier: Modifier = Modifier) {
+private fun ColumnView(
+    model: TableUiModel.ColumnUiModel,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier
-            .combinedClickable(
-                onClick = {
-                    // TODO
-                },
-                onDoubleClick = {
-                    // TODO
-                }
-            )
             .padding(start = 46.dp)
             .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -213,13 +221,13 @@ private fun ColumnView(model: TableUiModel.ColumnUiModel, modifier: Modifier = M
         )
         Text(
             model.name,
-            style = FloconTheme.typography.bodySmall,
+            style = FloconTheme.typography.bodyMedium,
             color = color,
         )
 
         Text(
             model.type,
-            style = FloconTheme.typography.bodySmall,
+            style = FloconTheme.typography.bodyMedium,
             color = color.copy(alpha = 0.6f),
         )
     }
