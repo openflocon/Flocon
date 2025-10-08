@@ -1,7 +1,9 @@
 package io.github.openflocon.domain.database.repository
 
 import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.database.models.DatabaseAndTablesDomainModel
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -37,4 +39,21 @@ interface DatabaseRepository {
     )
 
     fun observeLastSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId): Flow<List<String>>
+
+    suspend fun saveTable(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: DeviceDataBaseId,
+        table: DatabaseTableDomainModel,
+    )
+
+    suspend fun removeTablesNotPresentAnymore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: DeviceDataBaseId,
+        tablesNames: List<String>,
+    )
+
+    suspend fun observe(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: DeviceDataBaseId,
+    ): Flow<List<DatabaseTableDomainModel>>
 }

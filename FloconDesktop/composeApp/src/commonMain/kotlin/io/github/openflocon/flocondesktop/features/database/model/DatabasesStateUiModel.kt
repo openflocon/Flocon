@@ -7,7 +7,6 @@ sealed interface DatabasesStateUiModel {
 
     data class WithContent(
         val databases: List<DeviceDataBaseUiModel>,
-        val selected: DeviceDataBaseUiModel,
     ) : DatabasesStateUiModel
 }
 
@@ -18,5 +17,4 @@ fun previewDatabasesStateUiModel(): DatabasesStateUiModel = DatabasesStateUiMode
         previewDeviceDataBaseUiModel(id = "id2"),
         previewDeviceDataBaseUiModel(id = "id3"),
     ),
-    selected = previewDeviceDataBaseUiModel(id = "id1"),
 )

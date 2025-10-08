@@ -25,6 +25,7 @@ import io.github.openflocon.flocondesktop.features.database.DatabaseViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
+import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.flocondesktop.features.database.model.previewDatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.previewDatabasesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -77,9 +78,14 @@ fun DatabaseScreen(
             DatabasesAndTablesView(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(300.dp),
+                    .width(340.dp),
                 state = deviceDataBases,
                 onDatabaseSelected = onDatabaseSelected,
+                onTableDoubleClicked = {
+                    // TODO on another MR move this
+                    query = "SELECT * FROM ${it.name}"
+                    executeQuery(query)
+                },
             )
             Spacer(modifier = Modifier.width(12.dp))
             when (deviceDataBases) {
