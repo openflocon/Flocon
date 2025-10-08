@@ -1,8 +1,10 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,18 +12,28 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Dataset
+import androidx.compose.material.icons.outlined.TableRows
+import androidx.compose.material.icons.outlined.ViewColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -125,10 +137,88 @@ private fun DatabaseItemView(
 
 @Composable
 fun TableItemView(item: TableUiModel, modifier: Modifier = Modifier) {
+    var isOpened by remember(item.name) { mutableStateOf(false) }
     Column(modifier = modifier) {
-        Text(item.name)
-        item.columns.fastForEach {
-            Text(it.name + " " + it.type)
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .combinedClickable(
+                    onClick = {
+                        isOpened = !isOpened
+                    },
+                    onDoubleClick = {
+                        // TODO
+                    }
+                )
+                .padding(start = 12.dp)
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            val color = FloconTheme.colorPalette.onSurface
+            Image(
+                imageVector = Icons.Outlined.ChevronRight,
+                modifier = Modifier.size(14.dp).graphicsLayer {
+                    rotationZ = if (isOpened) 90f else 0f
+                },
+                colorFilter = ColorFilter.tint(color),
+                contentDescription = null,
+            )
+            Image(
+                imageVector = Icons.Outlined.TableRows,
+                modifier = Modifier.size(14.dp),
+                colorFilter = ColorFilter.tint(color),
+                contentDescription = null,
+            )
+            Text(
+                item.name,
+                style = FloconTheme.typography.bodySmall,
+                color = color,
+            )
         }
+        AnimatedVisibility(isOpened, modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                item.columns.fastForEach {
+                    ColumnView(it, modifier = Modifier.fillMaxWidth())
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ColumnView(model: TableUiModel.ColumnUiModel, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .combinedClickable(
+                onClick = {
+                    // TODO
+                },
+                onDoubleClick = {
+                    // TODO
+                }
+            )
+            .padding(start = 46.dp)
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        val color = FloconTheme.colorPalette.onSurface
+        Image(
+            imageVector = Icons.Outlined.ViewColumn,
+            modifier = Modifier.size(14.dp),
+            colorFilter = ColorFilter.tint(color),
+            contentDescription = null,
+        )
+        Text(
+            model.name,
+            style = FloconTheme.typography.bodySmall,
+            color = color,
+        )
+
+        Text(
+            model.type,
+            style = FloconTheme.typography.bodySmall,
+            color = color.copy(alpha = 0.6f),
+        )
     }
 }
