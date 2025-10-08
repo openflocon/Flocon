@@ -7,6 +7,7 @@ import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.repository.DatabaseRepository
@@ -119,4 +120,42 @@ class DatabaseRepositoryImpl(
         databaseId = databaseId,
     )
         .flowOn(dispatcherProvider.data)
+
+    override suspend fun saveTable(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: DeviceDataBaseId,
+        table: DatabaseTableDomainModel,
+    ) {
+        withContext(dispatcherProvider.data) {
+            localDatabaseDataSource.saveTable(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                databaseId = databaseId,
+                table = table,
+            )
+        }
+    }
+
+    override suspend fun removeTablesNotPresentAnymore(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: DeviceDataBaseId,
+        tablesNames: List<String>,
+    ) {
+        withContext(dispatcherProvider.data) {
+            localDatabaseDataSource.removeTablesNotPresentAnymore(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                databaseId = databaseId,
+                tablesNames = tablesNames,
+            )
+        }
+    }
+
+    override suspend fun observe(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: DeviceDataBaseId,
+    ): Flow<List<DatabaseTableDomainModel>> {
+        return localDatabaseDataSource.observe(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            databaseId = databaseId,
+        ).flowOn(dispatcherProvider.data)
+    }
 }

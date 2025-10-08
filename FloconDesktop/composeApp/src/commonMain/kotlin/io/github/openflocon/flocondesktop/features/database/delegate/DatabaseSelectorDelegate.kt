@@ -4,6 +4,7 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.usecase.AskForDeviceDatabasesUseCase
+import io.github.openflocon.domain.database.usecase.GetDeviceDatabaseTablesUseCase
 import io.github.openflocon.domain.database.usecase.ObserveCurrentDeviceSelectedDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDeviceDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.SelectCurrentDeviceDatabaseUseCase
@@ -29,6 +30,7 @@ class DatabaseSelectorDelegate(
     private val dispatcherProvider: DispatcherProvider,
     private val askForDeviceDatabasesUseCase: AskForDeviceDatabasesUseCase,
     private val selectCurrentDeviceDatabaseUseCase: SelectCurrentDeviceDatabaseUseCase,
+    private val getDeviceDatabaseTablesUseCase: GetDeviceDatabaseTablesUseCase,
 ) : CloseableScoped by closeableDelegate {
     val deviceDataBases: StateFlow<DatabasesStateUiModel> =
         combine(
@@ -58,6 +60,7 @@ class DatabaseSelectorDelegate(
     fun onDatabaseSelected(databaseId: DeviceDataBaseId) {
         coroutineScope.launch(dispatcherProvider.viewModel) {
             selectCurrentDeviceDatabaseUseCase(databaseId)
+            getDeviceDatabaseTablesUseCase()
         }
     }
 
