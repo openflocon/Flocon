@@ -1,18 +1,26 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -26,10 +34,11 @@ fun DatabaseQueryView(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.background(
-            color = FloconTheme.colorPalette.secondary,
-            shape = FloconTheme.shapes.medium
-        )
+        modifier = modifier
+            .background(
+                color = FloconTheme.colorPalette.secondary,
+                shape = FloconTheme.shapes.medium
+            )
     ) {
         FloconTextField(
             value = query,
@@ -37,26 +46,33 @@ fun DatabaseQueryView(
             singleLine = false,
             minLines = 5,
             maxLines = 10,
-            textStyle = FloconTheme.typography.bodySmall,
+            textStyle = FloconTheme.typography.bodyMedium,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             containerColor = FloconTheme.colorPalette.secondary,
             modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 6.dp, vertical = 4.dp)
         )
-        Box(
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            FloconIconButton(
-                imageVector = Icons.Outlined.Delete,
-                onClick = clearQuery,
-                modifier = Modifier
-                    .align(Alignment.TopStart),
-            )
-            FloconIconButton(
-                imageVector = Icons.AutoMirrored.Outlined.Send,
+            FloconButton(
                 onClick = { executeQuery(query) },
                 modifier = Modifier
-                    .align(Alignment.TopEnd),
-            )
+                    .padding(all = 8.dp)
+            ) {
+                Text("Run", modifier = Modifier.padding(horizontal = 10.dp))
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            FloconButton(
+                onClick = clearQuery,
+                modifier = Modifier
+                    .padding(all = 8.dp)
+            ) {
+                Text("Reset", modifier = Modifier.padding(horizontal = 10.dp))
+            }
         }
     }
 }
