@@ -77,7 +77,7 @@ fun DatabaseScreen(
             DatabasesAndTablesView(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(300.dp),
+                    .width(340.dp),
                 state = deviceDataBases,
                 onDatabaseSelected = onDatabaseSelected,
             )
