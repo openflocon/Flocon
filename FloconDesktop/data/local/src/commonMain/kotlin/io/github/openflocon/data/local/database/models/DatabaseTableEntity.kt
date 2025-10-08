@@ -4,7 +4,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
-import kotlinx.serialization.Serializable
 
 @Entity(
     primaryKeys = [
@@ -25,16 +24,11 @@ import kotlinx.serialization.Serializable
         )
     ],
 )
-data class DabataseTableEntity(
+data class DatabaseTableEntity(
     val deviceId: String,
     val packageName: String,
     val databaseId: String,
     val tableName: String,
-    val columnsAsString: String, // json formatted of List<DabataseTableEntityColumn>
+    val columnsAsString: String, // json formatted of List<DababaseTableEntity>
 )
 
-@Serializable
-data class DabataseTableEntityColumn(
-    val name: String,
-    val type: String,
-)

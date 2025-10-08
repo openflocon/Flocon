@@ -4,6 +4,7 @@ import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSourc
 import io.github.openflocon.data.local.database.dao.QueryDao
 import io.github.openflocon.data.local.database.dao.TablesDao
 import io.github.openflocon.data.local.database.mapper.toDomain
+import io.github.openflocon.data.local.database.mapper.toEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId

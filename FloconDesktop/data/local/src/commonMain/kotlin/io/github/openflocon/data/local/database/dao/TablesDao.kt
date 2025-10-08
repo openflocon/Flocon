@@ -1,35 +1,31 @@
 package io.github.openflocon.data.local.database.dao
 
 import androidx.room.Dao
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Upsert
-import io.github.openflocon.data.local.database.models.DabataseTableEntity
+import io.github.openflocon.data.local.database.models.DatabaseTableEntity
 import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface TablesDao {
     @Upsert
-    suspend fun insertTable(table: DabataseTableEntity)
+    suspend fun insertTable(table: DatabaseTableEntity)
 
     @Query("""
-        SELECT * FROM DabataseTableEntity 
+        SELECT * FROM DatabaseTableEntity 
         WHERE deviceId = :deviceId 
         AND packageName = :packageName
         AND databaseId = :databaseId
     """)
-    suspend fun observe(
+    fun observe(
         deviceId: String,
         packageName: String,
         databaseId: String,
-    ) : Flow<List<DabataseTableEntity>>
+    ) : Flow<List<DatabaseTableEntity>>
 
     @Query("""
-        DELETE FROM DabataseTableEntity 
+        DELETE FROM DatabaseTableEntity 
         WHERE deviceId = :deviceId 
         AND packageName = :packageName
         AND databaseId = :databaseId

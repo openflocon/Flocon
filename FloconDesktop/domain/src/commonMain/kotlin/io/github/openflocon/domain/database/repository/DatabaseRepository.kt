@@ -1,6 +1,7 @@
 package io.github.openflocon.domain.database.repository
 
 import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.database.models.DatabaseAndTablesDomainModel
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel

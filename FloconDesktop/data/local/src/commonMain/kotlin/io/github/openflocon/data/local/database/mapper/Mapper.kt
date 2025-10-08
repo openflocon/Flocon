@@ -1,7 +1,7 @@
 package io.github.openflocon.data.local.database.mapper
 
-import io.github.openflocon.data.local.database.models.DabataseTableEntity
 import io.github.openflocon.data.local.database.models.DabataseTableEntityColumn
+import io.github.openflocon.data.local.database.models.DatabaseTableEntity
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -12,9 +12,9 @@ internal fun DatabaseTableDomainModel.toEntity(
     json: Json,
     databaseId: DeviceDataBaseId,
     deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-): DabataseTableEntity {
+): DatabaseTableEntity {
     val columns = columns.map { it.toEntity() }
-    return DabataseTableEntity(
+    return DatabaseTableEntity(
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
         databaseId = databaseId,
@@ -29,7 +29,7 @@ internal fun DatabaseTableDomainModel.toEntity(
 }
 
 
-internal fun DabataseTableEntity.toDomain(
+internal fun DatabaseTableEntity.toDomain(
     json: Json,
 ): DatabaseTableDomainModel {
     val columnsEntity = try {

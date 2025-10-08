@@ -13,6 +13,8 @@ import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.data.local.database.dao.QueryDao
+import io.github.openflocon.data.local.database.dao.TablesDao
+import io.github.openflocon.data.local.database.models.DatabaseTableEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkDao
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
@@ -40,7 +42,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 65,
+    version = 66,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -59,6 +61,7 @@ import kotlinx.coroutines.Dispatchers
         BadQualityConfigEntity::class,
         DeviceEntity::class,
         DeviceAppEntity::class,
+        DatabaseTableEntity::class,
     ],
 )
 @TypeConverters(
@@ -80,6 +83,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val adbDevicesDao: AdbDevicesDao
     abstract val networkBadQualityConfigDao: NetworkBadQualityConfigDao
     abstract val devicesDao: DevicesDao
+    abstract val tablesDao: TablesDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()

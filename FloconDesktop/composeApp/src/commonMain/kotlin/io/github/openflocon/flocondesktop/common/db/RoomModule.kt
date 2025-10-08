@@ -46,4 +46,7 @@ val roomModule =
         single {
             get<AppDatabase>().devicesDao
         }
+        single {
+            get<AppDatabase>().tablesDao
+        }
     }
