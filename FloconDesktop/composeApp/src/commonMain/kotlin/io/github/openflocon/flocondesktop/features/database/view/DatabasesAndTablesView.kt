@@ -45,7 +45,6 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabasesState
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.common.customClickable
 
 @Composable
 fun DatabasesAndTablesView(
