@@ -5,19 +5,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.mapper.toUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicReference
+import kotlin.time.Duration.Companion.seconds
 
 class DatabaseTabViewModel(
     private val params: Params,
@@ -34,6 +41,32 @@ class DatabaseTabViewModel(
 
     var query = mutableStateOf("")
 
+    private val autoUpdateJob = AtomicReference<Job?>(null)
+    data class AutoUpdate(
+        val query: String? = null,
+        val isEnabled: Boolean = false,
+    )
+
+    private val isVisible = MutableStateFlow(false)
+
+    fun onVisible() {
+        isVisible.update { true }
+    }
+
+    fun onNotVisible() {
+        isVisible.update { false }
+    }
+
+    private val _autoUpdate = MutableStateFlow(AutoUpdate())
+    val isAutoUpdateEnabled = _autoUpdate
+        .map { it.isEnabled }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Companion.WhileSubscribed(5000),
+            initialValue = false,
+        )
+
     private val queryResult = MutableStateFlow<QueryResultUiModel?>(null)
 
     val state: StateFlow<DatabaseScreenState> = queryResult.map { queryResult ->
@@ -48,12 +81,15 @@ class DatabaseTabViewModel(
 
     init {
         params.tableName?.let {
-            updateQuery(buildString {
+            val query = buildString {
                 appendLine("SELECT * ")
                 appendLine("FROM $it")
                 append("LIMIT 50 OFFSET 0")
-            })
-            executeQuery()
+            }
+            updateQuery(query)
+            viewModelScope.launch(dispatcherProvider.viewModel) {
+                executeQuery(query = query, editAutoUpdate = true)
+            }
         }
     }
 
@@ -62,25 +98,79 @@ class DatabaseTabViewModel(
     }
 
     fun executeQuery() {
-        executeQuery(query = query.value)
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            executeQuery(query = query.value, editAutoUpdate = true)
+        }
     }
 
-    private fun executeQuery(query: String) {
+    init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            executeDatabaseQueryUseCase(
-                query = query,
-                databaseId = params.databaseId,
-            ).fold(doOnSuccess = {
-                queryResult.value = it.toUi()
-            }, doOnFailure = {
-                feedbackDisplayer.displayMessage("database failure : $it")
-            })
+            combines(isVisible, _autoUpdate)
+                .distinctUntilChanged()
+                .collect { (isVisible, autoUpdate) ->
+                    refreshAutoUpdate(
+                        isVisible = isVisible,
+                        autoUpdate = autoUpdate,
+                    )
+                }
         }
+    }
+
+    private suspend fun executeQuery(query: String, editAutoUpdate: Boolean) {
+        println("executeQuery: $query")
+        executeDatabaseQueryUseCase(
+            query = query,
+            databaseId = params.databaseId,
+        ).fold(doOnSuccess = {
+            queryResult.value = it.toUi()
+            if (editAutoUpdate) {
+                _autoUpdate.update {
+                    it.copy(
+                        query = query,
+                    )
+                }
+            }
+        }, doOnFailure = {
+            feedbackDisplayer.displayMessage("database failure : $it")
+        })
     }
 
     fun clearQuery() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
+            updateQuery("")
             queryResult.update { null }
+            _autoUpdate.update {
+                it.copy(
+                    query = null,
+                    isEnabled = false,
+                )
+            }
+        }
+    }
+
+    fun updateAutoUpdate(value: Boolean) {
+        _autoUpdate.update {
+            it.copy(
+                isEnabled = value,
+            )
+        }
+    }
+
+    private fun refreshAutoUpdate(isVisible: Boolean, autoUpdate: AutoUpdate) {
+        val job = autoUpdateJob.get()
+        if (!autoUpdate.isEnabled || !isVisible) {
+            job?.cancel()
+            return
+        } else {
+            job?.cancel()
+            val autoUpdateJob = viewModelScope.launch(dispatcherProvider.viewModel) {
+                while (isActive) {
+                    delay(3.seconds)
+                    val query = _autoUpdate.value.takeIf { it.isEnabled }?.query ?: return@launch
+                    executeQuery(query, editAutoUpdate = false)
+                }
+            }
+            this.autoUpdateJob.set(autoUpdateJob)
         }
     }
 
