@@ -87,8 +87,8 @@ class DatabaseViewModel(
                 DatabaseTabState(
                     databaseId = databaseId,
                     tableName = table.name,
-                    displayName = generatedName,
                     generatedName = generatedName,
+                    index = 0,
                 )
             )
         }
@@ -116,8 +116,8 @@ class DatabaseViewModel(
                 DatabaseTabState(
                     databaseId = database.id,
                     tableName = null,
-                    displayName = generatedName,
                     generatedName = generatedName,
+                    index = 0,
                 )
             )
         }
@@ -156,10 +156,10 @@ class DatabaseViewModel(
         _tabs.update {
             val list = it[deviceIdAndPackageName] ?: emptyList()
             // if we have already a tab with the same "generatedName", it creates a new one with (number) after
-            val withSameName = list.count { it.generatedName == tab.generatedName }
+            val maxIndexOfSameName = list.filter { it.generatedName == tab.generatedName }.maxByOrNull { it.index }
 
-            addedTab = if (withSameName != 0) {
-                tab.copy(displayName = "${tab.displayName} (${withSameName})")
+            addedTab = if (maxIndexOfSameName != null) {
+                tab.copy(index = maxIndexOfSameName.index + 1)
             } else {
                 tab
             }
