@@ -6,6 +6,5 @@ import androidx.compose.runtime.Immutable
 data class DatabaseTabState(
     val databaseId: String,
     val tableName: String?,
-) {
-    val name: String = tableName ?: databaseId
-}
+    val displayName: String,
+)
