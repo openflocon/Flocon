@@ -10,7 +10,10 @@ import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.mapper.toUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +45,7 @@ class DatabaseTabViewModel(
     var query = mutableStateOf("")
 
     private val autoUpdateJob = AtomicReference<Job?>(null)
+
     data class AutoUpdate(
         val query: String? = null,
         val isEnabled: Boolean = false,
@@ -93,14 +97,29 @@ class DatabaseTabViewModel(
         }
     }
 
-    fun updateQuery(queryValue: String) {
-        this.query.value = queryValue
+    fun onAction(action: DatabaseTabAction) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            when (action) {
+                is DatabaseTabAction.ClearQuery -> clearQuery()
+                is DatabaseTabAction.ExecuteQuery -> executeQuery(query = query.value, editAutoUpdate = true)
+                is DatabaseTabAction.UpdateAutoUpdate -> updateAutoUpdate(action.value)
+                DatabaseTabAction.Copy -> {
+                    copyToClipboard(query.value)
+                    feedbackDisplayer.displayMessage("copied")
+                }
+                DatabaseTabAction.Import -> {
+                    // TODO
+                }
+
+                is DatabaseTabAction.SaveFavorite -> {
+                    // TODO
+                }
+            }
+        }
     }
 
-    fun executeQuery() {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            executeQuery(query = query.value, editAutoUpdate = true)
-        }
+    fun updateQuery(queryValue: String) {
+        this.query.value = queryValue
     }
 
     init {
@@ -135,20 +154,18 @@ class DatabaseTabViewModel(
         })
     }
 
-    fun clearQuery() {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            updateQuery("")
-            queryResult.update { null }
-            _autoUpdate.update {
-                it.copy(
-                    query = null,
-                    isEnabled = false,
-                )
-            }
+    private suspend fun clearQuery() {
+        updateQuery("")
+        queryResult.update { null }
+        _autoUpdate.update {
+            it.copy(
+                query = null,
+                isEnabled = false,
+            )
         }
     }
 
-    fun updateAutoUpdate(value: Boolean) {
+    private fun updateAutoUpdate(value: Boolean) {
         _autoUpdate.update {
             it.copy(
                 isEnabled = value,

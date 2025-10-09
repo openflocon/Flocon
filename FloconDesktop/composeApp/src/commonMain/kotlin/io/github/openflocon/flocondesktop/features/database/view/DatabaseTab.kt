@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.database.DatabaseTabViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.koin.compose.viewmodel.koinViewModel
@@ -45,9 +46,7 @@ fun DatabaseTabView(
         query = viewModel.query.value,
         autoUpdate = autoUpdate,
         updateQuery = viewModel::updateQuery,
-        executeQuery = viewModel::executeQuery,
-        clearQuery = viewModel::clearQuery,
-        updateAutoUpdate = viewModel::updateAutoUpdate,
+        onAction = viewModel::onAction,
         state = state,
     )
 }
@@ -57,9 +56,7 @@ private fun DatabaseTabViewContent(
     query: String,
     autoUpdate: Boolean,
     updateQuery: (String) -> Unit,
-    executeQuery: () -> Unit,
-    clearQuery: () -> Unit,
-    updateAutoUpdate: (Boolean) -> Unit,
+    onAction: (action: DatabaseTabAction) -> Unit,
     state: DatabaseScreenState,
 ) {
     Column(
@@ -73,11 +70,7 @@ private fun DatabaseTabViewContent(
                 query = query,
                 updateQuery = updateQuery,
                 autoUpdate = autoUpdate,
-                executeQuery = {
-                    executeQuery()
-                },
-                updateAutoUpdate = updateAutoUpdate,
-                clearQuery = clearQuery,
+                onAction = onAction,
                 modifier = Modifier
                     .fillMaxWidth()
             )
