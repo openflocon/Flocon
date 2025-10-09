@@ -80,6 +80,7 @@ class DatabaseTabViewModel(
 
     fun clearQuery() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
+            updateQuery("")
             queryResult.update { null }
         }
     }
