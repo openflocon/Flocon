@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.database.DatabaseTabViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.koin.compose.viewmodel.koinViewModel
@@ -21,6 +22,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DatabaseTabView(
     tab: DatabaseTabState,
+    favoritesTitles: Set<String>,
 ) {
     val viewModel: DatabaseTabViewModel = koinViewModel(
         key = tab.id,
@@ -28,6 +30,7 @@ fun DatabaseTabView(
             DatabaseTabViewModel.Params(
                 databaseId = tab.databaseId,
                 tableName = tab.tableName,
+                favoriteId = tab.favoriteId,
             )
         ) }
     )
@@ -45,10 +48,9 @@ fun DatabaseTabView(
         query = viewModel.query.value,
         autoUpdate = autoUpdate,
         updateQuery = viewModel::updateQuery,
-        executeQuery = viewModel::executeQuery,
-        clearQuery = viewModel::clearQuery,
-        updateAutoUpdate = viewModel::updateAutoUpdate,
+        onAction = viewModel::onAction,
         state = state,
+        favoritesTitles = favoritesTitles,
     )
 }
 
@@ -56,10 +58,9 @@ fun DatabaseTabView(
 private fun DatabaseTabViewContent(
     query: String,
     autoUpdate: Boolean,
+    favoritesTitles: Set<String>,
     updateQuery: (String) -> Unit,
-    executeQuery: () -> Unit,
-    clearQuery: () -> Unit,
-    updateAutoUpdate: (Boolean) -> Unit,
+    onAction: (action: DatabaseTabAction) -> Unit,
     state: DatabaseScreenState,
 ) {
     Column(
@@ -73,11 +74,8 @@ private fun DatabaseTabViewContent(
                 query = query,
                 updateQuery = updateQuery,
                 autoUpdate = autoUpdate,
-                executeQuery = {
-                    executeQuery()
-                },
-                updateAutoUpdate = updateAutoUpdate,
-                clearQuery = clearQuery,
+                onAction = onAction,
+                favoritesTitles = favoritesTitles,
                 modifier = Modifier
                     .fillMaxWidth()
             )

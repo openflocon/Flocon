@@ -3,6 +3,8 @@ package io.github.openflocon.data.local.database.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Upsert
+import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -60,5 +62,72 @@ interface QueryDao {
         packageName: String,
         databaseId: String,
         queryString: String,
+    )
+
+    @Upsert
+    suspend fun insertFavoriteQuery(query: FavoriteQueryEntity)
+
+    @Query(
+        """
+        SELECT *
+        FROM FavoriteQueryEntity
+        WHERE deviceId = :deviceId
+        AND packageName = :packageName
+        AND databaseId = :databaseId
+        AND title = :title
+        LIMIT 1
+    """
+    )
+    suspend fun getFavoriteQueryByTitle(
+        deviceId: String,
+        packageName: String,
+        databaseId: String,
+        title: String,
+    ): FavoriteQueryEntity?
+
+    @Query(
+        """
+        SELECT *
+        FROM FavoriteQueryEntity
+        WHERE deviceId = :deviceId
+        AND packageName = :packageName
+        ORDER BY timestamp DESC
+    """
+    )
+    fun observeFavoriteQueryEntity(
+        deviceId: String,
+        packageName: String,
+    ): Flow<List<FavoriteQueryEntity>>
+
+    @Query(
+        """
+        SELECT *
+        FROM FavoriteQueryEntity
+        WHERE deviceId = :deviceId
+        AND packageName = :packageName
+        AND id = :id
+        LIMIT 1
+    """
+    )
+    suspend fun getFavorite(
+        deviceId: String,
+        packageName: String,
+        id: Long,
+    ): FavoriteQueryEntity?
+
+    @Query(
+        """
+        DELETE FROM FavoriteQueryEntity
+        WHERE deviceId = :deviceId
+        AND packageName = :packageName
+        AND databaseId = :databaseId
+        AND id = :favoriteId
+    """
+    )
+    suspend fun deleteFavoriteQuery(
+        deviceId: String,
+        packageName: String,
+        databaseId: String,
+        favoriteId: Long,
     )
 }

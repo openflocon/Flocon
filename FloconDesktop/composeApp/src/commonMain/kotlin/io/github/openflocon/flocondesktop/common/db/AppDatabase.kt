@@ -15,6 +15,7 @@ import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.data.local.database.dao.QueryDao
 import io.github.openflocon.data.local.database.dao.TablesDao
 import io.github.openflocon.data.local.database.models.DatabaseTableEntity
+import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkDao
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
@@ -42,7 +43,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 66,
+    version = 67,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -53,6 +54,7 @@ import kotlinx.coroutines.Dispatchers
         TableItemEntity::class,
         DeviceImageEntity::class,
         SuccessQueryEntity::class,
+        FavoriteQueryEntity::class,
         DeeplinkEntity::class,
         AnalyticsItemEntity::class,
         NetworkFilterEntity::class,

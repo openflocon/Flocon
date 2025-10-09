@@ -4,11 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
+import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
+import io.github.openflocon.domain.database.usecase.favorite.DeleteFavoriteQueryDatabaseUseCase
+import io.github.openflocon.domain.database.usecase.favorite.ObserveFavoriteQueriesUseCase
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.features.database.delegate.DatabaseSelectorDelegate
+import io.github.openflocon.flocondesktop.features.database.mapper.mapToUi
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
@@ -22,14 +27,28 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
+import kotlin.collections.emptyList
 
 class DatabaseViewModel(
     private val databaseSelectorDelegate: DatabaseSelectorDelegate,
     private val dispatcherProvider: DispatcherProvider,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
+    private val observeFavoriteQueriesUseCase: ObserveFavoriteQueriesUseCase,
+    private val deleteFavoriteQueryDatabaseUseCase: DeleteFavoriteQueryDatabaseUseCase,
 ) : ViewModel(databaseSelectorDelegate) {
     val deviceDataBases: StateFlow<DatabasesStateUiModel> = databaseSelectorDelegate.deviceDataBases
+
+    val favorites = observeFavoriteQueriesUseCase()
+        .map { list ->
+            list.map { it.mapToUi() }
+        }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(
+            scope = viewModelScope,
+            started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList(),
+        )
 
     private val _selectedTab =
         MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DatabaseTabState>>(emptyMap())
@@ -88,6 +107,7 @@ class DatabaseViewModel(
                 databaseId = databaseId,
                 tableName = table.name,
                 generatedName = generatedName,
+                favoriteId = null,
             )
         }
     }
@@ -113,6 +133,7 @@ class DatabaseViewModel(
                 databaseId = database.id,
                 tableName = null,
                 generatedName = "${database.name}.db",
+                favoriteId = null,
             )
         }
     }
@@ -120,6 +141,26 @@ class DatabaseViewModel(
     fun onTabCloseClicked(tab: DatabaseTabState) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             removeTab(tab)
+        }
+    }
+
+    fun onFavoriteClicked(favorite: DatabaseFavoriteQueryUiModel) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            createTab(
+                databaseId = favorite.databaseId,
+                favoriteId = favorite.id,
+                generatedName = favorite.title,
+                tableName = null,
+            )
+        }
+    }
+
+    fun deleteFavorite(favorite: DatabaseFavoriteQueryUiModel) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            deleteFavoriteQueryDatabaseUseCase(
+                id = favorite.id,
+                databaseId = favorite.databaseId,
+            )
         }
     }
 
@@ -147,6 +188,7 @@ class DatabaseViewModel(
     private suspend fun createTab(
         databaseId: DeviceDataBaseId,
         tableName: String?,
+        favoriteId: Long?,
         generatedName: String,
     ) {
         val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
@@ -167,6 +209,7 @@ class DatabaseViewModel(
             tableName = tableName,
             generatedName = generatedName,
             index = index,
+            favoriteId = favoriteId,
             id = UUID.randomUUID().toString(),
         )
 

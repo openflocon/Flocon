@@ -1,38 +1,33 @@
-package io.github.openflocon.domain.database.usecase
+package io.github.openflocon.domain.database.usecase.favorite
 
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
-import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.repository.DatabaseRepository
+import io.github.openflocon.domain.database.usecase.GetCurrentDeviceSelectedDatabaseUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 
-class ExecuteDatabaseQueryUseCase(
+class SaveQueryAsFavoriteDatabaseUseCase(
     private val databaseRepository: DatabaseRepository,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val getCurrentDeviceSelectedDatabaseUseCase: GetCurrentDeviceSelectedDatabaseUseCase,
 ) {
     suspend operator fun invoke(
         query: String,
-        databaseId: String?
-    ): Either<Throwable, DatabaseExecuteSqlResponseDomainModel> {
-        val current = getCurrentDeviceIdAndPackageNameUseCase()
-            ?: return Failure(Throwable("no current device"))
+        title: String,
+        databaseId: String?,
+    ) : Either<Throwable, Unit> {
+        val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("no current device"))
         val databaseId =
             databaseId ?: getCurrentDeviceSelectedDatabaseUseCase()?.id ?: return Failure(
                 Throwable("no selected database")
             )
 
-        return databaseRepository.executeQuery(
+        return databaseRepository.saveAsFavorite(
             deviceIdAndPackageName = current,
             databaseId = databaseId,
+            title = title,
             query = query,
         )
-            .alsoSuccess {
-                databaseRepository.saveSuccessQuery(
-                    deviceIdAndPackageName = current,
-                    databaseId = databaseId,
-                    query = query,
-                )
-            }
     }
+
 }

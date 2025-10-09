@@ -1,5 +1,7 @@
 package io.github.openflocon.data.core.database.datasource
 
+import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -33,4 +35,27 @@ interface LocalDatabaseDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: DeviceDataBaseId
     ): Flow<List<DatabaseTableDomainModel>>
+
+    suspend fun saveAsFavorite(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: String,
+        title: String,
+        query: String
+    ): Either<Throwable, Unit>
+
+    suspend fun deleteFavorite(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: String,
+        id: Long,
+    ): Either<Throwable, Unit>
+
+    fun observeFavorites(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ) : Flow<List<DatabaseFavoriteQueryDomainModel>>
+
+    suspend fun getFavorite(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: String,
+        id: Long
+    ): DatabaseFavoriteQueryDomainModel?
 }

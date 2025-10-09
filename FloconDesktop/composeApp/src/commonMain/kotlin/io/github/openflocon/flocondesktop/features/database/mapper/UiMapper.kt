@@ -2,8 +2,10 @@ package io.github.openflocon.flocondesktop.features.database.mapper
 
 import io.github.openflocon.domain.database.models.DatabaseAndTablesDomainModel
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
@@ -55,4 +57,12 @@ fun DatabaseExecuteSqlResponseDomainModel.toUi(): QueryResultUiModel = when (thi
         )
 
     is DatabaseExecuteSqlResponseDomainModel.UpdateDelete -> QueryResultUiModel.Text("Done, affected=$affectedCount")
+}
+
+internal fun DatabaseFavoriteQueryDomainModel.mapToUi() : DatabaseFavoriteQueryUiModel {
+    return DatabaseFavoriteQueryUiModel(
+        id = id,
+        databaseId = databaseId,
+        title = title,
+    )
 }
