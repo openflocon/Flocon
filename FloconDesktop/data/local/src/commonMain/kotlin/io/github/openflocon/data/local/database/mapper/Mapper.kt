@@ -2,6 +2,8 @@ package io.github.openflocon.data.local.database.mapper
 
 import io.github.openflocon.data.local.database.models.DabataseTableEntityColumn
 import io.github.openflocon.data.local.database.models.DatabaseTableEntity
+import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
+import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -58,3 +60,9 @@ fun DabataseTableEntityColumn.toDomain() = DatabaseTableDomainModel.Column(
     primaryKey = primaryKey,
 )
 
+fun FavoriteQueryEntity.toDomain() = DatabaseFavoriteQueryDomainModel(
+    id = id,
+    databaseId = databaseId,
+    title = title,
+    query = queryString,
+)

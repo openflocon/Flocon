@@ -204,6 +204,8 @@ private fun Toopbar(
                 colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
             )
         }
+
+        /* for another MR
         VerticalDivider(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp))
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp)).clickable {
@@ -218,7 +220,10 @@ private fun Toopbar(
                 colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
             )
         }
+
+         */
         Spacer(modifier = Modifier.weight(1f))
+
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp)).clickable {
                 onAction(DatabaseTabAction.ClearQuery)

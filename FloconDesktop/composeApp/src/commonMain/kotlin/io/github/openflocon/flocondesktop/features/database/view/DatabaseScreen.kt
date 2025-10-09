@@ -10,17 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.features.database.DatabaseViewModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
@@ -33,6 +29,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DatabaseScreen(modifier: Modifier = Modifier) {
     val viewModel: DatabaseViewModel = koinViewModel()
     val deviceDataBases by viewModel.deviceDataBases.collectAsStateWithLifecycle()
+    val favorites by viewModel.favorites.collectAsStateWithLifecycle()
     val tabs by viewModel.tabs.collectAsStateWithLifecycle()
     val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
 
@@ -45,11 +42,14 @@ fun DatabaseScreen(modifier: Modifier = Modifier) {
 
     DatabaseScreen(
         deviceDataBases = deviceDataBases,
+        favorites = favorites,
         onDatabaseSelected = viewModel::onDatabaseSelected,
         onDatabaseDoubleClicked = viewModel::onDatabaseDoubleClicked,
         onTableDoubleClicked = viewModel::onTableDoubleClicked,
         onTabSelected = viewModel::onTabSelected,
         onTabCloseClicked = viewModel::onTabCloseClicked,
+        onFavoriteClicked = viewModel::onFavoriteClicked,
+        deleteFavorite = viewModel::deleteFavorite,
         tabs = tabs,
         selectedTab = selectedTab,
         modifier = modifier,
@@ -59,6 +59,7 @@ fun DatabaseScreen(modifier: Modifier = Modifier) {
 @Composable
 fun DatabaseScreen(
     deviceDataBases: DatabasesStateUiModel,
+    favorites: List<DatabaseFavoriteQueryUiModel>,
     tabs: List<DatabaseTabState>,
     selectedTab: DatabaseTabState?,
     onDatabaseSelected: (DeviceDataBaseId) -> Unit,
@@ -66,6 +67,8 @@ fun DatabaseScreen(
     onTableDoubleClicked: (DeviceDataBaseId, TableUiModel) -> Unit,
     onTabSelected: (DatabaseTabState) -> Unit,
     onTabCloseClicked: (DatabaseTabState) -> Unit,
+    onFavoriteClicked: (DatabaseFavoriteQueryUiModel) -> Unit,
+    deleteFavorite: (DatabaseFavoriteQueryUiModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     FloconFeature(
@@ -77,8 +80,11 @@ fun DatabaseScreen(
                     .fillMaxHeight()
                     .width(340.dp),
                 state = deviceDataBases,
+                favorites = favorites,
                 onDatabaseSelected = onDatabaseSelected,
                 onDatabaseDoubleClicked = onDatabaseDoubleClicked,
+                onFavoriteClicked = onFavoriteClicked,
+                deleteFavorite = deleteFavorite,
                 onTableDoubleClicked = { table ->
                     deviceDataBases.selectedDatabase()?.let {
                         onTableDoubleClicked(it.id, table)

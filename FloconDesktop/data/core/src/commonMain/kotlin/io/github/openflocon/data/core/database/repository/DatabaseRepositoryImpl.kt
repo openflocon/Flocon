@@ -9,6 +9,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.models.DatabaseAndTablesDomainModel
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
@@ -162,5 +163,55 @@ class DatabaseRepositoryImpl(
             deviceIdAndPackageName = deviceIdAndPackageName,
             databaseId = databaseId,
         ).flowOn(dispatcherProvider.data)
+    }
+
+    override suspend fun saveAsFavorite(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: String,
+        title: String,
+        query: String,
+    ): Either<Throwable, Unit> {
+        return withContext(dispatcherProvider.data) {
+            localDatabaseDataSource.saveAsFavorite(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                databaseId = databaseId,
+                title = title,
+                query = query,
+            )
+        }
+    }
+
+    override suspend fun deleteFavorite(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: String,
+        id: Long
+    ): Either<Throwable, Unit> {
+        return withContext(dispatcherProvider.data) {
+            localDatabaseDataSource.deleteFavorite(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                databaseId = databaseId,
+                id = id,
+            )
+        }
+    }
+
+    override fun observeFavorites(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DatabaseFavoriteQueryDomainModel>> {
+        return localDatabaseDataSource.observeFavorites(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        ).flowOn(dispatcherProvider.data)
+    }
+
+    override suspend fun getFavorite(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: String,
+        id: Long
+    ): DatabaseFavoriteQueryDomainModel? {
+        return withContext(dispatcherProvider.data) {
+            localDatabaseDataSource.getFavorite(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                databaseId = databaseId,
+                id = id,
+            )
+        }
     }
 }

@@ -29,6 +29,7 @@ fun DatabaseTabView(
             DatabaseTabViewModel.Params(
                 databaseId = tab.databaseId,
                 tableName = tab.tableName,
+                favoriteId = tab.favoriteId,
             )
         ) }
     )

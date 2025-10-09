@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
+import io.github.openflocon.domain.database.usecase.favorite.GetFavoriteQueryByIdDatabaseUseCase
+import io.github.openflocon.domain.database.usecase.favorite.SaveQueryAsFavoriteDatabaseUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.mapper.toUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
@@ -32,6 +34,8 @@ import kotlin.time.Duration.Companion.seconds
 class DatabaseTabViewModel(
     private val params: Params,
     private val executeDatabaseQueryUseCase: ExecuteDatabaseQueryUseCase,
+    private val saveAsFavoriteUseCase: SaveQueryAsFavoriteDatabaseUseCase,
+    private val getFavoriteQueryUseCase: GetFavoriteQueryByIdDatabaseUseCase,
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel() {
@@ -40,6 +44,7 @@ class DatabaseTabViewModel(
     data class Params(
         val databaseId: String,
         val tableName: String?,
+        val favoriteId: Long?,
     )
 
     var query = mutableStateOf("")
@@ -84,6 +89,19 @@ class DatabaseTabViewModel(
         )
 
     init {
+        params.favoriteId?.let {
+            viewModelScope.launch(dispatcherProvider.viewModel) {
+                getFavoriteQueryUseCase(
+                    id = it,
+                    databaseId = params.databaseId,
+                )?.let {
+                    val q = it.query
+                    query.value = q
+                    updateQuery(q)
+                    executeQuery(query = q, editAutoUpdate = true)
+                }
+            }
+        }
         params.tableName?.let {
             val query = buildString {
                 appendLine("SELECT * ")
@@ -112,7 +130,11 @@ class DatabaseTabViewModel(
                 }
 
                 is DatabaseTabAction.SaveFavorite -> {
-                    // TODO
+                    saveAsFavoriteUseCase(
+                        title = action.title,
+                        query = query.value,
+                        databaseId = params.databaseId,
+                    )
                 }
             }
         }

@@ -1,8 +1,11 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,9 +25,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Dataset
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.TableRows
 import androidx.compose.material.icons.outlined.ViewColumn
 import androidx.compose.runtime.Composable
@@ -42,7 +48,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.composeunstyled.Text
+import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
+import io.github.openflocon.flocondesktop.common.ui.interactions.hover
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
@@ -55,6 +64,9 @@ fun DatabasesAndTablesView(
     onTableDoubleClicked: (TableUiModel) -> Unit,
     onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
     onDatabaseSelected: (id: DeviceDataBaseId) -> Unit,
+    onFavoriteClicked: (DatabaseFavoriteQueryUiModel) -> Unit,
+    deleteFavorite: (DatabaseFavoriteQueryUiModel) -> Unit,
+    favorites: List<DatabaseFavoriteQueryUiModel>,
 ) {
     Surface(
         color = FloconTheme.colorPalette.primary,
@@ -64,31 +76,66 @@ fun DatabasesAndTablesView(
     ) {
         Column(
             Modifier.fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(all = 4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(
-                "Databases",
-                color = FloconTheme.colorPalette.onSurface,
-                style = FloconTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-            )
-            when (state) {
-                DatabasesStateUiModel.Empty -> Unit
-                DatabasesStateUiModel.Loading -> Unit
-                is DatabasesStateUiModel.WithContent -> {
-                    state.databases.forEach {
-                        DatabaseItemView(
+            Column(
+                Modifier.fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(all = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    "Databases",
+                    color = FloconTheme.colorPalette.onSurface,
+                    style = FloconTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                )
+                when (state) {
+                    DatabasesStateUiModel.Empty -> Unit
+                    DatabasesStateUiModel.Loading -> Unit
+                    is DatabasesStateUiModel.WithContent -> {
+                        state.databases.forEach {
+                            DatabaseItemView(
+                                state = it,
+                                onSelect = onDatabaseSelected,
+                                modifier = Modifier.fillMaxWidth(),
+                                onTableDoubleClicked = onTableDoubleClicked,
+                                onDatabaseDoubleClicked = onDatabaseDoubleClicked,
+                            )
+                        }
+                    }
+                }
+            }
+            favorites.takeIf { it.isNotEmpty() }?.let {
+                Column(
+                    Modifier.fillMaxWidth()
+                        .weight(0.4f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(all = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Text(
+                        "Favorites",
+                        color = FloconTheme.colorPalette.onSurface,
+                        style = FloconTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                    )
+
+                    favorites.forEach {
+                        FavoriteQueryItemView(
                             state = it,
-                            onSelect = onDatabaseSelected,
                             modifier = Modifier.fillMaxWidth(),
-                            onTableDoubleClicked = onTableDoubleClicked,
-                            onDatabaseDoubleClicked = onDatabaseDoubleClicked,
+                            onClick = onFavoriteClicked,
+                            onDelete = deleteFavorite,
                         )
                     }
                 }
@@ -127,7 +174,7 @@ private fun DatabaseItemView(
                 modifier = Modifier.width(14.dp),
                 imageVector = Icons.Outlined.Dataset,
                 contentDescription = null,
-                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(textColor),
+                colorFilter = ColorFilter.tint(textColor),
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
@@ -256,5 +303,65 @@ private fun ColumnView(
             style = FloconTheme.typography.bodyMedium,
             color = color.copy(alpha = 0.6f),
         )
+    }
+}
+
+@Composable
+private fun FavoriteQueryItemView(
+    state: DatabaseFavoriteQueryUiModel,
+    onClick: (DatabaseFavoriteQueryUiModel) -> Unit,
+    onDelete: (DatabaseFavoriteQueryUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val (background, textColor) = Color.Transparent to FloconTheme.colorPalette.onSurface
+
+    var isHover by remember { mutableStateOf(false) }
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(background)
+            .hover(
+                isHover = {
+                    isHover = it
+                }
+            )
+            .clickable(onClick = {
+                onClick(state)
+            }
+            ).padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Image(
+            modifier = Modifier.width(14.dp),
+            imageVector = Icons.Outlined.Star,
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(textColor),
+        )
+        Text(
+            state.title,
+            color = textColor,
+            style = FloconTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        AnimatedVisibility(
+            enter = fadeIn(),
+            exit = fadeOut(),
+            visible = isHover,
+        ) {
+            Image(
+                modifier = Modifier.width(14.dp)
+                    .clickable {
+                        onDelete(state)
+                    },
+                imageVector = Icons.Filled.Delete,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(textColor),
+            )
+        }
     }
 }

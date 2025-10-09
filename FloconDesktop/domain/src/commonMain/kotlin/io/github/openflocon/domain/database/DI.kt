@@ -10,6 +10,10 @@ import io.github.openflocon.domain.database.usecase.ObserveCurrentDeviceSelected
 import io.github.openflocon.domain.database.usecase.ObserveDeviceDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.ObserveLastSuccessQueriesUseCase
 import io.github.openflocon.domain.database.usecase.SelectCurrentDeviceDatabaseUseCase
+import io.github.openflocon.domain.database.usecase.favorite.DeleteFavoriteQueryDatabaseUseCase
+import io.github.openflocon.domain.database.usecase.favorite.GetFavoriteQueryByIdDatabaseUseCase
+import io.github.openflocon.domain.database.usecase.favorite.ObserveFavoriteQueriesUseCase
+import io.github.openflocon.domain.database.usecase.favorite.SaveQueryAsFavoriteDatabaseUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -24,4 +28,8 @@ internal val databaseModule = module {
     factoryOf(::GetDeviceDatabaseTablesUseCase)
     factoryOf(::GetTableColumnsUseCase)
     factoryOf(::ObserveCurrentDeviceSelectedDatabaseAndTablesUseCase)
+    factoryOf(::DeleteFavoriteQueryDatabaseUseCase)
+    factoryOf(::ObserveFavoriteQueriesUseCase)
+    factoryOf(::SaveQueryAsFavoriteDatabaseUseCase)
+    factoryOf(::GetFavoriteQueryByIdDatabaseUseCase)
 }

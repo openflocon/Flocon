@@ -5,16 +5,21 @@ import io.github.openflocon.data.local.database.dao.QueryDao
 import io.github.openflocon.data.local.database.dao.TablesDao
 import io.github.openflocon.data.local.database.mapper.toDomain
 import io.github.openflocon.data.local.database.mapper.toEntity
+import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
+import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.common.Success
+import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
 internal class LocalDatabaseDataSourceRoom(
-    private val successQueryDao: QueryDao,
+    private val queryDao: QueryDao,
     private val tablesDao: TablesDao,
     private val json: Json,
 ) : LocalDatabaseDataSource {
@@ -24,7 +29,7 @@ internal class LocalDatabaseDataSourceRoom(
         databaseId: DeviceDataBaseId,
         query: String
     ) {
-        if (successQueryDao.doesQueryExists(
+        if (queryDao.doesQueryExists(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
                 databaseId = databaseId,
@@ -32,7 +37,7 @@ internal class LocalDatabaseDataSourceRoom(
             )
         ) {
             // put it in top if we already have it
-            successQueryDao.deleteQuery(
+            queryDao.deleteQuery(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
                 databaseId = databaseId,
@@ -47,13 +52,13 @@ internal class LocalDatabaseDataSourceRoom(
             queryString = query,
             timestamp = System.currentTimeMillis(),
         )
-        successQueryDao.insertSuccessQuery(entity)
+        queryDao.insertSuccessQuery(entity)
     }
 
     override fun observeLastSuccessQuery(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: DeviceDataBaseId
-    ): Flow<List<String>> = successQueryDao.observeSuccessQueriesByDeviceId(
+    ): Flow<List<String>> = queryDao.observeSuccessQueriesByDeviceId(
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
         databaseId = databaseId,
@@ -101,5 +106,75 @@ internal class LocalDatabaseDataSourceRoom(
             databaseId = databaseId,
             tablesNames = tablesNames,
         )
+    }
+
+    override suspend fun saveAsFavorite(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: String,
+        title: String,
+        query: String
+    ): Either<Throwable, Unit> {
+        val existing = queryDao.getFavoriteQueryByTitle(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            databaseId = databaseId,
+            title = title,
+        )
+        val title = if(existing != null) {
+            "$title (1)"
+        } else {
+            title
+        }
+        queryDao.insertFavoriteQuery(
+            FavoriteQueryEntity(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+                databaseId = databaseId,
+                queryString = query,
+                title = title,
+                timestamp = System.currentTimeMillis(),
+            )
+        )
+
+        return Success(Unit)
+    }
+
+    override suspend fun deleteFavorite(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: String,
+        id: Long
+    ): Either<Throwable, Unit> {
+        queryDao.deleteFavoriteQuery(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            databaseId = databaseId,
+            favoriteId = id,
+        )
+        return Success(Unit)
+    }
+
+    override fun observeFavorites(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<List<DatabaseFavoriteQueryDomainModel>> {
+        return queryDao.observeFavoriteQueryEntity(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+        ).map { list ->
+            list.map {
+                it.toDomain()
+            }
+        }.distinctUntilChanged()
+    }
+
+    override suspend fun getFavorite(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: String,
+        id: Long
+    ): DatabaseFavoriteQueryDomainModel? {
+        return queryDao.getFavorite(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            id = id,
+        )?.toDomain()
     }
 }
