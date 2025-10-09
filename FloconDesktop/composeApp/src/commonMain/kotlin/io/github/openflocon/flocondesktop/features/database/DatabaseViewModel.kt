@@ -59,11 +59,8 @@ class DatabaseViewModel(
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            combines(
-                observeCurrentDeviceIdAndPackageNameUseCase(),
-                databaseSelectorDelegate.deviceDataBases,
-            ).collect { (device, databases) ->
-                if (_tabs.value[device].isNullOrEmpty()) {
+            databaseSelectorDelegate.deviceDataBases.collect { databases ->
+                getCurrentDeviceIdAndPackageNameUseCase()?.let {
                     databases.selectedDatabase()?.let {
                         createTabForDatabase(it.id)
                     }
@@ -137,7 +134,7 @@ class DatabaseViewModel(
         if (selectedTab.value == tab) {
             _selectedTab.update {
                 val newTab = _tabs.value[deviceIdAndPackageName]?.firstOrNull()
-                if(newTab == null) {
+                if (newTab == null) {
                     it - deviceIdAndPackageName
                 } else {
                     it + (deviceIdAndPackageName to newTab)
