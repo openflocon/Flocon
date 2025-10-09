@@ -13,24 +13,23 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.database.DatabaseTabViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 fun DatabaseTabView(
-    databaseId: String,
-    tableName: String?,
+    tab: DatabaseTabState,
 ) {
-    val params = remember(databaseId, tableName) {
-        DatabaseTabViewModel.Params(
-            databaseId = databaseId,
-            tableName = tableName,
-        )
-    }
     val viewModel: DatabaseTabViewModel = koinViewModel(
-        key = params.toString(),
-        parameters = { parametersOf(params) }
+        key = tab.id,
+        parameters = { parametersOf(
+            DatabaseTabViewModel.Params(
+                databaseId = tab.databaseId,
+                tableName = tab.tableName,
+            )
+        ) }
     )
 
     DisposableEffect(viewModel) {
