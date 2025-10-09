@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material.icons.outlined.FileOpen
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -35,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isMetaPressed
@@ -69,7 +69,8 @@ fun DatabaseQueryView(
     ) {
         Toopbar(
             onAction = onAction,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isQueryEmpty = query.isBlank(),
         )
         FloconTextField(
             value = query,
@@ -154,6 +155,7 @@ fun DatabaseQueryView(
 @Composable
 private fun Toopbar(
     onAction: (action: DatabaseTabAction) -> Unit,
+    isQueryEmpty: Boolean,
     modifier: Modifier = Modifier,
 ) {
     var showFavoriteDialog by remember { mutableStateOf(false) }
@@ -164,29 +166,37 @@ private fun Toopbar(
             .padding(horizontal = 10.dp)
     ) {
         Box(
-            modifier = Modifier.clip(RoundedCornerShape(2.dp)).clickable {
-                showFavoriteDialog = true
-            }.aspectRatio(1f, true),
+            modifier = Modifier.clip(RoundedCornerShape(2.dp))
+                .clickable(enabled = isQueryEmpty.not()) {
+                    showFavoriteDialog = true
+                }.aspectRatio(1f, true),
             contentAlignment = Alignment.Center
         ) {
             Image(
                 Icons.Filled.StarBorder,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(20.dp)
+                    .graphicsLayer(
+                        alpha = if (isQueryEmpty) 0.6f else 1f
+                    ),
                 colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
             )
         }
         VerticalDivider(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp))
         Box(
-            modifier = Modifier.clip(RoundedCornerShape(2.dp)).clickable {
-                onAction(DatabaseTabAction.Copy)
-            }.aspectRatio(1f, true),
+            modifier = Modifier.clip(RoundedCornerShape(2.dp))
+                .clickable(enabled = isQueryEmpty.not()) {
+                    onAction(DatabaseTabAction.Copy)
+                }.aspectRatio(1f, true),
             contentAlignment = Alignment.Center
         ) {
             Image(
                 Icons.Filled.CopyAll,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(20.dp)
+                    .graphicsLayer(
+                        alpha = if (isQueryEmpty) 0.6f else 1f
+                    ),
                 colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
             )
         }
@@ -273,7 +283,10 @@ fun SaveFavoriteDialog(
                 value = favoriteName,
                 onValueChange = { favoriteName = it },
                 placeholder = {
-                    Text("give your favorite a funny name", style = FloconTheme.typography.bodyMedium)
+                    Text(
+                        "give your favorite a funny name",
+                        style = FloconTheme.typography.bodyMedium
+                    )
                 },
                 singleLine = true,
                 textStyle = FloconTheme.typography.bodyMedium,
