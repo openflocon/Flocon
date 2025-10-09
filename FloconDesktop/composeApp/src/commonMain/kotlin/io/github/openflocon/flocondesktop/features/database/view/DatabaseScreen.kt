@@ -97,8 +97,7 @@ fun DatabaseScreen(
                 )
                 selectedTab?.let {
                     DatabaseTabView(
-                        databaseId = it.databaseId,
-                        tableName = it.tableName,
+                        tab = it,
                     )
                 }
             }

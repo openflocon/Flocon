@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class DatabaseViewModel(
     private val databaseSelectorDelegate: DatabaseSelectorDelegate,
@@ -84,12 +85,9 @@ class DatabaseViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val generatedName = table.name
             createTab(
-                DatabaseTabState(
-                    databaseId = databaseId,
-                    tableName = table.name,
-                    generatedName = generatedName,
-                    index = 0,
-                )
+                databaseId = databaseId,
+                tableName = table.name,
+                generatedName = generatedName,
             )
         }
     }
@@ -111,14 +109,10 @@ class DatabaseViewModel(
 
     private fun createTabForDatabase(database: DeviceDataBaseUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            val generatedName = "${database.name}.db"
             createTab(
-                DatabaseTabState(
-                    databaseId = database.id,
-                    tableName = null,
-                    generatedName = generatedName,
-                    index = 0,
-                )
+                databaseId = database.id,
+                tableName = null,
+                generatedName = "${database.name}.db",
             )
         }
     }
@@ -150,25 +144,37 @@ class DatabaseViewModel(
         }
     }
 
-    private suspend fun createTab(tab: DatabaseTabState) {
+    private suspend fun createTab(
+        databaseId: DeviceDataBaseId,
+        tableName: String?,
+        generatedName: String,
+    ) {
         val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
-        lateinit var addedTab : DatabaseTabState
-        _tabs.update {
-            val list = it[deviceIdAndPackageName] ?: emptyList()
-            // if we have already a tab with the same "generatedName", it creates a new one with (number) after
-            val maxIndexOfSameName = list.filter { it.generatedName == tab.generatedName }.maxByOrNull { it.index }
 
-            addedTab = if (maxIndexOfSameName != null) {
-                tab.copy(index = maxIndexOfSameName.index + 1)
-            } else {
-                tab
-            }
+        val list = _tabs.value[deviceIdAndPackageName] ?: emptyList()
+        // if we have already a tab with the same "generatedName", it creates a new one with (number) after
+        val maxIndexOfSameName =
+            list.filter { it.generatedName == generatedName }.maxByOrNull { it.index }
 
-            val newList = list.toMutableList().apply {
-                add(addedTab)
-            }
-            it + (deviceIdAndPackageName to newList)
+        val index = if (maxIndexOfSameName != null) {
+            maxIndexOfSameName.index + 1
+        } else {
+            0
         }
+
+        val addedTab = DatabaseTabState(
+            databaseId = databaseId,
+            tableName = tableName,
+            generatedName = generatedName,
+            index = index,
+            id = UUID.randomUUID().toString(),
+        )
+
+        val newList = list.toMutableList().apply {
+            add(addedTab)
+        }
+
+        _tabs.update { it + (deviceIdAndPackageName to newList) }
         _selectedTab.update { it + (deviceIdAndPackageName to addedTab) }
     }
 }

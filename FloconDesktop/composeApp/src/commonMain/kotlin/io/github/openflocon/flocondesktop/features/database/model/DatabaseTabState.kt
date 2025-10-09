@@ -8,6 +8,7 @@ data class DatabaseTabState(
     val tableName: String?,
     val generatedName: String,
     val index: Int,
+    val id: String,
 ) {
     val displayName: String = generatedName + if(index > 0) " (${index})" else ""
 }
