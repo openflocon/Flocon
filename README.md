@@ -95,6 +95,7 @@ With this feature, you can:
 
 ```
 debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
+releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
 ```
 
 ```kotlin
