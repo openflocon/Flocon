@@ -16,6 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -100,11 +101,14 @@ class DatabaseTabViewModel(
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            combines(isVisible, _autoUpdate).collect { (isVisible, autoUpdate) ->
-                refreshAutoUpdate(
-                    isVisible = isVisible
-                )
-            }
+            combines(isVisible, _autoUpdate)
+                .distinctUntilChanged()
+                .collect { (isVisible, autoUpdate) ->
+                    refreshAutoUpdate(
+                        isVisible = isVisible,
+                        autoUpdate = autoUpdate,
+                    )
+                }
         }
     }
 
@@ -148,12 +152,12 @@ class DatabaseTabViewModel(
         }
     }
 
-    private fun refreshAutoUpdate(isVisible: Boolean) {
-        if (!_autoUpdate.value.isEnabled || !isVisible) {
-            _autoUpdate.value.autoUpdateJob?.cancel()
+    private fun refreshAutoUpdate(isVisible: Boolean, autoUpdate: AutoUpdate) {
+        if (!autoUpdate.isEnabled || !isVisible) {
+            autoUpdate.autoUpdateJob?.cancel()
             return
         } else {
-            _autoUpdate.value.autoUpdateJob?.cancel()
+            autoUpdate.autoUpdateJob?.cancel()
             val autoUpdateJob = viewModelScope.launch(dispatcherProvider.viewModel) {
                 while (isActive) {
                     delay(3.seconds)
