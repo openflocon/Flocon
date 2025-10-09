@@ -11,6 +11,7 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPacka
 import io.github.openflocon.flocondesktop.features.database.delegate.DatabaseSelectorDelegate
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
+import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.flocondesktop.features.database.model.selectedDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,7 +63,7 @@ class DatabaseViewModel(
             databaseSelectorDelegate.deviceDataBases.collect { databases ->
                 getCurrentDeviceIdAndPackageNameUseCase()?.let {
                     databases.selectedDatabase()?.let {
-                        createTabForDatabase(it.id)
+                        createTabForDatabase(it)
                     }
                 }
             }
@@ -73,10 +74,10 @@ class DatabaseViewModel(
         databaseSelectorDelegate.onDatabaseSelected(databaseId)
     }
 
-    fun onDatabaseDoubleClicked(databaseId: DeviceDataBaseId) {
-        databaseSelectorDelegate.onDatabaseSelected(databaseId)
+    fun onDatabaseDoubleClicked(database: DeviceDataBaseUiModel) {
+        databaseSelectorDelegate.onDatabaseSelected(database.id)
 
-        createTabForDatabase(databaseId)
+        createTabForDatabase(database)
     }
 
     fun onTableDoubleClicked(databaseId: DeviceDataBaseId, table: TableUiModel) {
@@ -85,6 +86,7 @@ class DatabaseViewModel(
                 DatabaseTabState(
                     databaseId = databaseId,
                     tableName = table.name,
+                    displayName = table.name,
                 )
             )
         }
@@ -105,12 +107,13 @@ class DatabaseViewModel(
         databaseSelectorDelegate.stop()
     }
 
-    private fun createTabForDatabase(databaseId: DeviceDataBaseId) {
+    private fun createTabForDatabase(database: DeviceDataBaseUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             createTab(
                 DatabaseTabState(
-                    databaseId = databaseId,
+                    databaseId = database.id,
                     tableName = null,
+                    displayName = "${database.name}.db"
                 )
             )
         }

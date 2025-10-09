@@ -6,9 +6,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -70,8 +72,9 @@ private fun DatabaseTabItemView(
         }.padding(vertical = 4.dp, horizontal = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Spacer(modifier = Modifier.width(4.dp))
         Text(
-            state.name, style = FloconTheme.typography.bodyMedium,
+            state.displayName, style = FloconTheme.typography.bodyMedium,
             color = contentColor,
         )
         Box(modifier = Modifier.clickable {

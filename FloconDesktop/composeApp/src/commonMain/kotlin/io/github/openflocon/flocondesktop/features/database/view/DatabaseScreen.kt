@@ -23,6 +23,7 @@ import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.features.database.DatabaseViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
+import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.flocondesktop.features.database.model.selectedDatabase
 import io.github.openflocon.library.designsystem.components.FloconFeature
@@ -61,7 +62,7 @@ fun DatabaseScreen(
     tabs: List<DatabaseTabState>,
     selectedTab: DatabaseTabState?,
     onDatabaseSelected: (DeviceDataBaseId) -> Unit,
-    onDatabaseDoubleClicked: (DeviceDataBaseId) -> Unit,
+    onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
     onTableDoubleClicked: (DeviceDataBaseId, TableUiModel) -> Unit,
     onTabSelected: (DatabaseTabState) -> Unit,
     onTabCloseClicked: (DatabaseTabState) -> Unit,

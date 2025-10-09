@@ -53,7 +53,7 @@ fun DatabasesAndTablesView(
     modifier: Modifier,
     state: DatabasesStateUiModel,
     onTableDoubleClicked: (TableUiModel) -> Unit,
-    onDatabaseDoubleClicked: (DeviceDataBaseId) -> Unit,
+    onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
     onDatabaseSelected: (id: DeviceDataBaseId) -> Unit,
 ) {
     Surface(
@@ -102,7 +102,7 @@ private fun DatabaseItemView(
     state: DeviceDataBaseUiModel,
     onSelect: (id: DeviceDataBaseId) -> Unit,
     onTableDoubleClicked: (TableUiModel) -> Unit,
-    onDatabaseDoubleClicked: (DeviceDataBaseId) -> Unit,
+    onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val (background, textColor) = if (state.isSelected) {
@@ -118,7 +118,7 @@ private fun DatabaseItemView(
                 .combinedClickable(onClick = {
                     onSelect(state.id)
                 }, onDoubleClick = {
-                    onDatabaseDoubleClicked(state.id)
+                    onDatabaseDoubleClicked(state)
                 }
                 ).padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,

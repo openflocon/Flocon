@@ -48,7 +48,11 @@ class DatabaseTabViewModel(
 
     init {
         params.tableName?.let {
-            updateQuery("SELECT * FROM $it")
+            updateQuery(buildString {
+                appendLine("SELECT * ")
+                appendLine("FROM $it")
+                append("LIMIT 50 OFFSET 0")
+            })
             executeQuery()
         }
     }
