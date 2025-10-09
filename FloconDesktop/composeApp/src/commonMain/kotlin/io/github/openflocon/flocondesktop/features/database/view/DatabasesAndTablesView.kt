@@ -3,10 +3,10 @@ package io.github.openflocon.flocondesktop.features.database.view
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,10 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Dataset
 import androidx.compose.material.icons.outlined.TableRows
@@ -118,7 +120,7 @@ private fun DatabaseItemView(
                 }, onDoubleClick = {
                     onDatabaseDoubleClicked(state.id)
                 }
-            ).padding(horizontal = 12.dp, vertical = 8.dp),
+                ).padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
@@ -218,12 +220,31 @@ private fun ColumnView(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         val color = FloconTheme.colorPalette.onSurface
-        Image(
-            imageVector = Icons.Outlined.ViewColumn,
-            modifier = Modifier.size(14.dp),
-            colorFilter = ColorFilter.tint(color),
-            contentDescription = null,
-        )
+
+        Box(Modifier.size(20.dp), contentAlignment = Alignment.Center) {
+            Image(
+                imageVector = Icons.Outlined.ViewColumn,
+                modifier = Modifier.size(14.dp),
+                colorFilter = ColorFilter.tint(color),
+                contentDescription = null,
+            )
+            if (model.isPrimaryKey) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd).size(10.dp).background(
+                            FloconTheme.colorPalette.accent,
+                            shape = CircleShape,
+                        ).padding(1.dp)
+                ) {
+                    Image(
+                        imageVector = Icons.Filled.VpnKey,
+                        modifier = Modifier.fillMaxSize(),
+                        colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onAccent),
+                        contentDescription = null,
+                    )
+                }
+            }
+        }
         Text(
             model.name,
             style = FloconTheme.typography.bodyMedium,

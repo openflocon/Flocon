@@ -16,6 +16,7 @@ data class TableUiModel(
     data class ColumnUiModel(
         val name: String,
         val type: String,
+        val isPrimaryKey: Boolean,
     )
 }
 

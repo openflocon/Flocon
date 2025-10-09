@@ -6,4 +6,6 @@ import kotlinx.serialization.Serializable
 data class DabataseTableEntityColumn(
     val name: String,
     val type: String,
+    val nullable: Boolean,
+    val primaryKey: Boolean,
 )

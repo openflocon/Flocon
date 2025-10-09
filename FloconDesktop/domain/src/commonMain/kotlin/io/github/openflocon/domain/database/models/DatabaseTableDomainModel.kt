@@ -7,5 +7,7 @@ class DatabaseTableDomainModel(
     data class Column(
         val name: String,
         val type: String,
+        val nullable: Boolean,
+        val primaryKey: Boolean,
     )
 }
