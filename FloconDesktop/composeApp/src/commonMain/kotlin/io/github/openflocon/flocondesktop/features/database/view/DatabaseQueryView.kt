@@ -26,6 +26,7 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.KeyEventType
@@ -267,6 +270,8 @@ fun SaveFavoriteDialog(
 ) {
     var favoriteName by remember { mutableStateOf("") }
 
+    val focusRequester = remember { FocusRequester() }
+
     FloconDialog(
         onDismissRequest = onDismiss,
     ) {
@@ -289,14 +294,29 @@ fun SaveFavoriteDialog(
                     )
                 },
                 singleLine = true,
+                maxLines = 1,
                 textStyle = FloconTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 containerColor = FloconTheme.colorPalette.secondary,
                 modifier = Modifier.fillMaxWidth()
+                    .focusRequester(focusRequester)
                     .padding(
                         horizontal = 16.dp,
                         vertical = 12.dp
-                    )
+                    ).onKeyEvent { keyEvent ->
+                        // detect CMD + Enter
+                        if (keyEvent.type == KeyEventType.KeyDown
+                            && keyEvent.key == androidx.compose.ui.input.key.Key.Enter
+                        ) {
+                            if (favoriteName.isNotBlank()) {
+                                onSave(favoriteName)
+                            }
+
+                            // Return 'true' to indicate that the event was consumed
+                            return@onKeyEvent true
+                        }
+                        return@onKeyEvent false
+                    }
             )
             FloconDialogButtons(
                 onCancel = onDismiss,
@@ -312,6 +332,9 @@ fun SaveFavoriteDialog(
                     )
             )
         }
+    }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 }
 
