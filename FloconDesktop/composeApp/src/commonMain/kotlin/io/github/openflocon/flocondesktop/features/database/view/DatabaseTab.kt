@@ -33,11 +33,14 @@ fun DatabaseTabView(
     )
 
     val state: DatabaseScreenState by viewModel.state.collectAsStateWithLifecycle()
+    val autoUpdate by viewModel.isAutoUpdateEnabled.collectAsStateWithLifecycle()
     DatabaseTabViewContent(
         query = viewModel.query.value,
+        autoUpdate = autoUpdate,
         updateQuery = viewModel::updateQuery,
         executeQuery = viewModel::executeQuery,
         clearQuery = viewModel::clearQuery,
+        updateAutoUpdate = viewModel::updateAutoUpdate,
         state = state,
     )
 }
@@ -45,9 +48,11 @@ fun DatabaseTabView(
 @Composable
 private fun DatabaseTabViewContent(
     query: String,
+    autoUpdate: Boolean,
     updateQuery: (String) -> Unit,
     executeQuery: () -> Unit,
     clearQuery: () -> Unit,
+    updateAutoUpdate: (Boolean) -> Unit,
     state: DatabaseScreenState,
 ) {
     Column(
@@ -60,9 +65,11 @@ private fun DatabaseTabViewContent(
             DatabaseQueryView(
                 query = query,
                 updateQuery = updateQuery,
+                autoUpdate = autoUpdate,
                 executeQuery = {
                     executeQuery()
                 },
+                updateAutoUpdate = updateAutoUpdate,
                 clearQuery = clearQuery,
                 modifier = Modifier
                     .fillMaxWidth()

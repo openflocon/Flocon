@@ -41,8 +41,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun DatabaseQueryView(
     query: String,
+    autoUpdate: Boolean,
     updateQuery: (query: String) -> Unit,
     executeQuery: (query: String) -> Unit,
+    updateAutoUpdate: (value: Boolean) -> Unit,
     clearQuery: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -111,7 +113,10 @@ fun DatabaseQueryView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(
-                    checked = false, onCheckedChange = {}, colors = CheckboxDefaults.colors(
+                    checked = autoUpdate,
+                    onCheckedChange = {
+                        updateAutoUpdate(it)
+                    }, colors = CheckboxDefaults.colors(
                         uncheckedColor = FloconTheme.colorPalette.secondary,
                         checkedColor = FloconTheme.colorPalette.secondary,
                     )
@@ -154,6 +159,8 @@ private fun DatabaseQueryViewPreview() {
             modifier = Modifier.fillMaxWidth(),
             query = "SELECT * FROM TABLE_NAME",
             updateQuery = {},
+            autoUpdate = true,
+            updateAutoUpdate = {},
         )
     }
 }

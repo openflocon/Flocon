@@ -10,6 +10,8 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.mapper.toUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +19,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class DatabaseTabViewModel(
     private val params: Params,
@@ -33,6 +37,22 @@ class DatabaseTabViewModel(
     )
 
     var query = mutableStateOf("")
+
+    data class AutoUpdate(
+        val query: String? = null,
+        val isEnabled: Boolean = false,
+        val autoUpdateJob: Job? = null
+    )
+
+    private val _autoUpdate = MutableStateFlow(AutoUpdate())
+    val isAutoUpdateEnabled = _autoUpdate
+        .map { it.isEnabled }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Companion.WhileSubscribed(5000),
+            initialValue = false,
+        )
 
     private val queryResult = MutableStateFlow<QueryResultUiModel?>(null)
 
@@ -65,6 +85,14 @@ class DatabaseTabViewModel(
         executeQuery(query = query.value)
     }
 
+    init {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            _autoUpdate.collect {
+                refreshAutoUpdate()
+            }
+        }
+    }
+
     private fun executeQuery(query: String) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             executeDatabaseQueryUseCase(
@@ -72,6 +100,11 @@ class DatabaseTabViewModel(
                 databaseId = params.databaseId,
             ).fold(doOnSuccess = {
                 queryResult.value = it.toUi()
+                _autoUpdate.update {
+                    it.copy(
+                        query = query,
+                    )
+                }
             }, doOnFailure = {
                 feedbackDisplayer.displayMessage("database failure : $it")
             })
@@ -82,7 +115,43 @@ class DatabaseTabViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             updateQuery("")
             queryResult.update { null }
+            _autoUpdate.update {
+                it.copy(
+                    query = null,
+                    isEnabled = false,
+                )
+            }
         }
+    }
+
+    fun updateAutoUpdate(value: Boolean) {
+        _autoUpdate.update {
+            it.copy(
+                isEnabled = value,
+            )
+        }
+    }
+
+    private fun refreshAutoUpdate() {
+        if (!_autoUpdate.value.isEnabled) {
+            _autoUpdate.value.autoUpdateJob?.cancel()
+            return
+        } else {
+            _autoUpdate.value.autoUpdateJob?.cancel()
+            val autoUpdateJob = viewModelScope.launch(dispatcherProvider.viewModel) {
+                while (isActive) {
+                    delay(3.seconds)
+                    val query = _autoUpdate.value.takeIf { it.isEnabled }?.query ?: return@launch
+                    executeQuery(query)
+                }
+            }
+            _autoUpdate.update {
+                it.copy(
+                    autoUpdateJob = autoUpdateJob
+                )
+            }
+        }
+
     }
 
 }
