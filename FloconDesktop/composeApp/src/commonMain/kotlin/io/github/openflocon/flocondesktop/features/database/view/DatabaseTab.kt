@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -31,6 +32,13 @@ fun DatabaseTabView(
         key = params.toString(),
         parameters = { parametersOf(params) }
     )
+
+    DisposableEffect(viewModel) {
+        viewModel.onVisible()
+        onDispose {
+            viewModel.onNotVisible()
+        }
+    }
 
     val state: DatabaseScreenState by viewModel.state.collectAsStateWithLifecycle()
     val autoUpdate by viewModel.isAutoUpdateEnabled.collectAsStateWithLifecycle()

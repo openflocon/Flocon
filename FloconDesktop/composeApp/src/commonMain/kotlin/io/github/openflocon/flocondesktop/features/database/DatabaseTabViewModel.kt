@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.mapper.toUi
@@ -44,6 +45,16 @@ class DatabaseTabViewModel(
         val autoUpdateJob: Job? = null
     )
 
+    private val isVisible = MutableStateFlow(false)
+
+    fun onVisible() {
+        isVisible.update { true }
+    }
+
+    fun onNotVisible() {
+        isVisible.update { false }
+    }
+
     private val _autoUpdate = MutableStateFlow(AutoUpdate())
     val isAutoUpdateEnabled = _autoUpdate
         .map { it.isEnabled }
@@ -82,33 +93,38 @@ class DatabaseTabViewModel(
     }
 
     fun executeQuery() {
-        executeQuery(query = query.value)
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            executeQuery(query = query.value, editAutoUpdate = true)
+        }
     }
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            _autoUpdate.collect {
-                refreshAutoUpdate()
+            combines(isVisible, _autoUpdate).collect { (isVisible, autoUpdate) ->
+                refreshAutoUpdate(
+                    isVisible = isVisible
+                )
             }
         }
     }
 
-    private fun executeQuery(query: String) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            executeDatabaseQueryUseCase(
-                query = query,
-                databaseId = params.databaseId,
-            ).fold(doOnSuccess = {
-                queryResult.value = it.toUi()
+    private suspend fun executeQuery(query: String, editAutoUpdate: Boolean) {
+        println("executeQuery: $query")
+        executeDatabaseQueryUseCase(
+            query = query,
+            databaseId = params.databaseId,
+        ).fold(doOnSuccess = {
+            queryResult.value = it.toUi()
+            if (editAutoUpdate) {
                 _autoUpdate.update {
                     it.copy(
                         query = query,
                     )
                 }
-            }, doOnFailure = {
-                feedbackDisplayer.displayMessage("database failure : $it")
-            })
-        }
+            }
+        }, doOnFailure = {
+            feedbackDisplayer.displayMessage("database failure : $it")
+        })
     }
 
     fun clearQuery() {
@@ -132,8 +148,8 @@ class DatabaseTabViewModel(
         }
     }
 
-    private fun refreshAutoUpdate() {
-        if (!_autoUpdate.value.isEnabled) {
+    private fun refreshAutoUpdate(isVisible: Boolean) {
+        if (!_autoUpdate.value.isEnabled || !isVisible) {
             _autoUpdate.value.autoUpdateJob?.cancel()
             return
         } else {
@@ -142,7 +158,7 @@ class DatabaseTabViewModel(
                 while (isActive) {
                     delay(3.seconds)
                     val query = _autoUpdate.value.takeIf { it.isEnabled }?.query ?: return@launch
-                    executeQuery(query)
+                    executeQuery(query, editAutoUpdate = false)
                 }
             }
             _autoUpdate.update {
@@ -151,7 +167,6 @@ class DatabaseTabViewModel(
                 )
             }
         }
-
     }
 
 }
