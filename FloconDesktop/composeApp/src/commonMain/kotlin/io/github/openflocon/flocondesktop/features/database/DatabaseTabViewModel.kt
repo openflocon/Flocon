@@ -81,12 +81,15 @@ class DatabaseTabViewModel(
 
     init {
         params.tableName?.let {
-            updateQuery(buildString {
+            val query = buildString {
                 appendLine("SELECT * ")
                 appendLine("FROM $it")
                 append("LIMIT 50 OFFSET 0")
-            })
-            executeQuery()
+            }
+            updateQuery(query)
+            viewModelScope.launch(dispatcherProvider.viewModel) {
+                executeQuery(query = query, editAutoUpdate = true)
+            }
         }
     }
 
