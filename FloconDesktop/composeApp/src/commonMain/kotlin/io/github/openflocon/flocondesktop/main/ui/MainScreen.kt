@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -59,11 +57,8 @@ import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.main.ui.view.leftpannel.PanelMinWidth
 import io.github.openflocon.flocondesktop.main.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import org.koin.compose.viewmodel.koinViewModel
-
 
 @Composable
 fun MainScreen(

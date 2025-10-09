@@ -3,8 +3,8 @@
 package io.github.openflocon.flocondesktop.main.ui.view.topbar.app
 
 
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,8 +17,9 @@ import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.main.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.main.ui.view.topbar.TopBarAppView
 import io.github.openflocon.flocondesktop.main.ui.view.topbar.TopBarSelector
+import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenu
+import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
 
 
 @Composable
@@ -31,7 +32,7 @@ internal fun TopBarAppDropdown(
     var expanded by remember { mutableStateOf(false) }
 
     if (devicesState is DevicesStateUiModel.WithDevices) {
-        ExposedDropdownMenuBox(
+        FloconExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = false },
         ) {
@@ -43,7 +44,7 @@ internal fun TopBarAppDropdown(
                 ) {
                     TopBarAppView(
                         deviceApp = it,
-                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                        modifier = modifier
                     )
                 }
             } ?: run {
@@ -64,22 +65,22 @@ internal fun TopBarAppDropdown(
                 }
 
                 is AppsStateUiModel.WithApps -> {
-                    ExposedDropdownMenu(
+                    FloconExposedDropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.exposedDropdownSize(),
+                        modifier = Modifier.exposedDropdownSize()
                     ) {
                         appsState.apps
                             .fastForEach { app ->
                                 TopBarAppView(
                                     deviceApp = app,
-                                    onClick = {
-                                        onAppSelected(app)
-                                        expanded = false
-                                    },
                                     selected = appsState.appSelected?.packageName == app.packageName,
                                     deleteClick = {
                                         deleteApp(app)
+                                        expanded = false
+                                    },
+                                    modifier = Modifier.clickable {
+                                        onAppSelected(app)
                                         expanded = false
                                     }
                                 )
