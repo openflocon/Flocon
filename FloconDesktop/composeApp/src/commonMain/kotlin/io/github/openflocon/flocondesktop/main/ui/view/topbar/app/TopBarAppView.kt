@@ -1,5 +1,4 @@
-package io.github.openflocon.flocondesktop.main.ui.view.topbar
-
+package io.github.openflocon.flocondesktop.main.ui.view.topbar.app
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,16 +38,11 @@ import kotlin.io.encoding.Base64
 internal fun TopBarAppView(
     deviceApp: DeviceAppUiModel,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null,
     selected: Boolean = false,
     deleteClick: (() -> Unit)? = null,
 ) {
     Row(
-        modifier = modifier
-            .then(if (onClick != null) Modifier.clickable {
-                onClick()
-            } else Modifier
-            ).padding(horizontal = 8.dp, 4.dp),
+        modifier = modifier.padding(horizontal = 8.dp, 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -75,12 +69,11 @@ internal fun TopBarAppView(
         if (!selected && deleteClick != null) {
             Spacer(modifier = Modifier.weight(1f))
             Box(
-                Modifier.clip(RoundedCornerShape(4.dp))
-                    .background(
-                        Color.White.copy(alpha = 0.8f)
-                    ).padding(2.dp).clickable {
-                        deleteClick()
-                    },
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.White.copy(alpha = 0.8f))
+                    .padding(2.dp)
+                    .clickable(onClick = deleteClick),
                 contentAlignment = Alignment.Center,
             ) {
                 FloconIcon(

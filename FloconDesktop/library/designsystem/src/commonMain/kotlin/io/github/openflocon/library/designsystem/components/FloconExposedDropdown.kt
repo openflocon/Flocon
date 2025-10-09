@@ -8,6 +8,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuBoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 fun FloconExposedDropdownMenuBox(
@@ -35,6 +36,7 @@ fun ExposedDropdownMenuBoxScope.FloconExposedDropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
         modifier = modifier,
+        containerColor = FloconTheme.colorPalette.primary,
         content = content
     )
 }
