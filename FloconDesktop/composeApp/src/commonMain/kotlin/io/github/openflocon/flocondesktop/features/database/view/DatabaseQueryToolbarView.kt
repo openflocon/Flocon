@@ -31,7 +31,8 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAct
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
-internal fun DatabaseQueryToopbarView(
+internal fun DatabaseQueryToolbarView(
+    favoritesTitles: Set<String>,
     onAction: (action: DatabaseTabAction) -> Unit,
     isQueryEmpty: Boolean,
     modifier: Modifier = Modifier,
@@ -129,6 +130,7 @@ internal fun DatabaseQueryToopbarView(
 
     if (showFavoriteDialog) {
         SaveFavoriteDialog(
+            favoritesTitles = favoritesTitles,
             onDismiss = { showFavoriteDialog = false },
             onSave = { queryName ->
                 onAction(DatabaseTabAction.SaveFavorite(queryName))

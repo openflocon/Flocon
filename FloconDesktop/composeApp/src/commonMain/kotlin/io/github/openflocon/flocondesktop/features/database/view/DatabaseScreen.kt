@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -104,6 +105,9 @@ fun DatabaseScreen(
                 selectedTab?.let {
                     DatabaseTabView(
                         tab = it,
+                        favoritesTitles = remember(favorites) {
+                            favorites.map { it.title }.toSet()
+                        },
                     )
                 }
             }

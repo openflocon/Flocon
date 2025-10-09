@@ -32,12 +32,14 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.String
 
 
 @Composable
 fun DatabaseQueryView(
     query: String,
     autoUpdate: Boolean,
+    favoritesTitles: Set<String>,
     updateQuery: (query: String) -> Unit,
     onAction: (action: DatabaseTabAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -49,7 +51,8 @@ fun DatabaseQueryView(
                 shape = FloconTheme.shapes.medium
             )
     ) {
-        DatabaseQueryToopbarView(
+        DatabaseQueryToolbarView(
+            favoritesTitles = favoritesTitles,
             onAction = onAction,
             modifier = Modifier.fillMaxWidth(),
             isQueryEmpty = query.isBlank(),
@@ -144,7 +147,8 @@ private fun DatabaseQueryViewPreview() {
             query = "SELECT * FROM TABLE_NAME",
             updateQuery = {},
             autoUpdate = true,
-            onAction = {}
+            onAction = {},
+            favoritesTitles = emptySet()
         )
     }
 }

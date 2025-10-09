@@ -22,6 +22,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DatabaseTabView(
     tab: DatabaseTabState,
+    favoritesTitles: Set<String>,
 ) {
     val viewModel: DatabaseTabViewModel = koinViewModel(
         key = tab.id,
@@ -49,6 +50,7 @@ fun DatabaseTabView(
         updateQuery = viewModel::updateQuery,
         onAction = viewModel::onAction,
         state = state,
+        favoritesTitles = favoritesTitles,
     )
 }
 
@@ -56,6 +58,7 @@ fun DatabaseTabView(
 private fun DatabaseTabViewContent(
     query: String,
     autoUpdate: Boolean,
+    favoritesTitles: Set<String>,
     updateQuery: (String) -> Unit,
     onAction: (action: DatabaseTabAction) -> Unit,
     state: DatabaseScreenState,
@@ -72,6 +75,7 @@ private fun DatabaseTabViewContent(
                 updateQuery = updateQuery,
                 autoUpdate = autoUpdate,
                 onAction = onAction,
+                favoritesTitles = favoritesTitles,
                 modifier = Modifier
                     .fillMaxWidth()
             )
