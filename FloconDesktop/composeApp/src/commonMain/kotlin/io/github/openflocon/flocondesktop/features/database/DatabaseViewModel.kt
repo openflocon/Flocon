@@ -82,11 +82,13 @@ class DatabaseViewModel(
 
     fun onTableDoubleClicked(databaseId: DeviceDataBaseId, table: TableUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
+            val generatedName = table.name
             createTab(
                 DatabaseTabState(
                     databaseId = databaseId,
                     tableName = table.name,
-                    displayName = table.name,
+                    displayName = generatedName,
+                    generatedName = generatedName,
                 )
             )
         }
@@ -109,11 +111,13 @@ class DatabaseViewModel(
 
     private fun createTabForDatabase(database: DeviceDataBaseUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
+            val generatedName = "${database.name}.db"
             createTab(
                 DatabaseTabState(
                     databaseId = database.id,
                     tableName = null,
-                    displayName = "${database.name}.db"
+                    displayName = generatedName,
+                    generatedName = generatedName,
                 )
             )
         }
@@ -148,16 +152,23 @@ class DatabaseViewModel(
 
     private suspend fun createTab(tab: DatabaseTabState) {
         val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
-        _selectedTab.update { it + (deviceIdAndPackageName to tab) }
+        lateinit var addedTab : DatabaseTabState
         _tabs.update {
             val list = it[deviceIdAndPackageName] ?: emptyList()
-            if (list.contains(tab)) it // nothing
-            else {
-                val newList = list.toMutableList().apply {
-                    add(tab)
-                }
-                it + (deviceIdAndPackageName to newList)
+            // if we have already a tab with the same "generatedName", it creates a new one with (number) after
+            val withSameName = list.count { it.generatedName == tab.generatedName }
+
+            addedTab = if (withSameName != 0) {
+                tab.copy(displayName = "${tab.displayName} (${withSameName})")
+            } else {
+                tab
             }
+
+            val newList = list.toMutableList().apply {
+                add(addedTab)
+            }
+            it + (deviceIdAndPackageName to newList)
         }
+        _selectedTab.update { it + (deviceIdAndPackageName to addedTab) }
     }
 }
