@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.seconds
 
 class DatabaseTabViewModel(
@@ -40,10 +41,10 @@ class DatabaseTabViewModel(
 
     var query = mutableStateOf("")
 
+    private val autoUpdateJob = AtomicReference<Job?>(null)
     data class AutoUpdate(
         val query: String? = null,
         val isEnabled: Boolean = false,
-        val autoUpdateJob: Job? = null
     )
 
     private val isVisible = MutableStateFlow(false)
@@ -153,11 +154,12 @@ class DatabaseTabViewModel(
     }
 
     private fun refreshAutoUpdate(isVisible: Boolean, autoUpdate: AutoUpdate) {
+        val job = autoUpdateJob.get()
         if (!autoUpdate.isEnabled || !isVisible) {
-            autoUpdate.autoUpdateJob?.cancel()
+            job?.cancel()
             return
         } else {
-            autoUpdate.autoUpdateJob?.cancel()
+            job?.cancel()
             val autoUpdateJob = viewModelScope.launch(dispatcherProvider.viewModel) {
                 while (isActive) {
                     delay(3.seconds)
@@ -165,11 +167,7 @@ class DatabaseTabViewModel(
                     executeQuery(query, editAutoUpdate = false)
                 }
             }
-            _autoUpdate.update {
-                it.copy(
-                    autoUpdateJob = autoUpdateJob
-                )
-            }
+            this.autoUpdateJob.set(autoUpdateJob)
         }
     }
 
