@@ -47,10 +47,14 @@ internal fun DatabaseTableEntity.toDomain(
 fun DatabaseTableDomainModel.Column.toEntity() = DabataseTableEntityColumn(
     name = name,
     type = type,
+    nullable = nullable,
+    primaryKey = primaryKey,
 )
 
 fun DabataseTableEntityColumn.toDomain() = DatabaseTableDomainModel.Column(
     name = name,
     type = type,
+    nullable = nullable,
+    primaryKey = primaryKey,
 )
 

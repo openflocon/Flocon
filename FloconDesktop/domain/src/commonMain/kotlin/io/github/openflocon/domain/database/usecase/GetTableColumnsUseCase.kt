@@ -45,10 +45,15 @@ class GetTableColumnsUseCase(
                 //val id = it.getOrNull(0)
                 val name = it.getOrNull(1)
                 val type = it.getOrNull(2)
+                val notnull = it.getOrNull(3)
+                //val dflt_value = it.getOrNull(4)
+                val primaryKey = it.getOrNull(5)
                 if(name != null && type != null) {
                     DatabaseTableDomainModel.Column(
                         name = name,
-                        type = type
+                        type = type,
+                        nullable = notnull == "0",
+                        primaryKey = primaryKey == "1",
                     )
                 } else null
             }

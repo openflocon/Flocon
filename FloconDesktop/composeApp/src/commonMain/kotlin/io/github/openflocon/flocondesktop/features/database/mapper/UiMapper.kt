@@ -29,7 +29,13 @@ fun DatabaseTableDomainModel.toUi() : TableUiModel {
         columns = this.columns.map {
             TableUiModel.ColumnUiModel(
                 name = it.name,
-                type = it.type,
+                isPrimaryKey = it.primaryKey,
+                type = buildString {
+                    append(it.type)
+                    if(!it.nullable) {
+                        append(", NOT NULL")
+                    }
+                },
             )
         }
     )
