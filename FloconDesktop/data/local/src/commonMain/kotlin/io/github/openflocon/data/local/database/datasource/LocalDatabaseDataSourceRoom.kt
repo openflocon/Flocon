@@ -120,8 +120,9 @@ internal class LocalDatabaseDataSourceRoom(
             databaseId = databaseId,
             title = title,
         )
+        val timestamp = System.currentTimeMillis()
         val title = if(existing != null) {
-            "$title (1)"
+            "${existing.title} ($timestamp)"
         } else {
             title
         }
