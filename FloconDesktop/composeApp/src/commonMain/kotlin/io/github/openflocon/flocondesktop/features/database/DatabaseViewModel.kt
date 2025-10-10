@@ -11,6 +11,7 @@ import io.github.openflocon.domain.database.usecase.favorite.ObserveFavoriteQuer
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.delegate.DatabaseSelectorDelegate
 import io.github.openflocon.flocondesktop.features.database.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
@@ -19,6 +20,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabasesState
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.flocondesktop.features.database.model.selectedDatabase
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
@@ -36,6 +38,7 @@ class DatabaseViewModel(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val observeFavoriteQueriesUseCase: ObserveFavoriteQueriesUseCase,
     private val deleteFavoriteQueryDatabaseUseCase: DeleteFavoriteQueryDatabaseUseCase,
+    private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel(databaseSelectorDelegate) {
     val deviceDataBases: StateFlow<DatabasesStateUiModel> = databaseSelectorDelegate.deviceDataBases
 
@@ -109,6 +112,13 @@ class DatabaseViewModel(
                 generatedName = generatedName,
                 favoriteId = null,
             )
+        }
+    }
+
+    fun onTableColumnClicked(column: TableUiModel.ColumnUiModel) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            copyToClipboard(column.name)
+            feedbackDisplayer.displayMessage("copied: ${column.name}")
         }
     }
 

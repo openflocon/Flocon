@@ -23,6 +23,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabasesState
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.flocondesktop.features.database.model.selectedDatabase
+import io.github.openflocon.flocondesktop.features.database.view.databases_tables.DatabasesAndTablesView
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -47,6 +48,7 @@ fun DatabaseScreen(modifier: Modifier = Modifier) {
         onDatabaseSelected = viewModel::onDatabaseSelected,
         onDatabaseDoubleClicked = viewModel::onDatabaseDoubleClicked,
         onTableDoubleClicked = viewModel::onTableDoubleClicked,
+        onTableColumnClicked = viewModel::onTableColumnClicked,
         onTabSelected = viewModel::onTabSelected,
         onTabCloseClicked = viewModel::onTabCloseClicked,
         onFavoriteClicked = viewModel::onFavoriteClicked,
@@ -66,6 +68,7 @@ fun DatabaseScreen(
     onDatabaseSelected: (DeviceDataBaseId) -> Unit,
     onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
     onTableDoubleClicked: (DeviceDataBaseId, TableUiModel) -> Unit,
+    onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
     onTabSelected: (DatabaseTabState) -> Unit,
     onTabCloseClicked: (DatabaseTabState) -> Unit,
     onFavoriteClicked: (DatabaseFavoriteQueryUiModel) -> Unit,
@@ -86,6 +89,7 @@ fun DatabaseScreen(
                 onDatabaseDoubleClicked = onDatabaseDoubleClicked,
                 onFavoriteClicked = onFavoriteClicked,
                 deleteFavorite = deleteFavorite,
+                onTableColumnClicked = onTableColumnClicked,
                 onTableDoubleClicked = { table ->
                     deviceDataBases.selectedDatabase()?.let {
                         onTableDoubleClicked(it.id, table)
