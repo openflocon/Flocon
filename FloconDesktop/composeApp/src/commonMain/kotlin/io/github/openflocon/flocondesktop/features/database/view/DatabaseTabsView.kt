@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,15 +59,16 @@ private fun DatabaseTabItemView(
     onCloseClicked: (DatabaseTabState) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val contentColor = if (state == selected) FloconTheme.colorPalette.onAccent else FloconTheme.colorPalette.onPrimary
+    val shape = RoundedCornerShape(
+        topStart = 6.dp,
+        topEnd = 6.dp,
+    )
+    val contentColor = if (state == selected) FloconTheme.colorPalette.onSecondary else FloconTheme.colorPalette.onPrimary
     Row(
         modifier = modifier.clip(
-            RoundedCornerShape(
-                topStart = 6.dp,
-                topEnd = 6.dp,
-            )
+            shape
         ).background(
-            color = if (state == selected) FloconTheme.colorPalette.accent else FloconTheme.colorPalette.primary
+            color = if (state == selected) FloconTheme.colorPalette.secondary else FloconTheme.colorPalette.primary
         ).clickable {
             onTabSelected(state)
         }.padding(vertical = 4.dp, horizontal = 6.dp),
