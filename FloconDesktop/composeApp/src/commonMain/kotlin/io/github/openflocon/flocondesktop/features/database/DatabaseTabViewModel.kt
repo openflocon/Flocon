@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
-import io.github.openflocon.domain.database.usecase.ExportDatabaseResultToCsvUseCase
+import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseResultToCsvProcessor
 import io.github.openflocon.domain.database.usecase.ObserveLastSuccessQueriesUseCase
 import io.github.openflocon.domain.database.usecase.favorite.GetFavoriteQueryByIdDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.favorite.SaveQueryAsFavoriteDatabaseUseCase
@@ -42,7 +42,7 @@ class DatabaseTabViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
     private val observeLastSuccessQueriesUseCase: ObserveLastSuccessQueriesUseCase,
     private val importSqlQueryProcessor: ImportSqlQueryProcessor,
-    private val exportDatabaseResultToCsv: ExportDatabaseResultToCsvUseCase,
+    private val exportDatabaseResultToCsv: ExportDatabaseResultToCsvProcessor,
 ) : ViewModel() {
 
     @Immutable
@@ -170,6 +170,13 @@ class DatabaseTabViewModel(
                             columns = it.columns,
                             values = it.rows.map { row ->
                                 row.items.map { it ?: "NULL" }
+                            }
+                        ).fold(
+                            doOnSuccess = {
+                                feedbackDisplayer.displayMessage("exported to $it")
+                            },
+                            doOnFailure = {
+                                feedbackDisplayer.displayMessage("export failed : $it")
                             }
                         )
                     }
