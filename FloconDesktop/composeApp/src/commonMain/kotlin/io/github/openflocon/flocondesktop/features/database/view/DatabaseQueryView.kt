@@ -61,7 +61,7 @@ class ColorsTransformation() : VisualTransformation {
                 "GROUP", "BY", "ORDER", "LIMIT", "HAVING"
             )
 
-            val tokens = text.split(Regex("(?<=\\s)|(?=\\s)")) // conserve les espaces
+            val tokens = text.split(Regex("(?<=\\s)|(?=\\s)"))
 
             for (token in tokens) {
                 val upper = token.uppercase()
