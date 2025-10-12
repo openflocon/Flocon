@@ -2,40 +2,51 @@ package io.github.openflocon.flocondesktop.features.database.delegate
 
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.database.models.DatabaseAndTablesDomainModel
+import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.usecase.AskForDeviceDatabasesUseCase
+import io.github.openflocon.domain.database.usecase.GetDatabaseByIdUseCase
 import io.github.openflocon.domain.database.usecase.GetDeviceDatabaseTablesUseCase
 import io.github.openflocon.domain.database.usecase.ObserveCurrentDeviceSelectedDatabaseAndTablesUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDeviceDatabaseUseCase
-import io.github.openflocon.domain.database.usecase.SelectCurrentDeviceDatabaseUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.features.database.mapper.toUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DatabaseSelectorDelegate(
     private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
     private val observeDeviceDatabaseUseCase: ObserveDeviceDatabaseUseCase,
-    private val observeCurrentDeviceSelectedDatabaseAndTablesUseCase: ObserveCurrentDeviceSelectedDatabaseAndTablesUseCase,
+    private val getDatabaseByIdUseCase: GetDatabaseByIdUseCase,
     private val closeableDelegate: CloseableDelegate,
     private val dispatcherProvider: DispatcherProvider,
     private val askForDeviceDatabasesUseCase: AskForDeviceDatabasesUseCase,
-    private val selectCurrentDeviceDatabaseUseCase: SelectCurrentDeviceDatabaseUseCase,
     private val getDeviceDatabaseTablesUseCase: GetDeviceDatabaseTablesUseCase,
+    private val observeCurrentDeviceSelectedDatabaseAndTablesUseCase: ObserveCurrentDeviceSelectedDatabaseAndTablesUseCase,
 ) : CloseableScoped by closeableDelegate {
+
+    val selectedDatabaseId = MutableStateFlow<DeviceDataBaseDomainModel?>(null)
+
     val deviceDataBases: StateFlow<DatabasesStateUiModel> =
         combine(
             observeDeviceDatabaseUseCase(),
-            observeCurrentDeviceSelectedDatabaseAndTablesUseCase(),
+            selectedDatabaseId.flatMapLatest {
+                if (it == null) flowOf(null)
+                else observeCurrentDeviceSelectedDatabaseAndTablesUseCase(it)
+            },
         ) { databases, selected ->
             if (databases.isEmpty()) {
                 DatabasesStateUiModel.Empty
@@ -59,10 +70,10 @@ class DatabaseSelectorDelegate(
                 DatabasesStateUiModel.Loading,
             )
 
-    fun onDatabaseSelected(databaseId: DeviceDataBaseId) {
-        coroutineScope.launch(dispatcherProvider.viewModel) {
-            selectCurrentDeviceDatabaseUseCase(databaseId)
-            getDeviceDatabaseTablesUseCase()
+    suspend fun onDatabaseSelected(databaseId: DeviceDataBaseId) : DeviceDataBaseDomainModel? {
+        return getDatabaseByIdUseCase(databaseId)?.also { database ->
+            selectedDatabaseId.update { database }
+            getDeviceDatabaseTablesUseCase(databaseId)
         }
     }
 

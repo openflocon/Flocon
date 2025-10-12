@@ -1,18 +1,12 @@
 package io.github.openflocon.data.core.database.datasource
 
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
-import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DeviceDatabasesRemoteDataSource {
 
-    fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?>
-
-    fun selectDeviceDatabase(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        databaseId: DeviceDataBaseId,
-    )
+    suspend fun getDatabaseById(databaseId: String): DeviceDataBaseDomainModel?
 
     fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>>
 

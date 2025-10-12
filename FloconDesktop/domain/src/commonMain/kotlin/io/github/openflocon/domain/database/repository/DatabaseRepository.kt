@@ -13,12 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface DatabaseRepository {
     fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>>
 
-    fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?>
-
-    fun selectDeviceDatabase(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        databaseId: DeviceDataBaseId,
-    )
+    suspend fun getDatabaseById(databaseId: String): DeviceDataBaseDomainModel?
 
     suspend fun registerDeviceDatabases(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -80,4 +75,5 @@ interface DatabaseRepository {
         databaseId: String,
         id: Long
     ): DatabaseFavoriteQueryDomainModel?
+
 }

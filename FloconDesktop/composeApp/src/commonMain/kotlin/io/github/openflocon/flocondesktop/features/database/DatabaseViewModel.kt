@@ -81,26 +81,18 @@ class DatabaseViewModel(
             initialValue = emptyList()
         )
 
-    init {
+    fun onDatabaseSelected(databaseId: DeviceDataBaseId) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            databaseSelectorDelegate.deviceDataBases.collect { databases ->
-                getCurrentDeviceIdAndPackageNameUseCase()?.let {
-                    databases.selectedDatabase()?.let {
-                        createTabForDatabase(it)
-                    }
-                }
-            }
+            databaseSelectorDelegate.onDatabaseSelected(databaseId)
         }
     }
 
-    fun onDatabaseSelected(databaseId: DeviceDataBaseId) {
-        databaseSelectorDelegate.onDatabaseSelected(databaseId)
-    }
-
     fun onDatabaseDoubleClicked(database: DeviceDataBaseUiModel) {
-        databaseSelectorDelegate.onDatabaseSelected(database.id)
-
-        createTabForDatabase(database)
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            databaseSelectorDelegate.onDatabaseSelected(database.id)?.let {
+                createTabForDatabase(database)
+            }
+        }
     }
 
     fun onTableDoubleClicked(databaseId: DeviceDataBaseId, table: TableUiModel) {
