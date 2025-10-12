@@ -16,9 +16,11 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isMetaPressed
@@ -87,13 +89,18 @@ fun DatabaseQueryView(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            val isEnabled = query.isNotBlank()
             FloconButton(
                 onClick = {
-                    onAction(DatabaseTabAction.ExecuteQuery(query))
+                    if(isEnabled)
+                        onAction(DatabaseTabAction.ExecuteQuery(query))
                 },
                 containerColor = FloconTheme.colorPalette.tertiary,
                 modifier = Modifier
                     .padding(all = 8.dp)
+                    .graphicsLayer {
+                        if(!isEnabled) alpha = 0.6f
+                    }
             ) {
                 val contentColor = FloconTheme.colorPalette.onTertiary
                 Row(
