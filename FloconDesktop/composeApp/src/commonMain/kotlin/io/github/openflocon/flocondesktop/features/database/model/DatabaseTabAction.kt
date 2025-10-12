@@ -7,4 +7,5 @@ sealed interface DatabaseTabAction {
     data object Copy : DatabaseTabAction
     data object Import : DatabaseTabAction
     data class SaveFavorite(val title: String) : DatabaseTabAction
+    data object ExportCsv : DatabaseTabAction
 }
