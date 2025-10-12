@@ -168,16 +168,20 @@ class DatabaseViewModel(
 
     private suspend fun removeTab(tab: DatabaseTabState) {
         val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
+        var tabIndex = -1
         _tabs.update {
             val list = it[deviceIdAndPackageName] ?: emptyList()
             val newList = list.toMutableList().apply {
+                tabIndex = indexOf(tab)
                 remove(tab)
             }
             it + (deviceIdAndPackageName to newList)
         }
         if (selectedTab.value == tab) {
             _selectedTab.update {
-                val newTab = _tabs.value[deviceIdAndPackageName]?.firstOrNull()
+                val newTab = _tabs.value[deviceIdAndPackageName]?.let {
+                    it.getOrNull(tabIndex) ?: it.firstOrNull()
+                }
                 if (newTab == null) {
                     it - deviceIdAndPackageName
                 } else {
