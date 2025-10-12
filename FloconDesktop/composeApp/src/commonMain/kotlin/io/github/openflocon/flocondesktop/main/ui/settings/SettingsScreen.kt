@@ -126,7 +126,7 @@ private fun SettingsScreen(
             }
         }
         FloconSection(
-            title = "Appearance",
+            title = "Font Size Multiplier : ${uiState.fontSizeMultiplier}x",
             initialValue = true
         ) {
             Column(
@@ -139,7 +139,7 @@ private fun SettingsScreen(
                 FloconSlider(
                     value = uiState.fontSizeMultiplier,
                     onValueChange = { onAction(SettingsAction.FontSizeMultiplierChange(it)) },
-                    valueRange = 0.2f..5f,
+                    valueRange = 1f..2f,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
