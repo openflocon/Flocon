@@ -2,6 +2,7 @@ package io.github.openflocon.domain.database.usecase
 
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.database.repository.DatabaseRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 
@@ -11,7 +12,7 @@ class ObserveLastSuccessQueriesUseCase(
 ) {
     operator fun invoke(
         databaseId: String,
-    ) = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { model ->
+    ): Flow<List<String>> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { model ->
         if (model == null) {
             flowOf(emptyList())
         } else {

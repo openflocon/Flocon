@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,12 +43,15 @@ fun DatabaseTabView(
 
     val state: DatabaseScreenState by viewModel.state.collectAsStateWithLifecycle()
     val autoUpdate by viewModel.isAutoUpdateEnabled.collectAsStateWithLifecycle()
+    val lastQueries by viewModel.lastQueries.collectAsStateWithLifecycle()
+
     DatabaseTabViewContent(
         query = viewModel.query.value,
         autoUpdate = autoUpdate,
         updateQuery = viewModel::updateQuery,
         onAction = viewModel::onAction,
         state = state,
+        lastQueries = lastQueries,
         favoritesTitles = favoritesTitles,
     )
 }
@@ -62,6 +64,7 @@ private fun DatabaseTabViewContent(
     updateQuery: (String) -> Unit,
     onAction: (action: DatabaseTabAction) -> Unit,
     state: DatabaseScreenState,
+    lastQueries: List<String>,
 ) {
     Column(
         Modifier.fillMaxSize(),
@@ -76,6 +79,7 @@ private fun DatabaseTabViewContent(
                 autoUpdate = autoUpdate,
                 onAction = onAction,
                 favoritesTitles = favoritesTitles,
+                lastQueries = lastQueries,
                 modifier = Modifier
                     .fillMaxWidth()
             )
