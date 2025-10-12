@@ -7,6 +7,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreen
 @Composable
 fun DatabaseContentView(
     state: DatabaseScreenState,
+    onExportCsvClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (state) {
@@ -18,6 +19,7 @@ fun DatabaseContentView(
             DatabaseResultView(
                 result = state.result,
                 modifier = modifier,
+                onExportCsvClicked = onExportCsvClicked,
             )
         }
     }

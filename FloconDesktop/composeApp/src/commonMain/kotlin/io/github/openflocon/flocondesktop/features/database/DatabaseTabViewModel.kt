@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
+import io.github.openflocon.domain.database.usecase.ExportDatabaseResultToCsvUseCase
 import io.github.openflocon.domain.database.usecase.ObserveLastSuccessQueriesUseCase
 import io.github.openflocon.domain.database.usecase.favorite.GetFavoriteQueryByIdDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.favorite.SaveQueryAsFavoriteDatabaseUseCase
@@ -29,7 +30,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.seconds
 
@@ -42,6 +42,7 @@ class DatabaseTabViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
     private val observeLastSuccessQueriesUseCase: ObserveLastSuccessQueriesUseCase,
     private val importSqlQueryProcessor: ImportSqlQueryProcessor,
+    private val exportDatabaseResultToCsv: ExportDatabaseResultToCsvUseCase,
 ) : ViewModel() {
 
     @Immutable
@@ -146,14 +147,12 @@ class DatabaseTabViewModel(
                 }
 
                 DatabaseTabAction.Import -> {
-                    withContext(dispatcherProvider.viewModel) {
-                        importSqlQueryProcessor()?.let { q ->
-                            updateQuery(q)
-                            executeQuery(
-                                query = q,
-                                editAutoUpdate = true
-                            )
-                        }
+                    importSqlQueryProcessor()?.let { q ->
+                        updateQuery(q)
+                        executeQuery(
+                            query = q,
+                            editAutoUpdate = true
+                        )
                     }
                 }
 
@@ -163,6 +162,17 @@ class DatabaseTabViewModel(
                         query = query.value,
                         databaseId = params.databaseId,
                     )
+                }
+
+                DatabaseTabAction.ExportCsv -> {
+                    (queryResult.value as? QueryResultUiModel.Values)?.let {
+                        exportDatabaseResultToCsv(
+                            columns = it.columns,
+                            values = it.rows.map { row ->
+                                row.items.map { it ?: "NULL" }
+                            }
+                        )
+                    }
                 }
             }
         }
