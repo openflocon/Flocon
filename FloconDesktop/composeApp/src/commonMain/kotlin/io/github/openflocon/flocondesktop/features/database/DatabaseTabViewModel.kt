@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
+import io.github.openflocon.domain.database.usecase.ObserveLastSuccessQueriesUseCase
 import io.github.openflocon.domain.database.usecase.favorite.GetFavoriteQueryByIdDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.favorite.SaveQueryAsFavoriteDatabaseUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
@@ -14,7 +15,6 @@ import io.github.openflocon.flocondesktop.features.database.mapper.toUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -38,6 +38,7 @@ class DatabaseTabViewModel(
     private val getFavoriteQueryUseCase: GetFavoriteQueryByIdDatabaseUseCase,
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
+    private val observeLastSuccessQueriesUseCase: ObserveLastSuccessQueriesUseCase,
 ) : ViewModel() {
 
     @Immutable
@@ -48,6 +49,15 @@ class DatabaseTabViewModel(
     )
 
     var query = mutableStateOf("")
+
+    val lastQueries = observeLastSuccessQueriesUseCase(params.databaseId)
+        .map { it.filterNot { it.isBlank() } }
+        .flowOn(dispatcherProvider.data)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            emptyList()
+        )
 
     private val autoUpdateJob = AtomicReference<Job?>(null)
 
@@ -119,12 +129,21 @@ class DatabaseTabViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
                 is DatabaseTabAction.ClearQuery -> clearQuery()
-                is DatabaseTabAction.ExecuteQuery -> executeQuery(query = query.value, editAutoUpdate = true)
+                is DatabaseTabAction.ExecuteQuery -> {
+                    query.value = action.query
+                    updateQuery(action.query)
+                    executeQuery(
+                        query = action.query,
+                        editAutoUpdate = true
+                    )
+                }
+
                 is DatabaseTabAction.UpdateAutoUpdate -> updateAutoUpdate(action.value)
                 DatabaseTabAction.Copy -> {
                     copyToClipboard(query.value)
                     feedbackDisplayer.displayMessage("copied")
                 }
+
                 DatabaseTabAction.Import -> {
                     // TODO
                 }

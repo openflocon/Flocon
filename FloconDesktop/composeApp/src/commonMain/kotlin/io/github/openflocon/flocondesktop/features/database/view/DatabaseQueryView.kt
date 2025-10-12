@@ -40,6 +40,7 @@ fun DatabaseQueryView(
     query: String,
     autoUpdate: Boolean,
     favoritesTitles: Set<String>,
+    lastQueries: List<String>,
     updateQuery: (query: String) -> Unit,
     onAction: (action: DatabaseTabAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -54,6 +55,7 @@ fun DatabaseQueryView(
         DatabaseQueryToolbarView(
             favoritesTitles = favoritesTitles,
             onAction = onAction,
+            lastQueries = lastQueries,
             modifier = Modifier.fillMaxWidth(),
             isQueryEmpty = query.isBlank(),
         )
@@ -148,7 +150,8 @@ private fun DatabaseQueryViewPreview() {
             updateQuery = {},
             autoUpdate = true,
             onAction = {},
-            favoritesTitles = emptySet()
+            favoritesTitles = emptySet(),
+            lastQueries = emptyList(),
         )
     }
 }
