@@ -11,6 +11,7 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
@@ -18,20 +19,16 @@ class DeviceDatabasesRemoteDataSourceImpl(
     private val server: Server,
 ) : DeviceDatabasesRemoteDataSource {
     private val deviceDatabases = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, List<DeviceDataBaseDomainModel>>>(emptyMap())
-    private val selectedDeviceDatabases = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DeviceDataBaseDomainModel?>>(emptyMap())
 
-    override fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?> = selectedDeviceDatabases
-        .map { it[deviceIdAndPackageName] }
-        .distinctUntilChanged()
-
-    override fun selectDeviceDatabase(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        databaseId: DeviceDataBaseId,
-    ) {
-        val deviceDatabaseList = deviceDatabases.value[deviceIdAndPackageName] ?: return
-        val database = deviceDatabaseList.firstOrNull { it.id == databaseId } ?: return
-
-        selectedDeviceDatabases.update { it + (deviceIdAndPackageName to database) }
+    override suspend fun getDatabaseById(databaseId: String): DeviceDataBaseDomainModel? {
+        deviceDatabases.value.values.forEach {
+            it.forEach { db ->
+                if(db.id == databaseId) {
+                    return db
+                }
+            }
+        }
+        return null
     }
 
     override fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>> = deviceDatabases.map { it[deviceIdAndPackageName] ?: emptyList() }
@@ -48,18 +45,6 @@ class DeviceDatabasesRemoteDataSourceImpl(
                     addAll(databases)
                 }.distinct()
             it + (deviceIdAndPackageName to newList)
-        }
-
-        if (databases.isNotEmpty()) {
-            // select the first db if no one for this device id
-            selectedDeviceDatabases.update { state ->
-                val dbForThisDevice = state[deviceIdAndPackageName]
-                if (dbForThisDevice == null) {
-                    state + (deviceIdAndPackageName to databases.first())
-                } else {
-                    state
-                }
-            }
         }
     }
 

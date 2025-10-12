@@ -43,20 +43,15 @@ class DatabaseRepositoryImpl(
     }
 
 
-    override fun observeSelectedDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceDataBaseDomainModel?> = deviceDatabasesDataSource
-        .observeSelectedDeviceDatabase(deviceIdAndPackageName)
-        .flowOn(dispatcherProvider.data)
-
-    override fun selectDeviceDatabase(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId) {
-        deviceDatabasesDataSource.selectDeviceDatabase(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-            databaseId = databaseId,
-        )
-    }
-
     override fun observeDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceDataBaseDomainModel>> = deviceDatabasesDataSource
         .observeDeviceDatabases(deviceIdAndPackageName)
         .flowOn(dispatcherProvider.data)
+
+    override suspend fun getDatabaseById(databaseId: String): DeviceDataBaseDomainModel? {
+        return withContext(dispatcherProvider.data) {
+            deviceDatabasesDataSource.getDatabaseById(databaseId)
+        }
+    }
 
     override suspend fun registerDeviceDatabases(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

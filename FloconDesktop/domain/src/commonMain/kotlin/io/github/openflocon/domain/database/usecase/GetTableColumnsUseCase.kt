@@ -16,11 +16,11 @@ class GetTableColumnsUseCase(
     suspend operator fun invoke(
         tableName: String,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        database: DeviceDataBaseDomainModel
+        databaseId: String
     ): Either<Throwable, Unit> {
         return databaseRepository.executeQuery(
             deviceIdAndPackageName = deviceIdAndPackageName,
-            databaseId = database.id,
+            databaseId = databaseId,
             query = "PRAGMA table_info($tableName)",
         ).mapSuccess {
             val columns = extractTableColumns(it)
@@ -31,7 +31,7 @@ class GetTableColumnsUseCase(
         }.alsoSuccess {
             databaseRepository.saveTable(
                 deviceIdAndPackageName = deviceIdAndPackageName,
-                databaseId = database.id,
+                databaseId = databaseId,
                 table = it,
             )
         }.mapSuccess {  }

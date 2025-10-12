@@ -9,18 +9,13 @@ import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNa
 class ExecuteDatabaseQueryUseCase(
     private val databaseRepository: DatabaseRepository,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
-    private val getCurrentDeviceSelectedDatabaseUseCase: GetCurrentDeviceSelectedDatabaseUseCase,
 ) {
     suspend operator fun invoke(
         query: String,
-        databaseId: String?
+        databaseId: String,
     ): Either<Throwable, DatabaseExecuteSqlResponseDomainModel> {
         val current = getCurrentDeviceIdAndPackageNameUseCase()
             ?: return Failure(Throwable("no current device"))
-        val databaseId =
-            databaseId ?: getCurrentDeviceSelectedDatabaseUseCase()?.id ?: return Failure(
-                Throwable("no selected database")
-            )
 
         return databaseRepository.executeQuery(
             deviceIdAndPackageName = current,

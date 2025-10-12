@@ -12,25 +12,24 @@ import kotlinx.coroutines.supervisorScope
 class GetDeviceDatabaseTablesUseCase(
     private val databaseRepository: DatabaseRepository,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
-    private val getCurrentDeviceSelectedDatabaseUseCase: GetCurrentDeviceSelectedDatabaseUseCase,
     private val getTableColumnsUseCase: GetTableColumnsUseCase,
 ) {
-    suspend operator fun invoke(): Either<Throwable, Unit> {
+    suspend operator fun invoke(
+        databaseId: String,
+    ): Either<Throwable, Unit> {
         val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase()
             ?: return Failure(Throwable("no current device"))
-        val database = getCurrentDeviceSelectedDatabaseUseCase()
-            ?: return Failure(Throwable("no selected database"))
 
         return databaseRepository.executeQuery(
             deviceIdAndPackageName = deviceIdAndPackageName,
-            databaseId = database.id,
+            databaseId = databaseId,
             query = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != 'android_metadata' AND name != 'room_master_table' ORDER BY name",
         ).mapSuccess {
             extractTables(it)
         }.alsoSuccess {
             databaseRepository.removeTablesNotPresentAnymore(
                 deviceIdAndPackageName = deviceIdAndPackageName,
-                databaseId = database.id,
+                databaseId = databaseId,
                 tablesNames = it,
             )
         }.alsoSuccess { tables ->
@@ -39,7 +38,7 @@ class GetDeviceDatabaseTablesUseCase(
                     async { getTableColumnsUseCase(
                         tableName = it,
                         deviceIdAndPackageName = deviceIdAndPackageName,
-                        database = database,
+                        databaseId = databaseId,
                     ) }
                 }.awaitAll()
             }
