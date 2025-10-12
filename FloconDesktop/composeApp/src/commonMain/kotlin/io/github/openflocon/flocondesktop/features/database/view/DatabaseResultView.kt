@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -21,7 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
@@ -92,16 +95,25 @@ fun DatabaseResultView(
                         Row(
                             modifier = Modifier
                                 .height(32.dp)
-                                .padding(horizontal = 8.dp),
+                                .padding(horizontal = 8.dp)
+                                .clickable {
+                                    // open right detail for this row
+                                },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             row.items.forEachIndexed { index, item ->
                                 Text(
-                                    item ?: "null",
+                                    text = item ?: "NULL",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
                                     style = FloconTheme.typography.bodySmall,
                                     color = FloconTheme.colorPalette.onPrimary,
                                     modifier = Modifier
                                         .width(columnsWidth)
+                                        .graphicsLayer {
+                                            if(item == null)
+                                                alpha = 0.5f
+                                        }
                                         .padding(horizontal = 4.dp),
                                 )
                             }
