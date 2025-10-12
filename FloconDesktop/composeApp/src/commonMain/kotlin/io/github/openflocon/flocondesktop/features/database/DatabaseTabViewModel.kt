@@ -15,6 +15,7 @@ import io.github.openflocon.flocondesktop.features.database.mapper.toUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
+import io.github.openflocon.flocondesktop.features.database.processor.ImportSqlQueryProcessor
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.seconds
 
@@ -39,6 +41,7 @@ class DatabaseTabViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val observeLastSuccessQueriesUseCase: ObserveLastSuccessQueriesUseCase,
+    private val importSqlQueryProcessor: ImportSqlQueryProcessor,
 ) : ViewModel() {
 
     @Immutable
@@ -106,7 +109,6 @@ class DatabaseTabViewModel(
                     databaseId = params.databaseId,
                 )?.let {
                     val q = it.query
-                    query.value = q
                     updateQuery(q)
                     executeQuery(query = q, editAutoUpdate = true)
                 }
@@ -130,7 +132,6 @@ class DatabaseTabViewModel(
             when (action) {
                 is DatabaseTabAction.ClearQuery -> clearQuery()
                 is DatabaseTabAction.ExecuteQuery -> {
-                    query.value = action.query
                     updateQuery(action.query)
                     executeQuery(
                         query = action.query,
@@ -145,7 +146,15 @@ class DatabaseTabViewModel(
                 }
 
                 DatabaseTabAction.Import -> {
-                    // TODO
+                    withContext(dispatcherProvider.viewModel) {
+                        importSqlQueryProcessor()?.let { q ->
+                            updateQuery(q)
+                            executeQuery(
+                                query = q,
+                                editAutoUpdate = true
+                            )
+                        }
+                    }
                 }
 
                 is DatabaseTabAction.SaveFavorite -> {

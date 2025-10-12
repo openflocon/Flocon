@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material.icons.outlined.FileOpen
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -131,7 +132,6 @@ internal fun DatabaseQueryToolbarView(
             }
         }
 
-        /* for another MR
         VerticalDivider(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp))
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp)).clickable {
@@ -147,7 +147,6 @@ internal fun DatabaseQueryToolbarView(
             )
         }
 
-         */
         Spacer(modifier = Modifier.weight(1f))
 
         Box(
