@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,12 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.database.DatabaseTabViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -71,7 +74,13 @@ private fun DatabaseTabViewContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         FloconPageTopBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .clip(FloconTheme.shapes.medium)
+                .border(
+                    width = 1.dp,
+                    color = FloconTheme.colorPalette.secondary,
+                    shape = FloconTheme.shapes.medium
+                ),
         ) { contentPadding ->
             DatabaseQueryView(
                 query = query,
