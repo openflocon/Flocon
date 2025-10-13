@@ -38,6 +38,7 @@ internal fun TableItemView(
     onTableDoubleClicked: (TableUiModel) -> Unit,
     onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
     onDeleteContentClicked: (TableUiModel) -> Unit,
+    onInsertContentClicked: (TableUiModel) -> Unit,
 ) {
     var isOpened by remember(item.name) { mutableStateOf(false) }
     Column(modifier = modifier) {
@@ -46,6 +47,9 @@ internal fun TableItemView(
             modifier = Modifier.fillMaxWidth(),
             items = remember(item) {
                 buildMenu {
+                    item("Insert new values") {
+                        onInsertContentClicked(item)
+                    }
                     item("Delete all data from ${item.name}") {
                         onDeleteContentClicked(item)
                     }

@@ -87,6 +87,9 @@ fun DatabasesAndTablesView(
                                 },
                                 onDeleteContentClicked = { id, table ->
                                     onAction(DatabaseScreenAction.OnDeleteContentClicked(id, table))
+                                },
+                                onInsertContentClicked = { id, table ->
+                                    onAction(DatabaseScreenAction.OnInsertContentClicked(id, table))
                                 }
                             )
                         }
