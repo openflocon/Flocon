@@ -20,6 +20,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabVie
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
+import io.github.openflocon.flocondesktop.features.database.model.generateInsertQuery
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -130,6 +131,11 @@ class DatabaseViewModel(
                     query = "DELETE FROM ${action.table.name}"
                 )
 
+                is DatabaseScreenAction.OnInsertContentClicked -> createTabForQuery(
+                    databaseId = action.databaseId,
+                    table = action.table,
+                    query = generateInsertQuery(action.table)
+                )
             }
         }
     }

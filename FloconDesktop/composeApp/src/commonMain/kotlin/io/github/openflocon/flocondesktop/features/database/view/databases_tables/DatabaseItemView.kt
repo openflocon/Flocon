@@ -35,6 +35,7 @@ internal fun DatabaseItemView(
     onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
     onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
     onDeleteContentClicked: (databaseId: DeviceDataBaseId, TableUiModel) -> Unit,
+    onInsertContentClicked: (databaseId: DeviceDataBaseId, TableUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -56,6 +57,9 @@ internal fun DatabaseItemView(
                         onTableColumnClicked = onTableColumnClicked,
                         onDeleteContentClicked = {
                             onDeleteContentClicked(state.id, it)
+                        },
+                        onInsertContentClicked = {
+                            onInsertContentClicked(state.id, it)
                         },
                     )
                 }
