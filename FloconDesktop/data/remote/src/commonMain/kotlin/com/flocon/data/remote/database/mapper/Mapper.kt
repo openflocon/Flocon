@@ -10,6 +10,10 @@ import kotlinx.serialization.json.Json
 @Serializable
 data class ReceivedQueryWrapper(
     val type: String,
+)
+
+@Serializable
+data class ReceivedQueryBodyWrapper(
     val body: String,
 )
 
@@ -17,11 +21,22 @@ internal fun Json.decodeReceivedQuery(body: String): ResponseAndRequestIdDataMod
     val result = decodeFromString<QueryResultReceivedDataModel>(body)
     val queryWrapper = decodeFromString<ReceivedQueryWrapper>(result.result)
     when (queryWrapper.type) {
-        "Error" -> decodeFromString<DatabaseExecuteSqlResponseDataModel.Error>(queryWrapper.body)
-        "Insert" -> decodeFromString<DatabaseExecuteSqlResponseDataModel.Insert>(queryWrapper.body)
-        "RawSuccess" -> decodeFromString<DatabaseExecuteSqlResponseDataModel.RawSuccess>(queryWrapper.body)
-        "Select" -> decodeFromString<DatabaseExecuteSqlResponseDataModel.Select>(queryWrapper.body)
-        "UpdateDelete" -> decodeFromString<DatabaseExecuteSqlResponseDataModel.UpdateDelete>(queryWrapper.body)
+        "Error" -> {
+            val bodyWrapper = decodeFromString<ReceivedQueryBodyWrapper>(result.result)
+            decodeFromString<DatabaseExecuteSqlResponseDataModel.Error>(bodyWrapper.body)
+        }
+        "Insert" -> {
+            val bodyWrapper = decodeFromString<ReceivedQueryBodyWrapper>(result.result)
+            decodeFromString<DatabaseExecuteSqlResponseDataModel.Insert>(bodyWrapper.body)
+        }
+        "RawSuccess" -> DatabaseExecuteSqlResponseDataModel.RawSuccess
+        "Select" -> {
+            val bodyWrapper = decodeFromString<ReceivedQueryBodyWrapper>(result.result)
+            decodeFromString<DatabaseExecuteSqlResponseDataModel.Select>(bodyWrapper.body)
+        }
+        "UpdateDelete" -> {
+            decodeFromString<DatabaseExecuteSqlResponseDataModel.UpdateDelete>(result.result)
+        }
 
         else -> null
     }?.let {

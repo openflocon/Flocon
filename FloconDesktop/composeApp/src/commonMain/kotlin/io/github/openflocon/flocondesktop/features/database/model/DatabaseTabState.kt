@@ -9,6 +9,7 @@ data class DatabaseTabState(
     val generatedName: String,
     val index: Int,
     val favoriteId: Long?,
+    val query: String?,
     val id: String,
 ) {
     val displayName: String = generatedName + if(index > 0) " (${index})" else ""

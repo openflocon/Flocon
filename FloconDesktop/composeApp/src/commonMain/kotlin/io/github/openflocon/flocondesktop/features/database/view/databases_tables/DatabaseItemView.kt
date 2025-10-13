@@ -31,9 +31,44 @@ import io.github.openflocon.library.designsystem.FloconTheme
 internal fun DatabaseItemView(
     state: DeviceDataBaseUiModel,
     onSelect: (id: DeviceDataBaseId) -> Unit,
-    onTableDoubleClicked: (TableUiModel) -> Unit,
+    onTableDoubleClicked: (databaseId: DeviceDataBaseId, TableUiModel) -> Unit,
     onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
     onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
+    onDeleteContentClicked: (databaseId: DeviceDataBaseId, TableUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        DatabaseView(
+            modifier = Modifier.fillMaxWidth(),
+            onSelect = onSelect,
+            state = state,
+            onDatabaseDoubleClicked = onDatabaseDoubleClicked,
+        )
+        state.tables?.let { tables ->
+            Column(modifier = Modifier.fillMaxWidth()) {
+                tables.fastForEach {
+                    TableItemView(
+                        item = it,
+                        modifier = Modifier.fillMaxWidth(),
+                        onTableDoubleClicked = {
+                            onTableDoubleClicked(state.id, it)
+                        },
+                        onTableColumnClicked = onTableColumnClicked,
+                        onDeleteContentClicked = {
+                            onDeleteContentClicked(state.id, it)
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DatabaseView(
+    onSelect: (DeviceDataBaseId) -> Unit,
+    state: DeviceDataBaseUiModel,
+    onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val (background, textColor) = if (state.isSelected) {
@@ -41,45 +76,32 @@ internal fun DatabaseItemView(
     } else {
         Color.Transparent to FloconTheme.colorPalette.onSurface
     }
-    Column(modifier = modifier) {
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp))
-                .background(background)
-                .combinedClickable(onClick = {
-                    onSelect(state.id)
-                }, onDoubleClick = {
-                    onDatabaseDoubleClicked(state)
-                }
-                ).padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(
-                modifier = Modifier.width(14.dp),
-                imageVector = Icons.Outlined.Dataset,
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(textColor),
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                state.name,
-                color = textColor,
-                style = FloconTheme.typography.bodyMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-        state.tables?.let { tables ->
-            Column(modifier = Modifier.fillMaxWidth()) {
-                tables.fastForEach {
-                    TableItemView(
-                        item = it,
-                        modifier = Modifier.fillMaxWidth(),
-                        onTableDoubleClicked = onTableDoubleClicked,
-                        onTableColumnClicked = onTableColumnClicked,
-                    )
-                }
+
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(background)
+            .combinedClickable(onClick = {
+                onSelect(state.id)
+            }, onDoubleClick = {
+                onDatabaseDoubleClicked(state)
             }
-        }
+            ).padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            modifier = Modifier.width(14.dp),
+            imageVector = Icons.Outlined.Dataset,
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(textColor),
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            state.name,
+            color = textColor,
+            style = FloconTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }

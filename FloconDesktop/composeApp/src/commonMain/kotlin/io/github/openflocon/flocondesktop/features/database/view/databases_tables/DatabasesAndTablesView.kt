@@ -19,22 +19,19 @@ import androidx.compose.ui.unit.dp
 import com.composeunstyled.Text
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
+import io.github.openflocon.flocondesktop.features.database.model.selectedDatabase
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 fun DatabasesAndTablesView(
     modifier: Modifier,
     state: DatabasesStateUiModel,
-    onTableDoubleClicked: (TableUiModel) -> Unit,
-    onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
-    onDatabaseSelected: (id: DeviceDataBaseId) -> Unit,
-    onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
-    onFavoriteClicked: (DatabaseFavoriteQueryUiModel) -> Unit,
-    deleteFavorite: (DatabaseFavoriteQueryUiModel) -> Unit,
     favorites: List<DatabaseFavoriteQueryUiModel>,
+    onAction: (DatabaseScreenAction) -> Unit,
 ) {
     val borderColor = FloconTheme.colorPalette.secondary
 
@@ -75,11 +72,22 @@ fun DatabasesAndTablesView(
                         state.databases.forEach {
                             DatabaseItemView(
                                 state = it,
-                                onSelect = onDatabaseSelected,
+                                onSelect = {
+                                    onAction(DatabaseScreenAction.OnDatabaseSelected(it))
+                                },
                                 modifier = Modifier.fillMaxWidth(),
-                                onTableDoubleClicked = onTableDoubleClicked,
-                                onDatabaseDoubleClicked = onDatabaseDoubleClicked,
-                                onTableColumnClicked = onTableColumnClicked,
+                                onTableDoubleClicked = { id, table ->
+                                    onAction(DatabaseScreenAction.OnTableDoubleClicked(id, table))
+                                },
+                                onDatabaseDoubleClicked = {
+                                    onAction(DatabaseScreenAction.OnDatabaseDoubleClicked(it))
+                                },
+                                onTableColumnClicked = {
+                                    onAction(DatabaseScreenAction.OnTableColumnClicked(it))
+                                },
+                                onDeleteContentClicked = { id, table ->
+                                    onAction(DatabaseScreenAction.OnDeleteContentClicked(id, table))
+                                }
                             )
                         }
                     }
@@ -109,8 +117,12 @@ fun DatabasesAndTablesView(
                         FavoriteQueryItemView(
                             state = it,
                             modifier = Modifier.fillMaxWidth(),
-                            onClick = onFavoriteClicked,
-                            onDelete = deleteFavorite,
+                            onClick = {
+                                onAction(DatabaseScreenAction.OnFavoriteClicked(it))
+                            },
+                            onDelete = {
+                                onAction(DatabaseScreenAction.DeleteFavorite(it))
+                            },
                         )
                     }
                 }

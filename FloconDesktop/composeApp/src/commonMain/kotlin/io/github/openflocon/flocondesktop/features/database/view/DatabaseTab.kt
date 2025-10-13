@@ -33,6 +33,7 @@ fun DatabaseTabView(
                 databaseId = tab.databaseId,
                 tableName = tab.tableName,
                 favoriteId = tab.favoriteId,
+                query = tab.query,
             )
         ) }
     )
