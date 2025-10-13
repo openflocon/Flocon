@@ -20,6 +20,23 @@ data class TableUiModel(
     )
 }
 
+fun generateInsertQuery(table: TableUiModel): String {
+    val columnNames = table.columns.joinToString(", ") { it.name }
+    return buildString {
+        appendLine("INSERT INTO ${ table.name }(")
+        appendLine("\t" + columnNames)
+        appendLine(") VALUES (")
+        table.columns.forEachIndexed { index, it ->
+            append("\t     /*${it.name}*/")
+            if(index != table.columns.lastIndex) {
+                append(",")
+            }
+            append("\n")
+        }
+        appendLine(")")
+    }
+}
+
 fun previewDeviceDataBaseUiModel(id: String = "id") = DeviceDataBaseUiModel(
     id = id,
     name = "database.db",

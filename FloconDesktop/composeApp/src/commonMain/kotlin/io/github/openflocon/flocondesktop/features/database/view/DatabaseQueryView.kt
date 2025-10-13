@@ -50,6 +50,7 @@ interface SqlColorPalette {
     val numberColor: Color
     val functionColor: Color
     val textColor: Color
+    val comments: Color
 }
 
 object DefaultSqlPalette : SqlColorPalette {
@@ -58,6 +59,7 @@ object DefaultSqlPalette : SqlColorPalette {
     override val numberColor = Color(0xFF03A9F4)
     override val functionColor = Color(0xFF82AAFF)
     override val textColor = Color(0xFFD0D0D0)
+    override val comments = Color(0xFF888888)
 }
 
 
@@ -75,28 +77,47 @@ class ColorsTransformation() : VisualTransformation {
                 "GROUP", "BY", "ORDER", "LIMIT", "HAVING"
             )
 
-            val tokens = text.split(Regex("(?<=\\s)|(?=\\s)"))
+            // Regex to split the SQL text into tokens:
+            // - block comments /* ... */
+            // - string literals '...'
+            // - numbers
+            // - words and whitespace
+            // - any other characters
+            val regex = Regex(
+                """(/\*[\s\S]*?\*/|'[^']*'|\b\d+\b|\b\w+\b|\s+|.)""",
+                RegexOption.MULTILINE
+            )
 
-            for (token in tokens) {
+            val matches = regex.findAll(text.text)
+            for (match in matches) {
+                val token = match.value
                 val upper = token.uppercase()
+
                 when {
-                    sqlKeywords.contains(upper.trim()) -> withStyle(
-                        SpanStyle(color = colorPalette.keywordColor, fontWeight = FontWeight.Bold)
+                    // Block comment: /* ... */
+                    token.startsWith("/*") && token.endsWith("*/") -> withStyle(
+                        SpanStyle(color = colorPalette.comments)
                     ) { append(token) }
 
+                    // String literal: '...'
                     token.startsWith("'") && token.endsWith("'") -> withStyle(
                         SpanStyle(color = colorPalette.stringColor)
                     ) { append(token) }
 
+                    // Numeric literal
                     token.matches(Regex("\\d+")) -> withStyle(
                         SpanStyle(color = colorPalette.numberColor)
                     ) { append(token) }
 
-                    else -> {
-                        withStyle(
-                            SpanStyle(color = colorPalette.textColor)
-                        ) { append(token) }
-                    }
+                    // SQL keyword
+                    sqlKeywords.contains(upper.trim()) -> withStyle(
+                        SpanStyle(color = colorPalette.keywordColor, fontWeight = FontWeight.Bold)
+                    ) { append(token) }
+
+                    // Default text color
+                    else -> withStyle(
+                        SpanStyle(color = colorPalette.textColor)
+                    ) { append(token) }
                 }
             }
         }
