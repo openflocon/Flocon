@@ -57,7 +57,8 @@ fun FloconTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     textStyle: TextStyle = FloconTheme.typography.bodySmall,
-    containerColor: Color = FloconTheme.colorPalette.primary
+    containerColor: Color = FloconTheme.colorPalette.primary,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     val contentColor = FloconTheme.colorPalette.contentColorFor(containerColor)
     val colors = TextFieldDefaults.colors(
@@ -111,7 +112,8 @@ fun FloconTextField(
                 shape = shape
             )
         },
-        modifier = modifier
+        modifier = modifier,
+        visualTransformation = visualTransformation,
     )
 }
 
