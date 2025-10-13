@@ -82,11 +82,8 @@ fun DatabaseScreen(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                     tabs = tabs,
                     selected = selectedTab,
-                    onTabSelected = {
-                        onAction(DatabaseScreenAction.OnTabSelected(it))
-                    },
-                    onCloseClicked = {
-                        onAction(DatabaseScreenAction.OnTabCloseClicked(it))
+                    onAction = {
+                        onAction(DatabaseScreenAction.OnTabAction(it))
                     },
                 )
                 selectedTab?.let {

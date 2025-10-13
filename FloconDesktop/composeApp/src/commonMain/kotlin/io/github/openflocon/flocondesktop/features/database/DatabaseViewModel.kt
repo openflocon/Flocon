@@ -16,12 +16,14 @@ import io.github.openflocon.flocondesktop.features.database.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabViewAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.flocondesktop.features.database.model.generateInsertQuery
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -48,7 +50,7 @@ class DatabaseViewModel(
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
-            started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList(),
         )
 
@@ -62,7 +64,7 @@ class DatabaseViewModel(
     }.flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
-            started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5000),
             initialValue = null,
         )
 
@@ -76,7 +78,7 @@ class DatabaseViewModel(
     }.flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
-            started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
 
@@ -100,10 +102,19 @@ class DatabaseViewModel(
                     favorite = action.favoriteQuery,
                 )
 
-                is DatabaseScreenAction.OnTabCloseClicked -> removeTab(tab = action.tab)
-                is DatabaseScreenAction.OnTabSelected -> onTabSelected(
-                    tab = action.tab
-                )
+                is DatabaseScreenAction.OnTabAction -> when(val a = action.action) {
+                    is DatabaseTabViewAction.OnTabSelected -> onTabSelected(
+                        tab = a.tab
+                    )
+                    is DatabaseTabViewAction.OnCloseClicked -> removeTab(
+                        tab = a.tab
+                    )
+                    is DatabaseTabViewAction.OnCloseAllClicked -> removeAllTab()
+                    is DatabaseTabViewAction.OnCloseOnLeftClicked -> removeTabOnLeft(a.tab)
+                    is DatabaseTabViewAction.OnCloseOnRightClicked -> removeTabOnRight(a.tab)
+                    is DatabaseTabViewAction.OnCloseOtherClicked -> removeTabsExcept(a.tab)
+                }
+
 
                 is DatabaseScreenAction.OnTableColumnClicked -> onTableColumnClicked(
                     column = action.column
@@ -198,6 +209,24 @@ class DatabaseViewModel(
         )
     }
 
+    private fun removeAllTab() {
+        _tabs.update { emptyMap() }
+        _selectedTab.update { emptyMap() }
+    }
+
+    private suspend fun removeTabsExcept(tab: DatabaseTabState) {
+        val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
+
+        _tabs.update {
+            it.mapValues { (_, list) ->
+                list.filter { it.id == tab.id }
+            }
+        }
+        _selectedTab.update {
+            it + (deviceIdAndPackageName to tab)
+        }
+    }
+
     private suspend fun removeTab(tab: DatabaseTabState) {
         val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
         var tabIndex = -1
@@ -220,6 +249,25 @@ class DatabaseViewModel(
                     it + (deviceIdAndPackageName to newTab)
                 }
             }
+        }
+    }
+
+    private suspend fun removeTabOnLeft(tab: DatabaseTabState) {
+        val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
+        _tabs.update {
+            val list = it[deviceIdAndPackageName] ?: emptyList()
+            val newList = list.dropWhile { it != tab }
+            it + (deviceIdAndPackageName to newList)
+        }
+
+    }
+
+    private suspend fun removeTabOnRight(tab: DatabaseTabState) {
+        val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
+        _tabs.update {
+            val list = it[deviceIdAndPackageName] ?: emptyList()
+            val newList = list.takeWhile { it != tab } + tab
+            it + (deviceIdAndPackageName to newList)
         }
     }
 
