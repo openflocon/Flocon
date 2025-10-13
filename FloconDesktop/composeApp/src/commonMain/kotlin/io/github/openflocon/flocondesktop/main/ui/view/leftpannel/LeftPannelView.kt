@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
+import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPannelSection
@@ -44,6 +45,7 @@ fun LeftPanelView(
             .padding(horizontal = 12.dp),
     ) {
         MenuSection(
+            current = state.current,
             items = state.sections,
             expanded = expanded,
             onClickItem = onClickItem,
@@ -51,6 +53,7 @@ fun LeftPanelView(
         Spacer(modifier = Modifier.height(12.dp))
         Spacer(Modifier.weight(1f))
         MenuItems(
+            current = state.current,
             items = state.bottomItems,
             expanded = expanded,
             onClickItem = onClickItem,
@@ -60,6 +63,7 @@ fun LeftPanelView(
 
 @Composable
 private fun ColumnScope.MenuSection(
+    current: SubScreen,
     items: List<LeftPannelSection>,
     expanded: Boolean,
     onClickItem: (LeftPanelItem) -> Unit,
@@ -70,6 +74,7 @@ private fun ColumnScope.MenuSection(
             text = section.title,
         )
         MenuItems(
+            current = current,
             items = section.items,
             expanded = expanded,
             onClickItem = onClickItem,
@@ -79,6 +84,7 @@ private fun ColumnScope.MenuSection(
 
 @Composable
 private fun ColumnScope.MenuItems(
+    current: SubScreen,
     items: List<LeftPanelItem>,
     expanded: Boolean,
     onClickItem: (LeftPanelItem) -> Unit,
@@ -101,15 +107,16 @@ private fun ColumnScope.MenuItems(
 @Composable
 @Preview
 private fun LeftPanelViewPreview() {
-    val selectedItem = remember { mutableStateOf<String?>(null) }
+    val selectedItem = remember { mutableStateOf(SubScreen.Network) }
+
     FloconTheme {
         Box(modifier = Modifier.background(Color.White))
         LeftPanelView(
             state = previewLeftPannelState(
-                selectedId = selectedItem.value,
+                current = selectedItem.value,
             ),
             onClickItem = {
-                selectedItem.value = it.id
+                selectedItem.value = it.screen
             },
             modifier = Modifier.wrapContentHeight(),
             expanded = false,

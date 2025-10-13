@@ -57,54 +57,54 @@ fun FloconPanel(
         }
     }
 
-    val floconPanelController = LocalFloconPanelController.current
+//    val floconPanelController = LocalFloconPanelController.current
 
-    if (innerExpanded) {
-        DisposableEffect(Unit) {
-            floconPanelController.display {
-                if (onClose != null) {
-                    EscapeHandler {
-                        onClose()
-                        true
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                ) {
-                    if (onClose != null) {
-                        Box(
-                            modifier = Modifier.padding(8.dp)
-                        ) {
-                            FloconIconTonalButton(
-                                onClick = onClose,
-                                modifier = Modifier
-                                    .graphicsLayer {
-                                        this.alpha = 1f - translationX.value.div(PanelWidth)
-                                    }
-                            ) {
-                                FloconIcon(
-                                    Icons.Outlined.Close
-                                )
-                            }
-                        }
-                    }
-                    Box(
-                        modifier = Modifier
-                            .width(PanelWidth)
-                            .fillMaxHeight()
-                            .graphicsLayer {
-                                this.translationX = translationX.value.toPx()
-                            }
-                            .border(width = 1.dp, color = FloconTheme.colorPalette.surface),
-                        content = content
-                    )
-                }
-            }
-            onDispose { floconPanelController.hide() }
-        }
-    }
+//    if (innerExpanded) {
+//        DisposableEffect(Unit) {
+//            floconPanelController.display {
+//                if (onClose != null) {
+//                    EscapeHandler {
+//                        onClose()
+//                        true
+//                    }
+//                }
+//
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxHeight()
+//                ) {
+//                    if (onClose != null) {
+//                        Box(
+//                            modifier = Modifier.padding(8.dp)
+//                        ) {
+//                            FloconIconTonalButton(
+//                                onClick = onClose,
+//                                modifier = Modifier
+//                                    .graphicsLayer {
+//                                        this.alpha = 1f - translationX.value.div(PanelWidth)
+//                                    }
+//                            ) {
+//                                FloconIcon(
+//                                    Icons.Outlined.Close
+//                                )
+//                            }
+//                        }
+//                    }
+//                    Box(
+//                        modifier = Modifier
+//                            .width(PanelWidth)
+//                            .fillMaxHeight()
+//                            .graphicsLayer {
+//                                this.translationX = translationX.value.toPx()
+//                            }
+//                            .border(width = 1.dp, color = FloconTheme.colorPalette.surface),
+//                        content = content
+//                    )
+//                }
+//            }
+//            onDispose { floconPanelController.hide() }
+//        }
+//    }
 }
 
 @Composable

@@ -18,7 +18,6 @@ import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
-import io.github.openflocon.flocondesktop.main.ui.model.id
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPannelSection
@@ -38,8 +37,8 @@ class MainViewModel(
     private val devicesDelegate: DevicesDelegate,
     private val dispatcherProvider: DispatcherProvider,
     private val initialSetupStateHolder: InitialSetupStateHolder,
-    private val takeScreenshotUseCase : TakeScreenshotUseCase,
-    private val restartAppUseCase : RestartAppUseCase,
+    private val takeScreenshotUseCase: TakeScreenshotUseCase,
+    private val restartAppUseCase: RestartAppUseCase,
     private val recordVideoDelegate: RecordVideoDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val observeCurrentDeviceCapabilitiesUseCase: ObserveCurrentDeviceCapabilitiesUseCase,
@@ -66,17 +65,13 @@ class MainViewModel(
         observeCurrentDeviceCapabilitiesUseCase(),
     ).map { (subScreen, capabilities) ->
         buildLeftPanelState(
-            selectedId = subScreen.id,
-            currentDeviceCapabilities = capabilities,
+            current = subScreen,
         )
     }.flowOn(dispatcherProvider.ui)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = buildLeftPanelState(
-                selectedId = subScreen.value.id,
-                currentDeviceCapabilities = null
-            ),
+            initialValue = buildLeftPanelState(subScreen.value),
         )
 
     val devicesState: StateFlow<DevicesStateUiModel> = devicesDelegate.devicesState
@@ -107,7 +102,7 @@ class MainViewModel(
     }
 
     fun onClickLeftPanelItem(leftPanelItem: LeftPanelItem) {
-        this.subScreen.update { SubScreen.fromId(leftPanelItem.id) }
+        this.subScreen.update { leftPanelItem.screen }
     }
 
     fun onRecordClicked() {
@@ -136,58 +131,50 @@ class MainViewModel(
     }
 }
 
-internal fun buildLeftPanelState(selectedId: String?, currentDeviceCapabilities: DeviceCapabilitiesDomainModel?) = LeftPanelState(
+internal fun buildLeftPanelState(current: SubScreen) = LeftPanelState(
+    current = current,
     bottomItems = listOf(
-        item(
-            subScreen = SubScreen.Settings,
-            selectedId = selectedId,
-            isEnabled = true,
-        ),
+        item(subScreen = SubScreen.Settings)
     ),
     sections = listOf(
         LeftPannelSection(
             title = "Network",
             items = listOf(
-                item(subScreen = SubScreen.Network, selectedId = selectedId, isEnabled = true,),
-                item(subScreen = SubScreen.Images, selectedId = selectedId, isEnabled = true,),
+                item(subScreen = SubScreen.Network),
+                item(subScreen = SubScreen.Images),
             ),
         ),
         LeftPannelSection(
             title = "Storage",
             items = listOf(
-                item(SubScreen.Database, selectedId = selectedId, isEnabled = true),
-                item(SubScreen.SharedPreferences, selectedId = selectedId, isEnabled = currentDeviceCapabilities?.sharedPreferences ?: true),
-                item(SubScreen.Files, selectedId = selectedId, isEnabled = currentDeviceCapabilities?.files ?: true),
+                item(SubScreen.Database),
+                item(SubScreen.SharedPreferences),
+                item(SubScreen.Files),
             ),
         ),
         LeftPannelSection(
             title = "Data",
             items = listOf(
-                item(SubScreen.Dashboard, selectedId = selectedId, isEnabled = true),
-                item(SubScreen.Analytics, selectedId = selectedId, isEnabled = true),
-                item(SubScreen.Tables, selectedId = selectedId, isEnabled = true),
+                item(SubScreen.Dashboard),
+                item(SubScreen.Analytics),
+                item(SubScreen.Tables),
             ),
         ),
         LeftPannelSection(
             title = "Actions",
             items = listOf(
-                item(SubScreen.Deeplinks, selectedId = selectedId, isEnabled = currentDeviceCapabilities?.deeplinks ?: true),
+                item(SubScreen.Deeplinks)
             ),
         ),
     ),
 )
 
 private fun item(
-    subScreen: SubScreen,
-    selectedId: String?,
-    isEnabled: Boolean,
+    subScreen: SubScreen
 ): LeftPanelItem {
-    val id = subScreen.id
     return LeftPanelItem(
-        id = id,
+        screen = subScreen,
         icon = subScreen.icon(),
-        text = subScreen.displayName(),
-        isSelected = selectedId == id,
-        isEnabled = isEnabled,
+        text = subScreen.displayName()
     )
 }

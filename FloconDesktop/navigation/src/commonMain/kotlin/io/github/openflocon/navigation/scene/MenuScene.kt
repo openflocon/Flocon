@@ -8,12 +8,6 @@ import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import io.github.openflocon.navigation.FloconRoute
 
-enum class Menu {
-    HOME,
-    SETTINGS,
-    ABOUT,
-}
-
 class MenuScene(
     override val key: String,
     override val previousEntries: List<NavEntry<FloconRoute>>,
@@ -49,7 +43,7 @@ class MenuSceneStrategy(
     ): Scene<FloconRoute>? {
         val lastEntry = entries.last()
 
-        return if (lastEntry.metadata.containsKey(MenuScene.MENU_KEY)) {
+        return if (lastEntry.metadata.containsKey(MenuScene.MENU_KEY) && lastEntry.metadata[MenuScene.MENU_KEY] == true) {
             MenuScene(
                 key = MenuScene.MENU_KEY,
                 previousEntries = entries.dropLast(1),
