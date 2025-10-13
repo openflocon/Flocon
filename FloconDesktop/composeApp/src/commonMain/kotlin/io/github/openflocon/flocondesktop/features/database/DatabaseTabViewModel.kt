@@ -50,6 +50,7 @@ class DatabaseTabViewModel(
         val databaseId: String,
         val tableName: String?,
         val favoriteId: Long?,
+        val query: String?,
     )
 
     var query = mutableStateOf("")
@@ -103,6 +104,12 @@ class DatabaseTabViewModel(
         )
 
     init {
+        params.query?.let { query ->
+            updateQuery(query)
+            // DO NOT EXECUTE QUERY HERE viewModelScope.launch(dispatcherProvider.viewModel) {
+            // DO NOT EXECUTE QUERY HERE     executeQuery(query = query, editAutoUpdate = true)
+            // DO NOT EXECUTE QUERY HERE }
+        }
         params.favoriteId?.let {
             viewModelScope.launch(dispatcherProvider.viewModel) {
                 getFavoriteQueryUseCase(
@@ -126,6 +133,8 @@ class DatabaseTabViewModel(
                 executeQuery(query = query, editAutoUpdate = true)
             }
         }
+
+
     }
 
     fun onAction(action: DatabaseTabAction) {

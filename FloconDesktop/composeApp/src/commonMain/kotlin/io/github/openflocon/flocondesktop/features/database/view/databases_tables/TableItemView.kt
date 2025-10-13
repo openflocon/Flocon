@@ -26,8 +26,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.composeunstyled.Text
+import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.buildMenu
 
 @Composable
 internal fun TableItemView(
@@ -35,46 +37,32 @@ internal fun TableItemView(
     modifier: Modifier = Modifier,
     onTableDoubleClicked: (TableUiModel) -> Unit,
     onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
+    onDeleteContentClicked: (TableUiModel) -> Unit,
 ) {
     var isOpened by remember(item.name) { mutableStateOf(false) }
     Column(modifier = modifier) {
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
-                .combinedClickable(
-                    onClick = {
-                        isOpened = !isOpened
-                    },
-                    onDoubleClick = {
-                        onTableDoubleClicked(item)
+
+        ContextualView(
+            modifier = Modifier.fillMaxWidth(),
+            items = remember(item) {
+                buildMenu {
+                    item("Delete all data from ${item.name}") {
+                        onDeleteContentClicked(item)
                     }
-                )
-                .padding(horizontal = 12.dp)
-                .padding(vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                }
+            },
         ) {
-            val color = FloconTheme.colorPalette.onSurface
-            Image(
-                imageVector = Icons.Outlined.ChevronRight,
-                modifier = Modifier.size(14.dp).graphicsLayer {
-                    rotationZ = if (isOpened) 90f else 0f
-                },
-                colorFilter = ColorFilter.tint(color),
-                contentDescription = null,
-            )
-            Image(
-                imageVector = Icons.Outlined.TableRows,
-                modifier = Modifier.size(14.dp),
-                colorFilter = ColorFilter.tint(color),
-                contentDescription = null,
-            )
-            Text(
-                item.name,
-                style = FloconTheme.typography.bodyMedium,
-                color = color,
+            TableView(
+                modifier = Modifier.fillMaxWidth(),
+                isOpened = isOpened,
+                onTableDoubleClicked = onTableDoubleClicked,
+                item = item,
+                updateIsOpened = {
+                    isOpened = it
+                }
             )
         }
+
         AnimatedVisibility(isOpened, modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 item.columns.fastForEach {
@@ -86,5 +74,52 @@ internal fun TableItemView(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TableView(
+    isOpened: Boolean,
+    updateIsOpened: (Boolean) -> Unit,
+    onTableDoubleClicked: (TableUiModel) -> Unit,
+    item: TableUiModel,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(4.dp))
+            .combinedClickable(
+                onClick = {
+                    updateIsOpened(!isOpened)
+                },
+                onDoubleClick = {
+                    onTableDoubleClicked(item)
+                }
+            )
+            .padding(horizontal = 12.dp)
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        val color = FloconTheme.colorPalette.onSurface
+        Image(
+            imageVector = Icons.Outlined.ChevronRight,
+            modifier = Modifier.size(14.dp).graphicsLayer {
+                rotationZ = if (isOpened) 90f else 0f
+            },
+            colorFilter = ColorFilter.tint(color),
+            contentDescription = null,
+        )
+        Image(
+            imageVector = Icons.Outlined.TableRows,
+            modifier = Modifier.size(14.dp),
+            colorFilter = ColorFilter.tint(color),
+            contentDescription = null,
+        )
+        Text(
+            item.name,
+            style = FloconTheme.typography.bodyMedium,
+            color = color,
+        )
     }
 }

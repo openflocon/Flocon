@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
-import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.usecase.favorite.DeleteFavoriteQueryDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.favorite.ObserveFavoriteQueriesUseCase
@@ -15,11 +14,11 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.delegate.DatabaseSelectorDelegate
 import io.github.openflocon.flocondesktop.features.database.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
-import io.github.openflocon.flocondesktop.features.database.model.selectedDatabase
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +28,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
-import kotlin.collections.emptyList
 
 class DatabaseViewModel(
     private val databaseSelectorDelegate: DatabaseSelectorDelegate,
@@ -81,44 +79,79 @@ class DatabaseViewModel(
             initialValue = emptyList()
         )
 
-    fun onDatabaseSelected(databaseId: DeviceDataBaseId) {
+    fun onAction(action: DatabaseScreenAction) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            databaseSelectorDelegate.onDatabaseSelected(databaseId)
-        }
-    }
+            when (action) {
+                is DatabaseScreenAction.DeleteFavorite -> deleteFavorite(
+                    favorite = action.favoriteQuery,
+                )
+                is DatabaseScreenAction.OnDatabaseDoubleClicked -> databaseSelectorDelegate.onDatabaseSelected(
+                    action.database.id
+                )?.let {
+                    createTabForDatabase(action.database)
+                }
 
-    fun onDatabaseDoubleClicked(database: DeviceDataBaseUiModel) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            databaseSelectorDelegate.onDatabaseSelected(database.id)?.let {
-                createTabForDatabase(database)
+                is DatabaseScreenAction.OnDatabaseSelected -> databaseSelectorDelegate.onDatabaseSelected(
+                    action.id
+                )
+
+                is DatabaseScreenAction.OnFavoriteClicked -> onFavoriteClicked(
+                    favorite = action.favoriteQuery,
+                )
+
+                is DatabaseScreenAction.OnTabCloseClicked -> removeTab(tab = action.tab)
+                is DatabaseScreenAction.OnTabSelected -> onTabSelected(
+                    tab = action.tab
+                )
+
+                is DatabaseScreenAction.OnTableColumnClicked -> onTableColumnClicked(
+                    column = action.column
+                )
+
+                is DatabaseScreenAction.OnTableDoubleClicked -> onTableDoubleClicked(
+                    databaseId = action.id,
+                    table = action.table
+                )
+
+                is DatabaseScreenAction.OnDeleteContentClicked -> createTabForQuery(
+                    databaseId = action.databaseId,
+                    table = action.table,
+                    query = "DELETE FROM ${action.table.name}"
+                )
             }
         }
     }
 
-    fun onTableDoubleClicked(databaseId: DeviceDataBaseId, table: TableUiModel) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            val generatedName = table.name
-            createTab(
-                databaseId = databaseId,
-                tableName = table.name,
-                generatedName = generatedName,
-                favoriteId = null,
-            )
-        }
+    private suspend fun onTableDoubleClicked(databaseId: DeviceDataBaseId, table: TableUiModel) {
+        val generatedName = table.name
+        createTab(
+            databaseId = databaseId,
+            tableName = table.name,
+            generatedName = generatedName,
+            favoriteId = null,
+            query = null,
+        )
     }
 
-    fun onTableColumnClicked(column: TableUiModel.ColumnUiModel) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            copyToClipboard(column.name)
-            feedbackDisplayer.displayMessage("copied: ${column.name}")
-        }
+    private suspend fun createTabForQuery(databaseId: DeviceDataBaseId, table: TableUiModel, query: String) {
+        val generatedName = table.name
+        createTab(
+            databaseId = databaseId,
+            tableName = null,
+            generatedName = generatedName,
+            favoriteId = null,
+            query = query,
+        )
     }
 
-    fun onTabSelected(tab: DatabaseTabState) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return@launch
-            _selectedTab.update { it + (deviceIdAndPackageName to tab) }
-        }
+    private fun onTableColumnClicked(column: TableUiModel.ColumnUiModel) {
+        copyToClipboard(column.name)
+        feedbackDisplayer.displayMessage("copied: ${column.name}")
+    }
+
+    private suspend fun onTabSelected(tab: DatabaseTabState) {
+        val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
+        _selectedTab.update { it + (deviceIdAndPackageName to tab) }
     }
 
     fun onVisible() {
@@ -136,34 +169,26 @@ class DatabaseViewModel(
                 tableName = null,
                 generatedName = "${database.name}.db",
                 favoriteId = null,
+                query = null,
             )
         }
     }
 
-    fun onTabCloseClicked(tab: DatabaseTabState) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            removeTab(tab)
-        }
+    private suspend fun onFavoriteClicked(favorite: DatabaseFavoriteQueryUiModel) {
+        createTab(
+            databaseId = favorite.databaseId,
+            favoriteId = favorite.id,
+            generatedName = favorite.title,
+            tableName = null,
+            query = null,
+        )
     }
 
-    fun onFavoriteClicked(favorite: DatabaseFavoriteQueryUiModel) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            createTab(
-                databaseId = favorite.databaseId,
-                favoriteId = favorite.id,
-                generatedName = favorite.title,
-                tableName = null,
-            )
-        }
-    }
-
-    fun deleteFavorite(favorite: DatabaseFavoriteQueryUiModel) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            deleteFavoriteQueryDatabaseUseCase(
-                id = favorite.id,
-                databaseId = favorite.databaseId,
-            )
-        }
+    private suspend fun deleteFavorite(favorite: DatabaseFavoriteQueryUiModel) {
+        deleteFavoriteQueryDatabaseUseCase(
+            id = favorite.id,
+            databaseId = favorite.databaseId,
+        )
     }
 
     private suspend fun removeTab(tab: DatabaseTabState) {
@@ -196,6 +221,7 @@ class DatabaseViewModel(
         tableName: String?,
         favoriteId: Long?,
         generatedName: String,
+        query: String?,
     ) {
         val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
 
@@ -216,6 +242,7 @@ class DatabaseViewModel(
             generatedName = generatedName,
             index = index,
             favoriteId = favoriteId,
+            query = query,
             id = UUID.randomUUID().toString(),
         )
 

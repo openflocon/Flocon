@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.features.database.DatabaseViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
@@ -45,19 +46,13 @@ fun DatabaseScreen(modifier: Modifier = Modifier) {
     DatabaseScreen(
         deviceDataBases = deviceDataBases,
         favorites = favorites,
-        onDatabaseSelected = viewModel::onDatabaseSelected,
-        onDatabaseDoubleClicked = viewModel::onDatabaseDoubleClicked,
-        onTableDoubleClicked = viewModel::onTableDoubleClicked,
-        onTableColumnClicked = viewModel::onTableColumnClicked,
-        onTabSelected = viewModel::onTabSelected,
-        onTabCloseClicked = viewModel::onTabCloseClicked,
-        onFavoriteClicked = viewModel::onFavoriteClicked,
-        deleteFavorite = viewModel::deleteFavorite,
+        onAction = viewModel::onAction,
         tabs = tabs,
         selectedTab = selectedTab,
         modifier = modifier,
     )
 }
+
 
 @Composable
 fun DatabaseScreen(
@@ -65,14 +60,7 @@ fun DatabaseScreen(
     favorites: List<DatabaseFavoriteQueryUiModel>,
     tabs: List<DatabaseTabState>,
     selectedTab: DatabaseTabState?,
-    onDatabaseSelected: (DeviceDataBaseId) -> Unit,
-    onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
-    onTableDoubleClicked: (DeviceDataBaseId, TableUiModel) -> Unit,
-    onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
-    onTabSelected: (DatabaseTabState) -> Unit,
-    onTabCloseClicked: (DatabaseTabState) -> Unit,
-    onFavoriteClicked: (DatabaseFavoriteQueryUiModel) -> Unit,
-    deleteFavorite: (DatabaseFavoriteQueryUiModel) -> Unit,
+    onAction: (DatabaseScreenAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     FloconFeature(
@@ -85,16 +73,7 @@ fun DatabaseScreen(
                     .width(340.dp),
                 state = deviceDataBases,
                 favorites = favorites,
-                onDatabaseSelected = onDatabaseSelected,
-                onDatabaseDoubleClicked = onDatabaseDoubleClicked,
-                onFavoriteClicked = onFavoriteClicked,
-                deleteFavorite = deleteFavorite,
-                onTableColumnClicked = onTableColumnClicked,
-                onTableDoubleClicked = { table ->
-                    deviceDataBases.selectedDatabase()?.let {
-                        onTableDoubleClicked(it.id, table)
-                    }
-                },
+                onAction = onAction
             )
             Spacer(modifier = Modifier.width(12.dp))
 
@@ -103,8 +82,12 @@ fun DatabaseScreen(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                     tabs = tabs,
                     selected = selectedTab,
-                    onTabSelected = onTabSelected,
-                    onCloseClicked = onTabCloseClicked,
+                    onTabSelected = {
+                        onAction(DatabaseScreenAction.OnTabSelected(it))
+                    },
+                    onCloseClicked = {
+                        onAction(DatabaseScreenAction.OnTabCloseClicked(it))
+                    },
                 )
                 selectedTab?.let {
                     DatabaseTabView(
