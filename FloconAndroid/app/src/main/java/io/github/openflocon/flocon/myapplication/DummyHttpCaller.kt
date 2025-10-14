@@ -42,4 +42,35 @@ class DummyHttpCaller(val client: OkHttpClient) {
             }
         }
     }
+
+    fun callGzip() {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val request = Request.Builder()
+                    .url("https://httpbin.org/gzip")
+                    .addHeader("Accept-Encoding", "gzip")
+                    .get()
+                    .build()
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(
+                        call: Call,
+                        e: IOException
+                    ) {
+
+                    }
+
+                    override fun onResponse(
+                        call: Call,
+                        response: Response
+                    ) {
+
+                    }
+
+                })
+                Log.d("NET_NET", "success")
+            } catch (t: Throwable) {
+                Log.e("NET_NET", t.message, t)
+            }
+        }
+    }
 }

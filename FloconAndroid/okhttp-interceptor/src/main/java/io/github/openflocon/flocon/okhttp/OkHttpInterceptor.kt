@@ -44,16 +44,29 @@ class FloconOkhttpInterceptor(
         var requestSize: Long? = null
         if (requestBody != null) {
             val contentType: MediaType? = requestBody.contentType()
-            var charset = StandardCharsets.UTF_8
-            if (contentType != null) {
-                charset = contentType.charset(StandardCharsets.UTF_8)
-            }
+            val charset = contentType?.charset(StandardCharsets.UTF_8) ?: StandardCharsets.UTF_8
+
             val buffer = Buffer()
             requestBody.writeTo(buffer)
-            requestBodyString = buffer.readString(charset!!)
-            requestSize = requestBody.contentLength().let {
-                if (it != -1L) it else requestBodyString?.toByteArray(charset)?.size?.toLong()
+
+            val isGzip = contentType?.toString()?.contains("gzip", ignoreCase = true) == true
+
+            if (isGzip) {
+                // Lire les octets binaires bruts
+                val bytes = buffer.readByteArray()
+
+                // Encoder en Base64 pour ne pas corrompre les octets
+                requestBodyString = android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
+
+                // Taille en octets
+                requestSize = bytes.size.toLong()
+            } else {
+                requestBodyString = buffer.readString(charset!!)
+                requestSize = requestBody.contentLength().let {
+                    if (it != -1L) it else requestBodyString?.toByteArray(charset)?.size?.toLong()
+                }
             }
+
         }
         val requestHeadersMap =
             request.headers.toMultimap().mapValues { it.value.joinToString(",") }
@@ -111,17 +124,17 @@ class FloconOkhttpInterceptor(
             var responseSize: Long? = null
             val responseContentType: MediaType? = responseBody?.contentType()
 
-            if (responseBody != null) {
-                // Use response.peekBody() to safely read the body without consuming it
-                // Note: peekBody has a max size, adjust as needed.
-                responseBodyString =
-                    response.peekBody(Long.MAX_VALUE).string() // Reads the body safely
-                responseSize = responseBody.contentLength().let {
-                    if (it != -1L) it else responseBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
-                }
-            }
             val responseHeadersMap =
                 response.headers.toMultimap().mapValues { it.value.joinToString(",") }
+
+            if (responseBody != null) {
+                val (rBodyString, rSize) = extractResponseBodyInfo(
+                    response = response,
+                    responseHeaders = responseHeadersMap,
+                )
+                responseBodyString = rBodyString
+                responseSize = rSize
+            }
 
             val isImage = responseContentType?.toString()?.startsWith("image/") == true || (isImage?.invoke(
                 FloconNetworkIsImageParams(
@@ -190,4 +203,34 @@ class FloconOkhttpInterceptor(
         }
     }
 
+}
+
+fun extractResponseBodyInfo(response: Response, responseHeaders: Map<String, String>): Pair<String?, Long?> {
+    val responseBody = response.body ?: return null to null
+
+    val contentType = responseBody.contentType()?.toString()?.lowercase() ?: ""
+    val isGzip = contentType.contains("gzip") || contentType.contains("application/octet-stream") || responseHeaders["content-encoding"] == "gzip"
+
+    // Utiliser peekBody() pour ne pas consommer la vraie réponse
+    val peekedBody = response.peekBody(Long.MAX_VALUE)
+
+    var bodyString: String? = null
+    var bodySize: Long? = null
+
+    if (isGzip) {
+        // Lire les octets bruts
+        val buffer = Buffer()
+        peekedBody.source().readAll(buffer)
+        val bytes = buffer.readByteArray()
+
+        // Encoder les octets en Base64 (API-compatible)
+        bodyString =  android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
+        bodySize = bytes.size.toLong()
+    } else {
+        // Texte normal — OkHttp décompresse automatiquement si Content-Encoding: gzip
+        bodyString = peekedBody.string()
+        bodySize = bodyString.toByteArray(StandardCharsets.UTF_8).size.toLong()
+    }
+
+    return bodyString to bodySize
 }

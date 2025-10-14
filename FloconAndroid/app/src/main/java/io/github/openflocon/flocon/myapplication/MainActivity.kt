@@ -91,6 +91,13 @@ class MainActivity : ComponentActivity() {
                             }
                             Button(
                                 onClick = {
+                                    dummyHttpCaller.callGzip()
+                                }
+                            ) {
+                                Text("okhttp gzip test")
+                            }
+                            Button(
+                                onClick = {
                                     GlobalScope.launch {
                                         graphQlTester.fetchViewerInfo()
                                     }
