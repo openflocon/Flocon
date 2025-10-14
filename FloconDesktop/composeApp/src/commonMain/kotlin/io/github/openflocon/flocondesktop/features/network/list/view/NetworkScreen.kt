@@ -14,10 +14,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.ChatBubble
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.ImportExport
+import androidx.compose.material.icons.outlined.Outbox
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Podcasts
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
@@ -171,7 +173,7 @@ fun NetworkScreen(
                         onValueChange = { onAction(NetworkAction.OpenWebsocketMocks) }
                     ) {
                         FloconIcon(
-                            imageVector = Icons.Outlined.Podcasts
+                            imageVector = Icons.Outlined.Outbox
                         )
                     }
                 }
