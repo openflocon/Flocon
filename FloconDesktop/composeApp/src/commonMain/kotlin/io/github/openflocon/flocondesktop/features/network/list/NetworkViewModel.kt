@@ -93,18 +93,26 @@ class NetworkViewModel(
     private val _filterText = mutableStateOf("")
     val filterText: State<String> = _filterText
 
+    private val displayOldSessions = MutableStateFlow(true)
+
     private val filterUiState = combine(
         mocksUseCase().map { it.any(MockNetworkDomainModel::isEnabled) }.distinctUntilChanged(),
         badNetworkUseCase().map { it.any(BadQualityConfigDomainModel::isEnabled) }
-            .distinctUntilChanged()
-    ) { mockEnabled, badNetworkEnabled ->
+            .distinctUntilChanged(),
+        displayOldSessions,
+    ) { mockEnabled, badNetworkEnabled, displayOldSessions ->
         TopBarUiState(
             hasBadNetwork = badNetworkEnabled,
             hasMocks = mockEnabled,
+            displayOldSessions = displayOldSessions,
         )
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5_000),
-        TopBarUiState(hasBadNetwork = false, hasMocks = false)
+        TopBarUiState(
+            hasBadNetwork = false,
+            hasMocks = false,
+            displayOldSessions = false,
+        )
     )
 
     private val detailState: StateFlow<NetworkDetailViewState?> =
@@ -127,11 +135,13 @@ class NetworkViewModel(
         headerDelegate.textFiltersState.map { it.toDomain() }.distinctUntilChanged(),
         headerDelegate.allowedMethods().map { items -> methodsToDomain(items) }
             .distinctUntilChanged(),
-    ).map { (textFilters, filterOnAllColumns, methods) ->
+        displayOldSessions,
+    ).map { (textFilters, filterOnAllColumns, methods, displayOldSessions) ->
         NetworkFilterDomainModel(
             filterOnAllColumns = textFilters,
             textsFilters = filterOnAllColumns,
             methodFilter = methods,
+            displayOldSessions = displayOldSessions,
         )
     }
 
@@ -146,6 +156,7 @@ class NetworkViewModel(
                 observeNetworkRequestsUseCase(
                     sortedBy = sorted,
                     filter = filter,
+                    deviceIdAndPackageName = deviceIdAndPackageName,
                 ).map { networkCallPagingData ->
                     networkCallPagingData.map {
                         it.toUi(
@@ -220,6 +231,7 @@ class NetworkViewModel(
             NetworkAction.ClearOldSession -> onClearSession()
             is NetworkAction.Down -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
             is NetworkAction.Up -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
+            is NetworkAction.UpdateDisplayOldSessions -> displayOldSessions.update { action.value }
         }
     }
 

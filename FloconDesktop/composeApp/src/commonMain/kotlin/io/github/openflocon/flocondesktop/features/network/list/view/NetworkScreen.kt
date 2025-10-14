@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.list.view
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
@@ -26,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.Key
@@ -33,14 +36,13 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.PagingSourceFactory
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.composeunstyled.Text
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
@@ -59,6 +61,7 @@ import io.github.openflocon.flocondesktop.features.network.mock.list.view.Networ
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.view.NetworkBodyWindow
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
 import io.github.openflocon.library.designsystem.components.FloconFeature
@@ -158,6 +161,15 @@ fun NetworkScreen(
                 )
             },
             actions = {
+                FloconIconToggleButton(
+                    value = uiState.filterState.displayOldSessions,
+                    tooltip = "Display old sessions",
+                    onValueChange = { onAction(NetworkAction.UpdateDisplayOldSessions(it)) }
+                ) {
+                    FloconIcon(
+                        imageVector = Icons.Outlined.History
+                    )
+                }
                 FloconIconToggleButton(
                     value = uiState.filterState.hasMocks,
                     tooltip = "Mocks",
@@ -407,16 +419,18 @@ private fun NetworkScreenPreview() {
     FloconTheme {
         val uiState = previewNetworkUiState()
         val rows = remember {
-            MutableStateFlow(PagingData.from(
-                listOf(
-                    previewNetworkItemViewState(),
-                    previewNetworkItemViewState(),
-                    previewGraphQlItemViewState(),
-                    previewNetworkItemViewState(),
-                    previewGraphQlItemViewState(),
-                    previewNetworkItemViewState(),
+            MutableStateFlow(
+                PagingData.from(
+                    listOf(
+                        previewNetworkItemViewState(),
+                        previewNetworkItemViewState(),
+                        previewGraphQlItemViewState(),
+                        previewNetworkItemViewState(),
+                        previewGraphQlItemViewState(),
+                        previewNetworkItemViewState(),
+                    )
                 )
-            ))
+            )
         }.collectAsLazyPagingItems()
 
         NetworkScreen(
@@ -424,6 +438,27 @@ private fun NetworkScreenPreview() {
             rows = rows,
             onAction = {},
             filterText = mutableStateOf(""),
+        )
+    }
+}
+
+@Composable
+fun TopBarCheckbox(
+    checked: Boolean,
+    label: String,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+        val color = FloconTheme.colorPalette.surface
+        FloconCheckbox(
+            checked = checked,
+            onCheckedChange = {},
+            uncheckedColor = color
+        )
+        Text(
+            label,
+            style = FloconTheme.typography.bodySmall,
+            color = color,
         )
     }
 }

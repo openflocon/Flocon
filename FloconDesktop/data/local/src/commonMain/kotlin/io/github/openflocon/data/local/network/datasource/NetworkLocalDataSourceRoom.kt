@@ -140,6 +140,11 @@ class NetworkLocalDataSourceRoom(
                 appendLine(")")
             }
 
+            if(!filter.displayOldSessions) {
+                appendLine("AND appInstance = ?")
+                args.add(deviceIdAndPackageName.appInstance)
+            }
+
             appendLine("ORDER BY $safeColumnName $sortOrder")
         }.trimIndent()
 
