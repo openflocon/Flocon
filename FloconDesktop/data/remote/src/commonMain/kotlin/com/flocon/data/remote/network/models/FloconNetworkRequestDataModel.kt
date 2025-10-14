@@ -1,5 +1,6 @@
 package com.flocon.data.remote.network.models
 
+import com.flocon.data.remote.network.mapper.decompressContentIfPossible
 import com.flocon.data.remote.network.mapper.failureStatus
 import com.flocon.data.remote.network.mapper.extractStatus
 import io.github.openflocon.domain.common.ByteFormatter
@@ -76,11 +77,12 @@ internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnl
                 )
             }
 
+            val headers = responseHeaders.orEmpty()
             FloconNetworkCallDomainModel.Response.Success(
                 durationMs = durationMs,
                 contentType = responseContentType,
-                body = responseBody,
-                headers = responseHeaders.orEmpty(),
+                body = responseBody?.decompressContentIfPossible(headers = headers),
+                headers = headers,
                 byteSize = responseSize,
                 specificInfos = specificInfos,
                 isImage = isImage,

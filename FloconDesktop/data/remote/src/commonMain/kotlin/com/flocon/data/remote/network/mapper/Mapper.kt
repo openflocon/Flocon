@@ -83,7 +83,7 @@ fun toDomain(
         startTimeFormatted = formatTimestamp(startTime),
         method = decoded.method!!,
         headers = decoded.requestHeaders!!,
-        body = decoded.requestBody,
+        body = decoded.requestBody?.decompressContentIfPossible(headers = decoded.requestHeaders),
         byteSize = requestSize,
         byteSizeFormatted = ByteFormatter.formatBytes(requestSize),
         isMocked = decoded.isMocked ?: false,
