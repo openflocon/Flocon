@@ -16,6 +16,7 @@ import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel.Filters
+import io.github.openflocon.domain.network.models.NetworkSettingsDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
@@ -29,6 +30,8 @@ import io.github.openflocon.domain.network.usecase.RemoveOldSessionsNetworkReque
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
+import io.github.openflocon.domain.network.usecase.settings.ObserveNetworkSettingsUseCase
+import io.github.openflocon.domain.network.usecase.settings.UpdateNetworkSettingsUseCase
 import io.github.openflocon.flocondesktop.features.network.body.model.ContentUiState
 import io.github.openflocon.flocondesktop.features.network.body.model.MockDisplayed
 import io.github.openflocon.flocondesktop.features.network.detail.mapper.toDetailUi
@@ -55,7 +58,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -77,6 +79,8 @@ class NetworkViewModel(
     private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase,
     private val decodeJwtTokenUseCase: DecodeJwtTokenUseCase,
     private val removeOldSessionsNetworkRequestUseCase: RemoveOldSessionsNetworkRequestUseCase,
+    private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
+    private val updateNetworkSettingsUseCase: UpdateNetworkSettingsUseCase,
 ) : ViewModel(headerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -85,26 +89,37 @@ class NetworkViewModel(
             detailJsons = emptySet(),
             mocksDisplayed = null,
             badNetworkQualityDisplayed = false,
-            invertList = false,
-            autoScroll = false
         ),
     )
 
     private val _filterText = mutableStateOf("")
     val filterText: State<String> = _filterText
 
-    private val displayOldSessions = MutableStateFlow(true)
+    private val defaultNetworkSettings = NetworkSettingsDomainModel(
+        displayOldSessions = true,
+        autoScroll = false,
+        invertList = false,
+    )
+
+    private val settings: StateFlow<NetworkSettingsDomainModel> = observeNetworkSettingsUseCase()
+        .flowOn(dispatcherProvider.viewModel)
+        .map { it ?: defaultNetworkSettings }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            initialValue = defaultNetworkSettings
+        )
 
     private val filterUiState = combine(
         mocksUseCase().map { it.any(MockNetworkDomainModel::isEnabled) }.distinctUntilChanged(),
         badNetworkUseCase().map { it.any(BadQualityConfigDomainModel::isEnabled) }
             .distinctUntilChanged(),
-        displayOldSessions,
-    ) { mockEnabled, badNetworkEnabled, displayOldSessions ->
+        settings,
+    ) { mockEnabled, badNetworkEnabled, settings ->
         TopBarUiState(
             hasBadNetwork = badNetworkEnabled,
             hasMocks = mockEnabled,
-            displayOldSessions = displayOldSessions,
+            displayOldSessions = settings.displayOldSessions,
         )
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5_000),
@@ -135,13 +150,13 @@ class NetworkViewModel(
         headerDelegate.textFiltersState.map { it.toDomain() }.distinctUntilChanged(),
         headerDelegate.allowedMethods().map { items -> methodsToDomain(items) }
             .distinctUntilChanged(),
-        displayOldSessions,
-    ).map { (textFilters, filterOnAllColumns, methods, displayOldSessions) ->
+        settings,
+    ).map { (textFilters, filterOnAllColumns, methods, settings) ->
         NetworkFilterDomainModel(
             filterOnAllColumns = textFilters,
             textsFilters = filterOnAllColumns,
             methodFilter = methods,
-            displayOldSessions = displayOldSessions,
+            displayOldSessions = settings.displayOldSessions,
         )
     }
 
@@ -150,36 +165,39 @@ class NetworkViewModel(
         filter,
     ).distinctUntilChanged()
 
-    val items: Flow<PagingData<NetworkItemViewState>> = observeCurrentDeviceIdAndPackageNameUseCase()
-        .flatMapLatest { deviceIdAndPackageName ->
-            sortAndFilter.flatMapLatest { (sorted, filter) ->
-                observeNetworkRequestsUseCase(
-                    sortedBy = sorted,
-                    filter = filter,
-                    deviceIdAndPackageName = deviceIdAndPackageName,
-                ).map { networkCallPagingData ->
-                    networkCallPagingData.map {
-                        it.toUi(
-                            deviceIdAndPackageName = deviceIdAndPackageName
-                        )
+    val items: Flow<PagingData<NetworkItemViewState>> =
+        observeCurrentDeviceIdAndPackageNameUseCase()
+            .flatMapLatest { deviceIdAndPackageName ->
+                sortAndFilter.flatMapLatest { (sorted, filter) ->
+                    observeNetworkRequestsUseCase(
+                        sortedBy = sorted,
+                        filter = filter,
+                        deviceIdAndPackageName = deviceIdAndPackageName,
+                    ).map { networkCallPagingData ->
+                        networkCallPagingData.map {
+                            it.toUi(
+                                deviceIdAndPackageName = deviceIdAndPackageName
+                            )
+                        }
                     }
                 }
             }
-        }
-        .flowOn(dispatcherProvider.viewModel)
-        .cachedIn(viewModelScope)
+            .flowOn(dispatcherProvider.viewModel)
+            .cachedIn(viewModelScope)
 
     val uiState = combine(
         contentState,
         detailState,
         filterUiState,
         headerDelegate.headerUiState,
-    ) { content, detail, filter, header ->
+        settings.map { it.toUi() },
+    ) { content, detail, filter, header, settings ->
         NetworkUiState(
             contentState = content,
             detailState = detail,
             filterState = filter,
             headerState = header,
+            settings = settings,
         )
     }
         .flowOn(dispatcherProvider.viewModel)
@@ -191,6 +209,7 @@ class NetworkViewModel(
                 contentState = contentState.value,
                 filterState = filterUiState.value,
                 headerState = headerDelegate.headerUiState.value,
+                settings = settings.value.toUi(),
             ),
         )
 
@@ -226,12 +245,12 @@ class NetworkViewModel(
                 action = action.action,
             )
 
-            is NetworkAction.InvertList -> onInvertList(action)
-            NetworkAction.ToggleAutoScroll -> onAutoScroll()
+            is NetworkAction.InvertList -> toggleInvertList(action)
+            is NetworkAction.ToggleAutoScroll -> toggleAutoScroll(action)
             NetworkAction.ClearOldSession -> onClearSession()
             is NetworkAction.Down -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
             is NetworkAction.Up -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
-            is NetworkAction.UpdateDisplayOldSessions -> displayOldSessions.update { action.value }
+            is NetworkAction.UpdateDisplayOldSessions -> toggleDisplayOldSessions(action)
         }
     }
 
@@ -241,12 +260,34 @@ class NetworkViewModel(
         }
     }
 
-    private fun onAutoScroll() {
-        contentState.update { it.copy(autoScroll = !it.autoScroll) }
+    private fun toggleAutoScroll(action: NetworkAction.ToggleAutoScroll) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            updateNetworkSettingsUseCase(
+                settings.value.copy(
+                    autoScroll = action.value
+                )
+            )
+        }
     }
 
-    private fun onInvertList(action: NetworkAction.InvertList) {
-        contentState.update { it.copy(invertList = action.value) }
+    private fun toggleDisplayOldSessions(action: NetworkAction.UpdateDisplayOldSessions) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            updateNetworkSettingsUseCase(
+                settings.value.copy(
+                    displayOldSessions = action.value
+                )
+            )
+        }
+    }
+
+    private fun toggleInvertList(action: NetworkAction.InvertList) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            updateNetworkSettingsUseCase(
+                settings.value.copy(
+                    invertList = action.value
+                )
+            )
+        }
     }
 
     private fun displayBearerJwt(token: String) {
@@ -418,7 +459,7 @@ private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): Li
     }
 }
 
-private fun TextFilterStateUiModel.FilterItem.toDomain(): NetworkFilterDomainModel.Filters.FilterItem? {
+private fun TextFilterStateUiModel.FilterItem.toDomain(): Filters.FilterItem? {
     return if (isActive) {
         Filters.FilterItem(
             text = text,
@@ -427,5 +468,6 @@ private fun TextFilterStateUiModel.FilterItem.toDomain(): NetworkFilterDomainMod
 }
 
 private fun methodsToDomain(items: List<NetworkMethodUi>): List<String>? {
-    return items.map { it.text }.takeIf { it.isNotEmpty() }?.takeIf { it.size != NetworkMethodUi.all().size } // returns null if we accept all
+    return items.map { it.text }.takeIf { it.isNotEmpty() }
+        ?.takeIf { it.size != NetworkMethodUi.all().size } // returns null if we accept all
 }

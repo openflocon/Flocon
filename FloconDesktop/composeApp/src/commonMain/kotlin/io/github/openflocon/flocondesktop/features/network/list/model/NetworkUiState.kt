@@ -10,6 +10,7 @@ import io.github.openflocon.flocondesktop.features.network.body.model.previewCon
 @Immutable
 data class NetworkUiState(
     val contentState: ContentUiState,
+    val settings: NetworkSettingsUiModel,
     val detailState: NetworkDetailViewState?,
     val filterState: TopBarUiState,
     val headerState: NetworkHeaderUiState,
@@ -20,4 +21,5 @@ fun previewNetworkUiState() = NetworkUiState(
     contentState = previewContentUiState(),
     filterState = previewTopBarUiState(),
     headerState = previewNetworkHeaderUiState(),
+    settings = previewNetworkSettingsUiModel(),
 )

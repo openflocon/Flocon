@@ -7,6 +7,7 @@ import io.github.openflocon.domain.network.repository.NetworkBadQualityRepositor
 import io.github.openflocon.domain.network.repository.NetworkFilterRepository
 import io.github.openflocon.domain.network.repository.NetworkMocksRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
+import io.github.openflocon.domain.network.repository.NetworkSettingsRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -19,5 +20,6 @@ internal val networkModule = module {
         bind<NetworkMocksRepository>()
         bind<NetworkBadQualityRepository>()
         bind<MessagesReceiverRepository>()
+        bind<NetworkSettingsRepository>()
     }
 }
