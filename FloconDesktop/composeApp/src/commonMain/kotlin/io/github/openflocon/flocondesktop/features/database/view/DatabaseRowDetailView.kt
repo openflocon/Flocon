@@ -41,6 +41,7 @@ import com.composeunstyled.Text
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import io.github.openflocon.library.designsystem.common.isImageUrl
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
@@ -184,14 +185,7 @@ private fun DetailItemView(
         Spacer(modifier = Modifier.height(2.dp))
 
         val isImageUrl = remember(value) {
-            value?.let {
-                it.startsWith("http", ignoreCase = true) &&
-                    (it.endsWith(".png", ignoreCase = true)
-                        || it.endsWith(".jpg", ignoreCase = true)
-                        || it.endsWith(".jpeg", ignoreCase = true)
-                        || it.endsWith(".webp", ignoreCase = true)
-                        || it.endsWith(".gif", ignoreCase = true))
-            } == true
+            value?.isImageUrl() == true
         }
 
         Text(

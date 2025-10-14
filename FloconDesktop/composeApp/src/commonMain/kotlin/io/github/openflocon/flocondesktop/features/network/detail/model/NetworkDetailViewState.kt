@@ -22,6 +22,7 @@ data class NetworkDetailViewState(
     val requestBody: String,
     val requestSize: String,
     val requestHeaders: List<NetworkDetailHeaderUi>?,
+    val imageUrl: String?, // filled only if it's an image url
     // response
     val response: Response?,
 ) {

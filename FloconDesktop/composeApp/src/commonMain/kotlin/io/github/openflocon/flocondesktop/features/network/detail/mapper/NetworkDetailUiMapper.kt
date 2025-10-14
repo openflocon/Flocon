@@ -14,6 +14,7 @@ import io.github.openflocon.flocondesktop.features.network.list.mapper.toHttpMet
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toNetworkStatusUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
+import io.github.openflocon.library.designsystem.common.isImageUrl
 
 fun toDetailUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState =
     NetworkDetailViewState(
@@ -24,6 +25,7 @@ fun toDetailUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState =
         status = toDetailHttpStatusUi(request),
         requestTimeFormatted = request.request.startTimeFormatted,
         durationFormatted = request.response?.durationFormatted,
+        imageUrl = request.request.url.takeIf { it.isImageUrl() },
         // request
         requestBodyTitle = requestBodyTitle(request),
         requestBody = httpBodyToUi(request.request.body),
