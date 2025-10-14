@@ -90,7 +90,7 @@ fun DatabaseRowDetailView(
             ) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = 12.dp),
+                    contentPadding = PaddingValues(top = 12.dp, bottom = 48.dp),
                 ) {
                     itemsIndexed(columns) { index, column ->
                         DetailItemView(
