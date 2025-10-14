@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,14 +26,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import coil3.compose.AsyncImage
 import com.composeunstyled.Text
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -179,6 +183,17 @@ private fun DetailItemView(
 
         Spacer(modifier = Modifier.height(2.dp))
 
+        val isImageUrl = remember(value) {
+            value?.let {
+                it.startsWith("http", ignoreCase = true) &&
+                    (it.endsWith(".png", ignoreCase = true)
+                        || it.endsWith(".jpg", ignoreCase = true)
+                        || it.endsWith(".jpeg", ignoreCase = true)
+                        || it.endsWith(".webp", ignoreCase = true)
+                        || it.endsWith(".gif", ignoreCase = true))
+            } == true
+        }
+
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -192,6 +207,19 @@ private fun DetailItemView(
             text = valueOrNull,
             color = valueColor,
         )
+
+        if (isImageUrl) {
+            // Coil image
+            AsyncImage(
+                model = valueOrNull,
+                contentDescription = "Image preview",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+                    .height(300.dp),
+                contentScale = ContentScale.Fit,
+            )
+        }
     }
 }
 
