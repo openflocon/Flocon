@@ -7,6 +7,7 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallIdDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
+import io.github.openflocon.domain.network.models.NetworkWebsocketId
 
 interface NetworkRemoteDataSource {
 
@@ -27,4 +28,12 @@ interface NetworkRemoteDataSource {
     fun getResponseData(message: FloconIncomingMessageDomainModel): FloconNetworkResponseOnlyDomainModel?
 
     fun getWebSocketData(message: FloconIncomingMessageDomainModel): FloconNetworkCallDomainModel?
+
+    fun getWebsocketClientsIds(message: FloconIncomingMessageDomainModel): List<String>
+
+    suspend fun sendWebsocketMock(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        websocketId: NetworkWebsocketId,
+        message: String,
+    )
 }

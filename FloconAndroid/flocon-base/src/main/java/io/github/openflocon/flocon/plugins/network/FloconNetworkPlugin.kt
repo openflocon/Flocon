@@ -6,6 +6,7 @@ import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
+import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketMockListener
 import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
 
 fun floconLogWebSocketEvent(event: FloconWebSocketEvent) {
@@ -23,4 +24,5 @@ interface FloconNetworkPlugin : FloconPlugin {
         event: FloconWebSocketEvent,
     )
 
+    fun registerWebSocketMockListener(id: String, listener: FloconWebSocketMockListener)
 }

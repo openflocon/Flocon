@@ -9,15 +9,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.ChatBubble
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.ImportExport
+import androidx.compose.material.icons.outlined.Outbox
 import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.Podcasts
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.runtime.Composable
@@ -27,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.Key
@@ -34,11 +39,15 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.composeunstyled.Text
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
@@ -56,6 +65,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.header.Netw
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.view.NetworkBodyWindow
+import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockWindow
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
@@ -156,6 +166,17 @@ fun NetworkScreen(
                 )
             },
             actions = {
+                if (uiState.filterState.hasWebsockets) {
+                    FloconIconToggleButton(
+                        value = true,
+                        tooltip = "Websocket Mocks",
+                        onValueChange = { onAction(NetworkAction.OpenWebsocketMocks) }
+                    ) {
+                        FloconIcon(
+                            imageVector = Icons.Outlined.Outbox
+                        )
+                    }
+                }
                 FloconIconToggleButton(
                     value = uiState.filterState.displayOldSessions,
                     tooltip = "Display old sessions",
@@ -371,6 +392,14 @@ fun NetworkScreen(
         BadNetworkQualityWindow(
             onCloseRequest = {
                 onAction(NetworkAction.CloseBadNetworkQuality)
+            },
+        )
+    }
+
+    if (uiState.contentState.websocketMocksDisplayed) {
+        NetworkWebsocketMockWindow(
+            onCloseRequest = {
+                onAction(NetworkAction.CloseWebsocketMocks)
             },
         )
     }

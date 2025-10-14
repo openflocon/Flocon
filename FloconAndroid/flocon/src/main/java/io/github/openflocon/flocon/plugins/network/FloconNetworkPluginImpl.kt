@@ -10,12 +10,15 @@ import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallRespo
 import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkWebSocketEventToJson
 import io.github.openflocon.flocon.plugins.network.mapper.parseBadQualityConfig
 import io.github.openflocon.flocon.plugins.network.mapper.parseMockResponses
+import io.github.openflocon.flocon.plugins.network.mapper.parseWebSocketMockMessage
 import io.github.openflocon.flocon.plugins.network.mapper.toJsonObject
+import io.github.openflocon.flocon.plugins.network.mapper.webSocketIdsToJsonArray
 import io.github.openflocon.flocon.plugins.network.mapper.writeMockResponsesToJson
 import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
+import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketMockListener
 import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +27,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicReference
 
@@ -35,6 +39,8 @@ internal class FloconNetworkPluginImpl(
     private var sender: FloconMessageSender,
     private val coroutineScope: CoroutineScope,
 ) : FloconNetworkPlugin {
+
+    private val websocketListeners = ConcurrentHashMap<String, FloconWebSocketMockListener>()
 
     override val mocks = CopyOnWriteArrayList<MockNetworkResponse>(loadMocksFromFile())
     private val _badQualityConfig = AtomicReference<BadQualityConfig?>(loadBadNetworkConfig())
@@ -102,11 +108,34 @@ internal class FloconNetworkPluginImpl(
                 _badQualityConfig.set(config)
                 saveBadNetworkConfig(config)
             }
+
+            Protocol.ToDevice.Network.Method.WebsocketMockMessage -> {
+                val message = parseWebSocketMockMessage(messageFromServer.body)
+                if(message != null) {
+                    websocketListeners[message.id]?.onMessage(message.message)
+                }
+            }
         }
     }
 
     override fun onConnectedToServer(sender: FloconMessageSender) {
-        // no op
+        updateWebSocketIds()
+    }
+
+    override fun registerWebSocketMockListener(
+        id: String,
+        listener: FloconWebSocketMockListener
+    ) {
+        websocketListeners.put(id, listener)
+        updateWebSocketIds()
+    }
+
+    private fun updateWebSocketIds() {
+        sender.send(
+            plugin = Protocol.FromDevice.Network.Plugin,
+            method = Protocol.FromDevice.Network.Method.RegisterWebSocketIds,
+            body = webSocketIdsToJsonArray(websocketListeners.keys).toString(),
+        )
     }
 
     private fun saveMocksToFile(mocks: CopyOnWriteArrayList<MockNetworkResponse>) {
