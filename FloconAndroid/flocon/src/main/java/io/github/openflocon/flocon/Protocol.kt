@@ -68,6 +68,7 @@ object Protocol {
                 const val LogNetworkCallRequest = "logNetworkCallRequest"
                 const val LogNetworkCallResponse = "logNetworkCallResponse"
                 const val LogWebSocketEvent = "logWebSocketEvent"
+                const val RegisterWebSocketIds = "registerWebSocketIds"
             }
         }
 
@@ -145,6 +146,7 @@ object Protocol {
             object Method {
                 const val SetupMocks = "setupMocks"
                 const val SetupBadNetworkConfig = "setupBadNetworkConfig"
+                const val WebsocketMockMessage = "websocketMockMessage"
             }
         }
 

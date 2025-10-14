@@ -14,6 +14,7 @@ class DummyWebsocketCaller(val client: OkHttpClient) {
     private var ws: WebSocket? = null
 
     fun connectToWebsocket() {
+        val url = "wss://ws.postman-echo.com/raw"
         val request = Request.Builder()
             .url("wss://ws.postman-echo.com/raw")
             .build()
@@ -56,7 +57,7 @@ class DummyWebsocketCaller(val client: OkHttpClient) {
         }
         this.ws = client.newWebSocket(
             request,
-            listener.listenWithFlocon(),
+            listener.listenWithFlocon(id = url),
         )
     }
 

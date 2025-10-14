@@ -3,10 +3,12 @@ package io.github.openflocon.flocon.okhttp.websocket
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.plugins.network.floconLogWebSocketEvent
 import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
+import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketMockListener
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
+import java.lang.ref.WeakReference
 
 object FloconWebSocket {
 
@@ -46,7 +48,19 @@ object FloconWebSocket {
         return webSocket.send(bytes = bytes)
     }
 
-    data class Listener(val listener: WebSocketListener) : WebSocketListener() {
+    data class Listener(val listener: WebSocketListener, val id: String) : WebSocketListener() {
+
+        private var websocketRef : WeakReference<WebSocket>? = null
+
+        init {
+            FloconApp.instance?.client?.networkPlugin?.registerWebSocketMockListener(id = id, listener = object: FloconWebSocketMockListener {
+                override fun onMessage(message: String) {
+                    websocketRef?.get()?.let { websocket ->
+                        listener.onMessage(websocket, message)
+                    }
+                }
+            })
+        }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             log(
@@ -105,6 +119,7 @@ object FloconWebSocket {
                 webSocket = webSocket,
                 event = FloconWebSocketEvent.Event.Open,
             )
+            websocketRef = WeakReference(webSocket)
             listener.onOpen(webSocket, response)
             super.onOpen(webSocket, response)
         }
@@ -115,6 +130,6 @@ object FloconWebSocket {
 fun WebSocket.sendWithFlocon(text: String) = FloconWebSocket.send(this, text)
 fun WebSocket.sendWithFlocon(bytes: ByteString) = FloconWebSocket.send(this, bytes)
 
-fun WebSocketListener.listenWithFlocon(): WebSocketListener {
-    return FloconWebSocket.Listener(this)
+fun WebSocketListener.listenWithFlocon(id: String): WebSocketListener {
+    return FloconWebSocket.Listener(this, id = id)
 }
