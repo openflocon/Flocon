@@ -127,14 +127,14 @@ class FloconOkhttpInterceptor(
             val responseHeadersMap =
                 response.headers.toMultimap().mapValues { it.value.joinToString(",") }
 
-            if (responseBody != null) {
-                val (rBodyString, rSize) = extractResponseBodyInfo(
-                    response = response,
-                    responseHeaders = responseHeadersMap,
-                )
-                responseBodyString = rBodyString
-                responseSize = rSize
-            }
+            // if (responseBody != null) {
+            //     val (rBodyString, rSize) = extractResponseBodyInfo(
+            //         response = response,
+            //         responseHeaders = responseHeadersMap,
+            //     )
+            //     responseBodyString = rBodyString
+            //     responseSize = rSize
+            // }
 
             val isImage = responseContentType?.toString()?.startsWith("image/") == true || (isImage?.invoke(
                 FloconNetworkIsImageParams(
