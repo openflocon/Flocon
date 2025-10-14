@@ -205,20 +205,18 @@ class FloconOkhttpInterceptor(
 
 }
 
-fun extractResponseBodyInfo(response: Response, responseHeaders: Map<String, String>): Pair<String?, Long?> {
+private fun extractResponseBodyInfo(response: Response, responseHeaders: Map<String, String>): Pair<String?, Long?> {
     val responseBody = response.body ?: return null to null
 
     val contentType = responseBody.contentType()?.toString()?.lowercase() ?: ""
     val isGzip = contentType.contains("gzip") || contentType.contains("application/octet-stream") || responseHeaders["content-encoding"] == "gzip"
 
-    // Utiliser peekBody() pour ne pas consommer la vraie réponse
     val peekedBody = response.peekBody(Long.MAX_VALUE)
 
     var bodyString: String? = null
     var bodySize: Long? = null
 
     if (isGzip) {
-        // Lire les octets bruts
         val buffer = Buffer()
         peekedBody.source().readAll(buffer)
         val bytes = buffer.readByteArray()
@@ -227,7 +225,6 @@ fun extractResponseBodyInfo(response: Response, responseHeaders: Map<String, Str
         bodyString =  android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
         bodySize = bytes.size.toLong()
     } else {
-        // Texte normal — OkHttp décompresse automatiquement si Content-Encoding: gzip
         bodyString = peekedBody.string()
         bodySize = bodyString.toByteArray(StandardCharsets.UTF_8).size.toLong()
     }
