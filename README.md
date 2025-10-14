@@ -314,16 +314,23 @@ This is an extremely powerful way to test different user scenarios or simulate a
 
 ---
 
-### 🧩 Database Query Tool
+### 🧩 Database 
 
-<img width="1203" height="774" alt="Database" src="https://github.com/user-attachments/assets/abf53cc3-0cec-42a4-941b-b9ec03ea9635" />
+<img width="1726" height="1080" alt="Screenshot 2025-10-14 at 23 40 58" src="https://github.com/user-attachments/assets/47360e06-43af-4713-b0ed-a6728a6b49ad" />
+
+<img width="1728" height="1077" alt="Screenshot 2025-10-14 at 23 44 16" src="https://github.com/user-attachments/assets/f351970f-0511-4b54-af5e-55dcd209f2e2" />
 
 Flocon gives you direct access to your app’s **local databases** (SQLite, Room, etc.), with a clean interface for exploring and querying data.
 
 Features include:
 
 - Listing all available databases
-- Running **custom SQL queries**
+- Display all database tables & schemas
+- Running **custom SQL queries** in tabs
+- Auto update queries
+- Save queries as favorite
+- Generate Insert & Delete queries
+  
 
 This makes it easy to debug persistent storage issues, verify migrations, or test app behavior with specific data sets — all without leaving your IDE.
 
