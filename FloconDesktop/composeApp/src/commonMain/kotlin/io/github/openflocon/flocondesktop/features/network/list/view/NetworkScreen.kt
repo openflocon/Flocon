@@ -109,8 +109,8 @@ fun NetworkScreen(
     val columnWidths: NetworkItemColumnWidths =
         remember { NetworkItemColumnWidths() } // Default widths provided
 
-    LaunchedEffect(uiState.contentState.autoScroll, rows.itemCount) {
-        if (uiState.contentState.autoScroll && rows.itemCount != -1) {
+    LaunchedEffect(uiState.settings.autoScroll, rows.itemCount) {
+        if (uiState.settings.autoScroll && rows.itemCount != -1) {
             lazyListState.animateScrollToItem(rows.itemCount)
         }
     }
@@ -242,13 +242,13 @@ fun NetworkScreen(
                         onClick = { onAction(NetworkAction.ExportCsv) }
                     )
                     FloconDropdownMenuItem(
-                        checked = uiState.contentState.autoScroll,
+                        checked = uiState.settings.autoScroll,
                         text = "Auto scroll",
                         leadingIcon = Icons.Outlined.PlayCircle,
-                        onCheckedChange = { onAction(NetworkAction.ToggleAutoScroll) }
+                        onCheckedChange = { onAction(NetworkAction.ToggleAutoScroll(it)) }
                     )
                     FloconDropdownMenuItem(
-                        checked = uiState.contentState.invertList,
+                        checked = uiState.settings.invertList,
                         text = "Invert list",
                         leadingIcon = Icons.AutoMirrored.Outlined.List,
                         onCheckedChange = { onAction(NetworkAction.InvertList(it)) }
@@ -287,7 +287,7 @@ fun NetworkScreen(
             ) {
                 LazyColumn(
                     state = lazyListState,
-                    reverseLayout = uiState.contentState.invertList,
+                    reverseLayout = uiState.settings.invertList,
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
@@ -388,7 +388,7 @@ private fun selectPreviousRow(
     rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
         .takeIf { it != -1 }
         ?.let { selectedIndex ->
-            val newIndex = if (uiState.contentState.invertList)
+            val newIndex = if (uiState.settings.invertList)
                 selectedIndex + 1
             else
                 selectedIndex - 1
@@ -404,7 +404,7 @@ private fun selectNextRow(
     rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
         .takeIf { it != -1 }
         ?.let { selectedIndex ->
-            val newIndex = if (uiState.contentState.invertList)
+            val newIndex = if (uiState.settings.invertList)
                 selectedIndex - 1
             else
                 selectedIndex + 1

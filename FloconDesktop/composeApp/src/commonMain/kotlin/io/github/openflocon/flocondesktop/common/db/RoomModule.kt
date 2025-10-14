@@ -11,6 +11,9 @@ val roomModule =
             get<AppDatabase>().networkDao
         }
         single {
+            get<AppDatabase>().networkSettingsDao
+        }
+        single {
             get<AppDatabase>().fileDao
         }
         single {

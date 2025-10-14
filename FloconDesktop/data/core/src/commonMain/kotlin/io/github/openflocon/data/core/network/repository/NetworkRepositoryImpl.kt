@@ -5,6 +5,7 @@ import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkMocksLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkQualityLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
+import io.github.openflocon.data.core.network.datasource.NetworkSettingsLocalDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -16,12 +17,14 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
+import io.github.openflocon.domain.network.models.NetworkSettingsDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.network.models.isImage
 import io.github.openflocon.domain.network.repository.NetworkBadQualityRepository
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
 import io.github.openflocon.domain.network.repository.NetworkMocksRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
+import io.github.openflocon.domain.network.repository.NetworkSettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -31,11 +34,13 @@ class NetworkRepositoryImpl(
     private val networkLocalDataSource: NetworkLocalDataSource,
     private val networkMocksLocalDataSource: NetworkMocksLocalDataSource,
     private val networkQualityLocalDataSource: NetworkQualityLocalDataSource,
+    private val networkSettingsLocalDataSource: NetworkSettingsLocalDataSource,
     private val networkImageRepository: NetworkImageRepository,
     private val networkRemoteDataSource: NetworkRemoteDataSource,
 ) : NetworkRepository,
     NetworkMocksRepository,
     MessagesReceiverRepository,
+    NetworkSettingsRepository,
     NetworkBadQualityRepository {
 
     override val pluginName = listOf(Protocol.FromDevice.Network.Plugin)
@@ -400,6 +405,32 @@ class NetworkRepositoryImpl(
         withContext(dispatcherProvider.data) {
             networkLocalDataSource.deleteRequestOnDifferentSession(
                 deviceIdAndPackageName = deviceIdAndPackageName,
+            )
+        }
+    }
+
+    override suspend fun getNetworkSettings(deviceAndApp: DeviceIdAndPackageNameDomainModel): NetworkSettingsDomainModel? {
+        return withContext(dispatcherProvider.data) {
+            networkSettingsLocalDataSource.getNetworkSettings(
+                deviceAndApp = deviceAndApp,
+            )
+        }
+    }
+
+    override fun observeNetworkSettings(deviceAndApp: DeviceIdAndPackageNameDomainModel): Flow<NetworkSettingsDomainModel?> {
+        return networkSettingsLocalDataSource.observeNetworkSettings(
+            deviceAndApp = deviceAndApp,
+        ).flowOn(dispatcherProvider.data)
+    }
+
+    override suspend fun updateNetworkSettings(
+        deviceAndApp: DeviceIdAndPackageNameDomainModel,
+        newValue: NetworkSettingsDomainModel
+    ) {
+        withContext(dispatcherProvider.data) {
+            networkSettingsLocalDataSource.updateNetworkSettings(
+                deviceAndApp = deviceAndApp,
+                newValue = newValue,
             )
         }
     }
