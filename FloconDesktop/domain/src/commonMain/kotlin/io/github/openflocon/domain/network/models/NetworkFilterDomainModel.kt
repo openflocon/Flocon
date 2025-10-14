@@ -4,6 +4,7 @@ data class NetworkFilterDomainModel(
     val filterOnAllColumns: String?,
     val textsFilters: List<Filters>?,
     val methodFilter: List<String>?,
+    val displayOldSessions: Boolean,
 ) {
     data class Filters(
         val column: NetworkTextFilterColumns,

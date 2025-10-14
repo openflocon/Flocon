@@ -12,7 +12,7 @@ interface NetworkLocalDataSource {
     suspend fun getRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
-        filter: NetworkFilterDomainModel
+        filter: NetworkFilterDomainModel,
     ): List<FloconNetworkCallDomainModel>
 
     fun observeRequests(

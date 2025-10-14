@@ -22,6 +22,7 @@ sealed interface NetworkAction {
     data object OpenMocks : NetworkAction
     data object CloseMocks : NetworkAction
 
+    data class UpdateDisplayOldSessions(val value: Boolean) : NetworkAction
     data object OpenBadNetworkQuality : NetworkAction
     data object CloseBadNetworkQuality : NetworkAction
 
