@@ -45,6 +45,7 @@ class DummyWebsocketCaller(val client: OkHttpClient) {
 
             override fun onMessage(webSocket: WebSocket, text: String) {
                 super.onMessage(webSocket, text)
+                println("websocket onMessage : $text")
             }
 
             override fun onMessage(webSocket: WebSocket, bytes: ByteString) {

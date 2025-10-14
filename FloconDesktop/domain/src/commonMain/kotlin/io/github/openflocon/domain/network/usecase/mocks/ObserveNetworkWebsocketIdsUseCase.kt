@@ -19,6 +19,6 @@ class ObserveNetworkWebsocketIdsUseCase(
     operator fun invoke(): Flow<List<NetworkWebsocketId>> =
         observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { current ->
             if (current == null) flowOf(emptyList())
-            else networkMocksRepository.observeWebsocketClientsIds(deviceAndApp = current)
+            else networkMocksRepository.observeWebsocketClientsIds(deviceIdAndPackageName = current)
         }.distinctUntilChanged()
 }

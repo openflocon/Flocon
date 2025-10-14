@@ -18,6 +18,8 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.Podcasts
+import androidx.compose.material.icons.outlined.SettingsInputAntenna
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.runtime.Composable
@@ -56,6 +58,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.header.Netw
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.view.NetworkBodyWindow
+import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockWindow
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
@@ -164,6 +167,17 @@ fun NetworkScreen(
                     FloconIcon(
                         imageVector = Icons.Outlined.History
                     )
+                }
+                if(uiState.filterState.hasWebsockets) {
+                    FloconIconToggleButton(
+                        value = false,
+                        tooltip = "Websocket Mocks",
+                        onValueChange = { onAction(NetworkAction.OpenWebsocketMocks) }
+                    ) {
+                        FloconIcon(
+                            imageVector = Icons.Outlined.Podcasts
+                        )
+                    }
                 }
                 FloconIconToggleButton(
                     value = uiState.filterState.hasMocks,
@@ -371,6 +385,14 @@ fun NetworkScreen(
         BadNetworkQualityWindow(
             onCloseRequest = {
                 onAction(NetworkAction.CloseBadNetworkQuality)
+            },
+        )
+    }
+
+    if (uiState.contentState.websocketMocksDisplayed) {
+        NetworkWebsocketMockWindow(
+            onCloseRequest = {
+                onAction(NetworkAction.CloseWebsocketMocks)
             },
         )
     }

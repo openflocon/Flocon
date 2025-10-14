@@ -9,6 +9,7 @@ data class ContentUiState(
     val selectedRequestId: String?,
     val detailJsons: Set<NetworkBodyDetailUi>,
     val mocksDisplayed: MockDisplayed?,
+    val websocketMocksDisplayed: Boolean,
     val badNetworkQualityDisplayed: Boolean,
 )
 
@@ -23,4 +24,5 @@ fun previewContentUiState() = ContentUiState(
     detailJsons = emptySet(),
     mocksDisplayed = null,
     badNetworkQualityDisplayed = false,
+    websocketMocksDisplayed = false,
 )

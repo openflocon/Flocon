@@ -30,6 +30,7 @@ import io.github.openflocon.domain.network.usecase.RemoveOldSessionsNetworkReque
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
+import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkWebsocketIdsUseCase
 import io.github.openflocon.domain.network.usecase.settings.ObserveNetworkSettingsUseCase
 import io.github.openflocon.domain.network.usecase.settings.UpdateNetworkSettingsUseCase
 import io.github.openflocon.flocondesktop.features.network.body.model.ContentUiState
@@ -81,6 +82,7 @@ class NetworkViewModel(
     private val removeOldSessionsNetworkRequestUseCase: RemoveOldSessionsNetworkRequestUseCase,
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
     private val updateNetworkSettingsUseCase: UpdateNetworkSettingsUseCase,
+    private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
 ) : ViewModel(headerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -89,6 +91,7 @@ class NetworkViewModel(
             detailJsons = emptySet(),
             mocksDisplayed = null,
             badNetworkQualityDisplayed = false,
+            websocketMocksDisplayed = false,
         ),
     )
 
@@ -115,11 +118,13 @@ class NetworkViewModel(
         badNetworkUseCase().map { it.any(BadQualityConfigDomainModel::isEnabled) }
             .distinctUntilChanged(),
         settings,
-    ) { mockEnabled, badNetworkEnabled, settings ->
+        observeNetworkWebsocketIdsUseCase().map { it.isNotEmpty() },
+    ) { mockEnabled, badNetworkEnabled, settings, hasWebsockets ->
         TopBarUiState(
             hasBadNetwork = badNetworkEnabled,
             hasMocks = mockEnabled,
             displayOldSessions = settings.displayOldSessions,
+            hasWebsockets = hasWebsockets,
         )
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5_000),
@@ -127,6 +132,7 @@ class NetworkViewModel(
             hasBadNetwork = false,
             hasMocks = false,
             displayOldSessions = false,
+            hasWebsockets = false,
         )
     )
 
@@ -251,7 +257,9 @@ class NetworkViewModel(
             is NetworkAction.Down -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
             is NetworkAction.Up -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
             is NetworkAction.UpdateDisplayOldSessions -> toggleDisplayOldSessions(action)
-        }
+            NetworkAction.OpenWebsocketMocks -> openWebsocketMocks()
+            NetworkAction.CloseWebsocketMocks -> contentState.update { it.copy(websocketMocksDisplayed = false) }
+            }
     }
 
     private fun onClearSession() {
@@ -314,6 +322,14 @@ class NetworkViewModel(
                 mocksDisplayed = MockDisplayed(
                     fromNetworkCallId = callId,
                 ),
+            )
+        }
+    }
+
+    private fun openWebsocketMocks() {
+        contentState.update { state ->
+            state.copy(
+                websocketMocksDisplayed = true,
             )
         }
     }
