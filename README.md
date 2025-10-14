@@ -163,7 +163,7 @@ val listener = object : WebSocketListener() {
 
 webSocket = client.newWebSocket(
       request,
-      listener.listenWithFlocon(), // extension method that wraps an existing WebSocketListener
+      listener.listenWithFlocon(id = "wss://......."), // extension method that wraps an existing WebSocketListener
     )
 }
 ```
