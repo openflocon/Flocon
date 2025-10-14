@@ -30,6 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -168,7 +172,19 @@ private fun NetworkWebsocketMockContent(
             )
             var message by remember { mutableStateOf("") }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .onKeyEvent { keyEvent ->
+                        // detect CMD + Enter
+                        if (keyEvent.type == KeyEventType.KeyDown
+                            && keyEvent.key == androidx.compose.ui.input.key.Key.Enter
+                        ) {
+                            onSend(message)
+
+                            // Return 'true' to indicate that the event was consumed
+                            return@onKeyEvent true
+                        }
+                        return@onKeyEvent false
+                    },
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 FloconTextField(

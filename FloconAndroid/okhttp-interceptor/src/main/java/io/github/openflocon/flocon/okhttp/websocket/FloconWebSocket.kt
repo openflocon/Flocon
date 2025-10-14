@@ -56,7 +56,7 @@ object FloconWebSocket {
             FloconApp.instance?.client?.networkPlugin?.registerWebSocketMockListener(id = id, listener = object: FloconWebSocketMockListener {
                 override fun onMessage(message: String) {
                     websocketRef?.get()?.let { websocket ->
-                        listener.onMessage(websocket, message)
+                        onMessage(websocket, message)
                     }
                 }
             })
