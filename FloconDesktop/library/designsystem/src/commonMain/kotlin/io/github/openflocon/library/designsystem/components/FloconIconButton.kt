@@ -76,7 +76,11 @@ fun FloconIconTonalButton(
             .clickable(enabled = enabled, onClick = onClick)
             .padding(all = 8.dp)
     ) {
-        CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.contentColorFor(containerColor)) {
+        CompositionLocalProvider(
+            LocalContentColor provides FloconTheme.colorPalette.contentColorFor(
+                containerColor
+            )
+        ) {
             content()
         }
     }

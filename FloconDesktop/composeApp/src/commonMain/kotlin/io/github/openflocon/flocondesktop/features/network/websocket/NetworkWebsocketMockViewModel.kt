@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.websocket
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkWebsocketIdsUseCase
 import io.github.openflocon.domain.network.usecase.mocks.SendNetworkWebsocketMockUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ class NetworkWebsocketMockViewModel(
     private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
     private val sendNetworkWebsocketMockUseCase: SendNetworkWebsocketMockUseCase,
     private val dispatcherProvider: DispatcherProvider,
+    private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel() {
 
     val clientsIds = observeNetworkWebsocketIdsUseCase()
@@ -33,6 +35,7 @@ class NetworkWebsocketMockViewModel(
                     websocketId = clientId,
                     message = message,
                 )
+                feedbackDisplayer.displayMessage("sent")
             }
         }
     }

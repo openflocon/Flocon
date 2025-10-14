@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -19,7 +20,6 @@ import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Podcasts
-import androidx.compose.material.icons.outlined.SettingsInputAntenna
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.runtime.Composable
@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.Key
@@ -36,11 +37,15 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.composeunstyled.Text
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
@@ -159,6 +164,17 @@ fun NetworkScreen(
                 )
             },
             actions = {
+                if (uiState.filterState.hasWebsockets) {
+                    FloconIconToggleButton(
+                        value = true,
+                        tooltip = "Websocket Mocks",
+                        onValueChange = { onAction(NetworkAction.OpenWebsocketMocks) }
+                    ) {
+                        FloconIcon(
+                            imageVector = Icons.Outlined.Podcasts
+                        )
+                    }
+                }
                 FloconIconToggleButton(
                     value = uiState.filterState.displayOldSessions,
                     tooltip = "Display old sessions",
@@ -167,17 +183,6 @@ fun NetworkScreen(
                     FloconIcon(
                         imageVector = Icons.Outlined.History
                     )
-                }
-                if(uiState.filterState.hasWebsockets) {
-                    FloconIconToggleButton(
-                        value = false,
-                        tooltip = "Websocket Mocks",
-                        onValueChange = { onAction(NetworkAction.OpenWebsocketMocks) }
-                    ) {
-                        FloconIcon(
-                            imageVector = Icons.Outlined.Podcasts
-                        )
-                    }
                 }
                 FloconIconToggleButton(
                     value = uiState.filterState.hasMocks,
