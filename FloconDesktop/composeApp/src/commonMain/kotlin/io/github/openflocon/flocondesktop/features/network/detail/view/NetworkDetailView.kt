@@ -21,8 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailHeadersView
@@ -212,6 +214,20 @@ private fun Request(
                         }
                     }
                 }
+            }
+
+            state.imageUrl?.let { imageUrl ->
+                // Coil image
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "Image preview",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                        .padding(4.dp)
+                        .height(300.dp),
+                    contentScale = ContentScale.Fit,
+                )
             }
 
             state.requestHeaders?.let {
@@ -426,6 +442,7 @@ private fun NetworkDetailViewPreview() {
                         ),
                 ),
                 graphQlSection = null,
+                imageUrl = null,
             ),
             modifier = Modifier.padding(16.dp), // Padding pour la preview
             onAction = {},
