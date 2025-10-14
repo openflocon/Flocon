@@ -32,7 +32,7 @@ class DummyHttpCaller(val client: OkHttpClient) {
                         call: Call,
                         response: Response
                     ) {
-
+                        Log.d("NET_NET", response.body?.string() ?: "")
                     }
 
                 })
@@ -63,7 +63,7 @@ class DummyHttpCaller(val client: OkHttpClient) {
                         call: Call,
                         response: Response
                     ) {
-
+                        Log.d("NET_NET", response.body?.string() ?: "")
                     }
 
                 })
