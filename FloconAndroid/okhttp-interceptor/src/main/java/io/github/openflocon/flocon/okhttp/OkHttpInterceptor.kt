@@ -44,35 +44,18 @@ class FloconOkhttpInterceptor(
         val requestBody = request.body
         var requestBodyString: String? = null
         var requestSize: Long? = null
-        if (requestBody != null) {
-            val contentType: MediaType? = requestBody.contentType()
-            val charset = contentType?.charset(StandardCharsets.UTF_8) ?: StandardCharsets.UTF_8
 
-            val buffer = Buffer()
-            requestBody.writeTo(buffer)
-
-            val isGzip = contentType?.toString()?.contains("gzip", ignoreCase = true) == true
-
-            if (isGzip) {
-                // Lire les octets binaires bruts
-                val bytes = buffer.readByteArray()
-
-                // Encoder en Base64 pour ne pas corrompre les octets
-                requestBodyString =
-                    android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
-
-                // Taille en octets
-                requestSize = bytes.size.toLong()
-            } else {
-                requestBodyString = buffer.readString(charset!!)
-                requestSize = requestBody.contentLength().let {
-                    if (it != -1L) it else requestBodyString?.toByteArray(charset)?.size?.toLong()
-                }
-            }
-
-        }
         val requestHeadersMap =
             request.headers.toMultimap().mapValues { it.value.joinToString(",") }
+
+        if (requestBody != null) {
+            val (rBodyString, rSize) = extractRequestBodyInfo(
+                request = request,
+                requestHeaders = requestHeadersMap,
+            )
+            requestBodyString = rBodyString
+            requestSize = rSize
+        }
 
         val startTime = System.nanoTime()
 
@@ -178,6 +161,7 @@ class FloconOkhttpInterceptor(
             // Just return the original response if you don't modify the body itself.
             return response
         } catch (e: IOException) {
+
             val endTime = System.nanoTime()
 
             val durationMs: Double = (endTime - startTime) / 1e6
@@ -229,22 +213,44 @@ private fun extractResponseBodyInfo(
 
     val contentEncoding = responseHeaders["Content-Encoding"] ?: responseHeaders["content-encoding"]
     if ("gzip".equals(contentEncoding, ignoreCase = true)) {
-        bodySize = buffer.size
         GzipSource(buffer.clone()).use { gzippedResponseBody ->
             buffer = Buffer()
             buffer.writeAll(gzippedResponseBody)
         }
 
         bodyString = buffer.clone().readString(charset)
+        bodySize = buffer.size
     } else {
         bodyString = buffer.clone().readString(charset)
-        bodySize = bodyString.toByteArray(StandardCharsets.UTF_8).size.toLong()
+        bodySize = buffer.size
     }
 
     return bodyString to bodySize
 }
 
-/*
-val peekedBody = response.peekBody(Long.MAX_VALUE)
-bodyString = peekedBody.string()
- */
+private fun extractRequestBodyInfo(
+    request: Request,
+    requestHeaders: Map<String, String>
+): Pair<String?, Long?> {
+    val requestBody = request.body ?: return null to null
+
+    var bodySize: Long? = null
+
+    var buffer = Buffer()
+    requestBody.writeTo(buffer)
+
+    val contentEncoding = requestHeaders["Content-Encoding"] ?: requestHeaders["content-encoding"]
+
+    if ("gzip".equals(contentEncoding, ignoreCase = true)) {
+        bodySize = buffer.size
+        GzipSource(buffer).use { gzippedResponseBody ->
+            buffer = Buffer()
+            buffer.writeAll(gzippedResponseBody)
+        }
+    }
+
+    val charset = requestBody.contentType().charsetOrUtf8()
+    val bodyString = buffer.readString(charset)
+
+    return bodyString to bodySize
+}
