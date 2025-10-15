@@ -3,6 +3,8 @@ package io.github.openflocon.flocon.myapplication.database
 import android.content.Context
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.database.model.FoodEntity
+import io.github.openflocon.flocon.myapplication.database.model.HumanEntity
+import io.github.openflocon.flocon.myapplication.database.model.HumanWithDogEntity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -13,19 +15,75 @@ fun initializeDatabases(context: Context) {
         dogDatabase.dogDao().insertDog(
             DogEntity(
                 id = 1, name = "Flocon", breed = "Golden Retriever", age = 6,
+                pictureUrl = "https://picsum.photos/501/500.jpg",
             )
         )
-        dogDatabase.dogDao().insertDog(
-            DogEntity(
-                id = 2, name = "Vanille", breed = "Basset", age = 2,
+        dogDatabase.dogDao().insertHuman(
+            HumanEntity(
+                id = 1,
+                firstName = "Florent",
+                name = "Champigny",
             )
         )
-        dogDatabase.dogDao().insertDog(
-            DogEntity(
-                id = 3, name = "Scoubi", breed = "Yorkshire", age = 2,
+        dogDatabase.dogDao().insertHuman(
+            HumanEntity(
+                id = 2,
+                firstName = "Camille",
+                name = "Champigny",
+            )
+        )
+        dogDatabase.dogDao().insertHumanWithDogEntity(
+            HumanWithDogEntity(
+                humanId = 1, // florent
+                dogId = 1,
+            )
+        )
+        dogDatabase.dogDao().insertHumanWithDogEntity(
+            HumanWithDogEntity(
+                humanId = 2, // camille
+                dogId = 1,
             )
         )
 
+        dogDatabase.dogDao().insertDog(
+            DogEntity(
+                id = 2, name = "Vanille", breed = "Basset", age = 2,
+                pictureUrl = "https://picsum.photos/501/501.jpg",
+            )
+        )
+        dogDatabase.dogDao().insertHuman(
+            HumanEntity(
+                id = 3,
+                firstName = "Auguste",
+                name = "Dum",
+            )
+        )
+        dogDatabase.dogDao().insertHumanWithDogEntity(
+            HumanWithDogEntity(
+                humanId = 3, // auguste
+                dogId = 2,
+            )
+        )
+
+        dogDatabase.dogDao().insertDog(
+            DogEntity(
+                id = 3, name = "Scoubi", breed = "Yorkshire", age = 2,
+                pictureUrl = "https://picsum.photos/501/502.jpg",
+            )
+        )
+        dogDatabase.dogDao().insertHuman(
+            HumanEntity(
+                id = 4,
+                firstName = "Jean",
+                name = "Paul",
+            )
+        )
+        dogDatabase.dogDao().insertHumanWithDogEntity(
+            HumanWithDogEntity(
+                humanId = 4, // auguste
+                dogId = 3,
+            )
+        )
 
         val longBreeds = listOf(
             "Golden Retriever royal de la lignée légendaire des chiens des montagnes dorées du nord-ouest canadien, " +
@@ -53,6 +111,7 @@ fun initializeDatabases(context: Context) {
                     id = 10L + i,
                     name = "dog$i",
                     breed = randomBreed,
+                    pictureUrl = "https://picsum.photos/500/50${i%10}.jpg",
                     age = (1..15).random()
                 )
             )
