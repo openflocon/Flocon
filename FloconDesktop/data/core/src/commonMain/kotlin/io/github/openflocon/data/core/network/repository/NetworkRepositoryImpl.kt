@@ -2,6 +2,7 @@ package io.github.openflocon.data.core.network.repository
 
 import co.touchlab.kermit.Logger
 import io.github.openflocon.data.core.network.datasource.NetworkLocalDataSource
+import io.github.openflocon.data.core.network.datasource.NetworkLocalWebsocketDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkMocksLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkQualityLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
@@ -19,6 +20,7 @@ import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSettingsDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
+import io.github.openflocon.domain.network.models.NetworkWebsocketId
 import io.github.openflocon.domain.network.models.isImage
 import io.github.openflocon.domain.network.repository.NetworkBadQualityRepository
 import io.github.openflocon.domain.network.repository.NetworkImageRepository
@@ -32,6 +34,7 @@ import kotlinx.coroutines.withContext
 class NetworkRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val networkLocalDataSource: NetworkLocalDataSource,
+    private val networkLocalWebsocketDataSource: NetworkLocalWebsocketDataSource,
     private val networkMocksLocalDataSource: NetworkMocksLocalDataSource,
     private val networkQualityLocalDataSource: NetworkQualityLocalDataSource,
     private val networkSettingsLocalDataSource: NetworkSettingsLocalDataSource,
@@ -113,6 +116,12 @@ class NetworkRepositoryImpl(
     ) {
         withContext(dispatcherProvider.data) {
             when (message.method) {
+                Protocol.FromDevice.Network.Method.RegisterWebSocketIds -> {
+                    networkLocalWebsocketDataSource.registerWebsocketClients(
+                        deviceIdAndPackageName = deviceIdAndPackageName,
+                        ids = networkRemoteDataSource.getWebsocketClientsIds(message),
+                    )
+                }
                 Protocol.FromDevice.Network.Method.LogWebSocketEvent -> {
                     networkRemoteDataSource.getWebSocketData(message)
                         ?.let { wenSocketEvent ->
@@ -431,6 +440,26 @@ class NetworkRepositoryImpl(
             networkSettingsLocalDataSource.updateNetworkSettings(
                 deviceAndApp = deviceAndApp,
                 newValue = newValue,
+            )
+        }
+    }
+
+    override suspend fun observeWebsocketClientsIds(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<NetworkWebsocketId>> {
+        return networkLocalWebsocketDataSource.observeWebsocketClients(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        ).flowOn(dispatcherProvider.data)
+    }
+
+    override suspend fun sendWebsocketMock(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        websocketId: NetworkWebsocketId,
+        message: String
+    ) {
+        withContext(dispatcherProvider.data) {
+            networkRemoteDataSource.sendWebsocketMock(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                websocketId = websocketId,
+                message = message,
             )
         }
     }

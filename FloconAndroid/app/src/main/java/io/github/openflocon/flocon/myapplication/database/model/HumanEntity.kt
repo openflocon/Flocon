@@ -4,12 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class DogEntity(
+data class HumanEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val firstName: String,
     val name: String,
-    val breed: String,
-    val pictureUrl: String,
-    val age: Int,
 )
-
-

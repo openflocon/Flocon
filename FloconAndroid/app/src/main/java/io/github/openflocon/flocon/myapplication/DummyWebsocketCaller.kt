@@ -14,6 +14,7 @@ class DummyWebsocketCaller(val client: OkHttpClient) {
     private var ws: WebSocket? = null
 
     fun connectToWebsocket() {
+        val url = "wss://ws.postman-echo.com/raw"
         val request = Request.Builder()
             .url("wss://ws.postman-echo.com/raw")
             .build()
@@ -44,6 +45,7 @@ class DummyWebsocketCaller(val client: OkHttpClient) {
 
             override fun onMessage(webSocket: WebSocket, text: String) {
                 super.onMessage(webSocket, text)
+                println("websocket onMessage : $text")
             }
 
             override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
@@ -56,7 +58,7 @@ class DummyWebsocketCaller(val client: OkHttpClient) {
         }
         this.ws = client.newWebSocket(
             request,
-            listener.listenWithFlocon(),
+            listener.listenWithFlocon(id = url),
         )
     }
 

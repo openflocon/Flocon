@@ -2,6 +2,7 @@ package io.github.openflocon.domain.network.repository
 
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
+import io.github.openflocon.domain.network.models.NetworkWebsocketId
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkMocksRepository {
@@ -39,5 +40,15 @@ interface NetworkMocksRepository {
     suspend fun updateMockDevice(
         mockId: String,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?
+    )
+
+    suspend fun observeWebsocketClientsIds(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ) : Flow<List<NetworkWebsocketId>>
+
+    suspend fun sendWebsocketMock(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        websocketId: NetworkWebsocketId,
+        message: String,
     )
 }
