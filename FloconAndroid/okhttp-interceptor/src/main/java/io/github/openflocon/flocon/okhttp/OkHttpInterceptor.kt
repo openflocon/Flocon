@@ -10,7 +10,9 @@ import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.Response
 import okio.Buffer
+import okio.GzipSource
 import java.io.IOException
+import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
@@ -56,7 +58,8 @@ class FloconOkhttpInterceptor(
                 val bytes = buffer.readByteArray()
 
                 // Encoder en Base64 pour ne pas corrompre les octets
-                requestBodyString = android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
+                requestBodyString =
+                    android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
 
                 // Taille en octets
                 requestSize = bytes.size.toLong()
@@ -127,22 +130,23 @@ class FloconOkhttpInterceptor(
             val responseHeadersMap =
                 response.headers.toMultimap().mapValues { it.value.joinToString(",") }
 
-            // if (responseBody != null) {
-            //     val (rBodyString, rSize) = extractResponseBodyInfo(
-            //         response = response,
-            //         responseHeaders = responseHeadersMap,
-            //     )
-            //     responseBodyString = rBodyString
-            //     responseSize = rSize
-            // }
-
-            val isImage = responseContentType?.toString()?.startsWith("image/") == true || (isImage?.invoke(
-                FloconNetworkIsImageParams(
-                    request = request,
+            if (responseBody != null) {
+                val (rBodyString, rSize) = extractResponseBodyInfo(
                     response = response,
-                    responseContentType = responseContentType?.toString(),
+                    responseHeaders = responseHeadersMap,
                 )
-            ) == true)
+                responseBodyString = rBodyString
+                responseSize = rSize
+            }
+
+            val isImage =
+                responseContentType?.toString()?.startsWith("image/") == true || (isImage?.invoke(
+                    FloconNetworkIsImageParams(
+                        request = request,
+                        response = response,
+                        responseContentType = responseContentType?.toString(),
+                    )
+                ) == true)
 
             val requestHeadersMapUpToDate =
                 response.request.headers.toMultimap().mapValues { it.value.joinToString(",") }
@@ -205,29 +209,42 @@ class FloconOkhttpInterceptor(
 
 }
 
-private fun extractResponseBodyInfo(response: Response, responseHeaders: Map<String, String>): Pair<String?, Long?> {
+internal fun MediaType?.charsetOrUtf8(): Charset = this?.charset() ?: Charsets.UTF_8
+
+private fun extractResponseBodyInfo(
+    response: Response,
+    responseHeaders: Map<String, String>
+): Pair<String?, Long?> {
     val responseBody = response.body ?: return null to null
-
-    val contentType = responseBody.contentType()?.toString()?.lowercase() ?: ""
-    val isGzip = contentType.contains("gzip") || contentType.contains("application/octet-stream") || responseHeaders["content-encoding"] == "gzip"
-
-    val peekedBody = response.peekBody(Long.MAX_VALUE)
 
     var bodyString: String? = null
     var bodySize: Long? = null
 
-    if (isGzip) {
-        val buffer = Buffer()
-        peekedBody.source().readAll(buffer)
-        val bytes = buffer.readByteArray()
+    val source = responseBody.source()
+    source.request(Long.MAX_VALUE) // Buffer the entire body, otherwise we have an empty string
 
-        // Encoder les octets en Base64 (API-compatible)
-        bodyString =  android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
-        bodySize = bytes.size.toLong()
+    var buffer = source.buffer
+
+    val charset = responseBody.contentType().charsetOrUtf8()
+
+    val contentEncoding = responseHeaders["Content-Encoding"] ?: responseHeaders["content-encoding"]
+    if ("gzip".equals(contentEncoding, ignoreCase = true)) {
+        bodySize = buffer.size
+        GzipSource(buffer.clone()).use { gzippedResponseBody ->
+            buffer = Buffer()
+            buffer.writeAll(gzippedResponseBody)
+        }
+
+        bodyString = buffer.clone().readString(charset)
     } else {
-        bodyString = peekedBody.string()
+        bodyString = buffer.clone().readString(charset)
         bodySize = bodyString.toByteArray(StandardCharsets.UTF_8).size.toLong()
     }
 
     return bodyString to bodySize
 }
+
+/*
+val peekedBody = response.peekBody(Long.MAX_VALUE)
+bodyString = peekedBody.string()
+ */
