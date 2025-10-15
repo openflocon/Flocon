@@ -6,10 +6,16 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import io.github.openflocon.flocon.myapplication.database.dao.DogDao
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
+import io.github.openflocon.flocon.myapplication.database.model.HumanEntity
+import io.github.openflocon.flocon.myapplication.database.model.HumanWithDogEntity
 
 @Database(
-    entities = [DogEntity::class],
-    version = 1,
+    entities = [
+        DogEntity::class,
+        HumanEntity::class,
+        HumanWithDogEntity::class,
+    ],
+    version = 3,
     exportSchema = false,
 )
 abstract class DogDatabase : RoomDatabase() {
@@ -25,7 +31,7 @@ abstract class DogDatabase : RoomDatabase() {
                     context.applicationContext,
                     DogDatabase::class.java,
                     "dogs_database" // Nom du fichier de la base de données Dogs
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 instance
             }
