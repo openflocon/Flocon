@@ -7,6 +7,7 @@ import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.messages.usecase.HandleIncomingMessagesUseCase
+import io.github.openflocon.domain.messages.usecase.HandleReceivedFilesUseCase
 import io.github.openflocon.domain.messages.usecase.StartServerUseCase
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
@@ -19,6 +20,7 @@ import kotlin.time.Duration.Companion.seconds
 class MessagesServerDelegate(
     private val startServerUseCase: StartServerUseCase,
     private val handleIncomingMessagesUseCase: HandleIncomingMessagesUseCase,
+    private val handleReceivedFilesUseCase: HandleReceivedFilesUseCase,
     private val closeableDelegate: CloseableDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val dispatcherProvider: DispatcherProvider,
@@ -27,6 +29,11 @@ class MessagesServerDelegate(
     fun initialize() {
         coroutineScope.launch {
             handleIncomingMessagesUseCase()
+                .collect()
+        }
+
+        coroutineScope.launch {
+            handleReceivedFilesUseCase()
                 .collect()
         }
 
@@ -53,7 +60,7 @@ class MessagesServerDelegate(
     } catch (t: Throwable) {
         feedbackDisplayer.displayMessage(
             buildString {
-                append("Cannot start server on port ${Constant.SERVER_PORT}")
+                append("Cannot start server on port ${Constant.SERVER_WEBSOCKET_PORT}")
                 t.message?.let {
                     append(" : ")
                     append(it)

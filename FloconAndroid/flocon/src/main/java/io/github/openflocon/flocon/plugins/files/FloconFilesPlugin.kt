@@ -3,18 +3,22 @@ package io.github.openflocon.flocon.plugins.files
 import android.content.Context
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.FloconPlugin
+import io.github.openflocon.flocon.model.FloconFileInfo
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FilesResultDataModel
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFileMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFolderContentMessage
+import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFileMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFilesMessage
 import java.io.File
 
 internal class FloconFilesPluginImpl(
     private val context: Context,
+    private val floconFileSender: FloconFileSender,
 ) : FloconFilesPlugin {
 
     override fun onMessageReceived(
@@ -32,6 +36,21 @@ internal class FloconFilesPluginImpl(
                     requestId = listFilesMessage.requestId,
                     sender = sender,
                 )
+            }
+
+            Protocol.ToDevice.Files.Method.GetFile -> {
+                val getFileMessage = ToDeviceGetFileMessage.fromJson(message = messageFromServer.body) ?: return
+
+                val file = getFile(path = getFileMessage.path, isConstantPath = false)
+                if (file.exists()) {
+                    floconFileSender.send(
+                        file = file,
+                        infos = FloconFileInfo(
+                            requestId = getFileMessage.requestId,
+                            path = getFileMessage.path,
+                        )
+                    )
+                }
             }
 
             Protocol.ToDevice.Files.Method.DeleteFile -> {

@@ -5,6 +5,7 @@ import com.flocon.data.remote.common.safeDecodeFromString
 import com.flocon.data.remote.files.models.FromDeviceFilesResultDataModel
 import com.flocon.data.remote.files.models.ToDeviceDeleteFileMessage
 import com.flocon.data.remote.files.models.ToDeviceDeleteFolderContentMessage
+import com.flocon.data.remote.files.models.ToDeviceGetFileMessage
 import com.flocon.data.remote.files.models.ToDeviceGetFilesMessage
 import com.flocon.data.remote.files.models.toDomain
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
@@ -21,6 +22,7 @@ import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.models.FromDeviceFilesResultDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -38,12 +40,19 @@ class FilesRemoteDataSourceImpl(
     private val getFilesResultReceived =
         MutableStateFlow<Set<FromDeviceFilesResultDomainModel>>(emptySet())
 
+    private val downloadFileResultReceived =
+        MutableStateFlow<Set<FloconReceivedFileDomainModel>>(emptySet())
+
     override fun onGetFilesResultReceived(received: FromDeviceFilesResultDomainModel) {
         getFilesResultReceived.update { it + received }
     }
 
+    override fun onFloconReceivedFilesDomainModel(received: FloconReceivedFileDomainModel) {
+        downloadFileResultReceived.update { it + received }
+    }
+
     @OptIn(ExperimentalUuidApi::class)
-    override suspend fun executeGetFile(
+    override suspend fun executeListFiles(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
     ): Either<Throwable, List<FileDomainModel>> {
@@ -62,17 +71,41 @@ class FilesRemoteDataSourceImpl(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.ListFiles,
                 body =
-                Json.Default.encodeToString(
-                    ToDeviceGetFilesMessage(
-                        requestId = requestId,
-                        path = filePath,
-                        isConstantPath = isConstantPath,
+                    Json.Default.encodeToString(
+                        ToDeviceGetFilesMessage(
+                            requestId = requestId,
+                            path = filePath,
+                            isConstantPath = isConstantPath,
+                        ),
                     ),
-                ),
             ),
         )
         // wait for result
         return waitForResult(requestId)
+    }
+
+    override suspend fun executeDownloadFile(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        path: String,
+    ): Either<Throwable, FloconReceivedFileDomainModel>{
+        val requestId = newRequestId() // not sure I need it
+        server.sendMessageToClient(
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
+            message = FloconOutgoingMessageDataModel(
+                plugin = Protocol.ToDevice.Files.Plugin,
+                method = Protocol.ToDevice.Files.Method.GetFile,
+                body =
+                    Json.Default.encodeToString(
+                        ToDeviceGetFileMessage(
+                            requestId = requestId,
+                            path = path,
+                        ),
+                    ),
+            ),
+        )
+
+        // wait for result
+        return waitForDownloadFileResult(requestId)
     }
 
     override suspend fun executeDeleteFolderContent(
@@ -94,13 +127,13 @@ class FilesRemoteDataSourceImpl(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFolderContent,
                 body =
-                Json.Default.encodeToString(
-                    ToDeviceDeleteFolderContentMessage(
-                        requestId = requestId,
-                        path = realPath,
-                        isConstantPath = isConstantPath,
+                    Json.Default.encodeToString(
+                        ToDeviceDeleteFolderContentMessage(
+                            requestId = requestId,
+                            path = realPath,
+                            isConstantPath = isConstantPath,
+                        ),
                     ),
-                ),
             ),
         )
 
@@ -135,14 +168,14 @@ class FilesRemoteDataSourceImpl(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFile,
                 body =
-                Json.Default.encodeToString(
-                    ToDeviceDeleteFileMessage(
-                        requestId = requestId,
-                        parentPath = parentPath,
-                        filePath = filePathValue,
-                        isConstantParentPath = isConstantParentPath,
+                    Json.Default.encodeToString(
+                        ToDeviceDeleteFileMessage(
+                            requestId = requestId,
+                            parentPath = parentPath,
+                            filePath = filePathValue,
+                            isConstantParentPath = isConstantParentPath,
+                        ),
                     ),
-                ),
             ),
         )
 
@@ -150,10 +183,11 @@ class FilesRemoteDataSourceImpl(
         return waitForResult(requestId)
     }
 
-    override fun getItems(message: FloconIncomingMessageDomainModel): FromDeviceFilesResultDomainModel? = json.safeDecodeFromString<FromDeviceFilesResultDataModel>(message.body)
-        ?.toDomain()
+    override fun getItems(message: FloconIncomingMessageDomainModel): FromDeviceFilesResultDomainModel? =
+        json.safeDecodeFromString<FromDeviceFilesResultDataModel>(message.body)
+            ?.toDomain()
 
-    private suspend fun waitForResult(requestId: String): Either<Exception, List<FileDomainModel>> {
+    private suspend fun waitForResult(requestId: String) : Either<Exception, List<FileDomainModel>> {
         try {
             val result = withTimeout(3_000) {
                 getFilesResultReceived
@@ -171,13 +205,31 @@ class FilesRemoteDataSourceImpl(
         }
     }
 
-    private fun getFilesFromResult(result: FromDeviceFilesResultDomainModel): List<FileDomainModel> = result.files.map {
-        FileDomainModel(
-            name = it.name,
-            isDirectory = it.isDirectory,
-            path = FilePathDomainModel.Real(it.path),
-            size = it.size,
-            lastModified = Instant.fromEpochMilliseconds(it.lastModified),
-        )
+    private suspend fun waitForDownloadFileResult(requestId: String) : Either<Exception, FloconReceivedFileDomainModel> {
+        try {
+            val result = withTimeout(30_000) { // 30s timeout
+                downloadFileResultReceived
+                    .mapNotNull { it.firstOrNull { it.requestId == requestId } }
+                    .first()
+            }
+            return Success(result)
+        } catch (e: TimeoutCancellationException) {
+            Logger.e { "Timeout: No response for the file request $requestId" }
+            return Failure(e)
+        } catch (e: Exception) {
+            Logger.e(e) { "Unknown exception: ${e.message}" }
+            return Failure(e)
+        }
     }
+
+    private fun getFilesFromResult(result: FromDeviceFilesResultDomainModel): List<FileDomainModel> =
+        result.files.map {
+            FileDomainModel(
+                name = it.name,
+                isDirectory = it.isDirectory,
+                path = FilePathDomainModel.Real(it.path),
+                size = it.size,
+                lastModified = Instant.fromEpochMilliseconds(it.lastModified),
+            )
+        }
 }

@@ -10,6 +10,8 @@ import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.repository.FilesRepository
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
+import io.github.openflocon.domain.messages.repository.FileReceiverRepository
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -20,7 +22,8 @@ class FilesRepositoryImpl(
     private val localFilesDataSource: FilesLocalDataSource,
     private val remoteFilesDataSource: FilesRemoteDataSource,
 ) : FilesRepository,
-    MessagesReceiverRepository {
+    MessagesReceiverRepository,
+    FileReceiverRepository {
 
     override val pluginName = listOf(Protocol.FromDevice.Files.Plugin)
 
@@ -34,6 +37,13 @@ class FilesRepositoryImpl(
                     ?.let(remoteFilesDataSource::onGetFilesResultReceived)
             }
         }
+    }
+
+    override suspend fun onFileReceived(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        receivedFile: FloconReceivedFileDomainModel
+    ) {
+        remoteFilesDataSource.onFloconReceivedFilesDomainModel(receivedFile)
     }
 
     override suspend fun onDeviceConnected(
@@ -58,7 +68,7 @@ class FilesRepositoryImpl(
         path: FilePathDomainModel,
     ): Either<Throwable, Unit> = withContext(dispatcherProvider.data) {
         remoteFilesDataSource
-            .executeGetFile(
+            .executeListFiles(
                 deviceIdAndPackageName = deviceIdAndPackageName,
                 path = path,
             ).alsoSuccess {
@@ -69,6 +79,17 @@ class FilesRepositoryImpl(
                 )
                 // store the result
             }.mapSuccess { }
+    }
+
+    override suspend fun downloadFile(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        path: String,
+    ) = withContext(dispatcherProvider.data) {
+        remoteFilesDataSource
+            .executeDownloadFile(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                path = path,
+            )
     }
 
     override suspend fun deleteFolderContent(

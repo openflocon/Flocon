@@ -16,3 +16,4 @@ interface FloconWebSocketClient {
 
     fun disconnect()
 }
+

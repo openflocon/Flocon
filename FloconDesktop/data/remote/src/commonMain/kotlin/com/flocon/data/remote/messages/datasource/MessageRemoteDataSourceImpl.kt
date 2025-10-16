@@ -5,6 +5,7 @@ import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.server.Server
 import io.github.openflocon.data.core.messages.datasource.MessageRemoteDataSource
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -13,9 +14,12 @@ internal class MessageRemoteDataSourceImpl(
 ) : MessageRemoteDataSource {
 
     override fun startServer() {
-        server.start()
+        server.startWebsocket()
+        server.starHttp()
     }
 
     override fun listenMessages(): Flow<FloconIncomingMessageDomainModel> = server.receivedMessages
         .map(FloconIncomingMessageDataModel::toDomain)
+
+    override fun listenReceivedFiles(): Flow<FloconReceivedFileDomainModel> = server.receivedFiles
 }

@@ -4,13 +4,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Folder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.files.models.FileDomainModel
+import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.usecase.DeleteFileUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFolderContentUseCase
+import io.github.openflocon.domain.files.usecase.DownloadFileUseCase
 import io.github.openflocon.domain.files.usecase.ObserveFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.RefreshFolderContentUseCase
+import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.features.files.mapper.buildContextualActions
 import io.github.openflocon.flocondesktop.features.files.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.files.mapper.toUi
@@ -29,12 +33,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.awt.Desktop
+import java.io.File
+import java.io.IOException
+
 
 class FilesViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val observeFolderContentUseCase: ObserveFolderContentUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val deleteFileUseCase: DeleteFileUseCase,
+    private val downloadFileUseCase: DownloadFileUseCase,
     private val deleteFolderContentUseCase: DeleteFolderContentUseCase,
     private val refreshFolderContentUseCase: RefreshFolderContentUseCase,
 ) : ViewModel() {
@@ -136,7 +145,18 @@ class FilesViewModel(
             FileTypeUiModel.Text,
             FileTypeUiModel.Other,
             -> {
-                feedbackDisplayer.displayMessage("not implemented")
+                (fileUiModel.path.toDomain() as? FilePathDomainModel.Real)?.let {
+                    viewModelScope.launch(dispatcherProvider.viewModel) {
+                        downloadFileUseCase(it).alsoSuccess {
+                            OpenFile.openFileOnDesktop(it.localPath).alsoFailure {
+                                feedbackDisplayer.displayMessage(
+                                    message = it.message,
+                                    type = FeedbackDisplayer.MessageType.Error,
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -12,3 +12,4 @@ data class FloconIncomingMessageDomainModel(
     val appPackageName: String,
     val appInstance: AppInstance,
 )
+

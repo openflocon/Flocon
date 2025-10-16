@@ -6,17 +6,25 @@ import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.models.FromDeviceFilesResultDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import kotlin.uuid.ExperimentalUuidApi
 
 interface FilesRemoteDataSource {
 
     fun onGetFilesResultReceived(received: FromDeviceFilesResultDomainModel)
+    fun onFloconReceivedFilesDomainModel(received: FloconReceivedFileDomainModel)
 
     @OptIn(ExperimentalUuidApi::class)
-    suspend fun executeGetFile(
+    suspend fun executeListFiles(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
     ): Either<Throwable, List<FileDomainModel>>
+
+    @OptIn(ExperimentalUuidApi::class)
+    suspend fun executeDownloadFile(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        path: String,
+    ) : Either<Throwable, FloconReceivedFileDomainModel>
 
     suspend fun executeDeleteFolderContent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -30,5 +38,4 @@ interface FilesRemoteDataSource {
     ): Either<Exception, List<FileDomainModel>>
 
     fun getItems(message: FloconIncomingMessageDomainModel): FromDeviceFilesResultDomainModel?
-
 }
