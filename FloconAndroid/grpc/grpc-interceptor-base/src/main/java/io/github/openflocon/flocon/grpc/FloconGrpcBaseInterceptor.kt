@@ -83,13 +83,14 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
     }
 
     override fun sendMessage(message: ReqT) {
+        val bodyString = formatter.format(message)
         val request = FloconNetworkRequest(
             url = next.authority(),
             method = method.fullMethodName,
             body = formatter.format(message),
             startTime = System.currentTimeMillis(),
             headers = headers?.toHeaders().orEmpty(),
-            size = 0, // TODO
+            size = bodyString.toByteArray().size.toLong(), // not the real request size, but it gives a good idea
             isMocked = false, // cannot mock grpc
         )
         requestHolder.request.complete(request)
@@ -137,15 +138,18 @@ private class LoggingClientCallListener<RespT>(
                         ),
                     )
                 } ?: run {
+                    val bodyString = formatter.format(message)
+                    val size = bodyString.toByteArray().size.toLong()
+
                     floconGrpcPlugin.reportResponse(
                         callId = callId,
                         request = request,
                         response = FloconNetworkResponse(
-                            body = formatter.format(message),
+                            body = bodyString,
                             headers = (this.headers ?: trailers).toHeaders(),
                             httpCode = null,
                             contentType = "grpc",
-                            size = 0L,
+                            size = size, // not the real response size, but it gives a good idea
                             grpcStatus = status.code.toString(),
                             error = null,
                             requestHeaders = null,
