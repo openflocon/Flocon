@@ -18,6 +18,10 @@ import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -33,6 +37,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkSta
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconCodeBlock
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIconButton
@@ -41,6 +46,8 @@ import io.github.openflocon.library.designsystem.components.FloconSection
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
+private const val LARGE_BODY_LENGHT = 30_000
 
 @Composable
 fun NetworkDetailView(
@@ -282,13 +289,46 @@ private fun Request(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                FloconCodeBlock(
-                    code = state.requestBody,
-                    containerColor = FloconTheme.colorPalette.secondary,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp)
-                )
+                var displayBody by remember(state.requestBody) {
+                    val isLargeResponse = state.requestBody.length > LARGE_BODY_LENGHT
+                    mutableStateOf(!isLargeResponse)
+                }
+                if (!displayBody) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
+                            .background(
+                                FloconTheme.colorPalette.secondary,
+                                shape = FloconTheme.shapes.medium,
+                            )
+                            .padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Response body too large (${state.requestSize} bytes)",
+                            color = FloconTheme.colorPalette.onPrimary,
+                            style = FloconTheme.typography.bodySmall,
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        FloconButton(
+                            onClick = {
+                                displayBody = true
+                            },
+                            containerColor = FloconTheme.colorPalette.tertiary,
+                        ) {
+                            Text("Display anyway")
+                        }
+                    }
+                } else {
+                    FloconCodeBlock(
+                        code = state.requestBody,
+                        containerColor = FloconTheme.colorPalette.secondary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
+                    )
+                }
             }
         }
     }
@@ -393,13 +433,46 @@ private fun Response(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        FloconCodeBlock(
-                            code = response.body,
-                            containerColor = FloconTheme.colorPalette.secondary,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp)
-                        )
+                        var displayBody by remember(response.body) {
+                            val isLargeResponse = response.body.length > LARGE_BODY_LENGHT
+                            mutableStateOf(!isLargeResponse)
+                        }
+                        if (!displayBody) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp)
+                                    .background(
+                                        FloconTheme.colorPalette.secondary,
+                                        shape = FloconTheme.shapes.medium,
+                                    )
+                                    .padding(12.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Response body too large (${response.size} bytes)",
+                                    color = FloconTheme.colorPalette.onPrimary,
+                                    style = FloconTheme.typography.bodySmall,
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                FloconButton(
+                                    onClick = {
+                                        displayBody = true
+                                    },
+                                    containerColor = FloconTheme.colorPalette.tertiary,
+                                ) {
+                                    Text("Display anyway")
+                                }
+                            }
+                        } else {
+                            FloconCodeBlock(
+                                code = response.body,
+                                containerColor = FloconTheme.colorPalette.secondary,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp)
+                            )
+                        }
                     }
                 }
             }
