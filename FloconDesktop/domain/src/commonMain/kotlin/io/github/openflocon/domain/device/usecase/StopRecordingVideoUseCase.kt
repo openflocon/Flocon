@@ -6,8 +6,8 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.device.models.RecordingDomainModel
+import java.io.File
 import java.nio.file.Paths
-import kotlin.io.path.absolutePathString
 
 class StopRecordingVideoUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
@@ -27,11 +27,16 @@ class StopRecordingVideoUseCase(
         // wait until the record is done
         recording.completableDeferred.await()
 
-        val desktopPath = Paths.get(System.getProperty("user.home"), "Desktop", fileName).absolutePathString()
+        val parentFile = Paths.get(System.getProperty("user.home"), "Desktop", "Flocon", "ScreenRecord").toFile()
+        if(!parentFile.exists()) {
+            parentFile.mkdirs()
+        }
+
+        val filePath = File(parentFile, fileName).absolutePath
 
         executeAdbCommandUseCase(
             target = AdbCommandTargetDomainModel.Device(current.deviceId),
-            command = "pull ${recording.onDeviceFilePath} $desktopPath",
+            command = "pull ${recording.onDeviceFilePath} $filePath",
         )
 
         executeAdbCommandUseCase(
@@ -39,6 +44,6 @@ class StopRecordingVideoUseCase(
             command = "shell rm ${recording.onDeviceFilePath}",
         )
 
-        return Success(desktopPath)
+        return Success(filePath)
     }
 }

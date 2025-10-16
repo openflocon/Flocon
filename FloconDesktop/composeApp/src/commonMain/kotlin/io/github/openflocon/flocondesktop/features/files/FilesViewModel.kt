@@ -148,7 +148,12 @@ class FilesViewModel(
                 (fileUiModel.path.toDomain() as? FilePathDomainModel.Real)?.let {
                     viewModelScope.launch(dispatcherProvider.viewModel) {
                         downloadFileUseCase(it).alsoSuccess {
-                            OpenFile.openFileOnDesktop(it.localPath)
+                            OpenFile.openFileOnDesktop(it.localPath).alsoFailure {
+                                feedbackDisplayer.displayMessage(
+                                    message = it.message,
+                                    type = FeedbackDisplayer.MessageType.Error,
+                                )
+                            }
                         }
                     }
                 }

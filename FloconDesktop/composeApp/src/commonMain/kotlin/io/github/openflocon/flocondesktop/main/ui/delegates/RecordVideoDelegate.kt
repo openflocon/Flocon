@@ -47,6 +47,7 @@ class RecordVideoDelegate(
             },
             doOnSuccess = {
                 recording.update { null }
+                feedbackDisplayer.displayMessage("Record saved at $it")
             }
         )
     }

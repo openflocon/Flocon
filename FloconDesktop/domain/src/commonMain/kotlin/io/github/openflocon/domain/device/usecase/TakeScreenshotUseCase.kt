@@ -5,8 +5,8 @@ import io.github.openflocon.domain.adb.model.AdbCommandTargetDomainModel
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.then
+import java.io.File
 import java.nio.file.Paths
-import kotlin.io.path.absolutePathString
 
 class TakeScreenshotUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
@@ -18,7 +18,13 @@ class TakeScreenshotUseCase(
 
         val fileName = "screenshot_${current.packageName}_${System.currentTimeMillis()}.png"
         val onDeviceFilePath = "/sdcard/$fileName"
-        val desktopPath = Paths.get(System.getProperty("user.home"), "Desktop", fileName).absolutePathString()
+
+        val parentFile = Paths.get(System.getProperty("user.home"), "Desktop", "Flocon", "Screenshot").toFile()
+        if(!parentFile.exists()) {
+            parentFile.mkdirs()
+        }
+
+        val filePath = File(parentFile, fileName).absolutePath
 
         return executeAdbCommandUseCase(
             target = AdbCommandTargetDomainModel.Device(current.deviceId),
@@ -26,7 +32,7 @@ class TakeScreenshotUseCase(
         ).then {
             executeAdbCommandUseCase(
                 target = AdbCommandTargetDomainModel.Device(current.deviceId),
-                command = "pull $onDeviceFilePath $desktopPath",
+                command = "pull $onDeviceFilePath $filePath",
             )
         }.then {
             executeAdbCommandUseCase(
@@ -34,7 +40,7 @@ class TakeScreenshotUseCase(
                 command = "shell rm $onDeviceFilePath",
             )
         }.mapSuccess {
-            desktopPath
+            filePath
         }.alsoFailure { it.printStackTrace() }
     }
 }

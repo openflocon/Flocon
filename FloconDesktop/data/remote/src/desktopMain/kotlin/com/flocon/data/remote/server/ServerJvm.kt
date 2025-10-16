@@ -187,7 +187,12 @@ class ServerJvm : Server {
         if (httpServer != null)
             return
 
-        val desktopPath = Paths.get(System.getProperty("user.home"), "Desktop").absolutePathString()
+        val desktopPath = Paths.get(System.getProperty("user.home"), "Desktop", "Flocon", "Files").absolutePathString()
+        File(desktopPath).also {
+            if(!it.exists()) {
+                it.mkdirs()
+            }
+        }
 
         this.httpServer = embeddedServer(Netty, port = port) {
             routing {
@@ -206,7 +211,7 @@ class ServerJvm : Server {
                             }
 
                             is PartData.FileItem -> {
-                                val fileName = part.originalFileName ?: "upload.bin"
+                                val fileName = part.originalFileName ?: "flocon_file${System.currentTimeMillis()}.bin"
                                 val targetFile = File(desktopPath, fileName)
                                 part.streamProvider().use { input ->
                                     targetFile.outputStream().use { output ->
@@ -222,9 +227,9 @@ class ServerJvm : Server {
                         part.dispose()
                     }
 
-                    println("=== 📦 Upload reçu ===")
+                    println("=== 📦 Upload received ===")
                     fields.forEach { (k, v) -> println("➡️ $k = $v") }
-                    println("📁 Fichier : ${savedFile?.absolutePath ?: "Aucun fichier reçu"}")
+                    println("📁 File : ${savedFile?.absolutePath ?: "error"}")
                     println("======================")
 
                     try {
@@ -241,12 +246,12 @@ class ServerJvm : Server {
                         Logger.e("error receiving file", t)
                     }
 
-                    call.respondText("✅ Upload reçu : ${savedFile?.absolutePath ?: "inconnu"}")
+                    call.respondText("file received : ${savedFile?.absolutePath ?: "inconnu"}")
                 }
             }
         }.start(wait = false)
 
-        Logger.d("🚀 Serveur HTTP prêt sur http://127.0.0.1:$port/upload")
+        Logger.d("🚀 HTTP file upload server ready on http://127.0.0.1:$port/upload")
     }
 
     override fun stop() {
