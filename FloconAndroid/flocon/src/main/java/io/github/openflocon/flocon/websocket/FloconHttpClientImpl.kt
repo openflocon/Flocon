@@ -6,9 +6,7 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.Response
 import java.io.File
-import java.io.IOException
 
 class FloconHttpClientImpl : FloconHttpClient {
 
@@ -20,7 +18,10 @@ class FloconHttpClientImpl : FloconHttpClient {
         file: File,
         infos: FloconFileInfo,
         address: String,
-        port: Int
+        port: Int,
+        deviceId: String,
+        appPackageName: String,
+        appInstance: Long
     ): Boolean {
         val uploadUrl = "http://$address:$port/upload"
 
@@ -31,8 +32,12 @@ class FloconHttpClientImpl : FloconHttpClient {
         val multipartBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
 
-            .addFormDataPart("filePath", infos.path)
+            .addFormDataPart("remotePath", infos.path)
             .addFormDataPart("requestId", infos.requestId)
+
+            .addFormDataPart("deviceId", deviceId)
+            .addFormDataPart("appPackageName", appPackageName)
+            .addFormDataPart("appInstance", appInstance.toString())
 
             .addFormDataPart("file", file.name, fileBody)
             .build()

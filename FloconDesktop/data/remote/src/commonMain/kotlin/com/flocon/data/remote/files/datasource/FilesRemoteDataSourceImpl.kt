@@ -22,6 +22,7 @@ import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.models.FromDeviceFilesResultDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
+import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -39,8 +40,15 @@ class FilesRemoteDataSourceImpl(
     private val getFilesResultReceived =
         MutableStateFlow<Set<FromDeviceFilesResultDomainModel>>(emptySet())
 
+    private val downloadFileResultReceived =
+        MutableStateFlow<Set<FloconReceivedFileDomainModel>>(emptySet())
+
     override fun onGetFilesResultReceived(received: FromDeviceFilesResultDomainModel) {
         getFilesResultReceived.update { it + received }
+    }
+
+    override fun onFloconReceivedFilesDomainModel(received: FloconReceivedFileDomainModel) {
+        downloadFileResultReceived.update { it + received }
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -79,7 +87,7 @@ class FilesRemoteDataSourceImpl(
     override suspend fun executeDownloadFile(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: String,
-    ) {
+    ): Either<Throwable, FloconReceivedFileDomainModel>{
         val requestId = newRequestId() // not sure I need it
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
@@ -95,6 +103,9 @@ class FilesRemoteDataSourceImpl(
                     ),
             ),
         )
+
+        // wait for result
+        return waitForDownloadFileResult(requestId)
     }
 
     override suspend fun executeDeleteFolderContent(
@@ -176,7 +187,7 @@ class FilesRemoteDataSourceImpl(
         json.safeDecodeFromString<FromDeviceFilesResultDataModel>(message.body)
             ?.toDomain()
 
-    private suspend fun waitForResult(requestId: String): Either<Exception, List<FileDomainModel>> {
+    private suspend fun waitForResult(requestId: String) : Either<Exception, List<FileDomainModel>> {
         try {
             val result = withTimeout(3_000) {
                 getFilesResultReceived
@@ -185,6 +196,23 @@ class FilesRemoteDataSourceImpl(
             }
             val files: List<FileDomainModel> = getFilesFromResult(result)
             return Success(files)
+        } catch (e: TimeoutCancellationException) {
+            Logger.e { "Timeout: No response for the file request $requestId" }
+            return Failure(e)
+        } catch (e: Exception) {
+            Logger.e(e) { "Unknown exception: ${e.message}" }
+            return Failure(e)
+        }
+    }
+
+    private suspend fun waitForDownloadFileResult(requestId: String) : Either<Exception, FloconReceivedFileDomainModel> {
+        try {
+            val result = withTimeout(30_000) { // 30s timeout
+                downloadFileResultReceived
+                    .mapNotNull { it.firstOrNull { it.requestId == requestId } }
+                    .first()
+            }
+            return Success(result)
         } catch (e: TimeoutCancellationException) {
             Logger.e { "Timeout: No response for the file request $requestId" }
             return Failure(e)

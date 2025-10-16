@@ -4,6 +4,7 @@ import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import io.github.openflocon.domain.Constant
+import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -23,6 +24,7 @@ interface Server {
     )
 
     val activeDevices: Flow<Set<FloconDeviceIdAndPackageNameDataModel>>
+    val receivedFiles: Flow<FloconReceivedFileDomainModel>
 }
 
 @OptIn(ExperimentalUuidApi::class)

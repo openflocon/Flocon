@@ -4,11 +4,18 @@ import co.touchlab.kermit.Logger
 import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
+import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
+import io.ktor.http.content.PartData
+import io.ktor.http.content.forEachPart
+import io.ktor.http.content.streamProvider
 import io.ktor.server.application.install
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
+import io.ktor.server.request.receiveMultipart
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
@@ -26,22 +33,18 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.Json
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.time.Duration.Companion.seconds
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.http.content.*
 import java.io.File
 import java.nio.file.Paths
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.io.path.absolutePathString
+import kotlin.time.Duration.Companion.seconds
 
 class ServerJvm : Server {
     private val _receivedMessages = Channel<FloconIncomingMessageDataModel>()
     override val receivedMessages = _receivedMessages.receiveAsFlow()
+
+    private val _receivedFiles = Channel<FloconReceivedFileDomainModel>()
+    override val receivedFiles = _receivedFiles.receiveAsFlow()
 
     private var websocketServer: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? =
         null
@@ -53,7 +56,8 @@ class ServerJvm : Server {
     override val activeDevices = _activeSessions.map { it.keys }
         .distinctUntilChanged()
 
-    private var httpServer: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? = null
+    private var httpServer: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? =
+        null
 
     override fun startWebsocket(port: Int) {
         if (websocketServer != null && isStarted.get()) return
@@ -122,7 +126,7 @@ class ServerJvm : Server {
                                 }
                             }
                         } catch (e: ClosedReceiveChannelException) {
-                            Logger.e(e) {"WebSocket connection closed (channel closed): ${closeReason.await()}" }
+                            Logger.e(e) { "WebSocket connection closed (channel closed): ${closeReason.await()}" }
                         } catch (e: Exception) {
                             Logger.e(e) { "WebSocket error: ${e.message}" }
                         } finally {
@@ -180,7 +184,7 @@ class ServerJvm : Server {
     }
 
     override fun starHttp(port: Int) {
-        if(httpServer != null)
+        if (httpServer != null)
             return
 
         val desktopPath = Paths.get(System.getProperty("user.home"), "Desktop").absolutePathString()
@@ -189,20 +193,52 @@ class ServerJvm : Server {
             routing {
                 post("/upload") {
                     val multipart = call.receiveMultipart()
+
+                    val fields = mutableMapOf<String, String>()
                     var savedFile: File? = null
 
                     multipart.forEachPart { part ->
-                        if (part is PartData.FileItem) {
-                            val name = part.originalFileName ?: "upload.bin"
-                            val targetFile = File(desktopPath, name)
-                            part.streamProvider().use { input ->
-                                targetFile.outputStream().use { output ->
-                                    input.copyTo(output)
+                        when (part) {
+                            is PartData.FormItem -> {
+                                part.name?.let {
+                                    fields[it] = part.value
                                 }
                             }
-                            savedFile = targetFile
+
+                            is PartData.FileItem -> {
+                                val fileName = part.originalFileName ?: "upload.bin"
+                                val targetFile = File(desktopPath, fileName)
+                                part.streamProvider().use { input ->
+                                    targetFile.outputStream().use { output ->
+                                        input.copyTo(output)
+                                    }
+                                }
+                                savedFile = targetFile
+                            }
+
+                            else -> Unit
                         }
+
                         part.dispose()
+                    }
+
+                    println("=== 📦 Upload reçu ===")
+                    fields.forEach { (k, v) -> println("➡️ $k = $v") }
+                    println("📁 Fichier : ${savedFile?.absolutePath ?: "Aucun fichier reçu"}")
+                    println("======================")
+
+                    try {
+                        val received = FloconReceivedFileDomainModel(
+                            deviceId = fields["deviceId"]!!,
+                            requestId = fields["requestId"]!!,
+                            appPackageName = fields["appPackageName"]!!,
+                            appInstance = fields["appInstance"]!!.toLong(),
+                            remotePath = fields["remotePath"]!!,
+                            localPath = savedFile!!.absolutePath,
+                        )
+                        _receivedFiles.send(received)
+                    } catch (t: Throwable) {
+                        Logger.e("error receiving file", t)
                     }
 
                     call.respondText("✅ Upload reçu : ${savedFile?.absolutePath ?: "inconnu"}")

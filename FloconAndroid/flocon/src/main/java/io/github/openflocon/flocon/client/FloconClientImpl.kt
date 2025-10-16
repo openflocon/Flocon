@@ -204,6 +204,10 @@ internal class FloconClientImpl(
                 port = FLOCON_HTTP_PORT,
                 file = file,
                 infos = infos,
+
+                deviceId = deviceId,
+                appPackageName = appPackageName,
+                appInstance = appInstance,
             )
         }
     }

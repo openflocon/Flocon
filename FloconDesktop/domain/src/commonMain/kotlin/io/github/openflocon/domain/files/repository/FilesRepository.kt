@@ -4,6 +4,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface FilesRepository {
@@ -31,5 +32,5 @@ interface FilesRepository {
     suspend fun downloadFile(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: String
-    )
+    ) : Either<Throwable, FloconReceivedFileDomainModel>
 }
