@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 67,
-    "identityHash": "2038d2adaa065952692bba0a38a7de5f",
+    "version": 68,
+    "identityHash": "94a1a4f3eb4cf29757584bdaa3c2a455",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -1217,6 +1217,52 @@
         ]
       },
       {
+        "tableName": "NetworkSettingsEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `valueAsJson` TEXT NOT NULL, PRIMARY KEY(`deviceId`, `packageName`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "valueAsJson",
+            "columnName": "valueAsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "deviceId",
+            "packageName"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
+          }
+        ]
+      },
+      {
         "tableName": "MockNetworkEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mockId` TEXT NOT NULL, `deviceId` TEXT, `packageName` TEXT, `isEnabled` INTEGER NOT NULL, `response` TEXT NOT NULL, `expectation_urlPattern` TEXT NOT NULL, `expectation_method` TEXT NOT NULL, PRIMARY KEY(`mockId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
@@ -1590,7 +1636,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2038d2adaa065952692bba0a38a7de5f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '94a1a4f3eb4cf29757584bdaa3c2a455')"
     ]
   }
 }

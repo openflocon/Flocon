@@ -9,9 +9,7 @@ import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.Response
-import okio.Buffer
 import java.io.IOException
-import java.nio.charset.StandardCharsets
 import java.util.UUID
 
 data class FloconNetworkIsImageParams(
@@ -42,21 +40,18 @@ class FloconOkhttpInterceptor(
         val requestBody = request.body
         var requestBodyString: String? = null
         var requestSize: Long? = null
-        if (requestBody != null) {
-            val contentType: MediaType? = requestBody.contentType()
-            var charset = StandardCharsets.UTF_8
-            if (contentType != null) {
-                charset = contentType.charset(StandardCharsets.UTF_8)
-            }
-            val buffer = Buffer()
-            requestBody.writeTo(buffer)
-            requestBodyString = buffer.readString(charset!!)
-            requestSize = requestBody.contentLength().let {
-                if (it != -1L) it else requestBodyString?.toByteArray(charset)?.size?.toLong()
-            }
-        }
+
         val requestHeadersMap =
             request.headers.toMultimap().mapValues { it.value.joinToString(",") }
+
+        if (requestBody != null) {
+            val (bodyString, bodySize) = extractRequestBodyInfo(
+                request = request,
+                requestHeaders = requestHeadersMap,
+            )
+            requestBodyString = bodyString
+            requestSize = bodySize
+        }
 
         val startTime = System.nanoTime()
 
@@ -111,25 +106,26 @@ class FloconOkhttpInterceptor(
             var responseSize: Long? = null
             val responseContentType: MediaType? = responseBody?.contentType()
 
-            if (responseBody != null) {
-                // Use response.peekBody() to safely read the body without consuming it
-                // Note: peekBody has a max size, adjust as needed.
-                responseBodyString =
-                    response.peekBody(Long.MAX_VALUE).string() // Reads the body safely
-                responseSize = responseBody.contentLength().let {
-                    if (it != -1L) it else responseBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
-                }
-            }
             val responseHeadersMap =
                 response.headers.toMultimap().mapValues { it.value.joinToString(",") }
 
-            val isImage = responseContentType?.toString()?.startsWith("image/") == true || (isImage?.invoke(
-                FloconNetworkIsImageParams(
-                    request = request,
+            if (responseBody != null) {
+                val (bodyString, bodySize) = extractResponseBodyInfo(
                     response = response,
-                    responseContentType = responseContentType?.toString(),
+                    responseHeaders = responseHeadersMap,
                 )
-            ) == true)
+                responseBodyString = bodyString
+                responseSize = bodySize
+            }
+
+            val isImage =
+                responseContentType?.toString()?.startsWith("image/") == true || (isImage?.invoke(
+                    FloconNetworkIsImageParams(
+                        request = request,
+                        response = response,
+                        responseContentType = responseContentType?.toString(),
+                    )
+                ) == true)
 
             val requestHeadersMapUpToDate =
                 response.request.headers.toMultimap().mapValues { it.value.joinToString(",") }
@@ -161,6 +157,7 @@ class FloconOkhttpInterceptor(
             // Just return the original response if you don't modify the body itself.
             return response
         } catch (e: IOException) {
+
             val endTime = System.nanoTime()
 
             val durationMs: Double = (endTime - startTime) / 1e6
