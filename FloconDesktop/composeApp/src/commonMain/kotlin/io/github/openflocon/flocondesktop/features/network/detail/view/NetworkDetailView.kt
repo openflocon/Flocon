@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -180,6 +179,15 @@ private fun Request(
                         contentColor = FloconTheme.colorPalette.onPrimary
                     )
                 }
+
+
+                FloconLineDescription(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = "Request Size",
+                    value = state.requestSize,
+                    labelWidth = linesLabelWidth,
+                    contentColor = FloconTheme.colorPalette.onPrimary
+                )
             }
 
             state.graphQlSection?.let {
@@ -322,6 +330,24 @@ private fun Response(
                 }
 
                 is NetworkDetailViewState.Response.Success -> {
+                    Column(
+                        modifier = Modifier
+                            .padding(bottom = 12.dp)
+                            .background(
+                                color = FloconTheme.colorPalette.secondary,
+                                shape = RoundedCornerShape(12.dp),
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                    ) {
+                        FloconLineDescription(
+                            modifier = Modifier.fillMaxWidth(),
+                            label = "Response Size",
+                            value = response.size,
+                            labelWidth = 130.dp,
+                            contentColor = FloconTheme.colorPalette.onPrimary
+                        )
+                    }
+
                     response.headers?.let {
                         FloconSection(
                             title = "Response - Headers",
@@ -344,6 +370,7 @@ private fun Response(
                             )
                         }
                     }
+
                     FloconSection(
                         title = "Response - Body",
                         initialValue = true,
