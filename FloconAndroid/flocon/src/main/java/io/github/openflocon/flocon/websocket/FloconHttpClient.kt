@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.websocket
 import io.github.openflocon.flocon.model.FloconFileInfo
 import java.io.File
 
-interface FloconHttpClient {
+internal interface FloconHttpClient {
     suspend fun send(
         file: File,
         infos: FloconFileInfo,

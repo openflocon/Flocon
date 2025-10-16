@@ -1,7 +1,6 @@
 package io.github.openflocon.flocon.plugins.network
 
 import io.github.openflocon.flocon.FloconApp
-import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
@@ -13,7 +12,7 @@ fun floconLogWebSocketEvent(event: FloconWebSocketEvent) {
     FloconApp.instance?.client?.networkPlugin?.logWebSocket(event)
 }
 
-interface FloconNetworkPlugin : FloconPlugin {
+interface FloconNetworkPlugin {
     val mocks: Collection<MockNetworkResponse>
     val badQualityConfig: BadQualityConfig?
 

@@ -8,6 +8,7 @@ import android.widget.Toast
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconFileSender
+import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconFileInfo
 import io.github.openflocon.flocon.model.floconMessageFromServerFromJson
@@ -35,7 +36,7 @@ import java.io.File
 
 internal class FloconClientImpl(
     private val appContext: Context,
-) : FloconApp.Client, FloconFileSender {
+) : FloconApp.Client, FloconMessageSender, FloconFileSender {
 
     private val FLOCON_WEBSOCKET_PORT = 9023
     private val FLOCON_HTTP_PORT = 9024
@@ -63,9 +64,9 @@ internal class FloconClientImpl(
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     // region plugins
-    private val databasePlugin = FloconDatabasePluginImpl(context = appContext)
-    private val filesPlugin = FloconFilesPluginImpl(context = appContext, floconFileSender = this)
-    private val sharedPrefsPlugin = FloconSharedPreferencesPluginImpl(context = appContext)
+    private val databasePlugin = FloconDatabasePluginImpl(context = appContext, sender = this)
+    private val filesPlugin = FloconFilesPluginImpl(context = appContext, sender = this, floconFileSender = this)
+    private val sharedPrefsPlugin = FloconSharedPreferencesPluginImpl(context = appContext, sender = this)
     override val dashboardPlugin = FloconDashboardPluginImpl(sender = this)
     override val tablePlugin = FloconTablePluginImpl(sender = this)
     override val deeplinksPlugin = FloconDeeplinksPluginImpl(sender = this)
@@ -100,7 +101,7 @@ internal class FloconClientImpl(
             onClosed = onClosed,
         )
         allPlugins.forEach {
-            it.onConnectedToServer(sender = this)
+            it.onConnectedToServer()
         }
     }
 
@@ -115,56 +116,48 @@ internal class FloconClientImpl(
                     Protocol.ToDevice.Database.Plugin -> {
                         databasePlugin.onMessageReceived(
                             messageFromServer = messageFromServer,
-                            sender = this@FloconClientImpl,
                         )
                     }
 
                     Protocol.ToDevice.Files.Plugin -> {
                         filesPlugin.onMessageReceived(
                             messageFromServer = messageFromServer,
-                            sender = this@FloconClientImpl,
                         )
                     }
 
                     Protocol.ToDevice.SharedPreferences.Plugin -> {
                         sharedPrefsPlugin.onMessageReceived(
                             messageFromServer = messageFromServer,
-                            sender = this@FloconClientImpl,
                         )
                     }
 
                     Protocol.ToDevice.Device.Plugin -> {
                         devicePlugin.onMessageReceived(
                             messageFromServer = messageFromServer,
-                            sender = this@FloconClientImpl,
                         )
                     }
 
                     Protocol.ToDevice.Dashboard.Plugin -> {
                         dashboardPlugin.onMessageReceived(
                             messageFromServer = messageFromServer,
-                            sender = this@FloconClientImpl,
                         )
                     }
 
                     Protocol.ToDevice.Table.Plugin -> {
                         tablePlugin.onMessageReceived(
                             messageFromServer = messageFromServer,
-                            sender = this@FloconClientImpl,
                         )
                     }
 
                     Protocol.ToDevice.Analytics.Plugin -> {
                         analyticsPlugin.onMessageReceived(
                             messageFromServer = messageFromServer,
-                            sender = this@FloconClientImpl,
                         )
                     }
 
                     Protocol.ToDevice.Network.Plugin -> {
                         networkPlugin.onMessageReceived(
                             messageFromServer = messageFromServer,
-                            sender = this@FloconClientImpl,
                         )
                     }
                 }

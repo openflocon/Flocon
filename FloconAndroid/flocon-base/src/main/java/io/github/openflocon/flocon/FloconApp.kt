@@ -1,14 +1,12 @@
 package io.github.openflocon.flocon
 
 import android.content.Context
-import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPlugin
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPlugin
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPlugin
 import io.github.openflocon.flocon.plugins.device.FloconDevicePlugin
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
 import io.github.openflocon.flocon.plugins.tables.FloconTablePlugin
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 abstract class FloconApp {
@@ -18,7 +16,7 @@ abstract class FloconApp {
             private set
     }
 
-    interface Client : FloconMessageSender {
+    interface Client {
 
         @Throws(Throwable::class)
         suspend fun connect(onClosed: () -> Unit)

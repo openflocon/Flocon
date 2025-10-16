@@ -4,6 +4,7 @@ import android.content.Context
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallRequestToJson
 import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallResponseToJson
@@ -38,7 +39,7 @@ internal class FloconNetworkPluginImpl(
     private val context: Context,
     private var sender: FloconMessageSender,
     private val coroutineScope: CoroutineScope,
-) : FloconNetworkPlugin {
+) : FloconPlugin, FloconNetworkPlugin {
 
     private val websocketListeners = ConcurrentHashMap<String, FloconWebSocketMockListener>()
 
@@ -93,7 +94,6 @@ internal class FloconNetworkPluginImpl(
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
-        sender: FloconMessageSender
     ) {
         when (messageFromServer.method) {
             Protocol.ToDevice.Network.Method.SetupMocks -> {
@@ -118,7 +118,7 @@ internal class FloconNetworkPluginImpl(
         }
     }
 
-    override fun onConnectedToServer(sender: FloconMessageSender) {
+    override fun onConnectedToServer() {
         updateWebSocketIds()
     }
 

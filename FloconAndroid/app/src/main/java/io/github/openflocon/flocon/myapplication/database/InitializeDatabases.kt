@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 fun initializeDatabases(context: Context) {
     val dogDatabase = DogDatabase.getDatabase(context)
     val foodDatabase = FoodDatabase.getDatabase(context)
+
     GlobalScope.launch {
         dogDatabase.dogDao().insertDog(
             DogEntity(

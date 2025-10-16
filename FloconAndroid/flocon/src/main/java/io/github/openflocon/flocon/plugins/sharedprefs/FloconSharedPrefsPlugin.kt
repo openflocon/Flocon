@@ -6,8 +6,8 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
-import io.github.openflocon.flocon.plugins.SharedPreferences.FloconSharedPreferencesPlugin
 import io.github.openflocon.flocon.plugins.sharedprefs.model.SharedPreferencesDescriptor
 import io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice.SharedPreferenceRowDataModel
 import io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice.SharedPreferenceValueResultDataModel
@@ -21,9 +21,8 @@ import io.github.openflocon.flocon.plugins.sharedprefs.model.todevice.ToDeviceGe
 
 internal class FloconSharedPreferencesPluginImpl(
     private val context: Context,
-) : FloconSharedPreferencesPlugin {
-
-    private var sender: FloconMessageSender? = null
+    private var sender: FloconMessageSender,
+) : FloconPlugin, FloconSharedPreferencesPlugin {
 
     private val mSharedPreferences: MutableMap<SharedPreferencesDescriptor, SharedPreferences> =
         mutableMapOf()
@@ -36,9 +35,6 @@ internal class FloconSharedPreferencesPluginImpl(
                 sharedPreferences: SharedPreferences,
                 key: String?
             ) {
-                if (sender == null) {
-                    return
-                }
                 val descriptor: SharedPreferencesDescriptor? =
                     mSharedPreferencesDescriptors[sharedPreferences]
                 if (descriptor == null) {
@@ -59,14 +55,10 @@ internal class FloconSharedPreferencesPluginImpl(
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
-        sender: FloconMessageSender,
     ) {
-        this.sender = sender
         when (messageFromServer.method) {
             Protocol.ToDevice.SharedPreferences.Method.GetSharedPreferences -> {
-                sendAllSharedPrefs(
-                    sender = sender,
-                )
+                sendAllSharedPrefs()
             }
 
             Protocol.ToDevice.SharedPreferences.Method.GetSharedPreferenceValue -> {
@@ -133,15 +125,11 @@ internal class FloconSharedPreferencesPluginImpl(
     }
 
     // on connected, send all shared prefs
-    override fun onConnectedToServer(sender: FloconMessageSender) {
-        sendAllSharedPrefs(
-            sender = sender,
-        )
+    override fun onConnectedToServer() {
+        sendAllSharedPrefs()
     }
 
-    private fun sendAllSharedPrefs(
-        sender: FloconMessageSender,
-    ) {
+    private fun sendAllSharedPrefs() {
         val allPrefs = getAllSharedPreferences()
         try {
             sender.send(

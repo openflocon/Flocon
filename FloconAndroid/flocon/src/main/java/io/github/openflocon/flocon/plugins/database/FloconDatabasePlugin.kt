@@ -18,14 +18,14 @@ import java.io.File
 import java.util.Locale
 
 internal class FloconDatabasePluginImpl(
+    private var sender: FloconMessageSender,
     private val context: Context,
-) : FloconDatabasePlugin {
+) : FloconPlugin, FloconDatabasePlugin {
 
     private val MAX_DEPTH = 7
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
-        sender: FloconMessageSender,
     ) {
         when (messageFromServer.method) {
             Protocol.ToDevice.Database.Method.GetDatabases -> {
@@ -55,7 +55,7 @@ internal class FloconDatabasePluginImpl(
         }
     }
 
-    override fun onConnectedToServer(sender: FloconMessageSender) {
+    override fun onConnectedToServer() {
         sendAllDatabases(sender)
     }
 

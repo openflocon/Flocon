@@ -8,7 +8,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
-class FloconHttpClientImpl : FloconHttpClient {
+internal class FloconHttpClientImpl : FloconHttpClient {
 
     private val client by lazy {
         OkHttpClient()

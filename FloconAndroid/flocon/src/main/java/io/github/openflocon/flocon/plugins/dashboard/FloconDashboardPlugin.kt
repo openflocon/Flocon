@@ -3,6 +3,7 @@ package io.github.openflocon.flocon.plugins.dashboard
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.dashboard.mapper.toJson
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback
@@ -14,14 +15,13 @@ import java.util.concurrent.ConcurrentHashMap
 
 internal class FloconDashboardPluginImpl(
     private val sender: FloconMessageSender,
-) : FloconDashboardPlugin {
+) : FloconPlugin, FloconDashboardPlugin {
 
     private val dashboards = ConcurrentHashMap<String, DashboardConfig>()
     private val callbackMap: MutableMap<String, DashboardCallback> = ConcurrentHashMap()
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
-        sender: FloconMessageSender,
     ) {
         when (messageFromServer.method) {
             Protocol.ToDevice.Dashboard.Method.OnClick -> {
@@ -56,7 +56,7 @@ internal class FloconDashboardPluginImpl(
         }
     }
 
-    override fun onConnectedToServer(sender: FloconMessageSender) {
+    override fun onConnectedToServer() {
         // on connected, send known dashboards
         dashboards.values.takeIf { it.isNotEmpty() }?.forEach { dashboardConfig ->
             registerDashboard(dashboardConfig)
