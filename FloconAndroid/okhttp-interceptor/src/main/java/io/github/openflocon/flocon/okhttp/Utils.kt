@@ -1,5 +1,12 @@
 package io.github.openflocon.flocon.okhttp
 
+import okhttp3.MediaType
+import okhttp3.Request
+import okhttp3.Response
+import okio.Buffer
+import okio.GzipSource
+import java.nio.charset.Charset
+
 internal fun getHttpMessage(httpCode: Int): String {
     return when (httpCode) {
         // 1xx Informational
@@ -42,4 +49,67 @@ internal fun getHttpMessage(httpCode: Int): String {
 
         else -> "Unknown"
     }
+}
+
+
+internal fun MediaType?.charsetOrUtf8(): Charset = this?.charset() ?: Charsets.UTF_8
+
+internal fun extractResponseBodyInfo(
+    response: Response,
+    responseHeaders: Map<String, String>
+): Pair<String?, Long?> {
+    val responseBody = response.body ?: return null to null
+
+    var bodyString: String? = null
+    var bodySize: Long? = null
+
+    val source = responseBody.source()
+    source.request(Long.MAX_VALUE) // Buffer the entire body, otherwise we have an empty string
+
+    var buffer = source.buffer
+
+    val charset = responseBody.contentType().charsetOrUtf8()
+
+    val contentEncoding = responseHeaders["Content-Encoding"] ?: responseHeaders["content-encoding"]
+    if ("gzip".equals(contentEncoding, ignoreCase = true)) {
+        GzipSource(buffer.clone()).use { gzippedResponseBody ->
+            buffer = Buffer()
+            buffer.writeAll(gzippedResponseBody)
+        }
+
+        bodyString = buffer.clone().readString(charset)
+        bodySize = buffer.size
+    } else {
+        bodyString = buffer.clone().readString(charset)
+        bodySize = buffer.size
+    }
+
+    return bodyString to bodySize
+}
+
+internal fun extractRequestBodyInfo(
+    request: Request,
+    requestHeaders: Map<String, String>
+): Pair<String?, Long?> {
+    val requestBody = request.body ?: return null to null
+
+    var bodySize: Long? = null
+
+    var buffer = Buffer()
+    requestBody.writeTo(buffer)
+
+    val contentEncoding = requestHeaders["Content-Encoding"] ?: requestHeaders["content-encoding"]
+
+    if ("gzip".equals(contentEncoding, ignoreCase = true)) {
+        bodySize = buffer.size
+        GzipSource(buffer).use { gzippedResponseBody ->
+            buffer = Buffer()
+            buffer.writeAll(gzippedResponseBody)
+        }
+    }
+
+    val charset = requestBody.contentType().charsetOrUtf8()
+    val bodyString = buffer.readString(charset)
+
+    return bodyString to bodySize
 }
