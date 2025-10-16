@@ -1,7 +1,6 @@
 package io.github.openflocon.flocon.plugins.dashboard
 
 import io.github.openflocon.flocon.FloconApp
-import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.plugins.dashboard.builder.DashboardBuilder
 import io.github.openflocon.flocon.plugins.dashboard.dsl.dashboardConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
@@ -15,6 +14,6 @@ fun FloconApp.dashboard(id: String, block: DashboardBuilder.() -> Unit) {
     }
 }
 
-interface FloconDashboardPlugin : FloconPlugin {
+interface FloconDashboardPlugin {
     fun registerDashboard(dashboardConfig: DashboardConfig)
 }

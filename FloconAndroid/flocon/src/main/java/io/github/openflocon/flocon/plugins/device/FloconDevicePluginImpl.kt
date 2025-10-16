@@ -5,13 +5,14 @@ import com.jakewharton.processphoenix.ProcessPhoenix
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.device.model.fromdevice.RegisterDeviceDataModel
 
 internal class FloconDevicePluginImpl(
     private var sender: FloconMessageSender,
     private val context: Context,
-) : FloconDevicePlugin {
+) : FloconPlugin, FloconDevicePlugin {
 
     override fun registerWithSerial(serial: String) {
         try {
@@ -27,7 +28,6 @@ internal class FloconDevicePluginImpl(
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
-        sender: FloconMessageSender
     ) {
         when (messageFromServer.method) {
             Protocol.ToDevice.Device.Method.GetAppIcon -> {
@@ -47,7 +47,7 @@ internal class FloconDevicePluginImpl(
         }
     }
 
-    override fun onConnectedToServer(sender: FloconMessageSender) {
+    override fun onConnectedToServer() {
         // no op
     }
 }

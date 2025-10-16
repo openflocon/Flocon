@@ -19,3 +19,9 @@ internal fun floconMessageFromServerFromJson(
         null
     }
 }
+
+internal data class FloconMessageFromServer(
+    val plugin: String,
+    val method: String,
+    val body: String,
+)

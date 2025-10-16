@@ -3,6 +3,7 @@ package io.github.openflocon.flocon.plugins.deeplinks
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
 import org.json.JSONArray
@@ -10,18 +11,17 @@ import org.json.JSONObject
 
 internal class FloconDeeplinksPluginImpl(
     private val sender: FloconMessageSender,
-) : FloconDeeplinksPlugin {
+) : FloconPlugin, FloconDeeplinksPlugin {
 
     private val deeplinks = java.util.concurrent.atomic.AtomicReference<List<DeeplinkModel>?>(null)
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
-        sender: FloconMessageSender,
     ) {
 
     }
 
-    override fun onConnectedToServer(sender: FloconMessageSender) {
+    override fun onConnectedToServer() {
         // on connected, send known dashboard
         deeplinks.get()?.let {
             registerDeeplinks(it)

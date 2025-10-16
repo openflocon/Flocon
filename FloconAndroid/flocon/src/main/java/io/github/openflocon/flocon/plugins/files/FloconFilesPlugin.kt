@@ -19,11 +19,11 @@ import java.io.File
 internal class FloconFilesPluginImpl(
     private val context: Context,
     private val floconFileSender: FloconFileSender,
-) : FloconFilesPlugin {
+    private val sender: FloconMessageSender,
+) : FloconPlugin, FloconFilesPlugin {
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
-        sender: FloconMessageSender,
     ) {
         when (messageFromServer.method) {
             Protocol.ToDevice.Files.Method.ListFiles -> {
@@ -34,7 +34,6 @@ internal class FloconFilesPluginImpl(
                     path = listFilesMessage.path,
                     isConstantPath = listFilesMessage.isConstantPath,
                     requestId = listFilesMessage.requestId,
-                    sender = sender,
                 )
             }
 
@@ -65,7 +64,6 @@ internal class FloconFilesPluginImpl(
                     path = deleteFilesMessage.parentPath,
                     isConstantPath = deleteFilesMessage.isConstantParentPath,
                     requestId = deleteFilesMessage.requestId,
-                    sender = sender,
                 )
             }
 
@@ -85,7 +83,6 @@ internal class FloconFilesPluginImpl(
                     path = deleteFolderContentMessage.path,
                     isConstantPath = deleteFolderContentMessage.isConstantPath,
                     requestId = deleteFolderContentMessage.requestId,
-                    sender = sender,
                 )
             }
         }
@@ -119,7 +116,6 @@ internal class FloconFilesPluginImpl(
         path: String,
         isConstantPath: Boolean,
         requestId: String,
-        sender: FloconMessageSender
     ) {
         val files = getFolderContent(
             path = path,
@@ -140,7 +136,7 @@ internal class FloconFilesPluginImpl(
         }
     }
 
-    override fun onConnectedToServer(sender: FloconMessageSender) {
+    override fun onConnectedToServer() {
         // no op
     }
 

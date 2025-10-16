@@ -1,7 +1,6 @@
 package io.github.openflocon.flocon.plugins.deeplinks
 
 import io.github.openflocon.flocon.FloconApp
-import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
 
 class ParameterBuilder {
@@ -46,6 +45,6 @@ fun FloconApp.deeplinks(deeplinksBlock: DeeplinkBuilder.() -> Unit) {
     }
 }
 
-interface FloconDeeplinksPlugin : FloconPlugin {
+interface FloconDeeplinksPlugin {
     fun registerDeeplinks(deeplinks: List<DeeplinkModel>)
 }
