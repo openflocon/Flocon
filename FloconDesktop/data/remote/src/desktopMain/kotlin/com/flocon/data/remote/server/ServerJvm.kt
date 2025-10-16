@@ -20,9 +20,7 @@ import io.ktor.websocket.readReason
 import io.ktor.websocket.readText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -30,13 +28,24 @@ import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.Json
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.time.Duration.Companion.seconds
+import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import io.ktor.http.content.*
+import java.io.File
+import java.nio.file.Paths
+import kotlin.io.path.absolutePathString
 
 class ServerJvm : Server {
     private val _receivedMessages = Channel<FloconIncomingMessageDataModel>()
     override val receivedMessages = _receivedMessages.receiveAsFlow()
 
-    private var server: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? =
+    private var websocketServer: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? =
         null
+
     private val isStarted = AtomicBoolean(false)
     private val _activeSessions =
         MutableStateFlow(emptyMap<FloconDeviceIdAndPackageNameDataModel, WebSocketSession>())
@@ -44,8 +53,10 @@ class ServerJvm : Server {
     override val activeDevices = _activeSessions.map { it.keys }
         .distinctUntilChanged()
 
-    override fun start(port: Int) {
-        if (server != null && isStarted.get()) return
+    private var httpServer: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? = null
+
+    override fun startWebsocket(port: Int) {
+        if (websocketServer != null && isStarted.get()) return
 
         val server: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration> =
             embeddedServer(Netty, port = port) {
@@ -124,7 +135,7 @@ class ServerJvm : Server {
                         }
                     }
                 }
-            }.also { this.server = it }
+            }.also { this.websocketServer = it }
         Logger.d("server started on $port")
 
         try {
@@ -168,8 +179,45 @@ class ServerJvm : Server {
         }
     }
 
+    override fun starHttp(port: Int) {
+        if(httpServer != null)
+            return
+
+        val desktopPath = Paths.get(System.getProperty("user.home"), "Desktop").absolutePathString()
+
+        this.httpServer = embeddedServer(Netty, port = port) {
+            routing {
+                post("/upload") {
+                    val multipart = call.receiveMultipart()
+                    var savedFile: File? = null
+
+                    multipart.forEachPart { part ->
+                        if (part is PartData.FileItem) {
+                            val name = part.originalFileName ?: "upload.bin"
+                            val targetFile = File(desktopPath, name)
+                            part.streamProvider().use { input ->
+                                targetFile.outputStream().use { output ->
+                                    input.copyTo(output)
+                                }
+                            }
+                            savedFile = targetFile
+                        }
+                        part.dispose()
+                    }
+
+                    call.respondText("✅ Upload reçu : ${savedFile?.absolutePath ?: "inconnu"}")
+                }
+            }
+        }.start(wait = false)
+
+        Logger.d("🚀 Serveur HTTP prêt sur http://127.0.0.1:$port/upload")
+    }
+
     override fun stop() {
-        server?.stop(1000, 2000)
-        server = null
+        websocketServer?.stop(1000, 2000)
+        websocketServer = null
+
+        httpServer?.stop(1000, 2000)
+        httpServer = null
     }
 }

@@ -27,4 +27,9 @@ interface FilesRepository {
         parentPath: FilePathDomainModel,
         path: FilePathDomainModel,
     ): Either<Throwable, Unit>
+
+    suspend fun downloadFile(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        path: String
+    )
 }

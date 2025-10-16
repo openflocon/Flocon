@@ -7,7 +7,9 @@ import android.util.Log
 import android.widget.Toast
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconPlugin
+import io.github.openflocon.flocon.model.FloconFileInfo
 import io.github.openflocon.flocon.model.floconMessageFromServerFromJson
 import io.github.openflocon.flocon.model.toFloconMessageToServer
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconSharedPreferencesPluginImpl
@@ -21,18 +23,22 @@ import io.github.openflocon.flocon.plugins.network.FloconNetworkPluginImpl
 import io.github.openflocon.flocon.plugins.tables.FloconTablePluginImpl
 import io.github.openflocon.flocon.utils.AppUtils
 import io.github.openflocon.flocon.utils.NetUtils
+import io.github.openflocon.flocon.websocket.FloconHttpClient
+import io.github.openflocon.flocon.websocket.FloconHttpClientImpl
 import io.github.openflocon.flocon.websocket.FloconWebSocketClient
 import io.github.openflocon.flocon.websocket.FloconWebSocketClientImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.io.File
 
 internal class FloconClientImpl(
     private val appContext: Context,
-) : FloconApp.Client {
+) : FloconApp.Client, FloconFileSender {
 
-    private val FLOCON_PORT = 9023
+    private val FLOCON_WEBSOCKET_PORT = 9023
+    private val FLOCON_HTTP_PORT = 9024
 
     private val appInstance by lazy {
         // store the start time of the sdk, for this app launch
@@ -47,6 +53,7 @@ internal class FloconClientImpl(
     }
 
     private val webSocketClient: FloconWebSocketClient = FloconWebSocketClientImpl()
+    private val httpClient: FloconHttpClient = FloconHttpClientImpl()
 
     private val deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
     private val appName = AppUtils.getAppName(appContext)
@@ -57,7 +64,7 @@ internal class FloconClientImpl(
 
     // region plugins
     private val databasePlugin = FloconDatabasePluginImpl(context = appContext)
-    private val filesPlugin = FloconFilesPluginImpl(context = appContext)
+    private val filesPlugin = FloconFilesPluginImpl(context = appContext, floconFileSender = this)
     private val sharedPrefsPlugin = FloconSharedPreferencesPluginImpl(context = appContext)
     override val dashboardPlugin = FloconDashboardPluginImpl(sender = this)
     override val tablePlugin = FloconTablePluginImpl(sender = this)
@@ -88,7 +95,7 @@ internal class FloconClientImpl(
     ) {
         webSocketClient.connect(
             address = address,
-            port = FLOCON_PORT,
+            port = FLOCON_WEBSOCKET_PORT,
             onMessageReceived = ::onMessageReceived,
             onClosed = onClosed,
         )
@@ -183,6 +190,20 @@ internal class FloconClientImpl(
             )
             webSocketClient.sendMessage(
                 message = floconMessage,
+            )
+        }
+    }
+
+    override fun send(
+        file: File,
+        infos: FloconFileInfo,
+    ) {
+        coroutineScope.launch(Dispatchers.IO) {
+            httpClient.send(
+                address = address,
+                port = FLOCON_HTTP_PORT,
+                file = file,
+                infos = infos,
             )
         }
     }

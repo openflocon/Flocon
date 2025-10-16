@@ -6,21 +6,19 @@ import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNa
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.repository.FilesRepository
 
-class DeleteFileUseCase(
+class DownloadFileUseCase(
     private val filesRepository: FilesRepository,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
 ) {
     suspend operator fun invoke(
-        path: FilePathDomainModel,
-        parentPath: FilePathDomainModel,
-    ): Either<Throwable, Unit> {
+        path: FilePathDomainModel.Real,
+    ) {
         val current = getCurrentDeviceIdAndPackageNameUseCase()
-            ?: return Throwable("no device selected").failure()
+            ?: return
 
-        return filesRepository.deleteFile(
+        return filesRepository.downloadFile(
             deviceIdAndPackageName = current,
-            path = path,
-            parentPath = parentPath,
+            path = path.absolutePath,
         )
     }
 }

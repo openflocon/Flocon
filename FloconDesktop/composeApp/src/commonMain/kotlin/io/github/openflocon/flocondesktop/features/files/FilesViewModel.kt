@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.files.models.FileDomainModel
+import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.usecase.DeleteFileUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFolderContentUseCase
+import io.github.openflocon.domain.files.usecase.DownloadFileUseCase
 import io.github.openflocon.domain.files.usecase.ObserveFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.RefreshFolderContentUseCase
 import io.github.openflocon.flocondesktop.features.files.mapper.buildContextualActions
@@ -35,6 +37,7 @@ class FilesViewModel(
     private val observeFolderContentUseCase: ObserveFolderContentUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val deleteFileUseCase: DeleteFileUseCase,
+    private val downloadFileUseCase: DownloadFileUseCase,
     private val deleteFolderContentUseCase: DeleteFolderContentUseCase,
     private val refreshFolderContentUseCase: RefreshFolderContentUseCase,
 ) : ViewModel() {
@@ -136,7 +139,11 @@ class FilesViewModel(
             FileTypeUiModel.Text,
             FileTypeUiModel.Other,
             -> {
-                feedbackDisplayer.displayMessage("not implemented")
+                (fileUiModel.path.toDomain() as? FilePathDomainModel.Real)?.let {
+                    viewModelScope.launch(dispatcherProvider.viewModel) {
+                        downloadFileUseCase(it)
+                    }
+                }
             }
         }
     }

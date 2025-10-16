@@ -9,7 +9,9 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 interface Server {
-    fun start(port: Int = Constant.SERVER_PORT)
+    fun startWebsocket(port: Int = Constant.SERVER_WEBSOCKET_PORT)
+
+    fun starHttp(port: Int = Constant.SERVER_HTTP_PORT)
 
     fun stop()
 

@@ -58,7 +58,7 @@ class FilesRepositoryImpl(
         path: FilePathDomainModel,
     ): Either<Throwable, Unit> = withContext(dispatcherProvider.data) {
         remoteFilesDataSource
-            .executeGetFile(
+            .executeListFiles(
                 deviceIdAndPackageName = deviceIdAndPackageName,
                 path = path,
             ).alsoSuccess {
@@ -69,6 +69,17 @@ class FilesRepositoryImpl(
                 )
                 // store the result
             }.mapSuccess { }
+    }
+
+    override suspend fun downloadFile(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        path: String,
+    ) = withContext(dispatcherProvider.data) {
+        remoteFilesDataSource
+            .executeDownloadFile(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                path = path,
+            )
     }
 
     override suspend fun deleteFolderContent(

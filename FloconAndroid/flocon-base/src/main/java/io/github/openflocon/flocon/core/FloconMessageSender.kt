@@ -7,3 +7,4 @@ interface FloconMessageSender {
         body: String,
     )
 }
+

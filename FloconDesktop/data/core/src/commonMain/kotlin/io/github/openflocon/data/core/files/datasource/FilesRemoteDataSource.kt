@@ -13,10 +13,16 @@ interface FilesRemoteDataSource {
     fun onGetFilesResultReceived(received: FromDeviceFilesResultDomainModel)
 
     @OptIn(ExperimentalUuidApi::class)
-    suspend fun executeGetFile(
+    suspend fun executeListFiles(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
     ): Either<Throwable, List<FileDomainModel>>
+
+    @OptIn(ExperimentalUuidApi::class)
+    suspend fun executeDownloadFile(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        path: String,
+    )
 
     suspend fun executeDeleteFolderContent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -30,5 +36,4 @@ interface FilesRemoteDataSource {
     ): Either<Exception, List<FileDomainModel>>
 
     fun getItems(message: FloconIncomingMessageDomainModel): FromDeviceFilesResultDomainModel?
-
 }

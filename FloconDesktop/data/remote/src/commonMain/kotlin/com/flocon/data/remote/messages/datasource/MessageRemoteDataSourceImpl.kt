@@ -13,7 +13,8 @@ internal class MessageRemoteDataSourceImpl(
 ) : MessageRemoteDataSource {
 
     override fun startServer() {
-        server.start()
+        server.startWebsocket()
+        server.starHttp()
     }
 
     override fun listenMessages(): Flow<FloconIncomingMessageDomainModel> = server.receivedMessages

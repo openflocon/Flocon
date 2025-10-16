@@ -10,8 +10,13 @@ class StartAdbForwardUseCase(
 ) {
     suspend operator fun invoke(): Either<Throwable, Unit> {
         return executeAdbCommandUseCase(
-            command = "reverse tcp:${Constant.SERVER_PORT} tcp:${Constant.SERVER_PORT}",
+            command = "reverse tcp:${Constant.SERVER_WEBSOCKET_PORT} tcp:${Constant.SERVER_WEBSOCKET_PORT}",
             target = AdbCommandTargetDomainModel.AllDevices,
-        ).mapSuccess { }
+        ).alsoSuccess {
+            executeAdbCommandUseCase(
+                command = "reverse tcp:${Constant.SERVER_HTTP_PORT} tcp:${Constant.SERVER_HTTP_PORT}",
+                target = AdbCommandTargetDomainModel.AllDevices,
+            )
+        }.mapSuccess { }
     }
 }

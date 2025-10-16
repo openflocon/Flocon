@@ -53,7 +53,7 @@ class MessagesServerDelegate(
     } catch (t: Throwable) {
         feedbackDisplayer.displayMessage(
             buildString {
-                append("Cannot start server on port ${Constant.SERVER_PORT}")
+                append("Cannot start server on port ${Constant.SERVER_WEBSOCKET_PORT}")
                 t.message?.let {
                     append(" : ")
                     append(it)
