@@ -26,6 +26,11 @@ sealed interface OpenFileError {
 }
 
 object OpenFile {
+
+    fun isSupported(): Boolean {
+        return Desktop.isDesktopSupported()
+    }
+
     fun openFileOnDesktop(path: String): Either<OpenFileError, Unit> {
         val file = File(path)
 

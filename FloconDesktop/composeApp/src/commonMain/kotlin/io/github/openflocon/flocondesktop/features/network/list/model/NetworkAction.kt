@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.list.model
 
+import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.NetworkColumnsTypeUiModel
 
@@ -57,6 +58,11 @@ sealed interface NetworkAction {
         val itemIdToSelect: String,
     ) : NetworkAction
 
+
+    sealed interface OpenBodyExternally : NetworkAction {
+        data class Request(val item: NetworkDetailViewState) : OpenBodyExternally
+        data class Response(val item: NetworkDetailViewState.Response.Success) : OpenBodyExternally
+    }
     sealed interface HeaderAction : NetworkAction {
         data class ClickOnSort(
             val type: NetworkColumnsTypeUiModel,
