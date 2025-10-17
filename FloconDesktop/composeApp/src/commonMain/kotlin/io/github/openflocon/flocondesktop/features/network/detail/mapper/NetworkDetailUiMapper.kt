@@ -2,10 +2,12 @@ package io.github.openflocon.flocondesktop.features.network.detail.mapper
 
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
+import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailHeaderUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState.Method.Http
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState.Method.MethodName
+import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBodyDelegate
 import io.github.openflocon.flocondesktop.features.network.list.mapper.getMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.mapper.loadingStatus
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toGraphQlNetworkStatusUi
@@ -16,7 +18,9 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMet
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.common.isImageUrl
 
-fun toDetailUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState =
+fun toDetailUi(
+    request: FloconNetworkCallDomainModel,
+): NetworkDetailViewState =
     NetworkDetailViewState(
         callId = request.callId,
         fullUrl = request.request.url,
@@ -29,6 +33,9 @@ fun toDetailUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState =
         // request
         requestBodyTitle = requestBodyTitle(request),
         requestBody = httpBodyToUi(request.request.body),
+        requestBodyIsNotBlank = request.request.body.isNullOrBlank().not(),
+        canOpenRequestBody = canOpenExternal(request.request.body),
+        // headers.,
         requestHeaders = toNetworkHeadersUi(request.request.headers),
         requestSize = request.request.byteSizeFormatted,
         // response
@@ -41,6 +48,8 @@ fun toDetailUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState =
                 is FloconNetworkCallDomainModel.Response.Success -> NetworkDetailViewState.Response.Success(
                     body = httpBodyToUi(it.body),
                     size = it.byteSizeFormatted,
+                    canOpenResponseBody = canOpenExternal(it.body),
+                    responseBodyIsNotBlank = it.body.isNullOrBlank().not(),
                     headers = toNetworkHeadersUi(it.headers),
                 )
 
@@ -157,3 +166,7 @@ fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewSt
             NetworkMethodUi.WebSocket
         )
     }
+
+private fun canOpenExternal(body: String?) : Boolean {
+    return body != null && body.isNotBlank() && OpenFile.isSupported()
+}

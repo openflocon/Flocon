@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
@@ -33,11 +34,13 @@ import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseC
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkWebsocketIdsUseCase
 import io.github.openflocon.domain.network.usecase.settings.ObserveNetworkSettingsUseCase
 import io.github.openflocon.domain.network.usecase.settings.UpdateNetworkSettingsUseCase
+import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.features.network.body.model.ContentUiState
 import io.github.openflocon.flocondesktop.features.network.body.model.MockDisplayed
 import io.github.openflocon.flocondesktop.features.network.detail.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
+import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBodyDelegate
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
@@ -62,6 +65,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
@@ -83,6 +87,7 @@ class NetworkViewModel(
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
     private val updateNetworkSettingsUseCase: UpdateNetworkSettingsUseCase,
     private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
+    private val openBodyDelegate: OpenBodyDelegate,
 ) : ViewModel(headerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -259,7 +264,9 @@ class NetworkViewModel(
             is NetworkAction.UpdateDisplayOldSessions -> toggleDisplayOldSessions(action)
             NetworkAction.OpenWebsocketMocks -> openWebsocketMocks()
             NetworkAction.CloseWebsocketMocks -> contentState.update { it.copy(websocketMocksDisplayed = false) }
-            }
+            is NetworkAction.OpenBodyExternally.Request -> openBodyDelegate.openBodyExternally(action.item)
+            is NetworkAction.OpenBodyExternally.Response -> openBodyDelegate.openBodyExternally(action.item)
+        }
     }
 
     private fun onClearSession() {

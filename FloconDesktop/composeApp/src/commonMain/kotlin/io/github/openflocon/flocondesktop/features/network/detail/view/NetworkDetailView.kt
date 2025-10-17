@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material3.Text
@@ -152,7 +153,7 @@ private fun Request(
                                 color = FloconTheme.colorPalette.onSecondary,
                                 modifier = Modifier.weight(2f)
                                     .background(
-                                        color = FloconTheme.colorPalette.secondary.copy(alpha = 0.8f),
+                                        color = FloconTheme.colorPalette.primary.copy(alpha = 0.8f),
                                         shape = RoundedCornerShape(4.dp),
                                     )
                                     .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -271,21 +272,40 @@ private fun Request(
                 title = state.requestBodyTitle,
                 initialValue = true,
                 actions = {
-                    FloconIconButton(
-                        imageVector = Icons.Outlined.OpenInFull,
-                        onClick = {
-                            onAction(
-                                NetworkAction.JsonDetail(
-                                    state.callId + "request",
-                                    state.requestBody,
-                                ),
-                            )
-                        }
-                    )
-                    FloconIconButton(
-                        imageVector = Icons.Outlined.CopyAll,
-                        onClick = { onAction(NetworkAction.CopyText(state.requestBody)) }
-                    )
+                    if(state.requestBodyIsNotBlank) {
+                        FloconIconButton(
+                            tooltip = "View in app",
+                            imageVector = Icons.Outlined.OpenInFull,
+                            onClick = {
+                                onAction(
+                                    NetworkAction.JsonDetail(
+                                        state.callId + "request",
+                                        state.requestBody,
+                                    ),
+                                )
+                            }
+                        )
+                    }
+                    if(state.canOpenRequestBody) {
+                        FloconIconButton(
+                            tooltip = "Open in external editor",
+                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                            onClick = {
+                                onAction(
+                                    NetworkAction.OpenBodyExternally.Request(
+                                        state,
+                                    )
+                                )
+                            }
+                        )
+                    }
+                    if(state.requestBodyIsNotBlank) {
+                        FloconIconButton(
+                            tooltip = "Copy",
+                            imageVector = Icons.Outlined.CopyAll,
+                            onClick = { onAction(NetworkAction.CopyText(state.requestBody)) }
+                        )
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -415,21 +435,40 @@ private fun Response(
                         title = "Response - Body",
                         initialValue = true,
                         actions = {
-                            FloconIconButton(
-                                imageVector = Icons.Outlined.OpenInFull,
-                                onClick = {
-                                    onAction(
-                                        NetworkAction.JsonDetail(
-                                            state.callId + "response",
-                                            response.body,
-                                        ),
-                                    )
-                                }
-                            )
-                            FloconIconButton(
-                                imageVector = Icons.Outlined.CopyAll,
-                                onClick = { onAction(NetworkAction.CopyText(response.body)) }
-                            )
+                            if(response.responseBodyIsNotBlank) {
+                                FloconIconButton(
+                                    tooltip = "View body in app",
+                                    imageVector = Icons.Outlined.OpenInFull,
+                                    onClick = {
+                                        onAction(
+                                            NetworkAction.JsonDetail(
+                                                state.callId + "response",
+                                                response.body,
+                                            ),
+                                        )
+                                    }
+                                )
+                            }
+                            if(response.canOpenResponseBody) {
+                                FloconIconButton(
+                                    tooltip = "Open in external editor",
+                                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                                    onClick = {
+                                        onAction(
+                                            NetworkAction.OpenBodyExternally.Response(
+                                                response,
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                            if(response.responseBodyIsNotBlank) {
+                                FloconIconButton(
+                                    tooltip = "Copy",
+                                    imageVector = Icons.Outlined.CopyAll,
+                                    onClick = { onAction(NetworkAction.CopyText(response.body)) }
+                                )
+                            }
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -532,6 +571,8 @@ private fun NetworkDetailViewPreview() {
                         }
                     """.trimIndent(),
                     size = "0kb",
+                    canOpenResponseBody = true,
+                    responseBodyIsNotBlank = true,
                     headers =
                         listOf(
                             previewNetworkDetailHeaderUi(),
@@ -543,6 +584,8 @@ private fun NetworkDetailViewPreview() {
                 ),
                 graphQlSection = null,
                 imageUrl = null,
+                canOpenRequestBody = true,
+                requestBodyIsNotBlank = true,
             ),
             modifier = Modifier.padding(16.dp), // Padding pour la preview
             onAction = {},
