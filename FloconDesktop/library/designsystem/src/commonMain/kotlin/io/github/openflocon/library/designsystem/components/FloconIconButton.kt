@@ -121,23 +121,8 @@ fun FloconIconToggleButton(
         }
     )
 
-    TooltipArea(
-        tooltip = {
-            if (tooltip != null) {
-                Text(
-                    text = tooltip,
-                    style = FloconTheme.typography.labelSmall,
-                    modifier = Modifier
-                        .clip(FloconTheme.shapes.small)
-                        .background(FloconTheme.colorPalette.primary)
-                        .padding(vertical = 2.dp, horizontal = 4.dp)
-                )
-            }
-        },
-        delayMillis = 100,
-        tooltipPlacement = TooltipPlacement.ComponentRect(
-            offset = DpOffset(x = 0.dp, y = 2.dp)
-        )
+    WithTooltip(
+        tooltip = tooltip,
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -160,6 +145,36 @@ fun FloconIconToggleButton(
                 content()
             }
         }
+    }
+}
+
+@Composable
+fun WithTooltip(
+    tooltip: String?,
+    tooltipPlacement: TooltipPlacement = TooltipPlacement.ComponentRect(
+        offset = DpOffset(x = 0.dp, y = 2.dp)
+    ),
+    content: @Composable () -> Unit
+) {
+    if(tooltip != null) {
+        TooltipArea(
+            tooltip = {
+                Text(
+                    text = tooltip,
+                    style = FloconTheme.typography.labelSmall,
+                    modifier = Modifier
+                        .clip(FloconTheme.shapes.small)
+                        .background(FloconTheme.colorPalette.primary)
+                        .padding(vertical = 2.dp, horizontal = 4.dp)
+                )
+            },
+            delayMillis = 100,
+            tooltipPlacement = tooltipPlacement,
+        ) {
+            content()
+        }
+    } else {
+        content()
     }
 }
 
@@ -188,16 +203,19 @@ fun FloconIconButton(
     imageVector: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    tooltip: String? = null,
     enabled: Boolean = true
 ) {
-    FloconIconButton(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = modifier
-    ) {
-        FloconIcon(
-            imageVector = imageVector
-        )
+    WithTooltip(tooltip) {
+        FloconIconButton(
+            onClick = onClick,
+            enabled = enabled,
+            modifier = modifier
+        ) {
+            FloconIcon(
+                imageVector = imageVector
+            )
+        }
     }
 }
 

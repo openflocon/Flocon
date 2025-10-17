@@ -274,6 +274,7 @@ private fun Request(
                 actions = {
                     if(state.requestBodyIsNotBlank) {
                         FloconIconButton(
+                            tooltip = "View in app",
                             imageVector = Icons.Outlined.OpenInFull,
                             onClick = {
                                 onAction(
@@ -287,6 +288,7 @@ private fun Request(
                     }
                     if(state.canOpenRequestBody) {
                         FloconIconButton(
+                            tooltip = "Open in external editor",
                             imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                             onClick = {
                                 onAction(
@@ -299,6 +301,7 @@ private fun Request(
                     }
                     if(state.requestBodyIsNotBlank) {
                         FloconIconButton(
+                            tooltip = "Copy",
                             imageVector = Icons.Outlined.CopyAll,
                             onClick = { onAction(NetworkAction.CopyText(state.requestBody)) }
                         )
@@ -434,6 +437,7 @@ private fun Response(
                         actions = {
                             if(response.responseBodyIsNotBlank) {
                                 FloconIconButton(
+                                    tooltip = "View body in app",
                                     imageVector = Icons.Outlined.OpenInFull,
                                     onClick = {
                                         onAction(
@@ -447,6 +451,7 @@ private fun Response(
                             }
                             if(response.canOpenResponseBody) {
                                 FloconIconButton(
+                                    tooltip = "Open in external editor",
                                     imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                                     onClick = {
                                         onAction(
@@ -459,6 +464,7 @@ private fun Response(
                             }
                             if(response.responseBodyIsNotBlank) {
                                 FloconIconButton(
+                                    tooltip = "Copy",
                                     imageVector = Icons.Outlined.CopyAll,
                                     onClick = { onAction(NetworkAction.CopyText(response.body)) }
                                 )
