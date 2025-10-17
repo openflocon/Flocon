@@ -346,8 +346,7 @@ From the desktop app, you can:
 
 - Browse directories within the app's sandbox
 - View file metadata (size, modification date, path)
-- `TO DEVELOP :` Open or download files for inspection
-- `TO DEVELOP :`Preview text, JSON, or binary blobs
+- Open or download files for inspection
 
 This feature is ideal for inspecting log files, cache data, downloaded assets, or exported config files.
 
