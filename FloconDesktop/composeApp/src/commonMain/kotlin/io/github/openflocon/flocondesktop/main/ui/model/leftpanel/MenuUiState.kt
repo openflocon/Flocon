@@ -2,19 +2,21 @@ package io.github.openflocon.flocondesktop.main.ui.model.leftpanel
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
+import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
 
 data class LeftPanelState(
+    val current: SubScreen,
     val sections: List<LeftPannelSection>,
     val bottomItems: List<LeftPanelItem>,
 )
 
-fun previewLeftPannelState(selectedId: String?) = LeftPanelState(
+fun previewLeftPannelState(current: SubScreen) = LeftPanelState(
+    current = current,
     bottomItems = listOf(
         LeftPanelItem(
-            id = "Settings",
+            screen = SubScreen.Settings,
             icon = Icons.Outlined.Settings,
-            text = "Settings",
-            isSelected = selectedId == "Settings",
+            text = "Settings"
         ),
     ),
     sections = listOf(
@@ -22,22 +24,19 @@ fun previewLeftPannelState(selectedId: String?) = LeftPanelState(
             title = "Network",
             items = listOf(
                 LeftPanelItem(
-                    id = "Http",
+                    screen = SubScreen.Network,
                     icon = Icons.Outlined.Settings,
-                    text = "Http",
-                    isSelected = selectedId == "Http",
+                    text = "Http"
                 ),
                 LeftPanelItem(
-                    id = "Images",
+                    screen = SubScreen.Images,
                     icon = Icons.Outlined.Settings,
-                    text = "Images",
-                    isSelected = selectedId == "Images",
+                    text = "Images"
                 ),
                 LeftPanelItem(
-                    id = "Grpc",
+                    screen = SubScreen.Network,
                     icon = Icons.Outlined.Settings,
-                    text = "Grpc",
-                    isSelected = selectedId == "Grpc",
+                    text = "Grpc"
                 ),
             ),
         ),
@@ -45,22 +44,19 @@ fun previewLeftPannelState(selectedId: String?) = LeftPanelState(
             title = "Storage",
             items = listOf(
                 LeftPanelItem(
-                    id = "Database",
+                    screen = SubScreen.Network,
                     icon = Icons.Outlined.Settings,
-                    text = "Database",
-                    isSelected = selectedId == "Database",
+                    text = "Database"
                 ),
                 LeftPanelItem(
-                    id = "SharedPreferences",
+                    screen = SubScreen.SharedPreferences,
                     icon = Icons.Outlined.Settings,
-                    text = "SharedPreferences",
-                    isSelected = selectedId == "SharedPreferences",
+                    text = "SharedPreferences"
                 ),
                 LeftPanelItem(
-                    id = "Files",
+                    screen = SubScreen.Files,
                     icon = Icons.Outlined.Settings,
-                    text = "Files",
-                    isSelected = selectedId == "Files",
+                    text = "Files"
                 ),
             ),
         ),
@@ -68,16 +64,14 @@ fun previewLeftPannelState(selectedId: String?) = LeftPanelState(
             title = "Data",
             items = listOf(
                 LeftPanelItem(
-                    id = "Dashboard",
+                    screen = SubScreen.Dashboard,
                     icon = Icons.Outlined.Settings,
-                    text = "Dashboard",
-                    isSelected = selectedId == "Dashboard",
+                    text = "Dashboard"
                 ),
                 LeftPanelItem(
-                    id = "Tables",
+                    screen = SubScreen.Tables,
                     icon = Icons.Outlined.Settings,
-                    text = "Tables",
-                    isSelected = selectedId == "Tables",
+                    text = "Tables"
                 ),
             ),
         ),

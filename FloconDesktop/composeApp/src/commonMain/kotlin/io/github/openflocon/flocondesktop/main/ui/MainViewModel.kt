@@ -15,13 +15,11 @@ import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.main.ui.model.SubScreen
-import io.github.openflocon.flocondesktop.main.ui.model.id
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelItem
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.main.ui.model.leftpanel.LeftPannelSection
 import io.github.openflocon.flocondesktop.main.ui.view.displayName
 import io.github.openflocon.flocondesktop.main.ui.view.icon
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -35,8 +33,8 @@ class MainViewModel(
     private val devicesDelegate: DevicesDelegate,
     private val dispatcherProvider: DispatcherProvider,
     private val initialSetupStateHolder: InitialSetupStateHolder,
-    private val takeScreenshotUseCase : TakeScreenshotUseCase,
-    private val restartAppUseCase : RestartAppUseCase,
+    private val takeScreenshotUseCase: TakeScreenshotUseCase,
+    private val restartAppUseCase: RestartAppUseCase,
     private val recordVideoDelegate: RecordVideoDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel(
@@ -59,13 +57,13 @@ class MainViewModel(
 
     val leftPanelState = subScreen.map { subScreen ->
         buildLeftPanelState(
-            selectedId = subScreen.id,
+            current = subScreen,
         )
     }.flowOn(dispatcherProvider.ui)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = buildLeftPanelState(subScreen.value.id),
+            initialValue = buildLeftPanelState(subScreen.value),
         )
 
     val devicesState: StateFlow<DevicesStateUiModel> = devicesDelegate.devicesState
@@ -96,7 +94,7 @@ class MainViewModel(
     }
 
     fun onClickLeftPanelItem(leftPanelItem: LeftPanelItem) {
-        this.subScreen.update { SubScreen.fromId(leftPanelItem.id) }
+        this.subScreen.update { leftPanelItem.screen }
     }
 
     fun onRecordClicked() {
@@ -125,52 +123,50 @@ class MainViewModel(
     }
 }
 
-fun buildLeftPanelState(selectedId: String?) = LeftPanelState(
+internal fun buildLeftPanelState(current: SubScreen) = LeftPanelState(
+    current = current,
     bottomItems = listOf(
-        item(subScreen = SubScreen.Settings, selectedId = selectedId),
+        item(subScreen = SubScreen.Settings)
     ),
     sections = listOf(
         LeftPannelSection(
             title = "Network",
             items = listOf(
-                item(subScreen = SubScreen.Network, selectedId = selectedId),
-                item(subScreen = SubScreen.Images, selectedId = selectedId),
+                item(subScreen = SubScreen.Network),
+                item(subScreen = SubScreen.Images),
             ),
         ),
         LeftPannelSection(
             title = "Storage",
             items = listOf(
-                item(SubScreen.Database, selectedId = selectedId),
-                item(SubScreen.SharedPreferences, selectedId = selectedId),
-                item(SubScreen.Files, selectedId = selectedId),
+                item(SubScreen.Database),
+                item(SubScreen.SharedPreferences),
+                item(SubScreen.Files),
             ),
         ),
         LeftPannelSection(
             title = "Data",
             items = listOf(
-                item(SubScreen.Dashboard, selectedId = selectedId),
-                item(SubScreen.Analytics, selectedId = selectedId),
-                item(SubScreen.Tables, selectedId = selectedId),
+                item(SubScreen.Dashboard),
+                item(SubScreen.Analytics),
+                item(SubScreen.Tables),
             ),
         ),
         LeftPannelSection(
             title = "Actions",
             items = listOf(
-                item(SubScreen.Deeplinks, selectedId = selectedId),
+                item(SubScreen.Deeplinks)
             ),
         ),
     ),
 )
 
 private fun item(
-    subScreen: SubScreen,
-    selectedId: String?,
+    subScreen: SubScreen
 ): LeftPanelItem {
-    val id = subScreen.id
     return LeftPanelItem(
-        id = id,
+        screen = subScreen,
         icon = subScreen.icon(),
-        text = subScreen.displayName(),
-        isSelected = selectedId == id,
+        text = subScreen.displayName()
     )
 }
