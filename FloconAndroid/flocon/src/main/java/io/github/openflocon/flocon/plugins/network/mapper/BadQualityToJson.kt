@@ -1,20 +1,21 @@
 package io.github.openflocon.flocon.plugins.network.mapper
 
 import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-internal fun BadQualityConfig.toJsonString(json: Json): String {
-    return json.encodeToString<BadQualityConfigSerializable>(
+internal fun BadQualityConfig.toJsonString(): String {
+    return FloconEncoder.json.encodeToString<BadQualityConfigSerializable>(
         toSerializable()
     )
 }
 
-internal fun parseBadQualityConfig(json: Json, jsonString: String): BadQualityConfig? {
+internal fun parseBadQualityConfig(jsonString: String): BadQualityConfig? {
     return try {
-        val parsed = json.decodeFromString<BadQualityConfigSerializable>(
+        val parsed = FloconEncoder.json.decodeFromString<BadQualityConfigSerializable>(
             jsonString
         )
         parsed.toDomain()

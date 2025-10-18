@@ -11,7 +11,6 @@ import kotlinx.serialization.json.Json
 
 internal class FloconAnalyticsPluginImpl(
     private val sender: FloconMessageSender,
-    private val json: Json,
 ) : FloconPlugin, FloconAnalyticsPlugin {
 
     override fun onMessageReceived(
@@ -34,7 +33,7 @@ internal class FloconAnalyticsPluginImpl(
                 sender.send(
                     plugin = Protocol.FromDevice.Analytics.Plugin,
                     method = Protocol.FromDevice.Analytics.Method.AddItems,
-                    body = analyticsItemsToJson(item = toSend, json = json)
+                    body = analyticsItemsToJson(item = toSend)
                 )
             } catch (t: Throwable) {
                 FloconLogger.logError("error on sendAnalytics", t)

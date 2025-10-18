@@ -21,7 +21,6 @@ import java.util.Locale
 internal class FloconDatabasePluginImpl(
     private var sender: FloconMessageSender,
     private val context: Context,
-    private val json: Json,
 ) : FloconPlugin, FloconDatabasePlugin {
 
     private val MAX_DEPTH = 7
@@ -67,7 +66,7 @@ internal class FloconDatabasePluginImpl(
             sender.send(
                 plugin = Protocol.FromDevice.Database.Plugin,
                 method = Protocol.FromDevice.Database.Method.GetDatabases,
-                body = listDeviceDataBaseDataModelToJson(items = databases, json = json),
+                body = listDeviceDataBaseDataModelToJson(items = databases),
             )
         } catch (t: Throwable) {
             FloconLogger.logError("Database parsing error", t)

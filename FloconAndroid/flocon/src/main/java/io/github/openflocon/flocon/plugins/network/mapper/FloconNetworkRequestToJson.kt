@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.network.mapper
 
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
@@ -22,9 +23,7 @@ internal class FloconNetworkCallRequestRemote(
     val requestSize: Long?,
 )
 
-internal fun FloconNetworkCallRequest.floconNetworkCallRequestToJson(
-    json: Json
-): String {
+internal fun FloconNetworkCallRequest.floconNetworkCallRequestToJson(): String {
     val remoteModel = FloconNetworkCallRequestRemote(
         floconCallId = floconCallId,
         floconNetworkType = floconNetworkType,
@@ -36,7 +35,7 @@ internal fun FloconNetworkCallRequest.floconNetworkCallRequestToJson(
         requestHeaders = request.headers,
         requestSize = request.size
     )
-    return json.encodeToString(remoteModel)
+    return FloconEncoder.json.encodeToString(remoteModel)
 }
 
 @Serializable
@@ -56,9 +55,7 @@ internal class FloconNetworkCallResponseRemote(
     val isImage: Boolean,
 )
 
-internal fun FloconNetworkCallResponse.floconNetworkCallResponseToJson(
-    json: Json
-): String {
+internal fun FloconNetworkCallResponse.floconNetworkCallResponseToJson(): String {
     val remoteModel = FloconNetworkCallResponseRemote(
         floconCallId = floconCallId,
         floconNetworkType = floconNetworkType,
@@ -77,7 +74,7 @@ internal fun FloconNetworkCallResponse.floconNetworkCallResponseToJson(
         responseError = response.error,
     )
 
-    return json.encodeToString(remoteModel)
+    return FloconEncoder.json.encodeToString(remoteModel)
 }
 
 @Serializable
@@ -91,9 +88,7 @@ internal class FloconWebSocketEventRemote(
     val error: String?,
 )
 
-internal fun FloconWebSocketEvent.floconNetworkWebSocketEventToJson(
-    json: Json
-): String {
+internal fun FloconWebSocketEvent.floconNetworkWebSocketEventToJson(): String {
     val remoteModel = FloconWebSocketEventRemote(
         id = UUID.randomUUID().toString(),
         event = when (event) {
@@ -110,5 +105,5 @@ internal fun FloconWebSocketEvent.floconNetworkWebSocketEventToJson(
         message = message,
         error = error?.message
     )
-    return json.encodeToString(remoteModel)
+    return FloconEncoder.json.encodeToString(remoteModel)
 }

@@ -1,12 +1,12 @@
 package io.github.openflocon.flocon.plugins.analytics.mapper
 
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
-internal fun analyticsItemsToJson(json: Json, item: AnalyticsItem): String {
-    return json.encodeToString(
+internal fun analyticsItemsToJson(item: AnalyticsItem): String {
+    return FloconEncoder.json.encodeToString(
         listOf(
             item.toSerializable()
         )

@@ -55,12 +55,6 @@ internal class FloconClientImpl(
         )
     }
 
-    private val json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-        encodeDefaults = false
-    }
-
     private val webSocketClient: FloconWebSocketClient = FloconWebSocketClientImpl()
     private val httpClient: FloconHttpClient = FloconHttpClientImpl()
 
@@ -72,7 +66,7 @@ internal class FloconClientImpl(
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     // region plugins
-    private val databasePlugin = FloconDatabasePluginImpl(context = appContext, sender = this, json = json)
+    private val databasePlugin = FloconDatabasePluginImpl(context = appContext, sender = this)
     private val filesPlugin =
         FloconFilesPluginImpl(context = appContext, sender = this, floconFileSender = this)
     private val sharedPrefsPlugin =
@@ -80,13 +74,12 @@ internal class FloconClientImpl(
     override val dashboardPlugin = FloconDashboardPluginImpl(sender = this)
     override val tablePlugin = FloconTablePluginImpl(sender = this)
     override val deeplinksPlugin = FloconDeeplinksPluginImpl(sender = this)
-    override val analyticsPlugin = FloconAnalyticsPluginImpl(sender = this, json = json)
+    override val analyticsPlugin = FloconAnalyticsPluginImpl(sender = this)
     override val devicePlugin = FloconDevicePluginImpl(sender = this, context = appContext)
     override val networkPlugin = FloconNetworkPluginImpl(
         context = appContext,
         sender = this,
         coroutineScope = coroutineScope,
-        json = json,
     )
 
     private val allPlugins = listOf<FloconPlugin>(
@@ -122,7 +115,7 @@ internal class FloconClientImpl(
 
     private fun onMessageReceived(message: String) {
         coroutineScope.launch(Dispatchers.IO) {
-            floconMessageFromServerFromJson(message = message, json = json)?.let { messageFromServer ->
+            floconMessageFromServerFromJson(message = message)?.let { messageFromServer ->
                 when (messageFromServer.plugin) {
                     Protocol.ToDevice.Database.Plugin -> {
                         databasePlugin.onMessageReceived(
@@ -191,9 +184,7 @@ internal class FloconClientImpl(
                 method = method,
                 deviceName = deviceName,
                 appInstance = appInstance,
-            ).toFloconMessageToServer(
-                json = json,
-            )
+            ).toFloconMessageToServer()
             webSocketClient.sendMessage(
                 message = floconMessage,
             )

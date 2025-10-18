@@ -1,8 +1,8 @@
 package io.github.openflocon.flocon.model
 
+import io.github.openflocon.flocon.core.FloconEncoder
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 @Serializable
 internal class FloconMessageToServer(
@@ -16,8 +16,6 @@ internal class FloconMessageToServer(
     val appInstance: Long, // app launch id / when the app has been launched
 )
 
-internal fun FloconMessageToServer.toFloconMessageToServer(
-    json: Json,
-): String {
-    return json.encodeToString(this)
+internal fun FloconMessageToServer.toFloconMessageToServer(): String {
+    return FloconEncoder.json.encodeToString(this)
 }
