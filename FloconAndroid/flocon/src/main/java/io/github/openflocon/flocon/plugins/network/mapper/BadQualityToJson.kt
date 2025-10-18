@@ -68,7 +68,7 @@ fun parseBadQualityConfig(jsonString: String): BadQualityConfig? {
                 val errorContentType = errorObject.optString("errorContentType")
                 val error = BadQualityConfig.Error(
                     weight = errorObject.getDouble("weight").toFloat(),
-                    type = if (errorException.isNotEmpty()) {
+                    type = if (errorException.isNotEmpty() && errorException != "null") {
                         BadQualityConfig.Error.Type.ErrorThrow(errorException)
                     } else {
                         BadQualityConfig.Error.Type.Body(
