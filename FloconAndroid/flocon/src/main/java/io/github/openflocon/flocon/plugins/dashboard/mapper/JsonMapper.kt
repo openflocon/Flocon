@@ -1,7 +1,12 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package io.github.openflocon.flocon.plugins.dashboard.mapper
 
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback
-import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback.*
+import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback.ButtonCallback
+import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback.CheckBoxCallback
+import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback.FormCallback
+import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback.TextFieldCallback
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.ButtonConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.CheckBoxConfig
@@ -13,28 +18,27 @@ import io.github.openflocon.flocon.plugins.dashboard.model.config.PlainTextConfi
 import io.github.openflocon.flocon.plugins.dashboard.model.config.SectionConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.TextConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.TextFieldConfig
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 
 internal fun DashboardConfig.toJson(
     registerCallback: (DashboardCallback) -> Unit,
-): JSONObject {
-    val rootJson = JSONObject()
-
-    rootJson.put("dashboardId", id)
-
-    val containersJsonArray = JSONArray()
-
-    containers.forEach { container ->
-        val containerJson = container.toJson(
-            dashboardId = id,
-            registerCallback = registerCallback,
-        )
-        containersJsonArray.put(containerJson)
+): JsonObject {
+    return buildJsonObject {
+        put("dashboardId", id)
+        putJsonArray("containers") {
+            addAll(containers.map { container ->
+                container.toJson(
+                    dashboardId = id,
+                    registerCallback = registerCallback,
+                )
+            })
+        }
     }
-
-    rootJson.put("containers", containersJsonArray)
-    return rootJson
 }
 
 //  {
@@ -46,18 +50,17 @@ internal fun DashboardConfig.toJson(
 internal fun ContainerConfig.toJson(
     registerCallback: (DashboardCallback) -> Unit,
     dashboardId: String,
-): JSONObject = JSONObject().apply {
-
-    val elementsJsonArray = JSONArray(elements.map { element ->
-        parseElementConfig(
-            element = element,
-            registerCallback = registerCallback,
-            dashboardId = dashboardId
-        )
-    })
-
+): JsonObject = buildJsonObject {
     put("name", name)
-    put("elements", elementsJsonArray)
+    putJsonArray("elements") {
+        addAll(elements.map { element ->
+            parseElementConfig(
+                element = element,
+                registerCallback = registerCallback,
+                dashboardId = dashboardId
+            )
+        })
+    }
 
     put(
         "containerConfig",
@@ -72,7 +75,7 @@ private fun parseElementConfig(
     element: ElementConfig,
     registerCallback: (DashboardCallback) -> Unit,
     dashboardId: String,
-): JSONObject = when (element) {
+): JsonObject = when (element) {
     is ButtonConfig -> {
         val actionId = createActionId(dashboardId, element.id)
         registerCallback(
@@ -123,7 +126,7 @@ private fun createActionId(dashboardId: String, elementId: String) = dashboardId
 private fun FormConfig.toJson(
     dashboardId: String,
     registerCallback: (DashboardCallback) -> Unit,
-): JSONObject {
+): JsonObject {
     val actionId = createActionId(dashboardId, id)
 
     registerCallback(
@@ -133,18 +136,16 @@ private fun FormConfig.toJson(
         )
     )
 
-    return JSONObject().apply {
+    return buildJsonObject {
         put("formId", actionId)
         put("submitText", submitText)
-        put("containerType", containerType)
+        put("containerType", containerType.name)
     }
 }
 
 /** Section specific config */
-private fun SectionConfig.toJson(): JSONObject {
-    return JSONObject().apply {
-        put("containerType", containerType)
-    }
+private fun SectionConfig.toJson(): JsonObject = buildJsonObject {
+    put("containerType", containerType.name)
 }
 
 // {
@@ -153,12 +154,10 @@ private fun SectionConfig.toJson(): JSONObject {
 //         "id": "1"
 //     }
 // }
-internal fun ButtonConfig.toJson(actionId: String): JSONObject {
-    return JSONObject().apply {
-        put("button", JSONObject().apply {
-            put("text", text)
-            put("id", actionId)
-        })
+internal fun ButtonConfig.toJson(actionId: String): JsonObject = buildJsonObject {
+    putJsonObject("button") {
+        put("text", text)
+        put("id", actionId)
     }
 }
 
@@ -167,14 +166,10 @@ internal fun ButtonConfig.toJson(actionId: String): JSONObject {
 //         "label": "user id",
 //     }
 // }
-internal fun LabelConfig.toJson(): JSONObject {
-    return JSONObject().apply {
-        put("label", JSONObject().apply {
-            put("label", label)
-            color?.let {
-                put("color", it)
-            }
-        })
+internal fun LabelConfig.toJson(): JsonObject = buildJsonObject {
+    putJsonObject("label") {
+        put("label", label)
+        color?.let { put("color", it) }
     }
 }
 
@@ -184,15 +179,11 @@ internal fun LabelConfig.toJson(): JSONObject {
 //         "value": "01010101010"
 //     }
 // }
-internal fun TextConfig.toJson(): JSONObject {
-    return JSONObject().apply {
-        put("text", JSONObject().apply {
-            put("label", label)
-            put("value", value)
-            color?.let {
-                put("color", it)
-            }
-        })
+internal fun TextConfig.toJson(): JsonObject = buildJsonObject {
+    putJsonObject("text") {
+        put("label", label)
+        put("value", value)
+        color?.let { put("color", it) }
     }
 }
 
@@ -204,14 +195,12 @@ internal fun TextConfig.toJson(): JSONObject {
 //         "value: "florent",
 //     }
 // }
-internal fun TextFieldConfig.toJson(actionId: String): JSONObject {
-    return JSONObject().apply {
-        put("textField", JSONObject().apply {
-            put("id", actionId)
-            put("label", label)
-            put("placeHolder", placeHolder)
-            put("value", value)
-        })
+internal fun TextFieldConfig.toJson(actionId: String): JsonObject = buildJsonObject {
+    putJsonObject("textField") {
+        put("id", actionId)
+        put("label", label)
+        put("placeHolder", placeHolder)
+        put("value", value)
     }
 }
 
@@ -223,29 +212,25 @@ internal fun TextFieldConfig.toJson(actionId: String): JSONObject {
 //         "value: "florent",
 //     }
 // }
-internal fun CheckBoxConfig.toJson(actionId: String): JSONObject {
-    return JSONObject().apply {
-        put("checkBox", JSONObject().apply {
-            put("id", actionId)
-            put("label", label)
-            put("value", value)
-        })
+internal fun CheckBoxConfig.toJson(actionId: String) = buildJsonObject {
+    putJsonObject("checkBox") {
+        put("id", actionId)
+        put("label", label)
+        put("value", value)
     }
 }
 
 // {
-//     "plainText" : {
+//     "text" : {
 //         "label": "user id",
 //         "value": "01010101010",
 //         "type": "text" / "json"
 //     }
 // }
-internal fun PlainTextConfig.toJson(): JSONObject {
-    return JSONObject().apply {
-        put("text", JSONObject().apply {
-            put("label", label)
-            put("value", value)
-            put("type", type)
-        })
+internal fun PlainTextConfig.toJson() = buildJsonObject {
+    putJsonObject("text") {
+        put("label", label)
+        put("value", value)
+        put("type", type)
     }
 }
