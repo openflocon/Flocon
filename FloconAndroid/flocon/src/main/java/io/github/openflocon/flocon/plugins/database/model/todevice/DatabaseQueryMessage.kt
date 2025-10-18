@@ -1,8 +1,10 @@
 package io.github.openflocon.flocon.plugins.database.model.todevice
 
 import io.github.openflocon.flocon.FloconLogger
-import org.json.JSONObject
+import io.github.openflocon.flocon.core.FloconEncoder
+import kotlinx.serialization.Serializable
 
+@Serializable
 internal data class DatabaseQueryMessage(
     val query: String,
     val requestId: String,
@@ -11,18 +13,8 @@ internal data class DatabaseQueryMessage(
     companion object {
         fun fromJson(message: String): DatabaseQueryMessage? {
             return try {
-                val jsonObject = JSONObject(message)
-
-                val query = jsonObject.getString("query")
-                val requestId = jsonObject.getString("requestId")
-                val database = jsonObject.getString("database")
-
-                DatabaseQueryMessage(
-                    query = query,
-                    requestId = requestId,
-                    database = database
-                )
-            }  catch (t: Throwable) {
+                FloconEncoder.json.decodeFromString<DatabaseQueryMessage>(message)
+            } catch (t: Throwable) {
                 FloconLogger.logError("parsing issue", t)
                 null
             }

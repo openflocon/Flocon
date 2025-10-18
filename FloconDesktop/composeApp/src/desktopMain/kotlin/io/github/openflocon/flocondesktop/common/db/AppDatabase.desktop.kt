@@ -6,6 +6,7 @@ import java.io.File
 
 actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
     val dbFile = File(System.getProperty("java.io.tmpdir"), "flocon_room.db")
+    dbFile.delete()
     return Room.databaseBuilder<AppDatabase>(
         name = dbFile.absolutePath,
     )

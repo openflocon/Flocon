@@ -1,36 +1,44 @@
 package io.github.openflocon.flocon.plugins.analytics.mapper
 
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 
-internal fun analyticsItemsToJson(item: AnalyticsItem) : JSONArray {
-    val array = JSONArray()
-    // Flocon server is expecing an array of json elements
-
-    array.put(item.toJson())
-
-    return array
+internal fun analyticsItemsToJson(item: AnalyticsItem): String {
+    return FloconEncoder.json.encodeToString(
+        listOf(
+            item.toSerializable()
+        )
+    )
 }
 
-private fun AnalyticsItem.toJson() : JSONObject {
-    val analyticsItemJson = JSONObject()
+@Serializable
+internal class AnalyticsItemSerializable(
+    val id: String,
+    val analyticsTableId: String,
+    val eventName: String,
+    val createdAt: Long,
+    val properties: List<AnalyticsPropertySerializable>,
+)
 
-    analyticsItemJson.put("id", this.id)
-    analyticsItemJson.put("analyticsTableId", this.analyticsTableId)
-    analyticsItemJson.put("eventName", this.eventName)
-    analyticsItemJson.put("createdAt", this.createdAt)
+@Serializable
+internal class AnalyticsPropertySerializable(
+    val name: String,
+    val value: String,
+)
 
-    val array = JSONArray()
-    properties.forEach {
-        array.put(
-            JSONObject().apply {
-                put("name", it.name)
-                put("value", it.value)
-            }
-        )
-    }
-
-    analyticsItemJson.put("properties", array)
-    return analyticsItemJson
+internal fun AnalyticsItem.toSerializable(): AnalyticsItemSerializable {
+    return AnalyticsItemSerializable(
+        id = id,
+        analyticsTableId = analyticsTableId,
+        eventName = eventName,
+        createdAt = createdAt,
+        properties = properties.map {
+            AnalyticsPropertySerializable(
+                name = it.name,
+                value = it.value
+            )
+        }
+    )
 }

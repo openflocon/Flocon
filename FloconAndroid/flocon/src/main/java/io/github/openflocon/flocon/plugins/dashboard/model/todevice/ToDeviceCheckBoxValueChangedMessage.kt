@@ -1,8 +1,10 @@
 package io.github.openflocon.flocon.plugins.dashboard.model.todevice
 
 import io.github.openflocon.flocon.FloconLogger
-import org.json.JSONObject
+import io.github.openflocon.flocon.core.FloconEncoder
+import kotlinx.serialization.Serializable
 
+@Serializable
 internal data class ToDeviceCheckBoxValueChangedMessage(
     val id: String,
     val value: Boolean,
@@ -10,12 +12,7 @@ internal data class ToDeviceCheckBoxValueChangedMessage(
     companion object {
         fun fromJson(message: String): ToDeviceCheckBoxValueChangedMessage? {
             return try {
-                val jsonObject = JSONObject(message)
-
-                ToDeviceCheckBoxValueChangedMessage(
-                    id = jsonObject.getString("id"),
-                    value = jsonObject.getBoolean("value"),
-                )
+                FloconEncoder.json.decodeFromString<ToDeviceCheckBoxValueChangedMessage>(message)
             } catch (t: Throwable) {
                 FloconLogger.logError("parsing issue", t)
                 null
