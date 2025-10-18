@@ -54,7 +54,7 @@ internal fun DatabaseExecuteSqlResponse.toJson(): String {
 
     return buildJsonObject {
         put("type", type)
-        put("body", thisAsJson.toString())
+        put("body", thisAsJson.toString()) // warning : the desktop is waiting for a string representation of the json here
     }.toString()
 }
 
