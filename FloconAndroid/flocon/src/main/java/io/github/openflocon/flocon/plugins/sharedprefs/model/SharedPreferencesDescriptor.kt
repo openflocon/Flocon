@@ -2,10 +2,11 @@ package io.github.openflocon.flocon.plugins.sharedprefs.model
 
 import android.content.Context
 import android.content.SharedPreferences
-import org.json.JSONArray
-import org.json.JSONObject
-import kotlin.collections.forEach
+import io.github.openflocon.flocon.core.FloconEncoder
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 
+@Serializable
 internal data class SharedPreferencesDescriptor(
     val name: String,
     val mode: Int,
@@ -15,13 +16,6 @@ internal data class SharedPreferencesDescriptor(
     }
 }
 
-internal fun listSharedPreferencesDescriptorToJson(items: List<SharedPreferencesDescriptor>) : JSONArray {
-    val array = JSONArray()
-    items.forEach {
-        val jsonObject = JSONObject().apply {
-            put("name", it.name)
-        }
-        array.put(jsonObject)
-    }
-    return array
+internal fun listSharedPreferencesDescriptorToJson(items: List<SharedPreferencesDescriptor>) : String {
+    return FloconEncoder.json.encodeToString(items)
 }
