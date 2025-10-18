@@ -12,7 +12,7 @@ import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkWebSocket
 import io.github.openflocon.flocon.plugins.network.mapper.parseBadQualityConfig
 import io.github.openflocon.flocon.plugins.network.mapper.parseMockResponses
 import io.github.openflocon.flocon.plugins.network.mapper.parseWebSocketMockMessage
-import io.github.openflocon.flocon.plugins.network.mapper.toJsonObject
+import io.github.openflocon.flocon.plugins.network.mapper.toJsonString
 import io.github.openflocon.flocon.plugins.network.mapper.webSocketIdsToJsonArray
 import io.github.openflocon.flocon.plugins.network.mapper.writeMockResponsesToJson
 import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
@@ -185,7 +185,7 @@ internal class FloconNetworkPluginImpl(
             val jsonString = FileInputStream(file).use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            parseBadQualityConfig(jsonString)
+            parseBadQualityConfig(jsonString = jsonString, json = json)
         } catch (t: Throwable) {
             FloconLogger.logError("issue in loadBadNetworkConfig", t)
             null
@@ -198,7 +198,7 @@ internal class FloconNetworkPluginImpl(
             if (config == null) {
                 file.delete()
             } else {
-                val jsonString = toJsonObject(config).toString(2)
+                val jsonString = config.toJsonString(json = json)
                 FileOutputStream(file).use {
                     it.write(jsonString.toByteArray())
                 }
