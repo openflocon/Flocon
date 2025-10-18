@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.network.model
 
+import io.github.openflocon.flocon.FloconLogger
 import kotlin.random.Random
 
 data class BadQualityConfig(
@@ -36,8 +37,13 @@ data class BadQualityConfig(
                 val classPath: String,
             ) : Type {
                 fun generate() : Throwable? {
-                    val errorClass = Class.forName(classPath)
-                    return errorClass.newInstance() as? Throwable
+                    return try {
+                        val errorClass = Class.forName(classPath)
+                        errorClass.newInstance() as? Throwable
+                    } catch (t: Throwable) {
+                        FloconLogger.logError("BadQualityConfig error, className not found", t)
+                        null
+                    }
                 }
             }
         }
