@@ -57,6 +57,7 @@ internal class FloconClientImpl(
     private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
+        encodeDefaults = false
     }
 
     private val webSocketClient: FloconWebSocketClient = FloconWebSocketClientImpl()

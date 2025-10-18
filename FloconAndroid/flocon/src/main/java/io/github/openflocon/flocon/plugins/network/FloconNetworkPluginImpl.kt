@@ -142,7 +142,7 @@ internal class FloconNetworkPluginImpl(
         sender.send(
             plugin = Protocol.FromDevice.Network.Plugin,
             method = Protocol.FromDevice.Network.Method.RegisterWebSocketIds,
-            body = webSocketIdsToJsonArray(websocketListeners.keys).toString(),
+            body = webSocketIdsToJsonArray(ids = websocketListeners.keys, json = json),
         )
     }
 
