@@ -14,12 +14,14 @@ import io.github.openflocon.flocon.plugins.database.model.fromdevice.QueryResult
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.listDeviceDataBaseDataModelToJson
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.toJson
 import io.github.openflocon.flocon.plugins.database.model.todevice.DatabaseQueryMessage
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.Locale
 
 internal class FloconDatabasePluginImpl(
     private var sender: FloconMessageSender,
     private val context: Context,
+    private val json: Json,
 ) : FloconPlugin, FloconDatabasePlugin {
 
     private val MAX_DEPTH = 7
@@ -65,7 +67,7 @@ internal class FloconDatabasePluginImpl(
             sender.send(
                 plugin = Protocol.FromDevice.Database.Plugin,
                 method = Protocol.FromDevice.Database.Method.GetDatabases,
-                body = listDeviceDataBaseDataModelToJson(databases).toString(),
+                body = listDeviceDataBaseDataModelToJson(items = databases, json = json),
             )
         } catch (t: Throwable) {
             FloconLogger.logError("Database parsing error", t)

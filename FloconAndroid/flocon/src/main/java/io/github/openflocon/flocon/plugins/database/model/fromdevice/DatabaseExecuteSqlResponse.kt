@@ -1,7 +1,12 @@
 package io.github.openflocon.flocon.plugins.database.model.fromdevice
 
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.addJsonArray
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 
 internal sealed interface DatabaseExecuteSqlResponse {
 
@@ -31,52 +36,54 @@ internal sealed interface DatabaseExecuteSqlResponse {
     ) : DatabaseExecuteSqlResponse
 }
 
-internal fun DatabaseExecuteSqlResponse.toJson(): JSONObject {
-    val json = JSONObject()
-    when (this) {
-        is DatabaseExecuteSqlResponse.Error -> {
-            json.put("type", "Error")
-            json.put("body", JSONObject().apply {
-                put("message", this@toJson.message)
-                put("originalSql", this@toJson.originalSql)
-            }.toString())
-        }
+internal fun DatabaseExecuteSqlResponse.toJson(): JsonObject {
+    return buildJsonObject {
+        when (this@toJson) {
+            is DatabaseExecuteSqlResponse.Error -> {
+                put("type", "Error")
+                putJsonObject("body") {
+                    put("message", message)
+                    put("originalSql", originalSql)
+                }
+            }
 
-        is DatabaseExecuteSqlResponse.Insert -> {
-            json.put("type", "Insert")
-            json.put("body", JSONObject().apply {
-                put("insertedId", this@toJson.insertedId)
-            }.toString())
-        }
+            is DatabaseExecuteSqlResponse.Insert -> {
+                put("type", "Insert")
+                putJsonObject("body") {
+                    put("insertedId", insertedId)
+                }
+            }
 
-        DatabaseExecuteSqlResponse.RawSuccess -> {
-            json.put("type", "RawSuccess")
-            json.put("body", JSONObject().toString())
-        }
+            DatabaseExecuteSqlResponse.RawSuccess -> {
+                put("type", "RawSuccess")
+                putJsonObject("body") {
+                    // empty
+                }
+            }
 
-        is DatabaseExecuteSqlResponse.Select -> {
-            json.put("type", "Select")
-            json.put("body", JSONObject().apply {
-                // Add columns
-                put("columns", JSONArray().apply {
-                    columns.forEach { put(it) }
-                })
-                put("values", JSONArray(values.map { row ->
-                    JSONArray().also { rowArray ->
-                        row.forEach { item ->
-                            rowArray.put(item) // null values are handled correctly by JSONObject/JSONArray
+            is DatabaseExecuteSqlResponse.Select -> {
+                put("type", "Select")
+                putJsonObject("body") {
+                    putJsonArray("columns") {
+                        columns.forEach { add(it) }
+                    }
+                    putJsonArray("values") {
+                        values.forEach { row ->
+                            addJsonArray {
+                                row.forEach { item -> add(item) }
+                            }
                         }
                     }
-                }))
-            }.toString())
-        }
+                }
+            }
 
-        is DatabaseExecuteSqlResponse.UpdateDelete -> {
-            json.put("type", "UpdateDelete")
-            json.put("body", JSONObject().apply {
-                json.put("affectedCount", affectedCount)
-            })
+            is DatabaseExecuteSqlResponse.UpdateDelete -> {
+                put("type", "UpdateDelete")
+                putJsonObject("body") {
+                    put("affectedCount", affectedCount)
+                }
+            }
         }
     }
-    return json
 }
+

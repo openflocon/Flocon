@@ -11,9 +11,9 @@ import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconFileInfo
+import io.github.openflocon.flocon.model.FloconMessageToServer
 import io.github.openflocon.flocon.model.floconMessageFromServerFromJson
 import io.github.openflocon.flocon.model.toFloconMessageToServer
-import io.github.openflocon.flocon.plugins.sharedprefs.FloconSharedPreferencesPluginImpl
 import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPluginImpl
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPluginImpl
 import io.github.openflocon.flocon.plugins.database.FloconDatabasePluginImpl
@@ -21,6 +21,7 @@ import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPluginImpl
 import io.github.openflocon.flocon.plugins.device.FloconDevicePluginImpl
 import io.github.openflocon.flocon.plugins.files.FloconFilesPluginImpl
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPluginImpl
+import io.github.openflocon.flocon.plugins.sharedprefs.FloconSharedPreferencesPluginImpl
 import io.github.openflocon.flocon.plugins.tables.FloconTablePluginImpl
 import io.github.openflocon.flocon.utils.AppUtils
 import io.github.openflocon.flocon.utils.NetUtils
@@ -71,13 +72,15 @@ internal class FloconClientImpl(
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     // region plugins
-    private val databasePlugin = FloconDatabasePluginImpl(context = appContext, sender = this)
-    private val filesPlugin = FloconFilesPluginImpl(context = appContext, sender = this, floconFileSender = this)
-    private val sharedPrefsPlugin = FloconSharedPreferencesPluginImpl(context = appContext, sender = this)
+    private val databasePlugin = FloconDatabasePluginImpl(context = appContext, sender = this, json = json)
+    private val filesPlugin =
+        FloconFilesPluginImpl(context = appContext, sender = this, floconFileSender = this)
+    private val sharedPrefsPlugin =
+        FloconSharedPreferencesPluginImpl(context = appContext, sender = this)
     override val dashboardPlugin = FloconDashboardPluginImpl(sender = this)
     override val tablePlugin = FloconTablePluginImpl(sender = this)
     override val deeplinksPlugin = FloconDeeplinksPluginImpl(sender = this)
-    override val analyticsPlugin = FloconAnalyticsPluginImpl(sender = this)
+    override val analyticsPlugin = FloconAnalyticsPluginImpl(sender = this, json = json)
     override val devicePlugin = FloconDevicePluginImpl(sender = this, context = appContext)
     override val networkPlugin = FloconNetworkPluginImpl(
         context = appContext,
@@ -119,7 +122,7 @@ internal class FloconClientImpl(
 
     private fun onMessageReceived(message: String) {
         coroutineScope.launch(Dispatchers.IO) {
-            floconMessageFromServerFromJson(message)?.let { messageFromServer ->
+            floconMessageFromServerFromJson(message = message, json = json)?.let { messageFromServer ->
                 when (messageFromServer.plugin) {
                     Protocol.ToDevice.Database.Plugin -> {
                         databasePlugin.onMessageReceived(
@@ -179,7 +182,7 @@ internal class FloconClientImpl(
         body: String,
     ) {
         coroutineScope.launch(Dispatchers.IO) {
-            val floconMessage = toFloconMessageToServer(
+            val floconMessage = FloconMessageToServer(
                 deviceId = deviceId,
                 plugin = plugin,
                 body = body,
@@ -188,6 +191,8 @@ internal class FloconClientImpl(
                 method = method,
                 deviceName = deviceName,
                 appInstance = appInstance,
+            ).toFloconMessageToServer(
+                json = json,
             )
             webSocketClient.sendMessage(
                 message = floconMessage,
@@ -214,8 +219,15 @@ internal class FloconClientImpl(
     }
 
     fun displayClearTextError() {
-        Toast.makeText(appContext, "Cannot start Flocon : ClearText Issue, see Logcat", Toast.LENGTH_LONG).show()
-        Log.e("Flocon", "Flocon uses ClearText communication to the server, it seems you already have a network-security-config setup on your project, please ensure you allowed cleartext communication on your debug app https://github.com/openflocon/Flocon?tab=readme-ov-file#-why-flocon-cant-see-your-device-calls-and-how-to-fix-it-")
+        Toast.makeText(
+            appContext,
+            "Cannot start Flocon : ClearText Issue, see Logcat",
+            Toast.LENGTH_LONG
+        ).show()
+        Log.e(
+            "Flocon",
+            "Flocon uses ClearText communication to the server, it seems you already have a network-security-config setup on your project, please ensure you allowed cleartext communication on your debug app https://github.com/openflocon/Flocon?tab=readme-ov-file#-why-flocon-cant-see-your-device-calls-and-how-to-fix-it-"
+        )
     }
 
     fun sendPendingMessages() {
