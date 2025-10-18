@@ -7,7 +7,6 @@ import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
 import io.github.openflocon.flocon.plugins.analytics.mapper.analyticsItemsToJson
-import kotlinx.serialization.json.Json
 
 internal class FloconAnalyticsPluginImpl(
     private val sender: FloconMessageSender,
@@ -33,7 +32,7 @@ internal class FloconAnalyticsPluginImpl(
                 sender.send(
                     plugin = Protocol.FromDevice.Analytics.Plugin,
                     method = Protocol.FromDevice.Analytics.Method.AddItems,
-                    body = analyticsItemsToJson(item = toSend)
+                    body = analyticsItemsToJson(toSend)
                 )
             } catch (t: Throwable) {
                 FloconLogger.logError("error on sendAnalytics", t)

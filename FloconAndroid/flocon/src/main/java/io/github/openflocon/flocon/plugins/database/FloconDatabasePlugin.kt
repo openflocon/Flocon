@@ -14,7 +14,6 @@ import io.github.openflocon.flocon.plugins.database.model.fromdevice.QueryResult
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.listDeviceDataBaseDataModelToJson
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.toJson
 import io.github.openflocon.flocon.plugins.database.model.todevice.DatabaseQueryMessage
-import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.Locale
 
@@ -66,7 +65,7 @@ internal class FloconDatabasePluginImpl(
             sender.send(
                 plugin = Protocol.FromDevice.Database.Plugin,
                 method = Protocol.FromDevice.Database.Method.GetDatabases,
-                body = listDeviceDataBaseDataModelToJson(items = databases),
+                body = listDeviceDataBaseDataModelToJson(databases),
             )
         } catch (t: Throwable) {
             FloconLogger.logError("Database parsing error", t)
