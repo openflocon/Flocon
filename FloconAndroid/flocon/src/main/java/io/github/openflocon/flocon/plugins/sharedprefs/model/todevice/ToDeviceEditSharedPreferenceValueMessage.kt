@@ -3,7 +3,6 @@ package io.github.openflocon.flocon.plugins.sharedprefs.model.todevice
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.core.FloconEncoder
 import kotlinx.serialization.Serializable
-import org.json.JSONObject
 
 @Serializable
 internal data class ToDeviceEditSharedPreferenceValueMessage(
