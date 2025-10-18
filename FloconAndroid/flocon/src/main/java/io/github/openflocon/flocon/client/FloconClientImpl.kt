@@ -67,10 +67,8 @@ internal class FloconClientImpl(
 
     // region plugins
     private val databasePlugin = FloconDatabasePluginImpl(context = appContext, sender = this)
-    private val filesPlugin =
-        FloconFilesPluginImpl(context = appContext, sender = this, floconFileSender = this)
-    private val sharedPrefsPlugin =
-        FloconSharedPreferencesPluginImpl(context = appContext, sender = this)
+    private val filesPlugin = FloconFilesPluginImpl(context = appContext, sender = this, floconFileSender = this)
+    private val sharedPrefsPlugin = FloconSharedPreferencesPluginImpl(context = appContext, sender = this)
     override val dashboardPlugin = FloconDashboardPluginImpl(sender = this)
     override val tablePlugin = FloconTablePluginImpl(sender = this)
     override val deeplinksPlugin = FloconDeeplinksPluginImpl(sender = this)
@@ -115,7 +113,7 @@ internal class FloconClientImpl(
 
     private fun onMessageReceived(message: String) {
         coroutineScope.launch(Dispatchers.IO) {
-            floconMessageFromServerFromJson(message = message)?.let { messageFromServer ->
+            floconMessageFromServerFromJson(message)?.let { messageFromServer ->
                 when (messageFromServer.plugin) {
                     Protocol.ToDevice.Database.Plugin -> {
                         databasePlugin.onMessageReceived(
@@ -175,18 +173,17 @@ internal class FloconClientImpl(
         body: String,
     ) {
         coroutineScope.launch(Dispatchers.IO) {
-            val floconMessage = FloconMessageToServer(
-                deviceId = deviceId,
-                plugin = plugin,
-                body = body,
-                appName = appName,
-                appPackageName = appPackageName,
-                method = method,
-                deviceName = deviceName,
-                appInstance = appInstance,
-            ).toFloconMessageToServer()
             webSocketClient.sendMessage(
-                message = floconMessage,
+                message = FloconMessageToServer(
+                    deviceId = deviceId,
+                    plugin = plugin,
+                    body = body,
+                    appName = appName,
+                    appPackageName = appPackageName,
+                    method = method,
+                    deviceName = deviceName,
+                    appInstance = appInstance,
+                ).toFloconMessageToServer(),
             )
         }
     }
