@@ -32,6 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import java.io.File
 
 internal class FloconClientImpl(
@@ -51,6 +52,11 @@ internal class FloconClientImpl(
             appContext.contentResolver,
             Settings.Secure.ANDROID_ID,
         )
+    }
+
+    private val json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
     }
 
     private val webSocketClient: FloconWebSocketClient = FloconWebSocketClientImpl()
@@ -76,6 +82,7 @@ internal class FloconClientImpl(
         context = appContext,
         sender = this,
         coroutineScope = coroutineScope,
+        json = json,
     )
 
     private val allPlugins = listOf<FloconPlugin>(

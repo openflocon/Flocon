@@ -25,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -39,6 +40,7 @@ internal class FloconNetworkPluginImpl(
     private val context: Context,
     private var sender: FloconMessageSender,
     private val coroutineScope: CoroutineScope,
+    private val json: Json,
 ) : FloconPlugin, FloconNetworkPlugin {
 
     private val websocketListeners = ConcurrentHashMap<String, FloconWebSocketMockListener>()
@@ -54,7 +56,9 @@ internal class FloconNetworkPluginImpl(
             sender.send(
                 plugin = Protocol.FromDevice.Network.Plugin,
                 method = Protocol.FromDevice.Network.Method.LogNetworkCallRequest,
-                body = floconNetworkCallRequestToJson(request).toString(),
+                body = request.floconNetworkCallRequestToJson(
+                    json = json,
+                ),
             )
         } catch (t: Throwable) {
             FloconLogger.logError("Network json mapping error", t)
@@ -68,7 +72,9 @@ internal class FloconNetworkPluginImpl(
                 sender.send(
                     plugin = Protocol.FromDevice.Network.Plugin,
                     method = Protocol.FromDevice.Network.Method.LogNetworkCallResponse,
-                    body = floconNetworkCallResponseToJson(response).toString(),
+                    body = response.floconNetworkCallResponseToJson(
+                        json = json,
+                    ),
                 )
             } catch (t: Throwable) {
                 FloconLogger.logError("Network json mapping error", t)
@@ -84,7 +90,9 @@ internal class FloconNetworkPluginImpl(
                 sender.send(
                     plugin = Protocol.FromDevice.Network.Plugin,
                     method = Protocol.FromDevice.Network.Method.LogWebSocketEvent,
-                    body = floconNetworkWebSocketEventToJson(event).toString(),
+                    body = event.floconNetworkWebSocketEventToJson(
+                        json = json
+                    ),
                 )
             } catch (t: Throwable) {
                 FloconLogger.logError("Network json mapping error", t)
