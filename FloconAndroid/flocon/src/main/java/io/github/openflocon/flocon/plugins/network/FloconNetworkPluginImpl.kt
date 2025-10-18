@@ -105,20 +105,20 @@ internal class FloconNetworkPluginImpl(
     ) {
         when (messageFromServer.method) {
             Protocol.ToDevice.Network.Method.SetupMocks -> {
-                val setup = parseMockResponses(messageFromServer.body)
+                val setup = parseMockResponses(json = json, jsonString = messageFromServer.body)
                 mocks.clear()
                 mocks.addAll(setup)
                 saveMocksToFile(mocks)
             }
 
             Protocol.ToDevice.Network.Method.SetupBadNetworkConfig -> {
-                val config = parseBadQualityConfig(messageFromServer.body)
+                val config = parseBadQualityConfig(json = json, jsonString = messageFromServer.body)
                 _badQualityConfig.set(config)
                 saveBadNetworkConfig(config)
             }
 
             Protocol.ToDevice.Network.Method.WebsocketMockMessage -> {
-                val message = parseWebSocketMockMessage(messageFromServer.body)
+                val message = parseWebSocketMockMessage(json = json, jsonString = messageFromServer.body)
                 if(message != null) {
                     websocketListeners[message.id]?.onMessage(message.message)
                 }
@@ -149,7 +149,7 @@ internal class FloconNetworkPluginImpl(
     private fun saveMocksToFile(mocks: CopyOnWriteArrayList<MockNetworkResponse>) {
         try {
             val file = File(context.filesDir, FLOCON_NETWORK_MOCKS_JSON)
-            val jsonString = writeMockResponsesToJson(mocks).toString(2)
+            val jsonString = writeMockResponsesToJson(json = json, mocks = mocks)
             FileOutputStream(file).use {
                 it.write(jsonString.toByteArray())
             }
@@ -168,7 +168,7 @@ internal class FloconNetworkPluginImpl(
             val jsonString = FileInputStream(file).use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            parseMockResponses(jsonString)
+            parseMockResponses(json = json, jsonString = jsonString)
         } catch (t: Throwable) {
             FloconLogger.logError("issue in loadMocksFromFile", t)
             emptyList()
