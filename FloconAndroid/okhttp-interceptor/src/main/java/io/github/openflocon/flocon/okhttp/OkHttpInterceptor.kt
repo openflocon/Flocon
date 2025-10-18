@@ -82,7 +82,7 @@ class FloconOkhttpInterceptor(
 
         try {
             val response = if (isMocked) {
-                executeMock(request = request, mock = mockConfig)
+                executeMock(request = request, mock = mockConfig, requestHeaders = requestHeadersMap)
             } else {
                 floconNetworkPlugin.badQualityConfig?.let { badQualityConfig ->
                     executeBadQuality(

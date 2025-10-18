@@ -8,6 +8,9 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Response.*
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.Buffer
+import okio.GzipSink
+import okio.buffer
 import java.io.IOException
 
 internal fun findMock(
@@ -25,7 +28,7 @@ internal fun findMock(
 }
 
 @Throws(IOException::class)
-internal fun executeMock(request: Request, mock: MockNetworkResponse): Response {
+internal fun executeMock(request: Request, requestHeaders: Map<String, String>, mock: MockNetworkResponse): Response {
     if (mock.response.delay > 0) {
         try {
             Thread.sleep(mock.response.delay)
@@ -36,9 +39,21 @@ internal fun executeMock(request: Request, mock: MockNetworkResponse): Response 
 
     when(val response = mock.response) {
         is MockNetworkResponse.Response.Body -> {
-            val body = response.body.toResponseBody(
-                response.mediaType.toMediaTypeOrNull()
-            )
+            val mediaType = response.mediaType.toMediaTypeOrNull()
+            var bodyBytes = response.body.toByteArray()
+
+            // TODO maybe check the mocked response headers
+            val isGzipped = requestHeaders["Accept-Encoding"] == "gzip" || requestHeaders["accept-encoding"] == "gzip"
+
+            if (isGzipped) {
+                val buffer = Buffer()
+                GzipSink(buffer).buffer().use { gzipSink ->
+                    gzipSink.write(bodyBytes)
+                }
+                bodyBytes = buffer.readByteArray()
+            }
+
+            val body = bodyBytes.toResponseBody(mediaType)
 
             return Builder()
                 .request(request)
