@@ -45,8 +45,8 @@ internal class FloconDatabasePluginImpl(
                         method = Protocol.FromDevice.Database.Method.Query,
                         body = QueryResultDataModel(
                             requestId = queryMessage.requestId,
-                            result = result.toJson().toString(),
-                        ).toJson().toString(),
+                            result = result.toJson(),
+                        ).toJson(),
                     )
                 } catch (t: Throwable) {
                     FloconLogger.logError("Database parsing error", t)
