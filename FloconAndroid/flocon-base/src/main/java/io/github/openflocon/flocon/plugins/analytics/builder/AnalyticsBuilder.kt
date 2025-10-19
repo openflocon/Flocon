@@ -1,9 +1,12 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package io.github.openflocon.flocon.plugins.analytics.builder
 
 import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPlugin
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsEvent
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class AnalyticsBuilder(
     val analyticsTableId: String,
@@ -16,7 +19,7 @@ class AnalyticsBuilder(
     fun logEvents(events: List<AnalyticsEvent>) {
         val analyticsItems = events.map {
             AnalyticsItem(
-                id = UUID.randomUUID().toString(),
+                id = Uuid.random().toString(),
                 analyticsTableId = analyticsTableId,
                 eventName = it.eventName,
                 createdAt = System.currentTimeMillis(),

@@ -1,11 +1,14 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package io.github.openflocon.flocon.myapplication.sharedpreferences
 
 import android.content.Context
 import androidx.core.content.edit
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.UUID
+import kotlin.uuid.Uuid
 import kotlin.random.Random
+import kotlin.uuid.ExperimentalUuidApi
 
 fun initializeSharedPreferences(context: Context) {
     context.getSharedPreferences("user_pref", Context.MODE_PRIVATE).apply {
@@ -37,7 +40,7 @@ private fun generateUsersJson(number: Int) : JSONArray {
     val usersArray = JSONArray()
 
     for (i in 1..number) {
-        val randomUsername = "user_${UUID.randomUUID().toString().substring(0, 8)}"
+        val randomUsername = "user_${Uuid.random().toString().substring(0, 8)}"
         val randomEmail = "$randomUsername@example.com"
         val isActive = Random.nextBoolean()
 

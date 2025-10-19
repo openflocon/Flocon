@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package io.github.openflocon.flocon.myapplication
 
 import android.os.Bundle
@@ -37,8 +39,9 @@ import io.github.openflocon.flocon.plugins.tables.table
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import java.util.UUID
+import kotlin.uuid.Uuid
 import kotlin.random.Random
+import kotlin.uuid.ExperimentalUuidApi
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,7 +126,7 @@ class MainActivity : ComponentActivity() {
                             }
                             Button(
                                 onClick = {
-                                    dummyWebsocketCaller.send(UUID.randomUUID().toString())
+                                    dummyWebsocketCaller.send(Uuid.random().toString())
                                 }
                             ) {
                                 Text("websocket test")
