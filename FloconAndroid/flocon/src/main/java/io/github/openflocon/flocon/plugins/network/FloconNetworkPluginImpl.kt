@@ -12,7 +12,7 @@ import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkWebSocket
 import io.github.openflocon.flocon.plugins.network.mapper.parseBadQualityConfig
 import io.github.openflocon.flocon.plugins.network.mapper.parseMockResponses
 import io.github.openflocon.flocon.plugins.network.mapper.parseWebSocketMockMessage
-import io.github.openflocon.flocon.plugins.network.mapper.toJsonObject
+import io.github.openflocon.flocon.plugins.network.mapper.toJsonString
 import io.github.openflocon.flocon.plugins.network.mapper.webSocketIdsToJsonArray
 import io.github.openflocon.flocon.plugins.network.mapper.writeMockResponsesToJson
 import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
@@ -25,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -54,7 +55,7 @@ internal class FloconNetworkPluginImpl(
             sender.send(
                 plugin = Protocol.FromDevice.Network.Plugin,
                 method = Protocol.FromDevice.Network.Method.LogNetworkCallRequest,
-                body = floconNetworkCallRequestToJson(request).toString(),
+                body = request.floconNetworkCallRequestToJson(),
             )
         } catch (t: Throwable) {
             FloconLogger.logError("Network json mapping error", t)
@@ -68,7 +69,7 @@ internal class FloconNetworkPluginImpl(
                 sender.send(
                     plugin = Protocol.FromDevice.Network.Plugin,
                     method = Protocol.FromDevice.Network.Method.LogNetworkCallResponse,
-                    body = floconNetworkCallResponseToJson(response).toString(),
+                    body = response.floconNetworkCallResponseToJson(),
                 )
             } catch (t: Throwable) {
                 FloconLogger.logError("Network json mapping error", t)
@@ -84,7 +85,7 @@ internal class FloconNetworkPluginImpl(
                 sender.send(
                     plugin = Protocol.FromDevice.Network.Plugin,
                     method = Protocol.FromDevice.Network.Method.LogWebSocketEvent,
-                    body = floconNetworkWebSocketEventToJson(event).toString(),
+                    body = event.floconNetworkWebSocketEventToJson(),
                 )
             } catch (t: Throwable) {
                 FloconLogger.logError("Network json mapping error", t)
@@ -97,20 +98,20 @@ internal class FloconNetworkPluginImpl(
     ) {
         when (messageFromServer.method) {
             Protocol.ToDevice.Network.Method.SetupMocks -> {
-                val setup = parseMockResponses(messageFromServer.body)
+                val setup = parseMockResponses(jsonString = messageFromServer.body)
                 mocks.clear()
                 mocks.addAll(setup)
                 saveMocksToFile(mocks)
             }
 
             Protocol.ToDevice.Network.Method.SetupBadNetworkConfig -> {
-                val config = parseBadQualityConfig(messageFromServer.body)
+                val config = parseBadQualityConfig(jsonString = messageFromServer.body)
                 _badQualityConfig.set(config)
                 saveBadNetworkConfig(config)
             }
 
             Protocol.ToDevice.Network.Method.WebsocketMockMessage -> {
-                val message = parseWebSocketMockMessage(messageFromServer.body)
+                val message = parseWebSocketMockMessage(jsonString = messageFromServer.body)
                 if(message != null) {
                     websocketListeners[message.id]?.onMessage(message.message)
                 }
@@ -134,14 +135,14 @@ internal class FloconNetworkPluginImpl(
         sender.send(
             plugin = Protocol.FromDevice.Network.Plugin,
             method = Protocol.FromDevice.Network.Method.RegisterWebSocketIds,
-            body = webSocketIdsToJsonArray(websocketListeners.keys).toString(),
+            body = webSocketIdsToJsonArray(ids = websocketListeners.keys),
         )
     }
 
     private fun saveMocksToFile(mocks: CopyOnWriteArrayList<MockNetworkResponse>) {
         try {
             val file = File(context.filesDir, FLOCON_NETWORK_MOCKS_JSON)
-            val jsonString = writeMockResponsesToJson(mocks).toString(2)
+            val jsonString = writeMockResponsesToJson(mocks = mocks)
             FileOutputStream(file).use {
                 it.write(jsonString.toByteArray())
             }
@@ -160,7 +161,7 @@ internal class FloconNetworkPluginImpl(
             val jsonString = FileInputStream(file).use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            parseMockResponses(jsonString)
+            parseMockResponses(jsonString = jsonString)
         } catch (t: Throwable) {
             FloconLogger.logError("issue in loadMocksFromFile", t)
             emptyList()
@@ -177,7 +178,7 @@ internal class FloconNetworkPluginImpl(
             val jsonString = FileInputStream(file).use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            parseBadQualityConfig(jsonString)
+            parseBadQualityConfig(jsonString = jsonString)
         } catch (t: Throwable) {
             FloconLogger.logError("issue in loadBadNetworkConfig", t)
             null
@@ -190,7 +191,7 @@ internal class FloconNetworkPluginImpl(
             if (config == null) {
                 file.delete()
             } else {
-                val jsonString = toJsonObject(config).toString(2)
+                val jsonString = config.toJsonString()
                 FileOutputStream(file).use {
                     it.write(jsonString.toByteArray())
                 }

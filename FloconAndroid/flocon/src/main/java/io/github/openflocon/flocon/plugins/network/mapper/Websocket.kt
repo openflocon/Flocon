@@ -1,29 +1,23 @@
 package io.github.openflocon.flocon.plugins.network.mapper
 
 import io.github.openflocon.flocon.FloconLogger
-import org.json.JSONArray
-import org.json.JSONObject
+import io.github.openflocon.flocon.core.FloconEncoder
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 
-class WebSocketMockMessage(
+@Serializable
+internal class WebSocketMockMessage(
     val id: String,
     val message: String,
 )
 
-internal fun webSocketIdsToJsonArray(ids: Collection<String>): JSONArray {
-    val jsonArray = JSONArray()
-    ids.forEach {
-        jsonArray.put(it)
-    }
-    return jsonArray
+internal fun webSocketIdsToJsonArray(ids: Collection<String>): String {
+    return FloconEncoder.json.encodeToString(ids)
 }
 
 internal fun parseWebSocketMockMessage(jsonString: String): WebSocketMockMessage? {
     try {
-        val jsonObject = JSONObject(jsonString)
-        return WebSocketMockMessage(
-            id = jsonObject.getString("id"),
-            message = jsonObject.getString("message"),
-        )
+        return FloconEncoder.json.decodeFromString<WebSocketMockMessage>(jsonString)
     } catch (t: Throwable) {
         FloconLogger.logError(t.message ?: "mock wesocket network parsing issue", t)
     }

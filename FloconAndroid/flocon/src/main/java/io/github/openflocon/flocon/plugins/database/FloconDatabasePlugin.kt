@@ -65,7 +65,7 @@ internal class FloconDatabasePluginImpl(
             sender.send(
                 plugin = Protocol.FromDevice.Database.Plugin,
                 method = Protocol.FromDevice.Database.Method.GetDatabases,
-                body = listDeviceDataBaseDataModelToJson(databases).toString(),
+                body = listDeviceDataBaseDataModelToJson(databases),
             )
         } catch (t: Throwable) {
             FloconLogger.logError("Database parsing error", t)

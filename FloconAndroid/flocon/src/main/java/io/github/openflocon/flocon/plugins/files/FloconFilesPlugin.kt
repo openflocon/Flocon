@@ -27,8 +27,7 @@ internal class FloconFilesPluginImpl(
     ) {
         when (messageFromServer.method) {
             Protocol.ToDevice.Files.Method.ListFiles -> {
-                val listFilesMessage =
-                    ToDeviceGetFilesMessage.fromJson(message = messageFromServer.body) ?: return
+                val listFilesMessage = ToDeviceGetFilesMessage.fromJson(message = messageFromServer.body) ?: return
 
                 executeGetFile(
                     path = listFilesMessage.path,
@@ -129,7 +128,7 @@ internal class FloconFilesPluginImpl(
                 body = FilesResultDataModel(
                     requestId = requestId,
                     files = files,
-                ).toJson().toString(),
+                ).toJson(),
             )
         } catch (t: Throwable) {
             FloconLogger.logError("File parsing error", t)

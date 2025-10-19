@@ -1,35 +1,37 @@
 package io.github.openflocon.flocon.plugins.tables.model
 
-import org.json.JSONArray
-import org.json.JSONObject
+import io.github.openflocon.flocon.core.FloconEncoder
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 
-internal fun tableItemListToJson(items: Collection<TableItem>): JSONArray {
-    val array = JSONArray()
-
-    items.forEach {
-        array.put(it.toJson())
-    }
-
-    return array
+internal fun tableItemListToJson(items: Collection<TableItem>): String {
+    return FloconEncoder.json.encodeToString(items.map { it.toRemote() })
 }
 
-private fun TableItem.toJson(): JSONObject {
-    val tableItemJson = JSONObject()
+@Serializable
+internal class TableItemRemote(
+    val id: String,
+    val name: String,
+    val createdAt: Long,
+    val columns: List<TableColumnRemote>,
+)
 
-    tableItemJson.put("id", this.id)
-    tableItemJson.put("name", this.name)
-    tableItemJson.put("createdAt", this.createdAt)
+@Serializable
+internal class TableColumnRemote(
+    val column: String,
+    val value: String,
+)
 
-    val array = JSONArray()
-    columns.forEach {
-        array.put(
-            JSONObject().apply {
-                put("column", it.columnName)
-                put("value", it.value)
-            }
-        )
-    }
+// --- Mapping ---
 
-    tableItemJson.put("columns", array)
-    return tableItemJson
-}
+internal fun TableItem.toRemote(): TableItemRemote = TableItemRemote(
+    id = id,
+    name = name,
+    createdAt = createdAt,
+    columns = columns.map { it.toRemote() }
+)
+
+internal fun TableColumnConfig.toRemote(): TableColumnRemote = TableColumnRemote(
+    column = columnName,
+    value = value
+)

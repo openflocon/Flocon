@@ -32,7 +32,7 @@ internal class FloconAnalyticsPluginImpl(
                 sender.send(
                     plugin = Protocol.FromDevice.Analytics.Plugin,
                     method = Protocol.FromDevice.Analytics.Method.AddItems,
-                    body = analyticsItemsToJson(toSend).toString()
+                    body = analyticsItemsToJson(toSend)
                 )
             } catch (t: Throwable) {
                 FloconLogger.logError("error on sendAnalytics", t)
