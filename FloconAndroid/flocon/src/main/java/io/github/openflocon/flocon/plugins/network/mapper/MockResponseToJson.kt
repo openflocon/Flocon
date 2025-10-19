@@ -5,8 +5,6 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.util.regex.Pattern
 
 @Serializable
 internal class MockNetworkResponseDataModel(
@@ -47,7 +45,6 @@ internal fun MockNetworkResponseDataModel.toDomain(): MockNetworkResponse? {
     return MockNetworkResponse(
         expectation = MockNetworkResponse.Expectation(
             urlPattern = expectation.urlPattern,
-            pattern = Pattern.compile(expectation.urlPattern),
             method = expectation.method,
         ),
         response = this.mapResponseToDomain() ?: return null
