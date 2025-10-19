@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package io.github.openflocon.flocon.okhttp
 
 import io.github.openflocon.flocon.FloconApp
@@ -10,7 +12,8 @@ import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class FloconNetworkIsImageParams(
     val request: Request,
@@ -30,7 +33,7 @@ class FloconOkhttpInterceptor(
             return chain.proceed(chain.request())
         }
 
-        val floconCallId = UUID.randomUUID().toString()
+        val floconCallId = Uuid.random().toString()
         val floconNetworkType = "http"
 
         val request = chain.request()

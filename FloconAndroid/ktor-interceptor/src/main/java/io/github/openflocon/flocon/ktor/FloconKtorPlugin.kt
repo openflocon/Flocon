@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package io.github.openflocon.flocon.ktor
 
 import io.github.openflocon.flocon.FloconApp
@@ -18,7 +20,8 @@ import io.ktor.util.AttributeKey
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.toByteArray
 import java.nio.charset.StandardCharsets
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 data class FloconNetworkIsImageParams(
@@ -45,7 +48,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
         }
 
         val request = context
-        val floconCallId = UUID.randomUUID().toString()
+        val floconCallId = Uuid.random().toString()
         val floconNetworkType = "http"
         val requestedAt = System.currentTimeMillis()
 

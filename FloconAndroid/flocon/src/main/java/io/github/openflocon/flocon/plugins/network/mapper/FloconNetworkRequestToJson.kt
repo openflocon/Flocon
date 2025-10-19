@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package io.github.openflocon.flocon.plugins.network.mapper
 
 import io.github.openflocon.flocon.core.FloconEncoder
@@ -6,8 +8,8 @@ import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRespon
 import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 internal class FloconNetworkCallRequestRemote(
@@ -90,7 +92,7 @@ internal class FloconWebSocketEventRemote(
 
 internal fun FloconWebSocketEvent.floconNetworkWebSocketEventToJson(): String {
     val remoteModel = FloconWebSocketEventRemote(
-        id = UUID.randomUUID().toString(),
+        id = Uuid.random().toString(),
         event = when (event) {
             FloconWebSocketEvent.Event.Closed -> "closed"
             FloconWebSocketEvent.Event.Closing -> "closing"

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package io.github.openflocon.flocon.grpc
 
 import io.github.openflocon.flocon.FloconApp
@@ -17,7 +19,8 @@ import io.grpc.Metadata
 import io.grpc.MethodDescriptor
 import io.grpc.Status
 import kotlinx.coroutines.runBlocking
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 abstract class FloconGrpcBaseInterceptor(
     private val grpcFormatter: FloconGrpcBaseFormatter,
@@ -36,7 +39,7 @@ abstract class FloconGrpcBaseInterceptor(
             return next.newCall(method, callOptions)
         }
 
-        val callId = UUID.randomUUID().toString()
+        val callId = Uuid.random().toString()
         return LoggingForwardingClientCall(
             floconGrpcPlugin = floconGrpcPlugin,
             floconNetworkPlugin = networkPlugin,
