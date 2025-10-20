@@ -1,17 +1,8 @@
 package io.github.openflocon.flocon
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+object Flocon : FloconCore() {
 
-actual object Flocon : FloconApp() {
-    private val _isInitialized = MutableStateFlow(false)
-    actual override val isInitialized: StateFlow<Boolean> = _isInitialized
-    
-    init {
-        // JVM implementation using Ktor
-        // Simplified version - can be extended later
-        super.initialize()
-        _isInitialized.value = true
+    fun initialize() {
+        super.initializeFlocon(context = FloconContext())
     }
 }
-

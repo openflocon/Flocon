@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 
 object Flocon : FloconCore() {
     fun initialize(context: Context) {
-        super.initialize(
+        super.initializeFlocon(
             FloconContext(appContext = context)
         )
     }

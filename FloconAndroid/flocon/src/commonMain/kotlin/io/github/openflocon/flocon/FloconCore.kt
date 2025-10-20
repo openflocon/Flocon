@@ -28,7 +28,7 @@ abstract class FloconCore : FloconApp() {
     private val _isInitialized = MutableStateFlow(false)
     override val isInitialized: StateFlow<Boolean> = _isInitialized
 
-    protected fun initialize(context: FloconContext) {
+    protected fun initializeFlocon(context: FloconContext) {
         val newClient = FloconClientImpl(context)
         _client = newClient
         _isInitialized.value = true
@@ -37,7 +37,7 @@ abstract class FloconCore : FloconApp() {
             start(newClient)
         }
 
-        super.initialize()
+        super.initializeFlocon()
     }
 
     private suspend fun start(client: FloconApp.Client) {
