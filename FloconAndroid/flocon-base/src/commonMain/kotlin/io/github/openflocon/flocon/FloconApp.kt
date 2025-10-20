@@ -38,5 +38,3 @@ abstract class FloconApp {
     }
 
 }
-
-expect fun FloconApp.initializePlatform(platformContext: Any?)

@@ -40,7 +40,6 @@ object Flocon : FloconApp() {
         }
 
         super.initialize()
-        initializePlatform(context)
     }
 
     private suspend fun start(client: FloconClientImpl) {

@@ -1,11 +1,5 @@
 package io.github.openflocon.flocon.utils
 
-import java.util.UUID
-
-actual fun generateUuid(): String {
-    return UUID.randomUUID().toString()
-}
-
 actual fun currentTimeMillis(): Long {
     return System.currentTimeMillis()
 }
