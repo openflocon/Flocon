@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-object Flocon : FloconApp() {
+actual object Flocon : FloconApp() {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -27,13 +27,14 @@ object Flocon : FloconApp() {
             return _client
         }
 
-    override val isInitialized = MutableStateFlow(false)
+    private val _isInitialized = MutableStateFlow(false)
+    actual override val isInitialized: StateFlow<Boolean> = _isInitialized
 
     fun initialize(context: Context) {
         val app = context.applicationContext
         val newClient = FloconClientImpl(app)
         _client = newClient
-        isInitialized.value = true
+        _isInitialized.value = true
 
         scope.launch {
             start(newClient)

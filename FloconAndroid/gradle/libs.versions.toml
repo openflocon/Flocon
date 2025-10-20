@@ -24,7 +24,7 @@ grpc = "1.70.0"
 protobufPlugin = "0.9.5"
 grpcKotlin = "1.4.3"
 protobuf = "4.26.1"
-ksp = "2.0.0-1.0.23"
+ksp = "2.1.0-1.0.29"
 processPhoenix = "3.0.0"
 
 [libraries]
