@@ -29,7 +29,7 @@ object Flocon : FloconApp() {
 
     override val isInitialized = MutableStateFlow(false)
 
-    override fun initialize(context: Context) {
+    fun initialize(context: Context) {
         val app = context.applicationContext
         val newClient = FloconClientImpl(app)
         _client = newClient
@@ -39,7 +39,8 @@ object Flocon : FloconApp() {
             start(newClient)
         }
 
-        super.initialize(context)
+        super.initialize()
+        initializePlatform(context)
     }
 
     private suspend fun start(client: FloconClientImpl) {
