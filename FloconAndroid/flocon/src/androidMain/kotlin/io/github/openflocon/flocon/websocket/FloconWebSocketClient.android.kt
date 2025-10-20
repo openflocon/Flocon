@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.websocket
 
+import kotlin.Throws
 import io.github.openflocon.flocon.FloconLogger
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.OkHttpClient
@@ -11,6 +12,10 @@ import java.io.EOFException
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+
+internal actual fun buildFloconWebSocketClient(): FloconWebSocketClient {
+    return FloconWebSocketClientImpl()
+}
 
 internal class FloconWebSocketClientImpl : FloconWebSocketClient {
 

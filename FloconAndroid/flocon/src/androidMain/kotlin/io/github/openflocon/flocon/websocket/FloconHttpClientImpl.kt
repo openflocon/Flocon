@@ -1,12 +1,12 @@
 package io.github.openflocon.flocon.websocket
 
+import io.github.openflocon.flocon.FloconFile
 import io.github.openflocon.flocon.model.FloconFileInfo
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
 
 internal class FloconHttpClientImpl : FloconHttpClient {
 
@@ -15,7 +15,7 @@ internal class FloconHttpClientImpl : FloconHttpClient {
     }
 
     override suspend fun send(
-        file: File,
+        file: FloconFile,
         infos: FloconFileInfo,
         address: String,
         port: Int,
@@ -25,6 +25,7 @@ internal class FloconHttpClientImpl : FloconHttpClient {
     ): Boolean {
         val uploadUrl = "http://$address:$port/upload"
 
+        val file = file.file
         // Corps du fichier (binaire)
         val fileBody = file.asRequestBody("application/octet-stream".toMediaType())
 

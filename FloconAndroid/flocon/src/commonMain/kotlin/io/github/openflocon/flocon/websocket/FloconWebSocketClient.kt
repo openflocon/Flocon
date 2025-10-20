@@ -1,5 +1,7 @@
 package io.github.openflocon.flocon.websocket
 
+internal expect fun buildFloconWebSocketClient() : FloconWebSocketClient
+
 interface FloconWebSocketClient {
 
     @Throws(Throwable::class)

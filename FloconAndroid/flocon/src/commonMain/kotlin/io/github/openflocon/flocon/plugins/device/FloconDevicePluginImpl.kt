@@ -1,7 +1,6 @@
 package io.github.openflocon.flocon.plugins.device
 
-import android.content.Context
-import com.jakewharton.processphoenix.ProcessPhoenix
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
@@ -9,9 +8,11 @@ import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.device.model.fromdevice.RegisterDeviceDataModel
 
+internal expect fun restartApp(context: FloconContext)
+
 internal class FloconDevicePluginImpl(
     private var sender: FloconMessageSender,
-    private val context: Context,
+    private val context: FloconContext,
 ) : FloconPlugin, FloconDevicePlugin {
 
     override fun registerWithSerial(serial: String) {
@@ -42,7 +43,7 @@ internal class FloconDevicePluginImpl(
             }
 
             Protocol.ToDevice.Device.Method.RestartApp -> {
-                ProcessPhoenix.triggerRebirth(context)
+                restartApp(context)
             }
         }
     }

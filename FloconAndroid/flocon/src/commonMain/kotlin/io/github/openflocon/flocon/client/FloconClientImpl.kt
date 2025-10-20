@@ -24,9 +24,9 @@ import io.github.openflocon.flocon.plugins.sharedprefs.FloconSharedPreferencesPl
 import io.github.openflocon.flocon.plugins.tables.FloconTablePluginImpl
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import io.github.openflocon.flocon.websocket.FloconHttpClient
-import io.github.openflocon.flocon.websocket.FloconHttpClientImpl
 import io.github.openflocon.flocon.websocket.FloconWebSocketClient
-import io.github.openflocon.flocon.websocket.FloconWebSocketClientImpl
+import io.github.openflocon.flocon.websocket.buildFloconHttpClient
+import io.github.openflocon.flocon.websocket.buildFloconWebSocketClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -50,8 +50,8 @@ internal class FloconClientImpl(
         getAppInfos(appContext)
     }
 
-    private val webSocketClient: FloconWebSocketClient = FloconWebSocketClientImpl()
-    private val httpClient: FloconHttpClient = FloconHttpClientImpl()
+    private val webSocketClient: FloconWebSocketClient = buildFloconWebSocketClient()
+    private val httpClient: FloconHttpClient = buildFloconHttpClient()
 
     private val address by lazy {
         getServerHost(appContext)

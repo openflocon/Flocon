@@ -1,11 +1,13 @@
 package io.github.openflocon.flocon.websocket
 
+import io.github.openflocon.flocon.FloconFile
 import io.github.openflocon.flocon.model.FloconFileInfo
-import java.io.File
+
+internal expect fun buildFloconHttpClient() : FloconHttpClient
 
 internal interface FloconHttpClient {
     suspend fun send(
-        file: File,
+        file: FloconFile,
         infos: FloconFileInfo,
         address: String,
         port: Int,
