@@ -69,7 +69,7 @@ android {
 val useMaven = false
 dependencies {
     if(useMaven) {
-        val floconVersion = "1.1.3"
+        val floconVersion = "1.4.0"
         implementation("io.github.openflocon:flocon:$floconVersion")
         //implementation("io.github.openflocon:flocon-no-op:$floconVersion")
         implementation("io.github.openflocon:flocon-grpc-interceptor-lite:$floconVersion")
