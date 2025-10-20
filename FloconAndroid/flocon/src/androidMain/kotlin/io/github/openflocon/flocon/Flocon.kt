@@ -16,58 +16,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-actual object Flocon : FloconApp() {
-
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
-    private var _client: FloconApp.Client? = null
-
-    override val client: FloconApp.Client?
-        get() {
-            return _client
-        }
-
-    private val _isInitialized = MutableStateFlow(false)
-    actual override val isInitialized: StateFlow<Boolean> = _isInitialized
-
+object Flocon : FloconCore() {
     fun initialize(context: Context) {
-        val app = context.applicationContext
-        val newClient = FloconClientImpl(app)
-        _client = newClient
-        _isInitialized.value = true
-
-        scope.launch {
-            start(newClient)
-        }
-
-        super.initialize()
+        super.initialize(
+            FloconContext(appContext = context)
+        )
     }
-
-    private suspend fun start(client: FloconClientImpl) {
-        // try to connect, it fail : try again in 3s
-        try {
-            client.connect(
-                onClosed = {
-                    // try again to connect
-                    scope.launch {
-                        start(client)
-                    }
-                }
-            )
-            // if success, just send a bonjour
-            client.send("bonjour", method = "bonjour", body = "bonjour")
-            client.sendPendingMessages()
-        } catch (t: Throwable) {
-            if(t.message?.contains("CLEARTEXT communication to localhost not permitted by network security policy") == true) {
-                withContext(Dispatchers.Main) {
-                    client.displayClearTextError()
-                }
-            } else {
-                //t.printStackTrace()
-                delay(3_000)
-                start(client)
-            }
-        }
-    }
-
 }

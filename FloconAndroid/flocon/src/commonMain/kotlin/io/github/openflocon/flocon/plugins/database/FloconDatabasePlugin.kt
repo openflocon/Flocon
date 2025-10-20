@@ -3,6 +3,7 @@ package io.github.openflocon.flocon.plugins.database
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
@@ -19,7 +20,7 @@ import java.util.Locale
 
 internal class FloconDatabasePluginImpl(
     private var sender: FloconMessageSender,
-    private val context: Context,
+    private val context: FloconContext,
 ) : FloconPlugin, FloconDatabasePlugin {
 
     private val MAX_DEPTH = 7

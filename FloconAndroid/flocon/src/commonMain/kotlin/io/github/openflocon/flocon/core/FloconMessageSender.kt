@@ -6,4 +6,6 @@ internal interface FloconMessageSender {
         method: String,
         body: String,
     )
+
+    fun sendPendingMessages()
 }

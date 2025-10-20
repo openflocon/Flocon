@@ -1,15 +1,14 @@
 package io.github.openflocon.flocon.client
 
-import android.content.Context
-import android.os.Build
-import android.provider.Settings
-import android.util.Log
-import android.widget.Toast
 import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconFile
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.FloconPlugin
+import io.github.openflocon.flocon.getAppInfos
+import io.github.openflocon.flocon.getServerHost
 import io.github.openflocon.flocon.model.FloconFileInfo
 import io.github.openflocon.flocon.model.FloconMessageToServer
 import io.github.openflocon.flocon.model.floconMessageFromServerFromJson
@@ -23,20 +22,20 @@ import io.github.openflocon.flocon.plugins.files.FloconFilesPluginImpl
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPluginImpl
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconSharedPreferencesPluginImpl
 import io.github.openflocon.flocon.plugins.tables.FloconTablePluginImpl
-import io.github.openflocon.flocon.utils.AppUtils
-import io.github.openflocon.flocon.utils.NetUtils
+import io.github.openflocon.flocon.utils.currentTimeMillis
 import io.github.openflocon.flocon.websocket.FloconHttpClient
 import io.github.openflocon.flocon.websocket.FloconHttpClientImpl
 import io.github.openflocon.flocon.websocket.FloconWebSocketClient
 import io.github.openflocon.flocon.websocket.FloconWebSocketClientImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import java.io.File
+import kotlin.getValue
 
 internal class FloconClientImpl(
-    private val appContext: Context,
+    private val appContext: FloconContext,
 ) : FloconApp.Client, FloconMessageSender, FloconFileSender {
 
     private val FLOCON_WEBSOCKET_PORT = 9023
@@ -44,24 +43,19 @@ internal class FloconClientImpl(
 
     private val appInstance by lazy {
         // store the start time of the sdk, for this app launch
-        System.currentTimeMillis()
+        currentTimeMillis()
     }
 
-    private val deviceId by lazy {
-        Settings.Secure.getString(
-            appContext.contentResolver,
-            Settings.Secure.ANDROID_ID,
-        )
+    private val appInfos by lazy {
+        getAppInfos(appContext)
     }
 
     private val webSocketClient: FloconWebSocketClient = FloconWebSocketClientImpl()
     private val httpClient: FloconHttpClient = FloconHttpClientImpl()
 
-    private val deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
-    private val appName = AppUtils.getAppName(appContext)
-    private val appPackageName = AppUtils.getAppPackageName(appContext)
-
-    private val address = NetUtils.getServerHost(context = appContext)
+    private val address by lazy {
+        getServerHost(appContext)
+    }
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     // region plugins
@@ -174,13 +168,13 @@ internal class FloconClientImpl(
         coroutineScope.launch(Dispatchers.IO) {
             webSocketClient.sendMessage(
                 message = FloconMessageToServer(
-                    deviceId = deviceId,
+                    deviceId = appInfos.deviceId,
                     plugin = plugin,
                     body = body,
-                    appName = appName,
-                    appPackageName = appPackageName,
+                    appName = appInfos.appName,
+                    appPackageName = appInfos.appPackageName,
                     method = method,
-                    deviceName = deviceName,
+                    deviceName = appInfos.deviceName,
                     appInstance = appInstance,
                 ).toFloconMessageToServer(),
             )
@@ -188,7 +182,7 @@ internal class FloconClientImpl(
     }
 
     override fun send(
-        file: File,
+        file: FloconFile,
         infos: FloconFileInfo,
     ) {
         coroutineScope.launch(Dispatchers.IO) {
@@ -198,13 +192,14 @@ internal class FloconClientImpl(
                 file = file,
                 infos = infos,
 
-                deviceId = deviceId,
-                appPackageName = appPackageName,
+                deviceId = appInfos.deviceId,
+                appPackageName = appInfos.appPackageName,
                 appInstance = appInstance,
             )
         }
     }
 
+    /* TODO
     fun displayClearTextError() {
         Toast.makeText(
             appContext,
@@ -216,8 +211,9 @@ internal class FloconClientImpl(
             "Flocon uses ClearText communication to the server, it seems you already have a network-security-config setup on your project, please ensure you allowed cleartext communication on your debug app https://github.com/openflocon/Flocon?tab=readme-ov-file#-why-flocon-cant-see-your-device-calls-and-how-to-fix-it-"
         )
     }
+     */
 
-    fun sendPendingMessages() {
+    override fun sendPendingMessages() {
         coroutineScope.launch(Dispatchers.IO) {
             webSocketClient.sendPendingMessages()
         }
