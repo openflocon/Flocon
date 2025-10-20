@@ -4,6 +4,10 @@ actual fun currentTimeMillis(): Long {
     return System.currentTimeMillis()
 }
 
+actual fun currentTimeNanos(): Long {
+    return System.nanoTime()
+}
+
 actual fun createThrowableFromClassName(className: String): Throwable? {
     return try {
         val errorClass = Class.forName(className)

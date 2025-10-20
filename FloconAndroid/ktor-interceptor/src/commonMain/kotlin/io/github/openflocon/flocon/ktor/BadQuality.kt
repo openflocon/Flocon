@@ -12,9 +12,7 @@ import io.ktor.util.date.GMTDate
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.delay
-import java.io.IOException
 
-@Throws(IOException::class)
 internal suspend fun executeBadQuality(
     badQualityConfig: BadQualityConfig,
     request: HttpRequestBuilder,
@@ -32,7 +30,6 @@ internal suspend fun executeBadQuality(
 }
 
 @OptIn(InternalAPI::class)
-@Throws(IOException::class)
 internal fun failResponseIfNeeded(
     badQualityConfig: BadQualityConfig,
     request: HttpRequestBuilder,
@@ -42,7 +39,7 @@ internal fun failResponseIfNeeded(
         badQualityConfig.selectRandomError()?.let { selectedError ->
             when (val t = selectedError.type) {
                 is BadQualityConfig.Error.Type.Body -> {
-                    val bodyBytes = t.errorBody.toByteArray()
+                    val bodyBytes = t.errorBody.encodeToByteArray()
 
                     // maybe add headers ?
                     val headers = HeadersBuilder().apply {
@@ -62,10 +59,8 @@ internal fun failResponseIfNeeded(
 
                 is BadQualityConfig.Error.Type.ErrorThrow -> {
                     val error = t.generate()
-                    if (error is IOException) {
-                        throw error //okhttp accepts only IOException
-                    } else if (error is Throwable) {
-                        throw IOException(error)
+                    if (error != null) {
+                        throw error
                     }
                 }
             }

@@ -19,7 +19,8 @@ import io.ktor.http.contentType
 import io.ktor.util.AttributeKey
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.toByteArray
-import java.nio.charset.StandardCharsets
+import io.github.openflocon.flocon.utils.currentTimeMillis
+import io.github.openflocon.flocon.utils.currentTimeNanos
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -50,11 +51,11 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
         val request = context
         val floconCallId = Uuid.random().toString()
         val floconNetworkType = "http"
-        val requestedAt = System.currentTimeMillis()
+        val requestedAt = currentTimeMillis()
 
         // Reads the body without consuming it
         val requestBodyString = extractAndReplaceRequestBody(request)
-        val requestSize = requestBodyString?.toByteArray(StandardCharsets.UTF_8)?.size?.toLong()
+        val requestSize = requestBodyString?.encodeToByteArray()?.size?.toLong()
         val requestHeadersMap =
             request.headers.entries().associate { it.key to it.value.joinToString(",") }
 
@@ -80,7 +81,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
             )
         )
 
-        val startTime = System.nanoTime()
+        val startTime = currentTimeNanos()
         request.attributes.put(FLOCON_CALL_ID_KEY, floconCallId)
         request.attributes.put(FLOCON_START_TIME_KEY, startTime)
         request.attributes.put(FLOCON_IS_MOCKED_KEY, isMocked)
@@ -102,7 +103,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
                 proceed()
             }
         } catch (t: Throwable) {
-            val endTime = System.nanoTime()
+            val endTime = currentTimeNanos()
 
             val durationMs: Double = (endTime - startTime) / 1e6
 
@@ -113,7 +114,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
                 headers = emptyMap(),
                 size = null,
                 grpcStatus = null,
-                error = t.message ?: t.javaClass.simpleName,
+                error = t.message ?: t::class.simpleName ?: "Unknown",
                 requestHeaders = requestHeadersMap,
                 isImage = false,
             )
@@ -142,11 +143,11 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
         val startTime = request.attributes.getOrNull(FLOCON_START_TIME_KEY) ?: return@intercept
         val isMocked = request.attributes.getOrNull(FLOCON_IS_MOCKED_KEY) ?: false
 
-        val endTime = System.nanoTime()
+        val endTime = currentTimeNanos()
         val durationMs = (endTime - startTime) / 1e6
 
         val originalBodyBytes = response.bodyAsChannel().toByteArray()
-        val bodyString = originalBodyBytes.toString(StandardCharsets.UTF_8)
+        val bodyString = originalBodyBytes.decodeToString()
         val responseSize = originalBodyBytes.size.toLong()
 
         val responseHeadersMap =

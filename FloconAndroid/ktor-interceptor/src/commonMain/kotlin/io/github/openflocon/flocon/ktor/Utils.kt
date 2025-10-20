@@ -13,7 +13,6 @@ import io.ktor.util.date.GMTDate
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.InternalAPI
 import io.ktor.utils.io.toByteArray
-import java.nio.charset.StandardCharsets
 import kotlin.coroutines.CoroutineContext
 
 
@@ -37,13 +36,13 @@ internal suspend fun extractAndReplaceRequestBody(request: HttpRequestBuilder): 
 
     // If it's already a type that can be read multiple times (e.g., a String), no problem.
     if (originalBody is OutgoingContent.ByteArrayContent) {
-        return originalBody.bytes().toString(StandardCharsets.UTF_8)
+        return originalBody.bytes().decodeToString()
     }
 
     // If it's a data stream, we need to read and replace it.
     if (originalBody is OutgoingContent.ReadChannelContent) {
         val bytes = originalBody.readFrom().toByteArray()
-        val bodyString = bytes.toString(StandardCharsets.UTF_8)
+        val bodyString = bytes.decodeToString()
 
         // We replace the original body with a new one that contains the bytes we just read.
         // We create a new OutgoingContent that can be read again.
