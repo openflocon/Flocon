@@ -3,6 +3,7 @@ package io.github.openflocon.flocon.plugins.sharedprefs
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
@@ -15,43 +16,27 @@ import io.github.openflocon.flocon.plugins.sharedprefs.model.listSharedPreferenc
 import io.github.openflocon.flocon.plugins.sharedprefs.model.todevice.ToDeviceEditSharedPreferenceValueMessage
 import io.github.openflocon.flocon.plugins.sharedprefs.model.todevice.ToDeviceGetSharedPreferenceValueMessage
 
+internal interface FloconSharedPreferencesDataSource {
+    fun getAllSharedPreferences(): List<SharedPreferencesDescriptor>
+    fun getSharedPreferenceContent(sharedPreferencesName: String): List<SharedPreferenceRowDataModel>
+    fun setSharedPreferenceRowValue(
+        sharedPreferencesName: String,
+        preferenceName: String,
+        message: ToDeviceEditSharedPreferenceValueMessage,
+    )
+}
+
+internal expect fun buildFloconSharedPreferencesDataSource(context: FloconContext) : FloconSharedPreferencesDataSource
 
 // Got some code from Flipper client
 // https://github.com/facebook/flipper/blob/main/android/src/main/java/com/facebook/flipper/plugins/sharedpreferences/SharedPreferencesFlipperPlugin.java
 
 internal class FloconSharedPreferencesPluginImpl(
-    private val context: Context,
+    private val context: FloconContext,
     private var sender: FloconMessageSender,
 ) : FloconPlugin, FloconSharedPreferencesPlugin {
 
-    private val mSharedPreferences: MutableMap<SharedPreferencesDescriptor, SharedPreferences> =
-        mutableMapOf()
-    private val mSharedPreferencesDescriptors: MutableMap<SharedPreferences, SharedPreferencesDescriptor> =
-        mutableMapOf()
-
-    private val onSharedPreferenceChangeListener: OnSharedPreferenceChangeListener =
-        object : OnSharedPreferenceChangeListener {
-            override fun onSharedPreferenceChanged(
-                sharedPreferences: SharedPreferences,
-                key: String?
-            ) {
-                val descriptor: SharedPreferencesDescriptor? =
-                    mSharedPreferencesDescriptors[sharedPreferences]
-                if (descriptor == null) {
-                    return
-                }
-                // TODO sender?.send(
-                // TODO     "sharedPreferencesChange",
-                // TODO     Builder()
-                // TODO         .put("preferences", descriptor.name)
-                // TODO         .put("name", key)
-                // TODO         .put("deleted", !sharedPreferences.contains(key))
-                // TODO         .put("time", System.currentTimeMillis())
-                // TODO         .put("value", sharedPreferences.getAll().get(key))
-                // TODO         .build()
-                // TODO )
-            }
-        }
+    private val dataSource = buildFloconSharedPreferencesDataSource(context)
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
@@ -78,7 +63,7 @@ internal class FloconSharedPreferencesPluginImpl(
                     ToDeviceEditSharedPreferenceValueMessage.fromJson(jsonString = messageFromServer.body)
                         ?: return
                 try {
-                    setSharedPreferenceRowValue(
+                    dataSource.setSharedPreferenceRowValue(
                         sharedPreferencesName = toDeviceMessage.sharedPreferenceName,
                         preferenceName = toDeviceMessage.key,
                         message = toDeviceMessage,
@@ -105,7 +90,7 @@ internal class FloconSharedPreferencesPluginImpl(
         requestId: String,
         sender: FloconMessageSender
     ) {
-        val rows = getSharedPreferenceContent(
+        val rows = dataSource.getSharedPreferenceContent(
             sharedPreferencesName = sharedPreferenceName,
         )
 
@@ -130,7 +115,7 @@ internal class FloconSharedPreferencesPluginImpl(
     }
 
     private fun sendAllSharedPrefs() {
-        val allPrefs = getAllSharedPreferences()
+        val allPrefs = dataSource.getAllSharedPreferences()
         try {
             sender.send(
                 plugin = Protocol.FromDevice.SharedPreferences.Plugin,
@@ -140,102 +125,5 @@ internal class FloconSharedPreferencesPluginImpl(
         } catch (t: Throwable) {
             FloconLogger.logError("SharedPreferences json mapping error", t)
         }
-    }
-
-
-    private fun getSharedPreferenceContent(sharedPreferencesName: String): List<SharedPreferenceRowDataModel> {
-        val sharedPreferences = getSharedPreferencesFor(sharedPreferencesName) ?: return emptyList()
-        return sharedPreferences.all.mapNotNull {
-            when (val value = it.value) {
-                is String -> SharedPreferenceRowDataModel(
-                    key = it.key,
-                    stringValue = value,
-                )
-
-                is Int -> SharedPreferenceRowDataModel(
-                    key = it.key,
-                    intValue = value
-                )
-
-                is Boolean -> SharedPreferenceRowDataModel(
-                    key = it.key,
-                    booleanValue = value
-                )
-
-                is Float -> SharedPreferenceRowDataModel(
-                    key = it.key,
-                    floatValue = value
-                )
-
-                is Long -> SharedPreferenceRowDataModel(
-                    key = it.key,
-                    longValue = value
-                )
-
-                is Set<*> -> SharedPreferenceRowDataModel(
-                    key = it.key,
-                    setStringValue = value
-                        .map { it.toString() }
-                        .toSet()
-                )
-
-                else -> null // Ne mappe pas les types non reconnus ou null
-            }
-        }
-    }
-
-    private fun getAllSharedPreferences(): List<SharedPreferencesDescriptor> {
-        val foundPrefs: List<SharedPreferencesDescriptor> =
-            SharedPreferencesFinder.buildDescriptorForAllPrefsFiles(context)
-        for (descriptor in foundPrefs) {
-            if (mSharedPreferences.containsKey(descriptor)) {
-                // no op
-            } else {
-                descriptor.getSharedPreferences(context)?.let { sharedPref ->
-                    sharedPref.registerOnSharedPreferenceChangeListener(
-                        onSharedPreferenceChangeListener
-                    )
-                    mSharedPreferences.put(descriptor, sharedPref)
-                    mSharedPreferencesDescriptors.put(sharedPref, descriptor)
-                }
-            }
-        }
-        return foundPrefs
-    }
-
-    private fun getSharedPreferencesFor(name: String?): SharedPreferences? {
-        for (entry in mSharedPreferencesDescriptors.entries) {
-            if (entry.value.name == name) {
-                return entry.key
-            }
-        }
-        return null
-    }
-
-    @Throws(Throwable::class)
-    private fun setSharedPreferenceRowValue(
-        sharedPreferencesName: String,
-        preferenceName: String,
-        message: ToDeviceEditSharedPreferenceValueMessage,
-    ) {
-        val sharedPreferences = getSharedPreferencesFor(sharedPreferencesName) ?: return
-        val originalValue: Any? = sharedPreferences.all[preferenceName]
-        val editor = sharedPreferences.edit()
-
-        if (originalValue is Boolean && message.booleanValue != null) {
-            editor.putBoolean(preferenceName, message.booleanValue)
-        } else if (originalValue is Long && message.longValue != null) {
-            editor.putLong(preferenceName, message.longValue)
-        } else if (originalValue is Int && message.intValue != null) {
-            editor.putInt(preferenceName, message.intValue)
-        } else if (originalValue is Float && message.floatValue != null) {
-            editor.putFloat(preferenceName, message.floatValue)
-        } else if (originalValue is String && message.stringValue != null) {
-            editor.putString(preferenceName, message.stringValue)
-        } else {
-            throw IllegalArgumentException("Method not supported: " + preferenceName)
-        }
-
-        editor.apply()
     }
 }

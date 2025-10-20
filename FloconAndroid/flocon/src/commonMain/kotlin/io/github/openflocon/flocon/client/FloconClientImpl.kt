@@ -7,7 +7,7 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.FloconPlugin
-import io.github.openflocon.flocon.getAppInfos
+import io.github.openflocon.flocon.core.getAppInfos
 import io.github.openflocon.flocon.getServerHost
 import io.github.openflocon.flocon.model.FloconFileInfo
 import io.github.openflocon.flocon.model.FloconMessageToServer
