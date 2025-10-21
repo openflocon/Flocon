@@ -72,10 +72,6 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) : F
         return foundDatabases
     }
 
-    override fun registerDatabase(name: String, dbPath: String) {
-        // no op on android
-    }
-
     /**
      * Recursively scans a directory for SQLite database files.
      *

@@ -15,8 +15,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "My Application"
-include(":app")
-include(":app-multi")
+include(":sample-android-only")
+include(":sample-multiplatform")
 include(":flocon-base")
 include(":flocon")
 include(":flocon-no-op")

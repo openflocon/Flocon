@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.websocket
 
 import kotlin.Throws
 import io.github.openflocon.flocon.FloconLogger
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -57,7 +58,9 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
                 override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                     FloconLogger.logError("❌ WebSocket Connection Failed: ${t.message}", t)
                     if(response == null && t is EOFException) {
-                        disconnect()
+                        runBlocking {
+                            disconnect()
+                        }
                         onClosed()
                     }
                     // Connection failed, resume the coroutine with an exception
