@@ -11,6 +11,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/app-multi" />
             <option value="$PROJECT_DIR$/flocon" />
             <option value="$PROJECT_DIR$/flocon-base" />
             <option value="$PROJECT_DIR$/flocon-no-op" />

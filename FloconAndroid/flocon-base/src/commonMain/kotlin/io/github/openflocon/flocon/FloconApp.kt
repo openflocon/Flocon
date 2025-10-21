@@ -19,7 +19,7 @@ abstract class FloconApp {
 
         @Throws(Throwable::class)
         suspend fun connect(onClosed: () -> Unit)
-        fun disconnect()
+        suspend fun disconnect()
 
         val dashboardPlugin: FloconDashboardPlugin
         val tablePlugin: FloconTablePlugin

@@ -107,7 +107,7 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
         }
     }
 
-    override fun disconnect() {
+    override suspend fun disconnect() {
         webSocket?.close(1000, "Client disconnecting")
         webSocket = null
     }

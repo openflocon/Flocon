@@ -16,6 +16,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "My Application"
 include(":app")
+include(":app-multi")
 include(":flocon-base")
 include(":flocon")
 include(":flocon-no-op")

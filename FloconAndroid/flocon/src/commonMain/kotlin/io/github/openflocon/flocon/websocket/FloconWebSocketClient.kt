@@ -16,6 +16,6 @@ interface FloconWebSocketClient {
 
     suspend fun sendMessage(message: String): Boolean
 
-    fun disconnect()
+    suspend fun disconnect()
 }
 

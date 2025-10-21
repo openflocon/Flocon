@@ -100,7 +100,7 @@ internal class FloconClientImpl(
         }
     }
 
-    override fun disconnect() {
+    override suspend fun disconnect() {
         webSocketClient.disconnect()
     }
 

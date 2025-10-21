@@ -1,8 +1,5 @@
 package io.github.openflocon.flocon.plugins.sharedprefs
 
-import android.content.Context
-import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
