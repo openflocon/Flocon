@@ -199,20 +199,6 @@ internal class FloconClientImpl(
         }
     }
 
-    /* TODO
-    fun displayClearTextError() {
-        Toast.makeText(
-            appContext,
-            "Cannot start Flocon : ClearText Issue, see Logcat",
-            Toast.LENGTH_LONG
-        ).show()
-        Log.e(
-            "Flocon",
-            "Flocon uses ClearText communication to the server, it seems you already have a network-security-config setup on your project, please ensure you allowed cleartext communication on your debug app https://github.com/openflocon/Flocon?tab=readme-ov-file#-why-flocon-cant-see-your-device-calls-and-how-to-fix-it-"
-        )
-    }
-     */
-
     override fun sendPendingMessages() {
         coroutineScope.launch(Dispatchers.IO) {
             webSocketClient.sendPendingMessages()

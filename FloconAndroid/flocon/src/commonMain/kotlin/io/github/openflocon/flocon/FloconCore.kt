@@ -34,20 +34,26 @@ abstract class FloconCore : FloconApp() {
         _isInitialized.value = true
 
         scope.launch {
-            start(newClient)
+            start(
+                client = newClient,
+                context = context
+            )
         }
 
         super.initializeFlocon()
     }
 
-    private suspend fun start(client: FloconApp.Client) {
+    private suspend fun start(client: FloconApp.Client, context: FloconContext) {
         // try to connect, it fail : try again in 3s
         try {
             client.connect(
                 onClosed = {
                     // try again to connect
                     scope.launch {
-                        start(client)
+                        start(
+                            client = client,
+                            context = context,
+                        )
                     }
                 }
             )
@@ -59,14 +65,19 @@ abstract class FloconCore : FloconApp() {
         } catch (t: Throwable) {
             if(t.message?.contains("CLEARTEXT communication to localhost not permitted by network security policy") == true) {
                 withContext(Dispatchers.Main) {
-                   // TODO client.displayClearTextError()
+                   displayClearTextError(context = context)
                 }
             } else {
                 //t.printStackTrace()
                 delay(3_000)
-                start(client)
+                start(
+                    client = client,
+                    context = context,
+                )
             }
         }
     }
 
 }
+
+internal expect fun displayClearTextError(context: FloconContext)
