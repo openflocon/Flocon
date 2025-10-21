@@ -11,9 +11,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
+import io.github.openflocon.flocon.myapplication.multi.dashboard.initializeDashboard
 import io.github.openflocon.flocon.plugins.analytics.floconAnalytics
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsEvent
 import io.github.openflocon.flocon.plugins.analytics.model.analyticsProperty
@@ -23,6 +25,9 @@ import kotlin.random.Random
 
 @Composable
 fun App() {
+    LaunchedEffect(Unit) {
+        initializeDashboard()
+    }
     MaterialTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column(
