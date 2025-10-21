@@ -1,0 +1,347 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:2:1-37:12
+INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:2:1-37:12
+INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:2:1-37:12
+INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:2:1-37:12
+MERGED from [androidx.room:room-runtime-android:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/38307d29cf768782107e8a7d4c7dcbd6/transformed/room-runtime-release/AndroidManifest.xml:17:1-31:12
+MERGED from [androidx.room:room-ktx:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/405ec6b31c0e28f2591fd86eb11d9ff2/transformed/room-ktx-2.7.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity:1.10.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/6882d14467bd6927d919c805dbebd959/transformed/activity-1.10.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.material3:material3-android:1.3.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/625d14230fbd4f9674a5f7708033fc73/transformed/material3-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity-compose:1.10.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/f3771061e297d08ce33d7ac66f1b916c/transformed/activity-compose-1.10.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-core-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/0c594960a91ef052001693a44712a50e/transformed/animation-core-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-ripple-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/149aed8f96b88de78a34907ba8bf5559/transformed/material-ripple-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/5e2114955feddbbb728712872c631e12/transformed/animation-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/3b54189b9b216d9cea5fc380f0ff0b77/transformed/foundation-layout-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca2bcecc6d8e3852ffcd145ad635c515/transformed/foundation-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/efbbd846177590d1157a1c35d49f1461/transformed/ui-unit-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/e33ba4f5e63703355b376586bb04d659/transformed/ui-geometry-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/c3b1b3216c6eb2293a08f5bd582d9e82/transformed/ui-graphics-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-util-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/3b3b341e1d18645412f52c27c01dac1b/transformed/ui-util-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-text-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/9b9f509493e896c48b499aade8bfff40/transformed/ui-text-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/43dc55c66671e13a209a374ea9ea7371/transformed/material-icons-core-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/d3cd4bafea5e566ae5efdb5068d7ad66/transformed/ui-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.activity:activity-ktx:1.10.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d864c92e85928b3176b03164ae3fc802/transformed/activity-ktx-1.10.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e89b4fa689f9042358bf745a54bde5e8/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/9ad43e67c98014fd95bd7696f8241ad9/transformed/lifecycle-livedata-core-2.9.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d492e72549b1fd9273afebaa190128f5/transformed/lifecycle-process-2.9.1/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/f7c03ab8cc6a12043a0c4b14c4caf68f/transformed/lifecycle-runtime-compose-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/7da771fc90a4d325bbc54afd7111787c/transformed/lifecycle-viewmodel-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate-ktx:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/7bfa2680fa0362501d7c4e8cc325752d/transformed/savedstate-ktx-1.3.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.savedstate:savedstate-android:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/1168bdc400d3c0beed9bd87f550d905e/transformed/savedstate-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/8020f5e0f69eab406357e845243260c9/transformed/lifecycle-viewmodel-savedstate-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core-ktx:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/b3aa64e85ad0a68e975473546eda0c64/transformed/core-ktx-1.16.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.autofill:autofill:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/9179d7df3b2ae9718d0c709160ee6cf0/transformed/autofill-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.graphics:graphics-path:1.0.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/b08391abd4cc3664d459a848a718a29e/transformed/graphics-path-1.0.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/c75b2e06deb160db570aebf58161f418/transformed/lifecycle-runtime-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/5926fc450a657cf3a5fc57a9b3f421f5/transformed/lifecycle-viewmodel-ktx-2.9.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/3e035289d2f459f3f60d28ac21501dc0/transformed/lifecycle-runtime-ktx/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/2fcf751415a7693d3fa5e36702438664/transformed/runtime-saveable-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/76c62cabe9df14416f08fc0d6106bbfb/transformed/runtime-release/AndroidManifest.xml:2:1-7:12
+MERGED from [:ktor-interceptor] /Users/florentchampigny/Flocon/FloconAndroid/ktor-interceptor/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:flocon-base] /Users/florentchampigny/Flocon/FloconAndroid/flocon-base/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/f8c67222f3a372e6b3f12528fbc07ef1/transformed/annotation-experimental-1.4.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.core:core-viewtree:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/cca71a307850b129173851c61fe1573e/transformed/core-viewtree-1.0.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.sqlite:sqlite-framework-android:2.5.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/80fa0fd0f7fe00234071758f013480c7/transformed/sqlite-framework-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.sqlite:sqlite-android:2.5.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/9fb90b4fd72eb6b43086b426e743f0bc/transformed/sqlite-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/131a71cfb86ca72ac13cc85081900d74/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/407b0917ca75f42b9bd64665ab388aba/transformed/startup-runtime-1.1.1/AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.2.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e93f4c5b81230eaa77d67e9e0917b62b/transformed/tracing-1.2.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/214bb6ce332e008085e6abd9b3d2b58e/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/97e1db558822c9af3b2d7022f6369484/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
+	package
+		INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:3:5-51
+	android:versionCode
+		INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:5:5-66
+	android:name
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:5:22-64
+application
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:7:5-35:19
+INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:7:5-35:19
+MERGED from [androidx.room:room-runtime-android:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/38307d29cf768782107e8a7d4c7dcbd6/transformed/room-runtime-release/AndroidManifest.xml:23:5-29:19
+MERGED from [androidx.room:room-runtime-android:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/38307d29cf768782107e8a7d4c7dcbd6/transformed/room-runtime-release/AndroidManifest.xml:23:5-29:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d492e72549b1fd9273afebaa190128f5/transformed/lifecycle-process-2.9.1/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d492e72549b1fd9273afebaa190128f5/transformed/lifecycle-process-2.9.1/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:28:5-89
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/407b0917ca75f42b9bd64665ab388aba/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/407b0917ca75f42b9bd64665ab388aba/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/214bb6ce332e008085e6abd9b3d2b58e/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/214bb6ce332e008085e6abd9b3d2b58e/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+	android:extractNativeLibs
+		INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:14:9-35
+	android:label
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:12:9-41
+	android:fullBackupContent
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:10:9-54
+	android:roundIcon
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:13:9-54
+	android:icon
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:11:9-43
+	android:allowBackup
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:8:9-35
+	android:theme
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:15:9-51
+	android:dataExtractionRules
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:9:9-65
+activity#io.github.openflocon.flocon.myapplication.multi.MainActivity
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:17:9-34:20
+	android:label
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:20:13-45
+	android:exported
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:19:13-36
+	android:theme
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:21:13-55
+	android:name
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:18:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:22:13-26:29
+action#android.intent.action.MAIN
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:23:17-69
+	android:name
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:23:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:25:17-77
+	android:name
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:25:27-74
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:flocon
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:28:13-33:29
+action#android.intent.action.VIEW
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:29:17-69
+	android:name
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:29:25-66
+category#android.intent.category.BROWSABLE
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:30:17-78
+	android:name
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:30:27-75
+category#android.intent.category.DEFAULT
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:31:17-76
+	android:name
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:31:27-73
+data
+ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:32:17-49
+	android:scheme
+		ADDED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml:32:23-46
+uses-sdk
+INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml
+INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml
+MERGED from [androidx.room:room-runtime-android:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/38307d29cf768782107e8a7d4c7dcbd6/transformed/room-runtime-release/AndroidManifest.xml:21:5-44
+MERGED from [androidx.room:room-runtime-android:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/38307d29cf768782107e8a7d4c7dcbd6/transformed/room-runtime-release/AndroidManifest.xml:21:5-44
+MERGED from [androidx.room:room-ktx:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/405ec6b31c0e28f2591fd86eb11d9ff2/transformed/room-ktx-2.7.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.room:room-ktx:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/405ec6b31c0e28f2591fd86eb11d9ff2/transformed/room-ktx-2.7.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.10.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/6882d14467bd6927d919c805dbebd959/transformed/activity-1.10.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.10.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/6882d14467bd6927d919c805dbebd959/transformed/activity-1.10.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material3:material3-android:1.3.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/625d14230fbd4f9674a5f7708033fc73/transformed/material3-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material3:material3-android:1.3.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/625d14230fbd4f9674a5f7708033fc73/transformed/material3-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-compose:1.10.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/f3771061e297d08ce33d7ac66f1b916c/transformed/activity-compose-1.10.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-compose:1.10.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/f3771061e297d08ce33d7ac66f1b916c/transformed/activity-compose-1.10.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/0c594960a91ef052001693a44712a50e/transformed/animation-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/0c594960a91ef052001693a44712a50e/transformed/animation-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/149aed8f96b88de78a34907ba8bf5559/transformed/material-ripple-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/149aed8f96b88de78a34907ba8bf5559/transformed/material-ripple-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/5e2114955feddbbb728712872c631e12/transformed/animation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/5e2114955feddbbb728712872c631e12/transformed/animation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/3b54189b9b216d9cea5fc380f0ff0b77/transformed/foundation-layout-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/3b54189b9b216d9cea5fc380f0ff0b77/transformed/foundation-layout-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca2bcecc6d8e3852ffcd145ad635c515/transformed/foundation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca2bcecc6d8e3852ffcd145ad635c515/transformed/foundation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/efbbd846177590d1157a1c35d49f1461/transformed/ui-unit-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/efbbd846177590d1157a1c35d49f1461/transformed/ui-unit-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/e33ba4f5e63703355b376586bb04d659/transformed/ui-geometry-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/e33ba4f5e63703355b376586bb04d659/transformed/ui-geometry-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/c3b1b3216c6eb2293a08f5bd582d9e82/transformed/ui-graphics-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/c3b1b3216c6eb2293a08f5bd582d9e82/transformed/ui-graphics-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/3b3b341e1d18645412f52c27c01dac1b/transformed/ui-util-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/3b3b341e1d18645412f52c27c01dac1b/transformed/ui-util-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/9b9f509493e896c48b499aade8bfff40/transformed/ui-text-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/9b9f509493e896c48b499aade8bfff40/transformed/ui-text-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/43dc55c66671e13a209a374ea9ea7371/transformed/material-icons-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/43dc55c66671e13a209a374ea9ea7371/transformed/material-icons-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/d3cd4bafea5e566ae5efdb5068d7ad66/transformed/ui-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/d3cd4bafea5e566ae5efdb5068d7ad66/transformed/ui-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.10.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d864c92e85928b3176b03164ae3fc802/transformed/activity-ktx-1.10.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.10.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d864c92e85928b3176b03164ae3fc802/transformed/activity-ktx-1.10.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e89b4fa689f9042358bf745a54bde5e8/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e89b4fa689f9042358bf745a54bde5e8/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/9ad43e67c98014fd95bd7696f8241ad9/transformed/lifecycle-livedata-core-2.9.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/9ad43e67c98014fd95bd7696f8241ad9/transformed/lifecycle-livedata-core-2.9.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d492e72549b1fd9273afebaa190128f5/transformed/lifecycle-process-2.9.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d492e72549b1fd9273afebaa190128f5/transformed/lifecycle-process-2.9.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/f7c03ab8cc6a12043a0c4b14c4caf68f/transformed/lifecycle-runtime-compose-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/f7c03ab8cc6a12043a0c4b14c4caf68f/transformed/lifecycle-runtime-compose-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/7da771fc90a4d325bbc54afd7111787c/transformed/lifecycle-viewmodel-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/7da771fc90a4d325bbc54afd7111787c/transformed/lifecycle-viewmodel-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/7bfa2680fa0362501d7c4e8cc325752d/transformed/savedstate-ktx-1.3.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/7bfa2680fa0362501d7c4e8cc325752d/transformed/savedstate-ktx-1.3.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.savedstate:savedstate-android:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/1168bdc400d3c0beed9bd87f550d905e/transformed/savedstate-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-android:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/1168bdc400d3c0beed9bd87f550d905e/transformed/savedstate-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/8020f5e0f69eab406357e845243260c9/transformed/lifecycle-viewmodel-savedstate-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/8020f5e0f69eab406357e845243260c9/transformed/lifecycle-viewmodel-savedstate-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core-ktx:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/b3aa64e85ad0a68e975473546eda0c64/transformed/core-ktx-1.16.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/b3aa64e85ad0a68e975473546eda0c64/transformed/core-ktx-1.16.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.autofill:autofill:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/9179d7df3b2ae9718d0c709160ee6cf0/transformed/autofill-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.autofill:autofill:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/9179d7df3b2ae9718d0c709160ee6cf0/transformed/autofill-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.graphics:graphics-path:1.0.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/b08391abd4cc3664d459a848a718a29e/transformed/graphics-path-1.0.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.graphics:graphics-path:1.0.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/b08391abd4cc3664d459a848a718a29e/transformed/graphics-path-1.0.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/c75b2e06deb160db570aebf58161f418/transformed/lifecycle-runtime-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/c75b2e06deb160db570aebf58161f418/transformed/lifecycle-runtime-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/5926fc450a657cf3a5fc57a9b3f421f5/transformed/lifecycle-viewmodel-ktx-2.9.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/5926fc450a657cf3a5fc57a9b3f421f5/transformed/lifecycle-viewmodel-ktx-2.9.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/3e035289d2f459f3f60d28ac21501dc0/transformed/lifecycle-runtime-ktx/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/3e035289d2f459f3f60d28ac21501dc0/transformed/lifecycle-runtime-ktx/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/2fcf751415a7693d3fa5e36702438664/transformed/runtime-saveable-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/2fcf751415a7693d3fa5e36702438664/transformed/runtime-saveable-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/76c62cabe9df14416f08fc0d6106bbfb/transformed/runtime-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.7.6] /Users/florentchampigny/.gradle/caches/8.13/transforms/76c62cabe9df14416f08fc0d6106bbfb/transformed/runtime-release/AndroidManifest.xml:5:5-44
+MERGED from [:ktor-interceptor] /Users/florentchampigny/Flocon/FloconAndroid/ktor-interceptor/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:ktor-interceptor] /Users/florentchampigny/Flocon/FloconAndroid/ktor-interceptor/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:flocon-base] /Users/florentchampigny/Flocon/FloconAndroid/flocon-base/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:flocon-base] /Users/florentchampigny/Flocon/FloconAndroid/flocon-base/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/f8c67222f3a372e6b3f12528fbc07ef1/transformed/annotation-experimental-1.4.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/f8c67222f3a372e6b3f12528fbc07ef1/transformed/annotation-experimental-1.4.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-viewtree:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/cca71a307850b129173851c61fe1573e/transformed/core-viewtree-1.0.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-viewtree:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/cca71a307850b129173851c61fe1573e/transformed/core-viewtree-1.0.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.sqlite:sqlite-framework-android:2.5.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/80fa0fd0f7fe00234071758f013480c7/transformed/sqlite-framework-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-framework-android:2.5.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/80fa0fd0f7fe00234071758f013480c7/transformed/sqlite-framework-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-android:2.5.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/9fb90b4fd72eb6b43086b426e743f0bc/transformed/sqlite-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-android:2.5.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/9fb90b4fd72eb6b43086b426e743f0bc/transformed/sqlite-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/131a71cfb86ca72ac13cc85081900d74/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/131a71cfb86ca72ac13cc85081900d74/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/407b0917ca75f42b9bd64665ab388aba/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/407b0917ca75f42b9bd64665ab388aba/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.2.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e93f4c5b81230eaa77d67e9e0917b62b/transformed/tracing-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing:1.2.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e93f4c5b81230eaa77d67e9e0917b62b/transformed/tracing-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/214bb6ce332e008085e6abd9b3d2b58e/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/214bb6ce332e008085e6abd9b3d2b58e/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/97e1db558822c9af3b2d7022f6369484/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/97e1db558822c9af3b2d7022f6369484/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+	android:targetSdkVersion
+		INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/florentchampigny/Flocon/FloconAndroid/app-multi/src/androidMain/AndroidManifest.xml
+service#androidx.room.MultiInstanceInvalidationService
+ADDED from [androidx.room:room-runtime-android:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/38307d29cf768782107e8a7d4c7dcbd6/transformed/room-runtime-release/AndroidManifest.xml:24:9-28:63
+	android:exported
+		ADDED from [androidx.room:room-runtime-android:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/38307d29cf768782107e8a7d4c7dcbd6/transformed/room-runtime-release/AndroidManifest.xml:27:13-37
+	tools:ignore
+		ADDED from [androidx.room:room-runtime-android:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/38307d29cf768782107e8a7d4c7dcbd6/transformed/room-runtime-release/AndroidManifest.xml:28:13-60
+	android:directBootAware
+		ADDED from [androidx.room:room-runtime-android:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/38307d29cf768782107e8a7d4c7dcbd6/transformed/room-runtime-release/AndroidManifest.xml:26:13-43
+	android:name
+		ADDED from [androidx.room:room-runtime-android:2.7.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/38307d29cf768782107e8a7d4c7dcbd6/transformed/room-runtime-release/AndroidManifest.xml:25:13-74
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d492e72549b1fd9273afebaa190128f5/transformed/lifecycle-process-2.9.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d492e72549b1fd9273afebaa190128f5/transformed/lifecycle-process-2.9.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/407b0917ca75f42b9bd64665ab388aba/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/407b0917ca75f42b9bd64665ab388aba/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/ca16b5dc08dd6ea9ed0c230561537a1d/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d492e72549b1fd9273afebaa190128f5/transformed/lifecycle-process-2.9.1/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d492e72549b1fd9273afebaa190128f5/transformed/lifecycle-process-2.9.1/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.9.1] /Users/florentchampigny/.gradle/caches/8.13/transforms/d492e72549b1fd9273afebaa190128f5/transformed/lifecycle-process-2.9.1/AndroidManifest.xml:30:17-78
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:23:9-81
+permission#io.github.openflocon.flocon.myapplication.multi.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:26:22-94
+uses-permission#io.github.openflocon.flocon.myapplication.multi.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.16.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/5325d933af6608741406a9f2375f9d60/transformed/core-1.16.0/AndroidManifest.xml:26:22-94
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /Users/florentchampigny/.gradle/caches/8.13/transforms/e24829ae1355f7bdea1a8844a4643b96/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:25-92

@@ -1,0 +1,5 @@
+abi_version=1.201.0
+compiler_version=2.1.0
+ir_signature_versions=1,2
+metadata_version=1.4.1
+unique_name=app-multi_commonMain
