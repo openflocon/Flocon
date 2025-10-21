@@ -66,8 +66,10 @@ internal class FloconWebSocketClientJvm() : FloconWebSocketClient {
                             else -> Unit
                         }
                     }
+                    FloconLogger.log("❌ WebSocket fermé sans raison")
                 } catch (e: Exception) {
                     FloconLogger.logError("❌ Erreur WebSocket : ${e.message}", e)
+                } finally {
                     disconnect()
                     onClosed()
                 }
