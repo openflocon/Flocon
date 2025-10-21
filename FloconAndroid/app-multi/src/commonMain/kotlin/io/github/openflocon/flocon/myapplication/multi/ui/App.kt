@@ -14,6 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
+import io.github.openflocon.flocon.plugins.analytics.floconAnalytics
+import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsEvent
+import io.github.openflocon.flocon.plugins.analytics.model.analyticsProperty
+import io.github.openflocon.flocon.plugins.tables.floconTable
+import io.github.openflocon.flocon.plugins.tables.model.toParam
+import kotlin.random.Random
 
 @Composable
 fun App() {
@@ -31,9 +37,8 @@ fun App() {
                     style = MaterialTheme.typography.headlineMedium
                 )
                 
-                Row(
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Button(
                         onClick = {
@@ -48,6 +53,38 @@ fun App() {
                         }
                     ) {
                         Text("Ktor POST test")
+                    }
+                    Button(
+                        onClick = {
+                            val value = Random.nextInt(from = 0, until = 1000).toString()
+                            floconTable("analytics").log(
+                                "name" toParam "new name $value",
+                                "value1" toParam "value1 $value",
+                                "value2" toParam "value2 $value",
+                            )
+                        }
+                    ) {
+                        Text("send table event")
+                    }
+                    Button(
+                        onClick = {
+                            floconAnalytics("firebase").logEvents(
+                                AnalyticsEvent(
+                                    eventName = "clicked user",
+                                    "userId" analyticsProperty "1024",
+                                    "username" analyticsProperty "florent",
+                                    "index" analyticsProperty "3",
+                                ),
+                                AnalyticsEvent(
+                                    eventName = "opened profile",
+                                    "userId" analyticsProperty "2048",
+                                    "username" analyticsProperty "kevin",
+                                    "age" analyticsProperty "34",
+                                ),
+                            )
+                        }
+                    ) {
+                        Text("send analytics event")
                     }
                 }
             }

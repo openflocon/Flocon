@@ -32,7 +32,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":flocon"))
-                //implementation(project(":flocon-base"))
+                implementation(project(":flocon-base"))
                 implementation(project(":ktor-interceptor"))
 
                 implementation(libs.kotlinx.coroutines.core)
