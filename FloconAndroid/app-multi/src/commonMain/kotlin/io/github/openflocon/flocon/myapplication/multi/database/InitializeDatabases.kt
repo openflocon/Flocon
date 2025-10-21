@@ -1,6 +1,5 @@
 package io.github.openflocon.flocon.myapplication.multi.database
 
-import android.content.Context
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.database.model.FoodEntity
 import io.github.openflocon.flocon.myapplication.multi.database.model.HumanEntity
@@ -8,10 +7,7 @@ import io.github.openflocon.flocon.myapplication.multi.database.model.HumanWithD
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-fun initializeDatabases(context: Context) {
-    val dogDatabase = DogDatabase.getDatabase(context)
-    val foodDatabase = FoodDatabase.getDatabase(context)
-
+fun initializeDatabases(dogDatabase: DogDatabase, foodDatabase: FoodDatabase) {
     GlobalScope.launch {
         dogDatabase.dogDao().insertDog(
             DogEntity(
@@ -112,7 +108,7 @@ fun initializeDatabases(context: Context) {
                     id = 10L + i,
                     name = "dog$i",
                     breed = randomBreed,
-                    pictureUrl = "https://picsum.photos/500/50${i%10}.jpg",
+                    pictureUrl = "https://picsum.photos/500/50${i % 10}.jpg",
                     age = (1..15).random()
                 )
             )

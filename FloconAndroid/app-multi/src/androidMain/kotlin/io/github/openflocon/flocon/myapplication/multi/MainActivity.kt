@@ -8,6 +8,9 @@ import androidx.activity.enableEdgeToEdge
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.ktor.FloconKtorPlugin
+import io.github.openflocon.flocon.myapplication.multi.Databases.getDogDatabase
+import io.github.openflocon.flocon.myapplication.multi.Databases.getFoodDatabase
+import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.multi.ui.App
@@ -32,7 +35,10 @@ class MainActivity : ComponentActivity() {
         DummyHttpKtorCaller.initialize(ktorClient)
 
         initializeSharedPreferences(applicationContext)
-        initializeDatabases(context = applicationContext)
+        initializeDatabases(
+            dogDatabase = getDogDatabase(this),
+            foodDatabase = getFoodDatabase(this),
+        )
 
         FloconLogger.enabled = true
         Flocon.initialize(this)

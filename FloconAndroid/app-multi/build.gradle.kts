@@ -40,7 +40,10 @@ kotlin {
                 
                 // Ktor client core
                 implementation(libs.ktor.client.core)
-                
+
+                // room
+                implementation(libs.androidx.room.runtime)
+
                 // Compose Multiplatform
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -55,11 +58,7 @@ kotlin {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.androidx.lifecycle.runtime.ktx)
                 implementation(libs.androidx.activity.compose)
-                
-                // Room for Android
-                implementation(libs.androidx.room.runtime)
-                implementation(libs.androidx.room.ktx)
-                
+
                 // Ktor client for Android
                 implementation(libs.ktor.client.okhttp)
             }
@@ -69,7 +68,10 @@ kotlin {
             dependencies {
                 // Ktor client for desktop/JVM
                 implementation(libs.ktor.client.cio)
-                
+
+                implementation("org.xerial:sqlite-jdbc:3.45.3.0") // ou la dernière version
+                implementation(libs.sqlite.bundled)
+
                 // Compose Desktop
                 implementation(compose.desktop.currentOs)
             }
@@ -145,7 +147,7 @@ android {
 }
 
 dependencies {
-    add("kspAndroid", libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 }
 
 compose.desktop {

@@ -18,7 +18,7 @@ composeBom = "2025.06.01"
 appcompat = "1.7.1"
 material = "1.12.0"
 okhttpBom = "4.12.0"
-roomRuntime = "2.7.1"
+room = "2.8.1"
 # for grpc
 gson = "2.11.0"
 grpc = "1.70.0"
@@ -27,12 +27,12 @@ grpcKotlin = "1.4.3"
 protobuf = "4.26.1"
 ksp = "2.1.0-1.0.29"
 processPhoenix = "3.0.0"
+sqlite = "2.5.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
-androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 apollo-http-okhttprealization = { module = "com.apollographql.apollo:apollo-http-okhttprealization", version.ref = "apollo" }
 apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
@@ -74,6 +74,7 @@ org-jetbrains-kotlinx-kotlinx-coroutines-core = { module = "org.jetbrains.kotlin
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf"}
 protobuf-util = { group = "com.google.protobuf", name = "protobuf-java-util", version.ref = "protobuf" }
 squareup-okhttp = { module = "com.squareup.okhttp3:okhttp" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

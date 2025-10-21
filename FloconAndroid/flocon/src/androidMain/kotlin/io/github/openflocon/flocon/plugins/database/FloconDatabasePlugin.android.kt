@@ -4,20 +4,22 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DeviceDataBaseDataModel
 import java.io.File
 import java.util.Locale
 
 internal actual fun buildFloconDatabaseDataSource(context: FloconContext): FloconDatabaseDataSource {
-    return FloconDatabaseDataSourceImpl(context.appContext)
+    return FloconDatabaseDataSourceAndroid(context.appContext)
 }
 
-internal class FloconDatabaseDataSourceImpl(private val context: Context) : FloconDatabaseDataSource {
+internal class FloconDatabaseDataSourceAndroid(private val context: Context) : FloconDatabaseDataSource {
 
     private val MAX_DEPTH = 7
 
     override fun executeSQL(
+        registeredDatabases: List<FloconDatabaseModel>,
         databaseName: String,
         query: String
     ): DatabaseExecuteSqlResponse {
@@ -43,7 +45,9 @@ internal class FloconDatabaseDataSourceImpl(private val context: Context) : Floc
         }
     }
 
-    override fun getAllDataBases(): List<DeviceDataBaseDataModel> {
+    override fun getAllDataBases(
+        registeredDatabases: List<FloconDatabaseModel>
+    ): List<DeviceDataBaseDataModel> {
         val databasesDir = context.getDatabasePath("dummy_db").parentFile ?: return emptyList()
 
         val foundDatabases = mutableListOf<DeviceDataBaseDataModel>()
@@ -54,7 +58,22 @@ internal class FloconDatabaseDataSourceImpl(private val context: Context) : Floc
             foundDatabases = foundDatabases
         )
 
+        registeredDatabases.forEach {
+            if(File(it.absolutePath).exists()) {
+                foundDatabases.add(
+                    DeviceDataBaseDataModel(
+                        id = it.absolutePath,
+                        name = it.displayName,
+                    )
+                )
+            }
+        }
+
         return foundDatabases
+    }
+
+    override fun registerDatabase(name: String, dbPath: String) {
+        // no op on android
     }
 
     /**

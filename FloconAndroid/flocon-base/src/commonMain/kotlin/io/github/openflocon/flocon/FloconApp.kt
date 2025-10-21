@@ -2,6 +2,7 @@ package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPlugin
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPlugin
+import io.github.openflocon.flocon.plugins.database.FloconDatabasePlugin
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPlugin
 import io.github.openflocon.flocon.plugins.device.FloconDevicePlugin
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
@@ -21,6 +22,7 @@ abstract class FloconApp {
         suspend fun connect(onClosed: () -> Unit)
         suspend fun disconnect()
 
+        val databasePlugin: FloconDatabasePlugin
         val dashboardPlugin: FloconDashboardPlugin
         val tablePlugin: FloconTablePlugin
         val deeplinksPlugin: FloconDeeplinksPlugin

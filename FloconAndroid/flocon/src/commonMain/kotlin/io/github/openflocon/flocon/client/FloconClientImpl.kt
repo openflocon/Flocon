@@ -59,7 +59,7 @@ internal class FloconClientImpl(
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     // region plugins
-    private val databasePlugin = FloconDatabasePluginImpl(context = appContext, sender = this)
+    override val databasePlugin = FloconDatabasePluginImpl(context = appContext, sender = this)
     private val filesPlugin = FloconFilesPluginImpl(context = appContext, sender = this, floconFileSender = this)
     private val sharedPrefsPlugin = FloconSharedPreferencesPluginImpl(context = appContext, sender = this)
     override val dashboardPlugin = FloconDashboardPluginImpl(sender = this)
