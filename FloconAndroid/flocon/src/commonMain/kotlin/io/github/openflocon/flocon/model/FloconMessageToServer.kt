@@ -14,6 +14,7 @@ internal class FloconMessageToServer(
     val appName: String,
     val appPackageName: String,
     val appInstance: Long, // app launch id / when the app has been launched
+    val platform: String, // android, ios, desktop
 )
 
 internal fun FloconMessageToServer.toFloconMessageToServer(): String {

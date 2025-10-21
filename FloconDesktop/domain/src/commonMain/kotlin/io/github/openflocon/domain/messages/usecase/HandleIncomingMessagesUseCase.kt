@@ -64,7 +64,8 @@ class HandleIncomingMessagesUseCase(
         RegisterDeviceWithAppDomainModel(
             device = DeviceDomainModel(
                 deviceId = message.deviceId,
-                message.deviceName,
+                deviceName = message.deviceName,
+                platform = message.platform,
             ),
             app = DeviceAppDomainModel(
                 name = message.appName,

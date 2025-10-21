@@ -7,6 +7,7 @@ internal data class AppInfos(
     val deviceName: String,
     val appName: String,
     val appPackageName: String,
+    val platform: String,
 )
 
 internal expect fun getAppInfos(floconContext: FloconContext) : AppInfos

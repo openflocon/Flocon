@@ -176,6 +176,7 @@ internal class FloconClientImpl(
                     method = method,
                     deviceName = appInfos.deviceName,
                     appInstance = appInstance,
+                    platform = appInfos.platform,
                 ).toFloconMessageToServer(),
             )
         }

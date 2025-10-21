@@ -13,6 +13,7 @@ internal actual fun getAppInfos(floconContext: FloconContext): AppInfos {
         deviceName = getHostName(),
         appName = floconContext.appName,
         appPackageName = floconContext.packageName,
+        platform = "desktop",
     )
 }
 

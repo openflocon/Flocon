@@ -18,7 +18,18 @@ internal fun DeviceDomainModel.mapToUi(activeDevices: Set<DeviceIdAndPackageName
         deviceName = deviceName,
         id = deviceId,
         isActive = activeDevices.any { it.deviceId == deviceId },
+        platform = mapToPlatformUi(platform)
     )
+
+
+private fun mapToPlatformUi(platform: String): DeviceItemUiModel.Platform {
+    return when (platform) {
+        "android" -> DeviceItemUiModel.Platform.Android
+        "desktop" -> DeviceItemUiModel.Platform.Desktop
+        else -> DeviceItemUiModel.Platform.Unknown
+    }
+}
+
 
 internal fun mapAppsToUi(devices: List<DeviceAppDomainModel>): List<DeviceAppUiModel> =
     devices.map {

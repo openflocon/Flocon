@@ -23,6 +23,7 @@ internal actual fun getAppInfos(floconContext: FloconContext): AppInfos {
         deviceId = deviceId(floconContext.appContext),
         deviceName = deviceName(),
         appName = AppUtils.getAppName(appContext),
-        appPackageName = AppUtils.getAppPackageName(appContext)
+        appPackageName = AppUtils.getAppPackageName(appContext),
+        platform = "android",
     )
 }

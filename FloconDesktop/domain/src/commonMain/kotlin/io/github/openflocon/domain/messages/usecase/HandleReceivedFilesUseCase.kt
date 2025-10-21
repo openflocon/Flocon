@@ -39,6 +39,7 @@ class HandleReceivedFilesUseCase(
             device = DeviceDomainModel(
                 deviceId = message.deviceId,
                 message.deviceName,
+                platform = message.platform,
             ),
             app = DeviceAppDomainModel(
                 name = message.appName,
