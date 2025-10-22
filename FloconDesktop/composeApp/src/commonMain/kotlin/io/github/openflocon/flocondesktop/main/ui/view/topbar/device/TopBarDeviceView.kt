@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.main.ui.view.topbar.device
 
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DesktopAccessDisabled
+import androidx.compose.material.icons.filled.DesktopWindows
 import androidx.compose.material.icons.filled.MobileOff
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.outlined.Close
@@ -61,10 +64,22 @@ internal fun TopBarDeviceView(
         ) {
             Image(
                 modifier = Modifier.width(20.dp),
-                imageVector = if (device.isActive.not()) {
-                    Icons.Filled.MobileOff
-                } else {
-                    Icons.Filled.Smartphone
+                imageVector = when(device.platform) {
+                    DeviceItemUiModel.Platform.Android -> if (device.isActive.not()) {
+                        Icons.Filled.MobileOff
+                    } else {
+                        Icons.Filled.Smartphone
+                    }
+                    DeviceItemUiModel.Platform.Desktop -> if (device.isActive.not()) {
+                        Icons.Filled.DesktopAccessDisabled
+                    } else {
+                        Icons.Filled.DesktopWindows
+                    }
+                    DeviceItemUiModel.Platform.Unknown -> if (device.isActive.not()) {
+                        Icons.Filled.MobileOff
+                    } else {
+                        Icons.Filled.Smartphone
+                    }
                 },
                 colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary),
                 contentDescription = null,
@@ -113,5 +128,41 @@ internal fun TopBarDeviceView(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun TopBarDeviceViewPreview_desktop_enabled() {
+    FloconTheme {
+        TopBarDeviceView(
+            device = DeviceItemUiModel(
+                deviceName = "Desktop",
+                platform = DeviceItemUiModel.Platform.Desktop,
+                isActive = true,
+                id = "123"
+            ),
+            selected = false,
+            onDelete = {},
+            onClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TopBarDeviceViewPreview_desktop_disabled() {
+    FloconTheme {
+        TopBarDeviceView(
+            device = DeviceItemUiModel(
+                deviceName = "Desktop",
+                platform = DeviceItemUiModel.Platform.Desktop,
+                isActive = false,
+                id = "123"
+            ),
+            selected = false,
+            onDelete = {},
+            onClick = {}
+        )
     }
 }

@@ -11,5 +11,6 @@ data class FloconIncomingMessageDomainModel(
     val appName: String,
     val appPackageName: String,
     val appInstance: AppInstance,
+    val platform: String,
 )
 

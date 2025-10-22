@@ -52,21 +52,25 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
             id = "id1",
             deviceName = "deviceName1",
             isActive = true,
+            platform = DeviceItemUiModel.Platform.Android,
         ),
         DeviceItemUiModel(
             id = "id2",
             deviceName = "deviceName2",
             isActive = true,
+            platform = DeviceItemUiModel.Platform.Android,
         ),
         DeviceItemUiModel(
             id = "id",
             deviceName = "deviceName",
             isActive = true,
+            platform = DeviceItemUiModel.Platform.Android,
         ),
     ),
     deviceSelected = DeviceItemUiModel(
         id = "id",
         deviceName = "deviceName",
         isActive = true,
+        platform = DeviceItemUiModel.Platform.Android,
     ),
 )

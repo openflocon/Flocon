@@ -8,5 +8,6 @@ data class DeviceEntity(
     @PrimaryKey
     val deviceId: String,
     val deviceName: String,
+    val platform: String,
 )
 

@@ -44,7 +44,8 @@ internal fun TopBarAppDropdown(
                 ) {
                     TopBarAppView(
                         deviceApp = it,
-                        modifier = modifier
+                        modifier = modifier,
+                        platform = devicesState.deviceSelected.platform,
                     )
                 }
             } ?: run {
@@ -74,6 +75,7 @@ internal fun TopBarAppDropdown(
                             .fastForEach { app ->
                                 TopBarAppView(
                                     deviceApp = app,
+                                    platform = devicesState.deviceSelected.platform,
                                     selected = appsState.appSelected?.packageName == app.packageName,
                                     deleteClick = {
                                         deleteApp(app)

@@ -17,14 +17,16 @@ internal fun DeviceAppEntity.toDomainModel(): DeviceAppDomainModel {
 internal fun DeviceDomainModel.toEntity(): DeviceEntity {
     return DeviceEntity(
         deviceId = this.deviceId,
-        deviceName = this.deviceName
+        deviceName = this.deviceName,
+        platform = this.platform,
     )
 }
 
 internal fun DeviceEntity.toDomainModel(): DeviceDomainModel {
     return DeviceDomainModel(
         deviceId = this.deviceId,
-        deviceName = this.deviceName
+        deviceName = this.deviceName,
+        platform = this.platform,
     )
 }
 
