@@ -35,7 +35,7 @@ abstract class FloconApp {
 
     abstract val isInitialized : StateFlow<Boolean>
 
-    open fun initializeFlocon() {
+    protected fun initializeFlocon() {
         instance = this
     }
 
