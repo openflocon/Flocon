@@ -1,14 +1,24 @@
 package io.github.openflocon.flocon.core
 
+import com.russhwolf.settings.NSUserDefaultsSettings
 import io.github.openflocon.flocon.FloconContext
 import platform.Foundation.NSBundle
 import platform.Foundation.NSUUID
+import platform.Foundation.NSUserDefaults
 import platform.UIKit.UIDevice
 
-private fun deviceId(): String {
-    // Identifiant unique pour l’appareil (généré et persistant tant que l’app est installée)
-    val uuid = NSUUID.UUID().UUIDString
-    return uuid
+private fun getDeviceId() : String {
+    val settings = NSUserDefaultsSettings(
+        NSUserDefaults.standardUserDefaults()
+    )
+    val id = settings.getStringOrNull("deviceId")
+    return if(id != null) {
+        id
+    } else {
+        val newId = NSUUID.UUID().UUIDString()
+        settings.putString("deviceId", newId)
+        newId
+    }
 }
 
 private fun deviceName(): String {
@@ -22,7 +32,7 @@ internal actual fun getAppInfos(floconContext: FloconContext): AppInfos {
     val appPackageName = bundle.bundleIdentifier ?: "Unknown"
 
     return AppInfos(
-        deviceId = deviceId(),
+        deviceId = getDeviceId(),
         deviceName = deviceName(),
         appName = appName,
         appPackageName = appPackageName,

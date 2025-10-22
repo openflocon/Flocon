@@ -65,6 +65,9 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
 
                 implementation(libs.androidx.sqlite.bundled)
+
+                // to store the device id
+                implementation("com.russhwolf:multiplatform-settings:1.3.0")
             }
         }
     }
