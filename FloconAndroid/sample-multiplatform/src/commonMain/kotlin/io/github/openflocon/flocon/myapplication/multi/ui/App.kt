@@ -91,6 +91,8 @@ fun App() {
                     ) {
                         Text("send analytics event")
                     }
+
+                    ImagesListView(modifier = Modifier.fillMaxSize())
                 }
             }
         }

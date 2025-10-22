@@ -5,6 +5,9 @@ import androidx.compose.ui.window.application
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
@@ -22,7 +25,21 @@ fun main() {
     Flocon.initialize()
     // Initialize Ktor client with Flocon plugin for Desktop
     val ktorClient = HttpClient(CIO) {
-        install(FloconKtorPlugin)
+        install(FloconKtorPlugin) {
+            isImage = {
+                it.request.url.toString().contains("picsum.photos")
+            }
+        }
+    }
+
+    SingletonImageLoader.setSafe {
+        ImageLoader.Builder(context = PlatformContext.INSTANCE)
+            .components {
+                add(
+                    coil3.network.ktor3.KtorNetworkFetcherFactory(ktorClient)
+                )
+            }
+            .build()
     }
 
     // Initialize the HTTP caller

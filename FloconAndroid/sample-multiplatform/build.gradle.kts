@@ -49,6 +49,9 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.material3)
                 implementation(compose.ui)
+
+                implementation(libs.coil.compose)
+                implementation(libs.coil.network.ktor)
             }
         }
         
@@ -69,11 +72,13 @@ kotlin {
                 // Ktor client for desktop/JVM
                 implementation(libs.ktor.client.cio)
 
-                implementation("org.xerial:sqlite-jdbc:3.45.3.0") // ou la dernière version
+                implementation(libs.sqlite.jdbc)
                 implementation(libs.sqlite.bundled)
 
                 // Compose Desktop
                 implementation(compose.desktop.currentOs)
+                implementation(libs.kotlinx.coroutines.swing)
+                implementation(libs.ktor.clientJava)
             }
         }
         

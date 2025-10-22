@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.detail.mapper
 
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.isImage
 import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailHeaderUi
@@ -29,7 +30,7 @@ fun toDetailUi(
         status = toDetailHttpStatusUi(request),
         requestTimeFormatted = request.request.startTimeFormatted,
         durationFormatted = request.response?.durationFormatted,
-        imageUrl = request.request.url.takeIf { it.isImageUrl() },
+        imageUrl = request.request.url.takeIf { request.response?.isImage() == true || it.isImageUrl() },
         // request
         requestBodyTitle = requestBodyTitle(request),
         requestBody = httpBodyToUi(request.request.body),

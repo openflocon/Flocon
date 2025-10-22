@@ -21,6 +21,7 @@ import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.toByteArray
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import io.github.openflocon.flocon.utils.currentTimeNanos
+import io.ktor.client.call.save
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -136,6 +137,8 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
     client.receivePipeline.intercept(HttpReceivePipeline.After) { response ->
         val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin ?: return@intercept
 
+        val savedCall = response.call.save()
+        val savedResponse = savedCall.response
         val call = response.call
         val request: HttpRequest = call.request
 
@@ -147,7 +150,6 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
         val durationMs = (endTime - startTime) / 1e6
 
         val originalBodyBytes = response.bodyAsChannel().toByteArray()
-        val bodyString = originalBodyBytes.decodeToString()
         val responseSize = originalBodyBytes.size.toLong()
 
         val responseHeadersMap =
@@ -168,7 +170,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
         val floconCallResponse = FloconNetworkResponse(
             httpCode = response.status.value,
             contentType = contentType,
-            body = bodyString.takeUnless { isImage },
+            body = if(isImage) null else originalBodyBytes.decodeToString(),
             headers = responseHeadersMap,
             size = responseSize,
             grpcStatus = null,
@@ -187,9 +189,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
             )
         )
 
-        // as we consumed the body, we should inject a new one here
-        val newResponse = response.cloneWithBody(ByteReadChannel(originalBodyBytes))
-        proceedWith(newResponse)
+        proceedWith(savedResponse)
     }
 }
 
