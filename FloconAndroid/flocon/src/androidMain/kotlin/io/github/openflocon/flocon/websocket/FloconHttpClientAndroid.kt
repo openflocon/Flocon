@@ -8,7 +8,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 
-internal class FloconHttpClientImpl : FloconHttpClient {
+/**
+ * The android client uses okhttp, because for android-only project there's more chance to having okhttp than ktor
+ * it prevent conflicts with ktor versions also
+ */
+internal class FloconHttpClientAndroid : FloconHttpClient {
 
     private val client by lazy {
         OkHttpClient()

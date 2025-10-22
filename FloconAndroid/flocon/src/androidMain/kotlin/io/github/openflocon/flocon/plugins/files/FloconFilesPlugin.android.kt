@@ -5,9 +5,8 @@ import io.github.openflocon.flocon.FloconFile
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
 import java.io.File
-import kotlin.printStackTrace
 
-internal class FileDataSourceImpl(
+internal class FileDataSourceAndroid(
     private val context: FloconContext,
 ) : FileDataSource {
     override fun getFile(
@@ -78,4 +77,4 @@ internal class FileDataSourceImpl(
     }
 }
 
-internal actual fun fileDataSource(context: FloconContext) : FileDataSource = FileDataSourceImpl(context)
+internal actual fun fileDataSource(context: FloconContext) : FileDataSource = FileDataSourceAndroid(context)

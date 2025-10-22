@@ -7,7 +7,7 @@ import io.github.openflocon.flocon.plugins.sharedprefs.model.SharedPreferencesDe
 import io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice.SharedPreferenceRowDataModel
 import io.github.openflocon.flocon.plugins.sharedprefs.model.todevice.ToDeviceEditSharedPreferenceValueMessage
 
-internal class FloconSharedPreferencesDataSourceImpl(
+internal class FloconSharedPreferencesDataSourceAndroid(
     private val context: Context,
 ) : FloconSharedPreferencesDataSource {
 
@@ -142,5 +142,5 @@ internal fun SharedPreferencesDescriptor.getSharedPreferences(context: Context):
 }
 
 internal actual fun buildFloconSharedPreferencesDataSource(context: FloconContext): FloconSharedPreferencesDataSource {
-    return FloconSharedPreferencesDataSourceImpl(context = context.appContext)
+    return FloconSharedPreferencesDataSourceAndroid(context = context.appContext)
 }
