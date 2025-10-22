@@ -1,8 +1,7 @@
 package io.github.openflocon.flocondesktop.menu.ui.di
 
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
-import io.github.openflocon.flocondesktop.menu.MainRoutes
-import io.github.openflocon.flocondesktop.menu.ui.MainViewModel
+import io.github.openflocon.flocondesktop.menu.ui.MenuViewModel
 import io.github.openflocon.flocondesktop.menu.ui.MenuNavigationState
 import io.github.openflocon.flocondesktop.menu.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.menu.ui.delegates.RecordVideoDelegate
@@ -13,13 +12,13 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val mainUiModule = module {
-    scope<MainRoutes.Sub> {
-        scoped { MenuNavigationState(SubScreen.Network) }
-        viewModelOf(::MainViewModel)
-        factoryOf(::DevicesDelegate)
-        factoryOf(::RecordVideoDelegate)
-        viewModelOf(::SettingsViewModel)
+//    scope<MainRoutes.Sub> {
+    single { MenuNavigationState(SubScreen.Network) }
+    viewModelOf(::MenuViewModel)
+    factoryOf(::DevicesDelegate)
+    factoryOf(::RecordVideoDelegate)
+    viewModelOf(::SettingsViewModel)
 
-        viewModelOf(::NetworkDetailViewModel)
-    }
+    viewModelOf(::NetworkDetailViewModel)
+//    }
 }

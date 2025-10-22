@@ -44,14 +44,10 @@ import io.github.openflocon.flocondesktop.features.images.view.ImagesScreen
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.sharedpreferences.view.SharedPreferencesScreen
 import io.github.openflocon.flocondesktop.features.table.view.TableScreen
-import io.github.openflocon.flocondesktop.menu.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.menu.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.menu.ui.model.DeviceItemUiModel
-import io.github.openflocon.flocondesktop.menu.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.menu.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.menu.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.menu.ui.model.leftpanel.LeftPanelItem
-import io.github.openflocon.flocondesktop.menu.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.menu.ui.settings.SettingsScreen
 import io.github.openflocon.flocondesktop.menu.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.menu.ui.view.leftpannel.PanelMaxWidth
@@ -60,30 +56,23 @@ import io.github.openflocon.flocondesktop.menu.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.navigation.FloconNavigation
-import org.koin.compose.currentKoinScope
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MenuScreen(
     modifier: Modifier = Modifier
 ) {
-    val viewModel: MainViewModel = currentKoinScope().get<MainViewModel>()
-    val leftPanelState by viewModel.leftPanelState.collectAsStateWithLifecycle()
-    val devicesState by viewModel.devicesState.collectAsStateWithLifecycle()
-    val appsState by viewModel.appsState.collectAsStateWithLifecycle()
-    val recordState by viewModel.recordState.collectAsStateWithLifecycle()
+    val viewModel: MenuViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     MenuScreen(
+        uiState = uiState,
         navigationState = viewModel.menuNavigationState,
         modifier = modifier,
-        devicesState = devicesState,
-        appsState = appsState,
-        recordState = recordState,
         onDeviceSelected = viewModel::onDeviceSelected,
         deleteDevice = viewModel::deleteDevice,
         deleteApp = viewModel::deleteApp,
         onAppSelected = viewModel::onAppSelected,
-        leftPanelState = leftPanelState,
         onClickLeftPanelItem = viewModel::onClickLeftPanelItem,
         onTakeScreenshotClicked = viewModel::onTakeScreenshotClicked,
         onRecordClicked = viewModel::onRecordClicked,
@@ -93,17 +82,14 @@ fun MenuScreen(
 
 @Composable
 private fun MenuScreen(
+    uiState: MenuUiState,
     navigationState: MenuNavigationState,
-    leftPanelState: LeftPanelState,
     onClickLeftPanelItem: (LeftPanelItem) -> Unit,
-    devicesState: DevicesStateUiModel,
-    appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     deleteDevice: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
     deleteApp: (DeviceAppUiModel) -> Unit,
     onTakeScreenshotClicked: () -> Unit,
-    recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -120,9 +106,9 @@ private fun MenuScreen(
         modifier = modifier.fillMaxSize()
     ) {
         MainScreenTopBar(
-            appsState = appsState,
-            devicesState = devicesState,
-            recordState = recordState,
+            appsState = uiState.appsStateUiModel,
+            devicesState = uiState.devicesStateUiModel,
+            recordState = uiState.recordVideoState,
             deleteApp = deleteApp,
             deleteDevice = deleteDevice,
             onAppSelected = onAppSelected,
@@ -142,7 +128,7 @@ private fun MenuScreen(
                     .fillMaxHeight(),
                 expanded = expanded,
                 onClickItem = onClickLeftPanelItem,
-                state = leftPanelState,
+                state = uiState.leftPanelState,
             )
             Spacer(Modifier.width(8.dp))
             FloconNavigation(

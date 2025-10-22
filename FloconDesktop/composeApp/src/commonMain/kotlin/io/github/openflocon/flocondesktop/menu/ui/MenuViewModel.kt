@@ -10,13 +10,11 @@ import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
+import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.menu.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.menu.ui.delegates.RecordVideoDelegate
-import io.github.openflocon.flocondesktop.menu.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.menu.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.menu.ui.model.DeviceItemUiModel
-import io.github.openflocon.flocondesktop.menu.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.menu.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.menu.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.menu.ui.model.leftpanel.LeftPanelItem
 import io.github.openflocon.flocondesktop.menu.ui.model.leftpanel.LeftPanelState
@@ -25,17 +23,12 @@ import io.github.openflocon.flocondesktop.menu.ui.view.displayName
 import io.github.openflocon.flocondesktop.menu.ui.view.icon
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
-class MainViewModel(
+class MenuViewModel(
     private val devicesDelegate: DevicesDelegate,
     private val dispatcherProvider: DispatcherProvider,
     private val initialSetupStateHolder: InitialSetupStateHolder,
@@ -50,39 +43,40 @@ class MainViewModel(
     recordVideoDelegate,
 ), KoinComponent {
 
-    // TODO Remove
-    val subScreen = MutableStateFlow<SubScreen>(SubScreen.Network)
+    private val leftPanelState = MutableStateFlow(buildLeftPanelState(current = SubScreen.Network))
 
-    val recordState: StateFlow<RecordVideoStateUiModel> = recordVideoDelegate.state
+    val uiState = combine(
+        leftPanelState,
+        recordVideoDelegate.state,
+        devicesDelegate.devicesState,
+        devicesDelegate.appsState
+    ) { content, record, device, apps ->
+        MenuUiState(
+            leftPanelState = content,
+            recordVideoState = record,
+            appsStateUiModel = apps,
+            devicesStateUiModel = device
+        )
+    }
+        .stateInWhileSubscribed(
+            MenuUiState(
+                leftPanelState = leftPanelState.value,
+                recordVideoState = recordVideoDelegate.state.value,
+                devicesStateUiModel = devicesDelegate.devicesState.value,
+                appsStateUiModel = devicesDelegate.appsState.value
+            )
+        )
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             initialSetupStateHolder.needsAdbSetup.collect {
                 if (it) {
-                    subScreen.update { SubScreen.Settings }
+                    menuNavigationState.navigate(SubScreen.Settings)
+                    leftPanelState.update { state -> state.copy(current = SubScreen.Settings) }
                 }
             }
         }
     }
-
-    val leftPanelState = combines(
-        subScreen,
-        observeCurrentDeviceCapabilitiesUseCase(),
-    ).map { (subScreen, capabilities) ->
-        buildLeftPanelState(
-            current = subScreen,
-        )
-    }
-        .flowOn(dispatcherProvider.ui)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = buildLeftPanelState(subScreen.value),
-        )
-
-    val devicesState: StateFlow<DevicesStateUiModel> = devicesDelegate.devicesState
-    val appsState: StateFlow<AppsStateUiModel> = devicesDelegate.appsState
-
 
     fun onDeviceSelected(device: DeviceItemUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
@@ -109,12 +103,11 @@ class MainViewModel(
     }
 
     fun onClickLeftPanelItem(leftPanelItem: LeftPanelItem) {
+        leftPanelState.update { state -> state.copy(current = leftPanelItem.screen) }
         menuNavigationState.navigate(leftPanelItem.screen)
     }
 
     fun onRecordClicked() {
-        // TODO Needs scoped vm
-//        mainNavigationState.navigate(MenuRoutes.App("zfjzhefoezf"))
         viewModelScope.launch(dispatcherProvider.viewModel) {
             recordVideoDelegate.toggleRecording()
         }

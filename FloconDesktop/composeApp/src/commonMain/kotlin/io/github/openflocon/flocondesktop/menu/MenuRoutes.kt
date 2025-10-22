@@ -8,8 +8,6 @@ import kotlinx.serialization.Serializable
 import org.koin.core.Koin
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
-import org.koin.core.qualifier.Qualifier
-import org.koin.core.qualifier.QualifierValue
 import org.koin.core.scope.Scope
 
 internal sealed interface MainRoutes : FloconRoute {
@@ -17,6 +15,7 @@ internal sealed interface MainRoutes : FloconRoute {
     @Serializable
     data object Main : MainRoutes
 
+    // For later
     @Serializable
     data class Sub(
         val id: String
