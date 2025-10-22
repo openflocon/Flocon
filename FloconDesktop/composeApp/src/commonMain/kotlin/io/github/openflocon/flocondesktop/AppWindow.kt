@@ -38,7 +38,6 @@ import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
-import org.koin.compose.scope.KoinScope
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -62,9 +61,10 @@ fun App() {
                 dataRemoteModule,
                 // Temporary
                 module {
-                    scope<MainRoutes.Sub> {
-                        scoped { MainFloconNavigationState(MainRoutes.Main) }
-                    }
+//                    scope<MainRoutes.Sub> {
+//                        scoped { MainFloconNavigationState(MainRoutes.Main) }
+//                    }
+                    single { MainFloconNavigationState(MainRoutes.Main) }
                     singleOf(::AdbRepositoryImpl) bind AdbRepository::class
                 },
             )
@@ -73,19 +73,19 @@ fun App() {
         val fontSizeMultiplier by koinInject<ObserveFontSizeMultiplierUseCase>()()
             .collectAsStateWithLifecycle()
 
-        KoinScope(
-            scopeDefinition = { createScope(MainRoutes.Sub.Main) }
+//        KoinScope(
+//            scopeDefinition = { createScope(MainRoutes.Sub.Main) }
+//        ) {
+        FloconTheme(
+            fontSizeMultiplier = fontSizeMultiplier
         ) {
-            FloconTheme(
-                fontSizeMultiplier = fontSizeMultiplier
-            ) {
-                val viewModel: AppViewModel = koinViewModel()
+            val viewModel: AppViewModel = koinViewModel()
 
-                Content(
-                    navigationState = viewModel.navigationState,
-                )
-            }
+            Content(
+                navigationState = viewModel.navigationState,
+            )
         }
+//        }
     }
 }
 

@@ -3,8 +3,10 @@ package io.github.openflocon.flocondesktop.menu.ui.model.leftpanel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.runtime.Immutable
 import io.github.openflocon.flocondesktop.menu.ui.model.SubScreen
 
+@Immutable
 data class LeftPanelState(
     val current: SubScreen,
     val sections: List<LeftPannelSection>,
