@@ -54,11 +54,11 @@ fun toDetailUi(
                     headers = toNetworkHeadersUi(it.headers),
                 )
 
-            }
+        }
 
-        },
-        graphQlSection = graphQlSection(request),
-    )
+    },
+    graphQlSection = graphQlSection(this),
+)
 
 private fun toDetailStatusLabel(request: FloconNetworkCallDomainModel): String =
     when (request.request.specificInfos) {

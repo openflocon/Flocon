@@ -145,7 +145,7 @@ private fun FrameWindowScope.FloconMenu() {
             alwaysOnTop = true,
             onCloseRequest = { openLicenses = false },
         ) {
-            io.github.openflocon.flocondesktop.main.ui.settings.AboutScreen(
+            io.github.openflocon.flocondesktop.menu.ui.settings.AboutScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(FloconTheme.colorPalette.primary),

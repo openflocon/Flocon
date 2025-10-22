@@ -1,17 +1,26 @@
 package io.github.openflocon.navigation
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 
-class FloconNavigationState internal constructor() {
+interface FloconNavigationState<T : Any> {
+    val stack: SnapshotStateList<T>
 
-    private val _stack = mutableStateListOf<FloconRoute>(LoadingRoute)
-    val stack: List<FloconRoute> = _stack
+    fun navigate(route: T)
 
-    fun navigate(route: FloconRoute) {
+    fun back(count: Int = 1)
+}
+
+class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : FloconNavigationState<FloconRoute> {
+
+    private val _stack = mutableStateListOf(initialScreen)
+    override val stack: SnapshotStateList<FloconRoute> = _stack
+
+    override fun navigate(route: FloconRoute) {
         _stack.add(route)
     }
 
-    fun back(count: Int = 1) {
+    override fun back(count: Int) {
         repeat(count) { _stack.removeLast() }
     }
 
