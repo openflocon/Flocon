@@ -14,12 +14,12 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 
 internal actual fun buildFloconNetworkDataSource(context: FloconContext): FloconNetworkDataSource {
-    return FloconNetworkDataSourceImpl(
+    return FloconNetworkDataSourceAndroid(
         context = context.appContext,
     )
 }
 
-internal class FloconNetworkDataSourceImpl(private val context: Context) : FloconNetworkDataSource {
+internal class FloconNetworkDataSourceAndroid(private val context: Context) : FloconNetworkDataSource {
     override fun saveMocksToFile(mocks: List<MockNetworkResponse>) {
         try {
             val file = File(context.filesDir, FLOCON_NETWORK_MOCKS_JSON)
