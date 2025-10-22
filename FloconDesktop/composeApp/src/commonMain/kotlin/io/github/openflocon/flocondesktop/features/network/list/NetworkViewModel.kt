@@ -31,14 +31,16 @@ import io.github.openflocon.domain.network.usecase.RemoveOldSessionsNetworkReque
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
+import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
+import io.github.openflocon.flocondesktop.core.data.settings.usecase.ObserveNetworkSettingsUseCase
+import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkWebsocketIdsUseCase
 import io.github.openflocon.domain.network.usecase.settings.ObserveNetworkSettingsUseCase
 import io.github.openflocon.domain.network.usecase.settings.UpdateNetworkSettingsUseCase
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.features.network.body.model.ContentUiState
 import io.github.openflocon.flocondesktop.features.network.body.model.MockDisplayed
-import io.github.openflocon.flocondesktop.features.network.detail.mapper.toDetailUi
-import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
+import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailDelegate
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBodyDelegate
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toDomain
@@ -51,15 +53,15 @@ import io.github.openflocon.flocondesktop.features.network.list.model.TopBarUiSt
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
 import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import io.github.openflocon.navigation.MainFloconNavigationState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -84,6 +86,9 @@ class NetworkViewModel(
     private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase,
     private val decodeJwtTokenUseCase: DecodeJwtTokenUseCase,
     private val removeOldSessionsNetworkRequestUseCase: RemoveOldSessionsNetworkRequestUseCase,
+    private val navigationState: MainFloconNavigationState,
+    private val detailDelegate: NetworkDetailDelegate,
+    private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
     private val updateNetworkSettingsUseCase: UpdateNetworkSettingsUseCase,
     private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
@@ -141,20 +146,6 @@ class NetworkViewModel(
         )
     )
 
-    private val detailState: StateFlow<NetworkDetailViewState?> =
-        contentState.map { it.selectedRequestId }
-            .flatMapLatest { id ->
-                if (id == null) {
-                    flowOf(null)
-                } else {
-                    observeNetworkRequestsByIdUseCase(id)
-                        .distinctUntilChanged()
-                        .map { it?.let { toDetailUi(it) } }
-                }
-            }
-            .flowOn(dispatcherProvider.viewModel)
-            .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5_000), null)
-
     private val filter = combines(
         snapshotFlow { _filterText.value }.map { it.takeIf { it.isNotBlank() } }
             .distinctUntilChanged(),
@@ -174,7 +165,8 @@ class NetworkViewModel(
     private val sortAndFilter = combines(
         headerDelegate.sorted.map { it?.toDomain() }.distinctUntilChanged(),
         filter,
-    ).distinctUntilChanged()
+    )
+        .distinctUntilChanged()
 
     val items: Flow<PagingData<NetworkItemViewState>> =
         observeCurrentDeviceIdAndPackageNameUseCase()
@@ -196,6 +188,15 @@ class NetworkViewModel(
             .flowOn(dispatcherProvider.viewModel)
             .cachedIn(viewModelScope)
 
+    private val detailState = combine(
+        detailDelegate.uiState,
+        contentState,
+        observeNetworkSettingsUseCase()
+    ) { state, content, settings ->
+        state.takeIf { settings.pinnedDetails && content.selectedRequestId != null }
+    }
+        .stateInWhileSubscribed(null)
+
     val uiState = combine(
         contentState,
         detailState,
@@ -216,7 +217,7 @@ class NetworkViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = NetworkUiState(
-                detailState = detailState.value,
+                detailState = detailDelegate.uiState.value,
                 contentState = contentState.value,
                 filterState = filterUiState.value,
                 headerState = headerDelegate.headerUiState.value,
@@ -311,16 +312,28 @@ class NetworkViewModel(
         }
     }
 
+    private var selectRequestJob: Job? = null
     private fun onSelectRequest(action: NetworkAction.SelectRequest) {
-        contentState.update { state ->
-            state.copy(
-                selectedRequestId = if (state.selectedRequestId == action.id) {
-                    null
+        contentState.update { it.copy(selectedRequestId = action.id) }
+        selectRequestJob?.cancel()
+        selectRequestJob = viewModelScope.launch {
+            observeNetworkSettingsUseCase().collect {
+                if (it.pinnedDetails) {
+                    detailDelegate.setRequestId(action.id)
                 } else {
-                    action.id
-                },
-            )
+                    navigationState.navigate(NetworkRoutes.Panel(action.id))
+                }
+            }
         }
+//        contentState.update { state ->
+//            state.copy(
+//                selectedRequestId = if (state.selectedRequestId == action.id) {
+//                    null
+//                } else {
+//                    action.id
+//                },
+//            )
+//        }
     }
 
     private fun openMocks(callId: String?) {
