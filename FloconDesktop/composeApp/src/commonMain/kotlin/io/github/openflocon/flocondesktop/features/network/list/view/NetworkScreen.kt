@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -80,6 +79,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconTonalButto
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.panel.PanelWidth
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.viewmodel.koinViewModel
@@ -323,7 +323,8 @@ fun NetworkScreen(
             }
         }
         FloconAnimateVisibility(
-            uiState.detailState
+            state = uiState.detailState,
+            modifier = Modifier.fillMaxHeight()
         ) {
             Row {
                 Spacer(Modifier.width(8.dp))
@@ -331,7 +332,7 @@ fun NetworkScreen(
                     uiState = it,
                     onAction = onAction,
                     modifier = Modifier
-                        .width(300.dp) // TODO Change, settings ?
+                        .width(PanelWidth)
                         .clip(FloconTheme.shapes.medium)
                 )
             }

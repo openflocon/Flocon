@@ -8,7 +8,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,12 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Pin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -30,106 +30,152 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
+import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
+import kotlinx.coroutines.launch
 
 private const val AnimDuration = 500
-private val PanelWidth = 500.dp
+val PanelWidth = 500.dp
 
-// TODO Rework
-@Composable
-fun FloconPanel(
-    expanded: Boolean,
-    onClose: (() -> Unit)? = null,
-    onPin: (() -> Unit)? = null,
-    content: @Composable BoxScope.() -> Unit
-) {
-    var innerExpanded by remember { mutableStateOf(expanded) }
-    val translationX = remember { AnimationState(typeConverter = Dp.VectorConverter, PanelWidth) }
+@Stable
+class FloconPanelState internal constructor(initialValue: Boolean) {
+
+    internal var expanded by mutableStateOf(initialValue)
+
+    val translationX = AnimationState(typeConverter = Dp.VectorConverter, PanelWidth)
+
+    suspend fun show() {
+        expanded = true
+        translationX.animateTo(0.dp, animationSpec = tween(AnimDuration, easing = EaseOutExpo))
+    }
 
     suspend fun hide() {
         translationX.animateTo(PanelWidth, animationSpec = tween(AnimDuration, easing = EaseOutExpo))
-        innerExpanded = false
+        expanded = false
     }
 
-    LaunchedEffect(expanded) {
-        if (expanded) {
-            innerExpanded = true
-            translationX.animateTo(0.dp, animationSpec = tween(AnimDuration, easing = EaseOutExpo))
-        } else {
-            hide()
+}
+
+@Composable
+fun rememberFloconPanelState(initialValue: Boolean = false): FloconPanelState {
+    return remember { FloconPanelState(initialValue) }
+}
+
+
+interface FloconPanelScope {
+    val state: FloconPanelState
+
+    fun Modifier.animatePanelAction(): Modifier
+
+}
+
+private class FloconPanelScopeImpl(
+    override val state: FloconPanelState
+) : FloconPanelScope {
+
+    @Stable
+    override fun Modifier.animatePanelAction(): Modifier = graphicsLayer {
+        this.alpha = 1f - state.translationX.value.div(PanelWidth)
+    }
+
+}
+
+
+@Composable
+fun FloconPanel(
+    state: FloconPanelState,
+    onDismissRequest: () -> Unit,
+    actions: @Composable FloconPanelScope.() -> Unit = {},
+    content: @Composable FloconPanelScope.() -> Unit
+) {
+    val scope = remember(state) { FloconPanelScopeImpl(state) }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        if (state.expanded) {
+            state.show()
         }
+    }
+
+    LaunchedEffect(state.expanded) {
+        if (!state.expanded) {
+            onDismissRequest()
+        }
+    }
+
+    EscapeHandler {
+        coroutineScope.launch {
+            state.hide()
+            onDismissRequest()
+        }
+        true
     }
 
     Row(
         modifier = Modifier
             .fillMaxHeight()
     ) {
-        if (onClose != null) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(8.dp)
-            ) {
-                FloconIconTonalButton(
-                    onClick = onClose,
-                    modifier = Modifier
-                        .graphicsLayer {
-                            this.alpha = 1f - translationX.value.div(PanelWidth)
-                        }
-                ) {
-                    FloconIcon(
-                        Icons.Outlined.Close
-                    )
-                }
-                if (onPin != null) {
-                    FloconIconTonalButton(
-                        onClick = onPin,
-                        modifier = Modifier
-                            .graphicsLayer {
-                                this.alpha = 1f - translationX.value.div(PanelWidth)
-                            }
-                    ) {
-                        FloconIcon(
-                            Icons.Outlined.Pin
-                        )
-                    }
-                }
-            }
-        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(8.dp),
+            content = { scope.actions() }
+        )
         Box(
             modifier = Modifier
                 .width(PanelWidth)
                 .fillMaxHeight()
                 .graphicsLayer {
-                    this.translationX = translationX.value.toPx()
+                    this.translationX = state.translationX.value.toPx()
                 }
-                .border(width = 1.dp, color = FloconTheme.colorPalette.surface),
+                .border(width = 1.dp, color = FloconTheme.colorPalette.surface)
+        ) {
+            scope.content()
+        }
+    }
+}
+
+// TODO Rework
+@Composable
+fun FloconPanel(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    actions: @Composable FloconPanelScope.() -> Unit = {},
+    content: @Composable FloconPanelScope.() -> Unit
+) {
+    var innerExpand by remember { mutableStateOf(expanded) }
+    val state = rememberFloconPanelState(expanded)
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(expanded) {
+        if (expanded) {
+            innerExpand = true
+            state.show()
+        } else {
+            state.hide()
+            innerExpand = false
+        }
+    }
+
+    if (innerExpand) {
+        FloconPanel(
+            state = state,
+            onDismissRequest = {
+                scope.launch {
+                    state.hide()
+                    innerExpand = false
+                    onDismissRequest()
+                }
+            },
+            actions = actions,
             content = content
         )
     }
 }
 
-//    val floconPanelController = LocalFloconPanelController.current
-
-//    if (innerExpanded) {
-//        DisposableEffect(Unit) {
-//            floconPanelController.display {
-//                if (onClose != null) {
-//                    EscapeHandler {
-//                        onClose()
-//                        true
-//                    }
-//                }
-//
-
-//            onDispose { floconPanelController.hide() }
-//        }
-//    }
-//}
-
 @Composable
 fun <T : Any?> FloconPanel(
     contentState: T,
     onClose: (() -> Unit)? = null,
-    content: @Composable BoxScope.(T & Any) -> Unit
+    content: @Composable FloconPanelScope.(T & Any) -> Unit
 ) {
     var rememberTarget by remember { mutableStateOf(contentState) }
 
@@ -141,7 +187,19 @@ fun <T : Any?> FloconPanel(
 
     FloconPanel(
         expanded = contentState != null,
-        onClose = onClose,
+        onDismissRequest = { onClose?.invoke() },
+        actions = {
+            if (onClose != null) {
+                FloconIconTonalButton(
+                    onClick = onClose,
+                    modifier = Modifier
+                ) {
+                    FloconIcon(
+                        Icons.Outlined.Close
+                    )
+                }
+            }
+        },
     ) {
         rememberTarget?.let { content(this, it) }
     }
