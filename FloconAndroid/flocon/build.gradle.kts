@@ -16,12 +16,10 @@ kotlin {
     
     jvm()
 
-    /*
     iosX64()
     iosArm64()
     iosSimulatorArm64()
-     */
-    
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -50,7 +48,6 @@ kotlin {
             }
         }
 
-        /*
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -61,9 +58,13 @@ kotlin {
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
                 implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.darwin)
+
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.serialization.kotlinx.json)
             }
         }
-         */
     }
 }
 
