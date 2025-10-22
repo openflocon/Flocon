@@ -1,9 +1,13 @@
 package io.github.openflocon.flocondesktop.core.data.settings.datasource.local
 
+import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
-interface SettingsDataSource {
+internal interface SettingsDataSource {
+    var networkSettings: NetworkSettingsLocal
+    val networkSettingsFlow: StateFlow<NetworkSettingsLocal>
+
     fun getAdbPath(): String?
 
     suspend fun setAdbPath(path: String)

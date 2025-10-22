@@ -20,15 +20,13 @@ import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailHeadersView
@@ -47,29 +45,39 @@ import io.github.openflocon.library.designsystem.components.FloconSection
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 private const val LARGE_BODY_LENGHT = 30_000
 
 @Composable
-fun NetworkDetailView(
-    state: NetworkDetailViewState,
+fun NetworkDetailScreen(
+    requestId: String
+) {
+    val viewModel = koinViewModel<NetworkDetailViewModel> {
+        parametersOf(requestId)
+    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    NetworkDetailContent(
+        uiState = uiState,
+        onAction = viewModel::onAction
+    )
+}
+
+@Composable
+fun NetworkDetailContent(
+    uiState: NetworkDetailViewState,
     onAction: (NetworkAction) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val scrollState: ScrollState = rememberScrollState()
-
     val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
-
     val linesLabelWidth: Dp = 130.dp
     val headersLabelWidth: Dp = 150.dp
 
-//    EscapeHandler {
-//        onAction(NetworkAction.ClosePanel)
-//        true // consumed
-//    }
-
     Box(
-        modifier
+        modifier = modifier
             .background(FloconTheme.colorPalette.primary)
     ) {
         Column(
@@ -80,7 +88,7 @@ fun NetworkDetailView(
             Request(
                 modifier = Modifier
                     .fillMaxWidth(),
-                state = state,
+                state = uiState,
                 onAction = onAction,
                 linesLabelWidth = linesLabelWidth,
                 headersLabelWidth = headersLabelWidth,
@@ -94,7 +102,7 @@ fun NetworkDetailView(
             Response(
                 modifier = Modifier
                     .fillMaxWidth(),
-                state = state,
+                state = uiState,
                 onAction = onAction,
                 headersLabelWidth = headersLabelWidth,
             )
@@ -523,8 +531,8 @@ private fun Response(
 @Composable
 private fun NetworkDetailViewPreview() {
     FloconTheme {
-        NetworkDetailView(
-            state = NetworkDetailViewState(
+        NetworkDetailContent(
+            uiState = NetworkDetailViewState(
                 callId = "",
                 fullUrl = "http://www.google.com",
                 method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
@@ -587,8 +595,7 @@ private fun NetworkDetailViewPreview() {
                 canOpenRequestBody = true,
                 requestBodyIsNotBlank = true,
             ),
-            modifier = Modifier.padding(16.dp), // Padding pour la preview
-            onAction = {},
+            onAction = {}
         )
     }
 }
