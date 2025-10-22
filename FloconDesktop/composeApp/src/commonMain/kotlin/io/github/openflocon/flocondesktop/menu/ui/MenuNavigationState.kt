@@ -10,7 +10,7 @@ class MenuNavigationState(initialScreen: SubScreen) : FloconNavigationState<SubS
     override val stack: SnapshotStateList<SubScreen> = _stack
 
     override fun navigate(route: SubScreen) {
-        _stack.add(route)
+        _stack[0] = route
     }
 
     override fun back(count: Int) {
