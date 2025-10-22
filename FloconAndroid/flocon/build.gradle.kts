@@ -15,15 +15,17 @@ kotlin {
     }
     
     jvm()
-    
+
+    /*
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+     */
     
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
                 implementation(libs.kotlinx.serialization.json)
                 api(project(":flocon-base"))
             }
@@ -42,14 +44,13 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
 
-                implementation("io.ktor:ktor-client-core:3.0.0")
-                implementation("io.ktor:ktor-client-content-negotiation:3.0.0")
-                implementation("io.ktor:ktor-client-logging:3.0.0")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.0")
-                implementation("io.ktor:ktor-client-cio:3.0.0")
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.serialization.kotlinx.json)
             }
         }
-        
+
+        /*
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -62,6 +63,7 @@ kotlin {
                 implementation(libs.ktor.client.core)
             }
         }
+         */
     }
 }
 

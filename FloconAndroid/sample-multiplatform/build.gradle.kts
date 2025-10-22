@@ -23,10 +23,12 @@ kotlin {
             }
         }
     }
-    
+
+    /*
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+     */
     
     sourceSets {
         val commonMain by getting {
@@ -81,7 +83,8 @@ kotlin {
                 implementation(libs.ktor.clientJava)
             }
         }
-        
+
+        /*
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -95,6 +98,7 @@ kotlin {
                 implementation(libs.ktor.client.cio)
             }
         }
+         */
     }
 }
 

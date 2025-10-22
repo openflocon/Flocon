@@ -14,15 +14,17 @@ kotlin {
     }
     
     jvm()
-    
+
+    /*
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+     */
     
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
             }
         }
         
@@ -35,7 +37,8 @@ kotlin {
             dependencies {
             }
         }
-        
+
+        /*
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -45,6 +48,7 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
         }
+         */
     }
 }
 
