@@ -1,2 +1,25 @@
 
 .DS_Store
+
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+/.idea/artifacts/
+.DS_Store
+/build
+**/build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+/grpc-server/grpc-go/
+
+# Kotlin Multiplatform
+.kotlin/
+kotlin-js-store/
