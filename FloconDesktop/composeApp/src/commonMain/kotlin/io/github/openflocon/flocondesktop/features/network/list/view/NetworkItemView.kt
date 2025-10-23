@@ -36,14 +36,19 @@ import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.flocondesktop.features.network.list.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.TextFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewStateError
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.errorTagText
+import io.github.openflocon.flocondesktop.features.network.list.view.components.exceptionTagText
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -55,6 +60,14 @@ fun NetworkItemView(
     columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
 ) {
     val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
+
+    val errorColor = remember(state) {
+        when(state.status.status) {
+            NetworkStatusUi.Status.ERROR -> errorTagText
+            NetworkStatusUi.Status.EXCEPTION -> exceptionTagText
+            else -> null
+        }
+    }
 
     ContextualView(
         items = contextualActions(
@@ -100,7 +113,7 @@ fun NetworkItemView(
                 Text(
                     state.dateFormatted,
                     style = bodySmall,
-                    color = FloconTheme.colorPalette.onPrimary
+                    color = errorColor ?: FloconTheme.colorPalette.onPrimary
                 )
             }
 
@@ -120,7 +133,7 @@ fun NetworkItemView(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = bodySmall,
-                    color = FloconTheme.colorPalette.onPrimary,
+                    color = errorColor ?: FloconTheme.colorPalette.onPrimary,
                     modifier = Modifier
                         .weight(columnWidths.domainWeight)
                         .padding(horizontal = 4.dp),
@@ -295,12 +308,27 @@ fun NetworkItemViewState.NetworkTypeUi.imageColor(): Color = when (this) {
 @Composable
 @Preview
 private fun ItemViewPreview() {
-    MaterialTheme {
+    FloconTheme {
         NetworkItemView(
             modifier = Modifier.fillMaxWidth(),
             selected = false,
             state = previewNetworkItemViewState(),
             onAction = {},
         )
+    }
+}
+
+@Composable
+@Preview
+private fun ItemViewPreview_error() {
+    FloconTheme {
+        FloconSurface {
+            NetworkItemView(
+                modifier = Modifier.fillMaxWidth(),
+                selected = false,
+                state = previewNetworkItemViewStateError(),
+                onAction = {},
+            )
+        }
     }
 }

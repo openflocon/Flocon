@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.list.model
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 
 @Immutable
 data class NetworkItemViewState(
@@ -77,6 +78,22 @@ fun previewNetworkItemViewState(): NetworkItemViewState = NetworkItemViewState(
     domain = "google.com",
     method = NetworkMethodUi.Http.GET,
     status = NetworkStatusUi("200", NetworkStatusUi.Status.SUCCESS),
+    type = NetworkItemViewState.NetworkTypeUi.Url(
+        query = "/search?q=test",
+    ),
+    isMocked = false,
+    isFromOldAppInstance = false,
+)
+
+fun previewNetworkItemViewStateError(): NetworkItemViewState = NetworkItemViewState(
+    uuid = "0",
+    dateFormatted = "00:00:00.0000",
+    requestSize = "10.kb",
+    responseSize = "0.B",
+    timeFormatted = "333ms",
+    domain = "google.com",
+    method = NetworkMethodUi.Http.GET,
+    status = NetworkStatusUi("500", NetworkStatusUi.Status.ERROR),
     type = NetworkItemViewState.NetworkTypeUi.Url(
         query = "/search?q=test",
     ),
