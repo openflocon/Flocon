@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.vanniktech.maven.publish)
+    alias(libs.plugins.buildconfig)
 }
 
 kotlin {
@@ -72,6 +73,14 @@ kotlin {
         }
     }
 }
+
+
+buildConfig {
+    packageName("io.github.openflocon.flocondesktop")
+
+    buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String)
+}
+
 
 android {
     namespace = "io.github.openflocon.flocon"

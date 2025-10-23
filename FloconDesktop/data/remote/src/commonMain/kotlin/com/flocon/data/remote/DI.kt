@@ -10,6 +10,7 @@ import com.flocon.data.remote.messages.messagesModule
 import com.flocon.data.remote.network.networkModule
 import com.flocon.data.remote.sharedpreference.sharedPreferencesModule
 import com.flocon.data.remote.table.tableModule
+import com.flocon.data.remote.version.versionModule
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
@@ -25,6 +26,7 @@ val dataRemoteModule = module {
         sharedPreferencesModule,
         tableModule,
         deviceModule,
+        versionModule,
     )
 
     single {

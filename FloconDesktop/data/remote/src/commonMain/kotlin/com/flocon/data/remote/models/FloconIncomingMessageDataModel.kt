@@ -13,6 +13,7 @@ data class FloconIncomingMessageDataModel(
     val appPackageName: String,
     val appInstance: Long,
     val platform: String,
+    val versionName: String,
 )
 
 

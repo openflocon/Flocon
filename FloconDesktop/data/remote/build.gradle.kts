@@ -37,11 +37,14 @@ kotlin {
             implementation(libs.ktor.serverCore)
             implementation(libs.ktor.serverNetty)
             implementation(libs.ktor.serializationKotlinJson)
-            implementation(libs.ktor.serializationKotlinJson)
             implementation(libs.ktor.serverContentNegociation)
             implementation(libs.ktor.serverWebsocket)
             implementation(libs.kotlinx.coroutinesCore)
             implementation(libs.kotlinx.serializationJson)
+
+            implementation(libs.ktor.clientCore)
+            implementation(libs.ktor.clientCio)
+            implementation(libs.ktor.clientContentNegociation)
         }
     }
 }

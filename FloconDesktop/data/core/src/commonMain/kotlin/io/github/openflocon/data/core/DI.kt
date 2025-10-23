@@ -10,6 +10,7 @@ import io.github.openflocon.data.core.messages.messageModule
 import io.github.openflocon.data.core.network.networkModule
 import io.github.openflocon.data.core.sharedpreference.sharedPreferenceModule
 import io.github.openflocon.data.core.table.tableModule
+import io.github.openflocon.data.core.versions.versionModule
 import org.koin.dsl.module
 
 val dataCoreModule = module {
@@ -23,6 +24,7 @@ val dataCoreModule = module {
         networkModule,
         sharedPreferenceModule,
         tableModule,
-        messageModule
+        messageModule,
+        versionModule
     )
 }

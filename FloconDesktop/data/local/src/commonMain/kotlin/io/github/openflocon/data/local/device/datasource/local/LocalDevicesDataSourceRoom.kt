@@ -52,7 +52,7 @@ class LocalDevicesDataSourceRoom(
                 )
             )
             InsertResult.New
-        } else if (appEntity.lastAppInstance != app.lastAppInstance) {
+        } else if (appEntity.lastAppInstance != app.lastAppInstance || appEntity.floconVersionOnDevice != app.floconVersionOnDevice) {
             // update the app instance if needed
             dao.insertDeviceApp(
                 app.toEntity(
@@ -88,6 +88,13 @@ class LocalDevicesDataSourceRoom(
             deviceId = deviceId,
             packageName = packageName,
         ).map { it?.toDomainModel() }
+    }
+
+    override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> {
+        return dao.observeDeviceAppByPackageName(
+            deviceId = deviceId,
+            packageName = appPackageName,
+        ).map { it?.floconVersionOnDevice }
     }
 
     override suspend fun saveAppIcon(
