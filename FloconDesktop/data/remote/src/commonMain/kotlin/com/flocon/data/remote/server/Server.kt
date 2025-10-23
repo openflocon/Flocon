@@ -6,6 +6,7 @@ import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import io.github.openflocon.domain.Constant
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.json.Json
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -30,4 +31,4 @@ interface Server {
 @OptIn(ExperimentalUuidApi::class)
 fun newRequestId(): String = Uuid.random().toString()
 
-expect fun getServer(): Server
+expect fun getServer(json: Json): Server

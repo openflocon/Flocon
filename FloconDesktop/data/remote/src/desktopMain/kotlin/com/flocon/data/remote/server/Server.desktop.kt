@@ -1,3 +1,5 @@
 package com.flocon.data.remote.server
 
-actual fun getServer(): Server = ServerJvm()
+import kotlinx.serialization.json.Json
+
+actual fun getServer(json: Json): Server = ServerJvm(json)

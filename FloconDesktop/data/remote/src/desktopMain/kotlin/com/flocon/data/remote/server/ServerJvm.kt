@@ -39,7 +39,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.io.path.absolutePathString
 import kotlin.time.Duration.Companion.seconds
 
-class ServerJvm : Server {
+class ServerJvm(
+    private val json: Json,
+) : Server {
     private val _receivedMessages = Channel<FloconIncomingMessageDataModel>()
     override val receivedMessages = _receivedMessages.receiveAsFlow()
 
@@ -85,7 +87,7 @@ class ServerJvm : Server {
                                         Logger.w("<---- Received raw message: $receivedText")
                                         try {
                                             val floconIncomingMessageDataModel =
-                                                Json.decodeFromString<FloconIncomingMessageDataModel>(
+                                                json.decodeFromString<FloconIncomingMessageDataModel>(
                                                     receivedText,
                                                 )
                                             val device = FloconDeviceIdAndPackageNameDataModel(
