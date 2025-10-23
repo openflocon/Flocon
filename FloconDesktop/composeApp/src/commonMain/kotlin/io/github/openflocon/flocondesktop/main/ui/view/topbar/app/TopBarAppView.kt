@@ -127,6 +127,7 @@ private fun AppImage(
                     modifier = modifier,
                 )
             }
+            DeviceItemUiModel.Platform.ios,
             DeviceItemUiModel.Platform.Android,
             DeviceItemUiModel.Platform.Unknown -> {
                 // Fallback : affiche une icône par défaut si iconEncoded est null ou invalide

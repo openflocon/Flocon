@@ -18,8 +18,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DesktopAccessDisabled
 import androidx.compose.material.icons.filled.DesktopWindows
 import androidx.compose.material.icons.filled.MobileOff
+import androidx.compose.material.icons.filled.PhoneIphone
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.MobileOff
+import androidx.compose.material.icons.outlined.PhoneIphone
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.main.ui.model.DeviceItemUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconSurface
 
 @Composable
 internal fun TopBarDeviceView(
@@ -74,6 +78,11 @@ internal fun TopBarDeviceView(
                         Icons.Filled.DesktopAccessDisabled
                     } else {
                         Icons.Filled.DesktopWindows
+                    }
+                    DeviceItemUiModel.Platform.ios -> if (device.isActive.not()) {
+                        Icons.Outlined.MobileOff
+                    } else {
+                        Icons.Filled.PhoneIphone
                     }
                     DeviceItemUiModel.Platform.Unknown -> if (device.isActive.not()) {
                         Icons.Filled.MobileOff
@@ -164,5 +173,45 @@ private fun TopBarDeviceViewPreview_desktop_disabled() {
             onDelete = {},
             onClick = {}
         )
+    }
+}
+
+@Preview
+@Composable
+private fun TopBarDeviceViewPreview_iphone() {
+    FloconTheme {
+        FloconSurface {
+            TopBarDeviceView(
+                device = DeviceItemUiModel(
+                    deviceName = "Desktop",
+                    platform = DeviceItemUiModel.Platform.ios,
+                    isActive = true,
+                    id = "123"
+                ),
+                selected = false,
+                onDelete = {},
+                onClick = {}
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun TopBarDeviceViewPreview_iphone_disabled() {
+    FloconTheme {
+        FloconSurface {
+            TopBarDeviceView(
+                device = DeviceItemUiModel(
+                    deviceName = "Desktop",
+                    platform = DeviceItemUiModel.Platform.ios,
+                    isActive = false,
+                    id = "123"
+                ),
+                selected = false,
+                onDelete = {},
+                onClick = {}
+            )
+        }
     }
 }

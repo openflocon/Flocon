@@ -26,6 +26,7 @@ private fun mapToPlatformUi(platform: String): DeviceItemUiModel.Platform {
     return when (platform) {
         "android" -> DeviceItemUiModel.Platform.Android
         "desktop" -> DeviceItemUiModel.Platform.Desktop
+        "ios" -> DeviceItemUiModel.Platform.ios
         else -> DeviceItemUiModel.Platform.Unknown
     }
 }
