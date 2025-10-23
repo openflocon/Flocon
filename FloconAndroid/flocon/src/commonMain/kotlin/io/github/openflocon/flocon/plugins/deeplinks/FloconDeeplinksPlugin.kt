@@ -6,12 +6,14 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 internal class FloconDeeplinksPluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconPlugin, FloconDeeplinksPlugin {
 
-    private val deeplinks = java.util.concurrent.atomic.AtomicReference<List<DeeplinkModel>?>(null)
+    private val deeplinks = MutableStateFlow<List<DeeplinkModel>?>(null)
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
@@ -21,13 +23,15 @@ internal class FloconDeeplinksPluginImpl(
 
     override fun onConnectedToServer() {
         // on connected, send known dashboard
-        deeplinks.get()?.let {
+        deeplinks.value?.let {
             registerDeeplinks(it)
         }
     }
 
     override fun registerDeeplinks(deeplinks: List<DeeplinkModel>) {
-        this.deeplinks.set(deeplinks)
+        this.deeplinks.update {
+            deeplinks
+        }
 
         try {
             sender.send(

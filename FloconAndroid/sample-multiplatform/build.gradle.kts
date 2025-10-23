@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
 kotlin {
@@ -15,7 +16,7 @@ kotlin {
             }
         }
     }
-    
+
     jvm("desktop") {
         compilations.all {
             kotlinOptions {
@@ -24,12 +25,17 @@ kotlin {
         }
     }
 
-    /*
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-     */
-    
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -39,12 +45,13 @@ kotlin {
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)
-                
+
                 // Ktor client core
                 implementation(libs.ktor.client.core)
 
                 // room
                 implementation(libs.androidx.room.runtime)
+                implementation(libs.androidx.sqlite.bundled)
 
                 // Compose Multiplatform
                 implementation(compose.runtime)
@@ -56,7 +63,7 @@ kotlin {
                 implementation(libs.coil.network.ktor)
             }
         }
-        
+
         val androidMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.android)
@@ -68,7 +75,7 @@ kotlin {
                 implementation(libs.ktor.client.okhttp)
             }
         }
-        
+
         val desktopMain by getting {
             dependencies {
                 // Ktor client for desktop/JVM
@@ -84,7 +91,6 @@ kotlin {
             }
         }
 
-        /*
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -98,7 +104,6 @@ kotlin {
                 implementation(libs.ktor.client.cio)
             }
         }
-         */
     }
 }
 
@@ -117,14 +122,14 @@ android {
     }
 
     signingConfigs {
-        named("debug")  {
+        named("debug") {
             // just a dummy keystore to be able to test the release build
             keyAlias = "release"
             keyPassword = "release"
             storeFile = file("../app/release.jks")
             storePassword = "release"
         }
-        register("release")  {
+        register("release") {
             keyAlias = "release"
             keyPassword = "release"
             storeFile = file("../app/release.jks")
@@ -146,23 +151,36 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    
+
     buildFeatures {
         compose = true
     }
-    
+
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
 }
 
 dependencies {
-    ksp(libs.androidx.room.compiler)
+    listOf(
+        "kspAndroid",
+        "kspDesktop",
+        "kspIosSimulatorArm64",
+        "kspIosX64",
+        "kspIosArm64"
+    ).forEach {
+        add(it, libs.androidx.room.compiler)
+    }
+    //ksp(libs.androidx.room.compiler)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 compose.desktop {
     application {
         mainClass = "io.github.openflocon.flocon.myapplication.multi.MainKt"
-        
+
         nativeDistributions {
             targetFormats(
                 org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg,
