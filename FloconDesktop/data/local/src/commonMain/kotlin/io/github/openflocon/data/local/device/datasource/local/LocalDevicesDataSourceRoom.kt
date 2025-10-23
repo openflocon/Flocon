@@ -52,7 +52,7 @@ class LocalDevicesDataSourceRoom(
                 )
             )
             InsertResult.New
-        } else if (appEntity.lastAppInstance != app.lastAppInstance) {
+        } else if (appEntity.lastAppInstance != app.lastAppInstance || appEntity.floconVersionOnDevice != app.floconVersionOnDevice) {
             // update the app instance if needed
             dao.insertDeviceApp(
                 app.toEntity(

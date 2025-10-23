@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.app.version
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -47,6 +48,11 @@ private fun VersionCheckerDialog(
     Box(
         modifier = modifier
             .padding(16.dp)
+            .clickable(
+                onClick = {
+                    // intercept click behind
+                }
+            )
             .background(
                 color = FloconTheme.colorPalette.tertiary,
                 shape = FloconTheme.shapes.medium

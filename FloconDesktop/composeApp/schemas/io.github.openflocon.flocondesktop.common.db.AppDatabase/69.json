@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 69,
-    "identityHash": "b3db48474cf70e9d0e86dc334bec843b",
+    "identityHash": "3c2a9d28f0bbcf44fd34823e76f4477b",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -1515,7 +1515,7 @@
       },
       {
         "tableName": "DeviceAppEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `packageName` TEXT NOT NULL, `iconEncoded` TEXT, `lastAppInstance` INTEGER NOT NULL, PRIMARY KEY(`deviceId`, `packageName`), FOREIGN KEY(`deviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `packageName` TEXT NOT NULL, `iconEncoded` TEXT, `lastAppInstance` INTEGER NOT NULL, `floconVersionOnDevice` TEXT NOT NULL, PRIMARY KEY(`deviceId`, `packageName`), FOREIGN KEY(`deviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "deviceId",
@@ -1544,6 +1544,12 @@
             "fieldPath": "lastAppInstance",
             "columnName": "lastAppInstance",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "floconVersionOnDevice",
+            "columnName": "floconVersionOnDevice",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -1642,7 +1648,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b3db48474cf70e9d0e86dc334bec843b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3c2a9d28f0bbcf44fd34823e76f4477b')"
     ]
   }
 }

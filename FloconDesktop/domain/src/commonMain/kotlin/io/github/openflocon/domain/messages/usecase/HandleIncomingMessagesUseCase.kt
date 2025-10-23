@@ -71,6 +71,7 @@ class HandleIncomingMessagesUseCase(
                 name = message.appName,
                 packageName = message.appPackageName,
                 lastAppInstance = message.appInstance,
+                floconVersionOnDevice = message.floconVersionOnDevice,
                 iconEncoded = null,
             ),
         )

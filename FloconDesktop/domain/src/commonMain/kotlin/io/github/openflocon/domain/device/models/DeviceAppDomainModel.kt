@@ -5,4 +5,5 @@ data class DeviceAppDomainModel(
     val packageName: AppPackageName,
     val iconEncoded: String?,
     val lastAppInstance: AppInstance, // last start app time
+    val floconVersionOnDevice: String,
 )

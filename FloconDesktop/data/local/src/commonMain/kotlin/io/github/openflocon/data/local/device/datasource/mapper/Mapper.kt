@@ -11,6 +11,7 @@ internal fun DeviceAppEntity.toDomainModel(): DeviceAppDomainModel {
         packageName = this.packageName,
         iconEncoded = this.iconEncoded,
         lastAppInstance = this.lastAppInstance,
+        floconVersionOnDevice = this.floconVersionOnDevice,
     )
 }
 
@@ -37,5 +38,6 @@ internal fun DeviceAppDomainModel.toEntity(deviceId: String): DeviceAppEntity {
         packageName = this.packageName,
         iconEncoded = this.iconEncoded,
         lastAppInstance = this.lastAppInstance,
+        floconVersionOnDevice = this.floconVersionOnDevice,
     )
 }
