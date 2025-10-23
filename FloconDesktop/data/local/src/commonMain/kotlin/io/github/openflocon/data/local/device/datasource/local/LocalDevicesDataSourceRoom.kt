@@ -90,6 +90,13 @@ class LocalDevicesDataSourceRoom(
         ).map { it?.toDomainModel() }
     }
 
+    override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> {
+        return dao.observeDeviceAppByPackageName(
+            deviceId = deviceId,
+            packageName = appPackageName,
+        ).map { it?.floconVersionOnDevice }
+    }
+
     override suspend fun saveAppIcon(
         deviceId: DeviceId,
         appPackageName: String,

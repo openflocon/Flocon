@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -26,64 +29,93 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun BoxScope.VersionCheckerView() {
     val viewmodel = koinViewModel<VersionCheckerViewModel>()
-    val version by viewmodel.versionAvailable.collectAsStateWithLifecycle()
-    version?.let {
+    val state by viewmodel.state.collectAsStateWithLifecycle()
+    state?.let {
         VersionCheckerDialog(
             modifier = Modifier.align(Alignment.BottomEnd),
-            version = it,
-            onDismiss = viewmodel::hideNewVersionDialog,
+            state = it,
+            onDesktopDismiss = viewmodel::hideDesktopNewVersionDialog,
+            onClientDismiss = viewmodel::hideClientNewVersionDialog,
         )
     }
 }
 
+@Composable
+private fun VersionCheckerDialog(
+    modifier: Modifier,
+    state: VersionCheckerViewModel.VersionAvailableState,
+    onClientDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+    onDesktopDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+) {
+    Column(
+        modifier.padding(16.dp),
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        state.client?.let {
+            VersionCheckerDialog(
+                modifier = Modifier, version = it, onDismiss = onClientDismiss
+            )
+        }
+        state.desktop?.let {
+            VersionCheckerDialog(
+                modifier = Modifier, version = it, onDismiss = onDesktopDismiss
+            )
+        }
+    }
+}
 
 @Composable
 private fun VersionCheckerDialog(
     modifier: Modifier,
     version: VersionCheckerViewModel.VersionAvailableUiModel,
-    onDismiss: () -> Unit,
+    onDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
 ) {
     val uriHandler = LocalUriHandler.current
 
     Box(
         modifier = modifier
-            .padding(16.dp)
+            .width(300.dp)
             .clickable(
-                onClick = {
-                    // intercept click behind
-                }
-            )
-            .background(
-                color = FloconTheme.colorPalette.tertiary,
-                shape = FloconTheme.shapes.medium
-            )
-            .padding(horizontal = 12.dp, 10.dp)
-    ) {
+            onClick = {
+                // intercept click behind
+            }).background(
+            color = FloconTheme.colorPalette.tertiary, shape = FloconTheme.shapes.medium
+        ).padding(horizontal = 12.dp, 10.dp)) {
         Column(
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "New version available: ${version.version}",
+                text = version.title,
                 color = FloconTheme.colorPalette.onTertiary,
                 style = FloconTheme.typography.titleSmall,
             )
+
+            version.subtitle?.let {
+                Text(
+                    text = it,
+                    color = FloconTheme.colorPalette.onTertiary,
+                    style = FloconTheme.typography.bodySmall,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FloconButton(
-                    containerColor = FloconTheme.colorPalette.primary,
-                    onClick = {
+                    containerColor = FloconTheme.colorPalette.primary, onClick = {
                         uriHandler.openUri(version.link)
-                        onDismiss()
+                        onDismiss(version)
                     }) {
                     Text("Download", color = FloconTheme.colorPalette.onPrimary)
                 }
                 FloconOutlinedButton(
-                    onClick = onDismiss,
-                    borderColor = FloconTheme.colorPalette.primary
+                    onClick = {
+                        onDismiss(version)
+                    }, borderColor = FloconTheme.colorPalette.primary
                 ) {
                     Text("Close", color = FloconTheme.colorPalette.primary)
                 }
@@ -102,6 +134,8 @@ private fun VersionCheckerDialogPreview() {
             version = VersionCheckerViewModel.VersionAvailableUiModel(
                 version = "1.0.0",
                 link = "https://github.com/openflocon/flocon-desktop",
+                title = "New destkop version available: 1.0.0",
+                subtitle = "subtitle",
             )
         )
     }

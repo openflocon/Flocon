@@ -187,6 +187,14 @@ class DevicesRepositoryImpl(
         }
     }
 
+    override fun observeDeviceSdkVersion(
+        deviceId: DeviceId,
+        appPackageName: String
+    ): Flow<String?> {
+        return localDevicesDataSource.observeDeviceSdkVersion(deviceId = deviceId, appPackageName = appPackageName)
+            .flowOn(dispatcherProvider.data)
+    }
+
     override suspend fun deleteDevice(deviceId: DeviceId) {
         withContext(dispatcherProvider.data) {
             localDevicesDataSource.delete(deviceId)

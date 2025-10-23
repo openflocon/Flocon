@@ -4,7 +4,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
 import io.github.openflocon.domain.versions.repository.VersionsCheckerRepository
 
-class CheckIsLastVersionUseCase(
+class CheckIsDesktopOnLastVersionUseCase(
     private val versionsCheckerRepository: VersionsCheckerRepository,
 ) {
     suspend operator fun invoke(current: String) : Either<Throwable, IsLastVersionDomainModel> {
@@ -12,14 +12,18 @@ class CheckIsLastVersionUseCase(
             .mapSuccess { lastVersion ->
                 val isLastVersion = isRemoteVersionNewer(localVersion = current, remoteVersion = lastVersion)
                 when(isLastVersion) {
-                    true -> IsLastVersionDomainModel.NewVersionAvailable(lastVersion, link = "https://github.com/openflocon/Flocon/releases/tag/$lastVersion")
+                    true -> IsLastVersionDomainModel.NewVersionAvailable(
+                        name = lastVersion,
+                        link = "https://github.com/openflocon/Flocon/releases/tag/$lastVersion",
+                        oldVersion = current,
+                    )
                     false -> IsLastVersionDomainModel.RunningLastVersion
                 }
             }
     }
 }
 
-private fun isRemoteVersionNewer(localVersion: String, remoteVersion: String): Boolean {
+fun isRemoteVersionNewer(localVersion: String, remoteVersion: String): Boolean {
     val localParts = localVersion.split(".").mapNotNull { it.toIntOrNull() }
     val remoteParts = remoteVersion.split(".").mapNotNull { it.toIntOrNull() }
 

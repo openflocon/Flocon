@@ -28,6 +28,8 @@ interface LocalDevicesDataSource {
     suspend fun hasAppIcon(deviceId: DeviceId, appPackageName: AppPackageName) : Boolean
     // endregion
 
+    fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String) : Flow<String?>
+
     suspend fun delete(deviceId: DeviceId)
     suspend fun deleteApp(deviceId: DeviceId, packageName: AppPackageName)
 

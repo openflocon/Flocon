@@ -35,6 +35,8 @@ interface DevicesRepository {
     suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 // endregion
 
+    fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?>
+
     suspend fun deleteDevice(deviceId: DeviceId)
     suspend fun deleteApplication(
         deviceId : DeviceId,
