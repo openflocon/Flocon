@@ -50,6 +50,7 @@ fun FloconButton(
 fun FloconOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    borderColor: Color? = null,
     content: @Composable RowScope.() -> Unit
 ) {
     FloconSurface(
@@ -58,7 +59,7 @@ fun FloconOutlinedButton(
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(1.dp, FloconTheme.colorPalette.onSurface),
+        border = BorderStroke(1.dp, borderColor ?: FloconTheme.colorPalette.onSurface),
     ) {
         CompositionLocalProvider(LocalTextStyle provides FloconTheme.typography.labelLarge) {
             Row(

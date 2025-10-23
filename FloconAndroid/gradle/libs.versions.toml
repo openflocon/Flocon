@@ -29,6 +29,7 @@ ksp = "2.1.0-1.0.29"
 processPhoenix = "3.0.0"
 sqlite = "2.5.2"
 sqliteJdbc = "3.50.3.0"
+buildconfig = "5.6.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -99,3 +100,4 @@ apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
+buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }

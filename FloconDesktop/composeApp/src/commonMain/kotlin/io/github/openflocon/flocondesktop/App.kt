@@ -2,16 +2,31 @@
 
 package io.github.openflocon.flocondesktop
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.composeunstyled.Text
 import com.flocon.data.remote.dataRemoteModule
 import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
@@ -21,6 +36,7 @@ import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUse
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
 import io.github.openflocon.flocondesktop.app.AppViewModel
 import io.github.openflocon.flocondesktop.app.di.appModule
+import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
 import io.github.openflocon.flocondesktop.common.di.commonModule
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
 import io.github.openflocon.flocondesktop.core.di.coreModule
@@ -90,6 +106,7 @@ fun App() {
                             modifier = Modifier.fillMaxSize()
                         )
                         FeedbackDisplayerView()
+                        VersionCheckerView()
                     }
                 }
             }

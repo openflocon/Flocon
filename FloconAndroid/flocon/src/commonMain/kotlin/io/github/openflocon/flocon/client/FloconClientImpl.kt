@@ -27,6 +27,7 @@ import io.github.openflocon.flocon.websocket.FloconHttpClient
 import io.github.openflocon.flocon.websocket.FloconWebSocketClient
 import io.github.openflocon.flocon.websocket.buildFloconHttpClient
 import io.github.openflocon.flocon.websocket.buildFloconWebSocketClient
+import io.github.openflocon.flocondesktop.BuildConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -48,6 +49,10 @@ internal class FloconClientImpl(
 
     private val appInfos by lazy {
         getAppInfos(appContext)
+    }
+
+    private val versionName by lazy {
+        BuildConfig.APP_VERSION
     }
 
     private val webSocketClient: FloconWebSocketClient = buildFloconWebSocketClient()
@@ -177,6 +182,7 @@ internal class FloconClientImpl(
                     deviceName = appInfos.deviceName,
                     appInstance = appInstance,
                     platform = appInfos.platform,
+                    versionName = versionName,
                 ).toFloconMessageToServer(),
             )
         }

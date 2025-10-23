@@ -13,6 +13,7 @@ import io.github.openflocon.domain.network.networkModule
 import io.github.openflocon.domain.settings.settingsModule
 import io.github.openflocon.domain.sharedpreference.sharedPreferencesModule
 import io.github.openflocon.domain.table.tableModule
+import io.github.openflocon.domain.versions.versionModule
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -29,6 +30,7 @@ val domainModule = module {
         settingsModule,
         sharedPreferencesModule,
         tableModule,
-        messagesModule
+        messagesModule,
+        versionModule,
     )
 }

@@ -56,10 +56,13 @@ kotlinx-dateTime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 ktor-clientJava = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
+ktor-clientCore = { module = "io.ktor:ktor-client-core-jvm", version.ref = "ktor" }
+ktor-clientCio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-serverCore = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-serverNetty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-serializationKotlinJson = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-serverContentNegociation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-clientContentNegociation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serverWebsocket = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
