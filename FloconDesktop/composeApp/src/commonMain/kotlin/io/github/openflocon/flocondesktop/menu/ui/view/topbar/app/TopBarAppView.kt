@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Text
@@ -32,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.smartphone
 import io.github.openflocon.flocondesktop.menu.ui.model.DeviceAppUiModel
+import io.github.openflocon.flocondesktop.menu.ui.model.DeviceItemUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import org.jetbrains.compose.resources.painterResource
@@ -117,7 +116,7 @@ private fun AppImage(
             modifier = modifier,
         )
     } else {
-        when(platform) {
+        when (platform) {
             DeviceItemUiModel.Platform.Desktop -> {
                 Image(
                     imageVector = Icons.Default.Terminal,
@@ -126,6 +125,7 @@ private fun AppImage(
                     modifier = modifier,
                 )
             }
+
             DeviceItemUiModel.Platform.ios,
             DeviceItemUiModel.Platform.Android,
             DeviceItemUiModel.Platform.Unknown -> {

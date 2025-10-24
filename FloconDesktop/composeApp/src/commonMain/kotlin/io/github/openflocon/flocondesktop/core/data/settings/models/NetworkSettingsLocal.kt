@@ -8,14 +8,29 @@ import kotlinx.serialization.Serializable
 internal data class NetworkSettingsLocal(
 
     @SerialName("pinned_detail")
-    val pinnedDetails: Boolean = false
+    val pinnedDetails: Boolean = false,
+
+    @SerialName("display_old_sessions")
+    val displayOldSessions: Boolean = false,
+
+    @SerialName("auto_scroll")
+    val autoScroll: Boolean = false,
+
+    @SerialName("invert_list")
+    val invertList: Boolean = false
 
 )
 
 internal fun NetworkSettingsLocal.toDomain() = NetworkSettings(
-    pinnedDetails = pinnedDetails
+    pinnedDetails = pinnedDetails,
+    displayOldSessions = displayOldSessions,
+    autoScroll = autoScroll,
+    invertList = invertList
 )
 
 internal fun NetworkSettings.toLocal() = NetworkSettingsLocal(
-    pinnedDetails = pinnedDetails
+    pinnedDetails = pinnedDetails,
+    displayOldSessions = displayOldSessions,
+    autoScroll = autoScroll,
+    invertList = invertList
 )

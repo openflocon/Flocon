@@ -52,7 +52,10 @@ class NetworkDetailDelegate(
                 requestBody = "",
                 requestSize = "",
                 requestHeaders = emptyList(),
-                response = null
+                response = null,
+                requestBodyIsNotBlank = false,
+                canOpenRequestBody = false,
+                imageUrl = null
             )
         )
 

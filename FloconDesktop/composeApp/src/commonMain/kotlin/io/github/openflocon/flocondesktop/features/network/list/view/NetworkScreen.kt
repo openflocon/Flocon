@@ -15,13 +15,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.outlined.ChatBubble
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material.icons.outlined.PlayCircle
-import androidx.compose.material.icons.outlined.Podcasts
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.material.icons.sharp.PushPin
@@ -241,19 +238,19 @@ fun NetworkScreen(
                             onClick = { onAction(NetworkAction.ExportCsv) }
                         )
                         FloconDropdownMenuItem(
-                            checked = uiState.contentState.autoScroll,
+                            checked = uiState.settings.autoScroll,
                             text = "Auto scroll",
                             leadingIcon = Icons.Outlined.PlayCircle,
-                            onCheckedChange = { onAction(NetworkAction.ToggleAutoScroll) }
+                            onCheckedChange = { checked -> onAction(NetworkAction.ToggleAutoScroll(checked)) }
                         )
                         FloconDropdownMenuItem(
-                            checked = uiState.contentState.invertList,
+                            checked = uiState.settings.invertList,
                             text = "Invert list",
                             leadingIcon = Icons.AutoMirrored.Outlined.List,
                             onCheckedChange = { checked -> onAction(NetworkAction.InvertList(checked)) }
                         )
                         FloconDropdownMenuItem(
-                            checked = uiState.contentState.pinPanel,
+                            checked = uiState.settings.pinPanel,
                             text = "Pin panel",
                             leadingIcon = Icons.Sharp.PushPin,
                             onCheckedChange = { checked -> onAction(NetworkAction.Pinned(checked)); it() }
@@ -292,7 +289,7 @@ fun NetworkScreen(
                 ) {
                     LazyColumn(
                         state = lazyListState,
-                        reverseLayout = uiState.contentState.invertList,
+                        reverseLayout = uiState.settings.invertList,
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f)

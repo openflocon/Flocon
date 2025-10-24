@@ -20,12 +20,16 @@ import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
@@ -280,7 +284,7 @@ private fun Request(
                 title = state.requestBodyTitle,
                 initialValue = true,
                 actions = {
-                    if(state.requestBodyIsNotBlank) {
+                    if (state.requestBodyIsNotBlank) {
                         FloconIconButton(
                             tooltip = "View in app",
                             imageVector = Icons.Outlined.OpenInFull,
@@ -294,7 +298,7 @@ private fun Request(
                             }
                         )
                     }
-                    if(state.canOpenRequestBody) {
+                    if (state.canOpenRequestBody) {
                         FloconIconButton(
                             tooltip = "Open in external editor",
                             imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
@@ -307,7 +311,7 @@ private fun Request(
                             }
                         )
                     }
-                    if(state.requestBodyIsNotBlank) {
+                    if (state.requestBodyIsNotBlank) {
                         FloconIconButton(
                             tooltip = "Copy",
                             imageVector = Icons.Outlined.CopyAll,
@@ -443,7 +447,7 @@ private fun Response(
                         title = "Response - Body",
                         initialValue = true,
                         actions = {
-                            if(response.responseBodyIsNotBlank) {
+                            if (response.responseBodyIsNotBlank) {
                                 FloconIconButton(
                                     tooltip = "View body in app",
                                     imageVector = Icons.Outlined.OpenInFull,
@@ -457,7 +461,7 @@ private fun Response(
                                     }
                                 )
                             }
-                            if(response.canOpenResponseBody) {
+                            if (response.canOpenResponseBody) {
                                 FloconIconButton(
                                     tooltip = "Open in external editor",
                                     imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
@@ -470,7 +474,7 @@ private fun Response(
                                     }
                                 )
                             }
-                            if(response.responseBodyIsNotBlank) {
+                            if (response.responseBodyIsNotBlank) {
                                 FloconIconButton(
                                     tooltip = "Copy",
                                     imageVector = Icons.Outlined.CopyAll,
