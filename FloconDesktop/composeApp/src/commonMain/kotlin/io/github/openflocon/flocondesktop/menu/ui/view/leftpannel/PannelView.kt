@@ -5,7 +5,6 @@ package io.github.openflocon.flocondesktop.menu.ui.view.leftpannel
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -26,7 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -44,14 +43,6 @@ fun PanelView(
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
     val shape = FloconTheme.shapes.medium
-    val shadow by animateDpAsState(
-        targetValue = when {
-            isSelected -> 6.dp
-            hovered -> 2.dp
-            else -> 0.dp
-        },
-        label = "shadow",
-    )
     val color by animateColorAsState(
         targetValue = when {
             isSelected -> FloconTheme.colorPalette.accent
@@ -71,7 +62,7 @@ fun PanelView(
     Row(
         modifier = modifier
             .height(28.dp)
-            .shadow(elevation = shadow, shape = shape, clip = true, ambientColor = color, spotColor = color)
+            .clip(shape)
             .background(color)
             .clickable(onClick = onClick, interactionSource = interactionSource, indication = null)
             .padding(horizontal = 12.dp, vertical = 4.dp),

@@ -1,14 +1,17 @@
 package io.github.openflocon.navigation.scene
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.window.Window
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
+import androidx.navigation3.scene.SceneStrategyScope
 import io.github.openflocon.navigation.FloconRoute
 
-class WindowScene(
+@Immutable
+data class WindowScene(
     private val entry: NavEntry<FloconRoute>,
     override val previousEntries: List<NavEntry<FloconRoute>>,
     private val onBack: () -> Unit
@@ -30,18 +33,14 @@ class WindowScene(
 
 class WindowSceneStrategy : SceneStrategy<FloconRoute> {
 
-    @Composable
-    override fun calculateScene(
-        entries: List<NavEntry<FloconRoute>>,
-        onBack: (Int) -> Unit
-    ): Scene<FloconRoute>? {
+    override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? {
         val entry = entries.last()
 
         if (entry.metadata[IS_WINDOW] == true) {
             return WindowScene(
                 entry = entry,
                 previousEntries = entries.dropLast(1),
-                onBack = { onBack(1) }
+                onBack = onBack
             )
         }
 

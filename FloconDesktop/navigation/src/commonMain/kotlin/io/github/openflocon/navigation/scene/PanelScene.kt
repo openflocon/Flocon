@@ -5,7 +5,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Pin
+import androidx.compose.material.icons.sharp.Pin
+import androidx.compose.material.icons.sharp.PinInvoke
+import androidx.compose.material.icons.sharp.PushPin
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,6 +17,7 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
+import androidx.navigation3.scene.SceneStrategyScope
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.panel.FloconPanel
@@ -21,14 +26,15 @@ import io.github.openflocon.navigation.FloconRoute
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
-class PanelScene(
+@Immutable
+data class PanelScene(
     override val overlaidEntries: List<NavEntry<FloconRoute>>,
     override val key: Any,
     override val previousEntries: List<NavEntry<FloconRoute>>,
     private val entry: NavEntry<FloconRoute>,
     private val properties: PaneProperties,
     private val onPin: OnPin?,
-    private val onBack: (count: Int) -> Unit,
+    private val onBack: () -> Unit,
 ) : OverlayScene<FloconRoute>, KoinComponent {
 
     override val entries: List<NavEntry<FloconRoute>> = listOf(entry)
@@ -43,10 +49,10 @@ class PanelScene(
         ) {
             FloconPanel(
                 state = state,
-                onDismissRequest = { onBack(1) },
+                onDismissRequest = onBack,
                 actions = {
                     FloconIconTonalButton(
-                        onClick = { onBack(1) },
+                        onClick = onBack,
                         modifier = Modifier
                             .animatePanelAction()
                     ) {
@@ -60,14 +66,14 @@ class PanelScene(
                                 scope.launch {
                                     onPin.onPin()
                                     state.hide()
-                                    onBack(1)
+                                    onBack()
                                 }
                             },
                             modifier = Modifier
                                 .animatePanelAction()
                         ) {
                             FloconIcon(
-                                Icons.Outlined.Pin
+                                Icons.Sharp.PushPin
                             )
                         }
                     }
@@ -80,12 +86,10 @@ class PanelScene(
 
 }
 
-class PanelSceneStrategy() : SceneStrategy<FloconRoute> {
+class PanelSceneStrategy : SceneStrategy<FloconRoute> {
 
-    @Composable
-    override fun calculateScene(
-        entries: List<NavEntry<FloconRoute>>,
-        onBack: (Int) -> Unit
+    override fun SceneStrategyScope<FloconRoute>.calculateScene(
+        entries: List<NavEntry<FloconRoute>>
     ): Scene<FloconRoute>? {
         val lastEntry = entries.lastOrNull() ?: return null
         val properties = lastEntry.metadata[PANEL_KEY] ?: return null
@@ -98,7 +102,7 @@ class PanelSceneStrategy() : SceneStrategy<FloconRoute> {
                 entry = lastEntry,
                 properties = properties,
                 onPin = lastEntry.metadata[ON_PIN] as? OnPin,
-                onBack = onBack
+                onBack = { onBack() }
             )
         }
 

@@ -11,6 +11,9 @@ data class ContentUiState(
     val mocksDisplayed: MockDisplayed?,
     val websocketMocksDisplayed: Boolean,
     val badNetworkQualityDisplayed: Boolean,
+    val invertList: Boolean,
+    val autoScroll: Boolean,
+    val pinPanel: Boolean
 )
 
 @Immutable
@@ -24,5 +27,7 @@ fun previewContentUiState() = ContentUiState(
     detailJsons = emptySet(),
     mocksDisplayed = null,
     badNetworkQualityDisplayed = false,
-    websocketMocksDisplayed = false,
+    invertList = false,
+    autoScroll = false,
+    pinPanel = false
 )
