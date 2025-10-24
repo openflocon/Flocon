@@ -3,8 +3,10 @@ package io.github.openflocon.flocondesktop.features.network.detail.model
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
+import kotlinx.serialization.Serializable
 
 @Immutable
+@Serializable
 data class NetworkDetailViewState(
     val callId: String,
     val fullUrl: String,
@@ -30,8 +32,10 @@ data class NetworkDetailViewState(
     val response: Response?,
 ) {
     @Immutable
+    @Serializable
     sealed interface Response {
         @Immutable
+        @Serializable
         data class Success(
             val body: String,
             val responseBodyIsNotBlank: Boolean,
@@ -40,12 +44,14 @@ data class NetworkDetailViewState(
             val headers: List<NetworkDetailHeaderUi>?,
         ) : Response
         @Immutable
+        @Serializable
         data class Error(
             val issue: String,
         ) : Response
     }
 
     @Immutable
+    @Serializable
     data class GraphQlSection(
         val queryName: String,
         val method: NetworkMethodUi,
@@ -53,11 +59,14 @@ data class NetworkDetailViewState(
     )
 
     @Immutable
+    @Serializable
     sealed interface Method {
         @Immutable
+        @Serializable
         data class Http(val method: NetworkMethodUi) : Method
 
         @Immutable
+        @Serializable
         data class MethodName(val name: String) : Method
     }
 }

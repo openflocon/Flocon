@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network
 
 import io.github.openflocon.flocondesktop.features.network.badquality.BadQualityNetworkViewModel
+import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailDelegate
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBodyDelegate
@@ -25,4 +26,6 @@ internal val networkModule = module {
 
     viewModelOf(::BadQualityNetworkViewModel)
     viewModelOf(::NetworkWebsocketMockViewModel)
+
+    factoryOf(::NetworkDetailDelegate)
 }

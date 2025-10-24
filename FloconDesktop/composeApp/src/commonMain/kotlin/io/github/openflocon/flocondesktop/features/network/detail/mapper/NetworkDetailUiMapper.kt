@@ -8,7 +8,6 @@ import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkD
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState.Method.Http
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState.Method.MethodName
-import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBodyDelegate
 import io.github.openflocon.flocondesktop.features.network.list.mapper.getMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.mapper.loadingStatus
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toGraphQlNetworkStatusUi
@@ -19,46 +18,43 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMet
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.common.isImageUrl
 
-fun toDetailUi(
-    request: FloconNetworkCallDomainModel,
-): NetworkDetailViewState =
-    NetworkDetailViewState(
-        callId = request.callId,
-        fullUrl = request.request.url,
-        method = toDetailMethodUi(request),
-        statusLabel = toDetailStatusLabel(request),
-        status = toDetailHttpStatusUi(request),
-        requestTimeFormatted = request.request.startTimeFormatted,
-        durationFormatted = request.response?.durationFormatted,
-        imageUrl = request.request.url.takeIf { request.response?.isImage() == true || it.isImageUrl() },
-        // request
-        requestBodyTitle = requestBodyTitle(request),
-        requestBody = httpBodyToUi(request.request.body),
-        requestBodyIsNotBlank = request.request.body.isNullOrBlank().not(),
-        canOpenRequestBody = canOpenExternal(request.request.body),
-        // headers.,
-        requestHeaders = toNetworkHeadersUi(request.request.headers),
-        requestSize = request.request.byteSizeFormatted,
-        // response
-        response = request.response?.let {
-            when (it) {
-                is FloconNetworkCallDomainModel.Response.Failure -> NetworkDetailViewState.Response.Error(
-                    issue = it.issue,
-                )
+fun FloconNetworkCallDomainModel.toDetailUi(): NetworkDetailViewState = NetworkDetailViewState(
+    callId = callId,
+    fullUrl = request.url,
+    method = toDetailMethodUi(this),
+    statusLabel = toDetailStatusLabel(this),
+    status = toDetailHttpStatusUi(this),
+    requestTimeFormatted = request.startTimeFormatted,
+    durationFormatted = response?.durationFormatted,
+    imageUrl = request.url.takeIf { response?.isImage() == true || it.isImageUrl() },
+    // request
+    requestBodyTitle = requestBodyTitle(this),
+    requestBody = httpBodyToUi(request.body),
+    requestBodyIsNotBlank = request.body.isNullOrBlank().not(),
+    canOpenRequestBody = canOpenExternal(request.body),
+    // headers.,
+    requestHeaders = toNetworkHeadersUi(request.headers),
+    requestSize = request.byteSizeFormatted,
+    // response
+    response = response?.let {
+        when (it) {
+            is FloconNetworkCallDomainModel.Response.Failure -> NetworkDetailViewState.Response.Error(
+                issue = it.issue,
+            )
 
-                is FloconNetworkCallDomainModel.Response.Success -> NetworkDetailViewState.Response.Success(
-                    body = httpBodyToUi(it.body),
-                    size = it.byteSizeFormatted,
-                    canOpenResponseBody = canOpenExternal(it.body),
-                    responseBodyIsNotBlank = it.body.isNullOrBlank().not(),
-                    headers = toNetworkHeadersUi(it.headers),
-                )
+            is FloconNetworkCallDomainModel.Response.Success -> NetworkDetailViewState.Response.Success(
+                body = httpBodyToUi(it.body),
+                size = it.byteSizeFormatted,
+                canOpenResponseBody = canOpenExternal(it.body),
+                responseBodyIsNotBlank = it.body.isNullOrBlank().not(),
+                headers = toNetworkHeadersUi(it.headers),
+            )
 
-            }
+        }
 
-        },
-        graphQlSection = graphQlSection(request),
-    )
+    },
+    graphQlSection = graphQlSection(this),
+)
 
 private fun toDetailStatusLabel(request: FloconNetworkCallDomainModel): String =
     when (request.request.specificInfos) {
@@ -168,6 +164,6 @@ fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewSt
         )
     }
 
-private fun canOpenExternal(body: String?) : Boolean {
+private fun canOpenExternal(body: String?): Boolean {
     return body != null && body.isNotBlank() && OpenFile.isSupported()
 }

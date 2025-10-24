@@ -77,7 +77,12 @@ kotlin {
             implementation(projects.domain)
             
             implementation(projects.library.designsystem)
+
+            implementation(projects.navigation)
+
             implementation(libs.kermit)
+
+//            implementation(libs.material3.adaptive)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

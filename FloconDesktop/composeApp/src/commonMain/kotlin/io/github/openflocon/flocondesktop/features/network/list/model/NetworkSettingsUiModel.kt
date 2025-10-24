@@ -6,11 +6,13 @@ import androidx.compose.runtime.Immutable
 data class NetworkSettingsUiModel(
     val displayOldSessions: Boolean,
     val autoScroll: Boolean,
-    val invertList: Boolean
+    val invertList: Boolean,
+    val pinPanel: Boolean
 )
 
 fun previewNetworkSettingsUiModel() = NetworkSettingsUiModel(
     displayOldSessions = true,
     autoScroll = false,
     invertList = false,
+    pinPanel = false
 )

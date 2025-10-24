@@ -31,6 +31,13 @@ kotlin {
                 api(compose.components.resources)
                 api(compose.components.uiToolingPreview)
                 api(libs.other.jsontree)
+
+                api(libs.compose.navigation3.ui)
+//                api(libs.compose.navigation3.runtime)
+
+                // Not KMP yet
+//                api(libs.androidx.lifecycle.viewmodel.navigation3)
+                api(libs.kotlinx.serialization.core)
                 api("com.composables:core:1.43.1")
             }
         }
