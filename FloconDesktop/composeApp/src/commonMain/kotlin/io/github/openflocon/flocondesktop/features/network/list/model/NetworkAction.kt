@@ -48,7 +48,7 @@ sealed interface NetworkAction {
 
     data class Pinned(val value: Boolean) : NetworkAction
 
-    data object ToggleAutoScroll : NetworkAction
+    data class ToggleAutoScroll(val value: Boolean): NetworkAction
 
     data object ClearOldSession : NetworkAction
 
