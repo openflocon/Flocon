@@ -64,6 +64,7 @@ fun DetailHeadersView(
                     label = item.name,
                     value = item.value,
                     labelWidth = labelWidth,
+                    contentColor = FloconTheme.colorPalette.onPrimary,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

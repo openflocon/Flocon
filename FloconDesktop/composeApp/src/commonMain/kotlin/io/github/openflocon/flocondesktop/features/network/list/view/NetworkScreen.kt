@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,11 +20,11 @@ import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.ImportExport
-import androidx.compose.material.icons.outlined.PinEnd
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Podcasts
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.outlined.WifiTethering
+import androidx.compose.material.icons.sharp.PushPin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -33,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.Key
@@ -41,13 +39,13 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
@@ -75,7 +73,6 @@ import io.github.openflocon.library.designsystem.components.FloconHorizontalDivi
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
-import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
@@ -83,7 +80,6 @@ import io.github.openflocon.library.designsystem.components.panel.PanelWidth
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.mp.KoinPlatform
 
 @Composable
 fun NetworkScreen(
@@ -254,7 +250,13 @@ fun NetworkScreen(
                             checked = uiState.contentState.invertList,
                             text = "Invert list",
                             leadingIcon = Icons.AutoMirrored.Outlined.List,
-                            onCheckedChange = { onAction(NetworkAction.InvertList(it)) }
+                            onCheckedChange = { checked -> onAction(NetworkAction.InvertList(checked)) }
+                        )
+                        FloconDropdownMenuItem(
+                            checked = uiState.contentState.pinPanel,
+                            text = "Pin panel",
+                            leadingIcon = Icons.Sharp.PushPin,
+                            onCheckedChange = { checked -> onAction(NetworkAction.Pinned(checked)); it() }
                         )
                         FloconDropdownSeparator()
                         FloconDropdownMenuItem(
@@ -336,25 +338,6 @@ fun NetworkScreen(
                         .clip(FloconTheme.shapes.medium)
                 )
             }
-        }
-    }
-
-    // TODO Change
-    Box(
-        contentAlignment = Alignment.TopEnd,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        FloconIconTonalButton(
-            onClick = {
-                val repository = KoinPlatform.getKoin().get<SettingsRepository>()
-
-                repository.networkSettings = repository.networkSettings.copy(pinnedDetails = false)
-            },
-            modifier = Modifier.align(Alignment.BottomStart)
-        ) {
-            FloconIcon(
-                Icons.Outlined.PinEnd
-            )
         }
     }
 

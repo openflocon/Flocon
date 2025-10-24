@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network
 
-import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailScreen
 import io.github.openflocon.navigation.FloconRoute
@@ -15,7 +15,7 @@ internal sealed interface NetworkRoutes : FloconRoute {
 
 }
 
-fun EntryProviderBuilder<FloconRoute>.networkRoutes() {
+fun EntryProviderScope<FloconRoute>.networkRoutes() {
     entry<NetworkRoutes.Panel>(
         metadata = PanelSceneStrategy.panel(
             pinnable = true,

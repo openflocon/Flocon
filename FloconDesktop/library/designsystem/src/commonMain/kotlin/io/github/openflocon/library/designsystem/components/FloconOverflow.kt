@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.composeunstyled.DropdownPanelAnchor
+import io.github.openflocon.library.designsystem.FloconTheme
 
 @Immutable
 data class FloconOverflowItem(
@@ -35,7 +38,7 @@ data class FloconOverflowItem(
 @Composable
 fun FloconOverflow(
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.(close: () -> Unit) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -56,6 +59,8 @@ fun FloconOverflow(
         onDismissRequest = { expanded = false },
         modifier = modifier
     ) {
-        content()
+        CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.onPrimary) {
+            content { expanded = false }
+        }
     }
 }
