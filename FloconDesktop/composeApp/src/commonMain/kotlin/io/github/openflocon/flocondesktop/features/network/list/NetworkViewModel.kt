@@ -13,6 +13,7 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
@@ -33,6 +34,7 @@ import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkB
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.core.data.settings.usecase.ObserveNetworkSettingsUseCase
+import io.github.openflocon.flocondesktop.core.data.settings.usecase.SaveNetworkSettingsUseCase
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkWebsocketIdsUseCase
 import io.github.openflocon.domain.network.usecase.settings.ObserveNetworkSettingsUseCase
@@ -93,6 +95,8 @@ class NetworkViewModel(
     private val updateNetworkSettingsUseCase: UpdateNetworkSettingsUseCase,
     private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
     private val openBodyDelegate: OpenBodyDelegate,
+    private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
+    private val saveNetworkSettingsUseCase: SaveNetworkSettingsUseCase
 ) : ViewModel(headerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -146,6 +150,9 @@ class NetworkViewModel(
         )
     )
 
+    private val settings = observeNetworkSettingsUseCase()
+        .stateInWhileSubscribed(NetworkSettings(pinnedDetails = false))
+
     private val filter = combines(
         snapshotFlow { _filterText.value }.map { it.takeIf { it.isNotBlank() } }
             .distinctUntilChanged(),
@@ -191,7 +198,7 @@ class NetworkViewModel(
     private val detailState = combine(
         detailDelegate.uiState,
         contentState,
-        observeNetworkSettingsUseCase()
+        settings
     ) { state, content, settings ->
         state.takeIf { settings.pinnedDetails && content.selectedRequestId != null }
     }
@@ -205,7 +212,9 @@ class NetworkViewModel(
         settings.map { it.toUi() },
     ) { content, detail, filter, header, settings ->
         NetworkUiState(
-            contentState = content,
+            contentState = content.copy(
+                pinPanel = settings.pinnedDetails
+            ),
             detailState = detail,
             filterState = filter,
             headerState = header,
@@ -217,7 +226,7 @@ class NetworkViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = NetworkUiState(
-                detailState = detailDelegate.uiState.value,
+                detailState = detailState.value,
                 contentState = contentState.value,
                 filterState = filterUiState.value,
                 headerState = headerDelegate.headerUiState.value,
@@ -267,6 +276,16 @@ class NetworkViewModel(
             NetworkAction.CloseWebsocketMocks -> contentState.update { it.copy(websocketMocksDisplayed = false) }
             is NetworkAction.OpenBodyExternally.Request -> openBodyDelegate.openBodyExternally(action.item)
             is NetworkAction.OpenBodyExternally.Response -> openBodyDelegate.openBodyExternally(action.item)
+        }
+    }
+
+    private fun onPinned(action: NetworkAction.Pinned) {
+        viewModelScope.launch {
+            saveNetworkSettingsUseCase(
+                settings.value.copy(
+                    pinnedDetails = action.value
+                )
+            )
         }
     }
 

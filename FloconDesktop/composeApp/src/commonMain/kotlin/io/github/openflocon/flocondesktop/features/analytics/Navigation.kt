@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.analytics
 
-import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import io.github.openflocon.navigation.FloconRoute
 
-fun EntryProviderBuilder<FloconRoute>.analyticsRoutes() {
+fun EntryProviderScope<FloconRoute>.analyticsRoutes() {
     // TODO
 }

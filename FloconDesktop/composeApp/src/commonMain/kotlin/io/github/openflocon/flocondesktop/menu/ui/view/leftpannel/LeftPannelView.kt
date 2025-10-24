@@ -17,8 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import io.github.openflocon.flocondesktop.menu.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.menu.ui.model.leftpanel.LeftPanelItem
@@ -26,7 +26,6 @@ import io.github.openflocon.flocondesktop.menu.ui.model.leftpanel.LeftPanelState
 import io.github.openflocon.flocondesktop.menu.ui.model.leftpanel.LeftPannelSection
 import io.github.openflocon.flocondesktop.menu.ui.model.leftpanel.previewLeftPannelState
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 val PanelMaxWidth = 275.dp
 val PanelMinWidth = 64.dp
@@ -44,8 +43,6 @@ fun LeftPanelView(
             .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colorPalette.primary)
             .padding(8.dp)
-//            .padding(bottom = 16.dp, top = 8.dp)
-//            .padding(horizontal = 12.dp),
     ) {
         MenuSection(
             current = state.current,
@@ -92,7 +89,7 @@ private fun ColumnScope.MenuItems(
     expanded: Boolean,
     onClickItem: (LeftPanelItem) -> Unit,
 ) {
-    items.fastForEach { item ->
+    items.fastForEachIndexed { index, item ->
         PanelView(
             modifier = Modifier
                 .height(PanelContentMinSize)
@@ -104,6 +101,8 @@ private fun ColumnScope.MenuItems(
             isEnabled = item.isEnabled,
             onClick = { onClickItem(item) },
         )
+        if (index != items.lastIndex)
+            Spacer(Modifier.height(4.dp))
     }
 }
 

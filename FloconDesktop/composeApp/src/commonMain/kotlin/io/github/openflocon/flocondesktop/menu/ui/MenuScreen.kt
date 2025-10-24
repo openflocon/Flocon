@@ -34,7 +34,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import io.github.openflocon.flocondesktop.features.analytics.view.AnalyticsScreen
 import io.github.openflocon.flocondesktop.features.dashboard.view.DashboardScreen
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseScreen
@@ -102,70 +102,76 @@ private fun MenuScreen(
     )
     val rotate by animateFloatAsState(targetValue = if (expanded) 180f else 0f)
 
-    Column(
-        modifier = modifier.fillMaxSize()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .onGloballyPositioned {
+                windowSize = it.size // TODO Add windowsize lib
+            }
     ) {
-        MainScreenTopBar(
-            appsState = uiState.appsStateUiModel,
-            devicesState = uiState.devicesStateUiModel,
-            recordState = uiState.recordVideoState,
-            deleteApp = deleteApp,
-            deleteDevice = deleteDevice,
-            onAppSelected = onAppSelected,
-            onRecordClicked = onRecordClicked,
-            onRestartClicked = onRestartClicked,
-            onDeviceSelected = onDeviceSelected,
-            onTakeScreenshotClicked = onTakeScreenshotClicked
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
+        Column(
+            modifier = modifier
+                .matchParentSize()
         ) {
-            LeftPanelView(
-                modifier = Modifier
-                    .width(width)
-                    .fillMaxHeight(),
-                expanded = expanded,
-                onClickItem = onClickLeftPanelItem,
-                state = uiState.leftPanelState,
+            MainScreenTopBar(
+                appsState = uiState.appsStateUiModel,
+                devicesState = uiState.devicesStateUiModel,
+                recordState = uiState.recordVideoState,
+                deleteApp = deleteApp,
+                deleteDevice = deleteDevice,
+                onAppSelected = onAppSelected,
+                onRecordClicked = onRecordClicked,
+                onRestartClicked = onRestartClicked,
+                onDeviceSelected = onDeviceSelected,
+                onTakeScreenshotClicked = onTakeScreenshotClicked
             )
-            Spacer(Modifier.width(8.dp))
-            FloconNavigation(
-                navigationState = navigationState,
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .onGloballyPositioned {
-                        windowSize = it.size // TODO Add windowsize lib
-                    },
+                    .fillMaxSize()
+                    .padding(8.dp)
             ) {
-                menus()
-            }
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .width(20.dp)
-                    .height(60.dp)
-                    .graphicsLayer {
-                        translationX = position.toPx() - size.width / 2 - 8.dp.toPx()
-                        translationY = (windowSize.height / 2) - (size.height / 2)
-                    }
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(FloconTheme.colorPalette.primary)
-                    .clickable(onClick = { expanded = !expanded }),
-            ) {
-                FloconIcon(
-                    imageVector = Icons.Outlined.ChevronRight,
-                    tint = Color.LightGray,
-                    modifier = Modifier.rotate(rotate),
+                LeftPanelView(
+                    modifier = Modifier
+                        .width(width)
+                        .fillMaxHeight(),
+                    expanded = expanded,
+                    onClickItem = onClickLeftPanelItem,
+                    state = uiState.leftPanelState,
                 )
+                Spacer(Modifier.width(8.dp))
+                FloconNavigation(
+                    navigationState = navigationState,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                ) {
+                    menus()
+                }
             }
+        }
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .width(20.dp)
+                .height(60.dp)
+                .graphicsLayer {
+                    translationX = position.toPx() - size.width / 2 - 2.dp.toPx()
+                    translationY = (windowSize.height / 2) - (size.height / 2)
+                }
+                .clip(RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp))
+                .background(FloconTheme.colorPalette.secondary)
+                .clickable(onClick = { expanded = !expanded }),
+        ) {
+            FloconIcon(
+                imageVector = Icons.Outlined.ChevronRight,
+                tint = Color.LightGray,
+                modifier = Modifier.rotate(rotate),
+            )
         }
     }
 }
 
-private fun EntryProviderBuilder<in SubScreen>.menus() {
+private fun EntryProviderScope<in SubScreen>.menus() {
     entry<SubScreen.Network> { NetworkScreen() }
     entry<SubScreen.Dashboard> { DashboardScreen() }
     entry<SubScreen.Analytics> { AnalyticsScreen() }

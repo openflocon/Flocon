@@ -41,6 +41,8 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
 
+            implementation(libs.androidx.lifecycle.nav3)
+
             api(libs.kotlinx.serialization.core)
         }
     }
