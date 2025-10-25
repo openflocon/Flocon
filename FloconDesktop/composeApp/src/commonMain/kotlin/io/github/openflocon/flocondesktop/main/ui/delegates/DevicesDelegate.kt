@@ -6,6 +6,7 @@ import io.github.openflocon.domain.device.usecase.DeleteDeviceUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.domain.device.usecase.ObserveDevicesUseCase
@@ -36,6 +37,7 @@ class DevicesDelegate(
     private val deleteDeviceUseCase: DeleteDeviceUseCase,
     private val deleteDeviceApplicationUseCase: DeleteDeviceApplicationUseCase,
     private val closeableDelegate: CloseableDelegate,
+    private val observeCurrentDeviceCapabilitiesUseCase: ObserveCurrentDeviceCapabilitiesUseCase,
 ) : CloseableScoped by closeableDelegate {
 
     val devicesState: StateFlow<DevicesStateUiModel> =
@@ -43,7 +45,8 @@ class DevicesDelegate(
             observeDevicesUseCase(),
             observeCurrentDeviceIdUseCase(),
             observeActiveDevicesUseCase(),
-        ) { devices, currentDeviceId, activeDevices ->
+            observeCurrentDeviceCapabilitiesUseCase(),
+        ) { devices, currentDeviceId, activeDevices, currentDeviceCapabilities ->
             if (devices.isEmpty()) {
                 DevicesStateUiModel.Empty
             } else {
@@ -57,7 +60,8 @@ class DevicesDelegate(
                             activeDevices = activeDevices
                         ),
                         deviceSelected = firstDevice.mapToUi(
-                            activeDevices = activeDevices
+                            activeDevices = activeDevices,
+                            currentDeviceCapabilities = currentDeviceCapabilities,
                         ),
                     )
                 } else {
@@ -67,7 +71,8 @@ class DevicesDelegate(
                             activeDevices = activeDevices
                         ),
                         deviceSelected = current.mapToUi(
-                            activeDevices = activeDevices
+                            activeDevices = activeDevices,
+                            currentDeviceCapabilities = currentDeviceCapabilities,
                         ),
                     )
                 }

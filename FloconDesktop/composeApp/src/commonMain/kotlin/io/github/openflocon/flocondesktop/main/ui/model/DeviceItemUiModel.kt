@@ -8,6 +8,9 @@ data class DeviceItemUiModel(
     val deviceName: String,
     val isActive: Boolean,
     val platform: Platform,
+    val canScreenshot: Boolean,
+    val canScreenRecord: Boolean,
+    val canRestart: Boolean,
 ) {
     enum class Platform {
         Android,
@@ -22,4 +25,7 @@ fun previewDeviceItemUiModel() = DeviceItemUiModel(
     deviceName = "deviceName",
     isActive = true,
     platform = DeviceItemUiModel.Platform.Android,
+    canScreenshot = true,
+    canScreenRecord = true,
+    canRestart = true,
 )

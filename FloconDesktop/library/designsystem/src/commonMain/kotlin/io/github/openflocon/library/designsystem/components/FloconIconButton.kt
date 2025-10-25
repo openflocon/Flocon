@@ -136,6 +136,7 @@ fun FloconIconToggleButton(
                     shape = shape
                 )
                 .toggleable(
+                    enabled = enabled,
                     value = value,
                     onValueChange = onValueChange
                 )

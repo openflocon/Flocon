@@ -53,6 +53,14 @@ class DevicesRepositoryImpl(
             localDevicesDataSource.getDeviceById(it)
         }
 
+    override fun observeCurrentDevice(): Flow<DeviceDomainModel?> =
+        localCurrentDeviceDataSource.currentDeviceId.flatMapLatest {
+            if(it == null)
+                flowOf(null)
+            else
+               localDevicesDataSource.observeDeviceById(it)
+        }
+
     // returns new if new device
     override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel =
         withContext(dispatcherProvider.data) {

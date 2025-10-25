@@ -48,4 +48,5 @@ interface DevicesRepository {
     )
 
     suspend fun clear()
+    fun observeCurrentDevice(): Flow<DeviceDomainModel?>
 }

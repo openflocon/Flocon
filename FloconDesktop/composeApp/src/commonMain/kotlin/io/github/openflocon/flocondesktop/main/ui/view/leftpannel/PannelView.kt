@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -26,7 +27,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -38,6 +41,7 @@ fun PanelView(
     text: String,
     isSelected: Boolean,
     expanded: Boolean,
+    isEnabled: Boolean, // just make it gray but still selectable
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -56,7 +60,7 @@ fun PanelView(
         targetValue = when {
             isSelected -> FloconTheme.colorPalette.primary
             hovered -> FloconTheme.colorPalette.secondary
-            else -> FloconTheme.colorPalette.surface
+            else -> FloconTheme.colorPalette.surface.copy(alpha = 0f)
         },
         label = "color",
     )
@@ -68,11 +72,20 @@ fun PanelView(
         }
     )
 
+    val lineAlpha by animateFloatAsState(
+        if (isEnabled.not() && isSelected.not()) {
+            0.3f
+        } else 1f
+    )
+
     Row(
         modifier = modifier
             .height(28.dp)
             .shadow(elevation = shadow, shape = shape, clip = true, ambientColor = color, spotColor = color)
             .background(color)
+            .graphicsLayer {
+                alpha = lineAlpha
+            }
             .clickable(onClick = onClick, interactionSource = interactionSource, indication = null)
             .padding(horizontal = 12.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -110,6 +123,7 @@ private fun PannelViewPreview() {
             isSelected = false,
             onClick = {},
             expanded = false,
+            isEnabled = true,
         )
     }
 }
@@ -124,6 +138,23 @@ private fun PannelViewPreview_Selected() {
             isSelected = true,
             onClick = {},
             expanded = false,
+            isEnabled = true,
+        )
+    }
+}
+
+
+@Composable
+@Preview
+private fun PannelViewPreview_Disabled() {
+    FloconTheme {
+        PanelView(
+            icon = Icons.Outlined.Settings,
+            text = "text",
+            isSelected = false,
+            onClick = {},
+            expanded = false,
+            isEnabled = false,
         )
     }
 }

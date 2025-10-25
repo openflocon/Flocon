@@ -92,6 +92,7 @@ private fun ColumnScope.MenuItems(
             text = item.text,
             expanded = expanded,
             isSelected = item.isSelected,
+            isEnabled = item.isEnabled,
             onClick = { onClickItem(item) },
         )
     }

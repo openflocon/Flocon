@@ -5,3 +5,15 @@ data class DeviceDomainModel(
     val deviceName: String,
     val platform: String,
 )
+
+fun DeviceDomainModel.isPlatformAndroid(): Boolean {
+    return platform == "android"
+}
+
+fun DeviceDomainModel.isPlatformDesktop(): Boolean {
+    return platform == "desktop"
+}
+
+fun DeviceDomainModel.isPlatformIos(): Boolean {
+    return platform == "ios"
+}

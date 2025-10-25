@@ -7,4 +7,5 @@ data class LeftPanelItem(
     val icon: ImageVector,
     val text: String,
     val isSelected: Boolean,
+    val isEnabled: Boolean,
 )
