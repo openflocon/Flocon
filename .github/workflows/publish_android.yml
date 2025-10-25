@@ -18,7 +18,7 @@ jobs:
           java-version: 21
       - name: Check release # be sure op and no-op versions are building
         working-directory: FloconAndroid
-        run: ./gradlew :app:assemble
+        run: ./gradlew :sample-android-only:assemble
       - name: Publish to MavenCentral
         run: |
             ./gradlew \
