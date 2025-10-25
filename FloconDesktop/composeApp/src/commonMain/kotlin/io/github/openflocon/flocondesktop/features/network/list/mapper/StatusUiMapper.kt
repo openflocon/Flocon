@@ -36,7 +36,7 @@ fun getStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = ne
 
 fun toNetworkStatusUi(code: Int): NetworkStatusUi = NetworkStatusUi(
     text = code.toString(),
-    status = if (code >= 200 && code < 300) NetworkStatusUi.Status.SUCCESS else NetworkStatusUi.Status.ERROR,
+    status = if (code >= 200 && code < 400) NetworkStatusUi.Status.SUCCESS else NetworkStatusUi.Status.ERROR,
 )
 
 fun toGraphQlNetworkStatusUi(isSuccess: Boolean): NetworkStatusUi = NetworkStatusUi(
