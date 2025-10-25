@@ -7,9 +7,9 @@ Inspired from [Flipper](https://github.com/facebook/flipper) by Meta, while leve
 It allows developers to connect a Kotlin Multiplatform or Android app to their computer and launch a **desktop interface** that can **observe, inspect, and interact with the running app** in real time — across shared Kotlin code and platform-specific implementations.
 
 Works on : 
-- Android
-- Desktop (jvm)
-- iOS (only simulator for now)
+- `Android`
+- `Desktop (jvm)`
+- `iOS` (only simulator for now)
 
 `Flocon Desktop is a Kotlin Multiplatform project structured like an Android app, using ViewModels, Room, Ktor, and Coroutines — designed to demonstrate how Kotlin Multiplatform can power both mobile and desktop debugging.`  
 
