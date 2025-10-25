@@ -126,13 +126,13 @@ android {
             // just a dummy keystore to be able to test the release build
             keyAlias = "release"
             keyPassword = "release"
-            storeFile = file("../app/release.jks")
+            storeFile = file("../sample-android-only/release.jks")
             storePassword = "release"
         }
         register("release") {
             keyAlias = "release"
             keyPassword = "release"
-            storeFile = file("../app/release.jks")
+            storeFile = file("../sample-android-only/release.jks")
             storePassword = "release"
         }
     }
