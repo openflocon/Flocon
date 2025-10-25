@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/grpc/grpc-interceptor-base" />
             <option value="$PROJECT_DIR$/grpc/grpc-interceptor-lite" />
             <option value="$PROJECT_DIR$/ktor-interceptor" />
+            <option value="$PROJECT_DIR$/ktor-interceptor-no-op" />
             <option value="$PROJECT_DIR$/okhttp-interceptor" />
             <option value="$PROJECT_DIR$/okhttp-interceptor-no-op" />
             <option value="$PROJECT_DIR$/sample-android-only" />

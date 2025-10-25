@@ -82,7 +82,8 @@ dependencies {
         debugImplementation(project(":okhttp-interceptor"))
         releaseImplementation(project(":okhttp-interceptor-no-op"))
         implementation(project(":grpc:grpc-interceptor-lite"))
-        implementation(project(":ktor-interceptor"))
+        debugImplementation(project(":ktor-interceptor"))
+        releaseImplementation(project(":ktor-interceptor-no-op"))
     }
 
 
