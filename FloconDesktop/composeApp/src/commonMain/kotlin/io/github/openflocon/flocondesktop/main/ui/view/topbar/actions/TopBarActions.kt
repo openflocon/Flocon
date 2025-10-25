@@ -34,7 +34,7 @@ internal fun TopBarActions(
             imageVector = Icons.Outlined.RestartAlt,
             contentDescription = "restart",
             onClicked = onRestartClicked,
-            isEnabled = devicesState.deviceSelected?.isActive == true,
+            isEnabled = devicesState.deviceSelected?.canRestart == true && devicesState.deviceSelected?.isActive == true,
         )
         TopBarButton(
             active = recordState == RecordVideoStateUiModel.Recording,
@@ -44,14 +44,14 @@ internal fun TopBarActions(
             },
             contentDescription = "Record",
             onClicked = onRecordClicked,
-            isEnabled = devicesState.deviceSelected?.isActive == true,
+            isEnabled = devicesState.deviceSelected?.canScreenRecord == true && devicesState.deviceSelected?.isActive == true,
         )
         TopBarButton(
             active = false,
             imageVector = Icons.Outlined.CameraAlt,
             contentDescription = "screenshot",
             onClicked = onTakeScreenshotClicked,
-            isEnabled = devicesState.deviceSelected?.isActive == true,
+            isEnabled = devicesState.deviceSelected?.canScreenshot == true && devicesState.deviceSelected?.isActive == true,
         )
     }
 }
