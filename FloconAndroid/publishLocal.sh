@@ -7,7 +7,8 @@
   :grpc:grpc-interceptor-lite:assembleRelease \
   :okhttp-interceptor:assembleRelease \
   :okhttp-interceptor-no-op:assembleRelease \
-  :ktor-interceptor:assembleRelease
+  :ktor-interceptor:assembleRelease \
+  :ktor-interceptor-no-op:assembleRelease
 
 ./gradlew \
   :flocon-base:publishToMavenLocal \
@@ -19,4 +20,5 @@
   :okhttp-interceptor:publishToMavenLocal \
   :okhttp-interceptor-no-op:publishToMavenLocal \
   :ktor-interceptor:publishToMavenLocal \
+  :ktor-interceptor-no-op:publishToMavenLocal \
   -Psigning.required=false

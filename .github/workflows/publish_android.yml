@@ -31,6 +31,7 @@ jobs:
               :grpc:grpc-interceptor-lite:publishToMavenCentral \
               :grpc:grpc-interceptor:publishToMavenCentral \
               :ktor-interceptor:publishToMavenCentral \
+              :ktor-interceptor-no-op:publishToMavenCentral \
               --no-configuration-cache
         working-directory: FloconAndroid
         env:
