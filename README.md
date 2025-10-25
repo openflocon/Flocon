@@ -1,20 +1,30 @@
 <img width="100" height="100" alt="flocon_small" src="https://github.com/user-attachments/assets/27143843-fce2-4c74-96d8-a0b35a8fccde" />     
 
-**Flocon** is an advanced debugging and inspection tool for Android applications, inspired by [Flipper](https://github.com/facebook/flipper) by Meta.
+**Flocon** is an advanced debugging and inspection tool built with **Kotlin Multiplatform (KMP)**, designed to work seamlessly across Android and desktop environments.  
+It draws inspiration from [Flipper](https://github.com/facebook/flipper) by Meta, while leveraging **modern Kotlin multiplatform architecture** for networking, databases, analytics, and UI data visualization.
 
-It allows developers to connect an Android device to their computer and launch a desktop interface that can **observe, inspect, and interact with the running mobile app** in real time.
+It allows developers to connect a Kotlin Multiplatform or Android app to their computer and launch a **desktop interface** that can **observe, inspect, and interact with the running app** in real time — across shared Kotlin code and platform-specific implementations.
 
-`Flocon Desktop is a Kotlin Multiplatform project structured similarly to an Android app, using ViewModels, Room, Ktor, and Coroutines. The project is open to contributions — feel free to submit a pull request!`
+Works on : 
+- Android
+- Desktop (jvm)
+- iOS (only simulator for now)
+
+`Flocon Desktop is a Kotlin Multiplatform project structured like an Android app, using ViewModels, Room, Ktor, and Coroutines — designed to demonstrate how Kotlin Multiplatform can power both mobile and desktop debugging.`  
+
+`The project is open to contributions — feel free to submit a pull request!`
 
 With Flocon, you gain deep access to critical app internals — such as
-- network requests (http, images, grpc, graphql, websockets)
+- network requests (HTTP, gRPC, GraphQL, WebSockets)
 - mock network calls
 - local storage (sharedpref, databases, app files)
 - analytics events (and custom events)
 - debug menu displayed on the desktop
 - **deeplinks**
 
-and more — without needing root access or tedious ADB commands. It’s designed to accelerate development, QA, and debugging workflows.
+and more — without needing root access or tedious ADB commands.
+
+It’s designed for modern multiplatform development, accelerating debugging, QA, and iteration cycles.
 
 <img width="1294" height="837" alt="Screenshot 2025-09-12 at 15 39 45" src="https://github.com/user-attachments/assets/3d585adb-6441-4cdb-ad25-69d771ad4ff6" />
 
@@ -22,13 +32,13 @@ and more — without needing root access or tedious ADB commands. It’s designe
 
 ## 🚀 What Can Flocon Do?
 
-Once your Android device is connected and your app includes the Flocon SDK, you can use the desktop companion app to access the following features:
+Once your device (Android / iOS / Desktop) is connected and your app includes the Flocon SDK, you can use the desktop companion app to access the following features:
 
 ---
 
 🛠️ Getting Started
 
-`This Android library is lightweight, contributing just 140KB to the overall app size`
+`This library is lightweight, contributing just 140KB to the overall app size`
 
 in your module .kts
 
@@ -40,24 +50,26 @@ releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
 
 in your `Application.kt`
 ```kotlin
+// android initialization
 Flocon.initialize(this)
-```
 
-or in your .toml
+// desktop / ios
+Flocon.initialize()
+```
 
 ```toml
 [versions]
 flocon = "LASTEST_VERSION"
 
 [libraries]
-flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
+flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
 ```
 
 Download & install the last `Desktop client`
 
 https://github.com/openflocon/Flocon/releases
 
-### 📡 Network Request Inspector
+### 📡 Network Request Inspector (kotlin multi platform compatible)
 
 <img width="1291" height="834" alt="Screenshot 2025-09-12 at 15 39 55" src="https://github.com/user-attachments/assets/48f86fdf-f552-4f68-abe2-8d61229ccb27" />
 
@@ -76,7 +88,7 @@ For each request, you can inspect:
 
 This feature is invaluable for diagnosing backend issues, debugging unexpected API failures, and verifying request payloads and authentication headers.
 
-#### 🎭 HTTP Request Mocking
+#### 🎭 HTTP Request Mocking (kotlin multi platform compatible)
 
 <img width="1293" height="836" alt="Screenshot 2025-09-12 at 15 40 38" src="https://github.com/user-attachments/assets/3a529e3f-488e-4dba-aee1-fc6f70efcb08" />
 
@@ -89,7 +101,7 @@ With this feature, you can:
 - Create a new mock from an existing request, then test your app with some differences inside the prefious body
 - Reduce dependencies: Develop and test features without needing a stable internet connection or a complete backend environment.
 
-#### With OkHttp
+#### With OkHttp (android only)
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-okhttp-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-okhttp-interceptor)
 
@@ -105,7 +117,7 @@ val okHttpClient = OkHttpClient()
             .build()
 ```
 
-#### With Ktor 
+#### With Ktor (kotlin multi platform compatible)
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-ktor-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-ktor-interceptor)
 
@@ -113,10 +125,11 @@ tested with ktor `3.2.3`
 
 ```
 debugImplementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
+releaseImplementation("io.github.openflocon:flocon-ktor-interceptor-no-op:LAST_VERSION")
 ```
 
 ```kotlin
-val httpClient = HttpClient(OkHttp) { // works with all clients, not only OkHttp
+val httpClient = HttpClient(YourClient) { 
     install(FloconKtorPlugin)
     ...
 }
@@ -143,7 +156,7 @@ With this feature, you can:
 - Verify the exact content of messages exchanged  
 - Diagnose disconnection or synchronization issues  
 
-#### With OkHttp3
+#### With OkHttp3 (android only)
 
 Flocon-Okhttp-Interceptor has built-in websocket methods (⚠️ it's not possible through interceptors ⚠️) 
 
@@ -168,7 +181,7 @@ webSocket = client.newWebSocket(
 }
 ```
 
-#### 🧰 Manually 
+#### 🧰 Manually (kotlin multi platform compatible)
 
 If you are using other websockets libs than okhttp, you can easily forward events to FloconWebSocket
 
@@ -180,7 +193,7 @@ webSocket.send(message)
 
 floconLogWebSocketEvent(
     FloconWebSocketEvent(
-        websocketUrl = "ws://..."
+        websocketUrl = "ws://...",
         event = FloconWebSocketEvent.Event.SendMessage,
         message = message,
     )
@@ -245,10 +258,11 @@ Whether you're working on UI/UX, performance optimization, or just debugging a m
 Usage with coil
 
 ```kotlin
-// just add your okhttp client (with the flipper interceptor)
+// just add your okhttp client (with the flocon interceptor)
 SingletonImageLoader.setSafe {
         ImageLoader.Builder(context = context)
             .components {
+                // works also for ktor network fetcher
                 add(
                     coil3.network.okhttp.OkHttpNetworkFetcherFactory(
                         callFactory = {
@@ -280,7 +294,7 @@ Each event includes:
 This is especially useful for QA teams and product analysts to validate that the right events are triggered at the right time, with the correct payloads.
 
 ```kotlin
-Flocon.analytics("firebase").logEvents(
+floconAnalytics("firebase").logEvents(
      AnalyticsEvent(
          eventName = "clicked user",
          "userId" analyticsProperty "1024",
@@ -297,7 +311,7 @@ Flocon.analytics("firebase").logEvents(
 
 ---
 
-### 🗝 SharedPreferences Explorer & Editor
+### 🗝 SharedPreferences Explorer & Editor (android only)
 
 <img width="1295" height="836" alt="Screenshot 2025-09-12 at 15 41 04" src="https://github.com/user-attachments/assets/03c3278b-dc2f-4943-ba17-b18030e204ea" />
 
@@ -314,7 +328,7 @@ This is an extremely powerful way to test different user scenarios or simulate a
 
 ---
 
-### 🧩 Database 
+### 🧩 Database (kotlin multi platform compatible)
 
 <img width="1726" height="1080" alt="Screenshot 2025-10-14 at 23 40 58" src="https://github.com/user-attachments/assets/47360e06-43af-4713-b0ed-a6728a6b49ad" />
 
@@ -334,9 +348,45 @@ Features include:
 
 This makes it easy to debug persistent storage issues, verify migrations, or test app behavior with specific data sets — all without leaving your IDE.
 
+On android there's nothing to add, but on a multi platform project, you need to provide the database's path to flocon
+
+```kotlin
+// on a desktop project
+val dbFile = File(System.getProperty("java.io.tmpdir"), "flocon_food_database.db")
+
+floconRegisterDatabase(
+    displayName = "food",
+    absolutePath = dbFile.absolutePath,
+)
+
+return Room.databaseBuilder<FoodDatabase>(
+        name = dbFile.absolutePath,
+    )
+    .setDriver(BundledSQLiteDriver())
+    .setQueryCoroutineContext(Dispatchers.IO)
+    .build()
+```
+
+
+```kotlin
+// on an ios project
+val dbFile = "${documentDirectory()}/dog_database.db"
+
+floconRegisterDatabase(
+    absolutePath = dbFile, 
+    displayName = "Dog Database"
+)
+
+return Room.databaseBuilder<DogDatabase>(
+        name = dbFile,
+    )
+    .setDriver(NativeSQLiteDriver())
+    .build()
+```
+
 ---
 
-### 📁 File Explorer
+### 📁 File Explorer (android only)
 
 <img width="1295" height="838" alt="Screenshot 2025-09-12 at 15 41 20" src="https://github.com/user-attachments/assets/1c22c813-20c4-4e34-bcf8-6cc511deab21" />
 
@@ -400,7 +450,7 @@ userFlow.collect { user ->
 
 ---
 
-### 📋 Configurable Data Tables
+### 📋 Configurable Data Tables (kotlin multi platform compatible)
 
 <img width="1196" height="768" alt="tables" src="https://github.com/user-attachments/assets/ff3090fa-8f37-4138-a492-20b9159314af" />
 
@@ -417,7 +467,7 @@ Tables are interactive, scrollable, and they give developers and testers a strai
 
 To create a dynamic row :
 ```kotlin
-Flocon.table("analytics").log(
+floconTable("analytics").log(
    "name" toParam "nameValue",
    "value1" toParam "value1Value",
    "value2" toParam "value2Value",
@@ -426,7 +476,7 @@ Flocon.table("analytics").log(
 
 ---
 
-### 🔗 Deeplink Launcher
+### 🔗 Deeplink Launcher (android only)
 
 <img width="1293" height="836" alt="Screenshot 2025-09-12 at 15 41 39" src="https://github.com/user-attachments/assets/eeaa30fb-6567-437a-96a4-dff44c6c6a54" />
 
@@ -511,12 +561,15 @@ Flocon is still evolving, next features :
 
 ## 🧰 Requirements
 
+### for android
 - An Android device with USB debugging enabled
 - Android Studio or SDK tools installed
 - ADB (Android Debug Bridge) accessible from your system path
+
+### for all platforms
 - Flocon Desktop app (JVM-based)
-- Flocon SDK integrated into your Android app
-- At least `kotlin 2.0.0` in your Android app
+- Flocon SDK integrated into your app
+- At least `kotlin 2.0.0` in your app
 - Be aligned between the mobile library version & the desktop app version
 
 ---
