@@ -12,7 +12,7 @@ actual object Flocon : FloconApp() {
     // This is a no-op implementation
     @Suppress("UNUSED_PARAMETER")
     fun initialize(context: Context) {
-        initialize()
+        initializeFlocon()
     }
 }
 
