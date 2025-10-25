@@ -11,10 +11,6 @@ Works on :
 - `Desktop (jvm)`
 - `iOS` (only simulator for now)
 
-`Flocon Desktop is a Kotlin Multiplatform project structured like an Android app, using ViewModels, Room, Ktor, and Coroutines — designed to demonstrate how Kotlin Multiplatform can power both mobile and desktop debugging.`  
-
-`The project is open to contributions — feel free to submit a pull request!`
-
 With Flocon, you gain deep access to critical app internals — such as
 - network requests (HTTP, gRPC, GraphQL, WebSockets)
 - mock network calls
@@ -657,6 +653,10 @@ That was all the inspiration I needed.
 No brainstorming, no hesitation — just the perfect name at the perfect time.
 
 <img width="540" height="501" alt="Flocon - Golden Retriever" src="https://github.com/user-attachments/assets/6ea7acd9-abea-4062-b375-17cb8337ce11" />
+
+## Contributions
+
+`The project is open to contributions — feel free to submit a pull request!`
 
 ## License
 
