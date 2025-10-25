@@ -19,5 +19,4 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
 }
 
 fun HttpClientConfig<*>.floconInterceptor() {
-    install(FloconKtorPlugin)
 }
