@@ -17,11 +17,25 @@ class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : Flo
     override val stack: SnapshotStateList<FloconRoute> = _stack
 
     override fun navigate(route: FloconRoute) {
-        _stack.add(route)
+        if (route is PanelRoute) {
+            val index = _stack.indexOfFirst { it is PanelRoute }
+
+            if (index != -1) {
+                _stack[index] = route
+            } else {
+                _stack.add(route)
+            }
+        } else {
+            _stack.add(route)
+        }
     }
 
     override fun back(count: Int) {
         repeat(count) { _stack.removeLast() }
+    }
+
+    fun menu(route: FloconRoute) {
+        _stack[0] = route
     }
 
 }
