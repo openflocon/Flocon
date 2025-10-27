@@ -86,3 +86,18 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
         canRestart = true,
     ),
 )
+
+fun previewAppsStateUiModel(): AppsStateUiModel = AppsStateUiModel.WithApps(
+    apps = listOf(
+        DeviceAppUiModel(
+            name = "appName1",
+            packageName = "packageName",
+            iconEncoded = null
+        )
+    ),
+    appSelected = DeviceAppUiModel(
+        name = "appName1",
+        packageName = "packageName",
+        iconEncoded = null
+    )
+)

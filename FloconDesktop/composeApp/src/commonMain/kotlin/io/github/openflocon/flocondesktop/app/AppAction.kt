@@ -1,3 +1,9 @@
 package io.github.openflocon.flocondesktop.app
 
-internal sealed interface AppAction
+import io.github.openflocon.flocondesktop.menu.ui.model.SubScreen
+
+internal sealed interface AppAction {
+
+    data class SelectMenu(val menu: SubScreen) : AppAction
+
+}

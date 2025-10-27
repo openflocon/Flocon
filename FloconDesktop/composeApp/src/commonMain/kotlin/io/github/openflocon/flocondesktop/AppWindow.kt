@@ -5,10 +5,10 @@ package io.github.openflocon.flocondesktop
 import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.DialogSceneStrategy
@@ -20,17 +20,21 @@ import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.domainModule
 import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUseCase
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
+import io.github.openflocon.flocondesktop.app.AppAction
+import io.github.openflocon.flocondesktop.app.AppUiState
 import io.github.openflocon.flocondesktop.app.AppViewModel
 import io.github.openflocon.flocondesktop.app.di.appModule
 import io.github.openflocon.flocondesktop.common.di.commonModule
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
 import io.github.openflocon.flocondesktop.core.di.coreModule
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
 import io.github.openflocon.flocondesktop.features.featuresModule
+import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.network.networkRoutes
-import io.github.openflocon.flocondesktop.menu.MainRoutes
+import io.github.openflocon.flocondesktop.menu.MenuSceneStrategy
 import io.github.openflocon.flocondesktop.menu.di.mainModule
-import io.github.openflocon.flocondesktop.menu.menuRoutes
+import io.github.openflocon.flocondesktop.menu.ui.buildLeftPanelState
+import io.github.openflocon.flocondesktop.menu.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.menu.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -64,7 +68,7 @@ fun App() {
 //                    scope<MainRoutes.Sub> {
 //                        scoped { MainFloconNavigationState(MainRoutes.Main) }
 //                    }
-                    single { MainFloconNavigationState(MainRoutes.Main) }
+                    single { MainFloconNavigationState(NetworkRoutes.Main) }
                     singleOf(::AdbRepositoryImpl) bind AdbRepository::class
                 },
             )
@@ -80,9 +84,12 @@ fun App() {
             fontSizeMultiplier = fontSizeMultiplier
         ) {
             val viewModel: AppViewModel = koinViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
             Content(
+                uiState = uiState,
                 navigationState = viewModel.navigationState,
+                onAction = viewModel::onAction
             )
         }
 //        }
@@ -91,26 +98,36 @@ fun App() {
 
 @Composable
 private fun Content(
-    navigationState: MainFloconNavigationState
+    uiState: AppUiState,
+    navigationState: MainFloconNavigationState,
+    onAction: (AppAction) -> Unit
 ) {
-    Box(
+    // TODO Redo
+    val menuState by produceState(
+        buildLeftPanelState(SubScreen.Network),
+        uiState.contentState.current
+    ) {
+        value = buildLeftPanelState(uiState.contentState.current)
+    }
+
+    FloconNavigation(
+        navigationState = navigationState,
+        sceneStrategy = PanelSceneStrategy()
+            .then(WindowSceneStrategy())
+            .then(DialogSceneStrategy())
+            .then(MenuSceneStrategy {
+                LeftPanelView(
+                    state = menuState,
+                    expanded = it,
+                    onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) }
+                )
+            })
+            .then(SinglePaneSceneStrategy()),
         modifier = Modifier
             .fillMaxSize()
+            .background(FloconTheme.colorPalette.surface)
     ) {
-        FloconNavigation(
-            navigationState = navigationState,
-            sceneStrategy = PanelSceneStrategy()
-                .then(WindowSceneStrategy())
-                .then(DialogSceneStrategy())
-                .then(SinglePaneSceneStrategy()),
-            modifier = Modifier
-                .matchParentSize()
-                .background(FloconTheme.colorPalette.surface)
-        ) {
-            menuRoutes()
-            networkRoutes()
-            analyticsRoutes()
-        }
-        FeedbackDisplayerView()
+        networkRoutes()
+        analyticsRoutes()
     }
 }

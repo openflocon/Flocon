@@ -4,9 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Pin
-import androidx.compose.material.icons.sharp.Pin
-import androidx.compose.material.icons.sharp.PinInvoke
 import androidx.compose.material.icons.sharp.PushPin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -88,6 +85,8 @@ data class PanelScene(
 
 class PanelSceneStrategy : SceneStrategy<FloconRoute> {
 
+    var currentScene: PanelScene? = null
+
     override fun SceneStrategyScope<FloconRoute>.calculateScene(
         entries: List<NavEntry<FloconRoute>>
     ): Scene<FloconRoute>? {
@@ -95,15 +94,26 @@ class PanelSceneStrategy : SceneStrategy<FloconRoute> {
         val properties = lastEntry.metadata[PANEL_KEY] ?: return null
 
         if (properties is PaneProperties) {
-            return PanelScene(
+            return currentScene?.copy(
+                key = lastEntry.contentKey,
+                previousEntries = entries.dropLast(1),
+                overlaidEntries = entries.dropLast(1),
+                entry = lastEntry,
+                properties = properties,
+                onPin = lastEntry.metadata[ON_PIN] as? OnPin
+            ) ?: PanelScene(
                 key = lastEntry.contentKey,
                 previousEntries = entries.dropLast(1),
                 overlaidEntries = entries.dropLast(1),
                 entry = lastEntry,
                 properties = properties,
                 onPin = lastEntry.metadata[ON_PIN] as? OnPin,
-                onBack = { onBack() }
+                onBack = {
+                    currentScene = null
+                    onBack()
+                }
             )
+                .also { currentScene = it }
         }
 
         return null

@@ -3,19 +3,32 @@ package io.github.openflocon.flocondesktop.features.network
 import androidx.navigation3.runtime.EntryProviderScope
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailScreen
+import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
+import io.github.openflocon.flocondesktop.menu.MenuScene
+import io.github.openflocon.flocondesktop.menu.MenuSceneStrategy
+import io.github.openflocon.flocondesktop.menu.ui.model.SubScreen
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.PanelRoute
 import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 
-internal sealed interface NetworkRoutes : FloconRoute {
+internal sealed interface NetworkRoutes {
 
     @Serializable
-    data class Panel(val requestId: String) : FloconRoute
+    data object Main : PanelRoute
+
+    @Serializable
+    data class Panel(val requestId: String) : PanelRoute
 
 }
 
 fun EntryProviderScope<FloconRoute>.networkRoutes() {
+    entry<NetworkRoutes.Main>(
+        metadata = MenuSceneStrategy.menu(SubScreen.Network)
+    ) {
+        NetworkScreen()
+    }
     entry<NetworkRoutes.Panel>(
         metadata = PanelSceneStrategy.panel(
             pinnable = true,
