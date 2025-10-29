@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.features.analytics
 
 import androidx.navigation3.runtime.EntryProviderScope
+import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.features.analytics.view.AnalyticsScreen
 import io.github.openflocon.flocondesktop.menu.MenuSceneStrategy
-import io.github.openflocon.flocondesktop.menu.ui.model.SubScreen
 import io.github.openflocon.navigation.FloconRoute
 import kotlinx.serialization.Serializable
 

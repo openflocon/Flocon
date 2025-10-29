@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.app
 
 import androidx.compose.runtime.Immutable
-import io.github.openflocon.flocondesktop.menu.ui.model.AppsStateUiModel
-import io.github.openflocon.flocondesktop.menu.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.menu.ui.model.RecordVideoStateUiModel
-import io.github.openflocon.flocondesktop.menu.ui.model.previewAppsStateUiModel
-import io.github.openflocon.flocondesktop.menu.ui.model.previewDevicesStateUiModel
+import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
+import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
+import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
+import io.github.openflocon.flocondesktop.app.ui.model.previewAppsStateUiModel
+import io.github.openflocon.flocondesktop.app.ui.model.previewDevicesStateUiModel
 
 @Immutable
 data class AppUiState(
