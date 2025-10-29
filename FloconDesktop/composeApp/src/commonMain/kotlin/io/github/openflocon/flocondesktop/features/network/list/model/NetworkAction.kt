@@ -21,7 +21,6 @@ sealed interface NetworkAction {
     data class CreateMock(val item: NetworkItemViewState) : NetworkAction
 
     data object OpenMocks : NetworkAction
-    data object CloseMocks : NetworkAction
 
     data object OpenWebsocketMocks : NetworkAction
 
@@ -46,6 +45,8 @@ sealed interface NetworkAction {
 
     data class InvertList(val value: Boolean) : NetworkAction
 
+    data class Pinned(val value: Boolean) : NetworkAction
+
     data class ToggleAutoScroll(val value: Boolean) : NetworkAction
 
     data object ClearOldSession : NetworkAction
@@ -63,6 +64,7 @@ sealed interface NetworkAction {
         data class Request(val item: NetworkDetailViewState) : OpenBodyExternally
         data class Response(val item: NetworkDetailViewState.Response.Success) : OpenBodyExternally
     }
+
     sealed interface HeaderAction : NetworkAction {
         data class ClickOnSort(
             val type: NetworkColumnsTypeUiModel,
