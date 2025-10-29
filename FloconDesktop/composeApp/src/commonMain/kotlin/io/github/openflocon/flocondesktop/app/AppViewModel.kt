@@ -11,9 +11,17 @@ import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.flocondesktop.app.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
+import io.github.openflocon.flocondesktop.features.dashboard.DashboardRoutes
+import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
+import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
+import io.github.openflocon.flocondesktop.features.files.FilesRoutes
+import io.github.openflocon.flocondesktop.features.images.ImageRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
+import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesRoutes
+import io.github.openflocon.flocondesktop.features.table.TableRoutes
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.delay
@@ -94,15 +102,15 @@ internal class AppViewModel(
         navigationState.menu(
             when (action.menu) {
                 SubScreen.Analytics -> AnalyticsRoutes.Main
-                SubScreen.Dashboard -> TODO()
-                SubScreen.Database -> TODO()
-                SubScreen.Deeplinks -> TODO()
-                SubScreen.Files -> TODO()
-                SubScreen.Images -> TODO()
+                SubScreen.Dashboard -> DashboardRoutes.Main
+                SubScreen.Database -> DatabaseRoutes.Main
+                SubScreen.Deeplinks -> DeeplinkRoutes.Main
+                SubScreen.Files -> FilesRoutes.Main
+                SubScreen.Images -> ImageRoutes.Main
                 SubScreen.Network -> NetworkRoutes.Main
-                SubScreen.Settings -> TODO()
-                SubScreen.SharedPreferences -> TODO()
-                SubScreen.Tables -> TODO()
+                SubScreen.Settings -> SettingsRoutes.Main
+                SubScreen.SharedPreferences -> SharedPreferencesRoutes.Main
+                SubScreen.Tables -> TableRoutes.Main
             }
         )
     }
