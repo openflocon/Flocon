@@ -37,7 +37,6 @@ import androidx.navigation3.scene.SceneStrategyScope
 import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
-import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
@@ -51,7 +50,6 @@ data class MenuScene(
     override val entries: List<NavEntry<FloconRoute>>,
     override val previousEntries: List<NavEntry<FloconRoute>>,
     val entry: NavEntry<FloconRoute>,
-    val screen: SubScreen,
     val menuContent: @Composable (expanded: Boolean) -> Unit
 ) : Scene<FloconRoute> {
     override val key: Any
@@ -134,14 +132,12 @@ class MenuSceneStrategy(
 
     override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? {
         val entry = entries.lastOrNull() ?: return null
-        val menu = entry.metadata[MENU_KEY] ?: return null
 
-        if (menu is SubScreen) {
+        if (entry.metadata.containsKey(MENU_KEY)) {
             return MenuScene(
                 entries = listOf(entry),
                 previousEntries = entries.dropLast(1),
                 entry = entry,
-                screen = menu,
                 menuContent = menuContent
             )
         }
@@ -152,7 +148,7 @@ class MenuSceneStrategy(
     companion object {
         private const val MENU_KEY = "menu_key"
 
-        fun menu(menu: SubScreen) = mapOf(MENU_KEY to menu)
+        fun menu() = mapOf(MENU_KEY to MENU_KEY)
 
     }
 

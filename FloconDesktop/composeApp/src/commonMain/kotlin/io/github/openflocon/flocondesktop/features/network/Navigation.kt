@@ -3,7 +3,6 @@ package io.github.openflocon.flocondesktop.features.network
 import androidx.navigation3.runtime.EntryProviderScope
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
-import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailScreen
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
 import io.github.openflocon.navigation.FloconRoute
@@ -24,7 +23,7 @@ internal sealed interface NetworkRoutes {
 
 fun EntryProviderScope<FloconRoute>.networkRoutes() {
     entry<NetworkRoutes.Main>(
-        metadata = MenuSceneStrategy.menu(SubScreen.Network)
+        metadata = MenuSceneStrategy.menu()
     ) {
         NetworkScreen()
     }
