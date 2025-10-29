@@ -28,6 +28,7 @@ fun <T> FloconAnimateVisibility(
     AnimatedContent(
         targetState = state,
         transitionSpec = transitionSpec,
+        contentKey = { it != null },
         modifier = modifier
     ) {
         if (it != null) {
