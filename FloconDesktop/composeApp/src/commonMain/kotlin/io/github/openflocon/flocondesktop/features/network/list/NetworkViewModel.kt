@@ -94,7 +94,6 @@ class NetworkViewModel(
         ContentUiState(
             selectedRequestId = null,
             detailJsons = emptySet(),
-            mocksDisplayed = null,
             badNetworkQualityDisplayed = false,
             websocketMocksDisplayed = false
         )
@@ -230,7 +229,6 @@ class NetworkViewModel(
 
             is NetworkAction.OpenBadNetworkQuality -> openBadNetworkQuality()
             is NetworkAction.CloseBadNetworkQuality -> closeBadNetworkQuality()
-            is NetworkAction.CloseMocks -> closeMocks()
             is NetworkAction.CopyCUrl -> onCopyCUrl(action)
             is NetworkAction.CopyUrl -> onCopyUrl(action)
             is NetworkAction.Remove -> onRemove(action)
@@ -335,28 +333,13 @@ class NetworkViewModel(
     }
 
     private fun openMocks(callId: String?) {
-        navigationState.navigate(NetworkRoutes.Mocks)
-//        contentState.update { state ->
-//            state.copy(
-//                mocksDisplayed = MockDisplayed(
-//                    fromNetworkCallId = callId,
-//                ),
-//            )
-//        }
+        navigationState.navigate(NetworkRoutes.Mocks(callId))
     }
 
     private fun openWebsocketMocks() {
         contentState.update { state ->
             state.copy(
                 websocketMocksDisplayed = true,
-            )
-        }
-    }
-
-    private fun closeMocks() {
-        contentState.update { state ->
-            state.copy(
-                mocksDisplayed = null,
             )
         }
     }

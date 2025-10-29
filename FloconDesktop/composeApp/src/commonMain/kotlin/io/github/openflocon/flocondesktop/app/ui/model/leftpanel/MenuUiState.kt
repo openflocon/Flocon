@@ -4,18 +4,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.app.ui.view.displayName
+import io.github.openflocon.flocondesktop.app.ui.view.icon
 
 @Immutable
-data class LeftPanelState(
+data class MenuState(
     val current: SubScreen,
-    val sections: List<LeftPannelSection>,
-    val bottomItems: List<LeftPanelItem>,
+    val sections: List<MenuSection>,
+    val bottomItems: List<MenuItem>,
 )
 
-fun previewLeftPannelState(current: SubScreen) = LeftPanelState(
+fun previewMenuState(current: SubScreen) = MenuState(
     current = current,
     bottomItems = listOf(
-        LeftPanelItem(
+        MenuItem(
             screen = SubScreen.Settings,
             icon = Icons.Outlined.Settings,
             text = "Settings",
@@ -23,22 +25,22 @@ fun previewLeftPannelState(current: SubScreen) = LeftPanelState(
         ),
     ),
     sections = listOf(
-        LeftPannelSection(
+        MenuSection(
             title = "Network",
             items = listOf(
-                LeftPanelItem(
+                MenuItem(
                     screen = SubScreen.Network,
                     icon = Icons.Outlined.Settings,
                     text = "Http",
                     isEnabled = true,
                 ),
-                LeftPanelItem(
+                MenuItem(
                     screen = SubScreen.Images,
                     icon = Icons.Outlined.Settings,
                     text = "Images",
                     isEnabled = true,
                 ),
-                LeftPanelItem(
+                MenuItem(
                     screen = SubScreen.Network,
                     icon = Icons.Outlined.Settings,
                     text = "Grpc",
@@ -46,22 +48,22 @@ fun previewLeftPannelState(current: SubScreen) = LeftPanelState(
                 ),
             ),
         ),
-        LeftPannelSection(
+        MenuSection(
             title = "Storage",
             items = listOf(
-                LeftPanelItem(
+                MenuItem(
                     screen = SubScreen.Network,
                     icon = Icons.Outlined.Settings,
                     text = "Database",
                     isEnabled = true,
                 ),
-                LeftPanelItem(
+                MenuItem(
                     screen = SubScreen.SharedPreferences,
                     icon = Icons.Outlined.Settings,
                     text = "SharedPreferences",
                     isEnabled = true,
                 ),
-                LeftPanelItem(
+                MenuItem(
                     screen = SubScreen.Files,
                     icon = Icons.Outlined.Settings,
                     text = "Files",
@@ -69,16 +71,16 @@ fun previewLeftPannelState(current: SubScreen) = LeftPanelState(
                 ),
             ),
         ),
-        LeftPannelSection(
+        MenuSection(
             title = "Data",
             items = listOf(
-                LeftPanelItem(
+                MenuItem(
                     screen = SubScreen.Dashboard,
                     icon = Icons.Outlined.Settings,
                     text = "Dashboard",
                     isEnabled = true,
                 ),
-                LeftPanelItem(
+                MenuItem(
                     screen = SubScreen.Tables,
                     icon = Icons.Outlined.Settings,
                     text = "Tables",
@@ -88,3 +90,52 @@ fun previewLeftPannelState(current: SubScreen) = LeftPanelState(
         ),
     ),
 )
+
+internal fun buildMenu(current: SubScreen) = MenuState(
+    current = current,
+    bottomItems = listOf(
+        item(subScreen = SubScreen.Settings)
+    ),
+    sections = listOf(
+        MenuSection(
+            title = "Network",
+            items = listOf(
+                item(subScreen = SubScreen.Network),
+                item(subScreen = SubScreen.Images),
+            ),
+        ),
+        MenuSection(
+            title = "Storage",
+            items = listOf(
+                item(SubScreen.Database),
+                item(SubScreen.SharedPreferences),
+                item(SubScreen.Files),
+            ),
+        ),
+        MenuSection(
+            title = "Data",
+            items = listOf(
+                item(SubScreen.Dashboard),
+                item(SubScreen.Analytics),
+                item(SubScreen.Tables),
+            ),
+        ),
+        MenuSection(
+            title = "Actions",
+            items = listOf(
+                item(SubScreen.Deeplinks)
+            ),
+        ),
+    ),
+)
+
+private fun item(
+    subScreen: SubScreen
+): MenuItem {
+    return MenuItem(
+        screen = subScreen,
+        icon = subScreen.icon(),
+        text = subScreen.displayName(),
+        isEnabled = true
+    )
+}

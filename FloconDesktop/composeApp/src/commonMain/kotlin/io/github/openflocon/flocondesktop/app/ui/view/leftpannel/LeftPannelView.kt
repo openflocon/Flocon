@@ -21,10 +21,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
-import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.LeftPanelItem
-import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.LeftPanelState
-import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.LeftPannelSection
-import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.previewLeftPannelState
+import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuItem
+import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuState
+import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuSection
+import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.previewMenuState
 import io.github.openflocon.library.designsystem.FloconTheme
 
 val PanelMaxWidth = 275.dp
@@ -33,9 +33,9 @@ val PanelContentMinSize = 40.dp
 
 @Composable
 fun LeftPanelView(
-    state: LeftPanelState,
+    state: MenuState,
     expanded: Boolean,
-    onClickItem: (LeftPanelItem) -> Unit,
+    onClickItem: (MenuItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -64,9 +64,9 @@ fun LeftPanelView(
 @Composable
 private fun ColumnScope.MenuSection(
     current: SubScreen,
-    items: List<LeftPannelSection>,
+    items: List<MenuSection>,
     expanded: Boolean,
-    onClickItem: (LeftPanelItem) -> Unit,
+    onClickItem: (MenuItem) -> Unit,
 ) {
     items.fastForEachIndexed { index, section ->
         PannelLabel(
@@ -85,9 +85,9 @@ private fun ColumnScope.MenuSection(
 @Composable
 private fun ColumnScope.MenuItems(
     current: SubScreen,
-    items: List<LeftPanelItem>,
+    items: List<MenuItem>,
     expanded: Boolean,
-    onClickItem: (LeftPanelItem) -> Unit,
+    onClickItem: (MenuItem) -> Unit,
 ) {
     items.fastForEachIndexed { index, item ->
         PanelView(
@@ -114,7 +114,7 @@ private fun LeftPanelViewPreview() {
     FloconTheme {
         Box(modifier = Modifier.background(Color.White))
         LeftPanelView(
-            state = previewLeftPannelState(
+            state = previewMenuState(
                 current = selectedItem.value,
             ),
             onClickItem = {

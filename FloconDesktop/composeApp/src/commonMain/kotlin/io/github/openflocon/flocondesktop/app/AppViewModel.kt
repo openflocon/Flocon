@@ -11,6 +11,7 @@ import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.flocondesktop.app.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.buildMenu
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
@@ -50,15 +51,20 @@ internal class AppViewModel(
             current = SubScreen.Network
         )
     )
+    private val menuState = MutableStateFlow(
+        buildMenu(SubScreen.Network)
+    )
 
     val uiState = combine(
         contentState,
+        menuState,
         devicesDelegate.devicesState,
         devicesDelegate.appsState,
         recordVideoDelegate.state
-    ) { content, devices, apps, record ->
+    ) { content, menu, devices, apps, record ->
         AppUiState(
             contentState = content,
+            menuState = menu,
             deviceState = devices,
             appState = apps,
             recordState = record
@@ -67,6 +73,7 @@ internal class AppViewModel(
         .stateInWhileSubscribed(
             AppUiState(
                 contentState = contentState.value,
+                menuState = menuState.value,
                 deviceState = devicesDelegate.devicesState.value,
                 appState = devicesDelegate.appsState.value,
                 recordState = recordVideoDelegate.state.value

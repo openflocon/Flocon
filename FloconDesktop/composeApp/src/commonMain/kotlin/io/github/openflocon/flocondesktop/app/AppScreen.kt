@@ -4,13 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.scene.SinglePaneSceneStrategy
-import io.github.openflocon.flocondesktop.app.ui.buildLeftPanelState
-import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
@@ -26,6 +22,7 @@ import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
+import io.github.openflocon.navigation.scene.DialogSceneStrategy
 import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import org.koin.compose.viewmodel.koinViewModel
@@ -48,14 +45,6 @@ private fun Content(
     navigationState: MainFloconNavigationState,
     onAction: (AppAction) -> Unit
 ) {
-    // TODO Redo
-    val menuState by produceState(
-        buildLeftPanelState(SubScreen.Network),
-        uiState.contentState.current
-    ) {
-        value = buildLeftPanelState(uiState.contentState.current)
-    }
-
     FloconNavigation(
         navigationState = navigationState,
         sceneStrategy = PanelSceneStrategy()
@@ -65,7 +54,7 @@ private fun Content(
                 MenuSceneStrategy(
                     menuContent = {
                         LeftPanelView(
-                            state = menuState,
+                            state = uiState.menuState,
                             expanded = it,
                             onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) }
                         )
@@ -96,7 +85,7 @@ private fun Content(
         deeplinkRoutes()
         filesRoutes()
         imageRoutes()
-        networkRoutes(navigationState)
+        networkRoutes()
         sharedPreferencesRoutes()
         tableRoutes()
         settingsRoutes()

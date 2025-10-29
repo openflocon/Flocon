@@ -8,7 +8,6 @@ import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDe
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.navigation.FloconRoute
-import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.navigation.PanelRoute
 import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import kotlinx.serialization.Serializable
@@ -20,14 +19,14 @@ internal sealed interface NetworkRoutes : FloconRoute {
     data object Main : NetworkRoutes
 
     @Serializable
-    data object Mocks : NetworkRoutes
+    data class Mocks(val id: String?) : NetworkRoutes
 
     @Serializable
     data class Panel(val requestId: String) : NetworkRoutes, PanelRoute
 
 }
 
-fun EntryProviderScope<FloconRoute>.networkRoutes(navigationState: MainFloconNavigationState) {
+fun EntryProviderScope<FloconRoute>.networkRoutes() {
     entry<NetworkRoutes.Main>(
         metadata = MenuSceneStrategy.menu()
     ) {
@@ -50,9 +49,7 @@ fun EntryProviderScope<FloconRoute>.networkRoutes(navigationState: MainFloconNav
         metadata = DialogSceneStrategy.dialog()
     ) {
         NetworkMocksWindow(
-            instanceId = "instance",
-            fromNetworkCallId = null,
-            onCloseRequest = { navigationState.remove(it) }
+            fromNetworkCallId = it.id
         )
     }
 }
