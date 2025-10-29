@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.app.ui.model.leftpanel
 
-data class LeftPannelSection(
+data class MenuSection(
     val title: String,
-    val items: List<LeftPanelItem>,
+    val items: List<MenuItem>,
 )

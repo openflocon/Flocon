@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 
 @Immutable
-data class LeftPanelItem(
+data class MenuItem(
     val screen: SubScreen,
     val icon: ImageVector,
     val text: String,
