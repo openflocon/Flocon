@@ -8,7 +8,12 @@ interface FloconNavigationState<T : Any> {
 
     fun navigate(route: T)
 
+    // TODO Remove, since it's multiple window handling
+    // Maybe not if we instansiate one per window
     fun back(count: Int = 1)
+
+    fun remove(route: FloconRoute)
+
 }
 
 class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : FloconNavigationState<FloconRoute> {
@@ -32,6 +37,10 @@ class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : Flo
 
     override fun back(count: Int) {
         repeat(count) { _stack.removeLast() }
+    }
+
+    override fun remove(route: FloconRoute) {
+        _stack.remove(route)
     }
 
     fun menu(route: FloconRoute) {

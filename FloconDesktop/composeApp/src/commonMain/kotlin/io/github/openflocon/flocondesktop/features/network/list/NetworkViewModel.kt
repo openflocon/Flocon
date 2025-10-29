@@ -36,7 +36,6 @@ import io.github.openflocon.flocondesktop.core.data.settings.usecase.ObserveNetw
 import io.github.openflocon.flocondesktop.core.data.settings.usecase.SaveNetworkSettingsUseCase
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.network.body.model.ContentUiState
-import io.github.openflocon.flocondesktop.features.network.body.model.MockDisplayed
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailDelegate
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBodyDelegate
@@ -253,8 +252,8 @@ class NetworkViewModel(
             is NetworkAction.InvertList -> toggleInvertList(action)
             is NetworkAction.ToggleAutoScroll -> toggleAutoScroll(action)
             NetworkAction.ClearOldSession -> onClearSession()
-            is NetworkAction.Down -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
-            is NetworkAction.Up -> contentState.update { it.copy(selectedRequestId = action.itemIdToSelect) }
+            is NetworkAction.Down -> selectRequest(action.itemIdToSelect)
+            is NetworkAction.Up -> selectRequest(action.itemIdToSelect)
             is NetworkAction.UpdateDisplayOldSessions -> toggleDisplayOldSessions(action)
             NetworkAction.OpenWebsocketMocks -> openWebsocketMocks()
             NetworkAction.CloseWebsocketMocks -> contentState.update { it.copy(websocketMocksDisplayed = false) }
@@ -316,38 +315,34 @@ class NetworkViewModel(
         }
     }
 
-    private var selectRequestJob: Job? = null
     private fun onSelectRequest(action: NetworkAction.SelectRequest) {
-        contentState.update { it.copy(selectedRequestId = action.id) }
+        selectRequest(action.id)
+    }
+
+    private var selectRequestJob: Job? = null
+    private fun selectRequest(id: String) {
+        contentState.update { it.copy(selectedRequestId = id) }
         selectRequestJob?.cancel()
         selectRequestJob = viewModelScope.launch {
             observeNetworkSettingsUseCase().collect {
                 if (it.pinnedDetails) {
-                    detailDelegate.setRequestId(action.id)
+                    detailDelegate.setRequestId(id)
                 } else {
-                    navigationState.navigate(NetworkRoutes.Panel(action.id))
+                    navigationState.navigate(NetworkRoutes.Panel(id))
                 }
             }
         }
-//        contentState.update { state ->
-//            state.copy(
-//                selectedRequestId = if (state.selectedRequestId == action.id) {
-//                    null
-//                } else {
-//                    action.id
-//                },
-//            )
-//        }
     }
 
     private fun openMocks(callId: String?) {
-        contentState.update { state ->
-            state.copy(
-                mocksDisplayed = MockDisplayed(
-                    fromNetworkCallId = callId,
-                ),
-            )
-        }
+        navigationState.navigate(NetworkRoutes.Mocks)
+//        contentState.update { state ->
+//            state.copy(
+//                mocksDisplayed = MockDisplayed(
+//                    fromNetworkCallId = callId,
+//                ),
+//            )
+//        }
     }
 
     private fun openWebsocketMocks() {

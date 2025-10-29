@@ -57,7 +57,10 @@ class FloconPanelState internal constructor(initialValue: Boolean) {
 
 @Composable
 fun rememberFloconPanelState(initialValue: Boolean = false): FloconPanelState {
-    return remember { FloconPanelState(initialValue) }
+    return remember {
+        println("rememberFloconPanelState")
+        FloconPanelState(initialValue)
+    }
 }
 
 

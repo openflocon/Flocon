@@ -26,13 +26,14 @@ import org.koin.core.component.KoinComponent
 @Immutable
 data class PanelScene(
     override val overlaidEntries: List<NavEntry<FloconRoute>>,
-    override val key: Any,
     override val previousEntries: List<NavEntry<FloconRoute>>,
     private val entry: NavEntry<FloconRoute>,
     private val properties: PaneProperties,
     private val onPin: OnPin?,
     private val onBack: () -> Unit,
 ) : OverlayScene<FloconRoute>, KoinComponent {
+    override val key: Any
+        get() = PanelScene::class.qualifiedName!!
 
     override val entries: List<NavEntry<FloconRoute>> = listOf(entry)
 
@@ -49,7 +50,12 @@ data class PanelScene(
                 onDismissRequest = onBack,
                 actions = {
                     FloconIconTonalButton(
-                        onClick = onBack,
+                        onClick = {
+                            scope.launch {
+                                state.hide()
+                                onBack()
+                            }
+                        },
                         modifier = Modifier
                             .animatePanelAction()
                     ) {
@@ -85,8 +91,6 @@ data class PanelScene(
 
 class PanelSceneStrategy : SceneStrategy<FloconRoute> {
 
-    var currentScene: PanelScene? = null
-
     override fun SceneStrategyScope<FloconRoute>.calculateScene(
         entries: List<NavEntry<FloconRoute>>
     ): Scene<FloconRoute>? {
@@ -94,33 +98,22 @@ class PanelSceneStrategy : SceneStrategy<FloconRoute> {
         val properties = lastEntry.metadata[PANEL_KEY] ?: return null
 
         if (properties is PaneProperties) {
-            return currentScene?.copy(
-                key = lastEntry.contentKey,
-                previousEntries = entries.dropLast(1),
-                overlaidEntries = entries.dropLast(1),
-                entry = lastEntry,
-                properties = properties,
-                onPin = lastEntry.metadata[ON_PIN] as? OnPin
-            ) ?: PanelScene(
-                key = lastEntry.contentKey,
+            return PanelScene(
                 previousEntries = entries.dropLast(1),
                 overlaidEntries = entries.dropLast(1),
                 entry = lastEntry,
                 properties = properties,
                 onPin = lastEntry.metadata[ON_PIN] as? OnPin,
-                onBack = {
-                    currentScene = null
-                    onBack()
-                }
+                onBack = onBack
             )
-                .also { currentScene = it }
         }
 
         return null
     }
 
     companion object {
-        private const val PANEL_KEY = "panel_key"
+        private val PANEL_KEY = PanelSceneStrategy::class.qualifiedName!!
+
         private const val ON_PIN = "on_pin"
 
         fun panel(
