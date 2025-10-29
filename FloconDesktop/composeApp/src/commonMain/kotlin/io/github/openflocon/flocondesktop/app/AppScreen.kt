@@ -78,7 +78,7 @@ private fun Content(
         deeplinkRoutes()
         filesRoutes()
         imageRoutes()
-        networkRoutes()
+        networkRoutes(navigationState)
         sharedPreferencesRoutes()
         tableRoutes()
         settingsRoutes()

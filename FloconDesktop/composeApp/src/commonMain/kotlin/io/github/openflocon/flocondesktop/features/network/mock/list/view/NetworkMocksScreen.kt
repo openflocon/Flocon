@@ -44,25 +44,25 @@ fun NetworkMocksWindow(
     val mocks by viewModel.items.collectAsStateWithLifecycle()
     val editionWindow by viewModel.editionWindow.collectAsStateWithLifecycle()
     key(instanceId) {
-        FloconDialog(
-            onDismissRequest = onCloseRequest,
-        ) {
+//        FloconDialog(
+//            onDismissRequest = onCloseRequest,
+//        ) {
             NetworkMocksContent(
                 mocks = mocks,
                 modifier = Modifier.fillMaxWidth(),
                 onAction = viewModel::onAction,
             )
-        }
+//        }
 
-        editionWindow?.let {
-            NetworkEditionWindow(
-                instanceId = it.windowInstanceId,
-                state = it.selectedMockUiModel,
-                onCloseRequest = viewModel::cancelMockCreation,
-                onCancel = viewModel::cancelMockCreation,
-                onSave = viewModel::addMock,
-            )
-        }
+//        editionWindow?.let {
+//            NetworkEditionWindow(
+//                instanceId = it.windowInstanceId,
+//                state = it.selectedMockUiModel,
+//                onCloseRequest = viewModel::cancelMockCreation,
+//                onCancel = viewModel::cancelMockCreation,
+//                onSave = viewModel::addMock,
+//            )
+//        }
     }
 }
 
