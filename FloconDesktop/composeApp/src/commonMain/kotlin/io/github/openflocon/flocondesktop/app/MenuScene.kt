@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.menu
+package io.github.openflocon.flocondesktop.app
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState

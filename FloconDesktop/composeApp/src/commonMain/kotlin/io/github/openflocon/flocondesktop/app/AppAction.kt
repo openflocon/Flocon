@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.app
 
-import io.github.openflocon.flocondesktop.menu.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 
 internal sealed interface AppAction {
 

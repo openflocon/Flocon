@@ -8,12 +8,12 @@ import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
 import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
+import io.github.openflocon.flocondesktop.app.ui.delegates.DevicesDelegate
+import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
+import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
-import io.github.openflocon.flocondesktop.menu.ui.delegates.DevicesDelegate
-import io.github.openflocon.flocondesktop.menu.ui.delegates.RecordVideoDelegate
-import io.github.openflocon.flocondesktop.menu.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.delay
