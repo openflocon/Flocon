@@ -11,10 +11,17 @@ import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import io.github.openflocon.flocondesktop.app.ui.buildLeftPanelState
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
+import io.github.openflocon.flocondesktop.features.dashboard.dashboardRoutes
+import io.github.openflocon.flocondesktop.features.database.databaseRoutes
+import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
+import io.github.openflocon.flocondesktop.features.files.filesRoutes
+import io.github.openflocon.flocondesktop.features.images.imageRoutes
 import io.github.openflocon.flocondesktop.features.network.networkRoutes
-import io.github.openflocon.flocondesktop.menu.MenuSceneStrategy
+import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
+import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -65,7 +72,15 @@ private fun Content(
             .fillMaxSize()
             .background(FloconTheme.colorPalette.surface)
     ) {
-        networkRoutes()
         analyticsRoutes()
+        dashboardRoutes()
+        databaseRoutes()
+        deeplinkRoutes()
+        filesRoutes()
+        imageRoutes()
+        networkRoutes()
+        sharedPreferencesRoutes()
+        tableRoutes()
+        settingsRoutes()
     }
 }

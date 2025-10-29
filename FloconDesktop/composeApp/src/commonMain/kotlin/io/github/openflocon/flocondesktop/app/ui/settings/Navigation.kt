@@ -4,11 +4,15 @@ import androidx.navigation3.runtime.EntryProviderScope
 import io.github.openflocon.navigation.FloconRoute
 import kotlinx.serialization.Serializable
 
-@Serializable
-data object SettingsRoute : FloconRoute
+sealed interface SettingsRoutes : FloconRoute {
+
+    @Serializable
+    data object Main : SettingsRoutes
+
+}
 
 fun EntryProviderScope<FloconRoute>.settingsRoutes() {
-    entry<SettingsRoute> {
+    entry<SettingsRoutes.Main> {
         SettingsScreen()
     }
 }
