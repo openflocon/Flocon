@@ -37,12 +37,12 @@ internal class AppViewModel(
     startAdbForwardUseCase: StartAdbForwardUseCase,
     val navigationState: MainFloconNavigationState,
     private val initialSetupStateHolder: InitialSetupStateHolder,
-    dispatcherProvider: DispatcherProvider,
+    private val dispatcherProvider: DispatcherProvider,
     private val devicesDelegate: DevicesDelegate,
     private val takeScreenshotUseCase: TakeScreenshotUseCase,
     private val restartAppUseCase: RestartAppUseCase,
     private val recordVideoDelegate: RecordVideoDelegate,
-    private val feedbackDisplayer: FeedbackDisplayer
+    private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel(messagesServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -94,6 +94,13 @@ internal class AppViewModel(
     fun onAction(action: AppAction) {
         when (action) {
             is AppAction.SelectMenu -> onSelectMenu(action)
+            is AppAction.DeleteApp -> deleteApp(action)
+            is AppAction.DeleteDevice -> deleteDevice(action)
+            AppAction.Record -> onRecord()
+            AppAction.Restart -> onRestart()
+            AppAction.Screenshoot -> onTakeScreenshot()
+            is AppAction.SelectApp -> onAppSelected(action)
+            is AppAction.SelectDevice -> onDeviceSelected(action)
         }
     }
 
@@ -113,6 +120,55 @@ internal class AppViewModel(
                 SubScreen.Tables -> TableRoutes.Main
             }
         )
+    }
+
+    private fun onDeviceSelected(action: AppAction.SelectDevice) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            devicesDelegate.select(action.device.id)
+        }
+    }
+
+    private fun deleteDevice(action: AppAction.DeleteDevice) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            devicesDelegate.delete(action.device.id)
+        }
+    }
+
+    private fun deleteApp(action: AppAction.DeleteApp) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            devicesDelegate.deleteApp(action.app.packageName)
+        }
+    }
+
+    private fun onAppSelected(action: AppAction.SelectApp) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            devicesDelegate.selectApp(action.app.packageName)
+        }
+    }
+
+    private fun onRecord() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            recordVideoDelegate.toggleRecording()
+        }
+    }
+
+    private fun onRestart() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            restartAppUseCase()
+        }
+    }
+
+    private fun onTakeScreenshot() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            takeScreenshotUseCase().fold(
+                doOnFailure = {
+                    feedbackDisplayer.displayMessage(it.message ?: "Unknown error")
+                },
+                doOnSuccess = {
+                    feedbackDisplayer.displayMessage("Success, file saved at $it")
+                },
+            )
+        }
     }
 
 }
