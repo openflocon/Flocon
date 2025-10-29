@@ -34,12 +34,8 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
-import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
-import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
-import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconScaffold
@@ -50,7 +46,8 @@ data class MenuScene(
     override val entries: List<NavEntry<FloconRoute>>,
     override val previousEntries: List<NavEntry<FloconRoute>>,
     val entry: NavEntry<FloconRoute>,
-    val menuContent: @Composable (expanded: Boolean) -> Unit
+    val menuContent: @Composable (expanded: Boolean) -> Unit,
+    val topBarContent: @Composable (() -> Unit)?
 ) : Scene<FloconRoute> {
     override val key: Any
         get() = Unit
@@ -66,20 +63,7 @@ data class MenuScene(
 
         Box {
             FloconScaffold(
-                topBar = {
-                    MainScreenTopBar(
-                        devicesState = DevicesStateUiModel.Empty,
-                        appsState = AppsStateUiModel.Empty,
-                        recordState = RecordVideoStateUiModel.Recording,
-                        deleteApp = {},
-                        deleteDevice = {},
-                        onDeviceSelected = {},
-                        onAppSelected = {},
-                        onRecordClicked = {},
-                        onRestartClicked = {},
-                        onTakeScreenshotClicked = {}
-                    )
-                },
+                topBar = { topBarContent?.invoke() },
                 modifier = Modifier
                     .fillMaxSize()
                     .onGloballyPositioned {
@@ -127,7 +111,8 @@ data class MenuScene(
 }
 
 class MenuSceneStrategy(
-    private val menuContent: @Composable (expanded: Boolean) -> Unit
+    private val menuContent: @Composable (expanded: Boolean) -> Unit,
+    private val topBarContent: @Composable (() -> Unit)? = null
 ) : SceneStrategy<FloconRoute> {
 
     override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? {
@@ -138,7 +123,8 @@ class MenuSceneStrategy(
                 entries = listOf(entry),
                 previousEntries = entries.dropLast(1),
                 entry = entry,
-                menuContent = menuContent
+                menuContent = menuContent,
+                topBarContent = topBarContent
             )
         }
 
