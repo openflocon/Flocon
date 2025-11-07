@@ -35,7 +35,8 @@ internal fun Json.decodeReceivedQuery(body: String): ResponseAndRequestIdDataMod
             decodeFromString<DatabaseExecuteSqlResponseDataModel.Select>(bodyWrapper.body)
         }
         "UpdateDelete" -> {
-            decodeFromString<DatabaseExecuteSqlResponseDataModel.UpdateDelete>(result.result)
+            val bodyWrapper = decodeFromString<ReceivedQueryBodyWrapper>(result.result)
+            decodeFromString<DatabaseExecuteSqlResponseDataModel.UpdateDelete>(bodyWrapper.body)
         }
 
         else -> null
