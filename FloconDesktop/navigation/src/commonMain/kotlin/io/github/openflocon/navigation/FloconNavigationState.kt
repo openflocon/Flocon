@@ -1,8 +1,10 @@
 package io.github.openflocon.navigation
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
+@Immutable
 interface FloconNavigationState<T : Any> {
     val stack: SnapshotStateList<T>
 
@@ -16,6 +18,7 @@ interface FloconNavigationState<T : Any> {
 
 }
 
+@Immutable
 class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : FloconNavigationState<FloconRoute> {
 
     private val _stack = mutableStateListOf(initialScreen)
