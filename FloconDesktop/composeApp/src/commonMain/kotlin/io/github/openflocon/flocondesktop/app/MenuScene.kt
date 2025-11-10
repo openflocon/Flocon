@@ -53,7 +53,7 @@ data class MenuScene(
         get() = Unit
 
     override val content: @Composable (() -> Unit) = {
-        var expanded by remember { mutableStateOf(false) }
+        var expanded by remember { mutableStateOf(true) }
         val width by animateDpAsState(targetValue = if (expanded) PanelMaxWidth else PanelMinWidth)
         var windowSize by remember { mutableStateOf(IntSize.Zero) }
         val position by animateDpAsState(

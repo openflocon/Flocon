@@ -29,6 +29,7 @@ import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsScre
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
 import io.github.openflocon.library.designsystem.common.asState
+import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -38,7 +39,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -47,7 +47,7 @@ class AnalyticsViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val analyticsSelectorDelegate: AnalyticsSelectorDelegate,
-    observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
+    private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     observeCurrentDeviceAnalyticsContentUseCase: ObserveCurrentDeviceAnalyticsContentUseCase,
     private val resetCurrentDeviceSelectedAnalyticsUseCase: ResetCurrentDeviceSelectedAnalyticsUseCase,
     private val removeAnalyticsItemUseCase: RemoveAnalyticsItemUseCase,
@@ -55,10 +55,11 @@ class AnalyticsViewModel(
     private val removeOldSessionsAnalyticsUseCase: RemoveOldSessionsAnalyticsUseCase,
     private val exportAnalyticsToCsv: ExportAnalyticsToCsvUseCase,
     private val observeAnalyticsByIdUseCase: ObserveAnalyticsByIdUseCase,
+    private val navigationState: MainFloconNavigationState
 ) : ViewModel() {
 
     private val _filterText = mutableStateOf("")
-    val filterText : State<String> = _filterText.asState()
+    val filterText: State<String> = _filterText.asState()
 
     private val _screenState = MutableStateFlow(
         AnalyticsScreenUiState(
@@ -140,14 +141,7 @@ class AnalyticsViewModel(
                 }
 
                 is AnalyticsAction.OnClick -> {
-                    val newId = action.item.id
-                    _selectedItemId.update {
-                        if (it == newId) {
-                            null
-                        } else {
-                            newId
-                        }
-                    }
+                    navigationState.navigate(AnalyticsRoutes.Detail(action.item.id))
                 }
 
                 is AnalyticsAction.Remove -> removeAnalyticsItemUseCase(action.item.id)

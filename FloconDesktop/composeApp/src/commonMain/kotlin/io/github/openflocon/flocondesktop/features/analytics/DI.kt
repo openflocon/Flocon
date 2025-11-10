@@ -7,5 +7,6 @@ import org.koin.dsl.module
 
 val analyticsModule = module {
     viewModelOf(::AnalyticsViewModel)
+    viewModelOf(::AnalyticsDetailViewModel)
     factoryOf(::AnalyticsSelectorDelegate)
 }

@@ -63,7 +63,7 @@ data class PanelScene(
                             Icons.Outlined.Close
                         )
                     }
-                    if (onPin != null) {
+                    if (onPin != null && properties.pinnable) { // TODO Use only one
                         FloconIconTonalButton(
                             onClick = {
                                 scope.launch {

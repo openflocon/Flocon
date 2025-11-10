@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
@@ -56,7 +55,6 @@ import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
-import io.github.openflocon.library.designsystem.components.panel.FloconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -232,26 +230,21 @@ fun AnalyticsScreen(
             )
         }
     }
-    FloconPanel(
-        contentState = selectedItem,
-        onClose = { onAction(AnalyticsAction.ClosePanel) },
-    ) {
-        AnalyticsDetailView(
-            modifier = Modifier.fillMaxSize(),
-            state = it
-        )
-    }
 }
 
 @Composable
 @Preview
 private fun AnalyticsScreenPreview() {
     val rows = remember {
-        flowOf(PagingData.from(listOf(
-            previewAnalyticsRowUiModel(),
-            previewAnalyticsRowUiModel(),
-            previewAnalyticsRowUiModel(),
-        )))
+        flowOf(
+            PagingData.from(
+                listOf(
+                    previewAnalyticsRowUiModel(),
+                    previewAnalyticsRowUiModel(),
+                    previewAnalyticsRowUiModel(),
+                )
+            )
+        )
     }.collectAsLazyPagingItems()
     FloconTheme {
         AnalyticsScreen(

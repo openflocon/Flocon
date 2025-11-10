@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.network.mock.NetworkMocksViewModel
+import io.github.openflocon.flocondesktop.features.network.mock.edition.view.NetworkEditionWindow
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockNetworkLineUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.previewMockNetworkLineUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -45,15 +46,15 @@ fun NetworkMocksWindow(
         onAction = viewModel::onAction,
     )
 
-//        editionWindow?.let {
-//            NetworkEditionWindow(
-//                instanceId = it.windowInstanceId,
-//                state = it.selectedMockUiModel,
-//                onCloseRequest = viewModel::cancelMockCreation,
-//                onCancel = viewModel::cancelMockCreation,
-//                onSave = viewModel::addMock,
-//            )
-//        }
+    editionWindow?.let {
+        NetworkEditionWindow(
+            instanceId = it.windowInstanceId,
+            state = it.selectedMockUiModel,
+            onCloseRequest = viewModel::cancelMockCreation,
+            onCancel = viewModel::cancelMockCreation,
+            onSave = viewModel::addMock,
+        )
+    }
 }
 
 sealed interface NetworkMockAction {
