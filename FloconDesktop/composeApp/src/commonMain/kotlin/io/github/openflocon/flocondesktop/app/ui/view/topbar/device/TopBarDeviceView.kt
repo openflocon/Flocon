@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.MobileOff
 import androidx.compose.material.icons.filled.PhoneIphone
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Details
 import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +43,7 @@ import flocondesktop.composeapp.generated.resources.devices_disconnected
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.resources.stringResource
 
