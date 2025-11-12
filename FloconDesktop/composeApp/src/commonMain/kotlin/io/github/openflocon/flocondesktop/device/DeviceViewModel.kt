@@ -7,7 +7,6 @@ import io.github.openflocon.domain.adb.usecase.SendCommandUseCase
 import io.github.openflocon.domain.common.getOrNull
 import io.github.openflocon.flocondesktop.device.models.ContentUiState
 import io.github.openflocon.flocondesktop.device.models.DeviceUiState
-import io.github.openflocon.flocondesktop.device.models.InfoUiState
 import io.github.openflocon.flocondesktop.device.models.MemoryItem
 import io.github.openflocon.flocondesktop.device.models.MemoryUiState
 import kotlinx.coroutines.Dispatchers
@@ -25,30 +24,18 @@ internal class DeviceViewModel(
 ) : ViewModel() {
 
     private val contentState = MutableStateFlow(ContentUiState(selectedTab = DeviceTab.entries.first()))
-    private val infoState = MutableStateFlow(
-        InfoUiState(
-            model = "",
-            brand = "",
-            versionRelease = "",
-            versionSdk = "",
-            serialNumber = "",
-            battery = ""
-        )
-    )
     private val memoryState = MutableStateFlow(MemoryUiState(emptyList()))
     private val deviceSerial = MutableStateFlow("")
 
     val uiState = combine(
         contentState,
-        infoState,
         memoryState,
         deviceSerial
     ) { states ->
         DeviceUiState(
             contentState = states[0] as ContentUiState,
-            infoState = states[1] as InfoUiState,
-            memoryState = states[2] as MemoryUiState,
-            deviceSerial = states[3] as String
+            memoryState = states[1] as MemoryUiState,
+            deviceSerial = states[2] as String
         )
     }
         .stateIn(
@@ -56,7 +43,6 @@ internal class DeviceViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = DeviceUiState(
                 contentState = contentState.value,
-                infoState = infoState.value,
                 memoryState = memoryState.value,
                 deviceSerial = deviceSerial.value
             )
@@ -83,25 +69,6 @@ internal class DeviceViewModel(
 
     private fun onRefresh() {
         refreshMemory()
-        deviceInfo()
-        viewModelScope.launch {
-            //                    battery = sendCommand("shell", "dumpsys", "battery"),
-//                    mem = sendCommand("shell", "dumpsys", "meminfo")
-        }
-    }
-
-    private fun deviceInfo() {
-        viewModelScope.launch {
-            infoState.update { state ->
-                state.copy(
-                    model = sendCommand("shell", "getprop", "ro.product.model"),
-                    brand = sendCommand("shell", "getprop", "ro.product.brand"),
-                    versionRelease = sendCommand("shell", "getprop", "ro.build.version.release"),
-                    versionSdk = sendCommand("shell", "getprop", "ro.build.version.sdk"),
-                    serialNumber = sendCommand("shell", "getprop", "ro.serialno")
-                )
-            }
-        }
     }
 
     private suspend fun sendCommand(vararg args: String): String {

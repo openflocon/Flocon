@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.device.pages
+package io.github.openflocon.flocondesktop.device.pages.info
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,17 +11,34 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.device.models.InfoUiState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSection
 import io.github.openflocon.library.designsystem.components.FloconTextValue
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun InfoPage(
-    state: InfoUiState
+    deviceSerial: String
+) {
+    val viewModel = koinViewModel<InfoViewModel> { parametersOf(deviceSerial) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Content(
+        uiState = uiState,
+        onAction = viewModel::onAction
+    )
+}
+
+@Composable
+private fun Content(
+    uiState: InfoUiState,
+    onAction: (InfoAction) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -29,7 +46,7 @@ internal fun InfoPage(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        General(state)
+        General(uiState)
     }
 }
 
