@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
@@ -49,7 +51,7 @@ actual fun FloconWindow(
         alwaysOnTop = alwaysOnTop,
         onPreviewKeyEvent = {
             when (it.key) {
-                Key.Escape -> handlers.lastOrNull()?.invoke() ?: false
+                Key.Escape if (it.type == KeyEventType.KeyDown) -> handlers.lastOrNull()?.invoke() ?: false
 
                 else -> false
             }
