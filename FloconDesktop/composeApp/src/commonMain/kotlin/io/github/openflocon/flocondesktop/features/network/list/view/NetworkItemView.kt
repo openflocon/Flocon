@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
@@ -49,7 +49,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu
 import io.github.openflocon.library.designsystem.components.FloconSurface
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun NetworkItemView(
@@ -62,7 +61,7 @@ fun NetworkItemView(
     val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
 
     val errorColor = remember(state) {
-        when(state.status.status) {
+        when (state.status.status) {
             NetworkStatusUi.Status.ERROR -> errorTagText
             NetworkStatusUi.Status.EXCEPTION -> exceptionTagText
             else -> null

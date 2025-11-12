@@ -11,9 +11,10 @@ import androidx.navigation3.scene.SceneStrategyScope
 import io.github.openflocon.navigation.FloconRoute
 
 @Immutable
-data class WindowScene(
-    private val entry: NavEntry<FloconRoute>,
+private data class WindowScene(
     override val previousEntries: List<NavEntry<FloconRoute>>,
+    private val entry: NavEntry<FloconRoute>,
+    private val properties: WindowProperties,
     private val onBack: () -> Unit
 ) : OverlayScene<FloconRoute> {
 
@@ -23,6 +24,7 @@ data class WindowScene(
 
     override val content: @Composable (() -> Unit) = {
         Window(
+            title = properties.title,
             onCloseRequest = onBack
         ) {
             entry.Content()
@@ -35,10 +37,12 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
 
     override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? {
         val entry = entries.last()
+        val properties = entry.metadata[WINDOW_KEY] ?: return null
 
-        if (entry.metadata[IS_WINDOW] == true) {
+        if (properties is WindowProperties) {
             return WindowScene(
                 entry = entry,
+                properties = properties,
                 previousEntries = entries.dropLast(1),
                 onBack = onBack
             )
@@ -48,9 +52,19 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
     }
 
     companion object {
-        private const val IS_WINDOW = "is_window"
+        private const val WINDOW_KEY = "is_window"
 
-        fun window() = mapOf(IS_WINDOW to true)
+        fun window(
+            title: String = ""
+        ): Map<String, Any> = mapOf(
+            WINDOW_KEY to WindowProperties(
+                title = title
+            )
+        )
     }
 
 }
+
+private data class WindowProperties(
+    val title: String
+)

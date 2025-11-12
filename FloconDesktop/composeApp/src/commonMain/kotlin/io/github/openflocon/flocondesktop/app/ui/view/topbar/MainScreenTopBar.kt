@@ -28,6 +28,8 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActio
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 
+val TopBarHeight = 48.dp
+
 @Composable
 fun MainScreenTopBar(
     modifier: Modifier = Modifier,
@@ -41,6 +43,7 @@ fun MainScreenTopBar(
     recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
+    onClickDetail: (DeviceItemUiModel) -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -57,6 +60,7 @@ fun MainScreenTopBar(
             onAppSelected = onAppSelected,
             deleteDevice = deleteDevice,
             deleteApp = deleteApp,
+            onClickDetail = onClickDetail
         )
         Spacer(modifier = Modifier.weight(1f))
         TopBarActions(

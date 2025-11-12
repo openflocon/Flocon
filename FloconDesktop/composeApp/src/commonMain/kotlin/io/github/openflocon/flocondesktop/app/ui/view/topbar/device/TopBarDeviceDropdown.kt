@@ -6,8 +6,8 @@ package io.github.openflocon.flocondesktop.app.ui.view.topbar.device
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +27,7 @@ internal fun TopBarDeviceDropdown(
     state: DevicesStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     deleteDevice: (DeviceItemUiModel) -> Unit,
+    onClickDetail: (DeviceItemUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -49,7 +50,9 @@ internal fun TopBarDeviceDropdown(
             ) {
                 TopBarDeviceView(
                     device = state.deviceSelected,
-                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                    onClick = { expanded = true },
+                    onClickDetail = { onClickDetail(state.deviceSelected) },
+                    modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                 )
             }
         }
@@ -70,6 +73,7 @@ internal fun TopBarDeviceDropdown(
                             onDeviceSelected(device)
                             expanded = false
                         },
+                        onClickDetail = { onClickDetail(device) },
                         onDelete = {
                             deleteDevice(device)
                             expanded = false
