@@ -5,11 +5,8 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.adb.usecase.GetDeviceSerialUseCase
 import io.github.openflocon.domain.adb.usecase.SendCommandUseCase
 import io.github.openflocon.domain.common.getOrNull
-import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.device.models.BatteryUiState
 import io.github.openflocon.flocondesktop.device.models.ContentUiState
-import io.github.openflocon.flocondesktop.device.models.CpuItem
-import io.github.openflocon.flocondesktop.device.models.CpuUiState
 import io.github.openflocon.flocondesktop.device.models.DeviceUiState
 import io.github.openflocon.flocondesktop.device.models.InfoUiState
 import io.github.openflocon.flocondesktop.device.models.MemoryItem
@@ -25,8 +22,7 @@ import kotlinx.coroutines.launch
 internal class DeviceViewModel(
     val deviceId: String,
     val sendCommandUseCase: SendCommandUseCase,
-    val deviceSerialUseCase: GetDeviceSerialUseCase,
-    val currentDeviceAppsUseCase: GetCurrentDeviceIdAndPackageNameUseCase
+    val deviceSerialUseCase: GetDeviceSerialUseCase
 ) : ViewModel() {
 
     private val contentState = MutableStateFlow(ContentUiState(selectedTab = DeviceTab.entries.first()))
@@ -63,14 +59,12 @@ internal class DeviceViewModel(
         )
     )
     private val memoryState = MutableStateFlow(MemoryUiState(emptyList()))
-    private val cpuState = MutableStateFlow(CpuUiState(emptyList()))
     private val deviceSerial = MutableStateFlow("")
 
     val uiState = combine(
         contentState,
         infoState,
         memoryState,
-        cpuState,
         batteryState,
         deviceSerial
     ) { states ->
@@ -78,9 +72,8 @@ internal class DeviceViewModel(
             contentState = states[0] as ContentUiState,
             infoState = states[1] as InfoUiState,
             memoryState = states[2] as MemoryUiState,
-            cpuState = states[3] as CpuUiState,
-            batteryState = states[4] as BatteryUiState,
-            deviceSerial = states[5] as String
+            batteryState = states[3] as BatteryUiState,
+            deviceSerial = states[4] as String
         )
     }
         .stateIn(
@@ -90,7 +83,6 @@ internal class DeviceViewModel(
                 contentState = contentState.value,
                 infoState = infoState.value,
                 memoryState = memoryState.value,
-                cpuState = cpuState.value,
                 batteryState = batteryState.value,
                 deviceSerial = deviceSerial.value
             )
@@ -116,7 +108,6 @@ internal class DeviceViewModel(
     }
 
     private fun onRefresh() {
-        refreshCpu()
         refreshMemory()
         refreshBattery()
         deviceInfo()
@@ -145,38 +136,6 @@ internal class DeviceViewModel(
             .getOrNull()
             .orEmpty()
             .removeSuffix("\n")
-    }
-
-    private fun refreshCpu() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val output = sendCommand("shell", "dumpsys", "cpuinfo")
-            val regex = CPU_REGEX.toRegex()
-            val items = output.lineSequence()
-                .mapNotNull { regex.find(it) }
-                .mapNotNull {
-                    try {
-                        val packageName = it.groupValues[2].split("/")
-
-                        CpuItem(
-                            cpuUsage = it.groupValues[1].toDoubleOrNull() ?: return@mapNotNull null,
-                            packageName = packageName[1],
-                            pId = packageName[0].toIntOrNull() ?: return@mapNotNull null,
-                            userPercentage = it.groupValues[3].toDoubleOrNull() ?: return@mapNotNull null,
-                            kernelPercentage = it.groupValues[4].toDoubleOrNull() ?: return@mapNotNull null,
-                            minorFaults = it.groupValues[5].toIntOrNull(),
-                            majorFaults = it.groupValues[6].toIntOrNull()
-                        )
-                    } catch (e: NumberFormatException) {
-                        // Handle parsing errors gracefully (e.g., log the error)
-                        null
-                    }
-                }
-                .sortedByDescending(CpuItem::cpuUsage)
-                .distinctBy(CpuItem::packageName)
-                .toList()
-
-            cpuState.update { it.copy(list = items) }
-        }
     }
 
     private fun refreshMemory() {
@@ -252,10 +211,6 @@ internal class DeviceViewModel(
     }
 
     companion object {
-
-        // CPU
-        private const val CPU_REGEX =
-            """(\d+(?:\.\d+)?)%\s+([^:]+):\s+(\d+(?:\.\d+)?)%\s+user\s+\+\s+(\d+(?:\.\d+)?)%\s+kernel\s+/ faults:\s+(\d+)\s+minor\s+(\d+)\s+major"""
 
         // MEM
         private const val MEM_REGEX = """([\d,]+)K:\s+([a-zA-Z0-9._:-]+)\s+$${"pid"}\s+(\d+)(?:\s+/\s+([a-zA-Z\s]+))?$"""

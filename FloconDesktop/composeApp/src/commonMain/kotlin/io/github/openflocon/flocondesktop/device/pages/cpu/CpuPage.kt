@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.device.pages
+package io.github.openflocon.flocondesktop.device.pages.cpu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,15 +19,29 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.device.DeviceAction
-import io.github.openflocon.flocondesktop.device.models.CpuUiState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun CpuPage(
-    state: CpuUiState,
-    onAction: (DeviceAction) -> Unit
+    deviceSerial: String
+) {
+    val viewModel = koinViewModel<CpuViewModel> { parametersOf(deviceSerial) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Content(
+        uiState = uiState,
+        onAction = viewModel::onAction
+    )
+}
+
+@Composable
+private fun Content(
+    uiState: CpuUiState,
+    onAction: (CpuAction) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -56,7 +71,7 @@ internal fun CpuPage(
             )
         }
         itemsIndexed(
-            items = state.list,
+            items = uiState.list,
             key = { _, item -> item.pId }
         ) { index, item ->
             BasicItem(
@@ -69,7 +84,7 @@ internal fun CpuPage(
                 minorFaults = item.minorFaults?.toString().orEmpty(),
                 style = FloconTheme.typography.labelSmall
             )
-            if (index != state.list.lastIndex) {
+            if (index != uiState.list.lastIndex) {
                 FloconHorizontalDivider(
                     color = FloconTheme.colorPalette.secondary
                 )
