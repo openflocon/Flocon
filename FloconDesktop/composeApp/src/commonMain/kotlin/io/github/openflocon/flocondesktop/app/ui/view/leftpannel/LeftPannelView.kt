@@ -29,7 +29,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 
 val PanelMaxWidth = 275.dp
 val PanelMinWidth = 64.dp
-val PanelContentMinSize = 40.dp
+val PanelContentMinSize = 48.dp
 
 @Composable
 fun LeftPanelView(

@@ -14,7 +14,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -67,22 +66,23 @@ fun PanelView(
             0.3f
         } else 1f
     )
+    val horizontalPadding = 12.dp
 
     Row(
         modifier = modifier
-            .height(28.dp)
             .clip(shape)
             .background(color)
             .graphicsLayer {
                 alpha = lineAlpha
             }
             .clickable(onClick = onClick, interactionSource = interactionSource, indication = null)
-            .padding(horizontal = 12.dp, vertical = 4.dp),
+            .padding(horizontal = horizontalPadding, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             modifier = Modifier
-                .size(16.dp),
+                .size(PanelContentMinSize - horizontalPadding.times(2))
+                .padding(4.dp),
             imageVector = icon,
             contentDescription = "Description de mon image",
             tint = iconColor,
