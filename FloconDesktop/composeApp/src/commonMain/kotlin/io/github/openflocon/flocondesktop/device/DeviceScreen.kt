@@ -23,10 +23,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.flocondesktop.device.models.DeviceUiState
 import io.github.openflocon.flocondesktop.device.models.previewDeviceUiState
+import io.github.openflocon.flocondesktop.device.pages.MemoryPage
 import io.github.openflocon.flocondesktop.device.pages.battery.BatteryPage
 import io.github.openflocon.flocondesktop.device.pages.cpu.CpuPage
-import io.github.openflocon.flocondesktop.device.pages.InfoPage
-import io.github.openflocon.flocondesktop.device.pages.MemoryPage
+import io.github.openflocon.flocondesktop.device.pages.info.InfoPage
 import io.github.openflocon.flocondesktop.device.pages.permission.PermissionPage
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
@@ -108,7 +108,7 @@ private fun Content(
                     .padding(it)
             ) { index ->
                 when (tabs[index]) {
-                    DeviceTab.INFORMATION -> InfoPage(uiState.infoState)
+                    DeviceTab.INFORMATION -> InfoPage(uiState.deviceSerial)
                     DeviceTab.BATTERY -> BatteryPage(uiState.deviceSerial)
                     DeviceTab.CPU -> CpuPage(uiState.deviceSerial)
                     DeviceTab.MEMORY -> MemoryPage(uiState.memoryState)
@@ -127,23 +127,23 @@ private fun Header(
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .weight(1f)
-        ) {
-            Text(
-                text = uiState.infoState.model,
-                style = FloconTheme.typography.headlineSmall
-            )
-            SelectionContainer {
-                Text(
-                    text = uiState.infoState.serialNumber,
-                    style = FloconTheme.typography.labelSmall
-                )
-            }
-        }
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(16.dp)
+//                .weight(1f)
+//        ) {
+//            Text(
+//                text = uiState.infoState.model,
+//                style = FloconTheme.typography.headlineSmall
+//            )
+//            SelectionContainer {
+//                Text(
+//                    text = uiState.infoState.serialNumber,
+//                    style = FloconTheme.typography.labelSmall
+//                )
+//            }
+//        }
         FloconIconButton(
             imageVector = Icons.Outlined.Refresh,
             onClick = { onAction(DeviceAction.Refresh) }
