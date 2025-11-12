@@ -3,10 +3,11 @@ package io.github.openflocon.flocondesktop.features.files.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -14,6 +15,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,6 +26,7 @@ import io.github.openflocon.flocondesktop.features.files.FilesViewModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.previewFilesStateUiModel
+import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
@@ -65,6 +69,11 @@ private fun FilesScreen(
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
+    val filterText = remember { mutableStateOf("") }
+    val files = remember(filterText.value, state.files) {
+        state.files.filter { it.name.contains(filterText.value, ignoreCase = true) }
+    }
+
     FloconFeature(
         modifier = modifier.fillMaxSize()
     ) {
@@ -73,6 +82,14 @@ private fun FilesScreen(
             current = state.current,
             onBack = onNavigateUp,
             onRefresh = onRefresh,
+            filterBar = {
+                FilterBar(
+                    filterText = filterText,
+                    placeholderText = "Filter files",
+                    onTextChange = { filterText.value = it },
+                    modifier = Modifier.width(250.dp),
+                )
+            },
             onDeleteContent = onDeleteContent,
         )
         Box(
@@ -87,14 +104,14 @@ private fun FilesScreen(
                 modifier = Modifier
                     .fillMaxSize(),
             ) {
-                itemsIndexed(state.files) { index, item ->
+                itemsIndexed(files) { index, item ->
                     FileItemRow(
                         item,
                         onClick = onFileClicked,
                         modifier = Modifier.fillMaxWidth(),
                         onContextualAction = onContextualAction,
                     )
-                    if (index != state.files.lastIndex) {
+                    if (index != files.lastIndex) {
                         HorizontalDivider(modifier = Modifier.fillMaxWidth())
                     }
                 }
