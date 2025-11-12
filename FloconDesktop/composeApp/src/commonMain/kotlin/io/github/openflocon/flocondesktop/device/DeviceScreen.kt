@@ -27,7 +27,7 @@ import io.github.openflocon.flocondesktop.device.pages.BatteryPage
 import io.github.openflocon.flocondesktop.device.pages.CpuPage
 import io.github.openflocon.flocondesktop.device.pages.InfoPage
 import io.github.openflocon.flocondesktop.device.pages.MemoryPage
-import io.github.openflocon.flocondesktop.device.pages.PermissionPage
+import io.github.openflocon.flocondesktop.device.pages.permission.PermissionPage
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIconButton
@@ -112,7 +112,7 @@ private fun Content(
                     DeviceTab.BATTERY -> BatteryPage(uiState.batteryState)
                     DeviceTab.CPU -> CpuPage(uiState.cpuState, onAction)
                     DeviceTab.MEMORY -> MemoryPage(uiState.memoryState)
-                    DeviceTab.PERMISSION -> PermissionPage(uiState.permissionState, onAction)
+                    DeviceTab.PERMISSION -> PermissionPage(uiState.deviceSerial)
                 }
             }
         }

@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.device.models
+package io.github.openflocon.flocondesktop.device.pages.permission
 
 import androidx.compose.runtime.Immutable
 
@@ -14,5 +14,5 @@ data class PermissionItem(
 )
 
 fun previewPermissionUiState() = PermissionUiState(
-    list = emptyList()
+    emptyList()
 )
