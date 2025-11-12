@@ -18,6 +18,7 @@ import io.github.openflocon.flocondesktop.app.AppScreen
 import io.github.openflocon.flocondesktop.app.di.appModule
 import io.github.openflocon.flocondesktop.common.di.commonModule
 import io.github.openflocon.flocondesktop.core.di.coreModule
+import io.github.openflocon.flocondesktop.device.deviceModule
 import io.github.openflocon.flocondesktop.features.featuresModule
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -43,6 +44,7 @@ fun App() {
                 dataCoreModule,
                 dataLocalModule,
                 dataRemoteModule,
+                deviceModule,
                 // Temporary
                 module {
 //                    scope<MainRoutes.Sub> {

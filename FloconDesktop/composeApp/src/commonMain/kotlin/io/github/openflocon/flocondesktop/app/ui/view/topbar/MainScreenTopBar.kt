@@ -41,6 +41,7 @@ fun MainScreenTopBar(
     recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
+    onClickDetail: (DeviceItemUiModel) -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -57,6 +58,7 @@ fun MainScreenTopBar(
             onAppSelected = onAppSelected,
             deleteDevice = deleteDevice,
             deleteApp = deleteApp,
+            onClickDetail = onClickDetail
         )
         Spacer(modifier = Modifier.weight(1f))
         TopBarActions(
