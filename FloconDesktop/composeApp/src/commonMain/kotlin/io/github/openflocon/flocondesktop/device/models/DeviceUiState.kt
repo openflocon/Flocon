@@ -7,14 +7,12 @@ data class DeviceUiState(
     val deviceSerial: String,
     val contentState: ContentUiState,
     val infoState: InfoUiState,
-    val memoryState: MemoryUiState,
-    val batteryState: BatteryUiState
+    val memoryState: MemoryUiState
 )
 
 internal fun previewDeviceUiState() = DeviceUiState(
     deviceSerial = "",
     contentState = previewContentUiState(),
     memoryState = previewMemoryUiState(),
-    infoState = previewInfoUiState(),
-    batteryState = previewBatteryUiState()
+    infoState = previewInfoUiState()
 )
