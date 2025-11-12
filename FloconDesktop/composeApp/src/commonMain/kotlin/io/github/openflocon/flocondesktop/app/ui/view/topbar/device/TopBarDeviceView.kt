@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.PhoneIphone
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Details
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 
 @Composable
 internal fun TopBarDeviceView(
@@ -55,7 +57,7 @@ internal fun TopBarDeviceView(
                 else
                     Modifier
             )
-            .padding(horizontal = 8.dp, 4.dp),
+            .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
@@ -99,6 +101,7 @@ internal fun TopBarDeviceView(
         }
 
         Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
@@ -114,21 +117,25 @@ internal fun TopBarDeviceView(
                 Text(
                     text = if (device.isActive.not()) {
                         "Disconnected"
-                    } else "Connected",
+                    } else {
+                        "Connected"
+                    },
                     color = FloconTheme.colorPalette.onPrimary,
                     style = FloconTheme.typography.bodySmall.copy(
                         fontSize = 10.sp,
                     ),
                 )
             }
+            FloconVerticalDivider(color = FloconTheme.colorPalette.secondary)
             FloconIconButton(
                 onClick = { onClickDetail?.invoke() }
             ) {
                 FloconIcon(
-                    imageVector = Icons.Outlined.Details
+                    imageVector = Icons.Outlined.Info
                 )
             }
             if (!selected && onDelete != null) {
+                FloconVerticalDivider(color = FloconTheme.colorPalette.secondary)
                 Spacer(modifier = Modifier.weight(1f))
                 Box(
                     Modifier
