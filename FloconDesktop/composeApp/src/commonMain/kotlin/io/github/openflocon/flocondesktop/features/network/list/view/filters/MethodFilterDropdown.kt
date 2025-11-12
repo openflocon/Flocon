@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
@@ -15,7 +16,6 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.col
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.previewMethodFilterState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun MethodFilterDropdownContent(

@@ -9,13 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // Custom colors for networkStatusUi/method views to integrate better with the theme
 val successTagBackground = Color(0xFF28A745).copy(alpha = 0.3f) // Muted green for success
@@ -77,10 +77,10 @@ private fun StatusView_Preview() {
     FloconTheme {
         StatusView(
             status =
-            NetworkStatusUi(
-                text = "200",
-                status = NetworkStatusUi.Status.SUCCESS,
-            ),
+                NetworkStatusUi(
+                    text = "200",
+                    status = NetworkStatusUi.Status.SUCCESS,
+                ),
         )
     }
 }

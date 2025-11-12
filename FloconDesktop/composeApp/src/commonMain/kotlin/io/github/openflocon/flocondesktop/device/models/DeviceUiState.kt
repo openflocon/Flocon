@@ -5,12 +5,10 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class DeviceUiState(
     val deviceSerial: String,
-    val contentState: ContentUiState,
-    val memoryState: MemoryUiState
+    val contentState: ContentUiState
 )
 
 internal fun previewDeviceUiState() = DeviceUiState(
     deviceSerial = "",
-    contentState = previewContentUiState(),
-    memoryState = previewMemoryUiState()
+    contentState = previewContentUiState()
 )
