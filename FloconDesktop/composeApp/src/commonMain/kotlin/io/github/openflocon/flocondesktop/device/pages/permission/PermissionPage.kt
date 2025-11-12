@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.device.pages
+package io.github.openflocon.flocondesktop.device.pages.permission
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,20 +12,35 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.device.DeviceAction
-import io.github.openflocon.flocondesktop.device.models.PermissionUiState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun PermissionPage(
-    state: PermissionUiState,
-    onAction: (DeviceAction) -> Unit
+    deviceSerial: String
+) {
+    val viewModel = koinViewModel<PermissionViewModel> { parametersOf(deviceSerial) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Content(
+        uiState = uiState,
+        onAction = viewModel::onAction
+    )
+}
+
+@Composable
+private fun Content(
+    uiState: PermissionUiState,
+    onAction: (PermissionAction) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -39,7 +54,7 @@ internal fun PermissionPage(
             )
     ) {
         itemsIndexed(
-            items = state.list,
+            items = uiState.list,
             key = { _, item -> item.name }
         ) { index, item ->
             Row(
@@ -50,7 +65,7 @@ internal fun PermissionPage(
                     .clip(FloconTheme.shapes.medium)
                     .clickable(onClick = {
                         onAction(
-                            DeviceAction.ChangePermission(
+                            PermissionAction.ChangePermission(
                                 permission = item.name,
                                 granted = item.granted
                             )
@@ -69,7 +84,7 @@ internal fun PermissionPage(
                     uncheckedColor = FloconTheme.colorPalette.secondary
                 )
             }
-            if (index != state.list.lastIndex) {
+            if (index != uiState.list.lastIndex) {
                 FloconHorizontalDivider(
                     color = FloconTheme.colorPalette.secondary
                 )
