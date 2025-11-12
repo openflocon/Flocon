@@ -24,7 +24,7 @@ import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.flocondesktop.device.models.DeviceUiState
 import io.github.openflocon.flocondesktop.device.models.previewDeviceUiState
 import io.github.openflocon.flocondesktop.device.pages.BatteryPage
-import io.github.openflocon.flocondesktop.device.pages.CpuPage
+import io.github.openflocon.flocondesktop.device.pages.cpu.CpuPage
 import io.github.openflocon.flocondesktop.device.pages.InfoPage
 import io.github.openflocon.flocondesktop.device.pages.MemoryPage
 import io.github.openflocon.flocondesktop.device.pages.permission.PermissionPage
@@ -110,7 +110,7 @@ private fun Content(
                 when (tabs[index]) {
                     DeviceTab.INFORMATION -> InfoPage(uiState.infoState)
                     DeviceTab.BATTERY -> BatteryPage(uiState.batteryState)
-                    DeviceTab.CPU -> CpuPage(uiState.cpuState, onAction)
+                    DeviceTab.CPU -> CpuPage(uiState.deviceSerial)
                     DeviceTab.MEMORY -> MemoryPage(uiState.memoryState)
                     DeviceTab.PERMISSION -> PermissionPage(uiState.deviceSerial)
                 }

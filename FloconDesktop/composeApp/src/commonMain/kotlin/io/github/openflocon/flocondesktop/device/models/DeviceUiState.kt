@@ -7,7 +7,6 @@ data class DeviceUiState(
     val deviceSerial: String,
     val contentState: ContentUiState,
     val infoState: InfoUiState,
-    val cpuState: CpuUiState,
     val memoryState: MemoryUiState,
     val batteryState: BatteryUiState
 )
@@ -15,7 +14,6 @@ data class DeviceUiState(
 internal fun previewDeviceUiState() = DeviceUiState(
     deviceSerial = "",
     contentState = previewContentUiState(),
-    cpuState = previewCpuUiState(),
     memoryState = previewMemoryUiState(),
     infoState = previewInfoUiState(),
     batteryState = previewBatteryUiState()
