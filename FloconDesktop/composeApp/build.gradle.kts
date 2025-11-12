@@ -31,6 +31,7 @@ kotlin {
         freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
         freeCompilerArgs.add("-Xcontext-parameters")
         freeCompilerArgs.add("-Xcontext-sensitive-resolution")
+        freeCompilerArgs.add("-Xdata-flow-based-exhaustiveness")
     }
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)

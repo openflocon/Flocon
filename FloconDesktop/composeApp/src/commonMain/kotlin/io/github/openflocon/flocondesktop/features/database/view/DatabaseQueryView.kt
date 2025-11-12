@@ -37,12 +37,12 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 interface SqlColorPalette {
     val keywordColor: Color
@@ -63,10 +63,9 @@ object DefaultSqlPalette : SqlColorPalette {
 }
 
 
-
 class ColorsTransformation() : VisualTransformation {
 
-    val colorPalette : SqlColorPalette = DefaultSqlPalette
+    val colorPalette: SqlColorPalette = DefaultSqlPalette
 
     private fun buildAnnotatedStringWithColors(text: AnnotatedString): AnnotatedString {
         return buildAnnotatedString {
