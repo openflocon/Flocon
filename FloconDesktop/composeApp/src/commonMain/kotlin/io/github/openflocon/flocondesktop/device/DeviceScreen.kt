@@ -21,8 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.device.models.DeviceId
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
-import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.device.models.DeviceUiState
 import io.github.openflocon.flocondesktop.device.models.previewDeviceUiState
 import io.github.openflocon.flocondesktop.device.pages.BatteryPage
@@ -43,8 +41,7 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun DeviceScreen(
-    deviceId: DeviceId,
-    onCloseRequest: () -> Unit
+    deviceId: DeviceId
 ) {
     val viewModel = koinViewModel<DeviceViewModel> {
         parametersOf(deviceId)
@@ -53,7 +50,6 @@ internal fun DeviceScreen(
 
     Content(
         uiState = uiState,
-        onCloseRequest = onCloseRequest,
         onAction = viewModel::onAction
     )
 }
@@ -61,7 +57,6 @@ internal fun DeviceScreen(
 @Composable
 private fun Content(
     uiState: DeviceUiState,
-    onCloseRequest: () -> Unit,
     onAction: (DeviceAction) -> Unit
 ) {
     val tabs = remember { DeviceTab.entries }
@@ -71,60 +66,53 @@ private fun Content(
         pagerState.animateScrollToPage(uiState.contentState.selectedTab.ordinal)
     }
 
-    FloconWindow(
-        title = "Device - ${uiState.infoState.model}",
-        onCloseRequest = onCloseRequest,
-        state = createFloconWindowState()
+    FloconSurface(
+        modifier = Modifier.fillMaxSize()
     ) {
-//        window.minimumSize = Dimension(500, 500) // TODO
-        FloconSurface(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            FloconScaffold(
-                topBar = {
-                    Column(
+        FloconScaffold(
+            topBar = {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Header(
+                        uiState = uiState,
+                        onAction = onAction
+                    )
+                    FloconScrollableTabRow(
+                        selectedTabIndex = uiState.contentState.selectedTab.ordinal,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Header(
-                            uiState = uiState,
-                            onAction = onAction
-                        )
-                        FloconScrollableTabRow(
-                            selectedTabIndex = uiState.contentState.selectedTab.ordinal,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            tabs.forEach { tab ->
-                                FloconTab(
-                                    text = tab.title,
-                                    selected = uiState.contentState.selectedTab == tab,
-                                    onClick = { onAction(DeviceAction.SelectTab(tab)) },
-                                    selectedContentColor = FloconTheme.colorPalette.onSurface
-                                )
-                            }
+                        tabs.forEach { tab ->
+                            FloconTab(
+                                text = tab.title,
+                                selected = uiState.contentState.selectedTab == tab,
+                                onClick = { onAction(DeviceAction.SelectTab(tab)) },
+                                selectedContentColor = FloconTheme.colorPalette.onSurface
+                            )
                         }
-                        FloconHorizontalDivider(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = FloconTheme.colorPalette.primary
-                        )
                     }
+                    FloconHorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = FloconTheme.colorPalette.primary
+                    )
                 }
-            ) {
-                HorizontalPager(
-                    state = pagerState,
-                    userScrollEnabled = false,
-                    contentPadding = PaddingValues(8.dp),
-                    pageSpacing = 8.dp,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) { index ->
-                    when (tabs[index]) {
-                        DeviceTab.INFORMATION -> InfoPage(uiState.infoState)
-                        DeviceTab.BATTERY -> BatteryPage(uiState.batteryState)
-                        DeviceTab.CPU -> CpuPage(uiState.cpuState, onAction)
-                        DeviceTab.MEMORY -> MemoryPage(uiState.memoryState)
-                        DeviceTab.PERMISSION -> PermissionPage(uiState.permissionState, onAction)
-                    }
+            }
+        ) {
+            HorizontalPager(
+                state = pagerState,
+                userScrollEnabled = false,
+                contentPadding = PaddingValues(8.dp),
+                pageSpacing = 8.dp,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            ) { index ->
+                when (tabs[index]) {
+                    DeviceTab.INFORMATION -> InfoPage(uiState.infoState)
+                    DeviceTab.BATTERY -> BatteryPage(uiState.batteryState)
+                    DeviceTab.CPU -> CpuPage(uiState.cpuState, onAction)
+                    DeviceTab.MEMORY -> MemoryPage(uiState.memoryState)
+                    DeviceTab.PERMISSION -> PermissionPage(uiState.permissionState, onAction)
                 }
             }
         }
@@ -169,7 +157,6 @@ private fun Preview() {
     FloconTheme {
         Content(
             uiState = previewDeviceUiState(),
-            onCloseRequest = {},
             onAction = {}
         )
     }

@@ -29,6 +29,7 @@ internal fun TopBarDeviceDropdown(
     state: DevicesStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     deleteDevice: (DeviceItemUiModel) -> Unit,
+    onClickDetail: (DeviceItemUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -72,6 +73,7 @@ internal fun TopBarDeviceDropdown(
                             onDeviceSelected(device)
                             expanded = false
                         },
+                        onClickDetail = { onClickDetail(device) },
                         onDelete = {
                             deleteDevice(device)
                             expanded = false

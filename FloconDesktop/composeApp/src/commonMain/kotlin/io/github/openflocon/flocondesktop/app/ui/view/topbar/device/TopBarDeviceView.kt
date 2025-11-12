@@ -23,11 +23,6 @@ import androidx.compose.material.icons.outlined.Details
 import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,11 +47,10 @@ internal fun TopBarDeviceView(
     device: DeviceItemUiModel,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
+    onClickDetail: (() -> Unit)? = null,
     selected: Boolean = false,
     onDelete: (() -> Unit)? = null,
 ) {
-    var openDetail by remember { mutableStateOf(false) }
-
     Row(
         modifier = modifier
             .then(
@@ -134,7 +128,7 @@ internal fun TopBarDeviceView(
                 )
             }
             FloconIconButton(
-                onClick = { openDetail = true }
+                onClick = { onClickDetail?.invoke() }
             ) {
                 FloconIcon(
                     imageVector = Icons.Outlined.Details
@@ -157,15 +151,6 @@ internal fun TopBarDeviceView(
                     )
                 }
             }
-        }
-    }
-
-    if (openDetail) {
-        key(device.id) {
-            DeviceScreen(
-                deviceId = device.id,
-                onCloseRequest = { openDetail = false }
-            )
         }
     }
 }

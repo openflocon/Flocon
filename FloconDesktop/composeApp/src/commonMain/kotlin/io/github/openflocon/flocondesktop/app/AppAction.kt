@@ -21,4 +21,7 @@ internal sealed interface AppAction {
     data object Restart : AppAction
 
     data object Screenshoot : AppAction
+
+    data class DeviceDetail(val item: DeviceItemUiModel) : AppAction
+
 }
