@@ -7,6 +7,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -27,6 +28,7 @@ fun FilesTopBar(
     onBack: () -> Unit,
     onDeleteContent: () -> Unit,
     onRefresh: () -> Unit,
+    filterBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hasParentFile = current != null
@@ -53,6 +55,8 @@ fun FilesTopBar(
                     .weight(1f)
                     .padding(vertical = 4.dp, horizontal = 8.dp),
             )
+
+            filterBar()
         },
         actions = {
             FloconIconButton(
@@ -79,6 +83,7 @@ private fun FilesTopBarPreview_noParent() {
             onRefresh = {},
             onDeleteContent = {},
             modifier = Modifier.fillMaxWidth(),
+            filterBar = {},
         )
     }
 }
@@ -101,6 +106,11 @@ private fun FilesTopBarPreview() {
             onRefresh = {},
             onDeleteContent = {},
             modifier = Modifier.fillMaxWidth(),
+            filterBar = {
+                Button(onClick = {}) {
+                    Text(text = "Filter")
+                }
+            },
         )
     }
 }

@@ -3,10 +3,10 @@ package io.github.openflocon.flocondesktop.features.files.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -14,6 +14,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,6 +25,7 @@ import io.github.openflocon.flocondesktop.features.files.FilesViewModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.previewFilesStateUiModel
+import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
@@ -34,6 +37,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun FilesScreen(modifier: Modifier = Modifier) {
     val viewModel: FilesViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val filterText = viewModel.filterText
 
     DisposableEffect(viewModel) {
         viewModel.onVisible()
@@ -49,12 +53,16 @@ fun FilesScreen(modifier: Modifier = Modifier) {
         onContextualAction = viewModel::onContextualAction,
         onRefresh = viewModel::onRefresh,
         onDeleteContent = viewModel::onDeleteContent,
+        filterText = filterText,
+        onFilterTextChanged = viewModel::onFilterTextChanged,
     )
 }
 
 @Composable
 private fun FilesScreen(
     state: FilesStateUiModel,
+    filterText: State<String>,
+    onFilterTextChanged: (String) -> Unit,
     onNavigateUp: () -> Unit,
     onRefresh: () -> Unit,
     onDeleteContent: () -> Unit,
@@ -73,6 +81,14 @@ private fun FilesScreen(
             current = state.current,
             onBack = onNavigateUp,
             onRefresh = onRefresh,
+            filterBar = {
+                FilterBar(
+                    filterText = filterText,
+                    placeholderText = "Filter files",
+                    onTextChange = onFilterTextChanged,
+                    modifier = Modifier.width(250.dp),
+                )
+            },
             onDeleteContent = onDeleteContent,
         )
         Box(
@@ -119,6 +135,8 @@ private fun FilesScreenPreview() {
             onRefresh = {},
             onDeleteContent = {},
             onContextualAction = { _, _ -> },
+            filterText = mutableStateOf(""),
+            onFilterTextChanged = {},
         )
     }
 }
