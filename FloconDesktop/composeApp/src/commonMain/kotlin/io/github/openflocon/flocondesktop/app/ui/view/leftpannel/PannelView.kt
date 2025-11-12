@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -47,11 +48,17 @@ fun PanelView(
     val shape = FloconTheme.shapes.medium
     val color by animateColorAsState(
         targetValue = when {
-            isSelected -> FloconTheme.colorPalette.accent
             hovered -> FloconTheme.colorPalette.secondary
             else -> FloconTheme.colorPalette.surface.copy(alpha = 0f)
         },
         label = "color",
+    )
+    val borderColor by animateColorAsState(
+        targetValue = when {
+            isSelected -> FloconTheme.colorPalette.accent
+            else -> FloconTheme.colorPalette.surface.copy(alpha = 0f)
+        },
+        label = "border_color",
     )
     val iconColor by animateColorAsState(
         targetValue = when {
@@ -60,7 +67,6 @@ fun PanelView(
             else -> FloconTheme.colorPalette.onPrimary
         }
     )
-
     val lineAlpha by animateFloatAsState(
         if (isEnabled.not() && isSelected.not()) {
             0.3f
@@ -72,6 +78,7 @@ fun PanelView(
         modifier = modifier
             .clip(shape)
             .background(color)
+            .border(1.dp, borderColor, shape)
             .graphicsLayer {
                 alpha = lineAlpha
             }

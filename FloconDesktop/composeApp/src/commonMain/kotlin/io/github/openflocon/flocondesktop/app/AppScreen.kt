@@ -54,6 +54,7 @@ private fun Content(
                 MenuSceneStrategy(
                     menuContent = {
                         LeftPanelView(
+                            current = uiState.contentState.current,
                             state = uiState.menuState,
                             expanded = it,
                             onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) }
@@ -73,7 +74,8 @@ private fun Content(
                             onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) }
                         )
                     }
-                ))
+                )
+            )
             .then(SinglePaneSceneStrategy()),
         modifier = Modifier
             .fillMaxSize()

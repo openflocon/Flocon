@@ -9,13 +9,11 @@ import io.github.openflocon.flocondesktop.app.ui.view.icon
 
 @Immutable
 data class MenuState(
-    val current: SubScreen,
     val sections: List<MenuSection>,
     val bottomItems: List<MenuItem>,
 )
 
-fun previewMenuState(current: SubScreen) = MenuState(
-    current = current,
+fun previewMenuState() = MenuState(
     bottomItems = listOf(
         MenuItem(
             screen = SubScreen.Settings,
@@ -91,8 +89,7 @@ fun previewMenuState(current: SubScreen) = MenuState(
     ),
 )
 
-internal fun buildMenu(current: SubScreen) = MenuState(
-    current = current,
+internal fun buildMenu() = MenuState(
     bottomItems = listOf(
         item(subScreen = SubScreen.Settings)
     ),

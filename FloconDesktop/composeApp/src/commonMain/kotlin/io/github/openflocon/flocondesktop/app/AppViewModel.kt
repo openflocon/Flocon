@@ -52,7 +52,7 @@ internal class AppViewModel(
         )
     )
     private val menuState = MutableStateFlow(
-        buildMenu(SubScreen.Network)
+        buildMenu()
     )
 
     val uiState = combine(
