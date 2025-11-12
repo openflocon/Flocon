@@ -28,6 +28,8 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActio
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 
+val TopBarHeight = 48.dp
+
 @Composable
 fun MainScreenTopBar(
     modifier: Modifier = Modifier,

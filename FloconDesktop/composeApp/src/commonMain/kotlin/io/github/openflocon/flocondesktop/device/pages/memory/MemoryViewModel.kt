@@ -4,10 +4,12 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.adb.usecase.SendCommandUseCase
 import io.github.openflocon.flocondesktop.device.PageViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class MemoryViewModel(
     deviceSerial: String,
@@ -18,38 +20,41 @@ class MemoryViewModel(
     val uiState = _uiState.asStateFlow()
 
     init {
-        refreshMemory()
+        viewModelScope.launch(Dispatchers.IO) {
+            while (true) {
+                refreshMemory()
+                delay(10.seconds)
+            }
+        }
     }
 
     fun onAction(action: MemoryAction) {
 
     }
 
-    private fun refreshMemory() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val output = sendCommand("shell", "dumpsys", "meminfo")
-            val regex = MEM_REGEX.toRegex()
-            val items = output.lineSequence()
-                .map { it.trim() }
-                .mapNotNull { regex.find(it) }
-                .mapNotNull {
-                    try {
-                        MemoryItem(
-                            memoryUsage = formatMemoryUsage(
-                                memoryUsageKB = it.groupValues[1].replace(",", "").toDoubleOrNull()
-                            ),
-                            processName = it.groupValues[2],
-                            pid = it.groupValues[3].toIntOrNull() ?: return@mapNotNull null
-                        )
-                    } catch (e: NumberFormatException) {
-                        // Handle parsing errors gracefully (e.g., log the error)
-                        null
-                    }
+    private suspend fun refreshMemory() {
+        val output = sendCommand("shell", "dumpsys", "meminfo")
+        val regex = MEM_REGEX.toRegex()
+        val items = output.lineSequence()
+            .map { it.trim() }
+            .mapNotNull { regex.find(it) }
+            .mapNotNull {
+                try {
+                    MemoryItem(
+                        memoryUsage = formatMemoryUsage(
+                            memoryUsageKB = it.groupValues[1].replace(",", "").toDoubleOrNull()
+                        ),
+                        processName = it.groupValues[2],
+                        pid = it.groupValues[3].toIntOrNull() ?: return@mapNotNull null
+                    )
+                } catch (e: NumberFormatException) {
+                    // Handle parsing errors gracefully (e.g., log the error)
+                    null
                 }
-                .toList()
+            }
+            .toList()
 
-            _uiState.update { it.copy(list = items) }
-        }
+        _uiState.update { it.copy(list = items) }
     }
 
     private fun formatMemoryUsage(memoryUsageKB: Double?): String {
