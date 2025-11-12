@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,7 +22,6 @@ import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockN
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.previewMockNetworkLineUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
-import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconOverflow
@@ -33,9 +31,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NetworkMocksWindow(
-    instanceId: String,
-    fromNetworkCallId: String?,
-    onCloseRequest: () -> Unit,
+    fromNetworkCallId: String?
 ) {
     val viewModel: NetworkMocksViewModel = koinViewModel()
     LaunchedEffect(viewModel, fromNetworkCallId) {
@@ -43,26 +39,21 @@ fun NetworkMocksWindow(
     }
     val mocks by viewModel.items.collectAsStateWithLifecycle()
     val editionWindow by viewModel.editionWindow.collectAsStateWithLifecycle()
-    key(instanceId) {
-        FloconDialog(
-            onDismissRequest = onCloseRequest,
-        ) {
-            NetworkMocksContent(
-                mocks = mocks,
-                modifier = Modifier.fillMaxWidth(),
-                onAction = viewModel::onAction,
-            )
-        }
 
-        editionWindow?.let {
-            NetworkEditionWindow(
-                instanceId = it.windowInstanceId,
-                state = it.selectedMockUiModel,
-                onCloseRequest = viewModel::cancelMockCreation,
-                onCancel = viewModel::cancelMockCreation,
-                onSave = viewModel::addMock,
-            )
-        }
+    NetworkMocksContent(
+        mocks = mocks,
+        modifier = Modifier.fillMaxWidth(),
+        onAction = viewModel::onAction,
+    )
+
+    editionWindow?.let {
+        NetworkEditionWindow(
+            instanceId = it.windowInstanceId,
+            state = it.selectedMockUiModel,
+            onCloseRequest = viewModel::cancelMockCreation,
+            onCancel = viewModel::cancelMockCreation,
+            onSave = viewModel::addMock,
+        )
     }
 }
 

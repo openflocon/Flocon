@@ -2,7 +2,6 @@
 
 package io.github.openflocon.flocondesktop.features.network.badquality.list.view
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable

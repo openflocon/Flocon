@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features
 
+import io.github.openflocon.flocondesktop.app.ui.settings.settingsModule
 import io.github.openflocon.flocondesktop.features.analytics.analyticsModule
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardModule
 import io.github.openflocon.flocondesktop.features.database.databaseModule
@@ -24,5 +25,6 @@ val featuresModule = module {
         dashboardModule,
         tableModule,
         deeplinkModule,
+        settingsModule
     )
 }

@@ -19,31 +19,47 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.flocondesktop.features.analytics.AnalyticsDetailViewModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
-import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun AnalyticsDetailView(
-    state: AnalyticsDetailUiModel,
-    modifier: Modifier = Modifier
+    id: String
+) {
+    val viewModel = koinViewModel<AnalyticsDetailViewModel> {
+        parametersOf(id)
+    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Content(
+        uiState = uiState
+    )
+}
+
+@Composable
+private fun Content(
+    uiState: AnalyticsDetailUiModel
 ) {
     val scrollState = rememberScrollState()
     val linesLabelWidth: Dp = 130.dp
     val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
 
     Box(
-        modifier
-            .background(FloconTheme.colorPalette.primary)
+        Modifier.background(FloconTheme.colorPalette.primary)
     ) {
         SelectionContainer(
             modifier = Modifier.fillMaxSize()
@@ -56,14 +72,14 @@ fun AnalyticsDetailView(
                 AnalyticsDetailLineTextView(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Name",
-                    value = state.eventName,
+                    value = uiState.eventName,
                     labelWidth = linesLabelWidth,
                     withDivider = false,
                 )
                 AnalyticsDetailLineTextView(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Time",
-                    value = state.dateFormatted,
+                    value = uiState.dateFormatted,
                     labelWidth = linesLabelWidth,
                     withDivider = false,
                 )
@@ -77,7 +93,7 @@ fun AnalyticsDetailView(
                             shape = FloconTheme.shapes.medium
                         )
                 ) {
-                    state.properties.forEachIndexed { index, property ->
+                    uiState.properties.forEachIndexed { index, property ->
                         AnalyticsDetailLineTextView(
                             modifier = Modifier.fillMaxWidth(),
                             label = property.name,
@@ -85,7 +101,7 @@ fun AnalyticsDetailView(
                             labelWidth = linesLabelWidth,
                             withDivider = true,
                         )
-                        if (index != state.properties.lastIndex) {
+                        if (index != uiState.properties.lastIndex) {
                             FloconHorizontalDivider(
                                 modifier = Modifier.fillMaxWidth(),
                                 color = FloconTheme.colorPalette.secondary

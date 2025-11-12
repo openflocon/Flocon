@@ -39,6 +39,7 @@ data class NetworkDetailViewState(
             val size: String,
             val headers: List<NetworkDetailHeaderUi>?,
         ) : Response
+
         @Immutable
         data class Error(
             val issue: String,

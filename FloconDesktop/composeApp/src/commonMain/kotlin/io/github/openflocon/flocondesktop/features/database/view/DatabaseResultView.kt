@@ -20,13 +20,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.CallMade
 import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
-import androidx.compose.material.icons.filled.FileUpload
-import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material.icons.outlined.ImportExport
-import androidx.compose.material.icons.outlined.Save
-import androidx.compose.material.icons.outlined.SaveAs
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -200,7 +194,7 @@ fun DatabaseResultView(
                         }
                     ) {
                         DatabaseRowDetailView(
-                            modifier = Modifier.matchParentSize(),
+                            modifier = Modifier.fillMaxSize(),
                             state = it,
                             columns = result.columns,
                         )
