@@ -12,7 +12,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.MenuBar
@@ -95,7 +97,7 @@ fun main() {
             },
             onPreviewKeyEvent = {
                 when (it.key) {
-                    Key.Escape -> handlers.lastOrNull()?.invoke() ?: false
+                    Key.Escape if it.type == KeyEventType.KeyDown -> handlers.lastOrNull()?.invoke() ?: false
 
                     else -> false
                 }
