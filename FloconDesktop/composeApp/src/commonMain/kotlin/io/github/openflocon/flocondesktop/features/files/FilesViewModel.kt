@@ -2,10 +2,13 @@ package io.github.openflocon.flocondesktop.features.files
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
@@ -33,9 +36,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.awt.Desktop
-import java.io.File
-import java.io.IOException
 
 
 class FilesViewModel(
@@ -48,34 +48,37 @@ class FilesViewModel(
     private val refreshFolderContentUseCase: RefreshFolderContentUseCase,
 ) : ViewModel() {
 
+    private val _filterText = mutableStateOf("")
+    val filterText: State<String> = _filterText
+
     private fun defaultValue() = FilesStateUiModel(
         current = null,
         backStack = emptyList(),
         files =
-        listOf(
-            FileUiModel(
-                name = "Caches",
-                type = FileTypeUiModel.Folder,
-                path = FilePathUiModel.Constants.CachesDir,
-                size = 0L,
-                icon = Icons.Outlined.Folder,
-                contextualActions = buildContextualActions(
-                    isConstant = true,
-                    isFolder = true,
+            listOf(
+                FileUiModel(
+                    name = "Caches",
+                    type = FileTypeUiModel.Folder,
+                    path = FilePathUiModel.Constants.CachesDir,
+                    size = 0L,
+                    icon = Icons.Outlined.Folder,
+                    contextualActions = buildContextualActions(
+                        isConstant = true,
+                        isFolder = true,
+                    ),
+                ),
+                FileUiModel(
+                    name = "Files",
+                    type = FileTypeUiModel.Folder,
+                    path = FilePathUiModel.Constants.FilesDir,
+                    size = 0L,
+                    icon = Icons.Outlined.Folder,
+                    contextualActions = buildContextualActions(
+                        isConstant = true,
+                        isFolder = true,
+                    ),
                 ),
             ),
-            FileUiModel(
-                name = "Files",
-                type = FileTypeUiModel.Folder,
-                path = FilePathUiModel.Constants.FilesDir,
-                size = 0L,
-                icon = Icons.Outlined.Folder,
-                contextualActions = buildContextualActions(
-                    isConstant = true,
-                    isFolder = true,
-                ),
-            ),
-        ),
     )
 
     private data class SelectedFile(
@@ -90,17 +93,24 @@ class FilesViewModel(
                 if (selectedFile == null) {
                     flowOf(defaultValue())
                 } else {
-                    observeFolderContentUseCase(
-                        selectedFile.current.path,
-                        fetchScope = viewModelScope,
-                    )
-                        .map { files ->
-                            FilesStateUiModel(
-                                backStack = selectedFile.backStack.map { it.toUi() },
-                                current = selectedFile.current.toUi(),
-                                files = (files ?: emptyList()).map { it.toUi() },
-                            )
+                    combines(
+                        observeFolderContentUseCase(
+                            selectedFile.current.path,
+                            fetchScope = viewModelScope,
+                        ),
+                        snapshotFlow { _filterText.value }
+                    ).map { (files, filter) ->
+                        val filtered = if(filter.isNotBlank()) {
+                            files?.filter { it.name.contains(filter, ignoreCase = true) }
+                        } else {
+                            files
                         }
+                        FilesStateUiModel(
+                            backStack = selectedFile.backStack.map { it.toUi() },
+                            current = selectedFile.current.toUi(),
+                            files = (filtered ?: emptyList()).map { it.toUi() },
+                        )
+                    }
                 }
             }.flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), defaultValue())
@@ -119,6 +129,11 @@ class FilesViewModel(
                 )
             }
         }
+        _filterText.value = "" // clear
+    }
+
+    fun onFilterTextChanged(value: String) {
+        _filterText.value = value
     }
 
     fun onFileClicked(fileUiModel: FileUiModel) {
@@ -144,7 +159,7 @@ class FilesViewModel(
             FileTypeUiModel.Video,
             FileTypeUiModel.Text,
             FileTypeUiModel.Other,
-            -> {
+                -> {
                 (fileUiModel.path.toDomain() as? FilePathDomainModel.Real)?.let {
                     viewModelScope.launch(dispatcherProvider.viewModel) {
                         downloadFileUseCase(it).alsoSuccess {

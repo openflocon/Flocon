@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.files.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class FilesStateUiModel(
     val backStack: List<FileUiModel>,
     val current: FileUiModel?,
