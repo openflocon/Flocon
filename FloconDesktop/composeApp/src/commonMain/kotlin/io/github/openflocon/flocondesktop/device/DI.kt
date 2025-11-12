@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.device
 
+import io.github.openflocon.flocondesktop.device.pages.battery.BatteryViewModel
 import io.github.openflocon.flocondesktop.device.pages.cpu.CpuViewModel
 import io.github.openflocon.flocondesktop.device.pages.permission.PermissionViewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -9,4 +10,5 @@ internal val deviceModule = module {
     viewModelOf(::DeviceViewModel)
     viewModelOf(::PermissionViewModel)
     viewModelOf(::CpuViewModel)
+    viewModelOf(::BatteryViewModel)
 }

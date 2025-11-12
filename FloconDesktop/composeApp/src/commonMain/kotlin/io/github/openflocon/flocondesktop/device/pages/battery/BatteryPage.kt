@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.device.pages
+package io.github.openflocon.flocondesktop.device.pages.battery
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,16 +8,33 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.device.models.BatteryUiState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconTextValue
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun BatteryPage(
-    state: BatteryUiState
+    deviceSerial: String
+) {
+    val viewModel = koinViewModel<BatteryViewModel> { parametersOf(deviceSerial) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Content(
+        uiState = uiState,
+        onAction = viewModel::onAction
+    )
+}
+
+@Composable
+private fun Content(
+    uiState: BatteryUiState,
+    onAction: (BatteryAction) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -32,62 +49,62 @@ internal fun BatteryPage(
             .verticalScroll(rememberScrollState())
             .padding(8.dp)
     ) {
-        FloconTextValue(label = "Technology", value = state.technology.orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
-        FloconTextValue(label = "Health", value = state.health?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "Technology", value = uiState.technology.orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "Health", value = uiState.health?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
         FloconTextValue(
             label = "Capacity",
-            value = state.capacityLevel?.toString().orEmpty(),
+            value = uiState.capacityLevel?.toString().orEmpty(),
             valueContainerColor = FloconTheme.colorPalette.secondary
         )
-        FloconTextValue(label = "AC Powered", value = state.acPowered?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "AC Powered", value = uiState.acPowered?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
         FloconTextValue(
             label = "Charge counter",
-            value = state.chargeCounter?.toString().orEmpty(),
+            value = uiState.chargeCounter?.toString().orEmpty(),
             valueContainerColor = FloconTheme.colorPalette.secondary
         )
         FloconTextValue(
             label = "Charging policy",
-            value = state.chargingPolicy?.toString().orEmpty(),
+            value = uiState.chargingPolicy?.toString().orEmpty(),
             valueContainerColor = FloconTheme.colorPalette.secondary
         )
         FloconTextValue(
             label = "Charging state",
-            value = state.chargingState?.toString().orEmpty(),
+            value = uiState.chargingState?.toString().orEmpty(),
             valueContainerColor = FloconTheme.colorPalette.secondary
         )
         FloconTextValue(
             label = "Max Charging current",
-            value = state.maxChargingCurrent?.toString().orEmpty(),
+            value = uiState.maxChargingCurrent?.toString().orEmpty(),
             valueContainerColor = FloconTheme.colorPalette.secondary
         )
         FloconTextValue(
             label = "Max Charging voltage",
-            value = state.maxChargingVoltage?.toString().orEmpty(),
+            value = uiState.maxChargingVoltage?.toString().orEmpty(),
             valueContainerColor = FloconTheme.colorPalette.secondary
         )
         FloconTextValue(
             label = "Dock powered",
-            value = state.dockPowered?.toString().orEmpty(),
+            value = uiState.dockPowered?.toString().orEmpty(),
             valueContainerColor = FloconTheme.colorPalette.secondary
         )
-        FloconTextValue(label = "Level", value = state.level?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
-        FloconTextValue(label = "Voltage", value = state.voltage?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "Level", value = uiState.level?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "Voltage", value = uiState.voltage?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
         FloconTextValue(
             label = "Temperature",
-            value = state.temperature?.toString().orEmpty(),
+            value = uiState.temperature?.toString().orEmpty(),
             valueContainerColor = FloconTheme.colorPalette.secondary
         )
         FloconTextValue(
             label = "Wireless powered",
-            value = state.wirelessPowered?.toString().orEmpty(),
+            value = uiState.wirelessPowered?.toString().orEmpty(),
             valueContainerColor = FloconTheme.colorPalette.secondary
         )
-        FloconTextValue(label = "Scale", value = state.scale?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "Scale", value = uiState.scale?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
         FloconTextValue(
             label = "USB Powered",
-            value = state.usbPowered?.toString().orEmpty(),
+            value = uiState.usbPowered?.toString().orEmpty(),
             valueContainerColor = FloconTheme.colorPalette.secondary
         )
-        FloconTextValue(label = "Present", value = state.present?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "Present", value = uiState.present?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
     }
 }

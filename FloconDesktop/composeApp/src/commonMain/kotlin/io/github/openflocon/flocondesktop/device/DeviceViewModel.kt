@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.adb.usecase.GetDeviceSerialUseCase
 import io.github.openflocon.domain.adb.usecase.SendCommandUseCase
 import io.github.openflocon.domain.common.getOrNull
-import io.github.openflocon.flocondesktop.device.models.BatteryUiState
 import io.github.openflocon.flocondesktop.device.models.ContentUiState
 import io.github.openflocon.flocondesktop.device.models.DeviceUiState
 import io.github.openflocon.flocondesktop.device.models.InfoUiState
@@ -36,28 +35,6 @@ internal class DeviceViewModel(
             battery = ""
         )
     )
-    private val batteryState = MutableStateFlow(
-        BatteryUiState(
-            acPowered = false,
-            usbPowered = false,
-            wirelessPowered = false,
-            dockPowered = false,
-            maxChargingCurrent = 0,
-            maxChargingVoltage = 0,
-            chargeCounter = 0,
-            status = 0,
-            health = 0,
-            present = false,
-            level = 0,
-            scale = 0,
-            voltage = 0,
-            temperature = 0,
-            technology = "",
-            chargingState = 0,
-            chargingPolicy = 0,
-            capacityLevel = 0
-        )
-    )
     private val memoryState = MutableStateFlow(MemoryUiState(emptyList()))
     private val deviceSerial = MutableStateFlow("")
 
@@ -65,15 +42,13 @@ internal class DeviceViewModel(
         contentState,
         infoState,
         memoryState,
-        batteryState,
         deviceSerial
     ) { states ->
         DeviceUiState(
             contentState = states[0] as ContentUiState,
             infoState = states[1] as InfoUiState,
             memoryState = states[2] as MemoryUiState,
-            batteryState = states[3] as BatteryUiState,
-            deviceSerial = states[4] as String
+            deviceSerial = states[3] as String
         )
     }
         .stateIn(
@@ -83,7 +58,6 @@ internal class DeviceViewModel(
                 contentState = contentState.value,
                 infoState = infoState.value,
                 memoryState = memoryState.value,
-                batteryState = batteryState.value,
                 deviceSerial = deviceSerial.value
             )
         )
@@ -109,7 +83,6 @@ internal class DeviceViewModel(
 
     private fun onRefresh() {
         refreshMemory()
-        refreshBattery()
         deviceInfo()
         viewModelScope.launch {
             //                    battery = sendCommand("shell", "dumpsys", "battery"),
@@ -180,60 +153,10 @@ internal class DeviceViewModel(
         }
     }
 
-    private fun refreshBattery() {
-        viewModelScope.launch {
-            val batteryInfo = sendCommand("shell", "dumpsys", "battery")
-
-            batteryState.update {
-                it.copy(
-                    acPowered = AC_POWERED_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toBoolean() ?: false,
-                    usbPowered = USB_POWERED_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toBoolean() ?: false,
-                    wirelessPowered = WIRELESS_POWERED_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toBoolean()
-                        ?: false,
-                    dockPowered = DOCK_POWERED_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toBoolean() ?: false,
-                    maxChargingCurrent = MAX_CHARGING_CURRENT_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull(),
-                    maxChargingVoltage = MAX_CHARGING_VOLTAGE_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull(),
-                    chargeCounter = CHARGE_COUNTER_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull(),
-                    status = STATUS_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull(),
-                    health = HEALTH_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull(),
-                    present = PRESENT_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toBoolean() ?: false,
-                    level = LEVEL_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull(),
-                    scale = SCALE_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull(),
-                    voltage = VOLTAGE_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull(),
-                    temperature = TEMPERATURE_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull(),
-                    technology = TECHNOLOGY_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1),
-                    chargingState = CHARGING_STATE_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull(),
-                    chargingPolicy = CHARGING_POLICY_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull(),
-                    capacityLevel = CAPACITY_LEVEL_REGEX.toRegex().find(batteryInfo)?.groupValues?.get(1)?.toIntOrNull()
-                )
-            }
-        }
-    }
-
     companion object {
 
         // MEM
         private const val MEM_REGEX = """([\d,]+)K:\s+([a-zA-Z0-9._:-]+)\s+$${"pid"}\s+(\d+)(?:\s+/\s+([a-zA-Z\s]+))?$"""
-
-        // Battery
-        private const val AC_POWERED_REGEX = """AC powered:\s+(true|false)"""
-        private const val USB_POWERED_REGEX = """USB powered:\s+(true|false)"""
-        private const val WIRELESS_POWERED_REGEX = """Wireless powered:\s+(true|false)"""
-        private const val DOCK_POWERED_REGEX = """Dock powered:\s+(true|false)"""
-        private const val MAX_CHARGING_CURRENT_REGEX = """Max charging current:\s+(\d+)"""
-        private const val MAX_CHARGING_VOLTAGE_REGEX = """Max charging voltage:\s+(\d+)"""
-        private const val CHARGE_COUNTER_REGEX = """Charge counter:\s+(\d+)"""
-        private const val STATUS_REGEX = """status:\s+(\d+)"""
-        private const val HEALTH_REGEX = """health:\s+(\d+)"""
-        private const val PRESENT_REGEX = """present:\s+(true|false)"""
-        private const val LEVEL_REGEX = """level:\s+(\d+)"""
-        private const val SCALE_REGEX = """scale:\s+(\d+)"""
-        private const val VOLTAGE_REGEX = """voltage:\s+(\d+)"""
-        private const val TEMPERATURE_REGEX = """temperature:\s+(\d+)"""
-        private const val TECHNOLOGY_REGEX = """technology:\s+([a-zA-Z-]+)"""
-        private const val CHARGING_STATE_REGEX = """Charging state:\s+(\d+)"""
-        private const val CHARGING_POLICY_REGEX = """Charging policy:\s+(\d+)"""
-        private const val CAPACITY_LEVEL_REGEX = """Capacity level:\s+(\d+)"""
     }
 
 }

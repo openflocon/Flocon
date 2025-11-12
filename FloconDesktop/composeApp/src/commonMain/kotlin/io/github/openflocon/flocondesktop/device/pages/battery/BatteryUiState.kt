@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.device.models
+package io.github.openflocon.flocondesktop.device.pages.battery
 
 import androidx.compose.runtime.Immutable
 
