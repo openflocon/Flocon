@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
@@ -26,6 +28,7 @@ import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -61,16 +64,33 @@ fun FileItemRow(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = file.name,
-                    style = FloconTheme.typography.bodySmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+            Text(
+                text = file.name,
+                modifier = Modifier.weight(1f),
+                style = FloconTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            Text(
+                text = file.dateFormatted ?: "",
+                style = FloconTheme.typography.bodySmall,
+                maxLines = 1,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.width(150.dp),
+                color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            Text(
+                text = file.sizeFormatted ?: "",
+                textAlign = TextAlign.End,
+                style = FloconTheme.typography.bodySmall,
+                maxLines = 1,
+                modifier = Modifier.width(70.dp),
+                color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+                overflow = TextOverflow.Ellipsis,
+            )
 
             // Flèche si c'est un dossier (pour indiquer qu'on peut y naviguer)
             if (file.isDirectory) {
@@ -80,6 +100,8 @@ fun FileItemRow(
                     tint = FloconTheme.colorPalette.onPrimary,
                     contentDescription = null,
                 )
+            } else {
+                Spacer(modifier = Modifier.size(24.dp))
             }
         }
     }
@@ -93,8 +115,9 @@ private fun FileItemRowPreview_folder() {
         type = FileTypeUiModel.Folder,
         path = FilePathUiModel.Constants.CachesDir,
         icon = Icons.Outlined.Folder,
-        size = 1024L,
+        sizeFormatted = "1 MB",
         contextualActions = emptyList(),
+        dateFormatted = "2022-01-01 12:10",
     )
     FloconTheme {
         FileItemRow(
@@ -113,8 +136,9 @@ private fun FileItemRowPreview_file() {
         type = FileTypeUiModel.Other,
         path = FilePathUiModel.Real("absolutePath"),
         icon = Icons.Outlined.Drafts,
-        size = 1024L,
+        sizeFormatted = "1 MB",
         contextualActions = emptyList(),
+        dateFormatted = "2022-01-01 12:10",
     )
     FloconTheme {
         FileItemRow(
@@ -122,5 +146,42 @@ private fun FileItemRowPreview_file() {
             onClick = {},
             onContextualAction = { _, _ -> },
         )
+    }
+}
+
+@Preview
+@Composable
+private fun FileItemRowPreview() {
+    FloconTheme {
+        FloconSurface {
+            Column {
+                FileItemRow(
+                    file = FileUiModel(
+                        name = "MyFile",
+                        type = FileTypeUiModel.Folder,
+                        path = FilePathUiModel.Constants.CachesDir,
+                        icon = Icons.Outlined.Folder,
+                        sizeFormatted = "1 MB",
+                        contextualActions = emptyList(),
+                        dateFormatted = "2022-01-01 12:10",
+                    ),
+                    onClick = {},
+                    onContextualAction = { _, _ -> },
+                )
+                FileItemRow(
+                    file = FileUiModel(
+                        name = "MyFile",
+                        type = FileTypeUiModel.Other,
+                        path = FilePathUiModel.Real("absolutePath"),
+                        icon = Icons.Outlined.Drafts,
+                        sizeFormatted = "1 MB",
+                        contextualActions = emptyList(),
+                        dateFormatted = "2022-01-01 12:10",
+                    ),
+                    onClick = {},
+                    onContextualAction = { _, _ -> },
+                )
+            }
+        }
     }
 }

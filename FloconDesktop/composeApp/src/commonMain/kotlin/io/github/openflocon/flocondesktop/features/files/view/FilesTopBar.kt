@@ -96,8 +96,9 @@ private fun FilesTopBarPreview() {
         type = FileTypeUiModel.Folder,
         path = FilePathUiModel.Constants.CachesDir,
         icon = Icons.Outlined.Folder,
-        size = 1024L,
+        sizeFormatted = "10 KB",
         contextualActions = emptyList(),
+        dateFormatted = "2022-01-01 12:10",
     )
     FloconTheme {
         FilesTopBar(

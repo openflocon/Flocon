@@ -60,8 +60,9 @@ class FilesViewModel(
                     name = "Caches",
                     type = FileTypeUiModel.Folder,
                     path = FilePathUiModel.Constants.CachesDir,
-                    size = 0L,
+                    sizeFormatted = null,
                     icon = Icons.Outlined.Folder,
+                    dateFormatted = null,
                     contextualActions = buildContextualActions(
                         isConstant = true,
                         isFolder = true,
@@ -71,8 +72,9 @@ class FilesViewModel(
                     name = "Files",
                     type = FileTypeUiModel.Folder,
                     path = FilePathUiModel.Constants.FilesDir,
-                    size = 0L,
+                    sizeFormatted = null,
                     icon = Icons.Outlined.Folder,
+                    dateFormatted = null,
                     contextualActions = buildContextualActions(
                         isConstant = true,
                         isFolder = true,
