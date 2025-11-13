@@ -2,23 +2,31 @@ package io.github.openflocon.flocondesktop.features.files.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.files.FilesViewModel
@@ -91,36 +99,76 @@ private fun FilesScreen(
             },
             onDeleteContent = onDeleteContent,
         )
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary)
+                .background(FloconTheme.colorPalette.primary),
         ) {
-            LazyColumn(
-                state = listState,
-                contentPadding = PaddingValues(vertical = 4.dp),
+            FilesListHeader(
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Box(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
             ) {
-                itemsIndexed(state.files) { index, item ->
-                    FileItemRow(
-                        item,
-                        onClick = onFileClicked,
-                        modifier = Modifier.fillMaxWidth(),
-                        onContextualAction = onContextualAction,
-                    )
-                    if (index != state.files.lastIndex) {
-                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                LazyColumn(
+                    state = listState,
+                    contentPadding = PaddingValues(vertical = 4.dp),
+                    modifier = Modifier
+                        .fillMaxSize(),
+                ) {
+                    itemsIndexed(state.files) { index, item ->
+                        FileItemRow(
+                            item,
+                            onClick = onFileClicked,
+                            modifier = Modifier.fillMaxWidth(),
+                            onContextualAction = onContextualAction,
+                        )
+                        if (index != state.files.lastIndex) {
+                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                        }
                     }
                 }
+                FloconVerticalScrollbar(
+                    adapter = scrollAdapter,
+                    modifier = Modifier.fillMaxHeight()
+                        .align(Alignment.TopEnd)
+                )
             }
-            FloconVerticalScrollbar(
-                adapter = scrollAdapter,
-                modifier = Modifier.fillMaxHeight()
-                    .align(Alignment.TopEnd)
-            )
         }
+    }
+}
+
+@Composable
+private fun FilesListHeader(
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.background(FloconTheme.colorPalette.secondary).padding(vertical = 8.dp, horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(
+            text = "Date",
+            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            maxLines = 1,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.width(150.dp),
+            color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+        )
+
+        Text(
+            text = "Size",
+            textAlign = TextAlign.End,
+            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            maxLines = 1,
+            modifier = Modifier.width(70.dp),
+            color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+        )
+
+        Spacer(modifier = Modifier.width(24.dp))
     }
 }
 

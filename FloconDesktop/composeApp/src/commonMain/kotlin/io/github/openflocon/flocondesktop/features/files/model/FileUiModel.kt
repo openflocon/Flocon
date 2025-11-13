@@ -2,14 +2,17 @@ package io.github.openflocon.flocondesktop.features.files.model
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 
+@Immutable
 data class FileUiModel(
     val name: String,
     val type: FileTypeUiModel,
     val path: FilePathUiModel,
     val icon: ImageVector,
-    val size: Long,
+    val dateFormatted: String?,
+    val sizeFormatted: String?,
     val contextualActions: List<ContextualAction>,
 ) {
 
@@ -35,7 +38,8 @@ fun previewFileUiModel(
     name = name,
     type = type,
     path = FilePathUiModel.Constants.CachesDir,
-    size = 100L,
+    sizeFormatted = "100 MB",
     icon = Icons.Outlined.Folder,
     contextualActions = listOf(),
+    dateFormatted = "2022-01-01 12:10",
 )

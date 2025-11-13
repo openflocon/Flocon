@@ -5,12 +5,17 @@ import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Drafts
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.ui.graphics.vector.ImageVector
+import io.github.openflocon.domain.common.ByteFormatter
+import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.time.Instant
+import kotlin.time.toJavaInstant
 
 fun FileUiModel.icon(): ImageVector = if (this.isDirectory) Icons.Outlined.Folder else Icons.Outlined.Drafts
 
@@ -22,23 +27,36 @@ fun FileDomainModel.toUi(): FileUiModel = FileUiModel(
         FileTypeUiModel.Other // TODO
     },
     path = path.toUi(),
-    size = size,
+    sizeFormatted = if(this.isDirectory) null else ByteFormatter.formatBytes(size),
     icon = if (this.isDirectory) {
         Icons.Outlined.Folder
     } else {
         Icons.Outlined.Description
     },
+    dateFormatted = formatDate(lastModified),
     contextualActions = buildContextualActions(
         isConstant = this.path is FilePathDomainModel.Constants,
         isFolder = this.isDirectory,
     ),
 )
 
+private fun formatDate(date: Instant) : String? {
+    return try {
+        val formateur = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+            .withZone(ZoneId.systemDefault())
+
+        formateur.format(date.toJavaInstant())
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        null
+    }
+}
+
 fun FileUiModel.toDomain(): FileDomainModel = FileDomainModel(
     name = name,
     isDirectory = isDirectory,
     path = path.toDomain(),
-    size = size,
+    size = 0L, // not useful
     lastModified = Instant.fromEpochMilliseconds(0L), // TODO
 )
 
