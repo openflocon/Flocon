@@ -21,10 +21,13 @@ import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.features.files.mapper.buildContextualActions
 import io.github.openflocon.flocondesktop.features.files.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.files.mapper.toUi
+import io.github.openflocon.flocondesktop.features.files.model.FileColumnUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FilesHeaderStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
+import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -50,6 +53,8 @@ class FilesViewModel(
 
     private val _filterText = mutableStateOf("")
     val filterText: State<String> = _filterText
+
+    private val sortedBy = MutableStateFlow<FilesHeaderStateUiModel.SortedBy?>(null)
 
     private fun defaultValue() = FilesStateUiModel(
         current = null,
@@ -81,6 +86,7 @@ class FilesViewModel(
                     ),
                 ),
             ),
+        headerState = FilesHeaderStateUiModel(sortedBy = sortedBy.value),
     )
 
     private data class SelectedFile(
@@ -90,8 +96,11 @@ class FilesViewModel(
 
     private val selectedFile = MutableStateFlow<SelectedFile?>(null)
     val state: StateFlow<FilesStateUiModel> =
-        selectedFile
-            .flatMapLatest { selectedFile ->
+        combines(
+            selectedFile,
+            sortedBy
+        )
+            .flatMapLatest { (selectedFile, sortedBy) ->
                 if (selectedFile == null) {
                     flowOf(defaultValue())
                 } else {
@@ -102,20 +111,53 @@ class FilesViewModel(
                         ),
                         snapshotFlow { _filterText.value }
                     ).map { (files, filter) ->
-                        val filtered = if(filter.isNotBlank()) {
+                        val filtered = if (filter.isNotBlank()) {
                             files?.filter { it.name.contains(filter, ignoreCase = true) }
                         } else {
                             files
                         }
+                        val sorted = filtered?.let { sort(it, sortedBy) }
                         FilesStateUiModel(
                             backStack = selectedFile.backStack.map { it.toUi() },
                             current = selectedFile.current.toUi(),
-                            files = (filtered ?: emptyList()).map { it.toUi() },
+                            files = (sorted ?: emptyList()).map { it.toUi() },
+                            headerState = FilesHeaderStateUiModel(sortedBy = sortedBy),
                         )
                     }
                 }
-            }.flowOn(dispatcherProvider.viewModel)
+            }
+            .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), defaultValue())
+
+    private fun sort(
+        files: List<FileDomainModel>,
+        sortedBy: FilesHeaderStateUiModel.SortedBy?
+    ): List<FileDomainModel> {
+        if (sortedBy == null) {
+            return files
+        }
+
+        return when (sortedBy.column) {
+            FileColumnUiModel.Name -> {
+                when(sortedBy.sortedBy) {
+                    SortedByUiModel.Enabled.Ascending -> files.sortedBy { it.name }
+                    SortedByUiModel.Enabled.Descending -> files.sortedByDescending { it.name }
+                }
+            }
+            FileColumnUiModel.Date -> {
+                when(sortedBy.sortedBy) {
+                    SortedByUiModel.Enabled.Ascending -> files.sortedBy { it.lastModified }
+                    SortedByUiModel.Enabled.Descending -> files.sortedByDescending { it.lastModified }
+                }
+            }
+            FileColumnUiModel.Size -> {
+                when(sortedBy.sortedBy) {
+                    SortedByUiModel.Enabled.Ascending -> files.sortedBy { it.size }
+                    SortedByUiModel.Enabled.Descending -> files.sortedByDescending { it.size }
+                }
+            }
+        }
+    }
 
     fun onNavigateUp() {
         selectedFile.update {
@@ -182,6 +224,21 @@ class FilesViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val current = selectedFile.value?.current?.path ?: return@launch
             refreshFolderContentUseCase(path = current)
+        }
+    }
+
+    fun clickOnSort(column: FileColumnUiModel, sortedBy: SortedByUiModel) {
+        when (sortedBy) {
+            SortedByUiModel.None -> {
+                this.sortedBy.value = null
+            }
+
+            is SortedByUiModel.Enabled -> {
+                this.sortedBy.value = FilesHeaderStateUiModel.SortedBy(
+                    column = column,
+                    sortedBy = sortedBy,
+                )
+            }
         }
     }
 
