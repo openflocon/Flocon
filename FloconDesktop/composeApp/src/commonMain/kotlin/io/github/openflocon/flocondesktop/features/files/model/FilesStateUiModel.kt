@@ -7,6 +7,7 @@ data class FilesStateUiModel(
     val backStack: List<FileUiModel>,
     val current: FileUiModel?,
     val files: List<FileUiModel>,
+    val headerState: FilesHeaderStateUiModel,
 )
 
 fun previewFilesStateUiModel() = FilesStateUiModel(
@@ -22,4 +23,5 @@ fun previewFilesStateUiModel() = FilesStateUiModel(
             name = "Files",
         ),
     ),
+    headerState = previewFilesHeaderStateUiModel(),
 )

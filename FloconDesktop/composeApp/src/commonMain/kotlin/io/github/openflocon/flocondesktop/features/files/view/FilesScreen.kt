@@ -4,19 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
@@ -25,14 +20,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.files.FilesViewModel
+import io.github.openflocon.flocondesktop.features.files.model.FileColumnUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.previewFilesStateUiModel
+import io.github.openflocon.flocondesktop.features.files.view.header.FilesListHeader
+import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
@@ -62,6 +58,7 @@ fun FilesScreen(modifier: Modifier = Modifier) {
         onRefresh = viewModel::onRefresh,
         onDeleteContent = viewModel::onDeleteContent,
         filterText = filterText,
+        clickOnSort = viewModel::clickOnSort,
         onFilterTextChanged = viewModel::onFilterTextChanged,
     )
 }
@@ -76,6 +73,7 @@ private fun FilesScreen(
     onDeleteContent: () -> Unit,
     onFileClicked: (FileUiModel) -> Unit,
     onContextualAction: (FileUiModel, FileUiModel.ContextualAction.Action) -> Unit,
+    clickOnSort: (FileColumnUiModel, SortedByUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -107,6 +105,8 @@ private fun FilesScreen(
         ) {
             FilesListHeader(
                 modifier = Modifier.fillMaxWidth(),
+                state = state.headerState,
+                clickOnSort = clickOnSort,
             )
             Box(
                 modifier = Modifier
@@ -141,38 +141,6 @@ private fun FilesScreen(
 }
 
 @Composable
-private fun FilesListHeader(
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.background(FloconTheme.colorPalette.secondary).padding(vertical = 8.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
-
-        Text(
-            text = "Date",
-            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.width(150.dp),
-            color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
-        )
-
-        Text(
-            text = "Size",
-            textAlign = TextAlign.End,
-            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            maxLines = 1,
-            modifier = Modifier.width(70.dp),
-            color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
-        )
-
-        Spacer(modifier = Modifier.width(24.dp))
-    }
-}
-
-@Composable
 @Preview
 private fun FilesScreenPreview() {
     FloconTheme {
@@ -185,6 +153,7 @@ private fun FilesScreenPreview() {
             onContextualAction = { _, _ -> },
             filterText = mutableStateOf(""),
             onFilterTextChanged = {},
+            clickOnSort = { _, _ -> },
         )
     }
 }
