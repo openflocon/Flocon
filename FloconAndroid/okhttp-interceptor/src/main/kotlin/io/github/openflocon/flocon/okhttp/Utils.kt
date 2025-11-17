@@ -67,11 +67,13 @@ internal fun extractResponseBodyInfo(
     source.request(Long.MAX_VALUE) // Buffer the entire body, otherwise we have an empty string
 
     var buffer = source.buffer
+    if (buffer.size <= 0L) {
+        // Do not attempt to read empty bodies, it would throw a EOFException in GzipSource
+        return "" to 0
+    }
 
     val charset = responseBody.contentType().charsetOrUtf8()
-
-    val contentEncoding = responseHeaders["Content-Encoding"] ?: responseHeaders["content-encoding"]
-    if ("gzip".equals(contentEncoding, ignoreCase = true)) {
+    if (responseHeaders.isGzipped()) {
         GzipSource(buffer.clone()).use { gzippedResponseBody ->
             buffer = Buffer()
             buffer.writeAll(gzippedResponseBody)
@@ -98,9 +100,7 @@ internal fun extractRequestBodyInfo(
     var buffer = Buffer()
     requestBody.writeTo(buffer)
 
-    val contentEncoding = requestHeaders["Content-Encoding"] ?: requestHeaders["content-encoding"]
-
-    if ("gzip".equals(contentEncoding, ignoreCase = true)) {
+    if (requestHeaders.isGzipped()) {
         bodySize = buffer.size
         GzipSource(buffer).use { gzippedResponseBody ->
             buffer = Buffer()
@@ -112,4 +112,9 @@ internal fun extractRequestBodyInfo(
     val bodyString = buffer.readString(charset)
 
     return bodyString to bodySize
+}
+
+private fun Map<String, String>.isGzipped(): Boolean {
+    val contentEncoding = get("Content-Encoding") ?: get("content-encoding") ?: return false
+    return "gzip".equals(contentEncoding, ignoreCase = true)
 }
