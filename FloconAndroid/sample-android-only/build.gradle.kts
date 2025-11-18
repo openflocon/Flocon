@@ -137,7 +137,7 @@ dependencies {
     //endregion
 
     // region datastore
-    implementation("androidx.datastore:datastore-preferences:1.1.7")
+    implementation(libs.androidx.datastore.preferences)
     // endregion
 }
 

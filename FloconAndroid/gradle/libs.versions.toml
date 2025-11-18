@@ -3,6 +3,7 @@ agp = "8.11.0-rc02"
 apollo = "4.0.0"
 coilCompose = "3.2.0"
 compose = "1.9.0"
+datastorePreferences = "1.1.7"
 kotlin = "2.1.0"
 mavenPublish = "0.34.0"
 coreKtx = "1.16.0"
@@ -33,6 +34,7 @@ buildconfig = "5.6.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
