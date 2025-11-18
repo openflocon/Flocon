@@ -1,30 +1,17 @@
 package io.github.openflocon.flocon.plugins.sharedprefs
 
 import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.plugins.sharedprefs.model.SharedPreferencesDescriptor
-import io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice.SharedPreferenceRowDataModel
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
+import io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice.PreferenceRowDataModel
 import io.github.openflocon.flocon.plugins.sharedprefs.model.todevice.ToDeviceEditSharedPreferenceValueMessage
 
-internal actual fun buildFloconSharedPreferencesDataSource(context: FloconContext): FloconSharedPreferencesDataSource {
-    return FloconSharedPreferencesDataSourceIOs()
+internal actual fun buildFloconPreferencesDataSource(context: FloconContext): FloconPreferencesDataSource {
+    return FloconPreferencesDataSourceIOs()
 }
 
 // TODO try to bind with ios storage
-internal class FloconSharedPreferencesDataSourceIOs : FloconSharedPreferencesDataSource {
-    override fun getAllSharedPreferences(): List<SharedPreferencesDescriptor> {
+internal class FloconPreferencesDataSourceIOs : FloconPreferencesDataSource {
+    override fun detectLocalPreferences(): List<FloconPreference> {
         return emptyList()
     }
-
-    override fun getSharedPreferenceContent(sharedPreferencesName: String): List<SharedPreferenceRowDataModel> {
-        return emptyList()
-    }
-
-    override fun setSharedPreferenceRowValue(
-        sharedPreferencesName: String,
-        preferenceName: String,
-        message: ToDeviceEditSharedPreferenceValueMessage
-    ) {
-        // TODO
-    }
-
 }

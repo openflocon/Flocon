@@ -3,14 +3,30 @@
 package io.github.openflocon.flocon.myapplication.sharedpreferences
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import androidx.core.content.edit
+import io.github.openflocon.flocon.plugins.sharedprefs.FloconSharedPreference
+import io.github.openflocon.flocon.plugins.sharedprefs.floconRegisterPreference
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.uuid.Uuid
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 
+fun initializeSharedPreferencesAfterInit(context: Context) {
+    val referencedPref = context.getSharedPreferences("ref_pref", Context.MODE_PRIVATE)
+    floconRegisterPreference(FloconSharedPreference("my_custom_name", referencedPref))
+
+    referencedPref.edit {
+        putString("works", "yes")
+    }
+}
+
 fun initializeSharedPreferences(context: Context) {
+    PreferenceManager.getDefaultSharedPreferences(context).edit { putFloat("flocon_validity", 42f) }
+
     context.getSharedPreferences("user_pref", Context.MODE_PRIVATE).apply {
         edit {
             putInt("age", 34)
@@ -18,6 +34,7 @@ fun initializeSharedPreferences(context: Context) {
             putString("name", "flo")
         }
     }
+
     context.getSharedPreferences("settings_pref", Context.MODE_PRIVATE).apply {
         edit {
             putBoolean("isValid", true)

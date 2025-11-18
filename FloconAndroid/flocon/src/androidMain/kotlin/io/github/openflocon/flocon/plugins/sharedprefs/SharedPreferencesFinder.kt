@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.os.Build
 import android.preference.PreferenceManager
-import io.github.openflocon.flocon.plugins.sharedprefs.model.SharedPreferencesDescriptor
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
 import java.io.File
 
 internal object SharedPreferencesFinder {
@@ -14,20 +14,26 @@ internal object SharedPreferencesFinder {
 
     fun buildDescriptorForAllPrefsFiles(
         context: Context
-    ): List<SharedPreferencesDescriptor> {
-        val descriptors = mutableListOf<SharedPreferencesDescriptor>()
+    ): List<FloconPreference> {
+        val descriptors = mutableListOf<FloconPreference>()
 
         val dir = File(context.applicationInfo.dataDir, SHARED_PREFS_DIR)
         val list = dir.list { dir, name -> name.endsWith(XML_SUFFIX) }
         if (list != null) {
             for (each in list) {
                 val prefName = each.substring(0, each.indexOf(".xml"))
-                descriptors.add(SharedPreferencesDescriptor(prefName, MODE_PRIVATE))
+                descriptors.add(
+                    FloconSharedPreference(prefName, sharedPreferences = context.getSharedPreferences(prefName, MODE_PRIVATE)
+                ))
             }
         }
 
+        val defaultSharedPrefName = getDefaultSharedPreferencesName(context)
         descriptors.add(
-            SharedPreferencesDescriptor(getDefaultSharedPreferencesName(context), MODE_PRIVATE)
+            FloconSharedPreference(
+                name = defaultSharedPrefName,
+                sharedPreferences = context.getSharedPreferences(defaultSharedPrefName, MODE_PRIVATE)
+            )
         )
 
         return descriptors

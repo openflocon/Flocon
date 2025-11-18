@@ -6,34 +6,32 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
-import io.github.openflocon.flocon.plugins.sharedprefs.model.SharedPreferencesDescriptor
-import io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice.SharedPreferenceRowDataModel
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceValue
+import io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice.PreferenceRowDataModel
 import io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice.SharedPreferenceValueResultDataModel
 import io.github.openflocon.flocon.plugins.sharedprefs.model.listSharedPreferencesDescriptorToJson
 import io.github.openflocon.flocon.plugins.sharedprefs.model.todevice.ToDeviceEditSharedPreferenceValueMessage
 import io.github.openflocon.flocon.plugins.sharedprefs.model.todevice.ToDeviceGetSharedPreferenceValueMessage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-internal interface FloconSharedPreferencesDataSource {
-    fun getAllSharedPreferences(): List<SharedPreferencesDescriptor>
-    fun getSharedPreferenceContent(sharedPreferencesName: String): List<SharedPreferenceRowDataModel>
-    fun setSharedPreferenceRowValue(
-        sharedPreferencesName: String,
-        preferenceName: String,
-        message: ToDeviceEditSharedPreferenceValueMessage,
-    )
+internal interface FloconPreferencesDataSource {
+    fun detectLocalPreferences(): List<FloconPreference>
 }
 
-internal expect fun buildFloconSharedPreferencesDataSource(context: FloconContext) : FloconSharedPreferencesDataSource
+internal expect fun buildFloconPreferencesDataSource(context: FloconContext): FloconPreferencesDataSource
 
-// Got some code from Flipper client
-// https://github.com/facebook/flipper/blob/main/android/src/main/java/com/facebook/flipper/plugins/sharedpreferences/SharedPreferencesFlipperPlugin.java
-
-internal class FloconSharedPreferencesPluginImpl(
-    private val context: FloconContext,
+internal class FloconPreferencesPluginImpl(
+    context: FloconContext,
     private var sender: FloconMessageSender,
-) : FloconPlugin, FloconSharedPreferencesPlugin {
+    private val scope: CoroutineScope,
+) : FloconPlugin, FloconPreferencesPlugin {
 
-    private val dataSource = buildFloconSharedPreferencesDataSource(context)
+    // references for quick access
+    private val preferences = mutableMapOf<String, FloconPreference>()
+
+    private val dataSource = buildFloconPreferencesDataSource(context)
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
@@ -48,48 +46,73 @@ internal class FloconSharedPreferencesPluginImpl(
                     ToDeviceGetSharedPreferenceValueMessage.fromJson(message = messageFromServer.body)
                         ?: return
 
-                getSharedPreferenceValues(
-                    sharedPreferenceName = toDeviceMessage.sharedPreferenceName,
-                    requestId = toDeviceMessage.requestId,
-                    sender = sender,
-                )
+                val preference = preferences[toDeviceMessage.sharedPreferenceName] ?: return
+
+                scope.launch {
+                    sendToServerPreferenceValues(
+                        preference = preference,
+                        requestId = toDeviceMessage.requestId,
+                        sender = sender,
+                    )
+                }
             }
 
             Protocol.ToDevice.SharedPreferences.Method.SetSharedPreferenceValue -> {
                 val toDeviceMessage =
                     ToDeviceEditSharedPreferenceValueMessage.fromJson(jsonString = messageFromServer.body)
                         ?: return
-                try {
-                    dataSource.setSharedPreferenceRowValue(
-                        sharedPreferencesName = toDeviceMessage.sharedPreferenceName,
-                        preferenceName = toDeviceMessage.key,
-                        message = toDeviceMessage,
-                    )
 
-                    // then send the shared pref content
-                    getSharedPreferenceValues(
-                        sharedPreferenceName = toDeviceMessage.sharedPreferenceName,
-                        requestId = toDeviceMessage.requestId,
-                        sender = sender,
-                    )
+                val preference = preferences[toDeviceMessage.sharedPreferenceName] ?: return
 
-                    //sender.send(Protocol.FromDevice.SharedPreferences.Plugin, "success")
-                } catch (t: Throwable) {
-                    t.printStackTrace()
-                    //sender.send(Protocol.FromDevice.SharedPreferences.Plugin, "failure")
+                scope.launch {
+                    try {
+                        preference.set(
+                            rowName = toDeviceMessage.key,
+                            value = FloconPreferenceValue(
+                                stringValue = toDeviceMessage.stringValue,
+                                booleanValue = toDeviceMessage.booleanValue,
+                                intValue = toDeviceMessage.intValue,
+                                longValue = toDeviceMessage.longValue,
+                                floatValue = toDeviceMessage.floatValue,
+                                setStringValue = toDeviceMessage.setStringValue,
+                            ),
+                        )
+
+                        // then send the shared pref content
+                        sendToServerPreferenceValues(
+                            preference = preference,
+                            requestId = toDeviceMessage.requestId,
+                            sender = sender,
+                        )
+
+                        //sender.send(Protocol.FromDevice.SharedPreferences.Plugin, "success")
+                    } catch (t: Throwable) {
+                        t.printStackTrace()
+                        //sender.send(Protocol.FromDevice.SharedPreferences.Plugin, "failure")
+                    }
                 }
             }
         }
     }
 
-    private fun getSharedPreferenceValues(
-        sharedPreferenceName: String,
+    private suspend fun sendToServerPreferenceValues(
+        preference: FloconPreference,
         requestId: String,
         sender: FloconMessageSender
     ) {
-        val rows = dataSource.getSharedPreferenceContent(
-            sharedPreferencesName = sharedPreferenceName,
-        )
+        val columns = preference.columns()
+        val rows = columns.map { key ->
+            val value = preference.get(key)
+            PreferenceRowDataModel(
+                key = key,
+                stringValue = value?.stringValue,
+                intValue = value?.intValue,
+                floatValue = value?.floatValue,
+                booleanValue = value?.booleanValue,
+                longValue = value?.longValue,
+                setStringValue = value?.setStringValue,
+            )
+        }
 
         try {
             sender.send(
@@ -97,9 +120,9 @@ internal class FloconSharedPreferencesPluginImpl(
                 method = Protocol.FromDevice.SharedPreferences.Method.GetSharedPreferenceValue,
                 body = SharedPreferenceValueResultDataModel(
                     requestId = requestId,
-                    sharedPreferenceName = sharedPreferenceName,
+                    sharedPreferenceName = preference.name,
                     rows = rows,
-                ).toJson().toString(),
+                ).toJson(),
             )
         } catch (t: Throwable) {
             FloconLogger.logError("SharedPreferences json mapping error", t)
@@ -108,11 +131,25 @@ internal class FloconSharedPreferencesPluginImpl(
 
     // on connected, send all shared prefs
     override fun onConnectedToServer() {
+        dataSource.detectLocalPreferences().forEach { preference ->
+            registerInternal(preference)
+        }
         sendAllSharedPrefs()
     }
 
+    override fun register(preference: FloconPreference) {
+        registerInternal(preference)
+        sendAllSharedPrefs()
+    }
+
+    private fun registerInternal(preference: FloconPreference) {
+        if(preferences.containsKey(preference.name).not()) {
+            preferences[preference.name] = preference
+        }
+    }
+
     private fun sendAllSharedPrefs() {
-        val allPrefs = dataSource.getAllSharedPreferences()
+        val allPrefs = getAllPreferences()
         try {
             sender.send(
                 plugin = Protocol.FromDevice.SharedPreferences.Plugin,
@@ -122,5 +159,9 @@ internal class FloconSharedPreferencesPluginImpl(
         } catch (t: Throwable) {
             FloconLogger.logError("SharedPreferences json mapping error", t)
         }
+    }
+
+    private fun getAllPreferences(): List<FloconPreference> {
+        return preferences.values.sortedBy { it.name }
     }
 }

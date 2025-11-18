@@ -8,7 +8,7 @@ import kotlinx.serialization.encodeToString
 internal data class SharedPreferenceValueResultDataModel(
     val requestId: String,
     val sharedPreferenceName: String,
-    val rows: List<SharedPreferenceRowDataModel>,
+    val rows: List<PreferenceRowDataModel>,
 ) {
     fun toJson(): String {
         return FloconEncoder.json.encodeToString(this)

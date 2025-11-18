@@ -20,7 +20,7 @@ import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPluginImpl
 import io.github.openflocon.flocon.plugins.device.FloconDevicePluginImpl
 import io.github.openflocon.flocon.plugins.files.FloconFilesPluginImpl
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPluginImpl
-import io.github.openflocon.flocon.plugins.sharedprefs.FloconSharedPreferencesPluginImpl
+import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferencesPluginImpl
 import io.github.openflocon.flocon.plugins.tables.FloconTablePluginImpl
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import io.github.openflocon.flocon.websocket.FloconHttpClient
@@ -66,7 +66,7 @@ internal class FloconClientImpl(
     // region plugins
     override val databasePlugin = FloconDatabasePluginImpl(context = appContext, sender = this)
     private val filesPlugin = FloconFilesPluginImpl(context = appContext, sender = this, floconFileSender = this)
-    private val sharedPrefsPlugin = FloconSharedPreferencesPluginImpl(context = appContext, sender = this)
+    override val preferencesPlugin = FloconPreferencesPluginImpl(context = appContext, sender = this, scope = coroutineScope)
     override val dashboardPlugin = FloconDashboardPluginImpl(sender = this)
     override val tablePlugin = FloconTablePluginImpl(sender = this)
     override val deeplinksPlugin = FloconDeeplinksPluginImpl(sender = this)
@@ -81,7 +81,7 @@ internal class FloconClientImpl(
     private val allPlugins = listOf<FloconPlugin>(
         databasePlugin,
         filesPlugin,
-        sharedPrefsPlugin,
+        preferencesPlugin,
         dashboardPlugin,
         tablePlugin,
         deeplinksPlugin,
@@ -126,7 +126,7 @@ internal class FloconClientImpl(
                     }
 
                     Protocol.ToDevice.SharedPreferences.Plugin -> {
-                        sharedPrefsPlugin.onMessageReceived(
+                        preferencesPlugin.onMessageReceived(
                             messageFromServer = messageFromServer,
                         )
                     }
