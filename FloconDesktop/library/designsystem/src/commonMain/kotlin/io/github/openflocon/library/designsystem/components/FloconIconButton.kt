@@ -151,6 +151,40 @@ fun FloconIconToggleButton(
     }
 }
 
+
+@Composable
+fun FloconIconButton(
+    modifier: Modifier = Modifier,
+    tooltip: String,
+    size: Dp = Size,
+    onClick: () -> Unit,
+    containerColor: Color = FloconTheme.colorPalette.primary,
+    contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor),
+    content: @Composable () -> Unit
+) {
+    val shape = FloconTheme.shapes.medium
+
+    WithTooltip(
+        tooltip = tooltip,
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = modifier
+                .size(size)
+                .clip(shape)
+                .background(color = containerColor)
+                .clickable(
+                    onClick = onClick,
+                )
+                .padding(Padding)
+        ) {
+            CompositionLocalProvider(LocalContentColor provides contentColor) {
+                content()
+            }
+        }
+    }
+}
+
 @Composable
 fun WithTooltip(
     tooltip: String?,

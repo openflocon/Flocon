@@ -28,7 +28,7 @@ fun SharedPreferenceEditScreen(
 ) {
     val windowState = remember(row.key) { createFloconWindowState() }
     FloconWindow(
-        title = "SharedPreference / ${row.key}",
+        title = "Preference / ${row.key}",
         state = windowState,
         onCloseRequest = cancel,
     ) {
