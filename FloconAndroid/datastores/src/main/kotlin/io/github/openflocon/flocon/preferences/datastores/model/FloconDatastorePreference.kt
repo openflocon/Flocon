@@ -14,9 +14,15 @@ import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceValue
 import kotlinx.coroutines.flow.first
 
+interface FloconDatastoreMapper {
+    fun fromDatastore(datastoreValue: String) : String
+    fun toDatastore(valueForDatastore: String) : String
+}
+
 class FloconDatastorePreference(
     override val name: String,
     private val dataStore: DataStore<Preferences>,
+    private val mapper: FloconDatastoreMapper? = null // if we encrypted the datastore
 ) : FloconPreference {
 
     override suspend fun set(
@@ -30,7 +36,9 @@ class FloconDatastorePreference(
             dataStore.edit {
                 try {
                     when (it[key]) {
-                        is String -> it[stringPreferencesKey(columnName)] = value.stringValue!!
+                        is String -> it[stringPreferencesKey(columnName)] = mapper?.let {
+                            it.toDatastore(value.stringValue!!)
+                        } ?: value.stringValue!!
                         is Int -> it[intPreferencesKey(columnName)] = value.intValue!!
                         is Boolean -> it[booleanPreferencesKey(columnName)] = value.booleanValue!!
                         is Float -> it[floatPreferencesKey(columnName)] = value.floatValue!!
@@ -63,7 +71,7 @@ class FloconDatastorePreference(
             val value = data[key] ?: return null
 
             return when (value) {
-                is String -> FloconPreferenceValue(stringValue = value)
+                is String -> FloconPreferenceValue(stringValue = mapper?.fromDatastore(value) ?: value)
                 is Int -> FloconPreferenceValue(intValue = value)
                 is Float -> FloconPreferenceValue(floatValue = value)
                 is Double -> FloconPreferenceValue(floatValue = value.toFloat())

@@ -14,6 +14,11 @@ import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceValue
 import kotlinx.coroutines.flow.first
 
+interface FloconDatastoreMapper {
+    fun fromDatastore(datastoreValue: String) : String
+    fun toDatastore(valueForDatastore: String) : String
+}
+
 class FloconDatastorePreference(
     override val name: String,
     val dataStore: DataStore<Preferences>,
