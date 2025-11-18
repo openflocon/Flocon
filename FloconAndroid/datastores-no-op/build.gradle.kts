@@ -1,56 +1,11 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.vanniktech.maven.publish)
-}
-
-kotlin {
-    androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
-        }
-    }
-    
-    jvm()
-
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
-                api(project(":flocon-base"))
-            }
-        }
-        
-        val androidMain by getting {
-            dependencies {
-            }
-        }
-        
-        val jvmMain by getting {
-            dependencies {
-            }
-        }
-
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-        }
-    }
+    alias(libs.plugins.kotlin.android)
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 android {
-    namespace = "io.github.openflocon.flocon"
+    namespace = "io.github.openflocon.flocon.datastores"
     compileSdk = 36
 
     defaultConfig {
@@ -69,11 +24,26 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
 }
+
+dependencies {
+
+    implementation(project(":flocon-base"))
+
+    implementation(platform(libs.kotlinx.coroutines.bom))
+    implementation(libs.jetbrains.kotlinx.coroutines.core)
+
+    implementation(libs.androidx.datastore.preferences)
+}
+
 
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
@@ -86,12 +56,12 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-        artifactId = "flocon-no-op",
+        artifactId = "flocon-datastores-no-op",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
     pom {
-        name = "Flocon No Op"
+        name = "Flocon Datastores Integration No Op"
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"

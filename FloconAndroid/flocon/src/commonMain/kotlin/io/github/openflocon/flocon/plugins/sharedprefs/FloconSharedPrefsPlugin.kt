@@ -67,7 +67,7 @@ internal class FloconPreferencesPluginImpl(
                 scope.launch {
                     try {
                         preference.set(
-                            rowName = toDeviceMessage.key,
+                            columnName = toDeviceMessage.key,
                             value = FloconPreferenceValue(
                                 stringValue = toDeviceMessage.stringValue,
                                 booleanValue = toDeviceMessage.booleanValue,

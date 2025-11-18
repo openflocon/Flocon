@@ -84,6 +84,8 @@ dependencies {
         implementation(project(":grpc:grpc-interceptor-lite"))
         debugImplementation(project(":ktor-interceptor"))
         releaseImplementation(project(":ktor-interceptor-no-op"))
+        debugImplementation(project(":datastores"))
+        releaseImplementation(project(":datastores-no-op"))
     }
 
 
@@ -135,6 +137,10 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.core)
     //endregion
+
+    // region datastore
+    implementation(libs.androidx.datastore.preferences)
+    // endregion
 }
 
 apollo {

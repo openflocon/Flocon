@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.sharedprefs
+package io.github.openflocon.flocon.plugins.sharedprefs
 
 import android.content.SharedPreferences
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
@@ -10,7 +10,7 @@ data class FloconSharedPreference(
 ) : FloconPreference {
 
     override suspend fun set(
-        rowName: String,
+        columnName: String,
         value: FloconPreferenceValue
     ) {
         // no op

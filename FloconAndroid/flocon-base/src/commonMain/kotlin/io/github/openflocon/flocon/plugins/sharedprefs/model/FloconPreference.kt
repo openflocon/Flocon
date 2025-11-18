@@ -4,7 +4,7 @@ interface FloconPreference {
     val name: String
 
     suspend fun set(
-        rowName: String,
+        columnName: String,
         value: FloconPreferenceValue,
     )
 
