@@ -32,7 +32,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.PlatformContext
 import coil3.compose.AsyncImage
+import coil3.network.NetworkHeaders
+import coil3.network.httpHeaders
+import coil3.request.ImageRequest
 import io.github.openflocon.flocondesktop.features.images.ImagesViewModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
@@ -46,6 +50,8 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 @Composable
 fun ImagesScreen(
@@ -174,7 +180,18 @@ fun ImageDialog(model: ImagesUiModel, onDismiss: () -> Unit) {
                 }
             }
             AsyncImage(
-                model = model.url,
+                model = remember(model) {
+                    ImageRequest.Builder(PlatformContext.INSTANCE)
+                        .data(model.url)
+                        .httpHeaders(
+                            NetworkHeaders.Builder().apply {
+                                model.headers?.forEach { (key, value) ->
+                                    add(key, value)
+                                }
+                            }.build()
+                        )
+                        .build()
+                },
                 contentDescription = "",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize(),

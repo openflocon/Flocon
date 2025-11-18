@@ -25,4 +25,5 @@ data class DeviceImageEntity(
     val packageName: String,
     val url: String,
     val time: Long,
+    val headersJsonEncoded: String,
 )
