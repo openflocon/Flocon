@@ -101,7 +101,6 @@ internal class FloconPreferencesPluginImpl(
         sender: FloconMessageSender
     ) {
         val columns = preference.columns()
-        println("TEST_TEST_TEST columns:$columns")
         val rows = columns.map { key ->
             val value = preference.get(key)
             PreferenceRowDataModel(
