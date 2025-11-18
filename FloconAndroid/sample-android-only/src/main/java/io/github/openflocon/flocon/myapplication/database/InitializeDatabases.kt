@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.myapplication.database
 
 import android.content.Context
+import androidx.room.Room
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.database.model.FoodEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanEntity
@@ -11,6 +12,8 @@ import kotlinx.coroutines.launch
 fun initializeDatabases(context: Context) {
     val dogDatabase = DogDatabase.getDatabase(context)
     val foodDatabase = FoodDatabase.getDatabase(context)
+
+    val x: DogDatabase = Room.inMemoryDatabaseBuilder(context, DogDatabase::class.java).build()
 
     GlobalScope.launch {
         dogDatabase.dogDao().insertDog(

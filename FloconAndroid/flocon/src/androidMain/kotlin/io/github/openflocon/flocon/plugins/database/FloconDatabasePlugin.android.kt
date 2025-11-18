@@ -3,6 +3,10 @@ package io.github.openflocon.flocon.plugins.database
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteCompat
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteOpenHelper
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
@@ -23,11 +27,22 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) : F
         databaseName: String,
         query: String
     ): DatabaseExecuteSqlResponse {
-        var database: SQLiteDatabase? = null
+        var database: SupportSQLiteDatabase? = null
         return try {
             val path = context.getDatabasePath(databaseName)
-            database =
-                SQLiteDatabase.openDatabase(path.absolutePath, null, SQLiteDatabase.OPEN_READWRITE)
+            val helper = FrameworkSQLiteOpenHelperFactory().create(SupportSQLiteOpenHelper.Configuration.builder(context)
+                .name(path.absolutePath)
+                .callback(object : SupportSQLiteOpenHelper.Callback(1) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        // Rien
+                    }
+                    override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {
+                        // Rien
+                    }
+                })
+                .build())
+            database = helper.writableDatabase
+
             val firstWordUpperCase = getFirstWord(query).uppercase(Locale.getDefault())
             when (firstWordUpperCase) {
                 "UPDATE", "DELETE" -> executeUpdateDelete(database, query)
@@ -115,10 +130,10 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) : F
 
 
 private fun executeSelect(
-    database: SQLiteDatabase,
+    database: SupportSQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
-    val cursor: Cursor = database.rawQuery(query, null)
+    val cursor: Cursor = database.query(query)
     try {
         val columnNames = cursor.columnNames.toList()
         val rows = cursorToList(cursor)
@@ -132,7 +147,7 @@ private fun executeSelect(
 }
 
 private fun executeUpdateDelete(
-    database: SQLiteDatabase,
+    database: SupportSQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
     val statement = database.compileStatement(query)
@@ -141,7 +156,7 @@ private fun executeUpdateDelete(
 }
 
 private fun executeInsert(
-    database: SQLiteDatabase,
+    database: SupportSQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
     val statement = database.compileStatement(query)
@@ -150,7 +165,7 @@ private fun executeInsert(
 }
 
 private fun executeRawQuery(
-    database: SQLiteDatabase,
+    database: SupportSQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
     database.execSQL(query)
