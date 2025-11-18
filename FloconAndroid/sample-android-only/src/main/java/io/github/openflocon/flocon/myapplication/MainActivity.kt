@@ -27,6 +27,7 @@ import io.github.openflocon.flocon.myapplication.graphql.GraphQlTester
 import io.github.openflocon.flocon.myapplication.grpc.GrpcController
 import io.github.openflocon.flocon.myapplication.images.initializeImages
 import io.github.openflocon.flocon.myapplication.sharedpreferences.initializeSharedPreferences
+import io.github.openflocon.flocon.myapplication.sharedpreferences.initializeSharedPreferencesAfterInit
 import io.github.openflocon.flocon.myapplication.table.initializeTable
 import io.github.openflocon.flocon.myapplication.ui.ImagesListView
 import io.github.openflocon.flocon.myapplication.ui.theme.MyApplicationTheme
@@ -65,6 +66,8 @@ class MainActivity : ComponentActivity() {
         FloconLogger.enabled = true
         Flocon.initialize(this)
         initializeDeeplinks()
+
+        initializeSharedPreferencesAfterInit(applicationContext)
 
         val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)
         val dummyWebsocketCaller = DummyWebsocketCaller(client = okHttpClient)
