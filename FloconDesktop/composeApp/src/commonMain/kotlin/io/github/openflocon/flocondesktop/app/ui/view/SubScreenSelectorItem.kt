@@ -22,7 +22,7 @@ fun SubScreen.displayName(): String = when (this) {
     SubScreen.Files -> "Files"
     SubScreen.Tables -> "Tables"
     SubScreen.Images -> "Images"
-    SubScreen.SharedPreferences -> "SharedPreferences"
+    SubScreen.SharedPreferences -> "Preferences"
     SubScreen.Dashboard -> "Dashboard"
     SubScreen.Settings -> "Settings"
     SubScreen.Deeplinks -> "Deeplinks"
