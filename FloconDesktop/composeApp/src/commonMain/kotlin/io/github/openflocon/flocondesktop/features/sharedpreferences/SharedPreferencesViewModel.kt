@@ -1,15 +1,12 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.domain.sharedpreference.usecase.EditSharedPrefFieldUseCase
+import io.github.openflocon.domain.sharedpreference.usecase.GetCurrentDeviceSharedPreferenceValuesUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSharedPreferenceValuesUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.delegate.SharedPrefSelectorDelegate
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
@@ -17,17 +14,21 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.Share
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
-import kotlinx.coroutines.flow.MutableSharedFlow
+import io.github.openflocon.flocondesktop.features.sharedpreferences.view.PreferenceAutoUpdate
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 class SharedPreferencesViewModel(
     private val dispatcherProvider: DispatcherProvider,
@@ -35,6 +36,7 @@ class SharedPreferencesViewModel(
     private val sharedPrefSelectorDelegate: SharedPrefSelectorDelegate,
     private val observeCurrentDeviceSharedPreferenceValuesUseCase: ObserveCurrentDeviceSharedPreferenceValuesUseCase,
     private val editSharedPrefFieldUseCase: EditSharedPrefFieldUseCase,
+    private val getCurrentDeviceSharedPrefValuesUseCase: GetCurrentDeviceSharedPreferenceValuesUseCase,
 ) : ViewModel() {
 
     private val _elementToEdit = MutableStateFlow<SharedPreferenceToEdit?>(null)
@@ -65,6 +67,49 @@ class SharedPreferencesViewModel(
                 SharedPreferencesRowsStateUiModel.Loading,
             )
 
+    data class PreferenceAutoUpdateState(
+        val isEnabled: Boolean,
+        val delayMs: Int,
+    ) {
+        fun toUi(): PreferenceAutoUpdate {
+            return if (isEnabled) {
+                PreferenceAutoUpdate.Enabled(
+                    delayMs = delayMs
+                )
+            } else {
+                PreferenceAutoUpdate.Disabled
+            }
+        }
+    }
+
+    private val _autoUpdate = MutableStateFlow<PreferenceAutoUpdateState>(
+        PreferenceAutoUpdateState(
+            isEnabled = false,
+            delayMs = 3000,
+        )
+    )
+    val autoUpdateState: StateFlow<PreferenceAutoUpdate> = _autoUpdate
+        .map { it.toUi() }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            _autoUpdate.value.toUi()
+        )
+
+    init {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            _autoUpdate.collectLatest {
+                if(it.isEnabled) {
+                    while (true) {
+                        getCurrentDeviceSharedPrefValuesUseCase()
+                        delay(max(it.delayMs.toLong(), 300L))
+                    }
+                }
+            }
+        }
+    }
+
     fun onVisible() {
         sharedPrefSelectorDelegate.start()
     }
@@ -75,6 +120,24 @@ class SharedPreferencesViewModel(
 
     fun onSharedPrefsSelected(selected: DeviceSharedPrefUiModel) {
         sharedPrefSelectorDelegate.onSharedPreferenceSelected(selected)
+    }
+
+    fun refreshClicked() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            getCurrentDeviceSharedPrefValuesUseCase()
+        }
+    }
+
+    fun onAutoUpdateChange(enabled: Boolean) {
+        _autoUpdate.update {
+            it.copy(isEnabled = enabled)
+        }
+    }
+
+    fun onAutoUpdateDelayChanged(delayMs: Int) {
+        _autoUpdate.update {
+            it.copy(delayMs = delayMs)
+        }
     }
 
     fun onValueChanged(item: SharedPreferencesRowUiModel, valueAsString: String) {
