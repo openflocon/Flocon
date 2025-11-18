@@ -67,7 +67,7 @@ internal class FloconPreferencesPluginImpl(
                 scope.launch {
                     try {
                         preference.set(
-                            rowName = toDeviceMessage.key,
+                            columnName = toDeviceMessage.key,
                             value = FloconPreferenceValue(
                                 stringValue = toDeviceMessage.stringValue,
                                 booleanValue = toDeviceMessage.booleanValue,
@@ -101,6 +101,7 @@ internal class FloconPreferencesPluginImpl(
         sender: FloconMessageSender
     ) {
         val columns = preference.columns()
+        println("TEST_TEST_TEST columns:$columns")
         val rows = columns.map { key ->
             val value = preference.get(key)
             PreferenceRowDataModel(

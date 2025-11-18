@@ -135,6 +135,10 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.core)
     //endregion
+
+    // region datastore
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
+    // endregion
 }
 
 apollo {

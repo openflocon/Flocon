@@ -26,6 +26,7 @@ import io.github.openflocon.flocon.myapplication.deeplinks.initializeDeeplinks
 import io.github.openflocon.flocon.myapplication.graphql.GraphQlTester
 import io.github.openflocon.flocon.myapplication.grpc.GrpcController
 import io.github.openflocon.flocon.myapplication.images.initializeImages
+import io.github.openflocon.flocon.myapplication.sharedpreferences.initializeDatastores
 import io.github.openflocon.flocon.myapplication.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.sharedpreferences.initializeSharedPreferencesAfterInit
 import io.github.openflocon.flocon.myapplication.table.initializeTable
@@ -68,6 +69,7 @@ class MainActivity : ComponentActivity() {
         initializeDeeplinks()
 
         initializeSharedPreferencesAfterInit(applicationContext)
+        initializeDatastores(applicationContext)
 
         val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)
         val dummyWebsocketCaller = DummyWebsocketCaller(client = okHttpClient)

@@ -10,7 +10,7 @@ data class FloconSharedPreference(
 ) : FloconPreference {
 
     override suspend fun set(
-        rowName: String,
+        columnName: String,
         value: FloconPreferenceValue
     ) {
         // no op

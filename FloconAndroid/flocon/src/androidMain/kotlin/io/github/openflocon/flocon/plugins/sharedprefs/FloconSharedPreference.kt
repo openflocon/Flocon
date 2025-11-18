@@ -10,22 +10,22 @@ data class FloconSharedPreference(
 ) : FloconPreference {
 
     override suspend fun set(
-        rowName: String,
+        columnName: String,
         value: FloconPreferenceValue
     ) {
-        val originalValue: Any? = sharedPreferences.all[rowName]
+        val originalValue: Any? = sharedPreferences.all[columnName]
         val editor = sharedPreferences.edit()
 
         if (originalValue is Boolean && value.booleanValue != null) {
-            editor.putBoolean(rowName, value.booleanValue!!)
+            editor.putBoolean(columnName, value.booleanValue!!)
         } else if (originalValue is Long && value.longValue != null) {
-            editor.putLong(rowName, value.longValue!!)
+            editor.putLong(columnName, value.longValue!!)
         } else if (originalValue is Int && value.intValue != null) {
-            editor.putInt(rowName, value.intValue!!)
+            editor.putInt(columnName, value.intValue!!)
         } else if (originalValue is Float && value.floatValue != null) {
-            editor.putFloat(rowName, value.floatValue!!)
+            editor.putFloat(columnName, value.floatValue!!)
         } else if (originalValue is String && value.stringValue != null) {
-            editor.putString(rowName, value.stringValue!!)
+            editor.putString(columnName, value.stringValue!!)
         } else {
             // do nothin
         }
