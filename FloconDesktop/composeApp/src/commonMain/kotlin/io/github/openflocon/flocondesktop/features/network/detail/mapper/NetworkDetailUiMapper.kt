@@ -17,44 +17,49 @@ import io.github.openflocon.flocondesktop.features.network.list.mapper.toNetwork
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.common.isImageUrl
+import kotlinx.collections.immutable.toPersistentMap
 
-fun FloconNetworkCallDomainModel.toDetailUi(): NetworkDetailViewState = NetworkDetailViewState(
-    callId = callId,
-    fullUrl = request.url,
-    method = toDetailMethodUi(this),
-    statusLabel = toDetailStatusLabel(this),
-    status = toDetailHttpStatusUi(this),
-    requestTimeFormatted = request.startTimeFormatted,
-    durationFormatted = response?.durationFormatted,
-    imageUrl = request.url.takeIf { response?.isImage() == true || it.isImageUrl() },
-    // request
-    requestBodyTitle = requestBodyTitle(this),
-    requestBody = httpBodyToUi(request.body),
-    requestBodyIsNotBlank = request.body.isNullOrBlank().not(),
-    canOpenRequestBody = canOpenExternal(request.body),
-    // headers.,
-    requestHeaders = toNetworkHeadersUi(request.headers),
-    requestSize = request.byteSizeFormatted,
-    // response
-    response = response?.let {
-        when (it) {
-            is FloconNetworkCallDomainModel.Response.Failure -> NetworkDetailViewState.Response.Error(
-                issue = it.issue,
-            )
+fun FloconNetworkCallDomainModel.toDetailUi(): NetworkDetailViewState {
+    val imageUrl = request.url.takeIf { response?.isImage() == true || it.isImageUrl() }
+    return NetworkDetailViewState(
+        callId = callId,
+        fullUrl = request.url,
+        method = toDetailMethodUi(this),
+        statusLabel = toDetailStatusLabel(this),
+        status = toDetailHttpStatusUi(this),
+        requestTimeFormatted = request.startTimeFormatted,
+        durationFormatted = response?.durationFormatted,
+        imageUrl = imageUrl,
+        imageHeaders = request.headers.takeIf { imageUrl != null }?.toPersistentMap(),
+        // request
+        requestBodyTitle = requestBodyTitle(this),
+        requestBody = httpBodyToUi(request.body),
+        requestBodyIsNotBlank = request.body.isNullOrBlank().not(),
+        canOpenRequestBody = canOpenExternal(request.body),
+        // headers.,
+        requestHeaders = toNetworkHeadersUi(request.headers),
+        requestSize = request.byteSizeFormatted,
+        // response
+        response = response?.let {
+            when (it) {
+                is FloconNetworkCallDomainModel.Response.Failure -> NetworkDetailViewState.Response.Error(
+                    issue = it.issue,
+                )
 
-            is FloconNetworkCallDomainModel.Response.Success -> NetworkDetailViewState.Response.Success(
-                body = httpBodyToUi(it.body),
-                size = it.byteSizeFormatted,
-                canOpenResponseBody = canOpenExternal(it.body),
-                responseBodyIsNotBlank = it.body.isNullOrBlank().not(),
-                headers = toNetworkHeadersUi(it.headers),
-            )
+                is FloconNetworkCallDomainModel.Response.Success -> NetworkDetailViewState.Response.Success(
+                    body = httpBodyToUi(it.body),
+                    size = it.byteSizeFormatted,
+                    canOpenResponseBody = canOpenExternal(it.body),
+                    responseBodyIsNotBlank = it.body.isNullOrBlank().not(),
+                    headers = toNetworkHeadersUi(it.headers),
+                )
 
-        }
+            }
 
-    },
-    graphQlSection = graphQlSection(this),
-)
+        },
+        graphQlSection = graphQlSection(this),
+    )
+}
 
 private fun toDetailStatusLabel(request: FloconNetworkCallDomainModel): String =
     when (request.request.specificInfos) {

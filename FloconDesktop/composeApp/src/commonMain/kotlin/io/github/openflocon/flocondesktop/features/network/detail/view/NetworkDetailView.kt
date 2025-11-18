@@ -29,7 +29,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.PlatformContext
 import coil3.compose.AsyncImage
+import coil3.network.NetworkHeaders
+import coil3.network.httpHeaders
+import coil3.request.ImageRequest
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
@@ -48,6 +52,7 @@ import io.github.openflocon.library.designsystem.components.FloconLineDescriptio
 import io.github.openflocon.library.designsystem.components.FloconSection
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.collections.immutable.persistentMapOf
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -247,7 +252,18 @@ private fun Request(
             state.imageUrl?.let { imageUrl ->
                 // Coil image
                 AsyncImage(
-                    model = imageUrl,
+                    model = remember(state) {
+                        ImageRequest.Builder(PlatformContext.INSTANCE)
+                            .data(imageUrl)
+                            .httpHeaders(
+                                NetworkHeaders.Builder().apply {
+                                    state.imageHeaders?.forEach { (key, value) ->
+                                        set(key, value)
+                                    }
+                                }.build()
+                            )
+                            .build()
+                    },
                     contentDescription = "Image preview",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -598,6 +614,7 @@ private fun NetworkDetailViewPreview() {
                 imageUrl = null,
                 canOpenRequestBody = true,
                 requestBodyIsNotBlank = true,
+                imageHeaders = persistentMapOf(),
             ),
             onAction = {}
         )

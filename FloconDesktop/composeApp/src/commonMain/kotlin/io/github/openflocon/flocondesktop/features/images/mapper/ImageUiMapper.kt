@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.images.mapper
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
+import kotlinx.collections.immutable.toPersistentMap
 
 
 internal fun List<DeviceImageDomainModel>.filterBy(filter: String) : List<DeviceImageDomainModel> {
@@ -16,4 +17,5 @@ internal fun List<DeviceImageDomainModel>.filterBy(filter: String) : List<Device
 internal fun DeviceImageDomainModel.toUi(): ImagesUiModel = ImagesUiModel(
     url = url,
     downloadedAt = formatTimestamp(time),
+    headers = headers.toPersistentMap(),
 )

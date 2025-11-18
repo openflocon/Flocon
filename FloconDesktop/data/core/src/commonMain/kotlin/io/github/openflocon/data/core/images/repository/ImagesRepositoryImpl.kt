@@ -49,6 +49,7 @@ class ImagesRepositoryImpl(
             deviceIdAndPackageName = deviceIdAndPackageName,
             image = DeviceImageDomainModel(
                 url = call.request.url,
+                headers = call.request.headers,
                 time = (call.request.startTime + duration).toLong(),
             ),
         )

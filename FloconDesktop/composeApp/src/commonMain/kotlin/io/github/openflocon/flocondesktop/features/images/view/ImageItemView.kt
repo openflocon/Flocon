@@ -27,9 +27,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
+import coil3.network.NetworkHeaders
+import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import coil3.size.SizeResolver
 import io.github.openflocon.flocondesktop.common.ui.isInPreview
@@ -37,6 +40,8 @@ import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 @Composable
 fun ImageItemView(
@@ -65,7 +70,18 @@ fun ImageItemView(
                 )
             } else {
                 AsyncImage(
-                    model = model.url,
+                    model = remember(model) {
+                        ImageRequest.Builder(PlatformContext.INSTANCE)
+                            .data(model.url)
+                            .httpHeaders(
+                                NetworkHeaders.Builder().apply {
+                                    model.headers?.forEach { (key, value) ->
+                                        set(key, value)
+                                    }
+                                }.build()
+                            )
+                            .build()
+                    },
                     contentDescription = "",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize(),

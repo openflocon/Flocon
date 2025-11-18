@@ -12,10 +12,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 
 internal class ImagesLocalDataSourceRoom(
     private val imageDao: FloconImageDao,
     private val dispatcherProvider: DispatcherProvider,
+    private val json: Json,
 ) : ImagesLocalDataSource {
 
     override suspend fun addImage(
@@ -25,7 +27,8 @@ internal class ImagesLocalDataSourceRoom(
         withContext(dispatcherProvider.data) {
             imageDao.insertImage(
                 image.toEntity(
-                    deviceIdAndPackageName = deviceIdAndPackageName
+                    deviceIdAndPackageName = deviceIdAndPackageName,
+                    json = json,
                 ),
             )
         }
@@ -37,7 +40,9 @@ internal class ImagesLocalDataSourceRoom(
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
     )
-        .map { entities -> entities.map { it.toDomainModel() } }
+        .map { entities -> entities.map { it.toDomainModel(
+            json = json,
+        ) } }
         .flowOn(dispatcherProvider.data)
 
     override suspend fun clearImages(

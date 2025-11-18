@@ -55,7 +55,8 @@ class NetworkDetailDelegate(
                 response = null,
                 requestBodyIsNotBlank = false,
                 canOpenRequestBody = false,
-                imageUrl = null
+                imageUrl = null,
+                imageHeaders = null,
             )
         )
 
