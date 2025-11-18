@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class SharedPreferenceRowDataModel(
+internal data class PreferenceRowDataModel(
     val key: String,
     val stringValue: String? = null,
     val intValue: Int? = null,

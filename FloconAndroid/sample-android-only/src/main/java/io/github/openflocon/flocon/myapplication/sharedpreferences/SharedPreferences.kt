@@ -3,6 +3,8 @@
 package io.github.openflocon.flocon.myapplication.sharedpreferences
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import androidx.core.content.edit
 import org.json.JSONArray
 import org.json.JSONObject
@@ -11,6 +13,8 @@ import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 
 fun initializeSharedPreferences(context: Context) {
+    PreferenceManager.getDefaultSharedPreferences(context).edit { putFloat("flocon_validity", 42f) }
+
     context.getSharedPreferences("user_pref", Context.MODE_PRIVATE).apply {
         edit {
             putInt("age", 34)
