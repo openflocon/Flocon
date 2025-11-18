@@ -91,7 +91,7 @@ mavenPublishing {
     )
 
     pom {
-        name = "Flocon"
+        name = "Flocon No Op"
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"

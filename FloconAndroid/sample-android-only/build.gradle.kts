@@ -84,6 +84,8 @@ dependencies {
         implementation(project(":grpc:grpc-interceptor-lite"))
         debugImplementation(project(":ktor-interceptor"))
         releaseImplementation(project(":ktor-interceptor-no-op"))
+        debugImplementation(project(":datastores"))
+        releaseImplementation(project(":datastores-no-op"))
     }
 
 

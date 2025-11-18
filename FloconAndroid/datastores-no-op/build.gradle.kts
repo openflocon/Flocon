@@ -40,7 +40,6 @@ dependencies {
 
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.jetbrains.kotlinx.coroutines.core)
-    implementation(libs.jetbrains.kotlinx.coroutines.android)
 
     implementation(libs.androidx.datastore.preferences)
 }
@@ -57,12 +56,12 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-        artifactId = "flocon-datastores",
+        artifactId = "flocon-datastores-no-op",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
     pom {
-        name = "Flocon Datastores Integration"
+        name = "Flocon Datastores Integration No Op"
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"
