@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.sharedprefs
+package io.github.openflocon.flocon.plugins.sharedprefs
 
 import android.content.SharedPreferences
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
