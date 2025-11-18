@@ -17,17 +17,17 @@ data class FloconSharedPreference(
         val editor = sharedPreferences.edit()
 
         if (originalValue is Boolean && value.booleanValue != null) {
-            editor.putBoolean(rowName, value.booleanValue)
+            editor.putBoolean(rowName, value.booleanValue!!)
         } else if (originalValue is Long && value.longValue != null) {
-            editor.putLong(rowName, value.longValue)
+            editor.putLong(rowName, value.longValue!!)
         } else if (originalValue is Int && value.intValue != null) {
-            editor.putInt(rowName, value.intValue)
+            editor.putInt(rowName, value.intValue!!)
         } else if (originalValue is Float && value.floatValue != null) {
-            editor.putFloat(rowName, value.floatValue)
+            editor.putFloat(rowName, value.floatValue!!)
         } else if (originalValue is String && value.stringValue != null) {
-            editor.putString(rowName, value.stringValue)
+            editor.putString(rowName, value.stringValue!!)
         } else {
-            throw IllegalArgumentException("Method not supported: " + rowName)
+            // do nothin
         }
 
         editor.apply()
