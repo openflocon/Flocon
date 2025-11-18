@@ -6,13 +6,13 @@ sealed interface SharedPrefsStateUiModel {
     data object Empty : SharedPrefsStateUiModel
 
     data class WithContent(
-        val sharedPrefs: List<DeviceSharedPrefUiModel>,
+        val preferences: List<DeviceSharedPrefUiModel>,
         val selected: DeviceSharedPrefUiModel,
     ) : SharedPrefsStateUiModel
 }
 
 fun previewSharedPrefsStateUiModel(): SharedPrefsStateUiModel = SharedPrefsStateUiModel.WithContent(
-    sharedPrefs =
+    preferences =
     listOf(
         previewDeviceSharedPrefUiModel(id = "id1"),
         previewDeviceSharedPrefUiModel(id = "id2"),

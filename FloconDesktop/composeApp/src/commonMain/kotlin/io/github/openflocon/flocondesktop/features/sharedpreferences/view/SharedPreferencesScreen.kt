@@ -4,9 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -93,13 +95,6 @@ fun SharedPrefScreen(
     ) {
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
-            selector = {
-                SharedPrefSelectorView(
-                    sharedPrefsState = deviceSharedPrefs,
-                    onSharedPrefSelected = onSharedPrefSelected,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            },
             filterBar = {
                 SharedPreferencesFilterBar(
                     items = rows.rows,
@@ -110,44 +105,55 @@ fun SharedPrefScreen(
             }
         )
 
-        SelectionContainer {
-            val lazyListState = rememberLazyListState()
-            val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
-            Box(
-                modifier = modifier.fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary)
-                    .border(
-                        width = 1.dp,
-                        color = FloconTheme.colorPalette.secondary,
-                        shape = FloconTheme.shapes.medium
-                    )
-            ) {
-                LazyColumn(
-                    state = lazyListState,
-                    modifier = Modifier
-                        .fillMaxSize()
+        Row(Modifier.fillMaxSize()) {
+            SharedPreferenceSelectorView(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(340.dp),
+                state = deviceSharedPrefs,
+                onSharedPrefSelected = onSharedPrefSelected,
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+
+            SelectionContainer {
+                val lazyListState = rememberLazyListState()
+                val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
+                Box(
+                    modifier = modifier.fillMaxSize()
+                        .clip(FloconTheme.shapes.medium)
+                        .background(FloconTheme.colorPalette.primary)
+                        .border(
+                            width = 1.dp,
+                            color = FloconTheme.colorPalette.secondary,
+                            shape = FloconTheme.shapes.medium
+                        )
                 ) {
-                    when (rows) {
-                        SharedPreferencesRowsStateUiModel.Empty -> {}
-                        SharedPreferencesRowsStateUiModel.Loading -> {}
-                        is SharedPreferencesRowsStateUiModel.WithContent -> {
-                            items(sharedPrefRows) {
-                                SharedPreferenceRowView(
-                                    model = it,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    onValueChanged = changeValue,
-                                    onEditClicked = onEditClicked,
-                                )
+                    LazyColumn(
+                        state = lazyListState,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        when (rows) {
+                            SharedPreferencesRowsStateUiModel.Empty -> {}
+                            SharedPreferencesRowsStateUiModel.Loading -> {}
+                            is SharedPreferencesRowsStateUiModel.WithContent -> {
+                                items(sharedPrefRows) {
+                                    SharedPreferenceRowView(
+                                        model = it,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onValueChanged = changeValue,
+                                        onEditClicked = onEditClicked,
+                                    )
+                                }
                             }
                         }
                     }
+                    FloconVerticalScrollbar(
+                        adapter = scrollAdapter,
+                        modifier = Modifier.fillMaxHeight()
+                            .align(Alignment.TopEnd),
+                    )
                 }
-                FloconVerticalScrollbar(
-                    adapter = scrollAdapter,
-                    modifier = Modifier.fillMaxHeight()
-                        .align(Alignment.TopEnd),
-                )
             }
         }
     }

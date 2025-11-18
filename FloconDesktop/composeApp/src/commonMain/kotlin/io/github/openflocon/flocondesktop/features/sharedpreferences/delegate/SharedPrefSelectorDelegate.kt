@@ -40,7 +40,7 @@ class SharedPrefSelectorDelegate(
                 SharedPrefsStateUiModel.Empty
             } else {
                 SharedPrefsStateUiModel.WithContent(
-                    sharedPrefs = sharedPrefs.map { toUi(it) },
+                    preferences = sharedPrefs.map { toUi(it) },
                     selected =
                     toUi(
                         selected ?: run {
