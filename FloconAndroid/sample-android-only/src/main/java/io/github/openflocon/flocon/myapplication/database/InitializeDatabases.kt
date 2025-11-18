@@ -13,8 +13,6 @@ fun initializeDatabases(context: Context) {
     val dogDatabase = DogDatabase.getDatabase(context)
     val foodDatabase = FoodDatabase.getDatabase(context)
 
-    val x: DogDatabase = Room.inMemoryDatabaseBuilder(context, DogDatabase::class.java).build()
-
     GlobalScope.launch {
         dogDatabase.dogDao().insertDog(
             DogEntity(

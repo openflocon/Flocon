@@ -2,8 +2,6 @@ package io.github.openflocon.flocon.plugins.database
 
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
-import androidx.sqlite.db.SupportSQLiteCompat
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
@@ -18,9 +16,27 @@ internal actual fun buildFloconDatabaseDataSource(context: FloconContext): Floco
     return FloconDatabaseDataSourceAndroid(context.appContext)
 }
 
-internal class FloconDatabaseDataSourceAndroid(private val context: Context) : FloconDatabaseDataSource {
+internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
+    FloconDatabaseDataSource {
 
     private val MAX_DEPTH = 7
+
+    // must use the old way to get the version...
+    private fun getVersion(
+        path: String,
+    ): Int {
+        val db = android.database.sqlite.SQLiteDatabase.openDatabase(
+            path,
+            null,
+            android.database.sqlite.SQLiteDatabase.OPEN_READONLY
+        )
+        val cursor = db.rawQuery("PRAGMA user_version", null)
+        var version = 0
+        if (cursor.moveToFirst()) version = cursor.getInt(0)
+        cursor.close()
+        db.close()
+        return version
+    }
 
     override fun executeSQL(
         registeredDatabases: List<FloconDatabaseModel>,
@@ -30,17 +46,25 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) : F
         var database: SupportSQLiteDatabase? = null
         return try {
             val path = context.getDatabasePath(databaseName)
-            val helper = FrameworkSQLiteOpenHelperFactory().create(SupportSQLiteOpenHelper.Configuration.builder(context)
-                .name(path.absolutePath)
-                .callback(object : SupportSQLiteOpenHelper.Callback(1) {
-                    override fun onCreate(db: SupportSQLiteDatabase) {
-                        // Rien
-                    }
-                    override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {
-                        // Rien
-                    }
-                })
-                .build())
+            val version = getVersion(path = path.absolutePath)
+            val helper = FrameworkSQLiteOpenHelperFactory().create(
+                SupportSQLiteOpenHelper.Configuration.builder(context)
+                    .name(path.absolutePath)
+                    .callback(object : SupportSQLiteOpenHelper.Callback(version) {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            // Rien
+                        }
+
+                        override fun onUpgrade(
+                            db: SupportSQLiteDatabase,
+                            oldVersion: Int,
+                            newVersion: Int
+                        ) {
+                            // Rien
+                        }
+                    })
+                    .build()
+            )
             database = helper.writableDatabase
 
             val firstWordUpperCase = getFirstWord(query).uppercase(Locale.getDefault())
@@ -74,7 +98,7 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) : F
         )
 
         registeredDatabases.forEach {
-            if(File(it.absolutePath).exists()) {
+            if (File(it.absolutePath).exists()) {
                 foundDatabases.add(
                     DeviceDataBaseDataModel(
                         id = it.absolutePath,
