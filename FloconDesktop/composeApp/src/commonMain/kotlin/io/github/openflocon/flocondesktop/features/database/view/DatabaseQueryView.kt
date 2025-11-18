@@ -42,7 +42,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAct
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 interface SqlColorPalette {
     val keywordColor: Color

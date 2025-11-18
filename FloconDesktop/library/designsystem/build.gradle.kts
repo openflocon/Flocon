@@ -33,6 +33,7 @@ kotlin {
                 api(libs.other.jsontree)
 
                 api(libs.compose.navigation3.ui)
+                api(libs.ui.tooling.preview)
 //                api(libs.compose.navigation3.runtime)
 
                 // Not KMP yet

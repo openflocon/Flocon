@@ -55,6 +55,7 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
+            //implementation(ui.tooling.preview.desktop)
             implementation(libs.kotlinx.serializationJson)
             implementation(libs.kotlinx.dateTime)
             implementation(libs.multiplatform.settings)

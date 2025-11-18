@@ -25,7 +25,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMet
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 val getMethodBackground = Color(0xFF007BFF).copy(alpha = 0.3f) // Muted blue for GET
 val getMethodText = Color(0xFF007BFF)
