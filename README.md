@@ -21,7 +21,7 @@ With Flocon, you gain deep access to critical app internals — such as
 - local storage (sharedpref, databases, app files)
 - analytics events (and custom events)
 - debug menu displayed on the desktop
-- **deeplinks**
+- deeplinks
 
 and more — without needing root access or tedious ADB commands.
 
@@ -642,7 +642,7 @@ Thanks to these amazing people for making Flocon better every day!
         <td align="center">
       <a href="https://github.com/doTTTTT">
         <img src="https://avatars.githubusercontent.com/u/13266870?v=4" width="100px;" alt="FRaphael Teyssandier"/><br />
-        <sub><b>doTTTTT</b></sub>
+        <sub><b>rteyssandier</b></sub>
       </a>
     </td>
   </tr>
