@@ -7,6 +7,7 @@ import androidx.sqlite.db.SupportSQLiteOpenHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel
+import io.github.openflocon.flocon.plugins.database.model.FloconFileDatabaseModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DeviceDataBaseDataModel
 import java.io.File
@@ -98,13 +99,26 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
         )
 
         registeredDatabases.forEach {
-            if (File(it.absolutePath).exists()) {
-                foundDatabases.add(
-                    DeviceDataBaseDataModel(
-                        id = it.absolutePath,
-                        name = it.displayName,
+            when(it) {
+                is FloconFileDatabaseModel -> {
+                    // check if file exists here
+                    if (File(it.absolutePath).exists()) {
+                        foundDatabases.add(
+                            DeviceDataBaseDataModel(
+                                id = it.displayName,
+                                name = it.displayName,
+                            )
+                        )
+                    }
+                }
+                else -> {
+                    foundDatabases.add(
+                        DeviceDataBaseDataModel(
+                            id = it.displayName,
+                            name = it.displayName,
+                        )
                     )
-                )
+                }
             }
         }
 
