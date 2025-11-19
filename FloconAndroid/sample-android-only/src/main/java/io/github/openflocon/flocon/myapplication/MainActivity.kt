@@ -68,11 +68,11 @@ class MainActivity : ComponentActivity() {
 
         initializeSharedPreferences(applicationContext)
         initializeDatabases(context = applicationContext)
-        inMemoryDb = initializeInMemoryDatabases(applicationContext)
 
         FloconLogger.enabled = true
         Flocon.initialize(this)
         initializeDeeplinks()
+        inMemoryDb = initializeInMemoryDatabases(applicationContext)
 
         initializeSharedPreferencesAfterInit(applicationContext)
         initializeDatastores(applicationContext)
