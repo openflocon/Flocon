@@ -92,5 +92,6 @@ internal class FloconDatabasePluginImpl(
 
     override fun register(floconDatabaseModel: FloconDatabaseModel) {
         registeredDatabases.update { it + floconDatabaseModel }
+        sendAllDatabases(sender)
     }
 }

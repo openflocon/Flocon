@@ -21,7 +21,9 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.myapplication.dashboard.initializeDashboard
+import io.github.openflocon.flocon.myapplication.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.database.initializeDatabases
+import io.github.openflocon.flocon.myapplication.database.initializeInMemoryDatabases
 import io.github.openflocon.flocon.myapplication.deeplinks.initializeDeeplinks
 import io.github.openflocon.flocon.myapplication.graphql.GraphQlTester
 import io.github.openflocon.flocon.myapplication.grpc.GrpcController
@@ -46,6 +48,9 @@ import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 
 class MainActivity : ComponentActivity() {
+
+    lateinit var inMemoryDb : DogDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -67,6 +72,7 @@ class MainActivity : ComponentActivity() {
         FloconLogger.enabled = true
         Flocon.initialize(this)
         initializeDeeplinks()
+        inMemoryDb = initializeInMemoryDatabases(applicationContext)
 
         initializeSharedPreferencesAfterInit(applicationContext)
         initializeDatastores(applicationContext)

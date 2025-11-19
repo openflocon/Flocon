@@ -2,9 +2,12 @@ package io.github.openflocon.flocon.plugins.database
 
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteOpenHelper
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel
+import io.github.openflocon.flocon.plugins.database.model.FloconFileDatabaseModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DeviceDataBaseDataModel
 import java.io.File
@@ -14,7 +17,8 @@ internal actual fun buildFloconDatabaseDataSource(context: FloconContext): Floco
     return FloconDatabaseDataSourceAndroid(context.appContext)
 }
 
-internal class FloconDatabaseDataSourceAndroid(private val context: Context) : FloconDatabaseDataSource {
+internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
+    FloconDatabaseDataSource {
 
     private val MAX_DEPTH = 7
 
@@ -23,11 +27,68 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) : F
         databaseName: String,
         query: String
     ): DatabaseExecuteSqlResponse {
-        var database: SQLiteDatabase? = null
+        val databaseModel = registeredDatabases.find { it.displayName == databaseName }
+        return when(databaseModel) {
+            is FloconSqliteDatabaseModel -> {
+                executeSQL(
+                    database = databaseModel.database,
+                    query = query,
+                )
+            }
+            else -> openDbAndExecuteQuery(
+                databaseName = databaseName,
+                query = query,
+            )
+        }
+    }
+
+    private fun openDbAndExecuteQuery(
+        databaseName: String,
+        query: String
+    ): DatabaseExecuteSqlResponse {
+        var helper: SupportSQLiteOpenHelper? = null
         return try {
             val path = context.getDatabasePath(databaseName)
-            database =
-                SQLiteDatabase.openDatabase(path.absolutePath, null, SQLiteDatabase.OPEN_READWRITE)
+            val version = getDatabaseVersion(path = path.absolutePath)
+            helper = FrameworkSQLiteOpenHelperFactory().create(
+                SupportSQLiteOpenHelper.Configuration.builder(context)
+                    .name(path.absolutePath)
+                    .callback(object : SupportSQLiteOpenHelper.Callback(version) {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            // no op
+                        }
+
+                        override fun onUpgrade(
+                            db: SupportSQLiteDatabase,
+                            oldVersion: Int,
+                            newVersion: Int
+                        ) {
+                            // no op
+                        }
+                    })
+                    .build()
+            )
+            val database = helper.writableDatabase
+
+            executeSQL(
+                database = database,
+                query = query,
+            )
+        } catch (t: Throwable) {
+            DatabaseExecuteSqlResponse.Error(
+                message = t.message ?: "error on executeSQL",
+                originalSql = query,
+            )
+        } finally {
+            helper?.close()
+        }
+    }
+
+    private fun executeSQL(
+        database: SupportSQLiteDatabase,
+        query: String
+    ): DatabaseExecuteSqlResponse {
+        return try {
             val firstWordUpperCase = getFirstWord(query).uppercase(Locale.getDefault())
             when (firstWordUpperCase) {
                 "UPDATE", "DELETE" -> executeUpdateDelete(database, query)
@@ -40,8 +101,6 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) : F
                 message = t.message ?: "error on executeSQL",
                 originalSql = query,
             )
-        } finally {
-            database?.close()
         }
     }
 
@@ -59,13 +118,26 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) : F
         )
 
         registeredDatabases.forEach {
-            if(File(it.absolutePath).exists()) {
-                foundDatabases.add(
-                    DeviceDataBaseDataModel(
-                        id = it.absolutePath,
-                        name = it.displayName,
+            when(it) {
+                is FloconFileDatabaseModel -> {
+                    // check if file exists here
+                    if (File(it.absolutePath).exists()) {
+                        foundDatabases.add(
+                            DeviceDataBaseDataModel(
+                                id = it.absolutePath,
+                                name = it.displayName,
+                            )
+                        )
+                    }
+                }
+                else -> {
+                    foundDatabases.add(
+                        DeviceDataBaseDataModel(
+                            id = it.displayName,
+                            name = it.displayName,
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -115,10 +187,10 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) : F
 
 
 private fun executeSelect(
-    database: SQLiteDatabase,
+    database: SupportSQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
-    val cursor: Cursor = database.rawQuery(query, null)
+    val cursor: Cursor = database.query(query)
     try {
         val columnNames = cursor.columnNames.toList()
         val rows = cursorToList(cursor)
@@ -132,7 +204,7 @@ private fun executeSelect(
 }
 
 private fun executeUpdateDelete(
-    database: SQLiteDatabase,
+    database: SupportSQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
     val statement = database.compileStatement(query)
@@ -141,7 +213,7 @@ private fun executeUpdateDelete(
 }
 
 private fun executeInsert(
-    database: SQLiteDatabase,
+    database: SupportSQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
     val statement = database.compileStatement(query)
@@ -150,7 +222,7 @@ private fun executeInsert(
 }
 
 private fun executeRawQuery(
-    database: SQLiteDatabase,
+    database: SupportSQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
     database.execSQL(query)
@@ -185,5 +257,20 @@ private fun getObjectFromColumnIndex(cursor: Cursor, column: Int): String? {
         Cursor.FIELD_TYPE_BLOB -> cursor.getBlob(column).toString()
         Cursor.FIELD_TYPE_STRING -> cursor.getString(column).toString()
         else -> cursor.getString(column)
+    }
+}
+
+// must use the old way to get the version...
+private fun getDatabaseVersion(
+    path: String,
+): Int {
+    return android.database.sqlite.SQLiteDatabase.openDatabase(
+        path,
+        null,
+        android.database.sqlite.SQLiteDatabase.OPEN_READONLY
+    ).use { db ->
+        db.rawQuery("PRAGMA user_version", null).use { cursor ->
+            if (cursor.moveToFirst()) cursor.getInt(0) else 0
+        }
     }
 }

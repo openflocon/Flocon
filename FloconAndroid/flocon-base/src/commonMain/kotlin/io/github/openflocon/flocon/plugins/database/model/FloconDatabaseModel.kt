@@ -1,6 +1,10 @@
 package io.github.openflocon.flocon.plugins.database.model
 
-data class FloconDatabaseModel(
-    val displayName: String,
+interface FloconDatabaseModel {
+    val displayName: String
+}
+
+data class FloconFileDatabaseModel(
+    override val displayName: String,
     val absolutePath: String
-)
+) : FloconDatabaseModel

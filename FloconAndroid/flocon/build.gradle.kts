@@ -35,6 +35,9 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.jakewharton.process.phoenix)
                 implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+                implementation(libs.androidx.sqlite)
+                implementation(libs.androidx.sqlite.framework)
             }
         }
         
