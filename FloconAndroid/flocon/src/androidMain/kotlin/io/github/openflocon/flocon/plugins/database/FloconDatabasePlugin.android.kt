@@ -60,16 +60,16 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
         databaseName: String,
         query: String
     ): DatabaseExecuteSqlResponse {
-        var database: SupportSQLiteDatabase? = null
+        var helper: SupportSQLiteOpenHelper? = null
         return try {
-            val path = if (File(databaseName).isAbsolute) File(databaseName) else context.getDatabasePath(databaseName)
+            val path = context.getDatabasePath(databaseName)
             val version = getDatabaseVersion(path = path.absolutePath)
-            val helper = FrameworkSQLiteOpenHelperFactory().create(
+            helper = FrameworkSQLiteOpenHelperFactory().create(
                 SupportSQLiteOpenHelper.Configuration.builder(context)
                     .name(path.absolutePath)
                     .callback(object : SupportSQLiteOpenHelper.Callback(version) {
                         override fun onCreate(db: SupportSQLiteDatabase) {
-                            // Rien
+                            // no op
                         }
 
                         override fun onUpgrade(
@@ -77,12 +77,12 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
                             oldVersion: Int,
                             newVersion: Int
                         ) {
-                            // Rien
+                            // no op
                         }
                     })
                     .build()
             )
-            database = helper.writableDatabase
+            val database = helper.writableDatabase
 
             executeSQL(
                 database = database,
@@ -94,7 +94,7 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
                 originalSql = query,
             )
         } finally {
-            database?.close()
+            helper?.close()
         }
     }
 
