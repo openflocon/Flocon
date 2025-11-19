@@ -41,6 +41,25 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
         databaseName: String,
         query: String
     ): DatabaseExecuteSqlResponse {
+        val databaseModel = registeredDatabases.find { it.displayName == databaseName }
+        return when(databaseModel) {
+            is FloconSqliteDatabaseModel -> {
+                executeSQL(
+                    database = databaseModel.database,
+                    query = query,
+                )
+            }
+            else -> openDbAndExecuteQuery(
+                databaseName = databaseName,
+                query = query,
+            )
+        }
+    }
+
+    private fun openDbAndExecuteQuery(
+        databaseName: String,
+        query: String
+    ): DatabaseExecuteSqlResponse {
         var database: SupportSQLiteDatabase? = null
         return try {
             val path = context.getDatabasePath(databaseName)
