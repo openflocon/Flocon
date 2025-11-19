@@ -278,15 +278,13 @@ private fun getObjectFromColumnIndex(cursor: Cursor, column: Int): String? {
 private fun getDatabaseVersion(
     path: String,
 ): Int {
-    val db = android.database.sqlite.SQLiteDatabase.openDatabase(
+    return android.database.sqlite.SQLiteDatabase.openDatabase(
         path,
         null,
         android.database.sqlite.SQLiteDatabase.OPEN_READONLY
-    )
-    val cursor = db.rawQuery("PRAGMA user_version", null)
-    var version = 0
-    if (cursor.moveToFirst()) version = cursor.getInt(0)
-    cursor.close()
-    db.close()
-    return version
+    ).use { db ->
+        db.rawQuery("PRAGMA user_version", null).use { cursor ->
+            if (cursor.moveToFirst()) cursor.getInt(0) else 0
+        }
+    }
 }
