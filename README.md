@@ -11,9 +11,9 @@ It allows developers to connect a Kotlin Multiplatform or Android app to their c
 |---|:---:|:---:|:---:|:---:|:---:|
 | Network | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Database | ✅ | ❌ | ❌ | ❌ | ❌ |
-| SharedPreference  | ✅ | ❌ | ❌ | ❌ |
+| SharedPreference  | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Table | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Analytics | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Analytics | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 With Flocon, you gain deep access to critical app internals — such as
 - network requests (HTTP, gRPC, GraphQL, WebSockets)
