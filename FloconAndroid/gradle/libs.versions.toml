@@ -31,7 +31,6 @@ processPhoenix = "3.0.0"
 sqlite = "2.5.2"
 sqliteJdbc = "3.50.3.0"
 buildconfig = "5.6.8"
-sqliteKtx = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -90,8 +89,8 @@ protobuf-util = { group = "com.google.protobuf", name = "protobuf-java-util", ve
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqliteJdbc" }
 squareup-okhttp = { module = "com.squareup.okhttp3:okhttp" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
-androidx-sqlite = { group = "androidx.sqlite", name = "sqlite", version.ref = "sqliteKtx" }
-androidx-sqlite-framework = { group = "androidx.sqlite", name = "sqlite-framework", version.ref = "sqliteKtx" }
+androidx-sqlite = { group = "androidx.sqlite", name = "sqlite", version.ref = "sqlite" }
+androidx-sqlite-framework = { group = "androidx.sqlite", name = "sqlite-framework", version.ref = "sqlite" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
