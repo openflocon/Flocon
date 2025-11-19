@@ -9,14 +9,14 @@ It allows developers to connect a Kotlin Multiplatform or Android app to their c
 **Works on**
 |   | Android | Desktop (jvm) | iOS (simulator) | iOS (device) | wasm |
 |---|:---:|:---:|:---:|:---:|:---:|
-| Network | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Database | ✅ | ❌ | ❌ | ❌ | ❌ |
-| SharedPreference | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Table | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Analytics | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Deeplink | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Files | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Images | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Network | ✅ | ✅ | ✅ | ❌ | ✅ |
+| Database | ✅ | ✅ | ✅ | ❌ | ✅ |
+| Preference | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Table | ✅ | ✅ | ✅ | ❌ | ✅ |
+| Analytics | ✅ | ✅ | ✅ | ❌ | ✅ |
+| Deeplink | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Files | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Images | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 With Flocon, you gain deep access to critical app internals — such as
 - network requests (HTTP, gRPC, GraphQL, WebSockets)
