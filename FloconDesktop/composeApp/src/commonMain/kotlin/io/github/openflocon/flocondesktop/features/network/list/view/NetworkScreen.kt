@@ -118,7 +118,6 @@ fun NetworkScreen(
             .fillMaxSize()
     ) {
         FloconFeature(
-            contentPadding = PaddingValues(0.dp),
             modifier = modifier
                 .fillMaxHeight()
                 .weight(1f)
