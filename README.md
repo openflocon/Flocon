@@ -7,13 +7,13 @@ Inspired from [Flipper](https://github.com/facebook/flipper) by Meta, while leve
 It allows developers to connect a Kotlin Multiplatform or Android app to their computer and launch a **desktop interface** that can **observe, inspect, and interact with the running app** in real time — across shared Kotlin code and platform-specific implementations.
 
 **Works on**
-|   | Android | Desktop (jvm) | iOS (simu) | iOS (device) | wasm |
+|   | Android | Desktop (jvm) | iOS (simulator) | iOS (device) | wasm |
 |---|:---:|:---:|:---:|:---:|:---:|
 | Network | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Database | ✅ | ❌ | ❌ | ❌ | ❌ |
-| SharedPreference  | ✅ | ❌ | ❌ | ❌ | ❌ |
+| SharedPreference | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Table | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Analytics | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Analytics | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 With Flocon, you gain deep access to critical app internals — such as
 - network requests (HTTP, gRPC, GraphQL, WebSockets)
