@@ -21,23 +21,6 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
 
     private val MAX_DEPTH = 7
 
-    // must use the old way to get the version...
-    private fun getVersion(
-        path: String,
-    ): Int {
-        val db = android.database.sqlite.SQLiteDatabase.openDatabase(
-            path,
-            null,
-            android.database.sqlite.SQLiteDatabase.OPEN_READONLY
-        )
-        val cursor = db.rawQuery("PRAGMA user_version", null)
-        var version = 0
-        if (cursor.moveToFirst()) version = cursor.getInt(0)
-        cursor.close()
-        db.close()
-        return version
-    }
-
     override fun executeSQL(
         registeredDatabases: List<FloconDatabaseModel>,
         databaseName: String,
@@ -46,7 +29,7 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
         var database: SupportSQLiteDatabase? = null
         return try {
             val path = context.getDatabasePath(databaseName)
-            val version = getVersion(path = path.absolutePath)
+            val version = getDatabaseVersion(path = path.absolutePath)
             val helper = FrameworkSQLiteOpenHelperFactory().create(
                 SupportSQLiteOpenHelper.Configuration.builder(context)
                     .name(path.absolutePath)
@@ -67,6 +50,25 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
             )
             database = helper.writableDatabase
 
+            executeSQL(
+                database = database,
+                query = query,
+            )
+        } catch (t: Throwable) {
+            DatabaseExecuteSqlResponse.Error(
+                message = t.message ?: "error on executeSQL",
+                originalSql = query,
+            )
+        } finally {
+            database?.close()
+        }
+    }
+
+    private fun executeSQL(
+        database: SupportSQLiteDatabase,
+        query: String
+    ): DatabaseExecuteSqlResponse {
+        return try {
             val firstWordUpperCase = getFirstWord(query).uppercase(Locale.getDefault())
             when (firstWordUpperCase) {
                 "UPDATE", "DELETE" -> executeUpdateDelete(database, query)
@@ -79,8 +81,6 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
                 message = t.message ?: "error on executeSQL",
                 originalSql = query,
             )
-        } finally {
-            database?.close()
         }
     }
 
@@ -225,4 +225,21 @@ private fun getObjectFromColumnIndex(cursor: Cursor, column: Int): String? {
         Cursor.FIELD_TYPE_STRING -> cursor.getString(column).toString()
         else -> cursor.getString(column)
     }
+}
+
+// must use the old way to get the version...
+private fun getDatabaseVersion(
+    path: String,
+): Int {
+    val db = android.database.sqlite.SQLiteDatabase.openDatabase(
+        path,
+        null,
+        android.database.sqlite.SQLiteDatabase.OPEN_READONLY
+    )
+    val cursor = db.rawQuery("PRAGMA user_version", null)
+    var version = 0
+    if (cursor.moveToFirst()) version = cursor.getInt(0)
+    cursor.close()
+    db.close()
+    return version
 }
