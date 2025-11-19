@@ -138,7 +138,7 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
                     if (File(it.absolutePath).exists()) {
                         foundDatabases.add(
                             DeviceDataBaseDataModel(
-                                id = it.displayName,
+                                id = it.absolutePath,
                                 name = it.displayName,
                             )
                         )
