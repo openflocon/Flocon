@@ -90,7 +90,8 @@ protobuf-util = { group = "com.google.protobuf", name = "protobuf-java-util", ve
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqliteJdbc" }
 squareup-okhttp = { module = "com.squareup.okhttp3:okhttp" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
-androidx-sqlite-ktx = { group = "androidx.sqlite", name = "sqlite-ktx", version.ref = "sqliteKtx" }
+androidx-sqlite = { group = "androidx.sqlite", name = "sqlite", version.ref = "sqliteKtx" }
+androidx-sqlite-framework = { group = "androidx.sqlite", name = "sqlite-framework", version.ref = "sqliteKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
