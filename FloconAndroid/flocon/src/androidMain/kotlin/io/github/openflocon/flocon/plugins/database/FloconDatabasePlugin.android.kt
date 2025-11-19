@@ -62,7 +62,7 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
     ): DatabaseExecuteSqlResponse {
         var database: SupportSQLiteDatabase? = null
         return try {
-            val path = context.getDatabasePath(databaseName)
+            val path = if (File(databaseName).isAbsolute) File(databaseName) else context.getDatabasePath(databaseName)
             val version = getDatabaseVersion(path = path.absolutePath)
             val helper = FrameworkSQLiteOpenHelperFactory().create(
                 SupportSQLiteOpenHelper.Configuration.builder(context)
