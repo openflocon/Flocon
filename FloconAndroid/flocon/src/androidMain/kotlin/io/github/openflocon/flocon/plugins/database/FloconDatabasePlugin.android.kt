@@ -13,20 +13,6 @@ import io.github.openflocon.flocon.plugins.database.model.fromdevice.DeviceDataB
 import java.io.File
 import java.util.Locale
 
-data class FloconSqliteDatabaseModel(
-    override val displayName: String,
-    val database: SupportSQLiteDatabase
-) : FloconDatabaseModel
-
-fun floconRegisterDatabase(displayName: String, database: SupportSQLiteDatabase) {
-    floconRegisterDatabase(
-        FloconSqliteDatabaseModel(
-            displayName = displayName,
-            database = database,
-        )
-    )
-}
-
 internal actual fun buildFloconDatabaseDataSource(context: FloconContext): FloconDatabaseDataSource {
     return FloconDatabaseDataSourceAndroid(context.appContext)
 }

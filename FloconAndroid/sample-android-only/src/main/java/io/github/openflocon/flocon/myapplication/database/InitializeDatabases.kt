@@ -6,8 +6,21 @@ import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.database.model.FoodEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanWithDogEntity
+import io.github.openflocon.flocon.plugins.database.floconRegisterDatabase
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+
+fun initializeInMemoryDatabases(context: Context): DogDatabase {
+    return Room.inMemoryDatabaseBuilder(
+        context,
+        DogDatabase::class.java,
+    ).build().also {
+        floconRegisterDatabase(
+            displayName = "inmemory_dogs",
+            openHelper = it.openHelper
+        )
+    }
+}
 
 fun initializeDatabases(context: Context) {
     val dogDatabase = DogDatabase.getDatabase(context)
