@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -36,15 +37,21 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import io.github.openflocon.flocon.myapplication.NetworkEvent.Type
 import java.lang.Math.pow
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 // -----------------------------
 // Data model
@@ -140,6 +147,10 @@ fun LaneCanvas(
 
     val viewportEndPx = viewportWidthPx + viewportWidthPx
 
+    val textMeasurer = rememberTextMeasurer()
+// Apply the current text style from theme, otherwise TextStyle.Default will be used.
+    val materialTextStyle = LocalTextStyle.current.copy(fontSize = 10.sp)
+
     Box(
         modifier = Modifier
             .height(laneHeightDp)
@@ -178,12 +189,33 @@ fun LaneCanvas(
                     NetworkEvent.Type.Database -> Color(0xFFBBDEFB)
                 }
 
+                val size =  Size(width, laneHeightPx - 12f)
+                val topLeft = Offset(xStart, 6f)
+
                 drawRoundRect(
                     color = color,
                     topLeft = Offset(xStart, 6f),
-                    size = Size(width, laneHeightPx - 12f),
+                    size = size,
                     cornerRadius = CornerRadius(8f, 8f)
                 )
+
+                val textPaddingHorizontal = 10
+
+                val textLayoutResult =
+                    textMeasurer.measure(
+                        text = ev.url,
+                        style = materialTextStyle,
+                        constraints =
+                            Constraints.fixed(
+                                width = size.width.toInt() - textPaddingHorizontal,
+                                height = size.height.toInt()
+                            ),
+                        overflow = TextOverflow.Ellipsis
+                    )
+                drawText(textLayoutResult, topLeft = topLeft.copy(
+                    x = topLeft.x + textPaddingHorizontal / 2f,
+                    y = topLeft.y + 4f
+                ))
             }
         }
 
@@ -289,7 +321,7 @@ fun NetworkTimelineVirtualized(
                     // lane row: each one draws only visible events in Canvas
                     Box(
                         modifier = Modifier
-                            .height(10.dp)
+                            .height(20.dp)
                             .width(timelineWidthDp)
                     ) {
                         LaneCanvas(
@@ -300,7 +332,7 @@ fun NetworkTimelineVirtualized(
                             timelineWidthPx = timelineWidthPx,
                             viewportStartPx = viewportStartPx,
                             viewportWidthPx = viewportWidthPx,
-                            laneHeightDp = 10.dp,
+                            laneHeightDp = 20.dp,
                             onEventClick = { selectedEvent = it }
                         )
                     }
