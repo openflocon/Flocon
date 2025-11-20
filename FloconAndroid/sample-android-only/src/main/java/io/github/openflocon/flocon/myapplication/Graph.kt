@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import io.github.openflocon.flocon.myapplication.NetworkEvent.Type
 import java.lang.Math.pow
 import kotlin.math.max
 
@@ -52,8 +53,14 @@ data class NetworkEvent(
     val id: String,
     val url: String,
     val startMs: Long,
-    val durationMs: Long
-)
+    val durationMs: Long,
+    val type: Type,
+) {
+    enum class Type {
+        Network,
+        Database,
+    }
+}
 
 // -----------------------------
 // Lane packing algorithm
@@ -154,10 +161,10 @@ fun LaneCanvas(
                 val width = max(2f, xEnd - xStart)
 
                 // --- keep partial visibility ---
-                val intersects = if(xStart < viewportStartPx) {
+                val intersects = if (xStart < viewportStartPx) {
                     // draw inky if xEnd > viewportStartPx
                     xEnd > viewportStartPx
-                } else if(xEnd > viewportEndPx) {
+                } else if (xEnd > viewportEndPx) {
                     xStart < viewportEndPx
                 } else {
                     // there's a visible part
@@ -166,9 +173,10 @@ fun LaneCanvas(
 
                 if (!intersects) return@forEach
 
-                val color =
-                    if (ev.durationMs > 500) Color(0xFFFFCDD2)
-                    else Color(0xFFBBDEFB)
+                val color = when(ev.type) {
+                    NetworkEvent.Type.Network -> Color.Green
+                    NetworkEvent.Type.Database -> Color(0xFFBBDEFB)
+                }
 
                 drawRoundRect(
                     color = color,
@@ -270,33 +278,31 @@ fun NetworkTimelineVirtualized(
             val timelineWidthDp = with(LocalDensity.current) { timelineWidthPx.toDp() }
             // left column for labels (optional) — here simple lane numbers
             // main timeline area: virtualized vertical lanes
-            Column {
-                // LazyColumn virtualizes lanes vertically
-                LazyColumn(
-                    modifier = Modifier
-                        .width(timelineWidthDp)
-                ) {
-                    itemsIndexed(lanesMap.toList()) { idx, pair ->
-                        val laneIndex = pair.first
-                        val laneEvents = pair.second
-                        // lane row: each one draws only visible events in Canvas
-                        Box(
-                            modifier = Modifier
-                                .height(20.dp)
-                                .width(timelineWidthDp)
-                        ) {
-                            LaneCanvas(
-                                laneIndex = laneIndex,
-                                events = laneEvents,
-                                minStart = minStart,
-                                scalePxPerMs = scalePxPerMs,
-                                timelineWidthPx = timelineWidthPx,
-                                viewportStartPx = viewportStartPx,
-                                viewportWidthPx = viewportWidthPx,
-                                laneHeightDp = 10.dp,
-                                onEventClick = { selectedEvent = it }
-                            )
-                        }
+            // LazyColumn virtualizes lanes vertically
+            LazyColumn(
+                modifier = Modifier
+                    .width(timelineWidthDp)
+            ) {
+                itemsIndexed(lanesMap.toList()) { idx, pair ->
+                    val laneIndex = pair.first
+                    val laneEvents = pair.second
+                    // lane row: each one draws only visible events in Canvas
+                    Box(
+                        modifier = Modifier
+                            .height(10.dp)
+                            .width(timelineWidthDp)
+                    ) {
+                        LaneCanvas(
+                            laneIndex = laneIndex,
+                            events = laneEvents,
+                            minStart = minStart,
+                            scalePxPerMs = scalePxPerMs,
+                            timelineWidthPx = timelineWidthPx,
+                            viewportStartPx = viewportStartPx,
+                            viewportWidthPx = viewportWidthPx,
+                            laneHeightDp = 10.dp,
+                            onEventClick = { selectedEvent = it }
+                        )
                     }
                 }
             }
@@ -334,20 +340,20 @@ fun NetworkTimelineVirtualized(
 @Composable
 fun PreviewNetworkTimelineVirtualized() {
     val demoEvents = listOf(
-        NetworkEvent("1", "/api/user", 0, 120),
-        NetworkEvent("2", "/img/logo.png", 40, 300),
-        NetworkEvent("3", "/api/data", 180, 90),
-        NetworkEvent("4", "/api/slow", 500, 800),
-        NetworkEvent("5", "/auth/login", 550, 200),
-        NetworkEvent("6", "/items", 900, 150),
-        NetworkEvent("7", "/sync", 1200, 350),
-        NetworkEvent("8", "/products", 1300, 400),
-        NetworkEvent("9", "/batch", 1310, 600),
-        NetworkEvent("10", "/big", 2000, 1500),
+        NetworkEvent("1", "/api/user", 0, 120, Type.Network),
+        NetworkEvent("2", "/img/logo.png", 40, 300, Type.Network),
+        NetworkEvent("3", "/api/data", 180, 90, Type.Network),
+        NetworkEvent("4", "/api/slow", 500, 800, Type.Database),
+        NetworkEvent("5", "/auth/login", 550, 200, Type.Network),
+        NetworkEvent("6", "/items", 900, 150, Type.Database),
+        NetworkEvent("7", "/sync", 1200, 350, Type.Network),
+        NetworkEvent("8", "/products", 1300, 400, Type.Database),
+        NetworkEvent("9", "/batch", 1310, 600, Type.Network),
+        NetworkEvent("10", "/big", 2000, 1500, Type.Network),
         // add many events to simulate heavy load:
     ) + (11..400).map {
         val start = (it - 10) * 50L + (it % 7) * 20L
-        NetworkEvent("$it", "/bulk/$it", start, (20 + (it % 10) * 30).toLong())
+        NetworkEvent("$it", "/bulk/$it", start, (20 + (it % 10) * 30).toLong(), Type.Network)
     }
 
     NetworkTimelineVirtualized(events = demoEvents)
