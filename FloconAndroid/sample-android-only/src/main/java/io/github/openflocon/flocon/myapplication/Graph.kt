@@ -172,14 +172,17 @@ fun LaneCanvas(
                 val width = max(2f, xEnd - xStart)
 
                 // --- keep partial visibility ---
-                val intersects = if (xStart < viewportStartPx) {
+                val intersects = if (xEnd > viewportStartPx &&
+                    xStart < viewportStartPx + viewportWidthPx
+                ) {
+                    true
+                } else if (xStart <= viewportStartPx) {
                     // draw inky if xEnd > viewportStartPx
-                    xEnd > viewportStartPx
-                } else if (xEnd > viewportEndPx) {
-                    xStart < viewportEndPx
+                    xEnd >= viewportStartPx
+                } else if (xEnd >= viewportEndPx) {
+                    xStart <= viewportEndPx
                 } else {
-                    // there's a visible part
-                    (viewportStartPx < xEnd && xEnd < viewportEndPx) || (viewportStartPx < xStart && xStart < viewportEndPx)
+                    false
                 }
 
                 if (!intersects) return@forEach
@@ -225,9 +228,18 @@ fun LaneCanvas(
             val xEnd = (ev.startMs + ev.durationMs - minStart) * scalePxPerMs
             val width = max(2f, xEnd - xStart)
 
-            val intersects =
-                xEnd > viewportStartPx &&
-                        xStart < viewportStartPx + viewportWidthPx
+            val intersects = if (xEnd > viewportStartPx &&
+                xStart < viewportStartPx + viewportWidthPx
+            ) {
+                true
+            } else if (xStart <= viewportStartPx) {
+                // draw inky if xEnd > viewportStartPx
+                xEnd >= viewportStartPx
+            } else if (xEnd >= viewportEndPx) {
+                xStart <= viewportEndPx
+            } else {
+                false
+            }
 
             if (!intersects) return@forEach
 
