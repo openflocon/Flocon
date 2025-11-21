@@ -238,6 +238,7 @@ class NetworkViewModel(
             is NetworkAction.JsonDetail -> onJsonDetail(action)
             is NetworkAction.DisplayBearerJwt -> displayBearerJwt(action.token)
             is NetworkAction.ExportCsv -> onExportCsv()
+            is NetworkAction.ImportFromCsv -> onImportFromCsv()
             is NetworkAction.HeaderAction.ClickOnSort -> headerDelegate.onClickSort(
                 type = action.type,
                 sort = action.sort,
@@ -426,6 +427,12 @@ class NetworkViewModel(
 
     private fun onFilterQuery(action: NetworkAction.FilterQuery) {
         _filterText.value = action.query
+    }
+
+    private fun onImportFromCsv() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+
+        }
     }
 
     private fun onExportCsv() {

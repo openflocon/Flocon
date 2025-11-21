@@ -30,6 +30,7 @@ sealed interface NetworkAction {
     data object CloseWebsocketMocks : NetworkAction
 
     data object ExportCsv : NetworkAction
+    data object ImportFromCsv : NetworkAction
 
     data class CloseJsonDetail(val id: String) : NetworkAction
 

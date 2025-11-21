@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
+import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.material.icons.sharp.PushPin
 import androidx.compose.runtime.Composable
@@ -233,6 +234,11 @@ fun NetworkScreen(
                         FloconDropdownMenuItem(
                             text = "Export CSV",
                             leadingIcon = Icons.Outlined.ImportExport,
+                            onClick = { onAction(NetworkAction.ExportCsv) }
+                        )
+                        FloconDropdownMenuItem(
+                            text = "Import From CSV",
+                            leadingIcon = Icons.Outlined.Upload,
                             onClick = { onAction(NetworkAction.ExportCsv) }
                         )
                         FloconDropdownMenuItem(
