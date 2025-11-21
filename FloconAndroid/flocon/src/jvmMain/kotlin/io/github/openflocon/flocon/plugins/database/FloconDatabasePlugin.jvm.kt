@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.plugins.database
 
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel
+import io.github.openflocon.flocon.plugins.database.model.FloconFileDatabaseModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DeviceDataBaseDataModel
 import java.io.File
@@ -57,11 +58,13 @@ internal class FloconDatabaseDataSourceJvm(
         registeredDatabases: List<FloconDatabaseModel>
     ): List<DeviceDataBaseDataModel> {
         return registeredDatabases.mapNotNull {
-            if (File(it.absolutePath).exists()) {
-                DeviceDataBaseDataModel(
-                    id = it.absolutePath,
-                    name = it.displayName,
-                )
+            if(it is FloconFileDatabaseModel) {
+                if (File(it.absolutePath).exists()) {
+                    DeviceDataBaseDataModel(
+                        id = it.absolutePath,
+                        name = it.displayName,
+                    )
+                } else null
             } else null
         }
 
