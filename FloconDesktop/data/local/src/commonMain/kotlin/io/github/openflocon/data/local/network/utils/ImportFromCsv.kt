@@ -11,6 +11,7 @@ import java.io.FileReader
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+private const val NUMBER_OF_COLUMNS_CSV_NETWORK = 20
 
 internal fun importNetworkCallsFromCsv(file: File, appInstance: AppInstance): List<FloconNetworkCallDomainModel> {
     val lines = readCsv(file)
@@ -20,7 +21,7 @@ internal fun importNetworkCallsFromCsv(file: File, appInstance: AppInstance): Li
 
     return rows.mapNotNull { cols ->
         try {
-            if (cols.size < 14) return@mapNotNull null
+            if (cols.size < NUMBER_OF_COLUMNS_CSV_NETWORK) return@mapNotNull null
             createDomainCallFromCsv(cols, appInstance = appInstance)
         } catch (t: Throwable) {
             t.printStackTrace()
