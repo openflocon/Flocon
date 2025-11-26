@@ -239,7 +239,7 @@ fun NetworkScreen(
                         FloconDropdownMenuItem(
                             text = "Import From CSV",
                             leadingIcon = Icons.Outlined.Upload,
-                            onClick = { onAction(NetworkAction.ExportCsv) }
+                            onClick = { onAction(NetworkAction.ImportFromCsv) }
                         )
                         FloconDropdownMenuItem(
                             checked = uiState.settings.autoScroll,
