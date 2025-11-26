@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
@@ -100,7 +101,10 @@ class FilesViewModel(
                     ),
                 ),
             ),
-        headerState = FilesHeaderStateUiModel(sortedBy = sortedBy.value),
+        headerState = FilesHeaderStateUiModel(
+            sortedBy = sortedBy.value,
+            totalSizeFormatted = null,
+        ),
         options = options.value
     )
 
@@ -137,8 +141,15 @@ class FilesViewModel(
                         FilesStateUiModel(
                             backStack = selectedFile.backStack.map { it.toUi(options.withFoldersSize) },
                             current = selectedFile.current.toUi(options.withFoldersSize),
-                            files = (sorted ?: emptyList()).map { it.toUi(options.withFoldersSize) },
-                            headerState = FilesHeaderStateUiModel(sortedBy = sortedBy),
+                            files = (sorted
+                                ?: emptyList()).map { it.toUi(options.withFoldersSize) },
+                            headerState = FilesHeaderStateUiModel(
+                                sortedBy = sortedBy,
+                                totalSizeFormatted = computeTotalSize(
+                                    options.withFoldersSize,
+                                    sorted
+                                )
+                            ),
                             options = options
                         )
                     }
@@ -146,6 +157,15 @@ class FilesViewModel(
             }
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), defaultValue())
+
+    private fun computeTotalSize(
+        withFoldersSize: Boolean, sorted: List<FileDomainModel>?
+    ): String? {
+        return if (!withFoldersSize) null
+        else sorted?.sumOf { it.size }?.let {
+            ByteFormatter.formatBytes(it)
+        }
+    }
 
     private fun sort(
         files: List<FileDomainModel>,
