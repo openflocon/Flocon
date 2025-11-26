@@ -190,6 +190,18 @@ class NetworkLocalDataSourceRoom(
         floconNetworkDao.upsertRequest(entity)
     }
 
+    override suspend fun save(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        calls: List<FloconNetworkCallDomainModel>
+    ) {
+        val entities = calls.map {
+            it.toEntity(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+            )
+        }
+        floconNetworkDao.upsertRequests(entities)
+    }
+
     override suspend fun getCall(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         callId: String,

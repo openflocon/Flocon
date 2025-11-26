@@ -9,6 +9,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface NetworkRepository {
 
+    suspend fun addCalls(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        calls: List<FloconNetworkCallDomainModel>
+    )
+
     suspend fun getRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,

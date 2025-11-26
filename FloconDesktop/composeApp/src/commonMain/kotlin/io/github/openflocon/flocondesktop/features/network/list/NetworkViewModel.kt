@@ -65,32 +65,36 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
-    private val getNetworkRequestsUseCase: GetNetworkRequestsUseCase,
     private val observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
-    private val generateCurlCommandUseCase: GenerateCurlCommandUseCase,
-    private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase,
     private val removeHttpRequestsBeforeUseCase: RemoveHttpRequestsBeforeUseCase,
     private val removeNetworkRequestUseCase: RemoveNetworkRequestUseCase,
     private val mocksUseCase: ObserveNetworkMocksUseCase,
     private val badNetworkUseCase: ObserveAllNetworkBadQualitiesUseCase,
     private val dispatcherProvider: DispatcherProvider,
-    private val feedbackDisplayer: FeedbackDisplayer,
     private val headerDelegate: HeaderDelegate,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
-    private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase,
-    private val decodeJwtTokenUseCase: DecodeJwtTokenUseCase,
-    private val removeOldSessionsNetworkRequestUseCase: RemoveOldSessionsNetworkRequestUseCase,
     private val navigationState: MainFloconNavigationState,
     private val detailDelegate: NetworkDetailDelegate,
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
     private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
-    private val openBodyDelegate: OpenBodyDelegate,
-    private val saveNetworkSettingsUseCase: SaveNetworkSettingsUseCase,
-    private val importNetworkCallsFromCsvUseCase: ImportNetworkCallsFromCsvUseCase,
-) : ViewModel(headerDelegate) {
+) : ViewModel(headerDelegate), KoinComponent {
+
+    // lazy inject the actions we might don't need
+    private val importNetworkCallsFromCsvUseCase: ImportNetworkCallsFromCsvUseCase by inject()
+    private val saveNetworkSettingsUseCase: SaveNetworkSettingsUseCase by inject()
+    private val openBodyDelegate: OpenBodyDelegate by inject()
+    private val removeOldSessionsNetworkRequestUseCase: RemoveOldSessionsNetworkRequestUseCase by inject()
+    private val decodeJwtTokenUseCase: DecodeJwtTokenUseCase by inject()
+    private val generateCurlCommandUseCase: GenerateCurlCommandUseCase by inject()
+    private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase by inject()
+    private val getNetworkRequestsUseCase: GetNetworkRequestsUseCase by inject()
+    private val feedbackDisplayer: FeedbackDisplayer by inject()
+    private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase by inject()
 
     private val contentState = MutableStateFlow(
         ContentUiState(
@@ -433,7 +437,18 @@ class NetworkViewModel(
 
     private fun onImportFromCsv() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            importNetworkCallsFromCsvUseCase()
+            importNetworkCallsFromCsvUseCase().fold(
+                doOnFailure = {
+                    feedbackDisplayer.displayMessage(
+                        "Error while importing csv : ${it.message}"
+                    )
+                },
+                doOnSuccess = { path ->
+                    feedbackDisplayer.displayMessage(
+                        "Csv imported"
+                    )
+                }
+            )
         }
     }
 

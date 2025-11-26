@@ -35,6 +35,7 @@ other-jsontree = "2.5.0"
 uiToolingPreviewDesktop = "1.8.2"
 buildconfig = "5.6.8"
 paging = "3.3.2"
+opencsv = "5.9"
 
 # TODO Sort
 nav3Core = "1.0.0-alpha04+dev3147"#"1.0.0-alpha03"
@@ -79,6 +80,7 @@ koin-android = { module = "io.insert-koin:koin-android" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+opencsv = { module = "com.opencsv:opencsv", version.ref = "opencsv" }
 
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "room" }

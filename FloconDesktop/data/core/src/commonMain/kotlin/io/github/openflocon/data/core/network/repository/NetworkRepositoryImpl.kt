@@ -71,6 +71,18 @@ class NetworkRepositoryImpl(
         )
         .flowOn(dispatcherProvider.data)
 
+    override suspend fun addCalls(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        calls: List<FloconNetworkCallDomainModel>
+    ) {
+        withContext(dispatcherProvider.data) {
+            networkLocalDataSource.save(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                calls = calls,
+            )
+        }
+    }
+
     override suspend fun getRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
