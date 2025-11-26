@@ -41,6 +41,11 @@ interface NetworkLocalDataSource {
         call: FloconNetworkCallDomainModel,
     )
 
+    suspend fun save(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        calls: List<FloconNetworkCallDomainModel>,
+    )
+
     suspend fun clearDeviceCalls(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     suspend fun deleteRequest(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, callId: String)

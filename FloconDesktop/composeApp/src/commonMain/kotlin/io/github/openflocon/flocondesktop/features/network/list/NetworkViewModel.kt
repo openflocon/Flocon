@@ -22,6 +22,7 @@ import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkRequestsUseCase
+import io.github.openflocon.domain.network.usecase.ImportNetworkCallsFromCsvUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
@@ -64,31 +65,36 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
-    private val getNetworkRequestsUseCase: GetNetworkRequestsUseCase,
     private val observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
-    private val generateCurlCommandUseCase: GenerateCurlCommandUseCase,
-    private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase,
     private val removeHttpRequestsBeforeUseCase: RemoveHttpRequestsBeforeUseCase,
     private val removeNetworkRequestUseCase: RemoveNetworkRequestUseCase,
     private val mocksUseCase: ObserveNetworkMocksUseCase,
     private val badNetworkUseCase: ObserveAllNetworkBadQualitiesUseCase,
     private val dispatcherProvider: DispatcherProvider,
-    private val feedbackDisplayer: FeedbackDisplayer,
     private val headerDelegate: HeaderDelegate,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
-    private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase,
-    private val decodeJwtTokenUseCase: DecodeJwtTokenUseCase,
-    private val removeOldSessionsNetworkRequestUseCase: RemoveOldSessionsNetworkRequestUseCase,
     private val navigationState: MainFloconNavigationState,
     private val detailDelegate: NetworkDetailDelegate,
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
     private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
-    private val openBodyDelegate: OpenBodyDelegate,
-    private val saveNetworkSettingsUseCase: SaveNetworkSettingsUseCase
-) : ViewModel(headerDelegate) {
+) : ViewModel(headerDelegate), KoinComponent {
+
+    // lazy inject the actions we might don't need
+    private val importNetworkCallsFromCsvUseCase: ImportNetworkCallsFromCsvUseCase by inject()
+    private val saveNetworkSettingsUseCase: SaveNetworkSettingsUseCase by inject()
+    private val openBodyDelegate: OpenBodyDelegate by inject()
+    private val removeOldSessionsNetworkRequestUseCase: RemoveOldSessionsNetworkRequestUseCase by inject()
+    private val decodeJwtTokenUseCase: DecodeJwtTokenUseCase by inject()
+    private val generateCurlCommandUseCase: GenerateCurlCommandUseCase by inject()
+    private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase by inject()
+    private val getNetworkRequestsUseCase: GetNetworkRequestsUseCase by inject()
+    private val feedbackDisplayer: FeedbackDisplayer by inject()
+    private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase by inject()
 
     private val contentState = MutableStateFlow(
         ContentUiState(
@@ -238,6 +244,7 @@ class NetworkViewModel(
             is NetworkAction.JsonDetail -> onJsonDetail(action)
             is NetworkAction.DisplayBearerJwt -> displayBearerJwt(action.token)
             is NetworkAction.ExportCsv -> onExportCsv()
+            is NetworkAction.ImportFromCsv -> onImportFromCsv()
             is NetworkAction.HeaderAction.ClickOnSort -> headerDelegate.onClickSort(
                 type = action.type,
                 sort = action.sort,
@@ -426,6 +433,23 @@ class NetworkViewModel(
 
     private fun onFilterQuery(action: NetworkAction.FilterQuery) {
         _filterText.value = action.query
+    }
+
+    private fun onImportFromCsv() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            importNetworkCallsFromCsvUseCase().fold(
+                doOnFailure = {
+                    feedbackDisplayer.displayMessage(
+                        "Error while importing csv : ${it.message}"
+                    )
+                },
+                doOnSuccess = { path ->
+                    feedbackDisplayer.displayMessage(
+                        "Csv imported"
+                    )
+                }
+            )
+        }
     }
 
     private fun onExportCsv() {

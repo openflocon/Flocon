@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.RoomRawQuery
+import androidx.room.Upsert
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
@@ -33,8 +34,11 @@ interface FloconNetworkDao {
     )
     suspend fun getRequests(ids: List<String>, deviceId: DeviceId, packageName: AppPackageName) : List<FloconNetworkCallEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsertRequest(request: FloconNetworkCallEntity)
+
+    @Upsert
+    suspend fun upsertRequests(request: List<FloconNetworkCallEntity>)
 
     @Query(
         """

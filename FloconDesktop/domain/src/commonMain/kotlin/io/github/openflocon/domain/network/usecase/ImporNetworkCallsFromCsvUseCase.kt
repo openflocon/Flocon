@@ -3,6 +3,7 @@ package io.github.openflocon.domain.network.usecase
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
+import io.github.openflocon.domain.common.then
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.repository.NetworkCsvRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
@@ -10,41 +11,38 @@ import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
 
-class ExportNetworkCallsToCsvUseCase(
+class ImportNetworkCallsFromCsvUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val networkRepository: NetworkRepository,
     private val networkCsvRepository: NetworkCsvRepository,
 ) {
-
-    suspend operator fun invoke(
-        ids: List<String>
-    ): Either<Throwable, String> {
-        val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("No device id"))
-
-        val fileName = "network_calls_${System.currentTimeMillis()}.csv"
-        val file = showSaveFileDialog(defaultFileName = fileName, dialogName = "Export network calls as CSV") ?: return Failure(
-            Throwable("no file selected")
-        )
-
-        val requests = networkRepository.getRequests(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-            ids = ids
-        )
-
-        networkCsvRepository.exportAsCsv(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-            requests = requests,
-            file = file
-        )
-
-        return Success(file.absolutePath)
+    suspend operator fun invoke(): Either<Throwable, Unit> {
+        val current = getCurrentDeviceIdAndPackageNameUseCase()
+            ?: return Failure(Throwable("no current device"))
+        return try {
+            val file = showOpenFileDialog(
+                dialogName = "Import Sql Query",
+            )
+            if (file == null) {
+                Failure(Throwable("no file selected"))
+            } else {
+                networkCsvRepository.importCallsFromCsv(file = file, current.appInstance)
+                    .then {
+                        networkRepository.addCalls(
+                            deviceIdAndPackageName = current,
+                            calls = it
+                        )
+                        Success(Unit)
+                    }
+            }
+        } catch (t: Throwable) {
+            Failure(t)
+        }
     }
 
-    private fun showSaveFileDialog(dialogName: String, defaultFileName: String): File? {
+    private fun showOpenFileDialog(dialogName: String): File? {
         val parentFrame = Frame()
-        val dialog = FileDialog(parentFrame, dialogName, FileDialog.SAVE).apply {
-            file = defaultFileName
-        }
+        val dialog = FileDialog(parentFrame, dialogName, FileDialog.LOAD)
 
         dialog.isVisible = true // Bloque jusqu'à ce que la boîte de dialogue soit fermée
 
@@ -59,4 +57,5 @@ class ExportNetworkCallsToCsvUseCase(
             null
         }
     }
+
 }

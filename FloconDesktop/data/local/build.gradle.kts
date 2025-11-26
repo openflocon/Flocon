@@ -31,6 +31,8 @@ kotlin {
 
             implementation(projects.domain)
             implementation(projects.data.core)
+
+            implementation(libs.opencsv)
         }
 
         commonTest.dependencies {
