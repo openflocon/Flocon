@@ -52,8 +52,9 @@ internal fun FilesListHeader(
 
         FilesListHeaderButton(
             title = "Size",
+            subtitle = state.totalSizeFormatted,
             textAlign = TextAlign.End,
-            modifier = Modifier.width(70.dp),
+            modifier = Modifier.width(100.dp),
             sortedBy = state.isSorted(FileColumnUiModel.Size),
             clickOnSort = {
                 clickOnSort(FileColumnUiModel.Size, it)

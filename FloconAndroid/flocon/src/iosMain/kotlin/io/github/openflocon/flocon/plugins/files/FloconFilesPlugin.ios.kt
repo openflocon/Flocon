@@ -19,7 +19,8 @@ internal class FileDataSourceIOs : FileDataSource {
 
     override fun getFolderContent(
         path: String,
-        isConstantPath: Boolean
+        isConstantPath: Boolean,
+        withFoldersSize: Boolean,
     ): List<FileDataModel> {
        return emptyList()
     }

@@ -14,6 +14,9 @@ import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import io.github.openflocon.domain.messages.repository.FileReceiverRepository
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
@@ -71,6 +74,7 @@ class FilesRepositoryImpl(
             .executeListFiles(
                 deviceIdAndPackageName = deviceIdAndPackageName,
                 path = path,
+                withFoldersSize = observeWithFoldersSize(deviceIdAndPackageName).firstOrNull() ?: false,
             ).alsoSuccess {
                 localFilesDataSource.storeFiles(
                     deviceIdAndPackageName = deviceIdAndPackageName,
@@ -128,5 +132,22 @@ class FilesRepositoryImpl(
                 )
                 // store the result
             }.mapSuccess { }
+    }
+
+    override fun observeWithFoldersSize(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> {
+        return localFilesDataSource.observeWithFoldersSize(deviceIdAndPackageName)
+            .flowOn(dispatcherProvider.data)
+    }
+
+    override suspend fun saveWithFoldersSize(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        value: Boolean
+    ) {
+        withContext(dispatcherProvider.data) {
+            localFilesDataSource.saveWithFoldersSize(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                value = value
+            )
+        }
     }
 }

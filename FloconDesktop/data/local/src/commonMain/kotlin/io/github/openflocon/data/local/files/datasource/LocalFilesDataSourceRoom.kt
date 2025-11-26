@@ -5,6 +5,7 @@ import io.github.openflocon.data.local.files.dao.FloconFileDao
 import io.github.openflocon.data.local.files.mapper.mapToLocal
 import io.github.openflocon.data.local.files.mapper.toDomainModel
 import io.github.openflocon.data.local.files.mapper.toEntity
+import io.github.openflocon.data.local.files.models.FileOptionsEntity
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.files.models.FileDomainModel
@@ -54,5 +55,28 @@ class LocalFilesDataSourceRoom(
                 },
             )
         }
+    }
+
+    override fun observeWithFoldersSize(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> {
+        return fileDao
+            .observeFileOptions(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName
+            )
+            .map { it?.withFoldersSize ?: false }
+            .distinctUntilChanged()
+    }
+
+    override suspend fun saveWithFoldersSize(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        value: Boolean
+    ) {
+        fileDao.updateFileOptions(
+            option = FileOptionsEntity(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+                withFoldersSize = value
+            )
+        )
     }
 }

@@ -9,6 +9,7 @@ internal data class ToDeviceGetFilesMessage(
     val requestId: String,
     val path: String,
     val isConstantPath: Boolean, // ex: context.files / context.caches
+    val withFoldersSize: Boolean = false,
 ) {
     companion object {
         fun fromJson(message: String): ToDeviceGetFilesMessage? {

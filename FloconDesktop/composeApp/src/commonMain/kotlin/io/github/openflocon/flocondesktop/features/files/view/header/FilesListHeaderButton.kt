@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,6 +34,7 @@ private const val NOT_ENABLED_OPACITY = 0.3f
 @Composable
 internal fun FilesListHeaderButton(
     title: String,
+    subtitle: String? = null,
     sortedBy: SortedByUiModel,
     clickOnSort: (SortedByUiModel) -> Unit,
     textAlign: TextAlign = TextAlign.Center,
@@ -53,12 +55,8 @@ internal fun FilesListHeaderButton(
         horizontalArrangement = Arrangement.spacedBy(FilterIcon_Spacing),
     ) {
 
-        Text(
-            text = title,
-            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            maxLines = 1,
-            modifier = Modifier
-                .weight(1f)
+        Column(
+            modifier = Modifier.weight(1f)
                 .clip(shape)
                 .background(
                     if (sortedBy != SortedByUiModel.None) FloconTheme.colorPalette.accent.copy(
@@ -68,9 +66,28 @@ internal fun FilesListHeaderButton(
                 .clickable(onClick = {
                     // TODO
                 }),
-            textAlign = textAlign,
-            color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
-        )
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = title,
+                style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                maxLines = 1,
+                textAlign = textAlign,
+                color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+            )
+
+            subtitle?.let {
+                Text(
+                    text = it,
+                    modifier = Modifier.fillMaxWidth(),
+                    style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                    maxLines = 1,
+                    textAlign = textAlign,
+                    color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+                )
+            }
+        }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

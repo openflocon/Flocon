@@ -4,6 +4,7 @@ import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.NativeSQLiteDriver
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel
+import io.github.openflocon.flocon.plugins.database.model.FloconFileDatabaseModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DeviceDataBaseDataModel
 import platform.Foundation.NSFileManager
@@ -56,11 +57,13 @@ internal class FloconDatabaseDataSourceIos(
     ): List<DeviceDataBaseDataModel> {
         val fileManager = NSFileManager.defaultManager
         return registeredDatabases.mapNotNull {
-            if (fileManager.fileExistsAtPath(it.absolutePath)) {
-                DeviceDataBaseDataModel(
-                    id = it.absolutePath,
-                    name = it.displayName
-                )
+            if(it is FloconFileDatabaseModel) {
+                if (fileManager.fileExistsAtPath(it.absolutePath)) {
+                    DeviceDataBaseDataModel(
+                        id = it.absolutePath,
+                        name = it.displayName
+                    )
+                } else null
             } else null
         }
     }

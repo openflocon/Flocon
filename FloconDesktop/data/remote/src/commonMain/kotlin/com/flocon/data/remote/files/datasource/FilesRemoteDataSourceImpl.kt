@@ -55,6 +55,7 @@ class FilesRemoteDataSourceImpl(
     override suspend fun executeListFiles(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
+        withFoldersSize: Boolean,
     ): Either<Throwable, List<FileDomainModel>> {
         val requestId = newRequestId()
 
@@ -76,6 +77,7 @@ class FilesRemoteDataSourceImpl(
                             requestId = requestId,
                             path = filePath,
                             isConstantPath = isConstantPath,
+                            withFoldersSize = withFoldersSize,
                         ),
                     ),
             ),

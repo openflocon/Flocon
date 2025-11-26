@@ -19,7 +19,7 @@ import kotlin.time.toJavaInstant
 
 fun FileUiModel.icon(): ImageVector = if (this.isDirectory) Icons.Outlined.Folder else Icons.Outlined.Drafts
 
-fun FileDomainModel.toUi(): FileUiModel = FileUiModel(
+fun FileDomainModel.toUi(withFoldersSize: Boolean): FileUiModel = FileUiModel(
     name = name,
     type = if (this.isDirectory) {
         FileTypeUiModel.Folder
@@ -27,7 +27,7 @@ fun FileDomainModel.toUi(): FileUiModel = FileUiModel(
         FileTypeUiModel.Other // TODO
     },
     path = path.toUi(),
-    sizeFormatted = if(this.isDirectory) null else ByteFormatter.formatBytes(size),
+    sizeFormatted = if(this.isDirectory && withFoldersSize.not()) null else ByteFormatter.formatBytes(size),
     icon = if (this.isDirectory) {
         Icons.Outlined.Folder
     } else {
