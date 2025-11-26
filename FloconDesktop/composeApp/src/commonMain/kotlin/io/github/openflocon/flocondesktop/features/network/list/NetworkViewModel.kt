@@ -22,6 +22,7 @@ import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkRequestsUseCase
+import io.github.openflocon.domain.network.usecase.ImportNetworkCallsFromCsvUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
@@ -87,7 +88,8 @@ class NetworkViewModel(
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
     private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
     private val openBodyDelegate: OpenBodyDelegate,
-    private val saveNetworkSettingsUseCase: SaveNetworkSettingsUseCase
+    private val saveNetworkSettingsUseCase: SaveNetworkSettingsUseCase,
+    private val importNetworkCallsFromCsvUseCase: ImportNetworkCallsFromCsvUseCase,
 ) : ViewModel(headerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -431,7 +433,7 @@ class NetworkViewModel(
 
     private fun onImportFromCsv() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-
+            importNetworkCallsFromCsvUseCase()
         }
     }
 
