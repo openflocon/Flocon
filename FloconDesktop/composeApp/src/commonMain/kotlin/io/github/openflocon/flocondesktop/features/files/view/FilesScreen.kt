@@ -60,6 +60,7 @@ fun FilesScreen(modifier: Modifier = Modifier) {
         filterText = filterText,
         clickOnSort = viewModel::clickOnSort,
         onFilterTextChanged = viewModel::onFilterTextChanged,
+        updateWithFoldersSize = viewModel::updateWithFoldersSize
     )
 }
 
@@ -72,6 +73,7 @@ private fun FilesScreen(
     onRefresh: () -> Unit,
     onDeleteContent: () -> Unit,
     onFileClicked: (FileUiModel) -> Unit,
+    updateWithFoldersSize: (Boolean) -> Unit,
     onContextualAction: (FileUiModel, FileUiModel.ContextualAction.Action) -> Unit,
     clickOnSort: (FileColumnUiModel, SortedByUiModel) -> Unit,
     modifier: Modifier = Modifier,
@@ -87,6 +89,7 @@ private fun FilesScreen(
             current = state.current,
             onBack = onNavigateUp,
             onRefresh = onRefresh,
+            options = state.options,
             filterBar = {
                 FilterBar(
                     filterText = filterText,
@@ -96,6 +99,7 @@ private fun FilesScreen(
                 )
             },
             onDeleteContent = onDeleteContent,
+            updateWithFoldersSize = updateWithFoldersSize,
         )
         Column(
             modifier = Modifier
@@ -154,6 +158,7 @@ private fun FilesScreenPreview() {
             filterText = mutableStateOf(""),
             onFilterTextChanged = {},
             clickOnSort = { _, _ -> },
+            updateWithFoldersSize = {},
         )
     }
 }

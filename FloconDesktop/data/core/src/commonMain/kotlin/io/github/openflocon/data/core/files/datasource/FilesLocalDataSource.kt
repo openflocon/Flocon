@@ -16,4 +16,11 @@ interface FilesLocalDataSource {
         parentPath: FilePathDomainModel,
         files: List<FileDomainModel>,
     )
+
+    fun observeWithFoldersSize(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean>
+
+    suspend fun saveWithFoldersSize(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        value: Boolean
+    )
 }

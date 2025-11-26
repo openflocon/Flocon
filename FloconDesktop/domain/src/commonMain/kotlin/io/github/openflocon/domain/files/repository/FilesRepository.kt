@@ -6,8 +6,10 @@ import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface FilesRepository {
+
     fun observeFolderContent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
@@ -33,4 +35,8 @@ interface FilesRepository {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: String
     ) : Either<Throwable, FloconReceivedFileDomainModel>
+
+    fun observeWithFoldersSize(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean>
+
+    suspend fun saveWithFoldersSize(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, value: Boolean)
 }

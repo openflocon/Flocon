@@ -16,7 +16,9 @@ import io.github.openflocon.domain.files.usecase.DeleteFileUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.DownloadFileUseCase
 import io.github.openflocon.domain.files.usecase.ObserveFolderContentUseCase
+import io.github.openflocon.domain.files.usecase.ObserveWithFoldersSizeUseCase
 import io.github.openflocon.domain.files.usecase.RefreshFolderContentUseCase
+import io.github.openflocon.domain.files.usecase.UpdateWithFoldersSizeUseCase
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.features.files.mapper.buildContextualActions
 import io.github.openflocon.flocondesktop.features.files.mapper.toDomain
@@ -49,12 +51,24 @@ class FilesViewModel(
     private val downloadFileUseCase: DownloadFileUseCase,
     private val deleteFolderContentUseCase: DeleteFolderContentUseCase,
     private val refreshFolderContentUseCase: RefreshFolderContentUseCase,
+    private val updateWithFoldersSizeUseCase: UpdateWithFoldersSizeUseCase,
+    private val observeWithFoldersSizeUseCase: ObserveWithFoldersSizeUseCase,
 ) : ViewModel() {
 
     private val _filterText = mutableStateOf("")
     val filterText: State<String> = _filterText
 
     private val sortedBy = MutableStateFlow<FilesHeaderStateUiModel.SortedBy?>(null)
+
+    private val options = observeWithFoldersSizeUseCase().map { withFoldersSize ->
+        FilesStateUiModel.Options(
+            withFoldersSize = withFoldersSize,
+        )
+    }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5_000), FilesStateUiModel.Options(
+            withFoldersSize = false,
+        )
+    )
 
     private fun defaultValue() = FilesStateUiModel(
         current = null,
@@ -87,6 +101,7 @@ class FilesViewModel(
                 ),
             ),
         headerState = FilesHeaderStateUiModel(sortedBy = sortedBy.value),
+        options = options.value
     )
 
     private data class SelectedFile(
@@ -98,9 +113,10 @@ class FilesViewModel(
     val state: StateFlow<FilesStateUiModel> =
         combines(
             selectedFile,
-            sortedBy
+            sortedBy,
+            options
         )
-            .flatMapLatest { (selectedFile, sortedBy) ->
+            .flatMapLatest { (selectedFile, sortedBy, options) ->
                 if (selectedFile == null) {
                     flowOf(defaultValue())
                 } else {
@@ -109,8 +125,9 @@ class FilesViewModel(
                             selectedFile.current.path,
                             fetchScope = viewModelScope,
                         ),
-                        snapshotFlow { _filterText.value }
-                    ).map { (files, filter) ->
+                        snapshotFlow { _filterText.value },
+                        observeWithFoldersSizeUseCase(),
+                    ).map { (files, filter, withFoldersSize) ->
                         val filtered = if (filter.isNotBlank()) {
                             files?.filter { it.name.contains(filter, ignoreCase = true) }
                         } else {
@@ -118,10 +135,11 @@ class FilesViewModel(
                         }
                         val sorted = filtered?.let { sort(it, sortedBy) }
                         FilesStateUiModel(
-                            backStack = selectedFile.backStack.map { it.toUi() },
-                            current = selectedFile.current.toUi(),
-                            files = (sorted ?: emptyList()).map { it.toUi() },
+                            backStack = selectedFile.backStack.map { it.toUi(options.withFoldersSize) },
+                            current = selectedFile.current.toUi(options.withFoldersSize),
+                            files = (sorted ?: emptyList()).map { it.toUi(options.withFoldersSize) },
                             headerState = FilesHeaderStateUiModel(sortedBy = sortedBy),
+                            options = options
                         )
                     }
                 }
@@ -139,19 +157,21 @@ class FilesViewModel(
 
         return when (sortedBy.column) {
             FileColumnUiModel.Name -> {
-                when(sortedBy.sortedBy) {
+                when (sortedBy.sortedBy) {
                     SortedByUiModel.Enabled.Ascending -> files.sortedBy { it.name }
                     SortedByUiModel.Enabled.Descending -> files.sortedByDescending { it.name }
                 }
             }
+
             FileColumnUiModel.Date -> {
-                when(sortedBy.sortedBy) {
+                when (sortedBy.sortedBy) {
                     SortedByUiModel.Enabled.Ascending -> files.sortedBy { it.lastModified }
                     SortedByUiModel.Enabled.Descending -> files.sortedByDescending { it.lastModified }
                 }
             }
+
             FileColumnUiModel.Size -> {
-                when(sortedBy.sortedBy) {
+                when (sortedBy.sortedBy) {
                     SortedByUiModel.Enabled.Ascending -> files.sortedBy { it.size }
                     SortedByUiModel.Enabled.Descending -> files.sortedByDescending { it.size }
                 }
@@ -178,6 +198,13 @@ class FilesViewModel(
 
     fun onFilterTextChanged(value: String) {
         _filterText.value = value
+    }
+
+    fun updateWithFoldersSize(value: Boolean) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            updateWithFoldersSizeUseCase(value)
+            onRefresh() // then perform a refresh
+        }
     }
 
     fun onFileClicked(fileUiModel: FileUiModel) {

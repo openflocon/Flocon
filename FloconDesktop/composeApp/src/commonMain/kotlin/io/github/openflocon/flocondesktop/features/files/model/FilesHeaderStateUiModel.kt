@@ -16,7 +16,7 @@ data class FilesHeaderStateUiModel(
 }
 
 fun previewFilesHeaderStateUiModel() = FilesHeaderStateUiModel(
-    sortedBy = null
+    sortedBy = null,
 )
 
 fun FilesHeaderStateUiModel.isSorted(columnUiModel: FileColumnUiModel) : SortedByUiModel =

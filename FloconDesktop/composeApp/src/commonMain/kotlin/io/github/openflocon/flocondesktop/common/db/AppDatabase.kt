@@ -24,6 +24,7 @@ import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
 import io.github.openflocon.data.local.files.dao.FloconFileDao
 import io.github.openflocon.data.local.files.models.FileEntity
+import io.github.openflocon.data.local.files.models.FileOptionsEntity
 import io.github.openflocon.data.local.images.dao.FloconImageDao
 import io.github.openflocon.data.local.images.models.DeviceImageEntity
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
@@ -45,10 +46,11 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 71,
+    version = 72,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
+        FileOptionsEntity::class,
         DashboardEntity::class,
         DashboardContainerEntity::class,
         DashboardElementEntity::class,
