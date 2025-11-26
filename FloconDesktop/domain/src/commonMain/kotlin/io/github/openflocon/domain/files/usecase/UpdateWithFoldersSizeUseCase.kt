@@ -1,19 +1,18 @@
 package io.github.openflocon.domain.files.usecase
 
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
-import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.repository.FilesRepository
 
-class RefreshFolderContentUseCase(
+class UpdateWithFoldersSizeUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val filesRepository: FilesRepository,
 ) {
     suspend operator fun invoke(
-        path: FilePathDomainModel,
+        withFoldersSize: Boolean,
     ) {
-        filesRepository.refreshFolderContent(
+        filesRepository.saveWithFoldersSize(
             deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return,
-            path = path,
+            value = withFoldersSize,
         )
     }
 }

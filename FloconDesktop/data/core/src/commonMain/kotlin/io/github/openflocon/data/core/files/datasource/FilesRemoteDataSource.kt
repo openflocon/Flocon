@@ -18,6 +18,7 @@ interface FilesRemoteDataSource {
     suspend fun executeListFiles(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: FilePathDomainModel,
+        withFoldersSize: Boolean,
     ): Either<Throwable, List<FileDomainModel>>
 
     @OptIn(ExperimentalUuidApi::class)

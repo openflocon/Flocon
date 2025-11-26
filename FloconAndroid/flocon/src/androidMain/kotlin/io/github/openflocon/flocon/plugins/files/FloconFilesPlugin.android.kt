@@ -25,7 +25,11 @@ internal class FileDataSourceAndroid(
         return file.takeIf { it.exists() }?.let { FloconFile(it) }
     }
 
-    override fun getFolderContent(path: String, isConstantPath: Boolean): List<FileDataModel> {
+    override fun getFolderContent(
+        path: String,
+        isConstantPath: Boolean,
+        withFoldersSize: Boolean,
+    ): List<FileDataModel> {
         val directory = getFile(path = path, isConstantPath = isConstantPath)
 
         val directoryFile = directory?.file
@@ -41,10 +45,19 @@ internal class FileDataSourceAndroid(
                 name = file.name,
                 isDirectory = file.isDirectory,
                 path = file.absolutePath,
-                size = if (file.isFile) file.length() else 0L,
+                size = if (file.isFile) file.length() else getFolderSize(file, withFoldersSize),
                 lastModified = file.lastModified()
             )
         }
+    }
+
+    private fun getFolderSize(file: File, withFoldersSize: Boolean): Long {
+        return if (withFoldersSize) {
+            file.walk()
+                .filter { it.isFile }
+                .map { it.length() }
+                .sum()
+        } else 0L
     }
 
 

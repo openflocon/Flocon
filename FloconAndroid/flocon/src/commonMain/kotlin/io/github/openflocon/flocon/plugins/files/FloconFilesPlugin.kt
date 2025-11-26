@@ -15,10 +15,12 @@ import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFi
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFolderContentMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFileMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFilesMessage
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 internal interface FileDataSource {
     fun getFile(path: String, isConstantPath: Boolean): FloconFile?
-    fun getFolderContent(path: String, isConstantPath: Boolean): List<FileDataModel>
+    fun getFolderContent(path: String, isConstantPath: Boolean, withFoldersSize: Boolean): List<FileDataModel>
     fun deleteFile(path: String)
     fun deleteFolderContent(folder: FloconFile)
 }
@@ -32,6 +34,7 @@ internal class FloconFilesPluginImpl(
 ) : FloconPlugin, FloconFilesPlugin {
 
     private val fileDataSource = fileDataSource(context)
+    private val withFoldersSize = MutableStateFlow(false)
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
@@ -39,6 +42,8 @@ internal class FloconFilesPluginImpl(
         when (messageFromServer.method) {
             Protocol.ToDevice.Files.Method.ListFiles -> {
                 val listFilesMessage = ToDeviceGetFilesMessage.fromJson(message = messageFromServer.body) ?: return
+
+                withFoldersSize.update { listFilesMessage.withFoldersSize }
 
                 executeGetFile(
                     path = listFilesMessage.path,
@@ -107,6 +112,7 @@ internal class FloconFilesPluginImpl(
         val files = fileDataSource.getFolderContent(
             path = path,
             isConstantPath = isConstantPath,
+            withFoldersSize = withFoldersSize.value,
         )
 
         try {

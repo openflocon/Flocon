@@ -6,7 +6,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,9 +17,12 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
+import io.github.openflocon.flocondesktop.features.files.model.previewFilesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -28,8 +33,10 @@ fun FilesTopBar(
     onBack: () -> Unit,
     onDeleteContent: () -> Unit,
     onRefresh: () -> Unit,
+    updateWithFoldersSize: (Boolean) -> Unit,
     filterBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    options: FilesStateUiModel.Options,
 ) {
     val hasParentFile = current != null
     val isDirectory = current?.isDirectory == true
@@ -56,6 +63,15 @@ fun FilesTopBar(
                     .padding(vertical = 4.dp, horizontal = 8.dp),
             )
 
+            FloconIconToggleButton(
+                value = options.withFoldersSize,
+                onValueChange = updateWithFoldersSize,
+                tooltip = "With folders size",
+            ) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.FolderOpen
+                )
+            }
             filterBar()
         },
         actions = {
@@ -80,10 +96,12 @@ private fun FilesTopBarPreview_noParent() {
         FilesTopBar(
             current = null,
             onBack = {},
-            onRefresh = {},
             onDeleteContent = {},
-            modifier = Modifier.fillMaxWidth(),
+            onRefresh = {},
             filterBar = {},
+            modifier = Modifier.fillMaxWidth(),
+            updateWithFoldersSize = {},
+            options = previewFilesStateUiModel().options,
         )
     }
 }
@@ -104,14 +122,16 @@ private fun FilesTopBarPreview() {
         FilesTopBar(
             current = current,
             onBack = {},
-            onRefresh = {},
             onDeleteContent = {},
-            modifier = Modifier.fillMaxWidth(),
+            onRefresh = {},
             filterBar = {
                 Button(onClick = {}) {
                     Text(text = "Filter")
                 }
             },
+            modifier = Modifier.fillMaxWidth(),
+            updateWithFoldersSize = {},
+            options = previewFilesStateUiModel().options,
         )
     }
 }

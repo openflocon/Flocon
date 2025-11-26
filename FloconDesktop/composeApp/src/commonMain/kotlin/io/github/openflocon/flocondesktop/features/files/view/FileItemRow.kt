@@ -87,7 +87,7 @@ fun FileItemRow(
                 textAlign = TextAlign.End,
                 style = FloconTheme.typography.bodySmall,
                 maxLines = 1,
-                modifier = Modifier.width(70.dp),
+                modifier = Modifier.width(100.dp),
                 color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
                 overflow = TextOverflow.Ellipsis,
             )

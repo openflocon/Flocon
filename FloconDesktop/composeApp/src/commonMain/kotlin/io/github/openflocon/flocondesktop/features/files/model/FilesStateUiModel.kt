@@ -8,7 +8,13 @@ data class FilesStateUiModel(
     val current: FileUiModel?,
     val files: List<FileUiModel>,
     val headerState: FilesHeaderStateUiModel,
-)
+    val options: Options,
+) {
+    @Immutable
+    data class Options(
+        val withFoldersSize: Boolean,
+    )
+}
 
 fun previewFilesStateUiModel() = FilesStateUiModel(
     current = previewFileUiModel(
@@ -24,4 +30,7 @@ fun previewFilesStateUiModel() = FilesStateUiModel(
         ),
     ),
     headerState = previewFilesHeaderStateUiModel(),
+    options = FilesStateUiModel.Options(
+        withFoldersSize = false,
+    )
 )
