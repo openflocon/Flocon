@@ -2,3 +2,6 @@ site_name: My Docs
 site_url: https://github.com/openflocon/Flocon
 theme:
   name: material
+nav: 
+  - Home: index.md
+  - About: about.md
