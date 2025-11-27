@@ -562,7 +562,7 @@ ManagedChannelBuilder
 
 Flocon is still evolving, next features : 
 
-- Preview & Dowload files 
+- Preview & Download files 
 
 ## 🧰 Requirements
 
