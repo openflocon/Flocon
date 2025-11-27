@@ -1,6 +1,4 @@
 site_name: My Docs
-site_url: https://github.com/openflocon/Flocon/site
+site_url: https://github.com/openflocon/Flocon
 theme:
   name: material
-
-  
