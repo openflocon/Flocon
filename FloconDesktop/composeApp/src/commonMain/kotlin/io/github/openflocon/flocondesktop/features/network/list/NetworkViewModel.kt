@@ -72,8 +72,6 @@ import org.koin.core.component.inject
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
     private val observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
-    private val generateCurlCommandUseCase: GenerateCurlCommandUseCase,
-    private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase,
     private val removeHttpRequestsBeforeUseCase: RemoveHttpRequestsBeforeUseCase,
     private val removeNetworkRequestUseCase: RemoveNetworkRequestUseCase,
     private val mocksUseCase: ObserveNetworkMocksUseCase,
