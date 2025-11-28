@@ -6,6 +6,7 @@ import io.github.openflocon.data.core.network.datasource.NetworkLocalWebsocketDa
 import io.github.openflocon.data.core.network.datasource.NetworkMocksLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkQualityLocalDataSource
 import io.github.openflocon.data.core.network.datasource.NetworkRemoteDataSource
+import io.github.openflocon.data.core.network.datasource.NetworkReplayDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -36,6 +37,7 @@ class NetworkRepositoryImpl(
     private val networkQualityLocalDataSource: NetworkQualityLocalDataSource,
     private val networkImageRepository: NetworkImageRepository,
     private val networkRemoteDataSource: NetworkRemoteDataSource,
+    private val networkReplayDataSource: NetworkReplayDataSource,
 ) : NetworkRepository,
     NetworkMocksRepository,
     MessagesReceiverRepository,
@@ -447,4 +449,16 @@ class NetworkRepositoryImpl(
         }
     }
 
+    override suspend fun replayRequest(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        request: FloconNetworkCallDomainModel
+    ) {
+        withContext(dispatcherProvider.data) {
+            val replayedRequest = networkReplayDataSource.replay(request)
+            networkLocalDataSource.save(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                call = replayedRequest
+            )
+        }
+    }
 }

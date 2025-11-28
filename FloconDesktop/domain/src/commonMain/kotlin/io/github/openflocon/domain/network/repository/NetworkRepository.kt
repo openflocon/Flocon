@@ -52,4 +52,9 @@ interface NetworkRepository {
     suspend fun deleteOldRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     )
+
+    suspend fun replayRequest(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        request: FloconNetworkCallDomainModel
+    )
 }

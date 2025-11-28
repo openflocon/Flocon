@@ -33,6 +33,7 @@ data class FloconNetworkCallEntity(
     val appInstance: Long, // the start time of the mobile app
 
     val type: FloconNetworkCallType,
+    val isReplayed: Boolean,
 
     @Embedded(prefix = "request_")
     val request: FloconNetworkRequestEmbedded,

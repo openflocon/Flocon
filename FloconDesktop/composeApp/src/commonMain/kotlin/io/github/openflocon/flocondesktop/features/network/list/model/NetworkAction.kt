@@ -38,6 +38,8 @@ sealed interface NetworkAction {
 
     data class CopyCUrl(val item: NetworkItemViewState) : NetworkAction
 
+    data class Replay(val item: NetworkItemViewState) : NetworkAction
+
     data class Remove(val item: NetworkItemViewState) : NetworkAction
 
     data class RemoveLinesAbove(val item: NetworkItemViewState) : NetworkAction

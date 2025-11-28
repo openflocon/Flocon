@@ -32,6 +32,7 @@ import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequest
 import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkWebsocketIdsUseCase
+import io.github.openflocon.domain.network.usecase.ReplayNetworkCallUseCase
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.core.data.settings.usecase.ObserveNetworkSettingsUseCase
 import io.github.openflocon.flocondesktop.core.data.settings.usecase.SaveNetworkSettingsUseCase
@@ -95,6 +96,7 @@ class NetworkViewModel(
     private val getNetworkRequestsUseCase: GetNetworkRequestsUseCase by inject()
     private val feedbackDisplayer: FeedbackDisplayer by inject()
     private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase by inject()
+    private val replayNetworkCallUseCase: ReplayNetworkCallUseCase by inject()
 
     private val contentState = MutableStateFlow(
         ContentUiState(
@@ -236,6 +238,7 @@ class NetworkViewModel(
             is NetworkAction.OpenBadNetworkQuality -> openBadNetworkQuality()
             is NetworkAction.CloseBadNetworkQuality -> closeBadNetworkQuality()
             is NetworkAction.CopyCUrl -> onCopyCUrl(action)
+            is NetworkAction.Replay -> onReplay(action)
             is NetworkAction.CopyUrl -> onCopyUrl(action)
             is NetworkAction.Remove -> onRemove(action)
             is NetworkAction.RemoveLinesAbove -> onRemoveLinesAbove(action)
@@ -408,6 +411,12 @@ class NetworkViewModel(
                 ?: return@launch
             val curl = generateCurlCommandUseCase(domainModel)
             copyToClipboard(curl)
+        }
+    }
+
+    private fun onReplay(action: NetworkAction.Replay) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            replayNetworkCallUseCase(action.item.uuid)
         }
     }
 
