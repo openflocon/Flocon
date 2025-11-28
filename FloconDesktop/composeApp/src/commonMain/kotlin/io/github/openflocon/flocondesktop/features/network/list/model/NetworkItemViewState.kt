@@ -15,6 +15,7 @@ data class NetworkItemViewState(
     val status: NetworkStatusUi,
     val method: NetworkMethodUi,
     val isMocked: Boolean,
+    val isReplayed: Boolean,
     val isFromOldAppInstance: Boolean,
 ) {
 
@@ -83,6 +84,7 @@ fun previewNetworkItemViewState(): NetworkItemViewState = NetworkItemViewState(
     ),
     isMocked = false,
     isFromOldAppInstance = false,
+    isReplayed = false,
 )
 
 fun previewNetworkItemViewStateError(): NetworkItemViewState = NetworkItemViewState(
@@ -99,6 +101,7 @@ fun previewNetworkItemViewStateError(): NetworkItemViewState = NetworkItemViewSt
     ),
     isMocked = false,
     isFromOldAppInstance = false,
+    isReplayed = false,
 )
 
 fun previewGraphQlItemViewState(): NetworkItemViewState = NetworkItemViewState(
@@ -115,4 +118,5 @@ fun previewGraphQlItemViewState(): NetworkItemViewState = NetworkItemViewState(
     ),
     isMocked = false,
     isFromOldAppInstance = false,
+    isReplayed = false,
 )

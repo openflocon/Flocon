@@ -7,6 +7,7 @@ data class FloconNetworkCallDomainModel(
     val appInstance: AppInstance,
     val request: Request,
     val response: Response?,
+    val isReplayed: Boolean = false,
 ) {
 
     data class Request(

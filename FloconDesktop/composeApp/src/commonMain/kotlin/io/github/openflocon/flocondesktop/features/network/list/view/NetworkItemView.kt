@@ -51,6 +51,8 @@ import io.github.openflocon.library.designsystem.common.buildMenu
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+private val replayColor = Color(0xFF242D44)
+
 @Composable
 fun NetworkItemView(
     state: NetworkItemViewState,
@@ -84,7 +86,9 @@ fun NetworkItemView(
                     } else Modifier
                 )
                 .then(
-                    if (state.isMocked) {
+                    if(state.isReplayed) {
+                        Modifier.background(replayColor)
+                    } else if (state.isMocked) {
                         Modifier.background(FloconTheme.colorPalette.accent)
                     } else Modifier,
                 )
@@ -211,6 +215,9 @@ private fun contextualActions(
                 item(
                     label = "Create Mock",
                     onClick = { onActionCallback(NetworkAction.CreateMock(state)) })
+                item(
+                    label = "Replay",
+                    onClick = { onActionCallback(NetworkAction.Replay(state)) })
             }
             separator()
             subMenu(label = "Filter") {

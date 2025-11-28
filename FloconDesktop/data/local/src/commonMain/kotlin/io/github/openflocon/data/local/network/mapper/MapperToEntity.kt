@@ -20,6 +20,7 @@ fun FloconNetworkCallDomainModel.toEntity(
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
         appInstance = deviceIdAndPackageName.appInstance,
+        isReplayed = isReplayed,
         type = when (this.request.specificInfos) {
             is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> FloconNetworkCallType.HTTP
             is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl -> FloconNetworkCallType.GRAPHQL

@@ -19,6 +19,7 @@ fun FloconNetworkCallDomainModel.toUi(
         method = getMethodUi(this),
         status = getStatusUi(this),
         isMocked = request.isMocked,
+        isReplayed = isReplayed,
         isFromOldAppInstance = deviceIdAndPackageName?.appInstance?.let { it != appInstance } ?: false
     )
 }

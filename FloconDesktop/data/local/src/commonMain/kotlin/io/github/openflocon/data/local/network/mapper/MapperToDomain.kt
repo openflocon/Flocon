@@ -12,6 +12,7 @@ fun FloconNetworkCallEntity.toDomainModel(): FloconNetworkCallDomainModel {
         appInstance = appInstance,
         request = toRequestDomainModel(),
         response = response?.toDomainModel(),
+        isReplayed = isReplayed,
     )
 }
 

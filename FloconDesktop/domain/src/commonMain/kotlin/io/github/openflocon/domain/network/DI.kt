@@ -11,6 +11,7 @@ import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.RemoveNetworkRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveOldSessionsNetworkRequestUseCase
+import io.github.openflocon.domain.network.usecase.ReplayNetworkCallUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.UpdateNetworkFilterUseCase
 import io.github.openflocon.domain.network.usecase.badquality.DeleteBadQualityUseCase
@@ -43,6 +44,7 @@ internal val networkModule = module {
     factoryOf(::ExportNetworkCallsToCsvUseCase)
     factoryOf(::DecodeJwtTokenUseCase)
     factoryOf(::RemoveOldSessionsNetworkRequestUseCase)
+    factoryOf(::ReplayNetworkCallUseCase)
     // filters
     factoryOf(::GetNetworkFilterUseCase)
     factoryOf(::ObserveNetworkFilterUseCase)
