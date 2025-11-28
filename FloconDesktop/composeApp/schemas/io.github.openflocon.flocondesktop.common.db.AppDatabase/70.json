@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 70,
-    "identityHash": "3703817a8a5d3760fd1ff9cbac797695",
+    "identityHash": "3977ab4681020f5d331fc22db26c02c5",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`callId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `appInstance` INTEGER NOT NULL, `type` TEXT NOT NULL, `isReplayed` INTEGER NOT NULL, `request_url` TEXT NOT NULL, `request_method` TEXT NOT NULL, `request_startTime` INTEGER NOT NULL, `request_startTimeFormatted` TEXT NOT NULL, `request_byteSizeFormatted` TEXT NOT NULL, `request_requestHeaders` TEXT NOT NULL, `request_requestBody` TEXT, `request_requestByteSize` INTEGER NOT NULL, `request_isMocked` INTEGER NOT NULL, `request_domainFormatted` TEXT NOT NULL, `request_methodFormatted` TEXT NOT NULL, `request_queryFormatted` TEXT NOT NULL, `request_graphql_query` TEXT, `request_graphql_operationType` TEXT, `request_websocket_event` TEXT, `response_durationMs` REAL, `response_durationFormatted` TEXT, `response_responseContentType` TEXT, `response_responseBody` TEXT, `response_responseHeaders` TEXT, `response_responseByteSize` INTEGER, `response_responseByteSizeFormatted` TEXT, `response_responseError` TEXT, `response_isImage` INTEGER, `response_statusFormatted` TEXT, `response_graphql_isSuccess` INTEGER, `response_graphql_responseHttpCode` INTEGER, `response_http_responseHttpCode` INTEGER, `response_grpc_responseStatus` TEXT, PRIMARY KEY(`callId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`callId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `appInstance` INTEGER NOT NULL, `type` TEXT NOT NULL, `request_url` TEXT NOT NULL, `request_method` TEXT NOT NULL, `request_startTime` INTEGER NOT NULL, `request_startTimeFormatted` TEXT NOT NULL, `request_byteSizeFormatted` TEXT NOT NULL, `request_requestHeaders` TEXT NOT NULL, `request_requestBody` TEXT, `request_requestByteSize` INTEGER NOT NULL, `request_isMocked` INTEGER NOT NULL, `request_domainFormatted` TEXT NOT NULL, `request_methodFormatted` TEXT NOT NULL, `request_queryFormatted` TEXT NOT NULL, `request_graphql_query` TEXT, `request_graphql_operationType` TEXT, `request_websocket_event` TEXT, `response_durationMs` REAL, `response_durationFormatted` TEXT, `response_responseContentType` TEXT, `response_responseBody` TEXT, `response_responseHeaders` TEXT, `response_responseByteSize` INTEGER, `response_responseByteSizeFormatted` TEXT, `response_responseError` TEXT, `response_isImage` INTEGER, `response_statusFormatted` TEXT, `response_graphql_isSuccess` INTEGER, `response_graphql_responseHttpCode` INTEGER, `response_http_responseHttpCode` INTEGER, `response_grpc_responseStatus` TEXT, PRIMARY KEY(`callId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "callId",
@@ -36,12 +36,6 @@
             "fieldPath": "type",
             "columnName": "type",
             "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "isReplayed",
-            "columnName": "isReplayed",
-            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -751,7 +745,7 @@
       },
       {
         "tableName": "DeviceImageEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `url` TEXT NOT NULL, `time` INTEGER NOT NULL, PRIMARY KEY(`deviceId`, `packageName`, `url`, `time`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `url` TEXT NOT NULL, `time` INTEGER NOT NULL, `headersJsonEncoded` TEXT NOT NULL, PRIMARY KEY(`deviceId`, `packageName`, `url`, `time`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "deviceId",
@@ -775,6 +769,12 @@
             "fieldPath": "time",
             "columnName": "time",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "headersJsonEncoded",
+            "columnName": "headersJsonEncoded",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -1654,7 +1654,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3703817a8a5d3760fd1ff9cbac797695')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3977ab4681020f5d331fc22db26c02c5')"
     ]
   }
 }
