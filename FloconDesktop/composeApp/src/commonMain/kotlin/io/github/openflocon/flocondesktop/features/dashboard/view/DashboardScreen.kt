@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.dashboard.DashboardViewModel
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArrangement
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
@@ -30,6 +31,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
     val viewModel: DashboardViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val deviceDashboards by viewModel.deviceDashboards.collectAsStateWithLifecycle()
+    val arrangement by viewModel.arrangement.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
         viewModel.onVisible()
@@ -40,6 +42,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
     DashboardScreen(
         state = state,
         deviceDashboards = deviceDashboards,
+        arrangement = arrangement,
         modifier = modifier,
         onDashboardSelected = viewModel::onDashboardSelected,
         onClickButton = viewModel::onButtonClicked,
@@ -48,6 +51,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         onUpdateCheckBox = viewModel::onUpdateCheckBox,
         deleteCurrentDashboard = viewModel::deleteCurrentDashboard,
         onDeleteClicked = viewModel::onDeleteClicked,
+        onArrangementClicked = viewModel::onArrangementClicked
     )
 }
 
@@ -55,9 +59,11 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
 fun DashboardScreen(
     state: DashboardViewState?,
     deviceDashboards: DashboardsStateUiModel,
+    arrangement: DashboardArrangement,
     onDashboardSelected: (DeviceDashboardUiModel) -> Unit,
     onDeleteClicked: (DeviceDashboardUiModel) -> Unit,
     deleteCurrentDashboard: () -> Unit,
+    onArrangementClicked: (DashboardArrangement) -> Unit,
     onClickButton: (buttonId: String) -> Unit,
     submitTextField: (textFieldId: String, value: String) -> Unit,
     submitForm: (formId: String, formValues: Map<String, Any>) -> Unit,
@@ -81,6 +87,11 @@ fun DashboardScreen(
                 Box(modifier = Modifier.weight(1f)) // to have actions on the right
             },
             actions = {
+                DashboardArrangementView(
+                    onArrangementClicked = onArrangementClicked,
+                    arrangement = arrangement
+                )
+
                 FloconOverflow {
                     FloconDropdownMenuItem(
                         text = "Delete Dashboards",
@@ -103,6 +114,7 @@ fun DashboardScreen(
                 submitTextField = submitTextField,
                 submitForm = submitForm,
                 onUpdateCheckBox = onUpdateCheckBox,
+                arrangement = arrangement
             )
         }
     }
