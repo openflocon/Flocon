@@ -28,11 +28,13 @@ fun main() {
             isImage = {
                 it.request.url.toString().contains("picsum.photos")
             }
+            /*
             shouldLog = {
                 val url = it.url.toString()
                 println("url: $url")
                 url.contains("1").not()
             }
+             */
         }
     }
 
