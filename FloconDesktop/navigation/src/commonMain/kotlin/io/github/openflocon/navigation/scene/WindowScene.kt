@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package io.github.openflocon.navigation.scene
 
 import androidx.compose.runtime.Composable
@@ -9,6 +11,7 @@ import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
 import io.github.openflocon.navigation.FloconRoute
+import kotlin.uuid.ExperimentalUuidApi
 
 @Immutable
 data class WindowScene(
@@ -18,6 +21,7 @@ data class WindowScene(
 ) : OverlayScene<FloconRoute> {
 
     override val key: Any = entry.contentKey
+
     override val overlaidEntries: List<NavEntry<FloconRoute>> = previousEntries
     override val entries: List<NavEntry<FloconRoute>> = listOf(entry)
 
@@ -48,7 +52,7 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
     }
 
     companion object {
-        private const val IS_WINDOW = "is_window"
+        internal const val IS_WINDOW = "is_window"
 
         fun window() = mapOf(IS_WINDOW to true)
     }
