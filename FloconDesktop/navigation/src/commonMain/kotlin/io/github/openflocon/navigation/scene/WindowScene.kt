@@ -52,7 +52,7 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
     }
 
     companion object {
-        internal const val IS_WINDOW = "is_window"
+        private const val IS_WINDOW = "is_window"
 
         fun window() = mapOf(IS_WINDOW to true)
     }
