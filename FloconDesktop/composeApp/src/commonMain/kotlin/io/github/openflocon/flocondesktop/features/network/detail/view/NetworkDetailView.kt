@@ -298,14 +298,7 @@ private fun Request(
                         FloconIconButton(
                             tooltip = "View in app",
                             imageVector = Icons.Outlined.OpenInFull,
-                            onClick = {
-                                onAction(
-                                    NetworkDetailAction.JsonDetail(
-                                        id = state.callId + "request",
-                                        json = state.requestBody,
-                                    )
-                                )
-                            }
+                            onClick = { onAction(NetworkDetailAction.JsonDetail(json = state.requestBody,)) }
                         )
                     }
                     if (state.canOpenRequestBody) {
@@ -449,27 +442,14 @@ private fun Response(
                                 FloconIconButton(
                                     tooltip = "View body in app",
                                     imageVector = Icons.Outlined.OpenInFull,
-                                    onClick = {
-                                        onAction(
-                                            NetworkDetailAction.JsonDetail(
-                                                state.callId + "response",
-                                                response.body,
-                                            ),
-                                        )
-                                    }
+                                    onClick = { onAction(NetworkDetailAction.JsonDetail(response.body),) }
                                 )
                             }
                             if (response.canOpenResponseBody) {
                                 FloconIconButton(
                                     tooltip = "Open in external editor",
                                     imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                                    onClick = {
-                                        onAction(
-                                            NetworkDetailAction.OpenBodyExternally.Response(
-                                                response,
-                                            )
-                                        )
-                                    }
+                                    onClick = { onAction(NetworkDetailAction.OpenBodyExternally.Response(response,)) }
                                 )
                             }
                             if (response.responseBodyIsNotBlank) {
