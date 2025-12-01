@@ -2,6 +2,7 @@ package io.github.openflocon.data.local.dashboard.mapper
 
 import io.github.openflocon.data.local.dashboard.models.ContainerConfigEntity
 import io.github.openflocon.data.local.dashboard.models.ContainerWithElements
+import io.github.openflocon.data.local.dashboard.models.LocalDashboardElement
 import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardWithContainersAndElements
 import io.github.openflocon.data.local.dashboard.models.FormContainerConfigEntity
@@ -12,62 +13,83 @@ import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
 import io.github.openflocon.domain.dashboard.models.FormContainerConfigDomainModel
 import io.github.openflocon.domain.dashboard.models.SectionContainerConfigDomainModel
+import kotlinx.serialization.json.Json
 
-internal fun DashboardWithContainersAndElements.toDomain(): DashboardDomainModel =
+internal fun DashboardWithContainersAndElements.toDomain(json: Json): DashboardDomainModel =
     DashboardDomainModel(
         dashboardId = dashboard.dashboardId,
-        containers = containersWithElements.mapNotNull {
-            it.toDomain()
-        },
+        containers = containersWithElements.mapNotNull { it.toDomain(
+            json = json
+        ) },
     )
 
-internal fun ContainerWithElements.toDomain(): DashboardContainerDomainModel? {
+internal fun ContainerWithElements.toDomain(json: Json): DashboardContainerDomainModel? {
     return DashboardContainerDomainModel(
         name = this.container?.name ?: return null,
-        elements = elements.mapNotNull { it.toDomain() },
+        elements = elements.mapNotNull { it.toDomain(
+            json = json
+        ) },
         containerConfig = this.container.containerConfig.toDomain()
     )
 }
 
-internal fun DashboardElementEntity.toDomain(): DashboardElementDomainModel? {
-    this.text?.let {
-        return DashboardElementDomainModel.Text(
-            label = it.label,
-            value = it.value,
-            color = it.color,
-        )
+internal fun DashboardElementEntity.toDomain(json: Json): DashboardElementDomainModel? {
+    return try {
+        when (val element = json.decodeFromString<LocalDashboardElement>(this.elementAsJson)) {
+            is LocalDashboardElement.Button ->
+                DashboardElementDomainModel.Button(
+                    text = element.text,
+                    id = element.actionId,
+                )
+
+            is LocalDashboardElement.Text ->
+                DashboardElementDomainModel.Text(
+                    label = element.label,
+                    value = element.value,
+                    color = element.color,
+                )
+
+            is LocalDashboardElement.Label ->
+                DashboardElementDomainModel.Label(
+                    label = element.label,
+                    color = element.color,
+                )
+
+            is LocalDashboardElement.PlainText ->
+                DashboardElementDomainModel.PlainText(
+                    label = element.label,
+                    value = element.value,
+                    type =
+                        when (element.type) {
+                            "text" -> DashboardElementDomainModel.PlainText.Type.Text
+                            "json" -> DashboardElementDomainModel.PlainText.Type.Json
+                            else -> DashboardElementDomainModel.PlainText.Type.Text
+                        },
+                )
+
+            is LocalDashboardElement.TextField ->
+                DashboardElementDomainModel.TextField(
+                    label = element.label,
+                    value = element.value,
+                    placeHolder = element.placeHolder,
+                    id = element.actionId,
+                )
+
+            is LocalDashboardElement.CheckBox ->
+                DashboardElementDomainModel.CheckBox(
+                    label = element.label,
+                    value = element.value,
+                    id = element.actionId,
+                )
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
-    this.label?.let {
-        return DashboardElementDomainModel.Label(
-            label = it.label,
-            color = it.color,
-        )
-    }
-    this.button?.let {
-        return DashboardElementDomainModel.Button(
-            text = it.text,
-            id = it.actionId,
-        )
-    }
-    this.textField?.let {
-        return DashboardElementDomainModel.TextField(
-            label = it.label,
-            value = it.value,
-            placeHolder = it.placeHolder,
-            id = it.actionId,
-        )
-    }
-    this.checkBox?.let {
-        return DashboardElementDomainModel.CheckBox(
-            label = it.label,
-            value = it.value,
-            id = it.actionId,
-        )
-    }
-    return null
 }
 
-fun ContainerConfigEntity.toDomain(): ContainerConfigDomainModel = when (this) {
-    is FormContainerConfigEntity -> FormContainerConfigDomainModel(formId, submitText)
-    is SectionContainerConfigEntity -> SectionContainerConfigDomainModel
-}
+fun ContainerConfigEntity.toDomain(): ContainerConfigDomainModel =
+    when (this) {
+        is FormContainerConfigEntity -> FormContainerConfigDomainModel(formId, submitText)
+        is SectionContainerConfigEntity -> SectionContainerConfigDomainModel
+    }
