@@ -18,22 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-
-import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.util.AttributeSet
-import android.view.View
-import android.view.animation.LinearInterpolator
-import android.animation.ValueAnimator
-import androidx.compose.runtime.remember
-import androidx.compose.ui.viewinterop.AndroidView
-import kotlin.math.min
-import kotlin.math.cos
-import kotlin.math.sin
-
-
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.myapplication.dashboard.initializeDashboard
@@ -103,14 +87,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MyApplicationTheme {
-                WarpSpeedEffect(
-                    photos = remember {
-                        List(100) {
-                            R.drawable.ic_launcher
-                        }
-                    }
-                )
-                return@MyApplicationTheme
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(Modifier.fillMaxSize().padding(innerPadding)) {
                         FlowRow(
