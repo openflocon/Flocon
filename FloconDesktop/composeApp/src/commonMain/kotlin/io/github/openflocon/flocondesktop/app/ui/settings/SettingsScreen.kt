@@ -144,6 +144,16 @@ private fun SettingsScreen(
                 )
             }
         }
+        FloconSection(
+            title = "Reset",
+            initialValue = true
+        ) {
+            FloconButton(
+                onClick = { onAction(SettingsAction.ResetDb) }
+            ) {
+                Text("Reset database")
+            }
+        }
     }
 }
 

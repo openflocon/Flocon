@@ -4,4 +4,6 @@ sealed interface SettingsAction {
 
     data class FontSizeMultiplierChange(val value: Float) : SettingsAction
 
+    data object ResetDb : SettingsAction
+
 }

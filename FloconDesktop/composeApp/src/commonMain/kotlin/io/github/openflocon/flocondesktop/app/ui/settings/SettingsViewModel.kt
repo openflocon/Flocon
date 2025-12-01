@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.File
 
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
@@ -51,12 +52,21 @@ class SettingsViewModel(
     fun onAction(action: SettingsAction) {
         when (action) {
             is SettingsAction.FontSizeMultiplierChange -> onFontSizeMultiplierChange(action)
+            SettingsAction.ResetDb -> onResetDb()
         }
     }
 
     private fun onFontSizeMultiplierChange(action: SettingsAction.FontSizeMultiplierChange) {
         viewModelScope.launch {
             setFontSizeMultiplierUseCase(action.value)
+        }
+    }
+
+    private fun onResetDb() {
+        val dbFile = File(System.getProperty("java.io.tmpdir"), "flocon_room.db")
+
+        if (dbFile.delete()) {
+            feedbackDisplayer.displayMessage("Database reset, please restart the application (Desktop).")
         }
     }
 
@@ -80,7 +90,7 @@ class SettingsViewModel(
             saveAdb()
             testAdbUseCase().fold(
                 doOnFailure = {
-                    feedbackDisplayer.displayMessage("failed")
+                    feedbackDisplayer.displayMessage("failed", type = FeedbackDisplayer.MessageType.Error)
                     initialSetupStateHolder.setRequiresInitialSetup()
                 },
                 doOnSuccess = {
