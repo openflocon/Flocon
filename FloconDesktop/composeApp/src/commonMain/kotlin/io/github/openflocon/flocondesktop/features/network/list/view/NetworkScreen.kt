@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -27,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -44,8 +42,6 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
-import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailContent
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
@@ -58,8 +54,6 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewNet
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeaderView
-import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
-import io.github.openflocon.flocondesktop.features.network.view.NetworkBodyWindow
 import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockWindow
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconAnimateVisibility
@@ -333,7 +327,7 @@ fun NetworkScreen(
                 Spacer(Modifier.width(8.dp))
                 NetworkDetailContent(
                     uiState = it,
-                    onAction = onAction,
+                    onAction = { action -> onAction(NetworkAction.DetailAction(action)) },
                     modifier = Modifier
                         .width(PanelWidth)
                         .clip(FloconTheme.shapes.medium)
@@ -341,36 +335,6 @@ fun NetworkScreen(
             }
         }
     }
-
-    val states = remember { mutableStateMapOf<NetworkBodyDetailUi, FloconWindowState>() }
-
-    LaunchedEffect(uiState.contentState.detailJsons) {
-        val deletedJson =
-            states.keys.filter { key -> uiState.contentState.detailJsons.none { key.id == it.id } }
-        val addedJson =
-            uiState.contentState.detailJsons.filter { key -> states.keys.none { key.id == it.id } }
-
-        deletedJson.forEach { states.remove(it) }
-        addedJson.forEach {
-            states[it] = createFloconWindowState()
-        }
-    }
-
-    uiState.contentState
-        .detailJsons
-        .forEach { item ->
-            val state = states[item]
-
-            if (state != null) {
-                NetworkBodyWindow(
-                    body = item,
-                    state = state,
-                    onCloseRequest = {
-                        onAction(NetworkAction.CloseJsonDetail(item.id))
-                    },
-                )
-            }
-        }
 
     if (uiState.contentState.badNetworkQualityDisplayed) {
         BadNetworkQualityWindow(
@@ -384,7 +348,7 @@ fun NetworkScreen(
         NetworkWebsocketMockWindow(
             onCloseRequest = {
                 onAction(NetworkAction.CloseWebsocketMocks)
-            },
+            }
         )
     }
 }

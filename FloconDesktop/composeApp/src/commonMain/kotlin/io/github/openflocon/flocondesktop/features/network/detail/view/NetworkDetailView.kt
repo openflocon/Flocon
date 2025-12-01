@@ -34,11 +34,11 @@ import coil3.compose.AsyncImage
 import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
+import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailAction
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailHeadersView
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
@@ -77,7 +77,7 @@ fun NetworkDetailScreen(
 @Composable
 fun NetworkDetailContent(
     uiState: NetworkDetailViewState,
-    onAction: (NetworkAction) -> Unit,
+    onAction: (NetworkDetailAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState: ScrollState = rememberScrollState()
@@ -127,7 +127,7 @@ fun NetworkDetailContent(
 @Composable
 private fun Request(
     state: NetworkDetailViewState,
-    onAction: (NetworkAction) -> Unit,
+    onAction: (NetworkDetailAction) -> Unit,
     linesLabelWidth: Dp,
     headersLabelWidth: Dp,
     modifier: Modifier = Modifier,
@@ -283,13 +283,7 @@ private fun Request(
                     DetailHeadersView(
                         headers = state.requestHeaders,
                         labelWidth = headersLabelWidth,
-                        onAuthorizationClicked = { token ->
-                            onAction(
-                                NetworkAction.DisplayBearerJwt(
-                                    token
-                                )
-                            )
-                        },
+                        onAuthorizationClicked = { token -> onAction(NetworkDetailAction.DisplayBearerJwt(token)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
@@ -306,10 +300,10 @@ private fun Request(
                             imageVector = Icons.Outlined.OpenInFull,
                             onClick = {
                                 onAction(
-                                    NetworkAction.JsonDetail(
-                                        state.callId + "request",
-                                        state.requestBody,
-                                    ),
+                                    NetworkDetailAction.JsonDetail(
+                                        id = state.callId + "request",
+                                        json = state.requestBody,
+                                    )
                                 )
                             }
                         )
@@ -318,20 +312,14 @@ private fun Request(
                         FloconIconButton(
                             tooltip = "Open in external editor",
                             imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                            onClick = {
-                                onAction(
-                                    NetworkAction.OpenBodyExternally.Request(
-                                        state,
-                                    )
-                                )
-                            }
+                            onClick = { onAction(NetworkDetailAction.OpenBodyExternally.Request(state)) }
                         )
                     }
                     if (state.requestBodyIsNotBlank) {
                         FloconIconButton(
                             tooltip = "Copy",
                             imageVector = Icons.Outlined.CopyAll,
-                            onClick = { onAction(NetworkAction.CopyText(state.requestBody)) }
+                            onClick = { onAction(NetworkDetailAction.CopyText(state.requestBody)) }
                         )
                     }
                 },
@@ -385,7 +373,7 @@ private fun Request(
 @Composable
 private fun Response(
     state: NetworkDetailViewState,
-    onAction: (NetworkAction) -> Unit,
+    onAction: (NetworkDetailAction) -> Unit,
     headersLabelWidth: Dp,
     modifier: Modifier = Modifier,
 ) {
@@ -445,13 +433,7 @@ private fun Response(
                             DetailHeadersView(
                                 headers = response.headers,
                                 labelWidth = headersLabelWidth,
-                                onAuthorizationClicked = { token ->
-                                    onAction(
-                                        NetworkAction.DisplayBearerJwt(
-                                            token
-                                        )
-                                    )
-                                },
+                                onAuthorizationClicked = { token -> onAction(NetworkDetailAction.DisplayBearerJwt(token)) },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
@@ -469,7 +451,7 @@ private fun Response(
                                     imageVector = Icons.Outlined.OpenInFull,
                                     onClick = {
                                         onAction(
-                                            NetworkAction.JsonDetail(
+                                            NetworkDetailAction.JsonDetail(
                                                 state.callId + "response",
                                                 response.body,
                                             ),
@@ -483,7 +465,7 @@ private fun Response(
                                     imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                                     onClick = {
                                         onAction(
-                                            NetworkAction.OpenBodyExternally.Response(
+                                            NetworkDetailAction.OpenBodyExternally.Response(
                                                 response,
                                             )
                                         )
@@ -494,7 +476,7 @@ private fun Response(
                                 FloconIconButton(
                                     tooltip = "Copy",
                                     imageVector = Icons.Outlined.CopyAll,
-                                    onClick = { onAction(NetworkAction.CopyText(response.body)) }
+                                    onClick = { onAction(NetworkDetailAction.CopyText(response.body)) }
                                 )
                             }
                         },

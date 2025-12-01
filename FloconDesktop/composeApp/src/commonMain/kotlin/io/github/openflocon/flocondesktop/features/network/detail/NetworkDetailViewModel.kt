@@ -1,12 +1,11 @@
 package io.github.openflocon.flocondesktop.features.network.detail
 
 import androidx.lifecycle.ViewModel
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import org.koin.core.component.KoinComponent
 
 class NetworkDetailViewModel(
     requestId: String,
-    delegate: NetworkDetailDelegate
+    private val delegate: NetworkDetailDelegate
 ) : ViewModel(), KoinComponent {
 
     val uiState = delegate.uiState
@@ -15,8 +14,8 @@ class NetworkDetailViewModel(
         delegate.setRequestId(requestId)
     }
 
-    fun onAction(action: NetworkAction) {
-
+    fun onAction(action: NetworkDetailAction) {
+        delegate.onAction(action)
     }
 
 }
