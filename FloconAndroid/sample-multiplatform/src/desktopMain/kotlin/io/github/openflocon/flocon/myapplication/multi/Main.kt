@@ -15,7 +15,6 @@ import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.plugins.database.floconRegisterDatabase
-import io.github.openflocon.flocon.plugins.tables.floconTable
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +27,11 @@ fun main() {
         install(FloconKtorPlugin) {
             isImage = {
                 it.request.url.toString().contains("picsum.photos")
+            }
+            shouldLog = {
+                val url = it.url.toString()
+                println("url: $url")
+                url.contains("1").not()
             }
         }
     }
