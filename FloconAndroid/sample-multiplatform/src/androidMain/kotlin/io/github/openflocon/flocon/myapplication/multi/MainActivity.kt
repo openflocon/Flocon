@@ -28,7 +28,15 @@ class MainActivity : ComponentActivity() {
 
         // Initialize Ktor client with Flocon plugin
         val ktorClient = HttpClient(OkHttp) {
-            install(FloconKtorPlugin)
+            install(FloconKtorPlugin) {
+                /*
+                shouldLog = {
+                    val url = it.url.toString()
+                    println("url: $url")
+                    url.contains("1").not()
+                }
+                 */
+            }
         }
 
         // Initialize the HTTP caller

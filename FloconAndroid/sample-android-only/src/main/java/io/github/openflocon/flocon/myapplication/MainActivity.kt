@@ -61,9 +61,16 @@ class MainActivity : ComponentActivity() {
 
         val okHttpClient = OkHttpClient()
             .newBuilder()
-            .addInterceptor(FloconOkhttpInterceptor(isImage = {
-                it.request.url.toString().contains("picsum")
-            }))
+            .addInterceptor(FloconOkhttpInterceptor(
+                isImage = {
+                    it.request.url.toString().contains("picsum")
+                },
+                /*shouldLog = {
+                    val url = it.request().url.toString()
+                    println("url: $url")
+                    url.contains("1").not()
+                }*/
+            ))
             .build()
 
         initializeSharedPreferences(applicationContext)

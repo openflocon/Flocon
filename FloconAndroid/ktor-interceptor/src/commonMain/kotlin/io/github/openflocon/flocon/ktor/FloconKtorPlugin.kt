@@ -22,6 +22,7 @@ import io.ktor.utils.io.toByteArray
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import io.github.openflocon.flocon.utils.currentTimeNanos
 import io.ktor.client.call.save
+import io.ktor.client.request.HttpRequestBuilder
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -34,22 +35,26 @@ data class FloconNetworkIsImageParams(
 
 class FloconKtorPluginConfig {
     var isImage: ((param: FloconNetworkIsImageParams) -> Boolean)? = null
+    var shouldLog: ((request: HttpRequestBuilder) -> Boolean) = { true }
 }
 
 val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPluginConfig) {
 
     val theClient = client
     val isImageCallback = pluginConfig.isImage
+    val shouldLogCallback = pluginConfig.shouldLog
 
     // Intercept requests
     client.sendPipeline.intercept(HttpSendPipeline.Monitoring) {
         val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin
-        if (floconNetworkPlugin == null) {
+        val request: HttpRequestBuilder = context
+
+        if (floconNetworkPlugin == null || shouldLogCallback(request)) {
+            request.attributes.put(FLOCON_SHOULD_LOG, false)
             proceed()
             return@intercept
         }
 
-        val request = context
         val floconCallId = Uuid.random().toString()
         val floconNetworkType = "http"
         val requestedAt = currentTimeMillis()
@@ -142,6 +147,12 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
         val call = response.call
         val request: HttpRequest = call.request
 
+        val floconShouldLog = request.attributes.getOrNull(FLOCON_SHOULD_LOG) ?: true
+        if(!floconShouldLog) {
+            proceed()
+            return@intercept
+        }
+
         val floconCallId = request.attributes.getOrNull(FLOCON_CALL_ID_KEY) ?: return@intercept
         val startTime = request.attributes.getOrNull(FLOCON_START_TIME_KEY) ?: return@intercept
         val isMocked = request.attributes.getOrNull(FLOCON_IS_MOCKED_KEY) ?: false
@@ -200,3 +211,4 @@ fun HttpClientConfig<*>.floconInterceptor() {
 private val FLOCON_CALL_ID_KEY = AttributeKey<String>("floconCallId")
 private val FLOCON_START_TIME_KEY = AttributeKey<Long>("floconStartTime")
 private val FLOCON_IS_MOCKED_KEY = AttributeKey<Boolean>("floconIsMocked")
+private val FLOCON_SHOULD_LOG = AttributeKey<Boolean>("floconShouldLog")
