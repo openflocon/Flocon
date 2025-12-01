@@ -15,6 +15,7 @@ import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.json.Json
 
 @Dao
 interface FloconDashboardDao {
@@ -70,6 +71,7 @@ interface FloconDashboardDao {
         deviceId: DeviceId,
         packageName: String,
         dashboard: DashboardDomainModel,
+        json: Json,
     ) {
         // 1. Clear old data
         clearDashboardByDeviceAndId(deviceId = deviceId, dashboard = dashboard.dashboardId)
@@ -102,6 +104,7 @@ interface FloconDashboardDao {
                         element.toEntity(
                             containerId = containerId,
                             index = index,
+                            json = json,
                         ),
                     )
                 }

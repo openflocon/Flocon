@@ -12,9 +12,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 
 class DashboardLocalDataSourceRoom(
     private val dashboardDao: FloconDashboardDao,
+    private val json: Json,
 ) : DashboardLocalDataSource {
 
     override suspend fun saveDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboard: DashboardDomainModel) {
@@ -22,6 +24,7 @@ class DashboardLocalDataSourceRoom(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
                 dashboard = dashboard,
+                json = json
             )
     }
 
@@ -31,7 +34,7 @@ class DashboardLocalDataSourceRoom(
             packageName = deviceIdAndPackageName.packageName,
             dashboardId = dashboardId,
         )
-            .map { it?.toDomain() }
+            .map { it?.toDomain(json = json) }
             .distinctUntilChanged()
 
     override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> =

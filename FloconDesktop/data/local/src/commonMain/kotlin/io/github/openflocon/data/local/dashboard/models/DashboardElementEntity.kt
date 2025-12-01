@@ -7,67 +7,69 @@ import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 
 @Entity(
-        foreignKeys =
-                [
-                        ForeignKey(
-                                entity = DashboardContainerEntity::class,
-                                parentColumns = ["id"],
-                                childColumns = ["containerId"],
-                                onDelete = ForeignKey.CASCADE,
-                        ),
-                ],
-        indices =
-                [
-                        Index(value = ["containerId"]),
-                        Index(value = ["containerId", "elementOrder"], unique = true),
-                ],
+    foreignKeys =
+        [
+            ForeignKey(
+                entity = DashboardContainerEntity::class,
+                parentColumns = ["id"],
+                childColumns = ["containerId"],
+                onDelete = ForeignKey.CASCADE,
+            ),
+        ],
+    indices =
+        [
+            Index(value = ["containerId"]),
+            Index(value = ["containerId", "elementOrder"], unique = true),
+        ],
 )
 data class DashboardElementEntity(
-        @PrimaryKey(autoGenerate = true) val id: Long = 0,
-        val containerId: Long,
-        val elementOrder: Int,
-        val elementAsJson: String,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val containerId: Long,
+    val elementOrder: Int,
+    val elementAsJson: String,
 )
 
-@Serializable sealed class DashboardElement
-
 @Serializable
-data class DashboardElementButton(
+internal sealed interface LocalDashboardElement {
+
+    @Serializable
+    data class Button(
         val text: String,
         val actionId: String,
-) : DashboardElement()
+    ) : LocalDashboardElement
 
-@Serializable
-data class DashboardElementText(
+    @Serializable
+    data class Text(
         val label: String,
         val value: String,
         val color: Int?,
-) : DashboardElement()
+    ) : LocalDashboardElement
 
-@Serializable
-data class DashboardElementLabel(
+    @Serializable
+    data class Label(
         val label: String,
         val color: Int?,
-) : DashboardElement()
+    ) : LocalDashboardElement
 
-@Serializable
-data class DashboardElementPlainText(
+    @Serializable
+    data class PlainText(
         val label: String,
         val value: String,
         val type: String,
-) : DashboardElement()
+    ) : LocalDashboardElement
 
-@Serializable
-data class DashboardElementTextField(
+    @Serializable
+    data class TextField(
         val actionId: String,
         val label: String,
         val value: String,
         val placeHolder: String?,
-) : DashboardElement()
+    ) : LocalDashboardElement
 
-@Serializable
-data class DashboardElementCheckBox(
+    @Serializable
+    data class CheckBox(
         val actionId: String,
         val label: String,
         val value: Boolean,
-) : DashboardElement()
+    ) : LocalDashboardElement
+}
