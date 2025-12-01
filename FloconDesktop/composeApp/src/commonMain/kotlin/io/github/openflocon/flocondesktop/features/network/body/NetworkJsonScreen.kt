@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.network.view
+package io.github.openflocon.flocondesktop.features.network.body
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -34,10 +34,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sebastianneubauer.jsontree.search.rememberSearchState
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
-import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
-import io.github.openflocon.flocondesktop.features.network.model.previewNetworkBodyDetailUi
+import io.github.openflocon.flocondesktop.features.network.body.model.NetworkBodyDetailUi
+import io.github.openflocon.flocondesktop.features.network.body.model.previewNetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconSmallIconButton
@@ -49,20 +47,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun NetworkBodyWindow(
-    body: NetworkBodyDetailUi,
-    state: FloconWindowState,
-    onCloseRequest: () -> Unit,
+    body: NetworkBodyDetailUi
 ) {
-    FloconWindow(
-        title = "Body",
-        state = state,
-        onCloseRequest = onCloseRequest,
-    ) {
-        NetworkBodyContent(
-            body = body,
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+    NetworkBodyContent(
+        body = body,
+        modifier = Modifier.fillMaxSize(),
+    )
 }
 
 @Composable

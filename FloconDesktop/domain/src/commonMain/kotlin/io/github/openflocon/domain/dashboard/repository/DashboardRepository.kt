@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.dashboard.repository
 
+import io.github.openflocon.domain.dashboard.models.DashboardArrangementDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -11,6 +12,9 @@ interface DashboardRepository {
     suspend fun selectDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId)
     fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?>
     fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>>
+
+    fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel>
+    suspend fun selectDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, arrangement: DashboardArrangementDomainModel)
 
     suspend fun sendClickEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

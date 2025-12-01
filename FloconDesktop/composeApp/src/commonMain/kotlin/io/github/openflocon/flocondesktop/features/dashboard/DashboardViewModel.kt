@@ -3,17 +3,20 @@ package io.github.openflocon.flocondesktop.features.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.dashboard.models.DashboardId
+import io.github.openflocon.domain.dashboard.models.DashboardArrangementDomainModel
 import io.github.openflocon.domain.dashboard.usecase.DeleteCurrentDeviceSelectedDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.DeleteDashboardUseCase
 import io.github.openflocon.domain.dashboard.usecase.ObserveCurrentDeviceDashboardUseCase
+import io.github.openflocon.domain.dashboard.usecase.ObserveDashboardArrangementUseCase
 import io.github.openflocon.domain.dashboard.usecase.SendCheckBoxUpdateDeviceDeviceUseCase
 import io.github.openflocon.domain.dashboard.usecase.SendClickEventToDeviceDeviceUseCase
+import io.github.openflocon.domain.dashboard.usecase.SelectDashboardArrangementUseCase
 import io.github.openflocon.domain.dashboard.usecase.SubmitFormToDeviceDeviceUseCase
 import io.github.openflocon.domain.dashboard.usecase.SubmitTextFieldToDeviceDeviceUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.dashboard.delegate.DashboardSelectorDelegate
 import io.github.openflocon.flocondesktop.features.dashboard.mapper.toUi
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArrangement
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
@@ -35,9 +38,21 @@ class DashboardViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
     private val deleteCurrentDeviceSelectedDashboardUseCase: DeleteCurrentDeviceSelectedDashboardUseCase,
     private val deleteDashboardUseCase: DeleteDashboardUseCase,
+    private val observeDashboardArrangementUseCase: ObserveDashboardArrangementUseCase,
+    private val selectDashboardArrangementUseCase: SelectDashboardArrangementUseCase,
 ) : ViewModel(dashboardSelectorDelegate) {
 
     val deviceDashboards: StateFlow<DashboardsStateUiModel> = dashboardSelectorDelegate.deviceDashboards
+
+    val arrangement: StateFlow<DashboardArrangement> =
+        observeDashboardArrangementUseCase()
+            .map { it.toUi() }
+            .flowOn(dispatcherProvider.viewModel)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                DashboardArrangement.Adaptive,
+            )
 
     val state: StateFlow<DashboardViewState?> =
         observeCurrentDeviceDashboardUseCase()
@@ -96,6 +111,17 @@ class DashboardViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             deleteDashboardUseCase(dashboard.id)
             feedbackDisplayer.displayMessage("Dashboard removed")
+        }
+    }
+
+    fun onArrangementClicked(arrangement: DashboardArrangement) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            selectDashboardArrangementUseCase(
+                when (arrangement) {
+                    is DashboardArrangement.Adaptive -> DashboardArrangementDomainModel.Adaptive
+                    is DashboardArrangement.Fixed -> DashboardArrangementDomainModel.Fixed(itemsPerRow = arrangement.itemsPerRow)
+                }
+            )
         }
     }
 }

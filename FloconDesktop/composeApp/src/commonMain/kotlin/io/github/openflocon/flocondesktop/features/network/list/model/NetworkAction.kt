@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.list.model
 
-import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
+import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.NetworkColumnsTypeUiModel
 
@@ -8,15 +8,9 @@ sealed interface NetworkAction {
 
     data class SelectRequest(val id: String) : NetworkAction
 
-    data class CopyText(val text: String) : NetworkAction
-
     data object ClosePanel : NetworkAction
 
     data object Reset : NetworkAction
-
-    data class JsonDetail(val id: String, val json: String) : NetworkAction
-
-    data class DisplayBearerJwt(val token: String) : NetworkAction
 
     data class CreateMock(val item: NetworkItemViewState) : NetworkAction
 
@@ -31,8 +25,6 @@ sealed interface NetworkAction {
 
     data object ExportCsv : NetworkAction
     data object ImportFromCsv : NetworkAction
-
-    data class CloseJsonDetail(val id: String) : NetworkAction
 
     data class CopyUrl(val item: NetworkItemViewState) : NetworkAction
 
@@ -54,6 +46,8 @@ sealed interface NetworkAction {
 
     data object ClearOldSession : NetworkAction
 
+    data class DetailAction(val action: NetworkDetailAction) : NetworkAction
+
     data class Up(
         val itemIdToSelect: String,
     ) : NetworkAction
@@ -61,12 +55,6 @@ sealed interface NetworkAction {
     data class Down(
         val itemIdToSelect: String,
     ) : NetworkAction
-
-
-    sealed interface OpenBodyExternally : NetworkAction {
-        data class Request(val item: NetworkDetailViewState) : OpenBodyExternally
-        data class Response(val item: NetworkDetailViewState.Response.Success) : OpenBodyExternally
-    }
 
     sealed interface HeaderAction : NetworkAction {
         data class ClickOnSort(

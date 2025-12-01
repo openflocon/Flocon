@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArrangement
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
 import io.github.openflocon.flocondesktop.features.dashboard.model.previewDashboardViewState
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -20,11 +21,15 @@ fun DashboardView(
     submitTextField: (textFieldId: String, value: String) -> Unit,
     submitForm: (formId: String, values: Map<String, Any>) -> Unit,
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
+    arrangement: DashboardArrangement,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalStaggeredGrid(
         modifier = modifier,
-        columns = StaggeredGridCells.Adaptive(minSize = 300.dp),
+        columns = when(arrangement) {
+            is DashboardArrangement.Adaptive -> StaggeredGridCells.Adaptive(minSize = 300.dp)
+            is DashboardArrangement.Fixed -> StaggeredGridCells.Fixed(arrangement.itemsPerRow)
+        },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp,
     ) {
@@ -51,6 +56,7 @@ private fun DashboardViewPreview() {
             submitTextField = { _, _ -> },
             submitForm = { _, _ -> },
             onUpdateCheckBox = { _, _ -> },
+            arrangement = DashboardArrangement.Adaptive
         )
     }
 }

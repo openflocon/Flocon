@@ -18,7 +18,6 @@ import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel.Filters
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
-import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkRequestsUseCase
@@ -28,6 +27,7 @@ import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.RemoveNetworkRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveOldSessionsNetworkRequestUseCase
+import io.github.openflocon.domain.network.usecase.ReplayNetworkCallUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
@@ -40,7 +40,6 @@ import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.network.body.model.ContentUiState
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailDelegate
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
-import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBodyDelegate
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
@@ -49,7 +48,6 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMet
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.TopBarUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
-import io.github.openflocon.flocondesktop.features.network.model.NetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.Job
@@ -88,9 +86,7 @@ class NetworkViewModel(
     // lazy inject the actions we might don't need
     private val importNetworkCallsFromCsvUseCase: ImportNetworkCallsFromCsvUseCase by inject()
     private val saveNetworkSettingsUseCase: SaveNetworkSettingsUseCase by inject()
-    private val openBodyDelegate: OpenBodyDelegate by inject()
     private val removeOldSessionsNetworkRequestUseCase: RemoveOldSessionsNetworkRequestUseCase by inject()
-    private val decodeJwtTokenUseCase: DecodeJwtTokenUseCase by inject()
     private val generateCurlCommandUseCase: GenerateCurlCommandUseCase by inject()
     private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase by inject()
     private val getNetworkRequestsUseCase: GetNetworkRequestsUseCase by inject()
@@ -101,7 +97,6 @@ class NetworkViewModel(
     private val contentState = MutableStateFlow(
         ContentUiState(
             selectedRequestId = null,
-            detailJsons = emptySet(),
             badNetworkQualityDisplayed = false,
             websocketMocksDisplayed = false
         )
@@ -228,7 +223,6 @@ class NetworkViewModel(
         when (action) {
             is NetworkAction.SelectRequest -> onSelectRequest(action)
             is NetworkAction.ClosePanel -> onClosePanel()
-            is NetworkAction.CopyText -> onCopyText(action)
             is NetworkAction.Reset -> onReset()
             is NetworkAction.OpenMocks -> openMocks(callId = null)
             is NetworkAction.CreateMock -> {
@@ -243,9 +237,6 @@ class NetworkViewModel(
             is NetworkAction.Remove -> onRemove(action)
             is NetworkAction.RemoveLinesAbove -> onRemoveLinesAbove(action)
             is NetworkAction.FilterQuery -> onFilterQuery(action)
-            is NetworkAction.CloseJsonDetail -> onCloseJsonDetail(action)
-            is NetworkAction.JsonDetail -> onJsonDetail(action)
-            is NetworkAction.DisplayBearerJwt -> displayBearerJwt(action.token)
             is NetworkAction.ExportCsv -> onExportCsv()
             is NetworkAction.ImportFromCsv -> onImportFromCsv()
             is NetworkAction.HeaderAction.ClickOnSort -> headerDelegate.onClickSort(
@@ -265,9 +256,8 @@ class NetworkViewModel(
             is NetworkAction.UpdateDisplayOldSessions -> toggleDisplayOldSessions(action)
             NetworkAction.OpenWebsocketMocks -> openWebsocketMocks()
             NetworkAction.CloseWebsocketMocks -> contentState.update { it.copy(websocketMocksDisplayed = false) }
-            is NetworkAction.OpenBodyExternally.Request -> openBodyDelegate.openBodyExternally(action.item)
-            is NetworkAction.OpenBodyExternally.Response -> openBodyDelegate.openBodyExternally(action.item)
             is NetworkAction.Pinned -> onPinned(action)
+            is NetworkAction.DetailAction -> detailDelegate.onAction(action.action)
         }
     }
 
@@ -314,12 +304,6 @@ class NetworkViewModel(
                     invertList = action.value
                 )
             )
-        }
-    }
-
-    private fun displayBearerJwt(token: String) {
-        decodeJwtTokenUseCase(token)?.let {
-            onJsonDetail(NetworkAction.JsonDetail(id = token, json = it))
         }
     }
 
@@ -372,31 +356,6 @@ class NetworkViewModel(
 
     private fun onClosePanel() {
         contentState.update { it.copy(selectedRequestId = null) }
-    }
-
-    private fun onCopyText(action: NetworkAction.CopyText) {
-        copyToClipboard(action.text)
-        feedbackDisplayer.displayMessage("copied")
-    }
-
-    private fun onJsonDetail(action: NetworkAction.JsonDetail) {
-        contentState.update { state ->
-            if (state.detailJsons.any { it.id == action.id })
-                return
-
-            state.copy(
-                detailJsons = state.detailJsons + NetworkBodyDetailUi(
-                    id = action.id,
-                    text = action.json,
-                ),
-            )
-        }
-    }
-
-    private fun onCloseJsonDetail(action: NetworkAction.CloseJsonDetail) {
-        contentState.update { state ->
-            state.copy(detailJsons = state.detailJsons.filterNot { it.id == action.id }.toSet())
-        }
     }
 
     private fun onReset() {
@@ -486,7 +445,7 @@ class NetworkViewModel(
     }
 }
 
-private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters>? {
+private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters> {
     return buildList {
         this@toDomain.forEach { (column, filter) ->
             if (filter.isEnabled) {
