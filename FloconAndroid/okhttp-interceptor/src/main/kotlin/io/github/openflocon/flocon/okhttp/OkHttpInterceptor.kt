@@ -23,12 +23,13 @@ data class FloconNetworkIsImageParams(
 
 class FloconOkhttpInterceptor(
     private val isImage: ((FloconNetworkIsImageParams) -> Boolean)? = null,
+    private val shouldLog: (chain: Interceptor.Chain) -> Boolean = { true },
 ) : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin
-        if (floconNetworkPlugin == null) {
+        if (floconNetworkPlugin == null || !shouldLog(chain)) {
             // on no op, do not intercept the call, just execute it
             return chain.proceed(chain.request())
         }

@@ -13,6 +13,7 @@ data class FloconNetworkIsImageParams(
 
 class FloconOkhttpInterceptor(
     private val isImage: ((FloconNetworkIsImageParams) -> Boolean)? = null,
+    private val shouldLog: (chain: Interceptor.Chain) -> Boolean = { true },
 ) : Interceptor {
 
     @Throws(IOException::class)
