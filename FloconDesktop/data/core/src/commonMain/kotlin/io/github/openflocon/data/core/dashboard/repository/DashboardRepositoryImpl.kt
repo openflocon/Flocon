@@ -5,6 +5,7 @@ import io.github.openflocon.data.core.dashboard.datasource.DeviceDashboardsDataS
 import io.github.openflocon.data.core.dashboard.datasource.ToDeviceDashboardDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.dashboard.models.DashboardArrangementDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.dashboard.repository.DashboardRepository
@@ -135,6 +136,23 @@ class DashboardRepositoryImpl(
         dashboardLocalDataSource.observeDeviceDashboards(
             deviceIdAndPackageName = deviceIdAndPackageName,
         ).flowOn(dispatcherProvider.data)
+
+    override fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel> =
+        deviceDashboardsDataSource.observeDashboardArrangement(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        ).flowOn(dispatcherProvider.data)
+
+    override suspend fun selectDashboardArrangement(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        arrangement: DashboardArrangementDomainModel
+    ) {
+        withContext(dispatcherProvider.data) {
+            deviceDashboardsDataSource.selectDashboardArrangement(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                arrangement = arrangement,
+            )
+        }
+    }
 
     override suspend fun deleteDashboard(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

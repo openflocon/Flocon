@@ -1,5 +1,6 @@
 package io.github.openflocon.data.core.dashboard.datasource
 
+import io.github.openflocon.domain.dashboard.models.DashboardArrangementDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -16,5 +17,12 @@ interface DeviceDashboardsDataSource {
     fun deleteDashboard(
         dashboardId: DashboardId,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    )
+
+    fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel>
+
+    fun selectDashboardArrangement(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        arrangement: DashboardArrangementDomainModel,
     )
 }
