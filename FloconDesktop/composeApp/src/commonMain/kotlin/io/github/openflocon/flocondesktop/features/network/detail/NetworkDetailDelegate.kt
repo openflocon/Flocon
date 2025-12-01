@@ -97,7 +97,7 @@ class NetworkDetailDelegate(
 
     private fun displayBearerJwt(token: String) {
         decodeJwtTokenUseCase(token)?.let {
-            onJsonDetail(NetworkDetailAction.JsonDetail(id = token, json = it))
+            onJsonDetail(NetworkDetailAction.JsonDetail(json = it))
         }
     }
 

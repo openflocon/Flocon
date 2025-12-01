@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class NetworkBodyDetailUi(
-    val text: String, // TODO get it from the id & a VM
+    val text: String
 )
 
 fun previewNetworkBodyDetailUi() = NetworkBodyDetailUi(

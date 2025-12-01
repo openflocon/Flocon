@@ -6,7 +6,7 @@ sealed interface NetworkDetailAction {
 
     data class DisplayBearerJwt(val token: String) : NetworkDetailAction
 
-    data class JsonDetail(val id: String, val json: String) : NetworkDetailAction
+    data class JsonDetail(val json: String) : NetworkDetailAction
 
     data class CopyText(val text: String) : NetworkDetailAction
 
