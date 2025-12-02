@@ -221,14 +221,14 @@ internal fun CheckBoxConfig.toJson(actionId: String) = buildJsonObject {
 }
 
 // {
-//     "text" : {
+//     "plainText" : {
 //         "label": "user id",
 //         "value": "01010101010",
 //         "type": "text" / "json"
 //     }
 // }
 internal fun PlainTextConfig.toJson() = buildJsonObject {
-    putJsonObject("text") {
+    putJsonObject("plainText") {
         put("label", label)
         put("value", value)
         put("type", type)

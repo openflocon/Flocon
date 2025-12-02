@@ -20,16 +20,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState.ContainerConfig
 import io.github.openflocon.flocondesktop.features.dashboard.model.previewDashboardContainerViewState
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardButtonView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardCheckBoxView
+import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardLabelView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardPlainTextView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextFieldView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextView
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState.ContainerConfig
-import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardLabelView
 
 @Composable
 fun DashboardContainerView(
@@ -38,33 +38,36 @@ fun DashboardContainerView(
     submitTextField: (textFieldId: String, value: String) -> Unit,
     submitForm: (formId: String, values: Map<String, Any>) -> Unit,
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
+    onOpenExternalClicked: (content: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var inputState by remember(viewState) {
+    var inputState by
+    remember(viewState) {
         mutableStateOf(
-            viewState.rows
-                .filterIsInstance<DashboardContainerViewState.InputItem>()
+            viewState.rows.filterIsInstance<DashboardContainerViewState.InputItem>()
                 .associate { it.id to it.value }
         )
     }
 
     Box(
-        modifier = modifier
-            .border(width = 1.dp, color = FloconTheme.colorPalette.secondary, shape = FloconTheme.shapes.medium)
-        ,
+        modifier =
+            modifier.border(
+                width = 1.dp,
+                color = FloconTheme.colorPalette.secondary,
+                shape = FloconTheme.shapes.medium
+            ),
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
                 textAlign = TextAlign.Center,
                 text = viewState.containerName,
-                style = FloconTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold,
-                ),
+                style =
+                    FloconTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
                 color = FloconTheme.colorPalette.onPrimary,
             )
 
@@ -80,15 +83,21 @@ fun DashboardContainerView(
                                 rowItem = rowItem,
                                 value = inputState[rowItem.id].toString(),
                                 onValueChange = {
-                                    inputState = inputState.toMutableMap().apply {
-                                        this[rowItem.id] = it
-                                    }
+                                    inputState =
+                                        inputState.toMutableMap().apply {
+                                            this[rowItem.id] = it
+                                        }
                                 },
                                 onSubmit = {
-                                    submitTextField(rowItem.id, inputState[rowItem.id].toString())
+                                    submitTextField(
+                                        rowItem.id,
+                                        inputState[rowItem.id].toString()
+                                    )
                                 },
-                                // A form only needs a single submit button, not on every textfield
-                                showSubmitButton = viewState.containerConfig !is ContainerConfig.Form
+                                // A form only needs a single submit button, not on every
+                                // textfield
+                                showSubmitButton =
+                                    viewState.containerConfig !is ContainerConfig.Form
                             )
                         }
 
@@ -98,9 +107,10 @@ fun DashboardContainerView(
                                 rowItem = rowItem,
                                 value = inputState[rowItem.id] as Boolean,
                                 onCheckedChange = {
-                                    inputState = inputState.toMutableMap().apply {
-                                        this[rowItem.id] = it
-                                    }
+                                    inputState =
+                                        inputState.toMutableMap().apply {
+                                            this[rowItem.id] = it
+                                        }
                                     onUpdateCheckBox(rowItem.id, it)
                                 }
                             )
@@ -132,6 +142,7 @@ fun DashboardContainerView(
                             DashboardPlainTextView(
                                 modifier = Modifier.fillMaxWidth(),
                                 rowItem = rowItem,
+                                onOpenExternalClicked = onOpenExternalClicked,
                             )
                         }
                     }
@@ -147,10 +158,11 @@ fun DashboardContainerView(
                                 inputState,
                             )
                         },
-                        rowItem = DashboardContainerViewState.RowItem.Button(
-                            id = "_",
-                            text = viewState.containerConfig.submitText,
-                        ),
+                        rowItem =
+                            DashboardContainerViewState.RowItem.Button(
+                                id = "_",
+                                text = viewState.containerConfig.submitText,
+                            ),
                     )
                 }
             }
@@ -169,6 +181,7 @@ private fun DashboardContainerViewPreview() {
                 submitTextField = { _, _ -> },
                 submitForm = { _, _ -> },
                 onUpdateCheckBox = { _, _ -> },
+                onOpenExternalClicked = {},
                 modifier = Modifier.fillMaxWidth(),
             )
         }
