@@ -46,26 +46,24 @@ fun MockNetworkDomainModel.toExportedModel(): MockNetworkExportedModel = MockNet
     response = this.response.toExportedModel()
 )
 
-fun MockNetworkDomainModel.Expectation.toExportedModel(): MockNetworkExportedModel.Expectation =
-    MockNetworkExportedModel.Expectation(
-        urlPattern = this.urlPattern,
-        method = this.method
-    )
+fun MockNetworkDomainModel.Expectation.toExportedModel(): MockNetworkExportedModel.Expectation = MockNetworkExportedModel.Expectation(
+    urlPattern = this.urlPattern,
+    method = this.method
+)
 
-fun MockNetworkDomainModel.Response.toExportedModel(): MockNetworkExportedModel.Response =
-    when (this) {
-        is MockNetworkDomainModel.Response.Body -> MockNetworkExportedModel.Response.Body(
-            httpCode = this.httpCode,
-            body = this.body,
-            mediaType = this.mediaType,
-            delay = this.delay,
-            headers = this.headers
-        )
-        is MockNetworkDomainModel.Response.Exception -> MockNetworkExportedModel.Response.Exception(
-            delay = this.delay,
-            classPath = this.classPath
-        )
-    }
+fun MockNetworkDomainModel.Response.toExportedModel(): MockNetworkExportedModel.Response = when (this) {
+    is MockNetworkDomainModel.Response.Body -> MockNetworkExportedModel.Response.Body(
+        httpCode = this.httpCode,
+        body = this.body,
+        mediaType = this.mediaType,
+        delay = this.delay,
+        headers = this.headers
+    )
+    is MockNetworkDomainModel.Response.Exception -> MockNetworkExportedModel.Response.Exception(
+        delay = this.delay,
+        classPath = this.classPath
+    )
+}
 
 fun MockNetworkExportedModel.toDomainModel(): MockNetworkDomainModel = MockNetworkDomainModel(
     id = this.id,
@@ -75,23 +73,21 @@ fun MockNetworkExportedModel.toDomainModel(): MockNetworkDomainModel = MockNetwo
     response = this.response.toDomainModel()
 )
 
-fun MockNetworkExportedModel.Expectation.toDomainModel(): MockNetworkDomainModel.Expectation =
-    MockNetworkDomainModel.Expectation(
-        urlPattern = this.urlPattern,
-        method = this.method
-    )
+fun MockNetworkExportedModel.Expectation.toDomainModel(): MockNetworkDomainModel.Expectation = MockNetworkDomainModel.Expectation(
+    urlPattern = this.urlPattern,
+    method = this.method
+)
 
-fun MockNetworkExportedModel.Response.toDomainModel(): MockNetworkDomainModel.Response =
-    when (this) {
-        is MockNetworkExportedModel.Response.Body -> MockNetworkDomainModel.Response.Body(
-            httpCode = this.httpCode,
-            body = this.body,
-            mediaType = this.mediaType,
-            delay = this.delay,
-            headers = this.headers
-        )
-        is MockNetworkExportedModel.Response.Exception -> MockNetworkDomainModel.Response.Exception(
-            delay = this.delay,
-            classPath = this.classPath
-        )
-    }
+fun MockNetworkExportedModel.Response.toDomainModel(): MockNetworkDomainModel.Response = when (this) {
+    is MockNetworkExportedModel.Response.Body -> MockNetworkDomainModel.Response.Body(
+        httpCode = this.httpCode,
+        body = this.body,
+        mediaType = this.mediaType,
+        delay = this.delay,
+        headers = this.headers
+    )
+    is MockNetworkExportedModel.Response.Exception -> MockNetworkDomainModel.Response.Exception(
+        delay = this.delay,
+        classPath = this.classPath
+    )
+}

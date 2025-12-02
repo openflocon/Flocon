@@ -28,14 +28,16 @@ fun DatabaseTabView(
 ) {
     val viewModel: DatabaseTabViewModel = koinViewModel(
         key = tab.id,
-        parameters = { parametersOf(
-            DatabaseTabViewModel.Params(
-                databaseId = tab.databaseId,
-                tableName = tab.tableName,
-                favoriteId = tab.favoriteId,
-                query = tab.query,
+        parameters = {
+            parametersOf(
+                DatabaseTabViewModel.Params(
+                    databaseId = tab.databaseId,
+                    tableName = tab.tableName,
+                    favoriteId = tab.favoriteId,
+                    query = tab.query,
+                )
             )
-        ) }
+        }
     )
 
     DisposableEffect(viewModel) {
@@ -104,4 +106,3 @@ private fun DatabaseTabViewContent(
         )
     }
 }
-

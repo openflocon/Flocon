@@ -2,10 +2,8 @@ package io.github.openflocon.flocondesktop.features.dashboard.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,8 +34,6 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
-import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
-import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 
 @Composable
 internal fun DashboardSelectorView(

@@ -104,7 +104,6 @@ fun ImageItemView(
                         )
                     }
                 }
-
             }
         }
         Column(

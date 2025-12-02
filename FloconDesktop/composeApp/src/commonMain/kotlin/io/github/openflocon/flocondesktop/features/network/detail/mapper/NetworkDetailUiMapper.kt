@@ -53,65 +53,62 @@ fun FloconNetworkCallDomainModel.toDetailUi(): NetworkDetailViewState {
                     responseBodyIsNotBlank = it.body.isNullOrBlank().not(),
                     headers = toNetworkHeadersUi(it.headers),
                 )
-
             }
-
         },
         graphQlSection = graphQlSection(this),
     )
 }
 
-private fun toDetailStatusLabel(request: FloconNetworkCallDomainModel): String =
-    when (request.request.specificInfos) {
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "Event"
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
-        FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
-        FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> "Status"
-    }
+private fun toDetailStatusLabel(request: FloconNetworkCallDomainModel): String = when (request.request.specificInfos) {
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "Event"
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
+    FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
+    FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> "Status"
+}
 
-private fun requestBodyTitle(request: FloconNetworkCallDomainModel): String =
-    when (request.request.specificInfos) {
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "Content"
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
-        FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
-        FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> "Request - Body"
-    }
+private fun requestBodyTitle(request: FloconNetworkCallDomainModel): String = when (request.request.specificInfos) {
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "Content"
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
+    FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
+    FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> "Request - Body"
+}
 
-private fun toDetailHttpStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi =
-    networkCall.response?.let { response ->
-        when (response) {
-            is FloconNetworkCallDomainModel.Response.Failure -> NetworkStatusUi(
-                text = response.issue,
-                status = NetworkStatusUi.Status.ERROR,
+private fun toDetailHttpStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.response?.let { response ->
+    when (response) {
+        is FloconNetworkCallDomainModel.Response.Failure -> NetworkStatusUi(
+            text = response.issue,
+            status = NetworkStatusUi.Status.ERROR,
+        )
+
+        is FloconNetworkCallDomainModel.Response.Success -> when (
+            val s =
+                response.specificInfos
+        ) {
+            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> toGrpcNetworkStatusUi(
+                networkCall
+            )
+            // here for grphql we want the http code, the graphql status will be displayed on the specific graphql section
+            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toNetworkStatusUi(
+                code = s.httpCode
             )
 
-            is FloconNetworkCallDomainModel.Response.Success -> when (val s =
-                response.specificInfos) {
-                is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> toGrpcNetworkStatusUi(
-                    networkCall
-                )
-                // here for grphql we want the http code, the graphql status will be displayed on the specific graphql section
-                is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toNetworkStatusUi(
-                    code = s.httpCode
-                )
-
-                is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> toNetworkStatusUi(
-                    code = s.httpCode
-                )
-            }
-        }
-    } ?: when (val s = networkCall.request.specificInfos) {
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> {
-            NetworkStatusUi(
-                text = s.event,
-                status = if (s.event == "error") NetworkStatusUi.Status.ERROR else NetworkStatusUi.Status.SUCCESS,
+            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> toNetworkStatusUi(
+                code = s.httpCode
             )
         }
-
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> loadingStatus()
     }
+} ?: when (val s = networkCall.request.specificInfos) {
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> {
+        NetworkStatusUi(
+            text = s.event,
+            status = if (s.event == "error") NetworkStatusUi.Status.ERROR else NetworkStatusUi.Status.SUCCESS,
+        )
+    }
+
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> loadingStatus()
+}
 
 fun graphQlSection(networkCall: FloconNetworkCallDomainModel): NetworkDetailViewState.GraphQlSection? {
     return (networkCall.request.specificInfos as? FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl)?.let {
@@ -123,23 +120,21 @@ fun graphQlSection(networkCall: FloconNetworkCallDomainModel): NetworkDetailView
     }
 }
 
-private fun graphQlStatus(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi? {
-    return when (val r = networkCall.response) {
-        is FloconNetworkCallDomainModel.Response.Failure -> NetworkStatusUi(
-            text = r.issue,
-            status = NetworkStatusUi.Status.ERROR,
+private fun graphQlStatus(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi? = when (val r = networkCall.response) {
+    is FloconNetworkCallDomainModel.Response.Failure -> NetworkStatusUi(
+        text = r.issue,
+        status = NetworkStatusUi.Status.ERROR,
+    )
+
+    is FloconNetworkCallDomainModel.Response.Success -> when (val s = r.specificInfos) {
+        is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toGraphQlNetworkStatusUi(
+            isSuccess = s.isSuccess
         )
 
-        is FloconNetworkCallDomainModel.Response.Success -> when (val s = r.specificInfos) {
-            is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toGraphQlNetworkStatusUi(
-                isSuccess = s.isSuccess
-            )
-
-            else -> null
-        }
-
-        null -> loadingStatus()
+        else -> null
     }
+
+    null -> loadingStatus()
 }
 
 fun httpBodyToUi(body: String?): String = body?.let { JsonPrettyPrinter.prettyPrint(body) } ?: ""
@@ -154,21 +149,18 @@ fun toNetworkHeadersUi(headers: Map<String, String>?): List<NetworkDetailHeaderU
         }.sortedBy { it.name }
 }?.takeIf { it.isNotEmpty() }
 
-fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState.Method =
-    when (request.request.specificInfos) {
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> MethodName(
-            name = request.request.method,
-        )
+fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState.Method = when (request.request.specificInfos) {
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> MethodName(
+        name = request.request.method,
+    )
 
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.Http,
-            -> Http(toHttpMethodUi(request.request.method))
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.Http,
+    -> Http(toHttpMethodUi(request.request.method))
 
-        is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> Http(
-            NetworkMethodUi.WebSocket
-        )
-    }
-
-private fun canOpenExternal(body: String?): Boolean {
-    return body != null && body.isNotBlank() && OpenFile.isSupported()
+    is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> Http(
+        NetworkMethodUi.WebSocket
+    )
 }
+
+private fun canOpenExternal(body: String?): Boolean = body != null && body.isNotBlank() && OpenFile.isSupported()

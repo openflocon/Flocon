@@ -159,7 +159,6 @@ private fun BadQualityErrorItemView(
     clickedError: (BadQualityConfigUiModel.Error) -> Unit,
     deleteError: (BadQualityConfigUiModel.Error) -> Unit
 ) {
-
     Row(
         modifier = modifier.clickable {
             clickedError(error)
@@ -222,7 +221,7 @@ private fun BadQualityErrorItemView(
                         color = FloconTheme.colorPalette.onSurface,
                         fontWeight = FontWeight.Bold,
                     ),
-                    color = Color(0xFF7B1FA2)//FloconTheme.colorPalette.exceptions, TODO
+                    color = Color(0xFF7B1FA2) // FloconTheme.colorPalette.exceptions, TODO
                 )
                 Text(
                     text = t.classPath,

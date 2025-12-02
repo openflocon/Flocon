@@ -34,7 +34,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.common.ui.interactions.hover
 import io.github.openflocon.flocondesktop.features.network.list.model.header.TextFilterAction

@@ -128,11 +128,9 @@ internal fun buildMenu() = MenuState(
 
 private fun item(
     subScreen: SubScreen
-): MenuItem {
-    return MenuItem(
-        screen = subScreen,
-        icon = subScreen.icon(),
-        text = subScreen.displayName(),
-        isEnabled = true
-    )
-}
+): MenuItem = MenuItem(
+    screen = subScreen,
+    icon = subScreen.icon(),
+    text = subScreen.displayName(),
+    isEnabled = true
+)

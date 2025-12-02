@@ -45,11 +45,9 @@ fun BadQualityEditionWindow(
     }
 }
 
-fun SelectedBadQualityUiModel.title(): String {
-    return when (this) {
-        SelectedBadQualityUiModel.Creation -> "Creation"
-        is SelectedBadQualityUiModel.Edition -> "Edition"
-    }
+fun SelectedBadQualityUiModel.title(): String = when (this) {
+    SelectedBadQualityUiModel.Creation -> "Creation"
+    is SelectedBadQualityUiModel.Edition -> "Edition"
 }
 
 @Composable
@@ -269,4 +267,3 @@ fun BadNetworkQualityEditionContent(
         )
     }
 }
-

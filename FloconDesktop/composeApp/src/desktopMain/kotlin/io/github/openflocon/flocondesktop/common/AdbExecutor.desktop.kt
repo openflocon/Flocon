@@ -60,7 +60,7 @@ actual fun localExecuteAdbCommand(
     command: String,
     deviceSerial: String?,
 ): Either<Throwable, String> = try {
-    if(deviceSerial != null) {
+    if (deviceSerial != null) {
         singleDeviceExecuteSystemCommand(adbPath = "$adbPath -s $deviceSerial", command = command)
     } else {
         val devices = listConnectedDevices(adbPath)
@@ -100,7 +100,7 @@ actual fun askSerialToAllDevices(adbPath: String, command: String, serialVariabl
 
 private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): Either<Throwable, String> = try {
     val process = Runtime.getRuntime().exec("$adbPath $command")
-    if(command.contains("reverse").not())
+    if (command.contains("reverse").not())
         Logger.d("Executing command: $adbPath $command")
 
     val output = process.inputStream.bufferedReader().use { it.readText() }
@@ -108,8 +108,7 @@ private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): 
 
     val exitCode = process.waitFor()
 
-
-    if(command.contains("reverse").not()) {
+    if (command.contains("reverse").not()) {
         Logger.d("command result success : $output")
         Logger.d("command result error : $error")
     }
@@ -124,7 +123,7 @@ private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): 
     }
 } catch (e: IOException) {
     val errorMessage = "Error executing command '$command': ${e.message}"
-    //Logger.e(errorMessage)
+    // Logger.e(errorMessage)
     Failure(IOException(errorMessage, e))
 } catch (e: InterruptedException) {
     // Thread.currentThread().interrupt()

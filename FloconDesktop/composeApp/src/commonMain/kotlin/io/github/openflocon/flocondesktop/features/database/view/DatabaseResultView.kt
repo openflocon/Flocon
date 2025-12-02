@@ -279,9 +279,11 @@ private fun ResultHeader(
 
         Spacer(Modifier.weight(1f))
 
-        Box(Modifier.size(30.dp).clickable {
-            onExportCsvClicked()
-        }.padding(5.dp)) {
+        Box(
+            Modifier.size(30.dp).clickable {
+                onExportCsvClicked()
+            }.padding(5.dp)
+        ) {
             Image(
                 imageVector = Icons.AutoMirrored.Outlined.DriveFileMove,
                 modifier = Modifier.fillMaxSize(),
@@ -291,7 +293,6 @@ private fun ResultHeader(
         }
     }
 }
-
 
 @Preview
 @Composable

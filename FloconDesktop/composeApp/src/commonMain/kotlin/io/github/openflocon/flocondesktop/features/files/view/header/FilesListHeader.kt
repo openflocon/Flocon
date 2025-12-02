@@ -16,7 +16,6 @@ import io.github.openflocon.flocondesktop.features.files.model.isSorted
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 
-
 @Composable
 internal fun FilesListHeader(
     modifier: Modifier = Modifier,

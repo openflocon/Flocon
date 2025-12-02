@@ -135,7 +135,5 @@ class MenuSceneStrategy(
         private const val MENU_KEY = "menu_key"
 
         fun menu() = mapOf(MENU_KEY to MENU_KEY)
-
     }
-
 }

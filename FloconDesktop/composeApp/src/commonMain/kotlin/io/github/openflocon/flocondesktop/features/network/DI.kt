@@ -32,5 +32,4 @@ internal val networkModule = module {
 
     viewModelOf(::BadQualityNetworkViewModel)
     viewModelOf(::NetworkWebsocketMockViewModel)
-
 }

@@ -9,4 +9,3 @@ data class ToDeviceGetFilesMessage(
     val isConstantPath: Boolean, // ex: context.files / context.caches
     val withFoldersSize: Boolean,
 )
-

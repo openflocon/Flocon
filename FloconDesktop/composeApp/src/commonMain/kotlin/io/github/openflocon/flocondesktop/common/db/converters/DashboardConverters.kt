@@ -11,12 +11,10 @@ import kotlinx.serialization.modules.polymorphic
 class DashboardConverters {
 
     @TypeConverter
-    fun fromContainerConfig(value: ContainerConfigEntity): String =
-        json.encodeToString(value)
+    fun fromContainerConfig(value: ContainerConfigEntity): String = json.encodeToString(value)
 
     @TypeConverter
-    fun toContainerConfig(value: String): ContainerConfigEntity =
-        json.decodeFromString(value)
+    fun toContainerConfig(value: String): ContainerConfigEntity = json.decodeFromString(value)
 
     private companion object {
         val json = Json {

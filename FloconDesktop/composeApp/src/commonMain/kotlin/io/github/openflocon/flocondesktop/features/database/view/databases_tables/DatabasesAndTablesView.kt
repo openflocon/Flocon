@@ -17,13 +17,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.Text
-import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
-import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
-import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
-import io.github.openflocon.flocondesktop.features.database.model.selectedDatabase
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
@@ -133,4 +129,3 @@ fun DatabasesAndTablesView(
         }
     }
 }
-

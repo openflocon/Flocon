@@ -43,10 +43,12 @@ class TableViewModel(
                     TableContentStateUiModel.Empty
                 } else {
                     TableContentStateUiModel.WithContent(
-                        columns = TableColumnsUiModel(buildList {
-                            add("time")
-                            addAll(it.columns)
-                        }),
+                        columns = TableColumnsUiModel(
+                            buildList {
+                                add("time")
+                                addAll(it.columns)
+                            }
+                        ),
                         rows = it.items.map { item ->
                             TableRowUiModel(
                                 id = item.itemId,
@@ -110,5 +112,4 @@ class TableViewModel(
             )
         }
     }
-
 }

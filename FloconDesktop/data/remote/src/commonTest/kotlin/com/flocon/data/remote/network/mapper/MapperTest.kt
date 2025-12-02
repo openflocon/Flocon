@@ -69,5 +69,4 @@ class MapperTest {
 
         assertNull(result)
     }
-
 }

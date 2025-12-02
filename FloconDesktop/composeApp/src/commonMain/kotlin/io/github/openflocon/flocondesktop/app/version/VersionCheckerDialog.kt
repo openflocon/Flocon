@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app.version
 
-
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -77,11 +76,13 @@ private fun VersionCheckerDialog(
         modifier = modifier
             .width(300.dp)
             .clickable(
-            onClick = {
-                // intercept click behind
-            }).background(
-            color = FloconTheme.colorPalette.tertiary, shape = FloconTheme.shapes.medium
-        ).padding(horizontal = 12.dp, 10.dp)) {
+                onClick = {
+                    // intercept click behind
+                }
+            ).background(
+                color = FloconTheme.colorPalette.tertiary, shape = FloconTheme.shapes.medium
+            ).padding(horizontal = 12.dp, 10.dp)
+    ) {
         Column(
             horizontalAlignment = Alignment.Start,
         ) {
@@ -109,7 +110,8 @@ private fun VersionCheckerDialog(
                     containerColor = FloconTheme.colorPalette.primary, onClick = {
                         uriHandler.openUri(version.link)
                         onDismiss(version)
-                    }) {
+                    }
+                ) {
                     Text("Download", color = FloconTheme.colorPalette.onPrimary)
                 }
                 FloconOutlinedButton(

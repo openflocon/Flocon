@@ -41,7 +41,6 @@ fun BadQuaityErrorExceptionEditor(
             modifier = Modifier.padding(all = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             FloconTextField(
                 label = defaultLabel("Weight"),
                 placeholder = defaultPlaceHolder("eg: 1.0"),
@@ -87,5 +86,3 @@ fun BadQuaityErrorExceptionEditor(
         }
     }
 }
-
-

@@ -1,19 +1,17 @@
 package io.github.openflocon.flocondesktop.features.network.mock.processor
 
-import io.github.openflocon.domain.common.Either
+import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.common.Failure
+import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.json.Json
 import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
-import co.touchlab.kermit.Logger
-import io.github.openflocon.domain.common.Success
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 sealed interface ExportResult {
     object Success : ExportResult
@@ -22,7 +20,7 @@ sealed interface ExportResult {
 }
 
 class ExportMocksProcessor(
-    private val observeNetworkMocksUseCase : ObserveNetworkMocksUseCase,
+    private val observeNetworkMocksUseCase: ObserveNetworkMocksUseCase,
 ) {
 
     private val json = Json {
@@ -30,7 +28,7 @@ class ExportMocksProcessor(
         prettyPrint = true
     }
 
-    suspend operator fun invoke() : ExportResult {
+    suspend operator fun invoke(): ExportResult {
         val mocks = observeNetworkMocksUseCase().firstOrNull() ?: return ExportResult.Failure(Throwable("no mocks to export"))
 
         val jsonString = try {
@@ -50,7 +48,7 @@ class ExportMocksProcessor(
             val hour = hour.toString().padStart(2, '0')
             val minute = minute.toString().padStart(2, '0')
 
-            "${day}_${month}_${year}_${hour}_${minute}"
+            "${day}_${month}_${year}_${hour}_$minute"
         }
         val selectedFile = showSaveFileDialog(defaultFileName = "flocon_mocks_$formattedDate.json", dialogName = "Export mocks")
 

@@ -80,7 +80,8 @@ class NetworkViewModel(
     private val detailDelegate: NetworkDetailDelegate,
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
     private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
-) : ViewModel(headerDelegate), KoinComponent {
+) : ViewModel(headerDelegate),
+    KoinComponent {
 
     // lazy inject the actions we might don't need
     private val importNetworkCallsFromCsvUseCase: ImportNetworkCallsFromCsvUseCase by inject()
@@ -444,37 +445,33 @@ class NetworkViewModel(
     }
 }
 
-private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters> {
-    return buildList {
-        this@toDomain.forEach { (column, filter) ->
-            if (filter.isEnabled) {
-                val includedFilters = filter.includedFilters.mapNotNull {
-                    it.toDomain()
-                }
-                val excludedFilters = filter.excludedFilters.mapNotNull {
-                    it.toDomain()
-                }
-                if (includedFilters.isNotEmpty() || excludedFilters.isNotEmpty()) {
-                    add(
-                        Filters(
-                            column = column,
-                            includedFilters = includedFilters,
-                            excludedFilters = excludedFilters,
-                        )
+private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters> = buildList {
+    this@toDomain.forEach { (column, filter) ->
+        if (filter.isEnabled) {
+            val includedFilters = filter.includedFilters.mapNotNull {
+                it.toDomain()
+            }
+            val excludedFilters = filter.excludedFilters.mapNotNull {
+                it.toDomain()
+            }
+            if (includedFilters.isNotEmpty() || excludedFilters.isNotEmpty()) {
+                add(
+                    Filters(
+                        column = column,
+                        includedFilters = includedFilters,
+                        excludedFilters = excludedFilters,
                     )
-                }
+                )
             }
         }
     }
 }
 
-private fun TextFilterStateUiModel.FilterItem.toDomain(): Filters.FilterItem? {
-    return if (isActive) {
-        Filters.FilterItem(
-            text = text,
-        )
-    } else null
-}
+private fun TextFilterStateUiModel.FilterItem.toDomain(): Filters.FilterItem? = if (isActive) {
+    Filters.FilterItem(
+        text = text,
+    )
+} else null
 
 private fun methodsToDomain(items: List<NetworkMethodUi>): List<String>? {
     return items.map { it.text }.takeIf { it.isNotEmpty() }

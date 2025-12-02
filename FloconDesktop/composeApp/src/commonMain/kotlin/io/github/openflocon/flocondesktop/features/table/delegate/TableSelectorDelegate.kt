@@ -39,11 +39,13 @@ class TableSelectorDelegate(
                 TablesStateUiModel.WithContent(
                     tables = tables.map { it.toUi() },
                     selected =
-                        (selected ?: run {
+                    (
+                        selected ?: run {
                             tables.first().also {
                                 selectCurrentDeviceTableUseCase(it.id)
                             }
-                        }).toUi(),
+                        }
+                        ).toUi(),
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)

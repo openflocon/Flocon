@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.database.view.databases_tables
 
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -52,9 +51,10 @@ internal fun FavoriteQueryItemView(
                     isHover = it
                 }
             )
-            .clickable(onClick = {
-                onClick(state)
-            }
+            .clickable(
+                onClick = {
+                    onClick(state)
+                }
             ).padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)

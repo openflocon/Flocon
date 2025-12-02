@@ -17,8 +17,8 @@ sealed interface AnalyticsRoutes : FloconRoute {
     @Serializable
     data class Detail(
         val id: String
-    ) : AnalyticsRoutes, PanelRoute
-
+    ) : AnalyticsRoutes,
+        PanelRoute
 }
 
 fun EntryProviderScope<FloconRoute>.analyticsRoutes() {

@@ -14,7 +14,7 @@ fun failureStatus() = NetworkStatusUi(
 )
 
 fun getStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.response?.let { response ->
-    when(response) {
+    when (response) {
         is FloconNetworkCallDomainModel.Response.Failure -> failureStatus()
         is FloconNetworkCallDomainModel.Response.Success -> when (val s = response.specificInfos) {
             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toGraphQlNetworkStatusUi(isSuccess = s.isSuccess)
@@ -22,14 +22,14 @@ fun getStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = ne
             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> toGrpcNetworkStatusUi(networkCall)
         }
     }
-} ?: when(val s = networkCall.request.specificInfos) {
+} ?: when (val s = networkCall.request.specificInfos) {
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> loadingStatus()
     is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> {
         NetworkStatusUi(
             text = s.event,
-            status = if(s.event == "error") NetworkStatusUi.Status.ERROR else NetworkStatusUi.Status.SUCCESS,
+            status = if (s.event == "error") NetworkStatusUi.Status.ERROR else NetworkStatusUi.Status.SUCCESS,
         )
     }
 }
@@ -46,10 +46,10 @@ fun toGraphQlNetworkStatusUi(isSuccess: Boolean): NetworkStatusUi = NetworkStatu
 
 fun toGrpcNetworkStatusUi(call: FloconNetworkCallDomainModel): NetworkStatusUi {
     val response = call.response ?: return loadingStatus()
-    return when(response) {
+    return when (response) {
         is FloconNetworkCallDomainModel.Response.Failure -> failureStatus()
         is FloconNetworkCallDomainModel.Response.Success -> {
-            when(val s = response.specificInfos) {
+            when (val s = response.specificInfos) {
                 is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> {
                     val isSuccess = s.grpcStatus == "OK"
                     NetworkStatusUi(
