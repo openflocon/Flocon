@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Entity(
@@ -55,7 +56,7 @@ internal sealed interface LocalDashboardElement {
     data class PlainText(
         val label: String,
         val value: String,
-        val type: String,
+        @SerialName("plaintext_type") val type: String,
     ) : LocalDashboardElement
 
     @Serializable

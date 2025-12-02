@@ -8,6 +8,7 @@ import com.flocon.data.remote.dashboard.models.DashboardElementDataModel
 import com.flocon.data.remote.dashboard.models.DashboardContainerDataModel
 import com.flocon.data.remote.dashboard.models.FormContainerConfigDataModel
 import com.flocon.data.remote.dashboard.models.LabelConfigDataModel
+import com.flocon.data.remote.dashboard.models.PlainTextConfigDataModel
 import com.flocon.data.remote.dashboard.models.SectionContainerConfigDataModel
 import com.flocon.data.remote.dashboard.models.TextConfigDataModel
 import com.flocon.data.remote.dashboard.models.TextFieldConfigDataModel
@@ -35,6 +36,9 @@ fun DashboardElementDataModel.toDomain(): DashboardElementDomainModel? {
     text?.let {
         return it.toDomain()
     }
+    plainText?.let {
+        return it.toDomain()
+    }
     button?.let {
         return it.toDomain()
     }
@@ -59,6 +63,15 @@ fun TextConfigDataModel.toDomain(): DashboardElementDomainModel.Text = Dashboard
     label = label,
     value = value,
     color = color,
+)
+
+fun PlainTextConfigDataModel.toDomain(): DashboardElementDomainModel.PlainText = DashboardElementDomainModel.PlainText(
+    label = label,
+    value = value,
+    type = when (type) {
+        "json" -> DashboardElementDomainModel.PlainText.Type.Json
+        else -> DashboardElementDomainModel.PlainText.Type.Text
+    }
 )
 
 fun LabelConfigDataModel.toDomain(): DashboardElementDomainModel.Label = DashboardElementDomainModel.Label(

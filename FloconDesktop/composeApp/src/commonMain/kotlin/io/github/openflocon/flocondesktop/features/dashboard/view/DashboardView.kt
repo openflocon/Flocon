@@ -21,13 +21,15 @@ fun DashboardView(
     submitTextField: (textFieldId: String, value: String) -> Unit,
     submitForm: (formId: String, values: Map<String, Any>) -> Unit,
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
+    onOpenExternalClicked: (content: String) -> Unit,
     arrangement: DashboardArrangement,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalStaggeredGrid(
         modifier = modifier,
-        columns = when(arrangement) {
+        columns = when (arrangement) {
             is DashboardArrangement.Adaptive -> StaggeredGridCells.Adaptive(minSize = 300.dp)
+
             is DashboardArrangement.Fixed -> StaggeredGridCells.Fixed(arrangement.itemsPerRow)
         },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -41,6 +43,7 @@ fun DashboardView(
                 submitTextField = submitTextField,
                 submitForm = submitForm,
                 onUpdateCheckBox = onUpdateCheckBox,
+                onOpenExternalClicked = onOpenExternalClicked,
             )
         }
     }
@@ -56,6 +59,7 @@ private fun DashboardViewPreview() {
             submitTextField = { _, _ -> },
             submitForm = { _, _ -> },
             onUpdateCheckBox = { _, _ -> },
+            onOpenExternalClicked = {},
             arrangement = DashboardArrangement.Adaptive
         )
     }

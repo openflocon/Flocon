@@ -51,7 +51,8 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         onUpdateCheckBox = viewModel::onUpdateCheckBox,
         deleteCurrentDashboard = viewModel::deleteCurrentDashboard,
         onDeleteClicked = viewModel::onDeleteClicked,
-        onArrangementClicked = viewModel::onArrangementClicked
+        onArrangementClicked = viewModel::onArrangementClicked,
+        onOpenExternalClicked = viewModel::onOpenExternalClicked,
     )
 }
 
@@ -68,6 +69,7 @@ fun DashboardScreen(
     submitTextField: (textFieldId: String, value: String) -> Unit,
     submitForm: (formId: String, formValues: Map<String, Any>) -> Unit,
     onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
+    onOpenExternalClicked: (content: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     FloconFeature(
@@ -114,7 +116,8 @@ fun DashboardScreen(
                 submitTextField = submitTextField,
                 submitForm = submitForm,
                 onUpdateCheckBox = onUpdateCheckBox,
-                arrangement = arrangement
+                arrangement = arrangement,
+                onOpenExternalClicked = onOpenExternalClicked,
             )
         }
     }
