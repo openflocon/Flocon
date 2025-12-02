@@ -3,15 +3,15 @@ package io.github.openflocon.library.designsystem.components.panel
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.runtime.State
 
 typealias PanelContent = (@Composable BoxScope.() -> Unit)
 
 @Immutable
-class FloconPanelController() {
+class FloconPanelController {
     private val _content = mutableStateOf<PanelContent?>(null)
     val content: State<PanelContent?> = _content
 

@@ -81,17 +81,15 @@ internal class LocalDatabaseDataSourceRoom(
     override suspend fun observe(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: DeviceDataBaseId,
-    ): Flow<List<DatabaseTableDomainModel>> {
-        return tablesDao.observe(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-            databaseId = databaseId,
-        ).map {
-            it.map {
-                it.toDomain(
-                    json = json,
-                )
-            }
+    ): Flow<List<DatabaseTableDomainModel>> = tablesDao.observe(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        databaseId = databaseId,
+    ).map {
+        it.map {
+            it.toDomain(
+                json = json,
+            )
         }
     }
 
@@ -121,7 +119,7 @@ internal class LocalDatabaseDataSourceRoom(
             title = title,
         )
         val timestamp = System.currentTimeMillis()
-        val title = if(existing != null) {
+        val title = if (existing != null) {
             "${existing.title} ($timestamp)"
         } else {
             title
@@ -156,26 +154,22 @@ internal class LocalDatabaseDataSourceRoom(
 
     override fun observeFavorites(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): Flow<List<DatabaseFavoriteQueryDomainModel>> {
-        return queryDao.observeFavoriteQueryEntity(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-        ).map { list ->
-            list.map {
-                it.toDomain()
-            }
-        }.distinctUntilChanged()
-    }
+    ): Flow<List<DatabaseFavoriteQueryDomainModel>> = queryDao.observeFavoriteQueryEntity(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    ).map { list ->
+        list.map {
+            it.toDomain()
+        }
+    }.distinctUntilChanged()
 
     override suspend fun getFavorite(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: String,
         id: Long
-    ): DatabaseFavoriteQueryDomainModel? {
-        return queryDao.getFavorite(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-            id = id,
-        )?.toDomain()
-    }
+    ): DatabaseFavoriteQueryDomainModel? = queryDao.getFavorite(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        id = id,
+    )?.toDomain()
 }

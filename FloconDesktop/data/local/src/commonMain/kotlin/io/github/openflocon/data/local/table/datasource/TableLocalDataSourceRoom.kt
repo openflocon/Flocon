@@ -5,7 +5,6 @@ import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.mapper.toEntity
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.table.models.TableDomainModel
 import io.github.openflocon.domain.table.models.TableId
@@ -51,44 +50,41 @@ internal class TableLocalDataSourceRoom(
         }
     }
 
-    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> =
-        tableDao.observeTable(deviceId = deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName, tableId = tableId)
-            .flatMapLatest { table ->
-                if (table == null) {
-                    flowOf(null)
-                } else {
-                    tableDao.observeTableItems(
-                        tableId = table.id,
-                    ).map { tableItem ->
-                        TableDomainModel(
-                            name = table.name,
-                            columns = tableItem.firstOrNull()?.columnsNames ?: emptyList(),
-                            items = tableItem.map {
-                                TableDomainModel.TableItem(
-                                    itemId = it.itemId,
-                                    createdAt = it.createdAt,
-                                    values = it.values,
-                                )
-                            },
-                        )
-                    }
+    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> = tableDao.observeTable(deviceId = deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName, tableId = tableId)
+        .flatMapLatest { table ->
+            if (table == null) {
+                flowOf(null)
+            } else {
+                tableDao.observeTableItems(
+                    tableId = table.id,
+                ).map { tableItem ->
+                    TableDomainModel(
+                        name = table.name,
+                        columns = tableItem.firstOrNull()?.columnsNames ?: emptyList(),
+                        items = tableItem.map {
+                            TableDomainModel.TableItem(
+                                itemId = it.itemId,
+                                createdAt = it.createdAt,
+                                values = it.values,
+                            )
+                        },
+                    )
                 }
-                    .flowOn(dispatcherProvider.data)
             }
+                .flowOn(dispatcherProvider.data)
+        }
 
-    override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> =
-        tableDao.observeTablesForDevice(deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName)
-            .map { list -> list.map { toDomain(it) } }
-            .flowOn(dispatcherProvider.data)
+    override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> = tableDao.observeTablesForDevice(deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName)
+        .map { list -> list.map { toDomain(it) } }
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun delete(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableIdentifierDomainModel) {
         tableDao.deleteTableContent(tableId = tableId.id)
     }
 
-    override suspend fun getDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<TableIdentifierDomainModel> =
-        tableDao.getTablesForDevice(deviceId = deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName).map {
-            toDomain(it)
-        }
+    override suspend fun getDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<TableIdentifierDomainModel> = tableDao.getTablesForDevice(deviceId = deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName).map {
+        toDomain(it)
+    }
 
     private fun toDomain(entity: TableEntity): TableIdentifierDomainModel = TableIdentifierDomainModel(
         id = entity.id,

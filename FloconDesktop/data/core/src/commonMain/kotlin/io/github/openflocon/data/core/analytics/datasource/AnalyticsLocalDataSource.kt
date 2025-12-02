@@ -24,7 +24,7 @@ interface AnalyticsLocalDataSource {
 
     fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>>
     suspend fun getDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<AnalyticsIdentifierDomainModel>
-    fun observeById(id: String, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) : Flow<AnalyticsItemDomainModel?>
+    fun observeById(id: String, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsItemDomainModel?>
 
     suspend fun delete(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

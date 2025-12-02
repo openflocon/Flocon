@@ -6,5 +6,4 @@ import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainMo
 interface DeeplinkRemoteDataSource {
 
     fun getItems(message: FloconIncomingMessageDomainModel): List<DeeplinkDomainModel>
-
 }

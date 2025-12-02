@@ -15,6 +15,7 @@ data class ErrorEmbedded(
             val body: String,
             val contentType: String,
         ) : Type
+
         @Serializable
         data class Exception(
             val classPath: String,

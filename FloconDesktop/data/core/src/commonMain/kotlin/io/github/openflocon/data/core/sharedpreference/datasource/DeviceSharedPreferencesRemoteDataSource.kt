@@ -28,5 +28,4 @@ interface DeviceSharedPreferencesRemoteDataSource {
     fun getPreferences(message: FloconIncomingMessageDomainModel): List<DeviceSharedPreferenceDomainModel>
 
     fun getValues(message: FloconIncomingMessageDomainModel): SharedPreferenceValuesResponseDomainModel?
-
 }

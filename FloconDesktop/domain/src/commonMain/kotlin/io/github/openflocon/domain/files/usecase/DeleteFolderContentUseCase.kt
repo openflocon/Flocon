@@ -1,7 +1,7 @@
 package io.github.openflocon.domain.files.usecase
 
-import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.failure
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.files.models.FilePathDomainModel

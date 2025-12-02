@@ -7,10 +7,11 @@ class HandleNewAppUseCase(
     private val devicesRepository: DevicesRepository,
 ) {
     suspend operator fun invoke(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
-        if(!devicesRepository.hasAppIcon(
-            deviceId = deviceIdAndPackageName.deviceId,
-            appPackageName = deviceIdAndPackageName.packageName
-        )) {
+        if (!devicesRepository.hasAppIcon(
+                deviceId = deviceIdAndPackageName.deviceId,
+                appPackageName = deviceIdAndPackageName.packageName
+            )
+        ) {
             devicesRepository.askForDeviceAppIcon(deviceIdAndPackageName)
         }
     }

@@ -13,16 +13,15 @@ class ObserveAnalyticsByIdUseCase(
     private val analyticsRepository: AnalyticsRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(id: String): Flow<AnalyticsItemDomainModel?> =
-        observeCurrentDeviceIdAndPackageNameUseCase()
-            .flatMapLatest { deviceIdAndPackageName ->
-                if (deviceIdAndPackageName == null) {
-                    flowOf(null)
-                } else {
-                    analyticsRepository.observeAnalyticsById(
-                        deviceIdAndPackageName = deviceIdAndPackageName,
-                        id = id,
-                    )
-                }
+    operator fun invoke(id: String): Flow<AnalyticsItemDomainModel?> = observeCurrentDeviceIdAndPackageNameUseCase()
+        .flatMapLatest { deviceIdAndPackageName ->
+            if (deviceIdAndPackageName == null) {
+                flowOf(null)
+            } else {
+                analyticsRepository.observeAnalyticsById(
+                    deviceIdAndPackageName = deviceIdAndPackageName,
+                    id = id,
+                )
             }
+        }
 }

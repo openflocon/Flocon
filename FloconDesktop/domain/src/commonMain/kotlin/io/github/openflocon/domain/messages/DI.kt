@@ -1,7 +1,6 @@
 package io.github.openflocon.domain.messages
 
 import io.github.openflocon.domain.messages.usecase.HandleIncomingMessagesUseCase
-import io.github.openflocon.domain.device.usecase.HandleNewAppUseCase
 import io.github.openflocon.domain.messages.usecase.HandleReceivedFilesUseCase
 import io.github.openflocon.domain.messages.usecase.StartServerUseCase
 import org.koin.core.module.dsl.factoryOf

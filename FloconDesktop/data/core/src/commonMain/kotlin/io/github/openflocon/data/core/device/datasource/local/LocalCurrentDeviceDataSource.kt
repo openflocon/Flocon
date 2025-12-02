@@ -1,6 +1,5 @@
 package io.github.openflocon.data.core.device.datasource.local
 
-import io.github.openflocon.domain.device.models.AppInstance
 import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -20,7 +19,7 @@ interface LocalCurrentDeviceDataSource {
     suspend fun selectApp(deviceId: DeviceId, packageName: AppPackageName)
     suspend fun isKnownAppForThisSession(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : Boolean
+    ): Boolean
     suspend fun addNewDeviceAppConnectedForThisSession(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     )

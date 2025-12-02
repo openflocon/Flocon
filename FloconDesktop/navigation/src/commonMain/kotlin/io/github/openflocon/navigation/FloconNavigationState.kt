@@ -15,7 +15,6 @@ interface FloconNavigationState<T : Any> {
     fun back(count: Int = 1)
 
     fun remove(route: FloconRoute)
-
 }
 
 @Immutable
@@ -49,5 +48,4 @@ class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : Flo
     fun menu(route: FloconRoute) {
         _stack[0] = route
     }
-
 }

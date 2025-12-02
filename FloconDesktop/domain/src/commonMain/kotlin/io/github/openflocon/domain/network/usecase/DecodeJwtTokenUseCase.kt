@@ -4,7 +4,7 @@ import java.util.Base64
 
 class DecodeJwtTokenUseCase {
 
-    operator fun invoke(token: String) : String? {
+    operator fun invoke(token: String): String? {
         return try {
             val parts = token.split(".")
             if (parts.size != 3) return null
@@ -27,5 +27,4 @@ class DecodeJwtTokenUseCase {
             null
         }
     }
-
 }

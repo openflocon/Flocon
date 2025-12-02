@@ -51,7 +51,7 @@ interface LocalDatabaseDataSource {
 
     fun observeFavorites(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : Flow<List<DatabaseFavoriteQueryDomainModel>>
+    ): Flow<List<DatabaseFavoriteQueryDomainModel>>
 
     suspend fun getFavorite(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

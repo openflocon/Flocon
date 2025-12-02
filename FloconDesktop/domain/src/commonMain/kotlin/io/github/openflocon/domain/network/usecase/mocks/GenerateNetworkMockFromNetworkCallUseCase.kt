@@ -16,37 +16,35 @@ class GenerateNetworkMockFromNetworkCallUseCase(
     @OptIn(ExperimentalUuidApi::class)
     suspend operator fun invoke(
         requestId: String,
-    ): MockNetworkDomainModel? {
-        return getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
-            observeNetworkRequestsByIdUseCase(requestId = requestId).firstOrNull()
-        }?.let { request ->
-            MockNetworkDomainModel(
-                id = Uuid.random().toString(), // generate
-                expectation = MockNetworkDomainModel.Expectation(
-                    urlPattern = request.request.url,
-                    method = request.request.method,
-                ),
-                isEnabled = true, // enabled by default
-                isShared = false,
-                response = request.response?.let {
-                    when(it) {
-                        is FloconNetworkCallDomainModel.Response.Failure -> null // maybe generate error response in this case
-                        is FloconNetworkCallDomainModel.Response.Success -> MockNetworkDomainModel.Response.Body(
-                            httpCode = request.httpCode() ?: 200,
-                            body = it.body ?: "",
-                            mediaType = it.headers["Content-Type"] ?: "",
-                            delay = 0,
-                            headers = it.headers,
-                        )
-                    }
-                } ?: MockNetworkDomainModel.Response.Body(
-                    httpCode = 200,
-                    body = "",
-                    mediaType = "application/json",
-                    delay = 0,
-                    headers = emptyMap(),
-                )
+    ): MockNetworkDomainModel? = getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
+        observeNetworkRequestsByIdUseCase(requestId = requestId).firstOrNull()
+    }?.let { request ->
+        MockNetworkDomainModel(
+            id = Uuid.random().toString(), // generate
+            expectation = MockNetworkDomainModel.Expectation(
+                urlPattern = request.request.url,
+                method = request.request.method,
+            ),
+            isEnabled = true, // enabled by default
+            isShared = false,
+            response = request.response?.let {
+                when (it) {
+                    is FloconNetworkCallDomainModel.Response.Failure -> null // maybe generate error response in this case
+                    is FloconNetworkCallDomainModel.Response.Success -> MockNetworkDomainModel.Response.Body(
+                        httpCode = request.httpCode() ?: 200,
+                        body = it.body ?: "",
+                        mediaType = it.headers["Content-Type"] ?: "",
+                        delay = 0,
+                        headers = it.headers,
+                    )
+                }
+            } ?: MockNetworkDomainModel.Response.Body(
+                httpCode = 200,
+                body = "",
+                mediaType = "application/json",
+                delay = 0,
+                headers = emptyMap(),
             )
-        }
+        )
     }
 }

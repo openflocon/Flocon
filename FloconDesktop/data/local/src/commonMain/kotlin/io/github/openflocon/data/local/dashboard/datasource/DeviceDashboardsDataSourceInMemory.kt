@@ -14,10 +14,9 @@ class DeviceDashboardsDataSourceInMemory : DeviceDashboardsDataSource {
     private val selectedDeviceDashboards = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DashboardId?>>(emptyMap())
     private val selectedDashboardArrangements = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DashboardArrangementDomainModel>>(emptyMap())
 
-    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> =
-        selectedDeviceDashboards
-            .map { it[deviceIdAndPackageName] }
-            .distinctUntilChanged()
+    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> = selectedDeviceDashboards
+        .map { it[deviceIdAndPackageName] }
+        .distinctUntilChanged()
 
     override fun selectDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId) {
         selectedDeviceDashboards.update {
@@ -27,16 +26,15 @@ class DeviceDashboardsDataSourceInMemory : DeviceDashboardsDataSource {
 
     override fun deleteDashboard(dashboardId: DashboardId, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         selectedDeviceDashboards.update {
-            if(it[deviceIdAndPackageName] == dashboardId) {
+            if (it[deviceIdAndPackageName] == dashboardId) {
                 it - deviceIdAndPackageName
             } else it
         }
     }
 
-    override fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel> =
-        selectedDashboardArrangements
-            .map { it[deviceIdAndPackageName] ?: DashboardArrangementDomainModel.Adaptive }
-            .distinctUntilChanged()
+    override fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel> = selectedDashboardArrangements
+        .map { it[deviceIdAndPackageName] ?: DashboardArrangementDomainModel.Adaptive }
+        .distinctUntilChanged()
 
     override fun selectDashboardArrangement(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -46,5 +44,4 @@ class DeviceDashboardsDataSourceInMemory : DeviceDashboardsDataSource {
             it + (deviceIdAndPackageName to arrangement)
         }
     }
-
 }

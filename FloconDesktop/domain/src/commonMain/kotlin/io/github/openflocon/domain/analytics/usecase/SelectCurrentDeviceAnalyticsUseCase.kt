@@ -1,8 +1,8 @@
 package io.github.openflocon.domain.analytics.usecase
 
-import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
 import io.github.openflocon.domain.analytics.repository.AnalyticsRepository
+import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 
 class SelectCurrentDeviceAnalyticsUseCase(
     private val analyticsRepository: AnalyticsRepository,

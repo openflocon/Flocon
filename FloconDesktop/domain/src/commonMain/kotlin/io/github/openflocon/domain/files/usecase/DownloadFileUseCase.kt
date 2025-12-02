@@ -13,7 +13,7 @@ class DownloadFileUseCase(
 ) {
     suspend operator fun invoke(
         path: FilePathDomainModel.Real,
-    ) : Either<Throwable, FloconReceivedFileDomainModel> {
+    ): Either<Throwable, FloconReceivedFileDomainModel> {
         val current = getCurrentDeviceIdAndPackageNameUseCase()
             ?: return Failure(Exception("No device connected"))
 

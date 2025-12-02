@@ -21,11 +21,11 @@ interface NetworkBadQualityRepository {
     suspend fun getNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         configId: BadQualityConfigId,
-    ) : BadQualityConfigDomainModel?
+    ): BadQualityConfigDomainModel?
 
     suspend fun getTheOnlyEnabledNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : BadQualityConfigDomainModel?
+    ): BadQualityConfigDomainModel?
 
     suspend fun deleteNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -35,11 +35,11 @@ interface NetworkBadQualityRepository {
     fun observeNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         configId: BadQualityConfigId,
-    ) : Flow<BadQualityConfigDomainModel?>
+    ): Flow<BadQualityConfigDomainModel?>
 
     fun observeAllNetworkQualities(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : Flow<List<BadQualityConfigDomainModel>>
+    ): Flow<List<BadQualityConfigDomainModel>>
 
     suspend fun setEnabledConfig(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

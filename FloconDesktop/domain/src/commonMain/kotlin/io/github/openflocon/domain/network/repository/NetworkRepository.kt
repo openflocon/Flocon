@@ -1,8 +1,8 @@
 package io.github.openflocon.domain.network.repository
 
 import androidx.paging.PagingData
-import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -47,7 +47,7 @@ interface NetworkRepository {
     suspend fun getRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         ids: List<String>
-    ) : List<FloconNetworkCallDomainModel>
+    ): List<FloconNetworkCallDomainModel>
 
     suspend fun deleteOldRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel

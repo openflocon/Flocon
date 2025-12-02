@@ -12,14 +12,13 @@ class ObserveNetworkMocksUseCase(
     private val networkMocksRepository: NetworkMocksRepository,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(): Flow<List<MockNetworkDomainModel>> =
-        observeCurrentDeviceIdAndPackageNameUseCase()
-            .flatMapLatest { current ->
-                if (current == null) {
-                    flowOf(emptyList())
-                } else {
-                    networkMocksRepository.observeAll(deviceIdAndPackageName = current)
-                }
+    operator fun invoke(): Flow<List<MockNetworkDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
+        .flatMapLatest { current ->
+            if (current == null) {
+                flowOf(emptyList())
+            } else {
+                networkMocksRepository.observeAll(deviceIdAndPackageName = current)
             }
-            .distinctUntilChanged()
+        }
+        .distinctUntilChanged()
 }

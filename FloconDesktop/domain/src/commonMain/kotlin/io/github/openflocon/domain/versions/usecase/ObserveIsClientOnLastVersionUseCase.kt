@@ -10,25 +10,23 @@ class ObserveIsClientOnLastVersionUseCase(
     private val observeLastAvailableFloconVersionUseCase: ObserveLastAvailableFloconVersionUseCase,
     private val observeCurrentDeviceFloconSdkVersionNameUseCase: ObserveCurrentDeviceFloconSdkVersionNameUseCase,
 ) {
-    operator fun invoke(): Flow<IsLastVersionDomainModel> {
-        return combines(
-            observeLastAvailableFloconVersionUseCase(),
-            observeCurrentDeviceFloconSdkVersionNameUseCase(),
-        ).map { (remote, local) ->
-            if (local == null || remote == null)
+    operator fun invoke(): Flow<IsLastVersionDomainModel> = combines(
+        observeLastAvailableFloconVersionUseCase(),
+        observeCurrentDeviceFloconSdkVersionNameUseCase(),
+    ).map { (remote, local) ->
+        if (local == null || remote == null)
+            IsLastVersionDomainModel.RunningLastVersion
+        else {
+            val newVersionAvailable =
+                isRemoteVersionNewer(localVersion = local, remoteVersion = remote)
+            if (newVersionAvailable) {
+                IsLastVersionDomainModel.NewVersionAvailable(
+                    name = remote,
+                    link = "https://github.com/openflocon/Flocon/releases/tag/$remote",
+                    oldVersion = local,
+                )
+            } else {
                 IsLastVersionDomainModel.RunningLastVersion
-            else {
-                val newVersionAvailable =
-                    isRemoteVersionNewer(localVersion = local, remoteVersion = remote)
-                if (newVersionAvailable) {
-                    IsLastVersionDomainModel.NewVersionAvailable(
-                        name = remote,
-                        link = "https://github.com/openflocon/Flocon/releases/tag/$remote",
-                        oldVersion = local,
-                    )
-                } else {
-                    IsLastVersionDomainModel.RunningLastVersion
-                }
             }
         }
     }

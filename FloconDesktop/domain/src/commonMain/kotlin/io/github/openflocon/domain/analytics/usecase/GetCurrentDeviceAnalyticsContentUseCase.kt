@@ -11,16 +11,15 @@ class GetCurrentDeviceAnalyticsContentUseCase(
 ) {
     suspend operator fun invoke(
         filter: String?,
-    ): List<AnalyticsItemDomainModel> =
-        getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
-            analyticsRepository.observeSelectedDeviceAnalytics(
-                deviceIdAndPackageName = deviceIdAndPackageName
-            ).firstOrNull()?.let { selectedAnalytics ->
-                analyticsRepository.getAnalytics(
-                    deviceIdAndPackageName = deviceIdAndPackageName,
-                    analyticsTableId = selectedAnalytics.id,
-                    filter = filter
-                )
-            }
-        } ?: emptyList()
+    ): List<AnalyticsItemDomainModel> = getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
+        analyticsRepository.observeSelectedDeviceAnalytics(
+            deviceIdAndPackageName = deviceIdAndPackageName
+        ).firstOrNull()?.let { selectedAnalytics ->
+            analyticsRepository.getAnalytics(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                analyticsTableId = selectedAnalytics.id,
+                filter = filter
+            )
+        }
+    } ?: emptyList()
 }

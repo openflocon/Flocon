@@ -17,12 +17,11 @@ interface NetworkMocksRepository {
 
     suspend fun getAllEnabledMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : List<MockNetworkDomainModel>
+    ): List<MockNetworkDomainModel>
 
     suspend fun observeAll(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : Flow<List<MockNetworkDomainModel>>
-
+    ): Flow<List<MockNetworkDomainModel>>
 
     suspend fun setupMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -44,7 +43,7 @@ interface NetworkMocksRepository {
 
     suspend fun observeWebsocketClientsIds(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : Flow<List<NetworkWebsocketId>>
+    ): Flow<List<NetworkWebsocketId>>
 
     suspend fun sendWebsocketMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

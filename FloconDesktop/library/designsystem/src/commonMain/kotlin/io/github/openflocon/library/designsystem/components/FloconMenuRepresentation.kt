@@ -57,7 +57,6 @@ internal class FloconMenuRepresentation : ContextMenuRepresentation {
             )
         }
     }
-
 }
 
 @Composable

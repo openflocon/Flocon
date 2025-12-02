@@ -33,42 +33,37 @@ import io.github.openflocon.library.designsystem.components.FloconIconTonalButto
 import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 import kotlinx.coroutines.launch
 
-private const val AnimDuration = 500
-val PanelWidth = 500.dp
+private const val ANIM_DURATION = 500
+val PANEL_WIDTH = 500.dp
 
 @Stable
 class FloconPanelState internal constructor(initialValue: Boolean) {
 
     internal var expanded by mutableStateOf(initialValue)
 
-    val translationX = AnimationState(typeConverter = Dp.VectorConverter, PanelWidth)
+    val translationX = AnimationState(typeConverter = Dp.VectorConverter, PANEL_WIDTH)
 
     suspend fun show() {
         expanded = true
-        translationX.animateTo(0.dp, animationSpec = tween(AnimDuration, easing = EaseOutExpo))
+        translationX.animateTo(0.dp, animationSpec = tween(ANIM_DURATION, easing = EaseOutExpo))
     }
 
     suspend fun hide() {
-        translationX.animateTo(PanelWidth, animationSpec = tween(AnimDuration, easing = EaseOutExpo))
+        translationX.animateTo(PANEL_WIDTH, animationSpec = tween(ANIM_DURATION, easing = EaseOutExpo))
         expanded = false
     }
-
 }
 
 @Composable
-fun rememberFloconPanelState(initialValue: Boolean = false): FloconPanelState {
-    return remember {
-        println("rememberFloconPanelState")
-        FloconPanelState(initialValue)
-    }
+fun rememberFloconPanelState(initialValue: Boolean = false): FloconPanelState = remember {
+    println("rememberFloconPanelState")
+    FloconPanelState(initialValue)
 }
-
 
 interface FloconPanelScope {
     val state: FloconPanelState
 
     fun Modifier.animatePanelAction(): Modifier
-
 }
 
 private class FloconPanelScopeImpl(
@@ -77,11 +72,9 @@ private class FloconPanelScopeImpl(
 
     @Stable
     override fun Modifier.animatePanelAction(): Modifier = graphicsLayer {
-        this.alpha = 1f - state.translationX.value.div(PanelWidth)
+        this.alpha = 1f - state.translationX.value.div(PANEL_WIDTH)
     }
-
 }
-
 
 @Composable
 fun FloconPanel(
@@ -124,7 +117,7 @@ fun FloconPanel(
         )
         Box(
             modifier = Modifier
-                .width(PanelWidth)
+                .width(PANEL_WIDTH)
                 .fillMaxHeight()
                 .graphicsLayer {
                     this.translationX = state.translationX.value.toPx()

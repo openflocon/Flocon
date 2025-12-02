@@ -34,19 +34,18 @@ class HandleReceivedFilesUseCase(
         }
         .map { }
 
-    private fun getDeviceAndApp(message: FloconIncomingMessageDomainModel) =
-        RegisterDeviceWithAppDomainModel(
-            device = DeviceDomainModel(
-                deviceId = message.deviceId,
-                message.deviceName,
-                platform = message.platform,
-            ),
-            app = DeviceAppDomainModel(
-                name = message.appName,
-                packageName = message.appPackageName,
-                lastAppInstance = message.appInstance,
-                floconVersionOnDevice = message.floconVersionOnDevice,
-                iconEncoded = null,
-            ),
-        )
+    private fun getDeviceAndApp(message: FloconIncomingMessageDomainModel) = RegisterDeviceWithAppDomainModel(
+        device = DeviceDomainModel(
+            deviceId = message.deviceId,
+            message.deviceName,
+            platform = message.platform,
+        ),
+        app = DeviceAppDomainModel(
+            name = message.appName,
+            packageName = message.appPackageName,
+            lastAppInstance = message.appInstance,
+            floconVersionOnDevice = message.floconVersionOnDevice,
+            iconEncoded = null,
+        ),
+    )
 }

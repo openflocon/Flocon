@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface AdbLocalDataSource {
     val devicesWithSerial: Flow<Set<DeviceWithSerialDomainModel>>
     suspend fun add(item: DeviceWithSerialDomainModel)
-    suspend fun getFromDeviceId(deviceId: String) : DeviceWithSerialDomainModel?
+    suspend fun getFromDeviceId(deviceId: String): DeviceWithSerialDomainModel?
 }

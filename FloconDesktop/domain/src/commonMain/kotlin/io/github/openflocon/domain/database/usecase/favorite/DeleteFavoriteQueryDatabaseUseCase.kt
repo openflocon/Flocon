@@ -22,5 +22,4 @@ class DeleteFavoriteQueryDatabaseUseCase(
             id = id,
         )
     }
-
 }

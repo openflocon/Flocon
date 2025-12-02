@@ -10,13 +10,11 @@ class ObserveWithFoldersSizeUseCase(
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val filesRepository: FilesRepository,
 ) {
-    operator fun invoke(): Flow<Boolean> {
-        return observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { current ->
-            if (current == null) {
-                flowOf(false)
-            } else {
-                filesRepository.observeWithFoldersSize(current)
-            }
+    operator fun invoke(): Flow<Boolean> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { current ->
+        if (current == null) {
+            flowOf(false)
+        } else {
+            filesRepository.observeWithFoldersSize(current)
         }
     }
 }

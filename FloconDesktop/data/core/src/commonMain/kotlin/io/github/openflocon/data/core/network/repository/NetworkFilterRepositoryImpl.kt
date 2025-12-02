@@ -1,8 +1,6 @@
 package io.github.openflocon.data.core.network.repository
 
 import io.github.openflocon.data.core.network.datasource.NetworkFilterLocalDataSource
-import io.github.openflocon.domain.device.models.AppPackageName
-import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.models.TextFilterStateDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns

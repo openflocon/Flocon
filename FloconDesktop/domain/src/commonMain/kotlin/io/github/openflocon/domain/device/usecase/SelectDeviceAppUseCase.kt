@@ -1,7 +1,6 @@
 package io.github.openflocon.domain.device.usecase
 
 import io.github.openflocon.domain.device.repository.DevicesRepository
-import kotlinx.coroutines.flow.firstOrNull
 
 class SelectDeviceAppUseCase(
     private val devicesRepository: DevicesRepository,

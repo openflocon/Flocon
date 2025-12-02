@@ -34,5 +34,4 @@ interface ToDeviceDashboardDataSource {
     )
 
     fun getItem(message: FloconIncomingMessageDomainModel): DashboardDomainModel?
-
 }

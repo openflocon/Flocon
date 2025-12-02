@@ -7,10 +7,8 @@ import io.github.openflocon.domain.common.Either
 class TestAdbUseCase(
     private val executeAdbCommandUseCase: ExecuteAdbCommandUseCase,
 ) {
-    suspend operator fun invoke(): Either<Throwable, Unit> {
-        return executeAdbCommandUseCase(
-            command = "start-server",
-            target = AdbCommandTargetDomainModel.AllDevices,
-        ).mapSuccess { Unit }
-    }
+    suspend operator fun invoke(): Either<Throwable, Unit> = executeAdbCommandUseCase(
+        command = "start-server",
+        target = AdbCommandTargetDomainModel.AllDevices,
+    ).mapSuccess { Unit }
 }

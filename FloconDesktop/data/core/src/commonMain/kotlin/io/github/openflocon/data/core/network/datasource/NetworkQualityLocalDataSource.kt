@@ -14,7 +14,7 @@ interface NetworkQualityLocalDataSource {
     suspend fun getNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         configId: BadQualityConfigId,
-    ) : BadQualityConfigDomainModel?
+    ): BadQualityConfigDomainModel?
 
     fun observe(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -40,5 +40,4 @@ interface NetworkQualityLocalDataSource {
     ): BadQualityConfigDomainModel?
 
     suspend fun prepopulate(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
-
 }

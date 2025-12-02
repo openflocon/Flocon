@@ -13,28 +13,34 @@ interface FloconImageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertImage(image: DeviceImageEntity)
 
-    @Query("""
+    @Query(
+        """
         SELECT * 
         FROM DeviceImageEntity 
         WHERE deviceId = :deviceId 
         AND packageName = :packageName 
         ORDER BY time DESC
-    """)
+    """
+    )
     fun observeImagesForDevice(deviceId: String, packageName: String): Flow<List<DeviceImageEntity>>
 
-    @Query("""
+    @Query(
+        """
         SELECT * 
         FROM DeviceImageEntity 
         WHERE deviceId = :deviceId 
         AND packageName = :packageName 
         ORDER BY time DESC
-        """)
-    suspend fun getImagesForDevice(deviceId: String,  packageName: String): List<DeviceImageEntity>
+        """
+    )
+    suspend fun getImagesForDevice(deviceId: String, packageName: String): List<DeviceImageEntity>
 
-    @Query("""
+    @Query(
+        """
         DELETE FROM DeviceImageEntity 
         WHERE deviceId = :deviceId
         AND packageName = :packageName 
-    """)
+    """
+    )
     suspend fun deleteAllImagesForDevice(deviceId: String, packageName: String)
 }
