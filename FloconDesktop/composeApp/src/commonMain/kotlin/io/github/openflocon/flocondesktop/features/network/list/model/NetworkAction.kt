@@ -48,6 +48,8 @@ sealed interface NetworkAction {
 
     data class DetailAction(val action: NetworkDetailAction) : NetworkAction
 
+    data class SelectLine(val id: String, val selected: Boolean) : NetworkAction
+
     data class Up(
         val itemIdToSelect: String,
     ) : NetworkAction

@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,6 +48,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -55,6 +57,8 @@ private val replayColor = Color(0xFF242D44)
 @Composable
 fun NetworkItemView(
     state: NetworkItemViewState,
+    multiSelect: Boolean,
+    multiSelected: Boolean,
     selected: Boolean,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -108,6 +112,13 @@ fun NetworkItemView(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            AnimatedVisibility(multiSelect) {
+                FloconCheckbox(
+                    checked = multiSelected,
+                    onCheckedChange = { onAction(NetworkAction.SelectLine(state.uuid, it)) },
+                    uncheckedColor = FloconTheme.colorPalette.secondary
+                )
+            }
             // Date - Fixed width from data class
             Box(
                 modifier = Modifier.width(columnWidths.dateWidth),
@@ -221,6 +232,7 @@ private fun contextualActions(
                     onClick = { onActionCallback(NetworkAction.Replay(state)) }
                 )
             }
+            item(label = "Select Item", onClick = { onActionCallback(NetworkAction.SelectLine(state.uuid, selected = true)) })
             separator()
             subMenu(label = "Filter") {
                 subMenu(label = "Include") {
@@ -323,6 +335,8 @@ private fun ItemViewPreview() {
         NetworkItemView(
             modifier = Modifier.fillMaxWidth(),
             selected = false,
+            multiSelect = false,
+            multiSelected = false,
             state = previewNetworkItemViewState(),
             onAction = {},
         )
@@ -337,6 +351,8 @@ private fun ItemViewPreview_error() {
             NetworkItemView(
                 modifier = Modifier.fillMaxWidth(),
                 selected = false,
+                multiSelect = true,
+                multiSelected = false,
                 state = previewNetworkItemViewStateError(),
                 onAction = {},
             )

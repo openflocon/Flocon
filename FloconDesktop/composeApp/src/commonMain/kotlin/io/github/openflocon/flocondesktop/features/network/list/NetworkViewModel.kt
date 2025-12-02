@@ -98,7 +98,9 @@ class NetworkViewModel(
         ContentUiState(
             selectedRequestId = null,
             badNetworkQualityDisplayed = false,
-            websocketMocksDisplayed = false
+            websocketMocksDisplayed = false,
+            selecting = false,
+            multiSelectedIds = emptySet()
         )
     )
 
@@ -258,6 +260,20 @@ class NetworkViewModel(
             NetworkAction.CloseWebsocketMocks -> contentState.update { it.copy(websocketMocksDisplayed = false) }
             is NetworkAction.Pinned -> onPinned(action)
             is NetworkAction.DetailAction -> detailDelegate.onAction(action.action)
+            is NetworkAction.SelectLine -> onSelectLine(action)
+        }
+    }
+
+    private fun onSelectLine(action: NetworkAction.SelectLine) {
+        contentState.update {
+            it.copy(
+                selecting = true,
+                multiSelectedIds = if (action.selected) {
+                    it.multiSelectedIds.plus(action.id)
+                } else {
+                    it.multiSelectedIds.minus(action.id)
+                }
+            )
         }
     }
 

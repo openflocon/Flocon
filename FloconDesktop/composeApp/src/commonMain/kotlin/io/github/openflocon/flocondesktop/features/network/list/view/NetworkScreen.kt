@@ -309,6 +309,8 @@ fun NetworkScreen(
                                     selected = item.uuid == uiState.contentState.selectedRequestId,
                                     columnWidths = columnWidths,
                                     onAction = onAction,
+                                    multiSelect = uiState.contentState.selecting,
+                                    multiSelected = uiState.contentState.multiSelectedIds.contains(item.uuid),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .animateItem(),
