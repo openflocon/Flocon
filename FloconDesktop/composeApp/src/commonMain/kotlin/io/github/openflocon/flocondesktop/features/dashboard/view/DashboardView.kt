@@ -27,14 +27,11 @@ fun DashboardView(
 ) {
     LazyVerticalStaggeredGrid(
         modifier = modifier,
-        columns =
-            when (arrangement) {
-                is DashboardArrangement.Adaptive ->
-                    StaggeredGridCells.Adaptive(minSize = 300.dp)
+        columns = when (arrangement) {
+            is DashboardArrangement.Adaptive -> StaggeredGridCells.Adaptive(minSize = 300.dp)
 
-                is DashboardArrangement.Fixed ->
-                    StaggeredGridCells.Fixed(arrangement.itemsPerRow)
-            },
+            is DashboardArrangement.Fixed -> StaggeredGridCells.Fixed(arrangement.itemsPerRow)
+        },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp,
     ) {
