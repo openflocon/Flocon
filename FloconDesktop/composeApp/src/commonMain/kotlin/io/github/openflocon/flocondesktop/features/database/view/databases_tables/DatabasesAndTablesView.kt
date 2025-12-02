@@ -24,7 +24,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 fun DatabasesAndTablesView(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     state: DatabasesStateUiModel,
     favorites: List<DatabaseFavoriteQueryUiModel>,
     onAction: (DatabaseScreenAction) -> Unit,

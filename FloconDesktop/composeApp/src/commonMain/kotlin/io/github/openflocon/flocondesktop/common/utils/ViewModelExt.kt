@@ -9,10 +9,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
 context(viewModel: ViewModel)
-fun <T> Flow<T>.stateInWhileSubscribed(default: T): StateFlow<T> {
-    return stateIn(
-        scope = viewModel.viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = default
-    )
-}
+fun <T> Flow<T>.stateInWhileSubscribed(default: T): StateFlow<T> = stateIn(
+    scope = viewModel.viewModelScope,
+    started = SharingStarted.WhileSubscribed(5_000),
+    initialValue = default
+)

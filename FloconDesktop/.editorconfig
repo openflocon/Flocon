@@ -8,6 +8,7 @@ insert_final_newline = true
 ktlint_custom-rule-set = enabled
 ktlint_standard_wrapping = enabled
 ktlint_standard_comment-position = disabled
+ktlint_standard_-value-parameter-comment = disabled
 ktlint_standard_trailing-comma-on-call-site = disabled
 ktlint_standard_comment-wrapping = disabled
 ktlint_standard_trailing-comma-on-declaration-site = disabled
@@ -28,3 +29,5 @@ ktlint_compose_naming-check = disabled
 ktlint_compose_parameter-naming = disabled
 ktlint_function_naming_ignore_when_annotated_with = Composable
 
+[**/build/**/*.kt]
+ktlint = disabled

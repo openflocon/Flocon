@@ -7,25 +7,38 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 data class FloconColorPaletteNew(
-    val surface: Color, // Base color // 0xFF2C2C2E
-    val onSurface: Color, // Base content color on surface // 0xffF2F2F7
+    // Base color // 0xFF2C2C2E
+    val surface: Color,
+    // Base content color on surface // 0xffF2F2F7
+    val onSurface: Color,
 
-    val primary: Color, // Color of container on the surface // 0xFF29282c
-    val onPrimary: Color, // Color of content on the primary // 0xffF2F2F7
+    // Color of container on the surface // 0xFF29282c
+    val primary: Color,
+    // Color of content on the primary // 0xffF2F2F7
+    val onPrimary: Color,
 
-    val secondary: Color, // Color of container on the primary // 0xff1E1F22
-    val onSecondary: Color, // Color of content on the secondary // Color.LightGray
+    // Color of container on the primary // 0xff1E1F22
+    val secondary: Color,
+    // Color of content on the secondary // Color.LightGray
+    val onSecondary: Color,
 
-    val tertiary: Color, // Color of container on the secondary // 0xFFe2e2e9
-    val onTertiary: Color, // Color of content on the tertiary // 0xFF2e3036
+    // Color of container on the secondary // 0xFFe2e2e9
+    val tertiary: Color,
+    // Color of content on the tertiary // 0xFF2e3036
+    val onTertiary: Color,
 
-    val accent: Color, // Color of container when actif // 0xFF4a330c
-    val onAccent: Color, // Color of content when actif // 0xFFfcaf28
+    // Color of container when actif // 0xFF4a330c
+    val accent: Color,
+    // Color of content when actif // 0xFFfcaf28
+    val onAccent: Color,
 
-    val error: Color, // Color of container when in error // 0xFFCF6679
-    val onError: Color, // Color of content when in error // 0xFF000000
+    // Color of container when in error // 0xFFCF6679
+    val error: Color,
+    // Color of content when in error // 0xFF000000
+    val onError: Color,
 
-    val exceptions: Color // Specific to exception status
+    // Specific to exception status
+    val exceptions: Color
 )
 
 internal val lightPalette = FloconColorPaletteNew(

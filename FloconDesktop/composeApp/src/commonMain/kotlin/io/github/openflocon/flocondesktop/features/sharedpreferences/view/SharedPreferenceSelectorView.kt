@@ -37,7 +37,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 fun SharedPreferenceSelectorView(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     state: SharedPrefsStateUiModel,
     onSharedPrefSelected: (DeviceSharedPrefUiModel) -> Unit,
 ) {
@@ -119,7 +119,7 @@ private fun PreferenceItemView(
     state: DeviceSharedPrefUiModel,
     isSelected: Boolean,
     onSelect: (DeviceSharedPrefUiModel) -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     val (background, textColor) = if (isSelected) {
         FloconTheme.colorPalette.accent.copy(alpha = 0.4f) to FloconTheme.colorPalette.onAccent
