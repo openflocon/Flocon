@@ -8,5 +8,4 @@ class ObserveFontSizeMultiplierUseCase(
 ) {
 
     operator fun invoke(): StateFlow<Float> = settingsRepository.fontSizeMultiplier
-
 }

@@ -2,10 +2,10 @@ package io.github.openflocon.data.local.dashboard.mapper
 
 import io.github.openflocon.data.local.dashboard.models.ContainerConfigEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
-import io.github.openflocon.data.local.dashboard.models.LocalDashboardElement
 import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
 import io.github.openflocon.data.local.dashboard.models.FormContainerConfigEntity
+import io.github.openflocon.data.local.dashboard.models.LocalDashboardElement
 import io.github.openflocon.data.local.dashboard.models.SectionContainerConfigEntity
 import io.github.openflocon.domain.dashboard.models.ContainerConfigDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardContainerDomainModel
@@ -20,23 +20,21 @@ import kotlinx.serialization.json.Json
 internal fun DashboardDomainModel.toEntity(
     deviceId: DeviceId,
     packageName: String
-): DashboardEntity =
-    DashboardEntity(
-        deviceId = deviceId,
-        packageName = packageName,
-        dashboardId = dashboardId,
-    )
+): DashboardEntity = DashboardEntity(
+    deviceId = deviceId,
+    packageName = packageName,
+    dashboardId = dashboardId,
+)
 
 internal fun DashboardContainerDomainModel.toEntity(
     dashboardId: DashboardId,
     index: Int,
-): DashboardContainerEntity =
-    DashboardContainerEntity(
-        name = this.name,
-        dashboardId = dashboardId,
-        containerOrder = index,
-        containerConfig = this.containerConfig.toEntity()
-    )
+): DashboardContainerEntity = DashboardContainerEntity(
+    name = this.name,
+    dashboardId = dashboardId,
+    containerOrder = index,
+    containerConfig = this.containerConfig.toEntity()
+)
 
 internal fun DashboardElementDomainModel.toEntity(
     containerId: Long,
@@ -78,13 +76,13 @@ internal fun DashboardElementDomainModel.toEntity(
                     label = label,
                     value = value,
                     type =
-                        when (type) {
-                            DashboardElementDomainModel.PlainText.Type.Text ->
-                                "text"
+                    when (type) {
+                        DashboardElementDomainModel.PlainText.Type.Text ->
+                            "text"
 
-                            DashboardElementDomainModel.PlainText.Type.Json ->
-                                "json"
-                        },
+                        DashboardElementDomainModel.PlainText.Type.Json ->
+                            "json"
+                    },
                 )
 
             is DashboardElementDomainModel.Label ->
@@ -101,8 +99,7 @@ internal fun DashboardElementDomainModel.toEntity(
     )
 }
 
-fun ContainerConfigDomainModel.toEntity(): ContainerConfigEntity =
-    when (this) {
-        is FormContainerConfigDomainModel -> FormContainerConfigEntity(formId, submitText)
-        is SectionContainerConfigDomainModel -> SectionContainerConfigEntity
-    }
+fun ContainerConfigDomainModel.toEntity(): ContainerConfigEntity = when (this) {
+    is FormContainerConfigDomainModel -> FormContainerConfigEntity(formId, submitText)
+    is SectionContainerConfigDomainModel -> SectionContainerConfigEntity
+}

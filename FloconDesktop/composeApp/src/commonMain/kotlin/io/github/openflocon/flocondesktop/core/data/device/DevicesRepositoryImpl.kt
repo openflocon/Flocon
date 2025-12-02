@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -45,71 +44,71 @@ class DevicesRepositoryImpl(
     override val activeDevices = remoteDeviceDataSource.activeDevices
         .flowOn(dispatcherProvider.data)
 
-    override suspend fun getCurrentDeviceId(): DeviceId? =
-        localCurrentDeviceDataSource.getCurrentDeviceId()
+    override suspend fun getCurrentDeviceId(): DeviceId? = localCurrentDeviceDataSource.getCurrentDeviceId()
 
-    override suspend fun getCurrentDevice(): DeviceDomainModel? =
-        localCurrentDeviceDataSource.getCurrentDeviceId()?.let {
-            localDevicesDataSource.getDeviceById(it)
-        }
+    override suspend fun getCurrentDevice(): DeviceDomainModel? = localCurrentDeviceDataSource.getCurrentDeviceId()?.let {
+        localDevicesDataSource.getDeviceById(it)
+    }
 
-    override fun observeCurrentDevice(): Flow<DeviceDomainModel?> =
-        localCurrentDeviceDataSource.currentDeviceId.flatMapLatest {
-            if(it == null)
-                flowOf(null)
-            else
-               localDevicesDataSource.observeDeviceById(it)
-        }
+    override fun observeCurrentDevice(): Flow<DeviceDomainModel?> = localCurrentDeviceDataSource.currentDeviceId.flatMapLatest {
+        if (it == null)
+            flowOf(null)
+        else
+            localDevicesDataSource.observeDeviceById(it)
+    }
 
     // returns new if new device
-    override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel =
-        withContext(dispatcherProvider.data) {
-            devicesMutex.withLock {
-                val isKnownDevice = localCurrentDeviceDataSource.isKnownDeviceForThisSession(
+    override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel = withContext(dispatcherProvider.data) {
+        devicesMutex.withLock {
+            val isKnownDevice = localCurrentDeviceDataSource.isKnownDeviceForThisSession(
+                registerDeviceWithApp.device.deviceId
+            )
+            val isKnownApp = localCurrentDeviceDataSource.isKnownAppForThisSession(
+                deviceIdAndPackageName = registerDeviceWithApp.deviceIdAndPackageName,
+            )
+            if (isKnownDevice && isKnownApp) {
+                HandleDeviceResultDomainModel(
+                    deviceId = registerDeviceWithApp.device.deviceId,
+                    justConnectedForThisSession = false,
+                    isNewDevice = false,
+                    isNewApp = false,
+                )
+            } else {
+                val isNewDevice = when (
+                    localDevicesDataSource.insertDevice(
+                        registerDeviceWithApp.device
+                    )
+                ) {
+                    InsertResult.New -> true
+                    InsertResult.Exists, InsertResult.Updated -> false
+                }
+                localCurrentDeviceDataSource.addNewDeviceConnectedForThisSession(
                     registerDeviceWithApp.device.deviceId
                 )
-                val isKnownApp = localCurrentDeviceDataSource.isKnownAppForThisSession(
-                    deviceIdAndPackageName = registerDeviceWithApp.deviceIdAndPackageName,
-                )
-                if (isKnownDevice && isKnownApp) {
-                    HandleDeviceResultDomainModel(
-                        deviceId = registerDeviceWithApp.device.deviceId,
-                        justConnectedForThisSession = false,
-                        isNewDevice = false,
-                        isNewApp = false,
-                    )
-                } else {
-                    val isNewDevice = when (localDevicesDataSource.insertDevice(
-                        registerDeviceWithApp.device
-                    )) {
-                        InsertResult.New -> true
-                        InsertResult.Exists, InsertResult.Updated -> false
-                    }
-                    localCurrentDeviceDataSource.addNewDeviceConnectedForThisSession(
-                        registerDeviceWithApp.device.deviceId
-                    )
 
-                    val isNewApp = when(localDevicesDataSource.insertDeviceApp(
+                val isNewApp = when (
+                    localDevicesDataSource.insertDeviceApp(
                         deviceId = registerDeviceWithApp.device.deviceId,
                         app = registerDeviceWithApp.app,
-                    )) {
-                        InsertResult.New, InsertResult.Updated -> true
-                        InsertResult.Exists -> false
-                    }
-
-                    localCurrentDeviceDataSource.addNewDeviceAppConnectedForThisSession(
-                        deviceIdAndPackageName = registerDeviceWithApp.deviceIdAndPackageName,
                     )
-
-                    HandleDeviceResultDomainModel(
-                        deviceId = registerDeviceWithApp.device.deviceId,
-                        justConnectedForThisSession = true,
-                        isNewDevice = isNewDevice,
-                        isNewApp = isNewApp,
-                    )
+                ) {
+                    InsertResult.New, InsertResult.Updated -> true
+                    InsertResult.Exists -> false
                 }
+
+                localCurrentDeviceDataSource.addNewDeviceAppConnectedForThisSession(
+                    deviceIdAndPackageName = registerDeviceWithApp.deviceIdAndPackageName,
+                )
+
+                HandleDeviceResultDomainModel(
+                    deviceId = registerDeviceWithApp.device.deviceId,
+                    justConnectedForThisSession = true,
+                    isNewDevice = isNewDevice,
+                    isNewApp = isNewApp,
+                )
             }
         }
+    }
 
     override suspend fun clear() {
         withContext(dispatcherProvider.data) {
@@ -132,62 +131,50 @@ class DevicesRepositoryImpl(
     }
 
     // region apps
-    override fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>> {
-        return localDevicesDataSource.observeDeviceApps(deviceId)
-            .flowOn(dispatcherProvider.data)
-    }
+    override fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>> = localDevicesDataSource.observeDeviceApps(deviceId)
+        .flowOn(dispatcherProvider.data)
 
-    override suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel? {
-        return withContext(dispatcherProvider.data) {
-            localCurrentDeviceDataSource.getDeviceSelectedApp(deviceId)?.let { packageName ->
-                localDevicesDataSource.getDeviceAppByPackage(deviceId = deviceId, packageName = packageName)
-            }
+    override suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel? = withContext(dispatcherProvider.data) {
+        localCurrentDeviceDataSource.getDeviceSelectedApp(deviceId)?.let { packageName ->
+            localDevicesDataSource.getDeviceAppByPackage(deviceId = deviceId, packageName = packageName)
         }
     }
 
-    override fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?> {
-        return localCurrentDeviceDataSource.observeDeviceSelectedApp(deviceId)
-            .flatMapLatest { packageName ->
-                packageName?.let {
-                    localDevicesDataSource.observeDeviceAppByPackage(
-                        deviceId = deviceId,
-                        packageName = it
-                    )
-                } ?: flowOf(null)
-            }
-            .flowOn(dispatcherProvider.data)
-    }
+    override fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?> = localCurrentDeviceDataSource.observeDeviceSelectedApp(deviceId)
+        .flatMapLatest { packageName ->
+            packageName?.let {
+                localDevicesDataSource.observeDeviceAppByPackage(
+                    deviceId = deviceId,
+                    packageName = it
+                )
+            } ?: flowOf(null)
+        }
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun getDeviceAppByPackage(
         deviceId: DeviceId,
         appPackageName: String
-    ): DeviceAppDomainModel? {
-        return withContext(dispatcherProvider.data) {
-            localDevicesDataSource.getDeviceAppByPackage(deviceId, appPackageName)
-        }
+    ): DeviceAppDomainModel? = withContext(dispatcherProvider.data) {
+        localDevicesDataSource.getDeviceAppByPackage(deviceId, appPackageName)
     }
 
     override suspend fun saveAppIcon(
         deviceId: DeviceId,
         appPackageName: String,
         iconEncoded: String
-    ) {
-        return localDevicesDataSource.saveAppIcon(
-            deviceId = deviceId,
-            appPackageName = appPackageName,
-            iconEncoded = iconEncoded
-        )
-    }
+    ) = localDevicesDataSource.saveAppIcon(
+        deviceId = deviceId,
+        appPackageName = appPackageName,
+        iconEncoded = iconEncoded
+    )
 
     override suspend fun hasAppIcon(
         deviceId: DeviceId,
         appPackageName: String
-    ): Boolean {
-        return localDevicesDataSource.hasAppIcon(
-            deviceId = deviceId,
-            appPackageName = appPackageName
-        )
-    }
+    ): Boolean = localDevicesDataSource.hasAppIcon(
+        deviceId = deviceId,
+        appPackageName = appPackageName
+    )
 
     override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         withContext(dispatcherProvider.data) {
@@ -198,10 +185,8 @@ class DevicesRepositoryImpl(
     override fun observeDeviceSdkVersion(
         deviceId: DeviceId,
         appPackageName: String
-    ): Flow<String?> {
-        return localDevicesDataSource.observeDeviceSdkVersion(deviceId = deviceId, appPackageName = appPackageName)
-            .flowOn(dispatcherProvider.data)
-    }
+    ): Flow<String?> = localDevicesDataSource.observeDeviceSdkVersion(deviceId = deviceId, appPackageName = appPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun deleteDevice(deviceId: DeviceId) {
         withContext(dispatcherProvider.data) {

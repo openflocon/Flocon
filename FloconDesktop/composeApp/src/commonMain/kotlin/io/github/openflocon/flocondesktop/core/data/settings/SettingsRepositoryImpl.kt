@@ -18,7 +18,9 @@ internal class SettingsRepositoryImpl(
 
     override var networkSettings: NetworkSettings
         get() = localSettingsDataSource.networkSettings.toDomain()
-        set(value) { localSettingsDataSource.networkSettings = value.toLocal() }
+        set(value) {
+            localSettingsDataSource.networkSettings = value.toLocal()
+        }
     override val networkSettingsFlow: Flow<NetworkSettings> = localSettingsDataSource.networkSettingsFlow
         .mapLatest { it.toDomain() }
 
@@ -31,5 +33,4 @@ internal class SettingsRepositoryImpl(
     override suspend fun setFontSizeMultiplier(value: Float) {
         localSettingsDataSource.setFontSizeMultiplier(value)
     }
-
 }

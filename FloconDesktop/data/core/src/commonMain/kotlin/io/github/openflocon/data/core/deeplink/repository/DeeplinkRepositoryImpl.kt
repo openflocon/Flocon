@@ -53,10 +53,8 @@ class DeeplinkRepositoryImpl(
     override suspend fun getDeeplinkById(
         deeplinkId: Long,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): DeeplinkDomainModel? {
-        return withContext(dispatcherProvider.data) {
-            localDeeplinkDataSource.getDeeplinkById(deeplinkId, deviceIdAndPackageName)
-        }
+    ): DeeplinkDomainModel? = withContext(dispatcherProvider.data) {
+        localDeeplinkDataSource.getDeeplinkById(deeplinkId, deviceIdAndPackageName)
     }
 
     override fun observeHistory(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observeHistory(deviceIdAndPackageName)

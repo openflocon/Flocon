@@ -70,11 +70,9 @@ class DatabaseSelectorDelegate(
                 DatabasesStateUiModel.Loading,
             )
 
-    suspend fun onDatabaseSelected(databaseId: DeviceDataBaseId) : DeviceDataBaseDomainModel? {
-        return getDatabaseByIdUseCase(databaseId)?.also { database ->
-            selectedDatabaseId.update { database }
-            getDeviceDatabaseTablesUseCase(databaseId)
-        }
+    suspend fun onDatabaseSelected(databaseId: DeviceDataBaseId): DeviceDataBaseDomainModel? = getDatabaseByIdUseCase(databaseId)?.also { database ->
+        selectedDatabaseId.update { database }
+        getDeviceDatabaseTablesUseCase(databaseId)
     }
 
     private var askForDeviceDatabasesJob: Job? = null

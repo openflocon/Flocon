@@ -9,7 +9,6 @@ sealed interface SettingsRoutes : FloconRoute {
 
     @Serializable
     data object Main : SettingsRoutes
-
 }
 
 fun EntryProviderScope<FloconRoute>.settingsRoutes() {

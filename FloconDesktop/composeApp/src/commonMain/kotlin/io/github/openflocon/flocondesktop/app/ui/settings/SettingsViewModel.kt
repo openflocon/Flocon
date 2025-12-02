@@ -61,7 +61,6 @@ class SettingsViewModel(
     }
 
     fun onAdbPathChanged(newPath: String) {
-
         _adbPathInput.value = newPath
     }
 

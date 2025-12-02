@@ -14,9 +14,13 @@ class AnalyticsRemoteDataSourceImpl(
 ) : AnalyticsRemoteDataSource {
 
     override fun getItems(message: FloconIncomingMessageDomainModel): List<AnalyticsItemDomainModel> = decodeAddItems(message).takeIf { it.isNotEmpty() }
-        ?.let { list -> list.map { it.toDomain(
-            appInstance = message.appInstance,
-        ) } }
+        ?.let { list ->
+            list.map {
+                it.toDomain(
+                    appInstance = message.appInstance,
+                )
+            }
+        }
         ?.takeIf { it.isNotEmpty() }
         .orEmpty()
 

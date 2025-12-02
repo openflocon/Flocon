@@ -39,7 +39,6 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
-
 }
 
 dependencies {

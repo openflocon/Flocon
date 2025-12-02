@@ -8,7 +8,6 @@ import io.github.openflocon.data.core.analytics.datasource.AnalyticsLocalDataSou
 import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
 import io.github.openflocon.data.local.analytics.mapper.toAnalyticsDomain
 import io.github.openflocon.data.local.analytics.mapper.toEntity
-import io.github.openflocon.data.local.network.mapper.toDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
@@ -16,7 +15,6 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -39,24 +37,22 @@ class AnalyticsLocalDataSourceRoom(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId,
         filter: String?,
-    ): Flow<PagingData<AnalyticsItemDomainModel>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-            ),
-            pagingSourceFactory = {
-                analyticsDao.observeAnalyticsItems(
-                    deviceId = deviceIdAndPackageName.deviceId,
-                    packageName = deviceIdAndPackageName.packageName,
-                    analyticsTableId = analyticsTableId,
-                    filter = filter,
-                )
-            }
-        ).flow
-            .map { pagingData ->
-                pagingData.map { entity -> entity.toAnalyticsDomain() }
-            }
-    }
+    ): Flow<PagingData<AnalyticsItemDomainModel>> = Pager(
+        config = PagingConfig(
+            pageSize = 20,
+        ),
+        pagingSourceFactory = {
+            analyticsDao.observeAnalyticsItems(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+                analyticsTableId = analyticsTableId,
+                filter = filter,
+            )
+        }
+    ).flow
+        .map { pagingData ->
+            pagingData.map { entity -> entity.toAnalyticsDomain() }
+        }
 
     override suspend fun getItems(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -72,29 +68,26 @@ class AnalyticsLocalDataSourceRoom(
     override fun observeById(
         id: String,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): Flow<AnalyticsItemDomainModel?> {
-        return analyticsDao.observeAnalyticsItemById(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-            analyticsItemId = id,
-        ).map {
-            it?.toAnalyticsDomain()
-        }.distinctUntilChanged()
-    }
+    ): Flow<AnalyticsItemDomainModel?> = analyticsDao.observeAnalyticsItemById(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        analyticsItemId = id,
+    ).map {
+        it?.toAnalyticsDomain()
+    }.distinctUntilChanged()
 
-    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
-        analyticsDao.observeAnalyticsTableIdsForDevice(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-        )
-            .map { list ->
-                list.map {
-                    AnalyticsIdentifierDomainModel(
-                        id = it,
-                        name = it,
-                    )
-                }
-            }.distinctUntilChanged()
+    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> = analyticsDao.observeAnalyticsTableIdsForDevice(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    )
+        .map { list ->
+            list.map {
+                AnalyticsIdentifierDomainModel(
+                    id = it,
+                    name = it,
+                )
+            }
+        }.distinctUntilChanged()
 
     override suspend fun delete(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsId: AnalyticsIdentifierDomainModel) {
         analyticsDao.deleteAnalyticsContent(
@@ -126,17 +119,16 @@ class AnalyticsLocalDataSourceRoom(
         )
     }
 
-    override suspend fun getDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<AnalyticsIdentifierDomainModel> =
-        analyticsDao.getAnalyticsForDevice(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-        )
-            .map {
-                AnalyticsIdentifierDomainModel(
-                    id = it,
-                    name = it,
-                )
-            }
+    override suspend fun getDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<AnalyticsIdentifierDomainModel> = analyticsDao.getAnalyticsForDevice(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    )
+        .map {
+            AnalyticsIdentifierDomainModel(
+                id = it,
+                name = it,
+            )
+        }
 
     override suspend fun deleteRequestOnDifferentSession(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         analyticsDao.deleteRequestOnDifferentSession(

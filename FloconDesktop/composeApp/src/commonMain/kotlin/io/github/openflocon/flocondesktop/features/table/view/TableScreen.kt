@@ -143,9 +143,9 @@ fun TableScreen(
                                     Text(
                                         text = column,
                                         modifier =
-                                            Modifier
-                                                .width(columnsWidth)
-                                                .padding(horizontal = 4.dp),
+                                        Modifier
+                                            .width(columnsWidth)
+                                            .padding(horizontal = 4.dp),
                                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                                         color = FloconTheme.colorPalette.onSecondary,
                                     )
@@ -168,8 +168,8 @@ fun TableScreen(
                             if (index < tableItems.lastIndex) {
                                 HorizontalDivider(
                                     modifier =
-                                        Modifier.fillMaxWidth()
-                                            .padding(top = 4.dp),
+                                    Modifier.fillMaxWidth()
+                                        .padding(top = 4.dp),
                                 )
                             }
                         }

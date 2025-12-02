@@ -18,7 +18,7 @@ fun BadQualityConfigDomainModel.toUi() = BadQualityConfigUiModel(
 
 private fun BadQualityConfigDomainModel.Error.toUi() = BadQualityConfigUiModel.Error(
     weight = weight,
-    type = when(val t = type) {
+    type = when (val t = type) {
         is BadQualityConfigDomainModel.Error.Type.Body -> BadQualityConfigUiModel.Error.Type.Body(
             httpCode = t.httpCode,
             body = t.body,
@@ -50,7 +50,7 @@ fun BadQualityConfigUiModel.toDomain() = BadQualityConfigDomainModel(
 
 private fun BadQualityConfigUiModel.Error.toDomain() = BadQualityConfigDomainModel.Error(
     weight = weight,
-    type = when(val t = type) {
+    type = when (val t = type) {
         is BadQualityConfigUiModel.Error.Type.Body -> BadQualityConfigDomainModel.Error.Type.Body(
             httpCode = t.httpCode,
             body = t.body,

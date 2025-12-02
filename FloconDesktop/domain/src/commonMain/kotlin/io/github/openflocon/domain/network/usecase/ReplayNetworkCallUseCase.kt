@@ -1,7 +1,6 @@
 package io.github.openflocon.domain.network.usecase
 
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
-import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.repository.NetworkRepository
 import kotlinx.coroutines.flow.firstOrNull
 

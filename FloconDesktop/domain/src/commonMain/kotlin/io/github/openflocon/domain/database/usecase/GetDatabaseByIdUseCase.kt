@@ -6,7 +6,5 @@ import io.github.openflocon.domain.database.repository.DatabaseRepository
 class GetDatabaseByIdUseCase(
     private val databaseRepository: DatabaseRepository,
 ) {
-    suspend operator fun invoke(databaseId: String)  : DeviceDataBaseDomainModel? {
-        return databaseRepository.getDatabaseById(databaseId)
-    }
+    suspend operator fun invoke(databaseId: String): DeviceDataBaseDomainModel? = databaseRepository.getDatabaseById(databaseId)
 }

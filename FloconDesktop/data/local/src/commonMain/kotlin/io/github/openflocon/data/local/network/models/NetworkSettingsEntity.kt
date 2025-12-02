@@ -3,7 +3,6 @@ package io.github.openflocon.data.local.network.models
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
-import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 
 @Entity(
     primaryKeys = [

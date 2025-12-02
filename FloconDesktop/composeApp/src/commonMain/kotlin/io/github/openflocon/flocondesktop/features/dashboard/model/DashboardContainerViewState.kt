@@ -42,14 +42,16 @@ data class DashboardContainerViewState(
             val placeHolder: String?,
             override val value: String,
             override val id: String,
-        ) : RowItem, InputItem
+        ) : RowItem,
+            InputItem
 
         @Immutable
         data class CheckBox(
             val label: String,
             override val value: Boolean,
             override val id: String,
-        ) : RowItem, InputItem
+        ) : RowItem,
+            InputItem
     }
 
     /** Any item that can be used to change the value of a field */

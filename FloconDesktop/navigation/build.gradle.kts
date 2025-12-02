@@ -46,5 +46,4 @@ kotlin {
             api(libs.kotlinx.serialization.core)
         }
     }
-
 }

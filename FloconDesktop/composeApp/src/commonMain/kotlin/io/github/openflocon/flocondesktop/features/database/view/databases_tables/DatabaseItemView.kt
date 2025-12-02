@@ -85,11 +85,12 @@ private fun DatabaseView(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .background(background)
-            .combinedClickable(onClick = {
-                onSelect(state.id)
-            }, onDoubleClick = {
-                onDatabaseDoubleClicked(state)
-            }
+            .combinedClickable(
+                onClick = {
+                    onSelect(state.id)
+                }, onDoubleClick = {
+                    onDatabaseDoubleClicked(state)
+                }
             ).padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

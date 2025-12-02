@@ -1,12 +1,11 @@
 package io.github.openflocon.domain.files.repository
 
 import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 
 interface FilesRepository {
 
@@ -34,7 +33,7 @@ interface FilesRepository {
     suspend fun downloadFile(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: String
-    ) : Either<Throwable, FloconReceivedFileDomainModel>
+    ): Either<Throwable, FloconReceivedFileDomainModel>
 
     fun observeWithFoldersSize(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean>
 

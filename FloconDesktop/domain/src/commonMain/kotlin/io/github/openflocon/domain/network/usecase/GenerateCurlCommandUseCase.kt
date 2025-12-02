@@ -29,7 +29,7 @@ class GenerateCurlCommandUseCase {
 
         // 4. Add URL (always last for better readability in the command line)
         // Ensure URL is quoted to handle special characters
-        commandBuilder.append(" '${url}'")
+        commandBuilder.append(" '$url'")
 
         return commandBuilder.toString()
     }

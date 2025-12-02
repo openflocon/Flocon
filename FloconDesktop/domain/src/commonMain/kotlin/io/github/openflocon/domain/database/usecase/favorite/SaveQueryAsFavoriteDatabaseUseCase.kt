@@ -13,7 +13,7 @@ class SaveQueryAsFavoriteDatabaseUseCase(
         query: String,
         title: String,
         databaseId: String,
-    ) : Either<Throwable, Unit> {
+    ): Either<Throwable, Unit> {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("no current device"))
 
         return databaseRepository.saveAsFavorite(
@@ -23,5 +23,4 @@ class SaveQueryAsFavoriteDatabaseUseCase(
             query = query,
         )
     }
-
 }

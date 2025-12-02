@@ -101,13 +101,11 @@ class NetworkRepositoryImpl(
     override suspend fun getRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         ids: List<String>
-    ): List<FloconNetworkCallDomainModel> {
-        return withContext(dispatcherProvider.data) {
-            networkLocalDataSource.getCalls(
-                deviceIdAndPackageName = deviceIdAndPackageName,
-                ids = ids,
-            )
-        }
+    ): List<FloconNetworkCallDomainModel> = withContext(dispatcherProvider.data) {
+        networkLocalDataSource.getCalls(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            ids = ids,
+        )
     }
 
     override fun observeRequest(
@@ -302,10 +300,9 @@ class NetworkRepositoryImpl(
         )
     }
 
-    override suspend fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<MockNetworkDomainModel>> =
-        networkMocksLocalDataSource.observeAll(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        ).flowOn(dispatcherProvider.data)
+    override suspend fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<MockNetworkDomainModel>> = networkMocksLocalDataSource.observeAll(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    ).flowOn(dispatcherProvider.data)
 
     override suspend fun deleteMock(
         id: String,
@@ -364,50 +361,40 @@ class NetworkRepositoryImpl(
     override suspend fun getNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         configId: BadQualityConfigId,
-    ): BadQualityConfigDomainModel? {
-        return withContext(dispatcherProvider.data) {
-            networkQualityLocalDataSource.getNetworkQuality(
-                deviceIdAndPackageName = deviceIdAndPackageName,
-                configId = configId,
-            )
-        }
+    ): BadQualityConfigDomainModel? = withContext(dispatcherProvider.data) {
+        networkQualityLocalDataSource.getNetworkQuality(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            configId = configId,
+        )
     }
 
-    override suspend fun getTheOnlyEnabledNetworkQuality(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): BadQualityConfigDomainModel? {
-        return withContext(dispatcherProvider.data) {
-            networkQualityLocalDataSource.getTheOnlyEnabledNetworkQuality(
-                deviceIdAndPackageName = deviceIdAndPackageName,
-            )
-        }
+    override suspend fun getTheOnlyEnabledNetworkQuality(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): BadQualityConfigDomainModel? = withContext(dispatcherProvider.data) {
+        networkQualityLocalDataSource.getTheOnlyEnabledNetworkQuality(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        )
     }
 
     override suspend fun deleteNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         configId: BadQualityConfigId,
-    ) {
-        return withContext(dispatcherProvider.data) {
-            networkQualityLocalDataSource.delete(
-                deviceIdAndPackageName = deviceIdAndPackageName,
-                configId = configId,
-            )
-        }
+    ) = withContext(dispatcherProvider.data) {
+        networkQualityLocalDataSource.delete(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            configId = configId,
+        )
     }
 
     override fun observeNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         configId: BadQualityConfigId,
-    ): Flow<BadQualityConfigDomainModel?> {
-        return networkQualityLocalDataSource.observe(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-            configId = configId,
-        ).flowOn(dispatcherProvider.data)
-    }
+    ): Flow<BadQualityConfigDomainModel?> = networkQualityLocalDataSource.observe(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+        configId = configId,
+    ).flowOn(dispatcherProvider.data)
 
-    override fun observeAllNetworkQualities(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<BadQualityConfigDomainModel>> {
-        return networkQualityLocalDataSource.observeAll(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        ).flowOn(dispatcherProvider.data)
-    }
+    override fun observeAllNetworkQualities(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<BadQualityConfigDomainModel>> = networkQualityLocalDataSource.observeAll(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    ).flowOn(dispatcherProvider.data)
 
     override suspend fun setEnabledConfig(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -429,11 +416,9 @@ class NetworkRepositoryImpl(
         }
     }
 
-    override suspend fun observeWebsocketClientsIds(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<NetworkWebsocketId>> {
-        return networkLocalWebsocketDataSource.observeWebsocketClients(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        ).flowOn(dispatcherProvider.data)
-    }
+    override suspend fun observeWebsocketClientsIds(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<NetworkWebsocketId>> = networkLocalWebsocketDataSource.observeWebsocketClients(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    ).flowOn(dispatcherProvider.data)
 
     override suspend fun sendWebsocketMock(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

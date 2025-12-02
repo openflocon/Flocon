@@ -67,7 +67,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconToggleButt
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
-import io.github.openflocon.library.designsystem.components.panel.PanelWidth
+import io.github.openflocon.library.designsystem.components.panel.PANEL_WIDTH
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.viewmodel.koinViewModel
@@ -251,7 +251,10 @@ fun NetworkScreen(
                             checked = uiState.settings.pinPanel,
                             text = "Pin panel",
                             leadingIcon = Icons.Sharp.PushPin,
-                            onCheckedChange = { checked -> onAction(NetworkAction.Pinned(checked)); it() }
+                            onCheckedChange = { checked ->
+                                onAction(NetworkAction.Pinned(checked))
+                                it()
+                            }
                         )
                         FloconDropdownSeparator()
                         FloconDropdownMenuItem(
@@ -329,7 +332,7 @@ fun NetworkScreen(
                     uiState = it,
                     onAction = { action -> onAction(NetworkAction.DetailAction(action)) },
                     modifier = Modifier
-                        .width(PanelWidth)
+                        .width(PANEL_WIDTH)
                         .clip(FloconTheme.shapes.medium)
                 )
             }
@@ -356,34 +359,32 @@ fun NetworkScreen(
 private fun selectPreviousRow(
     rows: LazyPagingItems<NetworkItemViewState>,
     uiState: NetworkUiState
-): NetworkItemViewState? =
-    rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
-        .takeIf { it != -1 }
-        ?.let { selectedIndex ->
-            val newIndex = if (uiState.settings.invertList)
-                selectedIndex + 1
-            else
-                selectedIndex - 1
-            newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
-        }?.let {
-            rows[it]
-        }
+): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
+    .takeIf { it != -1 }
+    ?.let { selectedIndex ->
+        val newIndex = if (uiState.settings.invertList)
+            selectedIndex + 1
+        else
+            selectedIndex - 1
+        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+    }?.let {
+        rows[it]
+    }
 
 private fun selectNextRow(
     rows: LazyPagingItems<NetworkItemViewState>,
     uiState: NetworkUiState
-): NetworkItemViewState? =
-    rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
-        .takeIf { it != -1 }
-        ?.let { selectedIndex ->
-            val newIndex = if (uiState.settings.invertList)
-                selectedIndex - 1
-            else
-                selectedIndex + 1
-            newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
-        }?.let {
-            rows[it]
-        }
+): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
+    .takeIf { it != -1 }
+    ?.let { selectedIndex ->
+        val newIndex = if (uiState.settings.invertList)
+            selectedIndex - 1
+        else
+            selectedIndex + 1
+        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+    }?.let {
+        rows[it]
+    }
 
 @Composable
 @Preview

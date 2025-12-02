@@ -35,50 +35,43 @@ class BadQualityConfigLocalDataSourceImpl(
     override suspend fun getNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         configId: BadQualityConfigId,
-    ): BadQualityConfigDomainModel? {
-        return networkBadQualityConfigDao.get(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-            configId = configId
-        )?.let {
-            it.toDomain(
-                json = json
-            )
-        }
+    ): BadQualityConfigDomainModel? = networkBadQualityConfigDao.get(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        configId = configId
+    )?.let {
+        it.toDomain(
+            json = json
+        )
     }
 
     override fun observe(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         configId: BadQualityConfigId,
-    ): Flow<BadQualityConfigDomainModel?> {
-        return networkBadQualityConfigDao.observe(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-            configId = configId,
-        ).map {
-            it?.let {
-                it.toDomain(
-                    json = json
-                )
-            }
-        }.distinctUntilChanged()
-    }
-
+    ): Flow<BadQualityConfigDomainModel?> = networkBadQualityConfigDao.observe(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        configId = configId,
+    ).map {
+        it?.let {
+            it.toDomain(
+                json = json
+            )
+        }
+    }.distinctUntilChanged()
 
     override fun observeAll(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): Flow<List<BadQualityConfigDomainModel>> {
-        return networkBadQualityConfigDao.observeAll(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-        ).map { list ->
-            list.map {
-                it.toDomain(
-                    json = json
-                )
-            }
-        }.distinctUntilChanged()
-    }
+    ): Flow<List<BadQualityConfigDomainModel>> = networkBadQualityConfigDao.observeAll(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    ).map { list ->
+        list.map {
+            it.toDomain(
+                json = json
+            )
+        }
+    }.distinctUntilChanged()
 
     override suspend fun setEnabledConfig(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -93,15 +86,13 @@ class BadQualityConfigLocalDataSourceImpl(
 
     override suspend fun getTheOnlyEnabledNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): BadQualityConfigDomainModel? {
-        return networkBadQualityConfigDao.getTheOnlyEnabledNetworkQuality(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-        )?.let {
-            it.toDomain(
-                json = json
-            )
-        }
+    ): BadQualityConfigDomainModel? = networkBadQualityConfigDao.getTheOnlyEnabledNetworkQuality(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    )?.let {
+        it.toDomain(
+            json = json
+        )
     }
 
     override suspend fun delete(
@@ -135,7 +126,7 @@ class BadQualityConfigLocalDataSourceImpl(
                 id = idPrefix + "low_latency",
                 isEnabled = false,
                 name = "Low latency",
-                createdAt = Instant.fromEpochMilliseconds(now + 1) ,
+                createdAt = Instant.fromEpochMilliseconds(now + 1),
                 latency = BadQualityConfigDomainModel.LatencyConfig(
                     minLatencyMs = 100,
                     maxLatencyMs = 400,
@@ -215,5 +206,3 @@ class BadQualityConfigLocalDataSourceImpl(
         )
     }
 }
-
-

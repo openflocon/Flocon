@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -151,7 +149,6 @@ fun FloconIconToggleButton(
     }
 }
 
-
 @Composable
 fun FloconIconButton(
     modifier: Modifier = Modifier,
@@ -193,7 +190,7 @@ fun WithTooltip(
     ),
     content: @Composable () -> Unit
 ) {
-    if(tooltip != null) {
+    if (tooltip != null) {
         TooltipArea(
             tooltip = {
                 Text(

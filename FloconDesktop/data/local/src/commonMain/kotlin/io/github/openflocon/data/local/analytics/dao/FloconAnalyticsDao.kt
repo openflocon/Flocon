@@ -7,9 +7,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
-import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
-import io.github.openflocon.domain.device.models.AppInstance
-import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
 
@@ -36,7 +33,7 @@ interface FloconAnalyticsDao {
         deviceId: String,
         packageName: String,
         analyticsItemId: String,
-    ) : Flow<AnalyticsItemEntity?>
+    ): Flow<AnalyticsItemEntity?>
 
     @Query(
         """
@@ -140,12 +137,14 @@ interface FloconAnalyticsDao {
         analyticsItemId: String
     )
 
-    @Query("""
+    @Query(
+        """
         DELETE FROM AnalyticsItemEntity 
         WHERE createdAt < (SELECT createdAt FROM AnalyticsItemEntity WHERE itemId = :analyticsItemId)
           AND deviceId = :deviceId
           AND packageName = :packageName
-    """)
+    """
+    )
     suspend fun deleteBefore(deviceId: DeviceId, packageName: String, analyticsItemId: String)
 
     @Query(
@@ -161,6 +160,4 @@ interface FloconAnalyticsDao {
         packageName: String,
         appInstance: Long,
     )
-
-
 }

@@ -58,16 +58,14 @@ fun toEntities(
     deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     deeplinks: List<DeeplinkDomainModel>,
     json: Json,
-): List<DeeplinkEntity> =
-    deeplinks.map {
-        it.toEntity(deviceIdAndPackageName = deviceIdAndPackageName, isHistory = false, json = json,)
-    }
+): List<DeeplinkEntity> = deeplinks.map {
+    it.toEntity(deviceIdAndPackageName = deviceIdAndPackageName, isHistory = false, json = json,)
+}
 
 private fun DeeplinkDomainModel.Parameter.toEntity() = DeeplinkParameterEntity(
     paramName = paramName,
     autoComplete = autoComplete,
 )
-
 
 private fun DeeplinkParameterEntity.toDomain() = DeeplinkDomainModel.Parameter(
     paramName = paramName,

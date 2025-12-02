@@ -28,5 +28,4 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
-
 }

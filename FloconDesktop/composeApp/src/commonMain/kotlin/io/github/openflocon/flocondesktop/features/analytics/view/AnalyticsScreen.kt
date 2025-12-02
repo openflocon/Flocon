@@ -112,7 +112,6 @@ fun AnalyticsScreen(
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
-
     LaunchedEffect(screenState.autoScroll, rows.itemCount) {
         if (screenState.autoScroll && rows.itemSnapshotList.lastIndex != -1) {
             listState.animateScrollToItem(rows.itemSnapshotList.lastIndex)

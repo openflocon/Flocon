@@ -3,7 +3,6 @@ package io.github.openflocon.data.local.files.models
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
-import androidx.room.PrimaryKey
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 
 @Entity(
@@ -11,9 +10,9 @@ import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
         Index(value = ["deviceId", "packageName"]),
     ],
     primaryKeys = [
-                  "deviceId",
-                  "packageName"
-   ],
+        "deviceId",
+        "packageName"
+    ],
     foreignKeys = [
         ForeignKey(
             entity = DeviceAppEntity::class,

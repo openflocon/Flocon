@@ -65,7 +65,8 @@ fun PreferenceAutoUpdate(
             checked = state is PreferenceAutoUpdate.Enabled,
             onCheckedChange = {
                 onChange(it)
-            }, colors = CheckboxDefaults.colors(
+            },
+            colors = CheckboxDefaults.colors(
                 uncheckedColor = FloconTheme.colorPalette.secondary,
                 checkedColor = FloconTheme.colorPalette.secondary,
             )

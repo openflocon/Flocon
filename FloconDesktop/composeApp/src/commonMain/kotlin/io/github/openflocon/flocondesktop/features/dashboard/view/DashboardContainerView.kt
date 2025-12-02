@@ -19,8 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.submit
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState.ContainerConfig
 import io.github.openflocon.flocondesktop.features.dashboard.model.previewDashboardContainerViewState
@@ -31,7 +29,6 @@ import io.github.openflocon.flocondesktop.features.dashboard.view.items.Dashboar
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextFieldView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextView
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -45,20 +42,20 @@ fun DashboardContainerView(
     modifier: Modifier = Modifier,
 ) {
     var inputState by
-    remember(viewState) {
-        mutableStateOf(
-            viewState.rows.filterIsInstance<DashboardContainerViewState.InputItem>()
-                .associate { it.id to it.value }
-        )
-    }
+        remember(viewState) {
+            mutableStateOf(
+                viewState.rows.filterIsInstance<DashboardContainerViewState.InputItem>()
+                    .associate { it.id to it.value }
+            )
+        }
 
     Box(
         modifier =
-            modifier.border(
-                width = 1.dp,
-                color = FloconTheme.colorPalette.secondary,
-                shape = FloconTheme.shapes.medium
-            ),
+        modifier.border(
+            width = 1.dp,
+            color = FloconTheme.colorPalette.secondary,
+            shape = FloconTheme.shapes.medium
+        ),
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -68,9 +65,9 @@ fun DashboardContainerView(
                 textAlign = TextAlign.Center,
                 text = viewState.containerName,
                 style =
-                    FloconTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
+                FloconTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                ),
                 color = FloconTheme.colorPalette.onPrimary,
             )
 
@@ -100,7 +97,7 @@ fun DashboardContainerView(
                                 // A form only needs a single submit button, not on every
                                 // textfield
                                 showSubmitButton =
-                                    viewState.containerConfig !is ContainerConfig.Form
+                                viewState.containerConfig !is ContainerConfig.Form
                             )
                         }
 
@@ -162,11 +159,10 @@ fun DashboardContainerView(
                             )
                         },
                         rowItem =
-                            DashboardContainerViewState.RowItem.Button(
-                                id = "_",
-                                text = viewState.containerConfig.submitText
-                                    ?: stringResource(Res.string.submit),
-                            ),
+                        DashboardContainerViewState.RowItem.Button(
+                            id = "_",
+                            text = viewState.containerConfig.submitText,
+                        ),
                     )
                 }
             }

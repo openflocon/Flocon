@@ -14,11 +14,7 @@ internal class MessagesRepositoryImpl(
         remote.startServer()
     }
 
-    override fun listenMessages(): Flow<FloconIncomingMessageDomainModel> {
-        return remote.listenMessages()
-    }
+    override fun listenMessages(): Flow<FloconIncomingMessageDomainModel> = remote.listenMessages()
 
-    override fun listenReceivedFiles(): Flow<FloconReceivedFileDomainModel> {
-        return remote.listenReceivedFiles()
-    }
+    override fun listenReceivedFiles(): Flow<FloconReceivedFileDomainModel> = remote.listenReceivedFiles()
 }

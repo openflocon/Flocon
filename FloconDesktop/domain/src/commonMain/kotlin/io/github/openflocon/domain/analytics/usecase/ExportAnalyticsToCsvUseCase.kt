@@ -4,23 +4,17 @@ import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
-import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
-import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
-import io.github.openflocon.domain.network.models.httpCode
-import io.github.openflocon.domain.network.repository.NetworkRepository
-import kotlinx.coroutines.flow.firstOrNull
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.math.roundToInt
 
 class ExportAnalyticsToCsvUseCase(
     private val getCurrentDeviceAnalyticsContentUseCase: GetCurrentDeviceAnalyticsContentUseCase,
 ) {
     suspend operator fun invoke(
         filter: String?,
-    ) : Either<Throwable, String> {
+    ): Either<Throwable, String> {
         val items = getCurrentDeviceAnalyticsContentUseCase(
             filter = filter,
         ).takeIf { it.isNotEmpty() } ?: return Failure(

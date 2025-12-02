@@ -1,9 +1,9 @@
 package io.github.openflocon.domain.analytics.usecase
 
 import androidx.paging.PagingData
-import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.analytics.repository.AnalyticsRepository
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

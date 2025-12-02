@@ -21,7 +21,5 @@ internal class LocalAdbDataSourceRoom(
         dao.insert(toEntity(item))
     }
 
-    override suspend fun getFromDeviceId(deviceId: String): DeviceWithSerialDomainModel? {
-        return dao.getFromDeviceId(deviceId)?.let { toDomainModel(it) }
-    }
+    override suspend fun getFromDeviceId(deviceId: String): DeviceWithSerialDomainModel? = dao.getFromDeviceId(deviceId)?.let { toDomainModel(it) }
 }

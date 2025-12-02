@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AdbRepository {
 
-    suspend fun getAdbSerial(deviceId: String) : String?
+    suspend fun getAdbSerial(deviceId: String): String?
 
     suspend fun saveAdbSerial(deviceId: String, serial: String)
 
@@ -25,5 +25,4 @@ interface AdbRepository {
     ): Either<Throwable, String>
 
     fun findAdbPath(): String?
-
 }

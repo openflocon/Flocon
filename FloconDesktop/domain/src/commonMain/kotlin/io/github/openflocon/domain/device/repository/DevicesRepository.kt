@@ -17,7 +17,7 @@ interface DevicesRepository {
     suspend fun getCurrentDeviceId(): DeviceId?
 
     // returns new if new device
-    suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel) : HandleDeviceResultDomainModel
+    suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel
     suspend fun getCurrentDevice(): DeviceDomainModel?
     suspend fun selectDevice(deviceId: DeviceId)
 
@@ -25,13 +25,13 @@ interface DevicesRepository {
     fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>>
     fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?>
     suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel?
-    suspend fun getDeviceAppByPackage(deviceId: DeviceId, appPackageName: String) : DeviceAppDomainModel?
+    suspend fun getDeviceAppByPackage(deviceId: DeviceId, appPackageName: String): DeviceAppDomainModel?
     suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel)
     // endregion
 
     // region app icon
     suspend fun saveAppIcon(deviceId: DeviceId, appPackageName: String, iconEncoded: String)
-    suspend fun hasAppIcon(deviceId: DeviceId, appPackageName: String) : Boolean
+    suspend fun hasAppIcon(deviceId: DeviceId, appPackageName: String): Boolean
     suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 // endregion
 
@@ -39,8 +39,8 @@ interface DevicesRepository {
 
     suspend fun deleteDevice(deviceId: DeviceId)
     suspend fun deleteApplication(
-        deviceId : DeviceId,
-        packageName : AppPackageName,
+        deviceId: DeviceId,
+        packageName: AppPackageName,
     )
 
     suspend fun restartApp(

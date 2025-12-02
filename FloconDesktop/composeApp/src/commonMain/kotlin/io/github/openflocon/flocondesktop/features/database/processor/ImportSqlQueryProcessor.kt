@@ -6,11 +6,9 @@ import java.io.File
 
 class ImportSqlQueryProcessor {
 
-    suspend operator fun invoke() : String? {
-        return showOpenFileDialog(
-                dialogName = "Import Sql Query"
-            )?.readText()
-    }
+    suspend operator fun invoke(): String? = showOpenFileDialog(
+        dialogName = "Import Sql Query"
+    )?.readText()
 
     private fun showOpenFileDialog(dialogName: String): File? {
         val parentFrame = Frame()
@@ -29,5 +27,4 @@ class ImportSqlQueryProcessor {
             null
         }
     }
-
 }

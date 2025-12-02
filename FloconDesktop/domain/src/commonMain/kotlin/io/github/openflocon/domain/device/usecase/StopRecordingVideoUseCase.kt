@@ -14,7 +14,7 @@ class StopRecordingVideoUseCase(
     private val executeAdbCommandUseCase: ExecuteAdbCommandUseCase,
 ) {
 
-    suspend operator fun invoke(recording: RecordingDomainModel) : Either<Throwable, String> {
+    suspend operator fun invoke(recording: RecordingDomainModel): Either<Throwable, String> {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("No device selected"))
 
         val fileName = "record_${current.packageName}_${System.currentTimeMillis()}.mp4"
@@ -28,7 +28,7 @@ class StopRecordingVideoUseCase(
         recording.completableDeferred.await()
 
         val parentFile = Paths.get(System.getProperty("user.home"), "Desktop", "Flocon", "ScreenRecord").toFile()
-        if(!parentFile.exists()) {
+        if (!parentFile.exists()) {
             parentFile.mkdirs()
         }
 

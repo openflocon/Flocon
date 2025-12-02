@@ -2,7 +2,6 @@ package io.github.openflocon.data.local.analytics.mapper
 
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
-import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 
 internal fun AnalyticsItemDomainModel.toEntity(

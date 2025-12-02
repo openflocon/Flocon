@@ -123,5 +123,4 @@ interface FloconTableDao {
     """
     )
     suspend fun deleteBefore(deviceId: DeviceId, packageName: String, itemId: String)
-
 }

@@ -25,7 +25,7 @@ interface FilesRemoteDataSource {
     suspend fun executeDownloadFile(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: String,
-    ) : Either<Throwable, FloconReceivedFileDomainModel>
+    ): Either<Throwable, FloconReceivedFileDomainModel>
 
     suspend fun executeDeleteFolderContent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

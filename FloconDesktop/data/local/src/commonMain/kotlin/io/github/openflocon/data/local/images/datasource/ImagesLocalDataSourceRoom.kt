@@ -5,7 +5,6 @@ import io.github.openflocon.data.local.images.dao.FloconImageDao
 import io.github.openflocon.data.local.images.mapper.toDomainModel
 import io.github.openflocon.data.local.images.mapper.toEntity
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.images.models.DeviceImageDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -40,9 +39,13 @@ internal class ImagesLocalDataSourceRoom(
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
     )
-        .map { entities -> entities.map { it.toDomainModel(
-            json = json,
-        ) } }
+        .map { entities ->
+            entities.map {
+                it.toDomainModel(
+                    json = json,
+                )
+            }
+        }
         .flowOn(dispatcherProvider.data)
 
     override suspend fun clearImages(

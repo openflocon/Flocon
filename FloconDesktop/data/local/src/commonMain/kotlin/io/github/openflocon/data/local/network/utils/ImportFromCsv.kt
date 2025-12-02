@@ -92,17 +92,17 @@ private fun createDomainCallFromCsv(
             byteSize = responseBodySize,
             byteSizeFormatted = ByteFormatter.formatBytes(responseBodySize),
             specificInfos =
-                when {
-                    httpCode != null -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http(
-                        httpCode
-                    )
+            when {
+                httpCode != null -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http(
+                    httpCode
+                )
 
-                    grpcStatus.isNotBlank() -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc(
-                        grpcStatus
-                    )
+                grpcStatus.isNotBlank() -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc(
+                    grpcStatus
+                )
 
-                    else -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http(200)
-                },
+                else -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http(200)
+            },
             isImage = isImage,
             statusFormatted = statusFormatted
         )

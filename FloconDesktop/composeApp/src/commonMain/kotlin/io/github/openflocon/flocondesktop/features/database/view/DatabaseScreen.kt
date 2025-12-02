@@ -15,15 +15,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.features.database.DatabaseViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
-import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
-import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
-import io.github.openflocon.flocondesktop.features.database.model.selectedDatabase
 import io.github.openflocon.flocondesktop.features.database.view.databases_tables.DatabasesAndTablesView
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import org.koin.compose.viewmodel.koinViewModel
@@ -52,7 +48,6 @@ fun DatabaseScreen(modifier: Modifier = Modifier) {
         modifier = modifier,
     )
 }
-
 
 @Composable
 fun DatabaseScreen(
@@ -97,5 +92,4 @@ fun DatabaseScreen(
             }
         }
     }
-
 }

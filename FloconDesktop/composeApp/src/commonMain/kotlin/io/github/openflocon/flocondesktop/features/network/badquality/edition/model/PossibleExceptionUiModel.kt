@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.badquality.edition.model
 
 data class PossibleExceptionUiModel(
-    val classPath : String,
+    val classPath: String,
     val description: String,
 )
 

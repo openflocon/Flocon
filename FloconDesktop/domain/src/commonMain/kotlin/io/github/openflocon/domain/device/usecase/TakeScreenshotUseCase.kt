@@ -13,14 +13,14 @@ class TakeScreenshotUseCase(
     private val executeAdbCommandUseCase: ExecuteAdbCommandUseCase,
 ) {
 
-    suspend operator fun invoke() : Either<Throwable, String> {
+    suspend operator fun invoke(): Either<Throwable, String> {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("No device selected"))
 
         val fileName = "screenshot_${current.packageName}_${System.currentTimeMillis()}.png"
         val onDeviceFilePath = "/sdcard/$fileName"
 
         val parentFile = Paths.get(System.getProperty("user.home"), "Desktop", "Flocon", "Screenshot").toFile()
-        if(!parentFile.exists()) {
+        if (!parentFile.exists()) {
             parentFile.mkdirs()
         }
 

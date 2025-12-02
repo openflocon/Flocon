@@ -12,21 +12,20 @@ class ObserveCurrentDeviceIdAndPackageNameUseCase(
     private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
     private val devicesRepository: DevicesRepository,
 ) {
-    operator fun invoke(): Flow<DeviceIdAndPackageNameDomainModel?> =
-        observeCurrentDeviceIdUseCase().flatMapLatest { deviceId ->
-            if (deviceId == null) {
-                flowOf(null)
-            } else {
-                devicesRepository.observeDeviceSelectedApp(deviceId)
-                    .map { app ->
-                        app?.let {
-                            DeviceIdAndPackageNameDomainModel(
-                                deviceId = deviceId,
-                                packageName = app.packageName,
-                                appInstance = app.lastAppInstance,
-                            )
-                        }
+    operator fun invoke(): Flow<DeviceIdAndPackageNameDomainModel?> = observeCurrentDeviceIdUseCase().flatMapLatest { deviceId ->
+        if (deviceId == null) {
+            flowOf(null)
+        } else {
+            devicesRepository.observeDeviceSelectedApp(deviceId)
+                .map { app ->
+                    app?.let {
+                        DeviceIdAndPackageNameDomainModel(
+                            deviceId = deviceId,
+                            packageName = app.packageName,
+                            appInstance = app.lastAppInstance,
+                        )
                     }
-            }
-        }.distinctUntilChanged()
+                }
+        }
+    }.distinctUntilChanged()
 }

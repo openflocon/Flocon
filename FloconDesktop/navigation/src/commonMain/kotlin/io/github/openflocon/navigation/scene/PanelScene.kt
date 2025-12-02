@@ -31,7 +31,8 @@ data class PanelScene(
     private val properties: PaneProperties,
     private val onPin: OnPin?,
     private val onBack: () -> Unit,
-) : OverlayScene<FloconRoute>, KoinComponent {
+) : OverlayScene<FloconRoute>,
+    KoinComponent {
     override val key: Any
         get() = PanelScene::class.qualifiedName!!
 
@@ -86,7 +87,6 @@ data class PanelScene(
             }
         }
     }
-
 }
 
 class PanelSceneStrategy : SceneStrategy<FloconRoute> {
@@ -127,9 +127,7 @@ class PanelSceneStrategy : SceneStrategy<FloconRoute> {
             ),
             ON_PIN to onPin
         )
-
     }
-
 }
 
 fun interface OnPin {
@@ -139,7 +137,6 @@ fun interface OnPin {
     companion object {
         val Empty = OnPin {}
     }
-
 }
 
 data class PaneProperties(

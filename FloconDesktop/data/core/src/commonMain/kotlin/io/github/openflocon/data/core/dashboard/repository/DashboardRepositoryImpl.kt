@@ -47,15 +47,13 @@ class DashboardRepositoryImpl(
         // no op
     }
 
-
     override fun observeDashboard(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId
-    ): Flow<DashboardDomainModel?> =
-        dashboardLocalDataSource.observeDashboard(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-            dashboardId = dashboardId,
-        ).flowOn(dispatcherProvider.data)
+    ): Flow<DashboardDomainModel?> = dashboardLocalDataSource.observeDashboard(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+        dashboardId = dashboardId,
+    ).flowOn(dispatcherProvider.data)
 
     override suspend fun sendClickEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -127,20 +125,17 @@ class DashboardRepositoryImpl(
         }
     }
 
-    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> =
-        deviceDashboardsDataSource.observeSelectedDeviceDashboard(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        ).flowOn(dispatcherProvider.data)
+    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> = deviceDashboardsDataSource.observeSelectedDeviceDashboard(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    ).flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> =
-        dashboardLocalDataSource.observeDeviceDashboards(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        ).flowOn(dispatcherProvider.data)
+    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> = dashboardLocalDataSource.observeDeviceDashboards(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    ).flowOn(dispatcherProvider.data)
 
-    override fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel> =
-        deviceDashboardsDataSource.observeDashboardArrangement(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        ).flowOn(dispatcherProvider.data)
+    override fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel> = deviceDashboardsDataSource.observeDashboardArrangement(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    ).flowOn(dispatcherProvider.data)
 
     override suspend fun selectDashboardArrangement(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

@@ -73,9 +73,9 @@ class AnalyticsViewModel(
     val screenState = _screenState.asStateFlow()
     val itemsState: StateFlow<AnalyticsStateUiModel> = analyticsSelectorDelegate.deviceAnalyticss
 
-    private val _selectedItemId = MutableStateFlow<String?>(null)
+    private val selectedItemId = MutableStateFlow<String?>(null)
     val selectedItem: StateFlow<AnalyticsDetailUiModel?> = combines(
-        _selectedItemId,
+        selectedItemId,
         observeCurrentDeviceIdAndPackageNameUseCase(),
     ).flatMapLatest { (id, device) ->
         if (id == null)
@@ -111,7 +111,6 @@ class AnalyticsViewModel(
                 viewModelScope,
             )
 
-
     fun onVisible() {
         // no op
     }
@@ -138,7 +137,7 @@ class AnalyticsViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
                 AnalyticsAction.ClosePanel -> {
-                    _selectedItemId.update {
+                    selectedItemId.update {
                         null
                     }
                 }

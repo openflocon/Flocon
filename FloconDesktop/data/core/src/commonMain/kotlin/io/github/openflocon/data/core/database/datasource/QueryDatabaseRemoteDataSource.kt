@@ -23,5 +23,4 @@ interface QueryDatabaseRemoteDataSource {
     fun getDeviceDatabases(message: FloconIncomingMessageDomainModel): List<DeviceDataBaseDomainModel>
 
     fun getReceiveQuery(message: FloconIncomingMessageDomainModel): ResponseAndRequestIdDomainModel?
-
 }

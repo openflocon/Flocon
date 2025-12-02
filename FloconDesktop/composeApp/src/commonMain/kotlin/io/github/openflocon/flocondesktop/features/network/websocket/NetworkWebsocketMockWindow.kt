@@ -40,7 +40,6 @@ import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.network.models.NetworkWebsocketId
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenu
@@ -88,7 +87,6 @@ private fun NetworkWebsocketMockContent(
     Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
-
         FloconDialogHeader(
             title = "Network Websocket Mock",
             modifier = Modifier.fillMaxWidth(),
@@ -100,7 +98,6 @@ private fun NetworkWebsocketMockContent(
                 .padding(horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-
             var selectionExpanded by remember { mutableStateOf(false) }
 
             Text(
@@ -175,8 +172,8 @@ private fun NetworkWebsocketMockContent(
                 modifier = Modifier.fillMaxWidth()
                     .onKeyEvent { keyEvent ->
                         // detect CMD + Enter
-                        if (keyEvent.type == KeyEventType.KeyDown
-                            && keyEvent.key == androidx.compose.ui.input.key.Key.Enter
+                        if (keyEvent.type == KeyEventType.KeyDown &&
+                            keyEvent.key == androidx.compose.ui.input.key.Key.Enter
                         ) {
                             onSend(message)
 
@@ -216,6 +213,5 @@ private fun NetworkWebsocketMockContent(
                 }
             }
         }
-
     }
 }

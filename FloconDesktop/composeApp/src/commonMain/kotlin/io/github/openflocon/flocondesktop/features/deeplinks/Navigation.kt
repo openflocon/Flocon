@@ -10,7 +10,6 @@ sealed interface DeeplinkRoutes : FloconRoute {
 
     @Serializable
     data object Main : DeeplinkRoutes
-
 }
 
 fun EntryProviderScope<FloconRoute>.deeplinkRoutes() {

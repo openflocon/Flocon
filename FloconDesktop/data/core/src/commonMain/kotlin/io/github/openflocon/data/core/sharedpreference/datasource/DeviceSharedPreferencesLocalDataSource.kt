@@ -20,5 +20,4 @@ interface DeviceSharedPreferencesLocalDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreferences: List<DeviceSharedPreferenceDomainModel>,
     )
-
 }

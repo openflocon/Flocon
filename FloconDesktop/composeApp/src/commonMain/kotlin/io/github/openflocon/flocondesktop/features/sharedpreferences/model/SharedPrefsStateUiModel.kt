@@ -6,8 +6,10 @@ import androidx.compose.runtime.Immutable
 sealed interface SharedPrefsStateUiModel {
     @Immutable
     data object Loading : SharedPrefsStateUiModel
+
     @Immutable
     data object Empty : SharedPrefsStateUiModel
+
     @Immutable
     data class WithContent(
         val preferences: List<DeviceSharedPrefUiModel>,

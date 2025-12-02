@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.table.view
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -47,9 +46,9 @@ fun TableRowView(
                     Text(
                         text = column,
                         modifier =
-                            Modifier
-                                .width(columnsWidth)
-                                .padding(horizontal = 4.dp),
+                        Modifier
+                            .width(columnsWidth)
+                            .padding(horizontal = 4.dp),
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
                         color = FloconTheme.colorPalette.onPrimary,
                     )
@@ -58,7 +57,6 @@ fun TableRowView(
         }
     }
 }
-
 
 @Composable
 private fun contextualActions(
@@ -87,7 +85,6 @@ private fun contextualActions(
         }
     }
 }
-
 
 @Preview
 @Composable

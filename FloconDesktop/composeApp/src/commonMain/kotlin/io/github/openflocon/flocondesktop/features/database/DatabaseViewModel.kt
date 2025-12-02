@@ -102,7 +102,7 @@ class DatabaseViewModel(
                     favorite = action.favoriteQuery,
                 )
 
-                is DatabaseScreenAction.OnTabAction -> when(val a = action.action) {
+                is DatabaseScreenAction.OnTabAction -> when (val a = action.action) {
                     is DatabaseTabViewAction.OnTabSelected -> onTabSelected(
                         tab = a.tab
                     )
@@ -114,7 +114,6 @@ class DatabaseViewModel(
                     is DatabaseTabViewAction.OnCloseOnRightClicked -> removeTabOnRight(a.tab)
                     is DatabaseTabViewAction.OnCloseOtherClicked -> removeTabsExcept(a.tab)
                 }
-
 
                 is DatabaseScreenAction.OnTableColumnClicked -> onTableColumnClicked(
                     column = action.column
@@ -259,7 +258,6 @@ class DatabaseViewModel(
             val newList = list.dropWhile { it != tab }
             it + (deviceIdAndPackageName to newList)
         }
-
     }
 
     private suspend fun removeTabOnRight(tab: DatabaseTabState) {

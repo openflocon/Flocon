@@ -209,13 +209,17 @@ private fun TextFilterStateUiModel.performAction(
         )
         val exists = excludedFilters.any { it.text == newItem.text }
         if (exists) {
-            copy(excludedFilters = (excludedFilters.map {
-                if (it.text == action.text) {
-                    newItem
-                } else {
-                    it
-                }
-            }).distinctBy { it.text })
+            copy(
+                excludedFilters = (
+                    excludedFilters.map {
+                        if (it.text == action.text) {
+                            newItem
+                        } else {
+                            it
+                        }
+                    }
+                    ).distinctBy { it.text }
+            )
         } else {
             copy(excludedFilters = (excludedFilters + newItem).distinctBy { it.text })
         }
@@ -229,13 +233,17 @@ private fun TextFilterStateUiModel.performAction(
         )
         val exists = includedFilters.any { it.text == newItem.text }
         if (exists) {
-            copy(includedFilters = (includedFilters.map {
-                if (it.text == action.text) {
-                    newItem
-                } else {
-                    it
-                }
-            }).distinctBy { it.text })
+            copy(
+                includedFilters = (
+                    includedFilters.map {
+                        if (it.text == action.text) {
+                            newItem
+                        } else {
+                            it
+                        }
+                    }
+                    ).distinctBy { it.text }
+            )
         } else {
             copy(includedFilters = (includedFilters + newItem).distinctBy { it.text })
         }

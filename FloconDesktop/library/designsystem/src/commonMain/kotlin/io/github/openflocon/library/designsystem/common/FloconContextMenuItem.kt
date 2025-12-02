@@ -16,7 +16,6 @@ sealed class FloconContextMenuItem(
     ) : FloconContextMenuItem(label, onClick = {})
 
     class Separator : FloconContextMenuItem(label = "", onClick = {})
-
 }
 
 class FloconContextMenuBuilder internal constructor() {
@@ -38,7 +37,6 @@ class FloconContextMenuBuilder internal constructor() {
     fun separator() {
         list.add(FloconContextMenuItem.Separator())
     }
-
 }
 
 fun buildMenu(block: FloconContextMenuBuilder.() -> Unit): List<FloconContextMenuItem> {

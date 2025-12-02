@@ -1,6 +1,5 @@
 package io.github.openflocon.domain.network.usecase.mocks
 
-import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.repository.NetworkMocksRepository
 
@@ -9,9 +8,7 @@ class GetNetworkMockByIdUseCase(
 ) {
     suspend operator fun invoke(
         id: String
-    ): MockNetworkDomainModel? {
-        return networkMocksRepository.getMock(
-            id = id,
-        )
-    }
+    ): MockNetworkDomainModel? = networkMocksRepository.getMock(
+        id = id,
+    )
 }

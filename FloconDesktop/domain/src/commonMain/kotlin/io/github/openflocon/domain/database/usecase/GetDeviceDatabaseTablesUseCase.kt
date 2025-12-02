@@ -35,21 +35,21 @@ class GetDeviceDatabaseTablesUseCase(
         }.alsoSuccess { tables ->
             supervisorScope {
                 tables.map {
-                    async { getTableColumnsUseCase(
-                        tableName = it,
-                        deviceIdAndPackageName = deviceIdAndPackageName,
-                        databaseId = databaseId,
-                    ) }
+                    async {
+                        getTableColumnsUseCase(
+                            tableName = it,
+                            deviceIdAndPackageName = deviceIdAndPackageName,
+                            databaseId = databaseId,
+                        )
+                    }
                 }.awaitAll()
             }
-        }.mapSuccess {  }
+        }.mapSuccess { }
     }
 
-    private fun extractTables(result: DatabaseExecuteSqlResponseDomainModel): List<String> {
-        return (result as? DatabaseExecuteSqlResponseDomainModel.Select)?.let {
-            it.values.mapNotNull { values ->
-                values.firstOrNull()
-            }
-        } ?: emptyList()
-    }
+    private fun extractTables(result: DatabaseExecuteSqlResponseDomainModel): List<String> = (result as? DatabaseExecuteSqlResponseDomainModel.Select)?.let {
+        it.values.mapNotNull { values ->
+            values.firstOrNull()
+        }
+    } ?: emptyList()
 }

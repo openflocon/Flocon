@@ -3,9 +3,7 @@ package io.github.openflocon.domain.network.usecase.badquality
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.BadQualityConfigId
-import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.repository.NetworkBadQualityRepository
-import io.github.openflocon.domain.network.repository.NetworkMocksRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -17,17 +15,16 @@ class ObserveNetworkBadQualityUseCase(
 ) {
     operator fun invoke(
         configId: BadQualityConfigId,
-    ): Flow<BadQualityConfigDomainModel?> =
-        observeCurrentDeviceIdAndPackageNameUseCase()
-            .flatMapLatest { current ->
-                if (current == null) {
-                    flowOf(null)
-                } else {
-                    networkBadQualityRepository.observeNetworkQuality(
-                        deviceIdAndPackageName = current,
-                        configId = configId,
-                    )
-                }
+    ): Flow<BadQualityConfigDomainModel?> = observeCurrentDeviceIdAndPackageNameUseCase()
+        .flatMapLatest { current ->
+            if (current == null) {
+                flowOf(null)
+            } else {
+                networkBadQualityRepository.observeNetworkQuality(
+                    deviceIdAndPackageName = current,
+                    configId = configId,
+                )
             }
-            .distinctUntilChanged()
+        }
+        .distinctUntilChanged()
 }

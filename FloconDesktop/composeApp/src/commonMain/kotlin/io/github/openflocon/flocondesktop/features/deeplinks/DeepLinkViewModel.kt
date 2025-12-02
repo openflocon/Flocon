@@ -36,10 +36,12 @@ class DeepLinkViewModel(
         observeCurrentDeviceDeeplinkUseCase(),
         observeCurrentDeviceDeeplinkHistoryUseCase()
     )
-        .mapLatest { (deepLinks, history) -> mapToUi(
-            deepLinks = deepLinks,
-            history = history,
-        ) }
+        .mapLatest { (deepLinks, history) ->
+            mapToUi(
+                deepLinks = deepLinks,
+                history = history,
+            )
+        }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,

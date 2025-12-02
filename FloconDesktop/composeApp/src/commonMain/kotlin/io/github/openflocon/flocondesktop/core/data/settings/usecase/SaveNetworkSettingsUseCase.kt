@@ -11,5 +11,4 @@ class SaveNetworkSettingsUseCase(
     ): Result<Unit> = runCatching {
         settingsRepository.networkSettings = settings
     }
-
 }

@@ -6,5 +6,5 @@ sealed interface IsLastVersionDomainModel {
         val name: String,
         val oldVersion: String,
         val link: String
-    ): IsLastVersionDomainModel
+    ) : IsLastVersionDomainModel
 }

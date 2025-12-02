@@ -10,23 +10,27 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NetworkFilterDao {
-    @Query("""
+    @Query(
+        """
         SELECT * FROM NetworkFilterEntity 
         WHERE deviceId = :deviceId 
         AND packageName = :packageName
         AND columnName = :column
-    """)
+    """
+    )
     suspend fun get(
         deviceId: String,
         packageName: String,
         column: NetworkTextFilterColumns
     ): NetworkFilterEntity?
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM NetworkFilterEntity 
         WHERE deviceId = :deviceId
          AND packageName = :packageName
-        """)
+        """
+    )
     fun observe(
         deviceId: String,
         packageName: String

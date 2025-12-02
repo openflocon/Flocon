@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.database.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 sealed interface DatabasesStateUiModel {
     data object Loading : DatabasesStateUiModel
 
@@ -19,12 +22,10 @@ fun previewDatabasesStateUiModel(): DatabasesStateUiModel = DatabasesStateUiMode
     ),
 )
 
-fun DatabasesStateUiModel.selectedDatabase(): DeviceDataBaseUiModel? {
-    return when (this) {
-        DatabasesStateUiModel.Empty,
-        DatabasesStateUiModel.Loading -> null
-        is DatabasesStateUiModel.WithContent -> {
-            this.databases.firstOrNull { it.isSelected }
-        }
+fun DatabasesStateUiModel.selectedDatabase(): DeviceDataBaseUiModel? = when (this) {
+    DatabasesStateUiModel.Empty,
+    DatabasesStateUiModel.Loading -> null
+    is DatabasesStateUiModel.WithContent -> {
+        this.databases.firstOrNull { it.isSelected }
     }
 }

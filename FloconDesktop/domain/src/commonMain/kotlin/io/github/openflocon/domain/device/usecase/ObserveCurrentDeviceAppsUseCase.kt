@@ -1,7 +1,7 @@
 package io.github.openflocon.domain.device.usecase
 
-import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
+import io.github.openflocon.domain.device.repository.DevicesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf

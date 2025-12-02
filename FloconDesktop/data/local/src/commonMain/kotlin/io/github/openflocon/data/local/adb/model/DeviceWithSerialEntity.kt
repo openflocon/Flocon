@@ -3,7 +3,6 @@ package io.github.openflocon.data.local.adb.model
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
 
 @Entity(

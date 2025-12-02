@@ -12,16 +12,15 @@ class ObserveAllNetworkBadQualitiesUseCase(
     private val networkBadQualityRepository: NetworkBadQualityRepository,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(): Flow<List<BadQualityConfigDomainModel>> =
-        observeCurrentDeviceIdAndPackageNameUseCase()
-            .flatMapLatest { current ->
-                if (current == null) {
-                    flowOf(emptyList())
-                } else {
-                    networkBadQualityRepository.observeAllNetworkQualities(
-                        deviceIdAndPackageName = current,
-                    )
-                }
+    operator fun invoke(): Flow<List<BadQualityConfigDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
+        .flatMapLatest { current ->
+            if (current == null) {
+                flowOf(emptyList())
+            } else {
+                networkBadQualityRepository.observeAllNetworkQualities(
+                    deviceIdAndPackageName = current,
+                )
             }
-            .distinctUntilChanged()
+        }
+        .distinctUntilChanged()
 }

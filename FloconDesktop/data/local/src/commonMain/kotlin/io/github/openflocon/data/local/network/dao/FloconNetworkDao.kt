@@ -2,8 +2,6 @@ package io.github.openflocon.data.local.network.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.RoomRawQuery
@@ -32,7 +30,7 @@ interface FloconNetworkDao {
         ORDER BY request_startTime ASC
     """,
     )
-    suspend fun getRequests(ids: List<String>, deviceId: DeviceId, packageName: AppPackageName) : List<FloconNetworkCallEntity>
+    suspend fun getRequests(ids: List<String>, deviceId: DeviceId, packageName: AppPackageName): List<FloconNetworkCallEntity>
 
     @Upsert
     suspend fun upsertRequest(request: FloconNetworkCallEntity)

@@ -26,10 +26,10 @@ data class FloconNetworkCallDomainModel(
         val queryFormatted: String, // extracted from url
     ) {
         sealed interface SpecificInfos {
-            data object Http: SpecificInfos
+            data object Http : SpecificInfos
             data class WebSocket(
                 val event: String,
-            ): SpecificInfos
+            ) : SpecificInfos
             data class GraphQl(
                 val query: String,
                 val operationType: String,
@@ -78,49 +78,39 @@ data class FloconNetworkCallDomainModel(
     }
 }
 
-fun FloconNetworkCallDomainModel.Response.Success.SpecificInfos.httpCode() : Int? = when(this) {
+fun FloconNetworkCallDomainModel.Response.Success.SpecificInfos.httpCode(): Int? = when (this) {
     is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> httpCode
     is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> httpCode
     is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> null
 }
 
-fun FloconNetworkCallDomainModel.httpCode(): Int? {
-    return when(this.response) {
-        is FloconNetworkCallDomainModel.Response.Failure -> null
-        is FloconNetworkCallDomainModel.Response.Success -> this.response.specificInfos.httpCode()
-        null -> null
-    }
+fun FloconNetworkCallDomainModel.httpCode(): Int? = when (this.response) {
+    is FloconNetworkCallDomainModel.Response.Failure -> null
+    is FloconNetworkCallDomainModel.Response.Success -> this.response.specificInfos.httpCode()
+    null -> null
 }
 
-fun FloconNetworkCallDomainModel.Response.isImage(): Boolean {
-    return when(this) {
-        is FloconNetworkCallDomainModel.Response.Failure -> false
-        is FloconNetworkCallDomainModel.Response.Success -> this.isImage
-        null -> false
-    }
+fun FloconNetworkCallDomainModel.Response.isImage(): Boolean = when (this) {
+    is FloconNetworkCallDomainModel.Response.Failure -> false
+    is FloconNetworkCallDomainModel.Response.Success -> this.isImage
+    null -> false
 }
 
-fun FloconNetworkCallDomainModel.byteSize(): Long? {
-    return when(this.response) {
-        is FloconNetworkCallDomainModel.Response.Failure -> null
-        is FloconNetworkCallDomainModel.Response.Success -> this.response.byteSize
-        null -> null
-    }
+fun FloconNetworkCallDomainModel.byteSize(): Long? = when (this.response) {
+    is FloconNetworkCallDomainModel.Response.Failure -> null
+    is FloconNetworkCallDomainModel.Response.Success -> this.response.byteSize
+    null -> null
 }
 
-fun FloconNetworkCallDomainModel.responseByteSizeFormatted(): String? {
-    return when(this.response) {
-        is FloconNetworkCallDomainModel.Response.Failure -> null
-        is FloconNetworkCallDomainModel.Response.Success -> this.response.byteSizeFormatted
-        null -> null
-    }
+fun FloconNetworkCallDomainModel.responseByteSizeFormatted(): String? = when (this.response) {
+    is FloconNetworkCallDomainModel.Response.Failure -> null
+    is FloconNetworkCallDomainModel.Response.Success -> this.response.byteSizeFormatted
+    null -> null
 }
 
-fun FloconNetworkCallDomainModel.Response.getContentType(): String? {
-    return when(this) {
-        is FloconNetworkCallDomainModel.Response.Failure -> null
-        is FloconNetworkCallDomainModel.Response.Success -> this.contentType
-    }
+fun FloconNetworkCallDomainModel.Response.getContentType(): String? = when (this) {
+    is FloconNetworkCallDomainModel.Response.Failure -> null
+    is FloconNetworkCallDomainModel.Response.Success -> this.contentType
 }
 
 data class FloconNetworkCallIdDomainModel(

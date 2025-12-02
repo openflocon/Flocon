@@ -17,10 +17,9 @@ internal class DeviceSharedPreferencesLocalDataSourceImpl : DeviceSharedPreferen
     private val selectedDeviceSharedPreferences =
         MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DeviceSharedPreferenceDomainModel?>>(emptyMap())
 
-    override fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> =
-        selectedDeviceSharedPreferences
-            .map { it[deviceIdAndPackageName] }
-            .distinctUntilChanged()
+    override fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> = selectedDeviceSharedPreferences
+        .map { it[deviceIdAndPackageName] }
+        .distinctUntilChanged()
 
     override fun selectDeviceSharedPreference(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -35,8 +34,7 @@ internal class DeviceSharedPreferencesLocalDataSourceImpl : DeviceSharedPreferen
         }
     }
 
-    override fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> =
-        deviceSharedPreferences.map { it[deviceIdAndPackageName] ?: emptyList() }
+    override fun observeDeviceSharedPreferences(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceSharedPreferenceDomainModel>> = deviceSharedPreferences.map { it[deviceIdAndPackageName] ?: emptyList() }
 
     override fun registerDeviceSharedPreferences(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -64,5 +62,4 @@ internal class DeviceSharedPreferencesLocalDataSourceImpl : DeviceSharedPreferen
             }
         }
     }
-
 }

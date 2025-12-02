@@ -15,5 +15,3 @@ data class FloconIncomingMessageDataModel(
     val platform: String,
     val versionName: String,
 )
-
-

@@ -91,7 +91,6 @@ internal fun TopBarAppView(
     }
 }
 
-
 @Composable
 private fun AppImage(
     deviceApp: DeviceAppUiModel,
@@ -101,7 +100,7 @@ private fun AppImage(
     val imageBitmap = remember(deviceApp.iconEncoded) {
         deviceApp.iconEncoded?.let { encoded ->
             try {
-                val decodedBytes = Base64.decode(encoded) //, Base64.DEFAULT)
+                val decodedBytes = Base64.decode(encoded) // , Base64.DEFAULT)
                 Image.makeFromEncoded(decodedBytes).toComposeImageBitmap()
             } catch (e: Exception) {
                 null

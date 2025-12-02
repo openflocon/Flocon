@@ -4,8 +4,8 @@ import com.flocon.data.remote.dashboard.models.ButtonConfigDataModel
 import com.flocon.data.remote.dashboard.models.CheckBoxConfigDataModel
 import com.flocon.data.remote.dashboard.models.ContainerConfigDataModel
 import com.flocon.data.remote.dashboard.models.DashboardConfigDataModel
-import com.flocon.data.remote.dashboard.models.DashboardElementDataModel
 import com.flocon.data.remote.dashboard.models.DashboardContainerDataModel
+import com.flocon.data.remote.dashboard.models.DashboardElementDataModel
 import com.flocon.data.remote.dashboard.models.FormContainerConfigDataModel
 import com.flocon.data.remote.dashboard.models.LabelConfigDataModel
 import com.flocon.data.remote.dashboard.models.PlainTextConfigDataModel
@@ -13,9 +13,9 @@ import com.flocon.data.remote.dashboard.models.SectionContainerConfigDataModel
 import com.flocon.data.remote.dashboard.models.TextConfigDataModel
 import com.flocon.data.remote.dashboard.models.TextFieldConfigDataModel
 import io.github.openflocon.domain.dashboard.models.ContainerConfigDomainModel
+import io.github.openflocon.domain.dashboard.models.DashboardContainerDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
-import io.github.openflocon.domain.dashboard.models.DashboardContainerDomainModel
 import io.github.openflocon.domain.dashboard.models.FormContainerConfigDomainModel
 import io.github.openflocon.domain.dashboard.models.SectionContainerConfigDomainModel
 

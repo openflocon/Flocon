@@ -33,21 +33,19 @@ internal class LocalDeeplinkDataSourceRoom(
         )
     }
 
-    override fun observe(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
-        deeplinkDao.observeAll(
-            deviceId = deviceIdAndPackageNameDomainModel.deviceId,
-            packageName = deviceIdAndPackageNameDomainModel.packageName,
-        )
-            .map { toDomainModels(it, json = json) }
-            .distinctUntilChanged()
+    override fun observe(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = deeplinkDao.observeAll(
+        deviceId = deviceIdAndPackageNameDomainModel.deviceId,
+        packageName = deviceIdAndPackageNameDomainModel.packageName,
+    )
+        .map { toDomainModels(it, json = json) }
+        .distinctUntilChanged()
 
-    override fun observeHistory(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
-        deeplinkDao.observeHistory(
-            deviceId = deviceIdAndPackageNameDomainModel.deviceId,
-            packageName = deviceIdAndPackageNameDomainModel.packageName,
-        )
-            .map { toDomainModels(it, json = json) }
-            .distinctUntilChanged()
+    override fun observeHistory(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = deeplinkDao.observeHistory(
+        deviceId = deviceIdAndPackageNameDomainModel.deviceId,
+        packageName = deviceIdAndPackageNameDomainModel.packageName,
+    )
+        .map { toDomainModels(it, json = json) }
+        .distinctUntilChanged()
 
     override suspend fun addToHistory(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -77,13 +75,11 @@ internal class LocalDeeplinkDataSourceRoom(
     override suspend fun getDeeplinkById(
         deeplinkId: Long,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): DeeplinkDomainModel? {
-        return deeplinkDao.getById(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-            deeplinkId = deeplinkId,
-        )?.toDomainModel(
-            json = json,
-        )
-    }
+    ): DeeplinkDomainModel? = deeplinkDao.getById(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        deeplinkId = deeplinkId,
+    )?.toDomainModel(
+        json = json,
+    )
 }

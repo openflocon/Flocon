@@ -1,6 +1,5 @@
 package io.github.openflocon.domain.deeplink.usecase
 
-import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.domain.deeplink.repository.DeeplinkRepository
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 
