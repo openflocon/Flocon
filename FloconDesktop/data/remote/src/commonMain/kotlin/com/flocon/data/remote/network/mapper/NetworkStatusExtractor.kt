@@ -6,20 +6,16 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 
 internal fun failureStatus() = "Exception"
 
-internal fun extractStatus(specificInfos: FloconNetworkCallDomainModel.Response.Success.SpecificInfos): String =
-    when (val s = specificInfos) {
-        is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toGraphQlNetworkStatus(isSuccess = s.isSuccess)
-        is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> toNetworkStatus(s.httpCode)
-        is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> toGrpcNetworkStatus(specificInfos)
-    }
+internal fun extractStatus(specificInfos: FloconNetworkCallDomainModel.Response.Success.SpecificInfos): String = when (val s = specificInfos) {
+    is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toGraphQlNetworkStatus(isSuccess = s.isSuccess)
+    is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> toNetworkStatus(s.httpCode)
+    is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> toGrpcNetworkStatus(specificInfos)
+}
 
 private fun toNetworkStatus(code: Int): String = code.toString()
 
-private fun toGraphQlNetworkStatus(isSuccess: Boolean): String =
-    if (isSuccess) "Success" else "Error"
+private fun toGraphQlNetworkStatus(isSuccess: Boolean): String = if (isSuccess) "Success" else "Error"
 
 private fun toGrpcNetworkStatus(
-    specificInfos: FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc
-): String {
-    return specificInfos.grpcStatus
-}
+    specificInfos: FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc,
+): String = specificInfos.grpcStatus

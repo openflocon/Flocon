@@ -37,8 +37,7 @@ class DashboardViewModel(
     private val dashboardSelectorDelegate: DashboardSelectorDelegate,
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
-    private val deleteCurrentDeviceSelectedDashboardUseCase:
-    DeleteCurrentDeviceSelectedDashboardUseCase,
+    private val deleteCurrentDeviceSelectedDashboardUseCase: DeleteCurrentDeviceSelectedDashboardUseCase,
     private val deleteDashboardUseCase: DeleteDashboardUseCase,
     private val observeDashboardArrangementUseCase: ObserveDashboardArrangementUseCase,
     private val selectDashboardArrangementUseCase: SelectDashboardArrangementUseCase,

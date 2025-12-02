@@ -2,7 +2,6 @@
 
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.app
 
-
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MenuAnchorType
@@ -60,7 +59,8 @@ internal fun TopBarAppDropdown(
 
             when (appsState) {
                 AppsStateUiModel.Empty,
-                AppsStateUiModel.Loading -> {
+                AppsStateUiModel.Loading,
+                -> {
                     // no op
                 }
 
@@ -68,7 +68,7 @@ internal fun TopBarAppDropdown(
                     FloconExposedDropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.exposedDropdownSize()
+                        modifier = Modifier.exposedDropdownSize(),
                     ) {
                         appsState.apps
                             .fastForEach { app ->
@@ -83,7 +83,7 @@ internal fun TopBarAppDropdown(
                                     modifier = Modifier.clickable {
                                         onAppSelected(app)
                                         expanded = false
-                                    }
+                                    },
                                 )
                             }
                     }

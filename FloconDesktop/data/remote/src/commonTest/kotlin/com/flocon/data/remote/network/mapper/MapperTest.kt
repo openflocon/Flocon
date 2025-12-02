@@ -19,7 +19,7 @@ class MapperTest {
                   "query": "query UserData { user { id name } }",
                   "variables": {}
                 }
-            """.trimIndent()
+            """.trimIndent(),
         )
 
         val result: GraphQlExtracted? = extractGraphQl(decoded)
@@ -34,7 +34,7 @@ class MapperTest {
     fun `should extract from url with persisted query`() {
         val decoded = FloconNetworkRequestDataModel(
             url = "https://ourapi.com/graphql?operationName=UserData&variables=%7B%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22abcdef%22%7D%7D",
-            requestBody = null
+            requestBody = null,
         )
 
         val result = extractGraphQl(decoded)
@@ -50,7 +50,7 @@ class MapperTest {
         val decoded = FloconNetworkRequestDataModel(
             // here I replaced "operationName" by "operation"
             url = "https://ourapi.com/graphql?operation=UserData&variables=%7B%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22abcdef%22%7D%7D",
-            requestBody = null
+            requestBody = null,
         )
 
         val result = extractGraphQl(decoded)
@@ -62,12 +62,11 @@ class MapperTest {
     fun `should return null for invalid request`() {
         val decoded = FloconNetworkRequestDataModel(
             url = "https://ourapi.com/graphql",
-            requestBody = "{ invalid json"
+            requestBody = "{ invalid json",
         )
 
         val result = extractGraphQl(decoded)
 
         assertNull(result)
     }
-
 }

@@ -38,9 +38,9 @@ fun MainScreenTopBar(
     onAppSelected: (DeviceAppUiModel) -> Unit,
     deleteApp: (DeviceAppUiModel) -> Unit,
     onTakeScreenshotClicked: () -> Unit,
-    recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
+    recordState: RecordVideoStateUiModel,
 ) {
     Row(
         modifier = modifier
@@ -96,4 +96,3 @@ private fun Title(
         )
     }
 }
-

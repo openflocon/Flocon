@@ -84,24 +84,23 @@ internal fun TopBarAppView(
                 FloconIcon(
                     imageVector = Icons.Outlined.Close,
                     tint = FloconTheme.colorPalette.primary,
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(14.dp),
                 )
             }
         }
     }
 }
 
-
 @Composable
 private fun AppImage(
     deviceApp: DeviceAppUiModel,
     modifier: Modifier = Modifier,
-    platform: DeviceItemUiModel.Platform
+    platform: DeviceItemUiModel.Platform,
 ) {
     val imageBitmap = remember(deviceApp.iconEncoded) {
         deviceApp.iconEncoded?.let { encoded ->
             try {
-                val decodedBytes = Base64.decode(encoded) //, Base64.DEFAULT)
+                val decodedBytes = Base64.decode(encoded) // , Base64.DEFAULT)
                 Image.makeFromEncoded(decodedBytes).toComposeImageBitmap()
             } catch (e: Exception) {
                 null
@@ -128,7 +127,8 @@ private fun AppImage(
 
             DeviceItemUiModel.Platform.ios,
             DeviceItemUiModel.Platform.Android,
-            DeviceItemUiModel.Platform.Unknown -> {
+            DeviceItemUiModel.Platform.Unknown,
+            -> {
                 // Fallback : affiche une icône par défaut si iconEncoded est null ou invalide
                 Image(
                     painter = painterResource(Res.drawable.smartphone),

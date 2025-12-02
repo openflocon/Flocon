@@ -36,7 +36,7 @@ class SettingsViewModel(
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = SettingsUiState(fontSizeMultiplier = 1f)
+            initialValue = SettingsUiState(fontSizeMultiplier = 1f),
         )
 
     init {
@@ -61,7 +61,6 @@ class SettingsViewModel(
     }
 
     fun onAdbPathChanged(newPath: String) {
-
         _adbPathInput.value = newPath
     }
 

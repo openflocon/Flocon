@@ -68,8 +68,8 @@ class NetworkMocksViewModel(
         }
     }
 
-    fun onAction(action: NetworkMockAction)  {
-        when(action) {
+    fun onAction(action: NetworkMockAction) {
+        when (action) {
             is NetworkMockAction.ChangeIsEnabled -> changeIsEnabled(
                 id = action.id,
                 enabled = action.enabled
@@ -94,7 +94,7 @@ class NetworkMocksViewModel(
 
     private fun exportMocks() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            when(val result = exportMocksProcessor()) {
+            when (val result = exportMocksProcessor()) {
                 is ExportResult.Cancelled -> { /* no op */ }
                 is ExportResult.Failure -> feedbackDisplayer.displayMessage(result.error.message ?: "error")
                 is ExportResult.Success -> feedbackDisplayer.displayMessage("Export successful")
@@ -104,7 +104,7 @@ class NetworkMocksViewModel(
 
     private fun importMocks() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            when(val result = importMocksProcessor()) {
+            when (val result = importMocksProcessor()) {
                 is ImportResult.Cancelled -> { /* no op */ }
                 is ImportResult.Failure -> feedbackDisplayer.displayMessage(result.error.message ?: "error")
                 is ImportResult.Success -> {
@@ -125,10 +125,13 @@ class NetworkMocksViewModel(
 
     private fun changeIsShared(id: String, isShared: Boolean) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            updateNetworkMocksDeviceUseCase(id = id, when(isShared){
-                true -> MockDeviceTarget.AllDevicesAndApps
-                false -> MockDeviceTarget.SpecificToCurrentDeviceAndApp
-            })
+            updateNetworkMocksDeviceUseCase(
+                id = id,
+                when (isShared) {
+                    true -> MockDeviceTarget.AllDevicesAndApps
+                    false -> MockDeviceTarget.SpecificToCurrentDeviceAndApp
+                }
+            )
         }
     }
 

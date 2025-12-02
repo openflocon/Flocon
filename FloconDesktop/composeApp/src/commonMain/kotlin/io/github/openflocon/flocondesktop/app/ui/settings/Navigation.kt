@@ -9,12 +9,11 @@ sealed interface SettingsRoutes : FloconRoute {
 
     @Serializable
     data object Main : SettingsRoutes
-
 }
 
 fun EntryProviderScope<FloconRoute>.settingsRoutes() {
     entry<SettingsRoutes.Main>(
-        metadata = MenuSceneStrategy.menu()
+        metadata = MenuSceneStrategy.menu(),
     ) {
         SettingsScreen()
     }

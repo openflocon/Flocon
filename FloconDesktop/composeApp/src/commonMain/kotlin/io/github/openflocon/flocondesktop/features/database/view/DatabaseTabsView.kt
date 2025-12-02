@@ -2,7 +2,6 @@ package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,7 +25,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
-import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabViewAction
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -35,9 +33,9 @@ import io.github.openflocon.library.designsystem.common.buildMenu
 @Composable
 fun DatabaseTabsView(
     modifier: Modifier = Modifier,
-    tabs: List<DatabaseTabState>,
     selected: DatabaseTabState?,
     onAction: (DatabaseTabViewAction) -> Unit,
+    tabs: List<DatabaseTabState>,
 ) {
     LazyRow(
         modifier = modifier,
@@ -53,7 +51,6 @@ fun DatabaseTabsView(
         }
     }
 }
-
 
 @Composable
 private fun DatabaseTabItemView(
@@ -85,9 +82,9 @@ private fun DatabaseTabItemView(
                 item("Close Tabs to the Right") {
                     onAction(DatabaseTabViewAction.OnCloseOnRightClicked(state))
                 }
-                //item("Rename") {
+                // item("Rename") {
                 //
-                //}
+                // }
             }
         }
     ) {
@@ -106,9 +103,11 @@ private fun DatabaseTabItemView(
                 state.displayName, style = FloconTheme.typography.bodyMedium,
                 color = contentColor,
             )
-            Box(modifier = Modifier.clickable {
-                onAction(DatabaseTabViewAction.OnCloseClicked(state))
-            }.size(20.dp).padding(all = 2.dp)) {
+            Box(
+                modifier = Modifier.clickable {
+                    onAction(DatabaseTabViewAction.OnCloseClicked(state))
+                }.size(20.dp).padding(all = 2.dp)
+            ) {
                 Image(
                     imageVector = Icons.Default.Close,
                     contentDescription = null,

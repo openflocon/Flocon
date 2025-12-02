@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
-
 internal val FilterIcon_Height = 32.dp
 internal val FilterIcon_Spacing = 2.dp
 private val FilterIcon = (FilterIcon_Height - FilterIcon_Spacing) / 2

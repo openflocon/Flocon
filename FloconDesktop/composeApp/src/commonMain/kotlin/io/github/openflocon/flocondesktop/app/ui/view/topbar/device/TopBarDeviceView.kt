@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.device
 
-
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -52,7 +51,7 @@ internal fun TopBarDeviceView(
                 if (onClick != null)
                     Modifier.clickable(onClick = onClick)
                 else
-                    Modifier
+                    Modifier,
             )
             .padding(horizontal = 8.dp, 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -63,7 +62,7 @@ internal fun TopBarDeviceView(
                 .padding(horizontal = 4.dp)
                 .graphicsLayer {
                     alpha = if (device.isActive) 1f else 0.4f
-                }
+                },
         ) {
             Image(
                 modifier = Modifier.width(20.dp),
@@ -102,7 +101,7 @@ internal fun TopBarDeviceView(
         ) {
             Column(
                 modifier = Modifier,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = device.deviceName,
@@ -125,7 +124,7 @@ internal fun TopBarDeviceView(
                 Box(
                     Modifier.clip(RoundedCornerShape(4.dp))
                         .background(
-                            Color.White.copy(alpha = 0.8f)
+                            Color.White.copy(alpha = 0.8f),
                         ).padding(2.dp).clickable {
                             onDelete()
                         },
@@ -134,7 +133,7 @@ internal fun TopBarDeviceView(
                     FloconIcon(
                         imageVector = Icons.Outlined.Close,
                         tint = FloconTheme.colorPalette.primary,
-                        modifier = Modifier.size(14.dp)
+                        modifier = Modifier.size(14.dp),
                     )
                 }
             }
@@ -158,7 +157,7 @@ private fun TopBarDeviceViewPreview_desktop_enabled() {
             ),
             selected = false,
             onDelete = {},
-            onClick = {}
+            onClick = {},
         )
     }
 }
@@ -179,7 +178,7 @@ private fun TopBarDeviceViewPreview_desktop_disabled() {
             ),
             selected = false,
             onDelete = {},
-            onClick = {}
+            onClick = {},
         )
     }
 }
@@ -201,7 +200,7 @@ private fun TopBarDeviceViewPreview_iphone() {
                 ),
                 selected = false,
                 onDelete = {},
-                onClick = {}
+                onClick = {},
             )
         }
     }
@@ -224,7 +223,7 @@ private fun TopBarDeviceViewPreview_iphone_disabled() {
                 ),
                 selected = false,
                 onDelete = {},
-                onClick = {}
+                onClick = {},
             )
         }
     }

@@ -91,7 +91,7 @@ fun previewMenuState() = MenuState(
 
 internal fun buildMenu() = MenuState(
     bottomItems = listOf(
-        item(subScreen = SubScreen.Settings)
+        item(subScreen = SubScreen.Settings),
     ),
     sections = listOf(
         MenuSection(
@@ -120,19 +120,17 @@ internal fun buildMenu() = MenuState(
         MenuSection(
             title = "Actions",
             items = listOf(
-                item(SubScreen.Deeplinks)
+                item(SubScreen.Deeplinks),
             ),
         ),
     ),
 )
 
 private fun item(
-    subScreen: SubScreen
-): MenuItem {
-    return MenuItem(
-        screen = subScreen,
-        icon = subScreen.icon(),
-        text = subScreen.displayName(),
-        isEnabled = true
-    )
-}
+    subScreen: SubScreen,
+): MenuItem = MenuItem(
+    screen = subScreen,
+    icon = subScreen.icon(),
+    text = subScreen.displayName(),
+    isEnabled = true,
+)

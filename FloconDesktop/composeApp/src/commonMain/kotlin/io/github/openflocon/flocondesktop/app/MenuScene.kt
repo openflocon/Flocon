@@ -47,7 +47,7 @@ data class MenuScene(
     override val previousEntries: List<NavEntry<FloconRoute>>,
     val entry: NavEntry<FloconRoute>,
     val menuContent: @Composable (expanded: Boolean) -> Unit,
-    val topBarContent: @Composable (() -> Unit)?
+    val topBarContent: @Composable (() -> Unit)?,
 ) : Scene<FloconRoute> {
     override val key: Any
         get() = Unit
@@ -68,14 +68,14 @@ data class MenuScene(
                     .fillMaxSize()
                     .onGloballyPositioned {
                         windowSize = it.size // TODO Add windowsize lib
-                    }
+                    },
             ) { padding ->
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
-                        .padding(8.dp)
+                        .padding(8.dp),
                 ) {
                     Box(
                         modifier = Modifier
@@ -112,7 +112,7 @@ data class MenuScene(
 
 class MenuSceneStrategy(
     private val menuContent: @Composable (expanded: Boolean) -> Unit,
-    private val topBarContent: @Composable (() -> Unit)? = null
+    private val topBarContent: @Composable (() -> Unit)? = null,
 ) : SceneStrategy<FloconRoute> {
 
     override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? {
@@ -124,7 +124,7 @@ class MenuSceneStrategy(
                 previousEntries = entries.dropLast(1),
                 entry = entry,
                 menuContent = menuContent,
-                topBarContent = topBarContent
+                topBarContent = topBarContent,
             )
         }
 
@@ -135,7 +135,5 @@ class MenuSceneStrategy(
         private const val MENU_KEY = "menu_key"
 
         fun menu() = mapOf(MENU_KEY to MENU_KEY)
-
     }
-
 }

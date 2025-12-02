@@ -5,13 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -27,7 +25,6 @@ import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsRowUiModel
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -97,8 +94,8 @@ fun AnalyticsRowView(
                     Text(
                         text = "...",
                         modifier =
-                            Modifier
-                                .padding(horizontal = 4.dp),
+                        Modifier
+                            .padding(horizontal = 4.dp),
                         style = FloconTheme.typography.bodySmall,
                         color = FloconTheme.colorPalette.onPrimary,
                     )
@@ -107,7 +104,6 @@ fun AnalyticsRowView(
         }
     }
 }
-
 
 @Composable
 private fun contextualActions(
@@ -135,7 +131,7 @@ private fun contextualActions(
             )
             add(
                 FloconContextMenuItem.Item(
-                    label =  "Clear old sessions",
+                    label = "Clear old sessions",
                     onClick = {
                         onActionCallback(AnalyticsAction.ClearOldSession)
                     }
@@ -144,7 +140,6 @@ private fun contextualActions(
         }
     }
 }
-
 
 @Preview
 @Composable

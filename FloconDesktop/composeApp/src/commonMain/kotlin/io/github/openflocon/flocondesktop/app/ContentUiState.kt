@@ -5,9 +5,9 @@ import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 
 @Immutable
 data class ContentUiState(
-    val current: SubScreen
+    val current: SubScreen,
 )
 
 fun previewContentUiState() = ContentUiState(
-    current = SubScreen.Network
+    current = SubScreen.Network,
 )

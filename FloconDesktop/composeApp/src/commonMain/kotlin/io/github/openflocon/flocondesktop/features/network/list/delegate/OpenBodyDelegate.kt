@@ -10,22 +10,16 @@ import java.io.File
 
 class OpenBodyDelegate {
 
-    fun openBodyExternally(request: NetworkDetailViewState): Either<OpenFileError, Unit> {
-        return openBodyExternally(prefix = "request_body_", content = request.requestBody)
-    }
+    fun openBodyExternally(request: NetworkDetailViewState): Either<OpenFileError, Unit> = openBodyExternally(prefix = "request_body_", content = request.requestBody)
 
     fun openBodyExternally(
         response: NetworkDetailViewState.Response.Success
-    ): Either<OpenFileError, Unit> {
-        return openBodyExternally(prefix = "response_body_", content = response.body)
-    }
+    ): Either<OpenFileError, Unit> = openBodyExternally(prefix = "response_body_", content = response.body)
 
     fun openBodyExternally(
         content: String,
         prefix: String = "content_"
-    ): Either<OpenFileError, Unit> {
-        return openAndWriteBody(prefix = prefix, body = content)
-    }
+    ): Either<OpenFileError, Unit> = openAndWriteBody(prefix = prefix, body = content)
 
     /** Centralizes the logic for writing the body to a temp file and opening it. */
     private fun openAndWriteBody(prefix: String, body: String): Either<OpenFileError, Unit> {
@@ -63,8 +57,8 @@ class OpenBodyDelegate {
         return when {
             trimmed.startsWith("{") || trimmed.startsWith("[") -> "json"
             trimmed.startsWith("<") &&
-                    trimmed.contains("</") &&
-                    !trimmed.contains("<html", ignoreCase = true) -> "xml"
+                trimmed.contains("</") &&
+                !trimmed.contains("<html", ignoreCase = true) -> "xml"
 
             trimmed.contains("<html", ignoreCase = true) -> "html"
             else -> "txt"

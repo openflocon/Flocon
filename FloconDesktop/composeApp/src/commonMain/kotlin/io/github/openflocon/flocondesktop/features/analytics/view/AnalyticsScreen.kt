@@ -24,6 +24,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -106,7 +107,6 @@ fun AnalyticsScreen(
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
-
     LaunchedEffect(screenState.autoScroll, rows.itemCount) {
         if (screenState.autoScroll && rows.itemSnapshotList.lastIndex != -1) {
             listState.animateScrollToItem(rows.itemSnapshotList.lastIndex)
@@ -168,7 +168,7 @@ fun AnalyticsScreen(
             }
         )
 
-        var widthPx by remember { mutableStateOf(0f) }
+        var widthPx by remember { mutableFloatStateOf(0f) }
         val density = LocalDensity.current.density
         val dpWidth = (widthPx / density).dp
 
@@ -257,7 +257,7 @@ private fun AnalyticsScreenPreview() {
             screenState = previewAnalyticsScreenUiState(),
             onFilterTextChanged = {},
             onResetClicked = {},
-            filterText = mutableStateOf(""),
+            filterText = remember { mutableStateOf("") },
         )
     }
 }

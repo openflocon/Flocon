@@ -18,7 +18,7 @@ class DeeplinkParserTest {
             DeeplinkPart.TextField("value2"),
             DeeplinkPart.Text("tata"),
         )
-        val actual = parseDeeplinkString(input,)
+        val actual = parseDeeplinkString(input)
         assertEquals(expected, actual)
     }
 
@@ -31,7 +31,7 @@ class DeeplinkParserTest {
             DeeplinkPart.Text("no text at start"),
             DeeplinkPart.TextField("second"),
         )
-        val actual = parseDeeplinkString(input,)
+        val actual = parseDeeplinkString(input)
         assertEquals(expected, actual)
     }
 
@@ -42,7 +42,7 @@ class DeeplinkParserTest {
         val expected = listOf(
             DeeplinkPart.Text("only plain text here"),
         )
-        val actual = parseDeeplinkString(input,)
+        val actual = parseDeeplinkString(input)
         assertEquals(expected, actual)
     }
 
@@ -53,7 +53,7 @@ class DeeplinkParserTest {
         val expected = listOf(
             DeeplinkPart.TextField("onlyfield"),
         )
-        val actual = parseDeeplinkString(input,)
+        val actual = parseDeeplinkString(input)
         assertEquals(expected, actual)
     }
 
@@ -62,7 +62,7 @@ class DeeplinkParserTest {
     fun testEmptyString() {
         val input = ""
         val expected = emptyList<DeeplinkPart>()
-        val actual = parseDeeplinkString(input,)
+        val actual = parseDeeplinkString(input)
         assertEquals(expected, actual)
     }
 
@@ -75,7 +75,7 @@ class DeeplinkParserTest {
             DeeplinkPart.TextField(""), // Placeholder vide
             DeeplinkPart.Text("after"),
         )
-        val actual = parseDeeplinkString(input,)
+        val actual = parseDeeplinkString(input)
         assertEquals(expected, actual)
     }
 
@@ -88,7 +88,7 @@ class DeeplinkParserTest {
             DeeplinkPart.TextField("param/1?id=abc"), // Contient des caractères spéciaux
             DeeplinkPart.Text("suffix"),
         )
-        val actual = parseDeeplinkString(input,)
+        val actual = parseDeeplinkString(input)
         assertEquals(expected, actual)
     }
 
@@ -101,7 +101,7 @@ class DeeplinkParserTest {
             DeeplinkPart.TextField("field2"),
             DeeplinkPart.Text("end"),
         )
-        val actual = parseDeeplinkString(input,)
+        val actual = parseDeeplinkString(input)
         assertEquals(expected, actual)
     }
 
@@ -111,7 +111,7 @@ class DeeplinkParserTest {
         val expected = listOf(
             DeeplinkPart.TextField("myField"),
         )
-        val actual = parseDeeplinkString(input,)
+        val actual = parseDeeplinkString(input)
         assertEquals(expected, actual)
     }
 }

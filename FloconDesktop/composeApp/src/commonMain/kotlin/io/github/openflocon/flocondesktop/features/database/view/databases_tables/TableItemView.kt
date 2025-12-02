@@ -33,16 +33,15 @@ import io.github.openflocon.library.designsystem.common.buildMenu
 
 @Composable
 internal fun TableItemView(
-    item: TableUiModel,
-    modifier: Modifier = Modifier,
     onTableDoubleClicked: (TableUiModel) -> Unit,
     onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
     onDeleteContentClicked: (TableUiModel) -> Unit,
     onInsertContentClicked: (TableUiModel) -> Unit,
+    item: TableUiModel,
+    modifier: Modifier = Modifier,
 ) {
     var isOpened by remember(item.name) { mutableStateOf(false) }
     Column(modifier = modifier) {
-
         ContextualView(
             modifier = Modifier.fillMaxWidth(),
             items = remember(item) {

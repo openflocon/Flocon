@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GithubReleaseRemote(
-    @SerialName("tag_name") val tagName: String
+    @SerialName("tag_name") val tagName: String,
 )

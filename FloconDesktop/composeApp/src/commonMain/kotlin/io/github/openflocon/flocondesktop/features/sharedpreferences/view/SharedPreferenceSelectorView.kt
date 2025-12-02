@@ -17,9 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Collections
-import androidx.compose.material.icons.outlined.DataArray
-import androidx.compose.material.icons.outlined.Dataset
 import androidx.compose.material.icons.outlined.TableRows
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -40,9 +37,9 @@ import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 fun SharedPreferenceSelectorView(
-    modifier: Modifier,
-    state: SharedPrefsStateUiModel,
+    modifier: Modifier = Modifier,
     onSharedPrefSelected: (DeviceSharedPrefUiModel) -> Unit,
+    state: SharedPrefsStateUiModel,
 ) {
     val borderColor = FloconTheme.colorPalette.secondary
 
@@ -81,8 +78,8 @@ fun SharedPreferenceSelectorView(
                     SharedPrefsStateUiModel.Loading -> Unit
                     is SharedPrefsStateUiModel.WithContent -> {
                         val filterText = remember { mutableStateOf("") }
-                        val filtered = remember(filterText.value,state) {
-                            if(filterText.value.isBlank()) {
+                        val filtered = remember(filterText.value, state) {
+                            if (filterText.value.isBlank()) {
                                 state
                             } else {
                                 state.copy(
@@ -122,7 +119,7 @@ private fun PreferenceItemView(
     state: DeviceSharedPrefUiModel,
     isSelected: Boolean,
     onSelect: (DeviceSharedPrefUiModel) -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     val (background, textColor) = if (isSelected) {
         FloconTheme.colorPalette.accent.copy(alpha = 0.4f) to FloconTheme.colorPalette.onAccent

@@ -6,7 +6,8 @@ import org.koin.core.component.KoinComponent
 class NetworkDetailViewModel(
     requestId: String,
     private val delegate: NetworkDetailDelegate
-) : ViewModel(), KoinComponent {
+) : ViewModel(),
+    KoinComponent {
 
     val uiState = delegate.uiState
 
@@ -17,5 +18,4 @@ class NetworkDetailViewModel(
     fun onAction(action: NetworkDetailAction) {
         delegate.onAction(action)
     }
-
 }

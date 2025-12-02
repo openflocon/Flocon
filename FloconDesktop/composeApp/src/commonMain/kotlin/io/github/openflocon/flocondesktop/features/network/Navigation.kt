@@ -29,14 +29,15 @@ internal sealed interface NetworkRoutes : FloconRoute {
     data class Mocks(val id: String?) : NetworkRoutes
 
     @Serializable
-    data class Panel(val requestId: String) : NetworkRoutes, PanelRoute
+    data class Panel(val requestId: String) :
+        NetworkRoutes,
+        PanelRoute
 
     @Serializable
     data class JsonDetail(
         val json: String,
         val id: String = Uuid.random().toString()
     ) : NetworkRoutes
-
 }
 
 fun EntryProviderScope<FloconRoute>.networkRoutes() {

@@ -1,7 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.list.model
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.remember
 
 @Immutable
 data class NetworkItemViewState(

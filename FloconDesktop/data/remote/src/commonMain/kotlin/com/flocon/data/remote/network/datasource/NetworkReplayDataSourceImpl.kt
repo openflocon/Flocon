@@ -39,12 +39,12 @@ internal class NetworkReplayDataSourceImpl : NetworkReplayDataSource {
             val duration = (endTime - startTime).toDouble()
             val body = result.bodyAsText()
             val size = body.length.toLong()
-            
+
             FloconNetworkCallDomainModel.Response.Success(
                 headers = result.headers.toMap().mapValues { it.value.joinToString(",") },
                 body = body,
                 specificInfos = SpecificInfos.Http(
-                    httpCode = result.status.value
+                    httpCode = result.status.value,
                 ),
                 durationMs = duration,
                 durationFormatted = formatDuration(duration),
@@ -52,7 +52,7 @@ internal class NetworkReplayDataSourceImpl : NetworkReplayDataSource {
                 byteSizeFormatted = ByteFormatter.formatBytes(size),
                 isImage = false, // TODO: check content type
                 statusFormatted = result.status.value.toString(),
-                contentType = result.headers["Content-Type"]
+                contentType = result.headers["Content-Type"],
             )
         } catch (e: Exception) {
             val endTime = Clock.System.now().toEpochMilliseconds()
@@ -61,7 +61,7 @@ internal class NetworkReplayDataSourceImpl : NetworkReplayDataSource {
                 issue = e.message ?: "Unknown error",
                 durationMs = duration,
                 durationFormatted = formatDuration(duration),
-                statusFormatted = "Error"
+                statusFormatted = "Error",
             )
         }
 

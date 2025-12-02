@@ -92,12 +92,12 @@ fun previewAppsStateUiModel(): AppsStateUiModel = AppsStateUiModel.WithApps(
         DeviceAppUiModel(
             name = "appName1",
             packageName = "packageName",
-            iconEncoded = null
-        )
+            iconEncoded = null,
+        ),
     ),
     appSelected = DeviceAppUiModel(
         name = "appName1",
         packageName = "packageName",
-        iconEncoded = null
-    )
+        iconEncoded = null,
+    ),
 )

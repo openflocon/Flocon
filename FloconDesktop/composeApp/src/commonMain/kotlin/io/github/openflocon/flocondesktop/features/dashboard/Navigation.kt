@@ -10,7 +10,6 @@ sealed interface DashboardRoutes : FloconRoute {
 
     @Serializable
     data object Main : DashboardRoutes
-
 }
 
 fun EntryProviderScope<FloconRoute>.dashboardRoutes() {

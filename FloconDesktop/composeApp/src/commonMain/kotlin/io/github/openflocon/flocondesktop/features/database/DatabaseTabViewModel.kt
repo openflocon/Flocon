@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
-import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseResultToCsvProcessor
 import io.github.openflocon.domain.database.usecase.ObserveLastSuccessQueriesUseCase
 import io.github.openflocon.domain.database.usecase.favorite.GetFavoriteQueryByIdDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.favorite.SaveQueryAsFavoriteDatabaseUseCase
@@ -16,6 +15,7 @@ import io.github.openflocon.flocondesktop.features.database.mapper.toUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
+import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseResultToCsvProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ImportSqlQueryProcessor
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.Job
@@ -81,8 +81,8 @@ class DatabaseTabViewModel(
         isVisible.update { false }
     }
 
-    private val _autoUpdate = MutableStateFlow(AutoUpdate())
-    val isAutoUpdateEnabled = _autoUpdate
+    private val autoUpdate = MutableStateFlow(AutoUpdate())
+    val isAutoUpdateEnabled = autoUpdate
         .map { it.isEnabled }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(
@@ -133,8 +133,6 @@ class DatabaseTabViewModel(
                 executeQuery(query = query, editAutoUpdate = true)
             }
         }
-
-
     }
 
     fun onAction(action: DatabaseTabAction) {
@@ -200,7 +198,7 @@ class DatabaseTabViewModel(
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            combines(isVisible, _autoUpdate)
+            combines(isVisible, autoUpdate)
                 .distinctUntilChanged()
                 .collect { (isVisible, autoUpdate) ->
                     refreshAutoUpdate(
@@ -219,7 +217,7 @@ class DatabaseTabViewModel(
         ).fold(doOnSuccess = {
             queryResult.value = it.toUi()
             if (editAutoUpdate) {
-                _autoUpdate.update {
+                autoUpdate.update {
                     it.copy(
                         query = query,
                     )
@@ -233,7 +231,7 @@ class DatabaseTabViewModel(
     private suspend fun clearQuery() {
         updateQuery("")
         queryResult.update { null }
-        _autoUpdate.update {
+        autoUpdate.update {
             it.copy(
                 query = null,
                 isEnabled = false,
@@ -242,7 +240,7 @@ class DatabaseTabViewModel(
     }
 
     private fun updateAutoUpdate(value: Boolean) {
-        _autoUpdate.update {
+        autoUpdate.update {
             it.copy(
                 isEnabled = value,
             )
@@ -259,12 +257,11 @@ class DatabaseTabViewModel(
             val autoUpdateJob = viewModelScope.launch(dispatcherProvider.viewModel) {
                 while (isActive) {
                     delay(3.seconds)
-                    val query = _autoUpdate.value.takeIf { it.isEnabled }?.query ?: return@launch
+                    val query = this@DatabaseTabViewModel.autoUpdate.value.takeIf { it.isEnabled }?.query ?: return@launch
                     executeQuery(query, editAutoUpdate = false)
                 }
             }
             this.autoUpdateJob.set(autoUpdateJob)
         }
     }
-
 }

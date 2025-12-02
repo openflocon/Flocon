@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 
 @Stable
+@Suppress("ktlint:compose:modifier-composed-check ")
 fun Modifier.hover(isHover: (Boolean) -> Unit): Modifier = composed {
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()

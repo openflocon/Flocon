@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,8 +26,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 internal fun DashboardPlainTextView(
     modifier: Modifier = Modifier,
-    rowItem: DashboardContainerViewState.RowItem.PlainText,
     onOpenExternalClicked: (content: String) -> Unit,
+    rowItem: DashboardContainerViewState.RowItem.PlainText,
 ) {
     SelectionContainer(
         modifier = modifier,
@@ -41,13 +40,13 @@ internal fun DashboardPlainTextView(
                 Text(
                     rowItem.label,
                     modifier =
-                        Modifier.padding(start = 4.dp)
-                            .align(Alignment.CenterStart),
+                    Modifier.padding(start = 4.dp)
+                        .align(Alignment.CenterStart),
                     color = FloconTheme.colorPalette.onSurface,
                     style =
-                        MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.Thin,
-                        ),
+                    MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Thin,
+                    ),
                 )
                 Box(modifier = Modifier.align(Alignment.CenterEnd)) {
                     FloconIconButton(
@@ -59,21 +58,21 @@ internal fun DashboardPlainTextView(
             }
             Box(
                 modifier =
-                    Modifier.fillMaxWidth()
-                        .background(
-                            color = FloconTheme.colorPalette.secondary,
-                            shape = RoundedCornerShape(8.dp),
-                        )
-                        .padding(8.dp),
+                Modifier.fillMaxWidth()
+                    .background(
+                        color = FloconTheme.colorPalette.secondary,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .padding(8.dp),
             ) {
                 SelectionContainer {
                     Text(
                         text = rowItem.value,
                         color = FloconTheme.colorPalette.onSurface,
                         style =
-                            FloconTheme.typography.bodySmall.copy(
-                                fontFamily = FontFamily.Monospace
-                            ),
+                        FloconTheme.typography.bodySmall.copy(
+                            fontFamily = FontFamily.Monospace
+                        ),
                     )
                 }
             }
@@ -88,14 +87,14 @@ internal fun DashboardPlainTextViewPreview() {
         DashboardContainerViewState.RowItem.PlainText(
             label = "label",
             value =
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eget ullamcorper elit. Pellentesque turpis ex, cursus cursus urna sed, iaculis sagittis nisl. Curabitur vehicula nunc eu metus rhoncus placerat. Vivamus at placerat ligula. Morbi ullamcorper cursus tellus, vitae molestie lorem sollicitudin euismod. Sed ullamcorper, risus vitae facilisis tempor, elit leo accumsan purus, ut ultricies augue erat et justo. Duis efficitur mauris eu finibus tincidunt. Aenean magna libero, auctor quis turpis et, viverra porta lorem. Ut tempus odio sit amet vestibulum condimentum. Donec et augue quis arcu blandit sodales. In laoreet odio id turpis ultricies, eu ornare dui blandit. Morbi hendrerit velit turpis, eget ornare ex consequat id. Nullam rhoncus, libero et sollicitudin tristique, risus ipsum luctus neque, ultricies ullamcorper felis metus non turpis. Nullam sed accumsan sem, at fermentum tortor.",
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eget ullamcorper elit. Pellentesque turpis ex, cursus cursus urna sed, iaculis sagittis nisl. Curabitur vehicula nunc eu metus rhoncus placerat. Vivamus at placerat ligula. Morbi ullamcorper cursus tellus, vitae molestie lorem sollicitudin euismod. Sed ullamcorper, risus vitae facilisis tempor, elit leo accumsan purus, ut ultricies augue erat et justo. Duis efficitur mauris eu finibus tincidunt. Aenean magna libero, auctor quis turpis et, viverra porta lorem. Ut tempus odio sit amet vestibulum condimentum. Donec et augue quis arcu blandit sodales. In laoreet odio id turpis ultricies, eu ornare dui blandit. Morbi hendrerit velit turpis, eget ornare ex consequat id. Nullam rhoncus, libero et sollicitudin tristique, risus ipsum luctus neque, ultricies ullamcorper felis metus non turpis. Nullam sed accumsan sem, at fermentum tortor.",
         )
     FloconTheme {
         DashboardPlainTextView(
             modifier =
-                Modifier.fillMaxWidth().background(
-                    FloconTheme.colorPalette.primary,
-                ),
+            Modifier.fillMaxWidth().background(
+                FloconTheme.colorPalette.primary,
+            ),
             rowItem = rowItem,
             onOpenExternalClicked = {},
         )
@@ -109,7 +108,7 @@ internal fun DashboardPlainTextViewPreview_json() {
         DashboardContainerViewState.RowItem.PlainText(
             label = "json",
             value =
-                """
+            """
                                 {
                                   "testData": {
                                     "name": "John Doe",
@@ -134,14 +133,14 @@ internal fun DashboardPlainTextViewPreview_json() {
                                   "status": "success",
                                   "message": "Test data loaded successfully."
                                 }
-        """.trimIndent(),
+            """.trimIndent(),
         )
     FloconTheme {
         DashboardPlainTextView(
             modifier =
-                Modifier.fillMaxWidth().background(
-                    FloconTheme.colorPalette.primary,
-                ),
+            Modifier.fillMaxWidth().background(
+                FloconTheme.colorPalette.primary,
+            ),
             rowItem = rowItem,
             onOpenExternalClicked = {},
         )

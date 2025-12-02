@@ -29,7 +29,7 @@ class RecordVideoDelegate(
     }.stateIn(
         coroutineScope,
         WhileSubscribed(5_000),
-        RecordVideoStateUiModel.Idle
+        RecordVideoStateUiModel.Idle,
     )
 
     suspend fun toggleRecording() {
@@ -48,7 +48,7 @@ class RecordVideoDelegate(
             doOnSuccess = {
                 recording.update { null }
                 feedbackDisplayer.displayMessage("Record saved at $it")
-            }
+            },
         )
     }
 
@@ -60,7 +60,7 @@ class RecordVideoDelegate(
             },
             doOnSuccess = { recordInstance ->
                 recording.update { recordInstance }
-            }
+            },
         )
     }
 }

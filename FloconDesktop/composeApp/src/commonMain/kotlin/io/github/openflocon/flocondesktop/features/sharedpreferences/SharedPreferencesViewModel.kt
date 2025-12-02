@@ -15,7 +15,6 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.Share
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.view.PreferenceAutoUpdate
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +23,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -71,36 +69,34 @@ class SharedPreferencesViewModel(
         val isEnabled: Boolean,
         val delayMs: Int,
     ) {
-        fun toUi(): PreferenceAutoUpdate {
-            return if (isEnabled) {
-                PreferenceAutoUpdate.Enabled(
-                    delayMs = delayMs
-                )
-            } else {
-                PreferenceAutoUpdate.Disabled
-            }
+        fun toUi(): PreferenceAutoUpdate = if (isEnabled) {
+            PreferenceAutoUpdate.Enabled(
+                delayMs = delayMs
+            )
+        } else {
+            PreferenceAutoUpdate.Disabled
         }
     }
 
-    private val _autoUpdate = MutableStateFlow<PreferenceAutoUpdateState>(
+    private val autoUpdate = MutableStateFlow<PreferenceAutoUpdateState>(
         PreferenceAutoUpdateState(
             isEnabled = false,
             delayMs = 3000,
         )
     )
-    val autoUpdateState: StateFlow<PreferenceAutoUpdate> = _autoUpdate
+    val autoUpdateState: StateFlow<PreferenceAutoUpdate> = autoUpdate
         .map { it.toUi() }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            _autoUpdate.value.toUi()
+            autoUpdate.value.toUi()
         )
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            _autoUpdate.collectLatest {
-                if(it.isEnabled) {
+            autoUpdate.collectLatest {
+                if (it.isEnabled) {
                     while (true) {
                         getCurrentDeviceSharedPrefValuesUseCase()
                         delay(max(it.delayMs.toLong(), 300L))
@@ -129,13 +125,13 @@ class SharedPreferencesViewModel(
     }
 
     fun onAutoUpdateChange(enabled: Boolean) {
-        _autoUpdate.update {
+        autoUpdate.update {
             it.copy(isEnabled = enabled)
         }
     }
 
     fun onAutoUpdateDelayChanged(delayMs: Int) {
-        _autoUpdate.update {
+        autoUpdate.update {
             it.copy(delayMs = delayMs)
         }
     }

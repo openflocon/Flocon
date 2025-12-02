@@ -61,7 +61,7 @@ fun App() {
 //            scopeDefinition = { createScope(MainRoutes.Sub.Main) }
 //        ) {
         FloconTheme(
-            fontSizeMultiplier = fontSizeMultiplier
+            fontSizeMultiplier = fontSizeMultiplier,
         ) {
             AppScreen()
         }

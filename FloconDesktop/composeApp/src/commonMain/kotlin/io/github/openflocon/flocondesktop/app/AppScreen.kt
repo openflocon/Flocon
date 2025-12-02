@@ -38,7 +38,7 @@ fun AppScreen() {
         Content(
             uiState = uiState,
             navigationState = viewModel.navigationState,
-            onAction = viewModel::onAction
+            onAction = viewModel::onAction,
         )
         FeedbackDisplayerView()
     }
@@ -48,7 +48,7 @@ fun AppScreen() {
 private fun Content(
     uiState: AppUiState,
     navigationState: MainFloconNavigationState,
-    onAction: (AppAction) -> Unit
+    onAction: (AppAction) -> Unit,
 ) {
     FloconNavigation(
         navigationState = navigationState,
@@ -62,7 +62,7 @@ private fun Content(
                             current = uiState.contentState.current,
                             state = uiState.menuState,
                             expanded = it,
-                            onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) }
+                            onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) },
                         )
                     },
                     topBarContent = {
@@ -76,15 +76,15 @@ private fun Content(
                             onAppSelected = { onAction(AppAction.SelectApp(it)) },
                             onRecordClicked = { onAction(AppAction.Record) },
                             onRestartClicked = { onAction(AppAction.Restart) },
-                            onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) }
+                            onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
                         )
-                    }
-                )
+                    },
+                ),
             )
             .then(SinglePaneSceneStrategy()),
         modifier = Modifier
             .fillMaxSize()
-            .background(FloconTheme.colorPalette.surface)
+            .background(FloconTheme.colorPalette.surface),
     ) {
         analyticsRoutes()
         dashboardRoutes()

@@ -28,17 +28,17 @@ fun AboutScreen(modifier: Modifier = Modifier) {
             contentColor = FloconTheme.colorPalette.onSurface,
             versionChipColors = LibraryDefaults.chipColors(
                 containerColor = FloconTheme.colorPalette.primary,
-                contentColor = FloconTheme.colorPalette.onPrimary
+                contentColor = FloconTheme.colorPalette.onPrimary,
             ),
             licenseChipColors = LibraryDefaults.chipColors(
                 containerColor = FloconTheme.colorPalette.secondary,
-                contentColor = FloconTheme.colorPalette.onSecondary
+                contentColor = FloconTheme.colorPalette.onSecondary,
             ),
             fundingChipColors = LibraryDefaults.chipColors(
                 containerColor = FloconTheme.colorPalette.tertiary,
-                contentColor = FloconTheme.colorPalette.onTertiary
+                contentColor = FloconTheme.colorPalette.onTertiary,
             ),
-            dialogConfirmButtonColor = FloconTheme.colorPalette.onSurface
+            dialogConfirmButtonColor = FloconTheme.colorPalette.onSurface,
         ),
         modifier = modifier,
     )

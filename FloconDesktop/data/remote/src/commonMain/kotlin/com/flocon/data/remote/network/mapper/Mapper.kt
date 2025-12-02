@@ -19,35 +19,33 @@ import java.net.URI
 import java.net.URLDecoder
 import kotlin.uuid.ExperimentalUuidApi
 
-fun listToRemote(mocks: List<MockNetworkDomainModel>): List<MockNetworkResponseDataModel> =
-    mocks.map { toRemote(it) }
+fun listToRemote(mocks: List<MockNetworkDomainModel>): List<MockNetworkResponseDataModel> = mocks.map { toRemote(it) }
 
-fun toRemote(mock: MockNetworkDomainModel): MockNetworkResponseDataModel =
-    MockNetworkResponseDataModel(
-        expectation = MockNetworkResponseDataModel.Expectation(
-            urlPattern = mock.expectation.urlPattern,
-            method = mock.expectation.method,
-        ),
-        response = when (val r = mock.response) {
-            is MockNetworkDomainModel.Response.Body -> MockNetworkResponseDataModel.Response(
-                httpCode = r.httpCode,
-                body = r.body,
-                mediaType = r.mediaType,
-                delay = r.delay,
-                headers = r.headers,
-                errorException = null,
-            )
+fun toRemote(mock: MockNetworkDomainModel): MockNetworkResponseDataModel = MockNetworkResponseDataModel(
+    expectation = MockNetworkResponseDataModel.Expectation(
+        urlPattern = mock.expectation.urlPattern,
+        method = mock.expectation.method,
+    ),
+    response = when (val r = mock.response) {
+        is MockNetworkDomainModel.Response.Body -> MockNetworkResponseDataModel.Response(
+            httpCode = r.httpCode,
+            body = r.body,
+            mediaType = r.mediaType,
+            delay = r.delay,
+            headers = r.headers,
+            errorException = null,
+        )
 
-            is MockNetworkDomainModel.Response.Exception -> MockNetworkResponseDataModel.Response(
-                httpCode = null,
-                body = null,
-                mediaType = null,
-                delay = r.delay,
-                headers = null,
-                errorException = r.classPath,
-            )
-        },
-    )
+        is MockNetworkDomainModel.Response.Exception -> MockNetworkResponseDataModel.Response(
+            httpCode = null,
+            body = null,
+            mediaType = null,
+            delay = r.delay,
+            headers = null,
+            errorException = r.classPath,
+        )
+    },
+)
 
 @OptIn(ExperimentalUuidApi::class)
 fun toDomain(
@@ -62,7 +60,7 @@ fun toDomain(
     val startTime = decoded.startTime!!
 
     val specificInfos = when {
-        graphQl != null -> when(graphQl) {
+        graphQl != null -> when (graphQl) {
             is GraphQlExtracted.WithBody -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
                 query = graphQl.requestBody.query,
                 operationType = graphQl.operationType,
@@ -177,78 +175,74 @@ private fun extractOperationName(query: String): String? {
     return matchResult?.groups?.get(2)?.value
 }
 
-fun toRemote(domain: BadQualityConfigDomainModel): BadQualityConfigDataModel =
-    BadQualityConfigDataModel(
-        latency = with(domain.latency) {
-            BadQualityConfigDataModel.LatencyConfig(
-                latencyTriggerProbability = triggerProbability,
-                minLatencyMs = minLatencyMs,
-                maxLatencyMs = maxLatencyMs,
+fun toRemote(domain: BadQualityConfigDomainModel): BadQualityConfigDataModel = BadQualityConfigDataModel(
+    latency = with(domain.latency) {
+        BadQualityConfigDataModel.LatencyConfig(
+            latencyTriggerProbability = triggerProbability,
+            minLatencyMs = minLatencyMs,
+            maxLatencyMs = maxLatencyMs,
+        )
+    },
+    errorProbability = domain.errorProbability,
+    errors = domain.errors.map {
+        when (val t = it.type) {
+            is BadQualityConfigDomainModel.Error.Type.Body -> BadQualityConfigDataModel.Error(
+                weight = it.weight,
+                errorCode = t.httpCode,
+                errorBody = t.body,
+                errorContentType = t.contentType,
+                errorException = null,
             )
-        },
-        errorProbability = domain.errorProbability,
-        errors = domain.errors.map {
-            when (val t = it.type) {
-                is BadQualityConfigDomainModel.Error.Type.Body -> BadQualityConfigDataModel.Error(
-                    weight = it.weight,
-                    errorCode = t.httpCode,
-                    errorBody = t.body,
-                    errorContentType = t.contentType,
-                    errorException = null,
-                )
 
-                is BadQualityConfigDomainModel.Error.Type.Exception -> BadQualityConfigDataModel.Error(
-                    weight = it.weight,
-                    errorException = t.classPath,
-                    errorCode = null,
-                    errorBody = null,
-                    errorContentType = null,
-                )
-            }
-        },
-    )
-
+            is BadQualityConfigDomainModel.Error.Type.Exception -> BadQualityConfigDataModel.Error(
+                weight = it.weight,
+                errorException = t.classPath,
+                errorCode = null,
+                errorBody = null,
+                errorContentType = null,
+            )
+        }
+    },
+)
 
 @OptIn(ExperimentalUuidApi::class)
 fun FloconNetworkWebSocketEvent.toDomain(
     appInstance: AppInstance,
-): FloconNetworkCallDomainModel? {
-    return try {
-        val callId = id!!
-        val startTime = timestamp!!
+): FloconNetworkCallDomainModel? = try {
+    val callId = id!!
+    val startTime = timestamp!!
 
-        val specificInfos = FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket(
-            event = event!!,
-        )
+    val specificInfos = FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket(
+        event = event!!,
+    )
 
-        val method = "websocket"
-        val body = message ?: error ?: event
-        val size = size ?: 0L
+    val method = "websocket"
+    val body = message ?: error ?: event
+    val size = size ?: 0L
 
-        val request = FloconNetworkCallDomainModel.Request(
-            url = url!!,
-            startTime = startTime,
-            startTimeFormatted = formatTimestamp(startTime),
-            method = method,
-            headers = emptyMap(),
-            body = body,
-            byteSize = size,
-            byteSizeFormatted = ByteFormatter.formatBytes(size),
-            isMocked = false, // TODO ?
-            specificInfos = specificInfos,
-            domainFormatted = extractDomain(url, specificInfos),
-            methodFormatted = method,
-            queryFormatted = body,
-        )
+    val request = FloconNetworkCallDomainModel.Request(
+        url = url!!,
+        startTime = startTime,
+        startTimeFormatted = formatTimestamp(startTime),
+        method = method,
+        headers = emptyMap(),
+        body = body,
+        byteSize = size,
+        byteSizeFormatted = ByteFormatter.formatBytes(size),
+        isMocked = false, // TODO ?
+        specificInfos = specificInfos,
+        domainFormatted = extractDomain(url, specificInfos),
+        methodFormatted = method,
+        queryFormatted = body,
+    )
 
-        FloconNetworkCallDomainModel(
-            callId = callId,
-            appInstance = appInstance,
-            request = request,
-            response = null, // no response for websocket
-        )
-    } catch (t: Throwable) {
-        t.printStackTrace()
-        null
-    }
+    FloconNetworkCallDomainModel(
+        callId = callId,
+        appInstance = appInstance,
+        request = request,
+        response = null, // no response for websocket
+    )
+} catch (t: Throwable) {
+    t.printStackTrace()
+    null
 }

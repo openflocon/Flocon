@@ -15,7 +15,7 @@ data class DashboardConfigDataModel(
 data class DashboardContainerDataModel(
     val name: String,
     val elements: List<DashboardElementDataModel>,
-    val containerConfig: ContainerConfigDataModel
+    val containerConfig: ContainerConfigDataModel,
 )
 
 @OptIn(ExperimentalSerializationApi::class)

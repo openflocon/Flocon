@@ -1,12 +1,11 @@
 package io.github.openflocon.flocondesktop.features.network.mock.processor
 
-
+import co.touchlab.kermit.Logger
+import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import kotlinx.serialization.json.Json
 import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
-import co.touchlab.kermit.Logger
-import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import java.io.FileNotFoundException
 
 sealed interface ImportResult {

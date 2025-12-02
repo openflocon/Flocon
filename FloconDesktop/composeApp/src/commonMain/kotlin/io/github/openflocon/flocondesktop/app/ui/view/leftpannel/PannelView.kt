@@ -65,12 +65,12 @@ fun PanelView(
             isSelected -> FloconTheme.colorPalette.onAccent
             hovered -> FloconTheme.colorPalette.onSecondary
             else -> FloconTheme.colorPalette.onPrimary
-        }
+        },
     )
     val lineAlpha by animateFloatAsState(
         if (isEnabled.not() && isSelected.not()) {
             0.3f
-        } else 1f
+        } else 1f,
     )
     val horizontalPadding = 12.dp
 
@@ -139,7 +139,6 @@ private fun PannelViewPreview_Selected() {
         )
     }
 }
-
 
 @Composable
 @Preview

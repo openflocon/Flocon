@@ -53,7 +53,7 @@ class ToDeviceDashboardDataSourceImpl(
     override suspend fun submitFormEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         formId: String,
-        values: Map<String, String>
+        values: Map<String, String>,
     ) {
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
@@ -65,8 +65,8 @@ class ToDeviceDashboardDataSourceImpl(
                         id = formId,
                         values = values,
                     ),
-                )
-            )
+                ),
+            ),
         )
     }
 

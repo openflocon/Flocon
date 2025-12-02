@@ -26,7 +26,7 @@ internal fun TopBarActions(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         TopBarButton(
             active = false,
@@ -54,4 +54,3 @@ internal fun TopBarActions(
         )
     }
 }
-

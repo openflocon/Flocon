@@ -18,5 +18,5 @@ expect fun FloconWindow(
     state: FloconWindowState,
     onCloseRequest: () -> Unit,
     alwaysOnTop: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 )

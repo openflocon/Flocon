@@ -67,11 +67,11 @@ private fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     FloconFeature(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) {
         FloconSection(
             title = "Adb Path",
-            initialValue = true
+            initialValue = true,
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -79,7 +79,7 @@ private fun SettingsScreen(
                     .padding(8.dp)
                     .clip(FloconTheme.shapes.medium)
                     .background(FloconTheme.colorPalette.primary)
-                    .padding(all = 8.dp)
+                    .padding(all = 8.dp),
             ) {
                 if (needsAdbSetup) {
                     Text(
@@ -90,17 +90,17 @@ private fun SettingsScreen(
                 } else {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         FloconIcon(
                             imageVector = Icons.Outlined.Check,
                             tint = FloconTheme.colorPalette.onAccent,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(16.dp),
                         )
                         Text(
                             text = "ADB configuraton is valid",
                             color = FloconTheme.colorPalette.onAccent,
-                            style = FloconTheme.typography.bodySmall
+                            style = FloconTheme.typography.bodySmall,
                         )
                     }
                 }
@@ -109,14 +109,14 @@ private fun SettingsScreen(
                     onValueChange = onAdbPathChanged,
                     placeholder = defaultPlaceHolder("Eg: /Users/youruser/Library/Android/sdk/platform-tools/adb"),
                     containerColor = FloconTheme.colorPalette.secondary,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     SettingsButton(
                         text = "Save",
-                        onClick = saveAdbPath
+                        onClick = saveAdbPath,
                     )
                     SettingsButton(
                         onClick = testAdbPath,
@@ -127,20 +127,20 @@ private fun SettingsScreen(
         }
         FloconSection(
             title = "Font Size Multiplier : ${uiState.fontSizeMultiplier}x",
-            initialValue = true
+            initialValue = true,
         ) {
             Column(
                 modifier = Modifier
                     .padding(8.dp)
                     .clip(FloconTheme.shapes.medium)
                     .background(FloconTheme.colorPalette.primary)
-                    .padding(all = 8.dp)
+                    .padding(all = 8.dp),
             ) {
                 FloconSlider(
                     value = uiState.fontSizeMultiplier,
                     onValueChange = { onAction(SettingsAction.FontSizeMultiplierChange(it)) },
                     valueRange = 1f..2f,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -156,11 +156,11 @@ private fun SettingsButton(
     FloconButton(
         onClick = onClick,
         containerColor = FloconTheme.colorPalette.secondary,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Text(
             text = text,
-            style = FloconTheme.typography.bodySmall
+            style = FloconTheme.typography.bodySmall,
         )
     }
 }

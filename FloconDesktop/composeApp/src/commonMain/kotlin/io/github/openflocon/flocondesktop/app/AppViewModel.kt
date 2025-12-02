@@ -48,11 +48,11 @@ internal class AppViewModel(
 
     private val contentState = MutableStateFlow(
         ContentUiState(
-            current = SubScreen.Network
-        )
+            current = SubScreen.Network,
+        ),
     )
     private val menuState = MutableStateFlow(
-        buildMenu()
+        buildMenu(),
     )
 
     val uiState = combine(
@@ -60,14 +60,14 @@ internal class AppViewModel(
         menuState,
         devicesDelegate.devicesState,
         devicesDelegate.appsState,
-        recordVideoDelegate.state
+        recordVideoDelegate.state,
     ) { content, menu, devices, apps, record ->
         AppUiState(
             contentState = content,
             menuState = menu,
             deviceState = devices,
             appState = apps,
-            recordState = record
+            recordState = record,
         )
     }
         .stateInWhileSubscribed(
@@ -76,8 +76,8 @@ internal class AppViewModel(
                 menuState = menuState.value,
                 deviceState = devicesDelegate.devicesState.value,
                 appState = devicesDelegate.appsState.value,
-                recordState = recordVideoDelegate.state.value
-            )
+                recordState = recordVideoDelegate.state.value,
+            ),
         )
 
     init {
@@ -125,7 +125,7 @@ internal class AppViewModel(
                 SubScreen.Settings -> SettingsRoutes.Main
                 SubScreen.SharedPreferences -> SharedPreferencesRoutes.Main
                 SubScreen.Tables -> TableRoutes.Main
-            }
+            },
         )
     }
 
@@ -177,5 +177,4 @@ internal class AppViewModel(
             )
         }
     }
-
 }

@@ -42,20 +42,20 @@ fun DashboardContainerView(
     modifier: Modifier = Modifier,
 ) {
     var inputState by
-    remember(viewState) {
-        mutableStateOf(
-            viewState.rows.filterIsInstance<DashboardContainerViewState.InputItem>()
-                .associate { it.id to it.value }
-        )
-    }
+        remember(viewState) {
+            mutableStateOf(
+                viewState.rows.filterIsInstance<DashboardContainerViewState.InputItem>()
+                    .associate { it.id to it.value }
+            )
+        }
 
     Box(
         modifier =
-            modifier.border(
-                width = 1.dp,
-                color = FloconTheme.colorPalette.secondary,
-                shape = FloconTheme.shapes.medium
-            ),
+        modifier.border(
+            width = 1.dp,
+            color = FloconTheme.colorPalette.secondary,
+            shape = FloconTheme.shapes.medium
+        ),
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -65,9 +65,9 @@ fun DashboardContainerView(
                 textAlign = TextAlign.Center,
                 text = viewState.containerName,
                 style =
-                    FloconTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
+                FloconTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                ),
                 color = FloconTheme.colorPalette.onPrimary,
             )
 
@@ -97,7 +97,7 @@ fun DashboardContainerView(
                                 // A form only needs a single submit button, not on every
                                 // textfield
                                 showSubmitButton =
-                                    viewState.containerConfig !is ContainerConfig.Form
+                                viewState.containerConfig !is ContainerConfig.Form
                             )
                         }
 
@@ -159,10 +159,10 @@ fun DashboardContainerView(
                             )
                         },
                         rowItem =
-                            DashboardContainerViewState.RowItem.Button(
-                                id = "_",
-                                text = viewState.containerConfig.submitText,
-                            ),
+                        DashboardContainerViewState.RowItem.Button(
+                            id = "_",
+                            text = viewState.containerConfig.submitText,
+                        ),
                     )
                 }
             }

@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app.version
 
-
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,24 +41,24 @@ internal fun BoxScope.VersionCheckerView() {
 
 @Composable
 private fun VersionCheckerDialog(
-    modifier: Modifier,
-    state: VersionCheckerViewModel.VersionAvailableState,
+    modifier: Modifier = Modifier,
     onClientDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
     onDesktopDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+    state: VersionCheckerViewModel.VersionAvailableState,
 ) {
     Column(
         modifier.padding(16.dp),
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         state.client?.let {
             VersionCheckerDialog(
-                modifier = Modifier, version = it, onDismiss = onClientDismiss
+                modifier = Modifier, version = it, onDismiss = onClientDismiss,
             )
         }
         state.desktop?.let {
             VersionCheckerDialog(
-                modifier = Modifier, version = it, onDismiss = onDesktopDismiss
+                modifier = Modifier, version = it, onDismiss = onDesktopDismiss,
             )
         }
     }
@@ -67,9 +66,9 @@ private fun VersionCheckerDialog(
 
 @Composable
 private fun VersionCheckerDialog(
-    modifier: Modifier,
-    version: VersionCheckerViewModel.VersionAvailableUiModel,
+    modifier: Modifier = Modifier,
     onDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+    version: VersionCheckerViewModel.VersionAvailableUiModel,
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -77,11 +76,13 @@ private fun VersionCheckerDialog(
         modifier = modifier
             .width(300.dp)
             .clickable(
-            onClick = {
-                // intercept click behind
-            }).background(
-            color = FloconTheme.colorPalette.tertiary, shape = FloconTheme.shapes.medium
-        ).padding(horizontal = 12.dp, 10.dp)) {
+                onClick = {
+                    // intercept click behind
+                },
+            ).background(
+                color = FloconTheme.colorPalette.tertiary, shape = FloconTheme.shapes.medium,
+            ).padding(horizontal = 12.dp, 10.dp),
+    ) {
         Column(
             horizontalAlignment = Alignment.Start,
         ) {
@@ -103,19 +104,20 @@ private fun VersionCheckerDialog(
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 FloconButton(
                     containerColor = FloconTheme.colorPalette.primary, onClick = {
                         uriHandler.openUri(version.link)
                         onDismiss(version)
-                    }) {
+                    },
+                ) {
                     Text("Download", color = FloconTheme.colorPalette.onPrimary)
                 }
                 FloconOutlinedButton(
                     onClick = {
                         onDismiss(version)
-                    }, borderColor = FloconTheme.colorPalette.primary
+                    }, borderColor = FloconTheme.colorPalette.primary,
                 ) {
                     Text("Close", color = FloconTheme.colorPalette.primary)
                 }
@@ -136,7 +138,7 @@ private fun VersionCheckerDialogPreview() {
                 link = "https://github.com/openflocon/flocon-desktop",
                 title = "New destkop version available: 1.0.0",
                 subtitle = "subtitle",
-            )
+            ),
         )
     }
 }

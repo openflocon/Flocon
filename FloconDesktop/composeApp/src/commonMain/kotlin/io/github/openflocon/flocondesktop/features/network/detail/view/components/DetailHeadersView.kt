@@ -42,7 +42,8 @@ fun DetailHeadersView(
             val isAuthBearer = item.name.equals(
                 "authorization",
                 ignoreCase = true
-            ) && item.value.startsWith("Bearer ")
+            ) &&
+                item.value.startsWith("Bearer ")
             if (isAuthBearer) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     FloconLineDescription(

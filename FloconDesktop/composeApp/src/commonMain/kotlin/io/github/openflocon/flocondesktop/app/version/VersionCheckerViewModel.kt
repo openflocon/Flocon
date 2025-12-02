@@ -8,7 +8,6 @@ import io.github.openflocon.domain.versions.usecase.CheckIsDesktopOnLastVersionU
 import io.github.openflocon.domain.versions.usecase.ObserveIsClientOnLastVersionUseCase
 import io.github.openflocon.flocondesktop.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -34,14 +33,13 @@ class VersionCheckerViewModel(
         val client: VersionAvailableUiModel?,
     )
 
-    private val _hiddenClientDialogs = MutableStateFlow<Set<VersionAvailableUiModel>>(emptySet())
-    private val _desktopVersionAvailable = MutableStateFlow<VersionAvailableUiModel?>(null)
-    private val desktopVersionAvailable = _desktopVersionAvailable.asStateFlow()
+    private val hiddenClientDialogs = MutableStateFlow<Set<VersionAvailableUiModel>>(emptySet())
+    private val desktopVersionAvailable = MutableStateFlow<VersionAvailableUiModel?>(null)
 
     private val clientVersionAvailable = observeIsClientOnLastVersionUseCase()
         .map {
             it.toUiClient()
-        }.combine(_hiddenClientDialogs) { uimodel, hidden ->
+        }.combine(hiddenClientDialogs) { uimodel, hidden ->
             uimodel.takeIf { it !in hidden }
         }
         .flowOn(dispatcherProvider.viewModel)
@@ -68,50 +66,46 @@ class VersionCheckerViewModel(
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             checkIsDesktopOnLastVersionUseCase(current = BuildConfig.APP_VERSION).alsoSuccess { newVersion ->
-                _desktopVersionAvailable.update { newVersion.toUiDesktop() }
+                desktopVersionAvailable.update { newVersion.toUiDesktop() }
             }
         }
     }
 
-    private fun IsLastVersionDomainModel.toUiDesktop(): VersionAvailableUiModel? {
-        return when (this) {
-            is IsLastVersionDomainModel.NewVersionAvailable -> {
-                VersionAvailableUiModel(
-                    version = this.name,
-                    link = this.link,
-                    title = "New destkop version available: ${name}",
-                    subtitle = null,
-                )
-            }
+    private fun IsLastVersionDomainModel.toUiDesktop(): VersionAvailableUiModel? = when (this) {
+        is IsLastVersionDomainModel.NewVersionAvailable -> {
+            VersionAvailableUiModel(
+                version = this.name,
+                link = this.link,
+                title = "New destkop version available: $name",
+                subtitle = null,
+            )
+        }
 
-            is IsLastVersionDomainModel.RunningLastVersion -> {
-                null
-            }
+        is IsLastVersionDomainModel.RunningLastVersion -> {
+            null
         }
     }
 
-    private fun IsLastVersionDomainModel.toUiClient(): VersionAvailableUiModel? {
-        return when (this) {
-            is IsLastVersionDomainModel.NewVersionAvailable -> {
-                VersionAvailableUiModel(
-                    version = this.name,
-                    link = this.link,
-                    title = "New client version available: $name",
-                    subtitle = "Don’t forget to update the app version\n(current: ${this.oldVersion})",
-                )
-            }
+    private fun IsLastVersionDomainModel.toUiClient(): VersionAvailableUiModel? = when (this) {
+        is IsLastVersionDomainModel.NewVersionAvailable -> {
+            VersionAvailableUiModel(
+                version = this.name,
+                link = this.link,
+                title = "New client version available: $name",
+                subtitle = "Don’t forget to update the app version\n(current: ${this.oldVersion})",
+            )
+        }
 
-            is IsLastVersionDomainModel.RunningLastVersion -> {
-                null
-            }
+        is IsLastVersionDomainModel.RunningLastVersion -> {
+            null
         }
     }
 
     fun hideDesktopNewVersionDialog(uimodel: VersionAvailableUiModel) {
-        _desktopVersionAvailable.update { null }
+        desktopVersionAvailable.update { null }
     }
 
     fun hideClientNewVersionDialog(uimodel: VersionAvailableUiModel) {
-        _hiddenClientDialogs.update { it + uimodel }
+        hiddenClientDialogs.update { it + uimodel }
     }
 }

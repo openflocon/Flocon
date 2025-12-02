@@ -13,7 +13,7 @@ sealed interface AnalyticsAction {
         val item: AnalyticsRowUiModel
     ) : AnalyticsAction
 
-    data object ClosePanel: AnalyticsAction
+    data object ClosePanel : AnalyticsAction
 
     data object ClearOldSession : AnalyticsAction
 
@@ -21,5 +21,5 @@ sealed interface AnalyticsAction {
 
     data class InvertList(val value: Boolean) : AnalyticsAction
 
-    data object ExportCsv: AnalyticsAction
+    data object ExportCsv : AnalyticsAction
 }

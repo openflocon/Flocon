@@ -10,7 +10,6 @@ sealed interface DatabaseRoutes : FloconRoute {
 
     @Serializable
     data object Main : DatabaseRoutes
-
 }
 
 fun EntryProviderScope<FloconRoute>.databaseRoutes() {

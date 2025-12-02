@@ -1,7 +1,7 @@
 package com.flocon.data.remote.network.models
 
-import com.flocon.data.remote.network.mapper.failureStatus
 import com.flocon.data.remote.network.mapper.extractStatus
+import com.flocon.data.remote.network.mapper.failureStatus
 import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.common.time.formatDuration
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
@@ -86,7 +86,7 @@ internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnl
                 isImage = isImage,
                 durationFormatted = durationFormatted,
                 byteSizeFormatted = ByteFormatter.formatBytes(responseSize),
-                statusFormatted = extractStatus(specificInfos)
+                statusFormatted = extractStatus(specificInfos),
             )
         }
         FloconNetworkResponseOnlyDomainModel(

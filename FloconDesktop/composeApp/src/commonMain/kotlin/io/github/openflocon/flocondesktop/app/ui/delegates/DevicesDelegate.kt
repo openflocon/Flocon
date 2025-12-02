@@ -55,7 +55,7 @@ class DevicesDelegate(
                     DevicesStateUiModel.WithDevices(
                         devices = mapListToUi(
                             devices = devices,
-                            activeDevices = activeDevices
+                            activeDevices = activeDevices,
                         ),
                         deviceSelected = firstDevice.mapToUi(
                             activeDevices = activeDevices,
@@ -66,7 +66,7 @@ class DevicesDelegate(
                     DevicesStateUiModel.WithDevices(
                         devices = mapListToUi(
                             devices = devices,
-                            activeDevices = activeDevices
+                            activeDevices = activeDevices,
                         ),
                         deviceSelected = current.mapToUi(
                             activeDevices = activeDevices,

@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,7 +47,7 @@ internal fun TopBarSelector(
             imageVector = Icons.Outlined.KeyboardArrowDown,
             contentDescription = "",
             modifier = Modifier.width(16.dp),
-            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary),
         )
     }
 }

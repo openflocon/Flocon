@@ -28,12 +28,10 @@ data class SharedPreferencesRowUiModel(
         data class StringSetValue(val value: Set<String>) : Value
     }
 
-    fun contains(text: String) : Boolean {
-        return key.contains(text, ignoreCase = true) || value.asString().contains(text, ignoreCase = true)
-    }
+    fun contains(text: String): Boolean = key.contains(text, ignoreCase = true) || value.asString().contains(text, ignoreCase = true)
 }
 
-fun SharedPreferencesRowUiModel.Value.asString() = when(this) {
+fun SharedPreferencesRowUiModel.Value.asString() = when (this) {
     is SharedPreferencesRowUiModel.Value.BooleanValue -> value.toString()
     is SharedPreferencesRowUiModel.Value.FloatValue -> value.toString()
     is SharedPreferencesRowUiModel.Value.IntValue -> value.toString()

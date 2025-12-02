@@ -10,7 +10,6 @@ sealed interface SharedPreferencesRoutes : FloconRoute {
 
     @Serializable
     data object Main : SharedPreferencesRoutes
-
 }
 
 fun EntryProviderScope<FloconRoute>.sharedPreferencesRoutes() {

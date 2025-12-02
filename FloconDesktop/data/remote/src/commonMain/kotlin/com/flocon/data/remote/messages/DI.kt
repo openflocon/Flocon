@@ -9,8 +9,10 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal val messagesModule = module {
-    single<Server> { getServer(
-        json = get()
-    ) }
+    single<Server> {
+        getServer(
+            json = get(),
+        )
+    }
     singleOf(::MessageRemoteDataSourceImpl) bind MessageRemoteDataSource::class
 }

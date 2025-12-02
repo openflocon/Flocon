@@ -202,9 +202,9 @@ private fun TextFieldPart(
 @Composable
 private fun DeeplinkTextField(
     modifier: Modifier = Modifier,
+    onValueChange: (String) -> Unit,
     label: String,
     value: String,
-    onValueChange: (String) -> Unit,
 ) {
     val isValueEmpty = value.isEmpty()
     Box(

@@ -30,9 +30,8 @@ fun itemToUI(item: TextFilterStateDomainModel.FilterItem): TextFilterStateUiMode
     isExcluded = item.isExcluded,
 )
 
-
 internal fun HeaderDelegate.Sorted?.toDomain(): NetworkSortDomainModel? {
-    val column = when(this?.column) {
+    val column = when (this?.column) {
         NetworkColumnsTypeUiModel.RequestTime -> NetworkSortDomainModel.Column.RequestStartTimeFormatted
         NetworkColumnsTypeUiModel.Method -> NetworkSortDomainModel.Column.Method
         NetworkColumnsTypeUiModel.Domain -> NetworkSortDomainModel.Column.Domain

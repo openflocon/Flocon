@@ -9,9 +9,9 @@ import io.github.openflocon.data.local.adb.model.DeviceWithSerialEntity
 import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
 import io.github.openflocon.data.local.dashboard.dao.FloconDashboardDao
+import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
-import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.data.local.database.dao.QueryDao
 import io.github.openflocon.data.local.database.dao.TablesDao
 import io.github.openflocon.data.local.database.models.DatabaseTableEntity

@@ -28,9 +28,9 @@ import io.github.openflocon.library.designsystem.components.FloconTextField
 
 @Composable
 fun SaveFavoriteDialog(
-    favoritesTitles: Set<String>,
     onDismiss: () -> Unit, // Callback pour annuler (clic en dehors ou bouton annuler)
-    onSave: (queryName: String) -> Unit // Callback pour sauvegarder (bouton Save)
+    onSave: (queryName: String) -> Unit, // Callback pour sauvegarder (bouton Save)
+    favoritesTitles: Set<String>
 ) {
     var favoriteName by remember { mutableStateOf("") }
 
@@ -69,8 +69,8 @@ fun SaveFavoriteDialog(
                         vertical = 12.dp
                     ).onKeyEvent { keyEvent ->
                         // detect CMD + Enter
-                        if (keyEvent.type == KeyEventType.KeyDown
-                            && keyEvent.key == androidx.compose.ui.input.key.Key.Enter
+                        if (keyEvent.type == KeyEventType.KeyDown &&
+                            keyEvent.key == androidx.compose.ui.input.key.Key.Enter
                         ) {
                             if (favoriteName.isNotBlank() && (favoriteName !in favoritesTitles)) {
                                 onSave(favoriteName)

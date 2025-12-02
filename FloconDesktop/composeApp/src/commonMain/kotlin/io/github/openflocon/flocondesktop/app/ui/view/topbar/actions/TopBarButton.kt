@@ -21,11 +21,11 @@ internal fun TopBarButton(
         onValueChange = { onClicked() },
         size = 48.dp,
         enabled = isEnabled,
-        tooltip = contentDescription
+        tooltip = contentDescription,
     ) {
         FloconIcon(
             imageVector = imageVector,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(18.dp),
         )
     }
 }

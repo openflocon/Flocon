@@ -54,7 +54,6 @@ internal fun FilesListHeaderButton(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FilterIcon_Spacing),
     ) {
-
         Column(
             modifier = Modifier.weight(1f)
                 .clip(shape)
@@ -104,7 +103,7 @@ internal fun FilesListHeaderButton(
                     SortedByUiModel.Enabled.Ascending -> textColor
                     SortedByUiModel.Enabled.Descending,
                     SortedByUiModel.None,
-                        -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
+                    -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
                 },
             )
             FilterIcon(

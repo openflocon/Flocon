@@ -10,5 +10,5 @@ data class FloconNetworkWebSocketEvent(
     val size: Long? = null,
     val timestamp: Long? = null,
     val message: String? = null,
-    val error: String? = null
+    val error: String? = null,
 )

@@ -4,9 +4,9 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 internal data class AppUiState(
-    val test: String
+    val test: String,
 )
 
 private fun previewAppUiState() = AppUiState(
-    test = ""
+    test = "",
 )

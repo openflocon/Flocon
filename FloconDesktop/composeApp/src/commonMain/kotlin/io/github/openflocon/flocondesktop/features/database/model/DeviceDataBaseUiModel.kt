@@ -1,7 +1,9 @@
 package io.github.openflocon.flocondesktop.features.database.model
 
+import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 
+@Immutable
 data class DeviceDataBaseUiModel(
     val id: DeviceDataBaseId,
     val name: String,
@@ -9,10 +11,12 @@ data class DeviceDataBaseUiModel(
     val tables: List<TableUiModel>?,
 )
 
+@Immutable
 data class TableUiModel(
     val name: String,
     val columns: List<ColumnUiModel>
 ) {
+    @Immutable
     data class ColumnUiModel(
         val name: String,
         val type: String,
@@ -28,7 +32,7 @@ fun generateInsertQuery(table: TableUiModel): String {
         appendLine(") VALUES (")
         table.columns.forEachIndexed { index, it ->
             append("\t     /*${it.name}*/")
-            if(index != table.columns.lastIndex) {
+            if (index != table.columns.lastIndex) {
                 append(",")
             }
             append("\n")

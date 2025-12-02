@@ -11,12 +11,10 @@ import kotlinx.serialization.modules.polymorphic
 class DashboardConverters {
 
     @TypeConverter
-    fun fromContainerConfig(value: ContainerConfigEntity): String =
-        json.encodeToString(value)
+    fun fromContainerConfig(value: ContainerConfigEntity): String = json.encodeToString(value)
 
     @TypeConverter
-    fun toContainerConfig(value: String): ContainerConfigEntity =
-        json.decodeFromString(value)
+    fun toContainerConfig(value: String): ContainerConfigEntity = json.decodeFromString(value)
 
     private companion object {
         val json = Json {
@@ -24,11 +22,11 @@ class DashboardConverters {
                 polymorphic(ContainerConfigEntity::class) {
                     subclass(
                         FormContainerConfigEntity::class,
-                        FormContainerConfigEntity.serializer()
+                        FormContainerConfigEntity.serializer(),
                     )
                     subclass(
                         SectionContainerConfigEntity::class,
-                        SectionContainerConfigEntity.serializer()
+                        SectionContainerConfigEntity.serializer(),
                     )
                 }
             }

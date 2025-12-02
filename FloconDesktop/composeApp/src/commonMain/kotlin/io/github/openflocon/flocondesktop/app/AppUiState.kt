@@ -15,7 +15,7 @@ data class AppUiState(
     val menuState: MenuState,
     val deviceState: DevicesStateUiModel,
     val appState: AppsStateUiModel,
-    val recordState: RecordVideoStateUiModel
+    val recordState: RecordVideoStateUiModel,
 )
 
 fun previewAppUiState() = AppUiState(
@@ -23,5 +23,5 @@ fun previewAppUiState() = AppUiState(
     menuState = previewMenuState(),
     deviceState = previewDevicesStateUiModel(),
     appState = previewAppsStateUiModel(),
-    recordState = RecordVideoStateUiModel.Recording
+    recordState = RecordVideoStateUiModel.Recording,
 )

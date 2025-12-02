@@ -43,7 +43,7 @@ fun LeftPanelView(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colorPalette.primary)
-            .padding(8.dp)
+            .padding(8.dp),
     ) {
         MenuSection(
             current = current,
