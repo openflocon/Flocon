@@ -42,13 +42,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
-import io.github.openflocon.library.designsystem.components.panel.FloconPanel
+import io.github.openflocon.navigation.MainFloconNavigationState
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.mp.KoinPlatform
 
+@Serializable
 data class DetailResultItem(
     val index: Int,
     val item: DatabaseRowUiModel,
@@ -113,10 +117,14 @@ fun DatabaseResultView(
                                         selectedItem?.index?.let { i ->
                                             val newIndex = i - 1
                                             result.rows.getOrNull(newIndex)?.let {
-                                                selectedItem = DetailResultItem(
+                                                val item = DetailResultItem(
                                                     index = newIndex,
                                                     item = it
                                                 )
+
+                                                selectedItem = item
+                                                KoinPlatform.getKoin().get<MainFloconNavigationState>()
+                                                    .navigate(DatabaseRoutes.Detail(item, result.columns))
                                             }
                                         }
 
@@ -127,10 +135,14 @@ fun DatabaseResultView(
                                         selectedItem?.index?.let { i ->
                                             val newIndex = i + 1
                                             result.rows.getOrNull(newIndex)?.let {
-                                                selectedItem = DetailResultItem(
+                                                val item = DetailResultItem(
                                                     index = newIndex,
                                                     item = it
                                                 )
+
+                                                selectedItem = item
+                                                KoinPlatform.getKoin().get<MainFloconNavigationState>()
+                                                    .navigate(DatabaseRoutes.Detail(item, result.columns))
                                             }
                                         }
 
@@ -175,6 +187,8 @@ fun DatabaseResultView(
                                 selected = selected,
                                 onItemSelected = {
                                     selectedItem = it
+                                    KoinPlatform.getKoin().get<MainFloconNavigationState>()
+                                        .navigate(DatabaseRoutes.Detail(it, result.columns))
                                 }
                             )
 
@@ -185,19 +199,6 @@ fun DatabaseResultView(
                                 )
                             }
                         }
-                    }
-
-                    FloconPanel(
-                        contentState = selectedItem,
-                        onClose = {
-                            selectedItem = null
-                        }
-                    ) {
-                        DatabaseRowDetailView(
-                            modifier = Modifier.fillMaxSize(),
-                            state = it,
-                            columns = result.columns,
-                        )
                     }
                 }
             }

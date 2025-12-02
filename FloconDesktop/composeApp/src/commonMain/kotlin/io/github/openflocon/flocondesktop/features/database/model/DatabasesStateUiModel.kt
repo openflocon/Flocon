@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.database.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 sealed interface DatabasesStateUiModel {
     data object Loading : DatabasesStateUiModel
 
