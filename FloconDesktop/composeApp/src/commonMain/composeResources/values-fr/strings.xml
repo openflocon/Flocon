@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Flocon</string>
+    <string name="open_external">Ouvrir dans un éditeur externe</string>
+    <string name="submit">Valider</string>
+</resources>
