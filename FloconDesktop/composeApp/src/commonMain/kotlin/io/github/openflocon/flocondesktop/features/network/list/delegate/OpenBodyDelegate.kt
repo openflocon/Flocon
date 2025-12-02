@@ -15,14 +15,14 @@ class OpenBodyDelegate {
     }
 
     fun openBodyExternally(
-            response: NetworkDetailViewState.Response.Success
+        response: NetworkDetailViewState.Response.Success
     ): Either<OpenFileError, Unit> {
         return openBodyExternally(prefix = "response_body_", content = response.body)
     }
 
     fun openBodyExternally(
-            content: String,
-            prefix: String = "content_"
+        content: String,
+        prefix: String = "content_"
     ): Either<OpenFileError, Unit> {
         return openAndWriteBody(prefix = prefix, body = content)
     }
@@ -37,23 +37,23 @@ class OpenBodyDelegate {
         val extension = detectBodyExtension(body)
 
         val tempFile =
-                runCatching { File.createTempFile(prefix, ".$extension") }.getOrElse { e ->
-                    Logger.e("❌ Failed to create temporary file: ${e.message}")
-                    return OpenFileError.IoError(e).failure()
-                }
+            runCatching { File.createTempFile(prefix, ".$extension") }.getOrElse { e ->
+                Logger.e("❌ Failed to create temporary file: ${e.message}")
+                return OpenFileError.IoError(e).failure()
+            }
 
         runCatching {
             tempFile.writeText(body)
             Logger.i("📝 Body written to temporary file: ${tempFile.absolutePath}")
         }
-                .onFailure { e ->
-                    Logger.e("💥 Error while writing file: ${e.message}")
-                    return OpenFileError.IoError(e).failure()
-                }
+            .onFailure { e ->
+                Logger.e("💥 Error while writing file: ${e.message}")
+                return OpenFileError.IoError(e).failure()
+            }
 
         return OpenFile.openFileOnDesktop(tempFile.absolutePath)
-                .alsoFailure { error -> Logger.e("❌ Failed to open file: ${error.message}") }
-                .alsoSuccess { Logger.i("✅ File opened successfully: ${tempFile.absolutePath}") }
+            .alsoFailure { error -> Logger.e("❌ Failed to open file: ${error.message}") }
+            .alsoSuccess { Logger.i("✅ File opened successfully: ${tempFile.absolutePath}") }
     }
 
     /** Tries to infer file extension based on content. */
@@ -65,6 +65,7 @@ class OpenBodyDelegate {
             trimmed.startsWith("<") &&
                     trimmed.contains("</") &&
                     !trimmed.contains("<html", ignoreCase = true) -> "xml"
+
             trimmed.contains("<html", ignoreCase = true) -> "html"
             else -> "txt"
         }

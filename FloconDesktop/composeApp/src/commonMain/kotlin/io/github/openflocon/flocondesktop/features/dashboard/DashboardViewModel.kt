@@ -135,6 +135,9 @@ class DashboardViewModel(
     fun onOpenExternalClicked(content: String) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             openBodyDelegate.openBodyExternally(content)
+                .alsoFailure {
+                    feedbackDisplayer.displayMessage(it.message)
+                }
         }
     }
 }
