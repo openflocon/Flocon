@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.ksp) // Add KSP plugin
     alias(libs.plugins.room)
-    alias(libs.plugins.ktlint)
     alias(libs.plugins.aboutLibraries)
 
     alias(libs.plugins.buildconfig)
@@ -96,22 +95,8 @@ kotlin {
     }
 }
 
-ktlint {
-    android.set(false)
-    outputToConsole.set(true)
-    filter {
-        exclude { element ->
-            val path = element.file.path
-            path.contains("/generated/")
-        }
-        include("**/kotlin/**")
-        exclude("**/generated/**", "**/ClosableScopeExt.kt", "**/ViewModelExt.kt", "**/Interactions.kt")
-    }
-}
-
 dependencies {
     ksp(libs.androidx.room.compiler)
-    ktlintRuleset("io.nlopez.compose.rules:ktlint:0.4.24")
 }
 
 room {
