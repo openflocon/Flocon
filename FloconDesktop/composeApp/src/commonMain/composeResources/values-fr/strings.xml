@@ -1,24 +1,20 @@
 <resources>
-    <string name="app_name">Flocon</string>
-    <string name="open_external">Ouvrir dans un éditeur externe</string>
-    <string name="submit">Valider</string>
+    <string name="open_external">Ouvrir dans un éditeur</string>
     <string name="error_exporting_csv">Erreur lors de l\'export CSV</string>
     <string name="no_analytics">Aucune analytique</string>
     <string name="remove">Supprimer</string>
-    <string name="remove_lines_above">Supprimer les lignes au-dessus de </string>
+    <string name="remove_lines_above">Supprimer les lignes au-dessus de</string>
     <string name="clear_old_sessions">Effacer les anciennes sessions</string>
     <string name="name">Nom</string>
     <string name="time">Heure</string>
     <string name="filter">Filtrer</string>
-    <string name="export_csv">Exporter CSV</string>
+    <string name="export_csv">Exporter en CSV</string>
     <string name="auto_scroll">Défilement auto</string>
     <string name="invert_list">Inverser la liste</string>
-    <string name="caches">Caches</string>
-    <string name="files">Fichiers</string>
     <string name="date">Date</string>
     <string name="size">Taille</string>
     <string name="with_folders_size">Avec taille des dossiers</string>
     <string name="deeplink_removed">Deeplink supprimé de l\'historique</string>
     <string name="fill_deeplink_parts">Tous les champs du deeplink doivent être remplis</string>
-    <string name="freeform_link">lien libre</string>
+    <string name="freeform_link">lien</string>
 </resources>

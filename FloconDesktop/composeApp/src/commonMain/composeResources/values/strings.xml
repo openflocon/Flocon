@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">Flocon</string>
     <string name="open_external">Open in external editor</string>
-    <string name="submit">Submit</string>
     <string name="error_exporting_csv">Error while exporting csv</string>
     <string name="no_analytics">No analytics</string>
     <string name="remove">Remove</string>
-    <string name="remove_lines_above">Remove lines above </string>
+    <string name="remove_lines_above">Remove lines above</string>
     <string name="clear_old_sessions">Clear old sessions</string>
     <string name="name">Name</string>
     <string name="time">Time</string>
@@ -13,8 +12,6 @@
     <string name="export_csv">Export CSV</string>
     <string name="auto_scroll">Auto scroll</string>
     <string name="invert_list">Invert list</string>
-    <string name="caches">Caches</string>
-    <string name="files">Files</string>
     <string name="date">Date</string>
     <string name="size">Size</string>
     <string name="with_folders_size">With folders size</string>
