@@ -16,53 +16,54 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DashboardView(
-        viewState: DashboardViewState,
-        onClickButton: (buttonId: String) -> Unit,
-        submitTextField: (textFieldId: String, value: String) -> Unit,
-        submitForm: (formId: String, values: Map<String, Any>) -> Unit,
-        onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
-        onOpenExternalClicked: (content: String) -> Unit,
-        arrangement: DashboardArrangement,
-        modifier: Modifier = Modifier,
+    viewState: DashboardViewState,
+    onClickButton: (buttonId: String) -> Unit,
+    submitTextField: (textFieldId: String, value: String) -> Unit,
+    submitForm: (formId: String, values: Map<String, Any>) -> Unit,
+    onUpdateCheckBox: (checkBoxId: String, value: Boolean) -> Unit,
+    onOpenExternalClicked: (content: String) -> Unit,
+    arrangement: DashboardArrangement,
+    modifier: Modifier = Modifier,
 ) {
-        LazyVerticalStaggeredGrid(
-                modifier = modifier,
-                columns =
-                        when (arrangement) {
-                                is DashboardArrangement.Adaptive ->
-                                        StaggeredGridCells.Adaptive(minSize = 300.dp)
-                                is DashboardArrangement.Fixed ->
-                                        StaggeredGridCells.Fixed(arrangement.itemsPerRow)
-                        },
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalItemSpacing = 8.dp,
-        ) {
-                items(viewState.items) {
-                        DashboardContainerView(
-                                modifier = Modifier.fillMaxWidth(),
-                                viewState = it,
-                                onClickButton = onClickButton,
-                                submitTextField = submitTextField,
-                                submitForm = submitForm,
-                                onUpdateCheckBox = onUpdateCheckBox,
-                                onOpenExternalClicked = onOpenExternalClicked,
-                        )
-                }
+    LazyVerticalStaggeredGrid(
+        modifier = modifier,
+        columns =
+            when (arrangement) {
+                is DashboardArrangement.Adaptive ->
+                    StaggeredGridCells.Adaptive(minSize = 300.dp)
+
+                is DashboardArrangement.Fixed ->
+                    StaggeredGridCells.Fixed(arrangement.itemsPerRow)
+            },
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalItemSpacing = 8.dp,
+    ) {
+        items(viewState.items) {
+            DashboardContainerView(
+                modifier = Modifier.fillMaxWidth(),
+                viewState = it,
+                onClickButton = onClickButton,
+                submitTextField = submitTextField,
+                submitForm = submitForm,
+                onUpdateCheckBox = onUpdateCheckBox,
+                onOpenExternalClicked = onOpenExternalClicked,
+            )
         }
+    }
 }
 
 @Composable
 @Preview
 private fun DashboardViewPreview() {
-        FloconTheme {
-                DashboardView(
-                        viewState = previewDashboardViewState(),
-                        onClickButton = {},
-                        submitTextField = { _, _ -> },
-                        submitForm = { _, _ -> },
-                        onUpdateCheckBox = { _, _ -> },
-                        onOpenExternalClicked = {},
-                        arrangement = DashboardArrangement.Adaptive
-                )
-        }
+    FloconTheme {
+        DashboardView(
+            viewState = previewDashboardViewState(),
+            onClickButton = {},
+            submitTextField = { _, _ -> },
+            submitForm = { _, _ -> },
+            onUpdateCheckBox = { _, _ -> },
+            onOpenExternalClicked = {},
+            arrangement = DashboardArrangement.Adaptive
+        )
+    }
 }

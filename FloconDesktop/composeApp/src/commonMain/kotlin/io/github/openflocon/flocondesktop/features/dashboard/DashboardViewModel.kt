@@ -29,44 +29,44 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DashboardViewModel(
-        private val observeCurrentDeviceDashboardUseCase: ObserveCurrentDeviceDashboardUseCase,
-        private val sendClickEventToDeviceDeviceUseCase: SendClickEventToDeviceDeviceUseCase,
-        private val submitFormToDeviceDeviceUseCase: SubmitFormToDeviceDeviceUseCase,
-        private val submitTextFieldToDeviceDeviceUseCase: SubmitTextFieldToDeviceDeviceUseCase,
-        private val sendCheckBoxUpdateDeviceDeviceUseCase: SendCheckBoxUpdateDeviceDeviceUseCase,
-        private val dashboardSelectorDelegate: DashboardSelectorDelegate,
-        private val dispatcherProvider: DispatcherProvider,
-        private val feedbackDisplayer: FeedbackDisplayer,
-        private val deleteCurrentDeviceSelectedDashboardUseCase:
-                DeleteCurrentDeviceSelectedDashboardUseCase,
-        private val deleteDashboardUseCase: DeleteDashboardUseCase,
-        private val observeDashboardArrangementUseCase: ObserveDashboardArrangementUseCase,
-        private val selectDashboardArrangementUseCase: SelectDashboardArrangementUseCase,
-        private val openBodyDelegate: OpenBodyDelegate,
+    private val observeCurrentDeviceDashboardUseCase: ObserveCurrentDeviceDashboardUseCase,
+    private val sendClickEventToDeviceDeviceUseCase: SendClickEventToDeviceDeviceUseCase,
+    private val submitFormToDeviceDeviceUseCase: SubmitFormToDeviceDeviceUseCase,
+    private val submitTextFieldToDeviceDeviceUseCase: SubmitTextFieldToDeviceDeviceUseCase,
+    private val sendCheckBoxUpdateDeviceDeviceUseCase: SendCheckBoxUpdateDeviceDeviceUseCase,
+    private val dashboardSelectorDelegate: DashboardSelectorDelegate,
+    private val dispatcherProvider: DispatcherProvider,
+    private val feedbackDisplayer: FeedbackDisplayer,
+    private val deleteCurrentDeviceSelectedDashboardUseCase:
+    DeleteCurrentDeviceSelectedDashboardUseCase,
+    private val deleteDashboardUseCase: DeleteDashboardUseCase,
+    private val observeDashboardArrangementUseCase: ObserveDashboardArrangementUseCase,
+    private val selectDashboardArrangementUseCase: SelectDashboardArrangementUseCase,
+    private val openBodyDelegate: OpenBodyDelegate,
 ) : ViewModel(dashboardSelectorDelegate) {
 
     val deviceDashboards: StateFlow<DashboardsStateUiModel> =
-            dashboardSelectorDelegate.deviceDashboards
+        dashboardSelectorDelegate.deviceDashboards
 
     val arrangement: StateFlow<DashboardArrangement> =
-            observeDashboardArrangementUseCase()
-                    .map { it.toUi() }
-                    .flowOn(dispatcherProvider.viewModel)
-                    .stateIn(
-                            viewModelScope,
-                            SharingStarted.WhileSubscribed(5_000),
-                            DashboardArrangement.Adaptive,
-                    )
+        observeDashboardArrangementUseCase()
+            .map { it.toUi() }
+            .flowOn(dispatcherProvider.viewModel)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                DashboardArrangement.Adaptive,
+            )
 
     val state: StateFlow<DashboardViewState?> =
-            observeCurrentDeviceDashboardUseCase()
-                    .map { it?.toUi() }
-                    .flowOn(dispatcherProvider.viewModel)
-                    .stateIn(
-                            viewModelScope,
-                            SharingStarted.WhileSubscribed(5_000),
-                            null,
-                    )
+        observeCurrentDeviceDashboardUseCase()
+            .map { it?.toUi() }
+            .flowOn(dispatcherProvider.viewModel)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                null,
+            )
 
     fun onVisible() {
         // databaseSelectorDelegate.start()
@@ -121,13 +121,13 @@ class DashboardViewModel(
     fun onArrangementClicked(arrangement: DashboardArrangement) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             selectDashboardArrangementUseCase(
-                    when (arrangement) {
-                        is DashboardArrangement.Adaptive -> DashboardArrangementDomainModel.Adaptive
-                        is DashboardArrangement.Fixed ->
-                                DashboardArrangementDomainModel.Fixed(
-                                        itemsPerRow = arrangement.itemsPerRow
-                                )
-                    }
+                when (arrangement) {
+                    is DashboardArrangement.Adaptive -> DashboardArrangementDomainModel.Adaptive
+                    is DashboardArrangement.Fixed ->
+                        DashboardArrangementDomainModel.Fixed(
+                            itemsPerRow = arrangement.itemsPerRow
+                        )
+                }
             )
         }
     }
