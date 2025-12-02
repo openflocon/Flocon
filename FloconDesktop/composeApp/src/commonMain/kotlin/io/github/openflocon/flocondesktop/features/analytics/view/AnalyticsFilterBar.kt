@@ -5,18 +5,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.filter
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.runtime.State
 
 @Composable
@@ -33,7 +29,7 @@ fun AnalyticsFilterBar(
     ) {
         FilterBar(
             filterText = filterText,
-            placeholderText = "Filter",
+            placeholderText = stringResource(Res.string.filter),
             modifier = Modifier.weight(1f),
             onTextChange = {
                 onFilterTextChanged(it)

@@ -164,7 +164,8 @@ fun DashboardContainerView(
                         rowItem =
                             DashboardContainerViewState.RowItem.Button(
                                 id = "_",
-                                text = viewState.containerConfig.submitText ?: stringResource(Res.string.submit),
+                                text = viewState.containerConfig.submitText
+                                    ?: stringResource(Res.string.submit),
                             ),
                     )
                 }

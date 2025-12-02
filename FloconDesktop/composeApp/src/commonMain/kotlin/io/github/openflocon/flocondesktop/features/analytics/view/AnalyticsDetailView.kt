@@ -27,12 +27,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.name
+import flocondesktop.composeapp.generated.resources.time
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsDetailViewModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -71,14 +75,14 @@ private fun Content(
             ) {
                 AnalyticsDetailLineTextView(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Name",
+                    label = stringResource(Res.string.name),
                     value = uiState.eventName,
                     labelWidth = linesLabelWidth,
                     withDivider = false,
                 )
                 AnalyticsDetailLineTextView(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Time",
+                    label = stringResource(Res.string.time),
                     value = uiState.dateFormatted,
                     labelWidth = linesLabelWidth,
                     withDivider = false,

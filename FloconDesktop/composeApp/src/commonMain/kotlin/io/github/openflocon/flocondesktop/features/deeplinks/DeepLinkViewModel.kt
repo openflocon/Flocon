@@ -2,6 +2,9 @@ package io.github.openflocon.flocondesktop.features.deeplinks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.deeplink_removed
+import flocondesktop.composeapp.generated.resources.fill_deeplink_parts
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.deeplink.usecase.ExecuteDeeplinkUseCase
@@ -12,14 +15,13 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.deeplinks.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class DeepLinkViewModel(
     private val dispatcherProvider: DispatcherProvider,
@@ -51,7 +53,7 @@ class DeepLinkViewModel(
                 deeplinkId = viewState.deeplinkId,
             )
             feedbackDisplayer.displayMessage(
-                "Deeplink removed from history",
+                getString(Res.string.deeplink_removed),
                 type = FeedbackDisplayer.MessageType.Error,
             )
         }
@@ -62,7 +64,7 @@ class DeepLinkViewModel(
             val numberOfTextFields = viewState.parts.count { it is DeeplinkPart.TextField }
             if (numberOfTextFields != values.values.filterNot { it.isBlank() }.size) {
                 feedbackDisplayer.displayMessage(
-                    "All deeplink parts should be filled",
+                    getString(Res.string.fill_deeplink_parts),
                     type = FeedbackDisplayer.MessageType.Error,
                 )
                 return@launch

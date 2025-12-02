@@ -23,6 +23,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.clear_old_sessions
+import flocondesktop.composeapp.generated.resources.remove
+import flocondesktop.composeapp.generated.resources.remove_lines_above
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowUiModel
@@ -30,6 +34,7 @@ import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyt
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -108,18 +113,20 @@ fun AnalyticsRowView(
     }
 }
 
-
 @Composable
 private fun contextualActions(
     onAction: (AnalyticsAction) -> Unit,
     state: AnalyticsRowUiModel
 ): List<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
+    val removeString = stringResource(Res.string.remove)
+    val removeLinesAboveString = stringResource(Res.string.remove_lines_above)
+    val clearOldSessionsString = stringResource(Res.string.clear_old_sessions)
     return remember(state) {
         buildList {
             add(
                 FloconContextMenuItem.Item(
-                    label = "Remove",
+                    label = removeString,
                     onClick = {
                         onActionCallback(AnalyticsAction.Remove(state))
                     }
@@ -127,7 +134,7 @@ private fun contextualActions(
             )
             add(
                 FloconContextMenuItem.Item(
-                    label = "Remove lines above ",
+                    label = removeLinesAboveString,
                     onClick = {
                         onActionCallback(AnalyticsAction.RemoveLinesAbove(state))
                     }
@@ -135,7 +142,7 @@ private fun contextualActions(
             )
             add(
                 FloconContextMenuItem.Item(
-                    label =  "Clear old sessions",
+                    label = clearOldSessionsString,
                     onClick = {
                         onActionCallback(AnalyticsAction.ClearOldSession)
                     }

@@ -14,6 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.filter
+import flocondesktop.composeapp.generated.resources.with_folders_size
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
@@ -25,6 +28,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -66,7 +70,7 @@ fun FilesTopBar(
             FloconIconToggleButton(
                 value = options.withFoldersSize,
                 onValueChange = updateWithFoldersSize,
-                tooltip = "With folders size",
+                tooltip = stringResource(Res.string.with_folders_size),
             ) {
                 FloconIcon(
                     imageVector = Icons.Outlined.FolderOpen

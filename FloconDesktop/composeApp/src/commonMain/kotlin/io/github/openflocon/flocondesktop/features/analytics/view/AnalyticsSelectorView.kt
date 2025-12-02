@@ -17,6 +17,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.no_analytics
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -26,6 +28,7 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AnalyticsSelectorView(
@@ -51,7 +54,12 @@ internal fun AnalyticsSelectorView(
                 containerColor = FloconTheme.colorPalette.secondary
             ) {
                 when (analyticsState) {
-                    AnalyticsStateUiModel.Empty -> Text("No analytics", style = FloconTheme.typography.bodySmall)
+                    AnalyticsStateUiModel.Empty ->
+                        Text(
+                            stringResource(Res.string.no_analytics),
+                            style = FloconTheme.typography.bodySmall
+                        )
+
                     AnalyticsStateUiModel.Loading -> FloconLinearProgressIndicator()
                     is AnalyticsStateUiModel.WithContent -> {
                         Text(text = analyticsState.selected.name, style = FloconTheme.typography.bodySmall)
