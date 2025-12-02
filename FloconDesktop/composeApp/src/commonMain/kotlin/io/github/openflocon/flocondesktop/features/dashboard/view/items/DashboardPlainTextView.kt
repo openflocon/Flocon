@@ -15,13 +15,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.open_external
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -51,7 +53,7 @@ internal fun DashboardPlainTextView(
                 )
                 Box(modifier = Modifier.align(Alignment.CenterEnd)) {
                     FloconIconButton(
-                        tooltip = "Open in external editor",
+                        tooltip = stringResource(Res.string.open_external),
                         imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                         onClick = { onOpenExternalClicked(rowItem.value) },
                     )
@@ -93,9 +95,10 @@ internal fun DashboardPlainTextViewPreview() {
     FloconTheme {
         DashboardPlainTextView(
             modifier =
-                Modifier.fillMaxWidth().background(
-                    FloconTheme.colorPalette.primary,
-                ),
+                Modifier.fillMaxWidth()
+                    .background(
+                        FloconTheme.colorPalette.primary,
+                    ),
             rowItem = rowItem,
             onOpenExternalClicked = {},
         )
@@ -139,9 +142,10 @@ internal fun DashboardPlainTextViewPreview_json() {
     FloconTheme {
         DashboardPlainTextView(
             modifier =
-                Modifier.fillMaxWidth().background(
-                    FloconTheme.colorPalette.primary,
-                ),
+                Modifier.fillMaxWidth()
+                    .background(
+                        FloconTheme.colorPalette.primary,
+                    ),
             rowItem = rowItem,
             onOpenExternalClicked = {},
         )
