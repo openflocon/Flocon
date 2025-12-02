@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeHotReload)
-    alias(libs.plugins.ktlint)
 }
 
 kotlin {
@@ -48,18 +47,5 @@ kotlin {
                 implementation(libs.kotlin.test)
             }
         }
-    }
-}
-
-ktlint {
-    android.set(false)
-    outputToConsole.set(true)
-    filter {
-        exclude { element ->
-            val path = element.file.path
-            path.contains("/generated/")
-        }
-        include("**/kotlin/**")
-        exclude("**/generated/**")
     }
 }

@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinx.serialization)
-
-    alias(libs.plugins.ktlint)
 }
 
 kotlin {
@@ -46,18 +44,5 @@ kotlin {
             implementation(libs.ktor.clientCio)
             implementation(libs.ktor.clientContentNegociation)
         }
-    }
-}
-
-ktlint {
-    android.set(false)
-    outputToConsole.set(true)
-    filter {
-        exclude { element ->
-            val path = element.file.path
-            path.contains("/generated/")
-        }
-        include("**/kotlin/**")
-        exclude("**/generated/**")
     }
 }

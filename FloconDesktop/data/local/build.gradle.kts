@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.ktlint)
 }
 
 kotlin {
@@ -48,17 +47,4 @@ dependencies {
 
 room {
     schemaDirectory("$projectDir/schemas")
-}
-
-ktlint {
-    android.set(false)
-    outputToConsole.set(true)
-    filter {
-        exclude { element ->
-            val path = element.file.path
-            path.contains("/generated/")
-        }
-        include("**/kotlin/**")
-        exclude("**/generated/**")
-    }
 }

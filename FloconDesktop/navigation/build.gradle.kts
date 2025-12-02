@@ -6,7 +6,6 @@ plugins {
 
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.ktlint)
 
     alias(libs.plugins.kotlinx.serialization)
 }
@@ -46,18 +45,5 @@ kotlin {
 
             api(libs.kotlinx.serialization.core)
         }
-    }
-}
-
-ktlint {
-    android.set(false)
-    outputToConsole.set(true)
-    filter {
-        exclude { element ->
-            val path = element.file.path
-            path.contains("/generated/")
-        }
-        include("**/kotlin/**")
-        exclude("**/generated/**")
     }
 }
