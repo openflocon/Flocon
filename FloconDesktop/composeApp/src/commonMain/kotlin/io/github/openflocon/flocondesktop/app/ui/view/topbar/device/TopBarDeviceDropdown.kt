@@ -2,7 +2,6 @@
 
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.device
 
-
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -80,7 +79,6 @@ internal fun TopBarDeviceDropdown(
         }
     }
 }
-
 
 @Composable
 private fun Empty() {

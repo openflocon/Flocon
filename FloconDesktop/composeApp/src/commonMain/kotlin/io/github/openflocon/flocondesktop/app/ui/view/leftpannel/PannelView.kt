@@ -140,7 +140,6 @@ private fun PannelViewPreview_Selected() {
     }
 }
 
-
 @Composable
 @Preview
 private fun PannelViewPreview_Disabled() {

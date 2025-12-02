@@ -62,75 +62,68 @@ object DefaultSqlPalette : SqlColorPalette {
     override val comments = Color(0xFF888888)
 }
 
+class ColorsTransformation : VisualTransformation {
 
+    val colorPalette: SqlColorPalette = DefaultSqlPalette
 
-class ColorsTransformation() : VisualTransformation {
+    private fun buildAnnotatedStringWithColors(text: AnnotatedString): AnnotatedString = buildAnnotatedString {
+        val sqlKeywords = listOf(
+            "SELECT", "FROM", "WHERE", "AND", "OR", "INSERT", "INTO", "VALUES",
+            "UPDATE", "SET", "DELETE", "CREATE", "TABLE", "DROP", "ALTER",
+            "JOIN", "LEFT", "RIGHT", "INNER", "OUTER", "ON", "AS", "DISTINCT",
+            "GROUP", "BY", "ORDER", "LIMIT", "HAVING"
+        )
 
-    val colorPalette : SqlColorPalette = DefaultSqlPalette
+        // Regex to split the SQL text into tokens:
+        // - block comments /* ... */
+        // - string literals '...'
+        // - numbers
+        // - words and whitespace
+        // - any other characters
+        val regex = Regex(
+            """(/\*[\s\S]*?\*/|'[^']*'|\b\d+\b|\b\w+\b|\s+|.)""",
+            RegexOption.MULTILINE
+        )
 
-    private fun buildAnnotatedStringWithColors(text: AnnotatedString): AnnotatedString {
-        return buildAnnotatedString {
-            val sqlKeywords = listOf(
-                "SELECT", "FROM", "WHERE", "AND", "OR", "INSERT", "INTO", "VALUES",
-                "UPDATE", "SET", "DELETE", "CREATE", "TABLE", "DROP", "ALTER",
-                "JOIN", "LEFT", "RIGHT", "INNER", "OUTER", "ON", "AS", "DISTINCT",
-                "GROUP", "BY", "ORDER", "LIMIT", "HAVING"
-            )
+        val matches = regex.findAll(text.text)
+        for (match in matches) {
+            val token = match.value
+            val upper = token.uppercase()
 
-            // Regex to split the SQL text into tokens:
-            // - block comments /* ... */
-            // - string literals '...'
-            // - numbers
-            // - words and whitespace
-            // - any other characters
-            val regex = Regex(
-                """(/\*[\s\S]*?\*/|'[^']*'|\b\d+\b|\b\w+\b|\s+|.)""",
-                RegexOption.MULTILINE
-            )
+            when {
+                // Block comment: /* ... */
+                token.startsWith("/*") && token.endsWith("*/") -> withStyle(
+                    SpanStyle(color = colorPalette.comments)
+                ) { append(token) }
 
-            val matches = regex.findAll(text.text)
-            for (match in matches) {
-                val token = match.value
-                val upper = token.uppercase()
+                // String literal: '...'
+                token.startsWith("'") && token.endsWith("'") -> withStyle(
+                    SpanStyle(color = colorPalette.stringColor)
+                ) { append(token) }
 
-                when {
-                    // Block comment: /* ... */
-                    token.startsWith("/*") && token.endsWith("*/") -> withStyle(
-                        SpanStyle(color = colorPalette.comments)
-                    ) { append(token) }
+                // Numeric literal
+                token.matches(Regex("\\d+")) -> withStyle(
+                    SpanStyle(color = colorPalette.numberColor)
+                ) { append(token) }
 
-                    // String literal: '...'
-                    token.startsWith("'") && token.endsWith("'") -> withStyle(
-                        SpanStyle(color = colorPalette.stringColor)
-                    ) { append(token) }
+                // SQL keyword
+                sqlKeywords.contains(upper.trim()) -> withStyle(
+                    SpanStyle(color = colorPalette.keywordColor, fontWeight = FontWeight.Bold)
+                ) { append(token) }
 
-                    // Numeric literal
-                    token.matches(Regex("\\d+")) -> withStyle(
-                        SpanStyle(color = colorPalette.numberColor)
-                    ) { append(token) }
-
-                    // SQL keyword
-                    sqlKeywords.contains(upper.trim()) -> withStyle(
-                        SpanStyle(color = colorPalette.keywordColor, fontWeight = FontWeight.Bold)
-                    ) { append(token) }
-
-                    // Default text color
-                    else -> withStyle(
-                        SpanStyle(color = colorPalette.textColor)
-                    ) { append(token) }
-                }
+                // Default text color
+                else -> withStyle(
+                    SpanStyle(color = colorPalette.textColor)
+                ) { append(token) }
             }
         }
     }
 
-    override fun filter(text: AnnotatedString): TransformedText {
-        return TransformedText(
-            buildAnnotatedStringWithColors(text),
-            OffsetMapping.Identity
-        )
-    }
+    override fun filter(text: AnnotatedString): TransformedText = TransformedText(
+        buildAnnotatedStringWithColors(text),
+        OffsetMapping.Identity
+    )
 }
-
 
 @Composable
 fun DatabaseQueryView(
@@ -158,7 +151,6 @@ fun DatabaseQueryView(
         )
 
         val highlightedText = remember(query) {
-
         }
 
         FloconTextField(
@@ -174,8 +166,8 @@ fun DatabaseQueryView(
             modifier = Modifier.fillMaxWidth()
                 .onKeyEvent { keyEvent ->
                     // detect CMD + Enter
-                    if (keyEvent.type == KeyEventType.KeyDown
-                        && keyEvent.key == androidx.compose.ui.input.key.Key.Enter &&
+                    if (keyEvent.type == KeyEventType.KeyDown &&
+                        keyEvent.key == androidx.compose.ui.input.key.Key.Enter &&
                         (keyEvent.isMetaPressed || keyEvent.isCtrlPressed)
                     ) {
                         onAction(DatabaseTabAction.ExecuteQuery(query))
@@ -217,9 +209,7 @@ fun DatabaseQueryView(
                     )
                     Text("Run Query", color = contentColor)
                 }
-
             }
-
 
             Row(
                 Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -230,7 +220,8 @@ fun DatabaseQueryView(
                     checked = autoUpdate,
                     onCheckedChange = {
                         onAction(DatabaseTabAction.UpdateAutoUpdate(it))
-                    }, colors = CheckboxDefaults.colors(
+                    },
+                    colors = CheckboxDefaults.colors(
                         uncheckedColor = FloconTheme.colorPalette.secondary,
                         checkedColor = FloconTheme.colorPalette.secondary,
                     )
@@ -246,7 +237,6 @@ fun DatabaseQueryView(
         }
     }
 }
-
 
 @Preview
 @Composable

@@ -30,5 +30,4 @@ class AnalyticsDetailViewModel(
                 properties = emptyList()
             )
         )
-
 }

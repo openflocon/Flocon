@@ -20,33 +20,26 @@ internal fun mapListToUi(
 internal fun DeviceDomainModel.mapToUi(
     activeDevices: Set<DeviceIdAndPackageNameDomainModel>,
     currentDeviceCapabilities: DeviceCapabilitiesDomainModel?,
-): DeviceItemUiModel =
-    DeviceItemUiModel(
-        deviceName = deviceName,
-        id = deviceId,
-        isActive = activeDevices.any { it.deviceId == deviceId },
-        platform = mapToPlatformUi(platform),
-        canScreenshot = currentDeviceCapabilities?.screenshot == true,
-        canScreenRecord = currentDeviceCapabilities?.recordScreen == true,
-        canRestart = currentDeviceCapabilities?.restart == true,
-    )
+): DeviceItemUiModel = DeviceItemUiModel(
+    deviceName = deviceName,
+    id = deviceId,
+    isActive = activeDevices.any { it.deviceId == deviceId },
+    platform = mapToPlatformUi(platform),
+    canScreenshot = currentDeviceCapabilities?.screenshot == true,
+    canScreenRecord = currentDeviceCapabilities?.recordScreen == true,
+    canRestart = currentDeviceCapabilities?.restart == true,
+)
 
-
-private fun mapToPlatformUi(platform: String): DeviceItemUiModel.Platform {
-    return when (platform) {
-        "android" -> DeviceItemUiModel.Platform.Android
-        "desktop" -> DeviceItemUiModel.Platform.Desktop
-        "ios" -> DeviceItemUiModel.Platform.ios
-        else -> DeviceItemUiModel.Platform.Unknown
-    }
+private fun mapToPlatformUi(platform: String): DeviceItemUiModel.Platform = when (platform) {
+    "android" -> DeviceItemUiModel.Platform.Android
+    "desktop" -> DeviceItemUiModel.Platform.Desktop
+    "ios" -> DeviceItemUiModel.Platform.ios
+    else -> DeviceItemUiModel.Platform.Unknown
 }
 
-
-internal fun mapAppsToUi(devices: List<DeviceAppDomainModel>): List<DeviceAppUiModel> =
-    devices.map {
-        it.mapToUi()
-    }
-
+internal fun mapAppsToUi(devices: List<DeviceAppDomainModel>): List<DeviceAppUiModel> = devices.map {
+    it.mapToUi()
+}
 
 internal fun DeviceAppDomainModel.mapToUi() = DeviceAppUiModel(
     name = name,

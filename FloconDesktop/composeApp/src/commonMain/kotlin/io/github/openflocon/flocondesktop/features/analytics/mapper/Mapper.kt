@@ -24,7 +24,6 @@ internal fun AnalyticsItemDomainModel.mapToUi(
     isFromOldAppInstance = deviceIdAndPackageName?.appInstance?.let { it != this.appInstance } ?: false
 )
 
-
 internal fun AnalyticsItemDomainModel.mapToDetailUi(
     deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?
 ): AnalyticsDetailUiModel = AnalyticsDetailUiModel(

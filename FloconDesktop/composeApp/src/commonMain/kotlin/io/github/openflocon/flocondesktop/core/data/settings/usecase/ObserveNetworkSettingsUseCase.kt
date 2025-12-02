@@ -9,5 +9,4 @@ class ObserveNetworkSettingsUseCase(
 ) {
 
     operator fun invoke(): Flow<NetworkSettings> = settingsRepository.networkSettingsFlow
-
 }

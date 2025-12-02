@@ -34,13 +34,14 @@ class NetworkDetailDelegate(
     private val navigationState: MainFloconNavigationState,
     observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
     dispatcherProvider: DispatcherProvider
-) : CloseableScoped by closeableDelegate, KoinComponent {
+) : CloseableScoped by closeableDelegate,
+    KoinComponent {
 
     private val openBodyDelegate: OpenBodyDelegate by inject()
 
-    private val _requestId = MutableStateFlow("")
+    private val requestId = MutableStateFlow("")
 
-    val uiState: StateFlow<NetworkDetailViewState> = _requestId.flatMapLatest {
+    val uiState: StateFlow<NetworkDetailViewState> = requestId.flatMapLatest {
         observeNetworkRequestsByIdUseCase(it)
     }
         .distinctUntilChanged()
@@ -73,7 +74,7 @@ class NetworkDetailDelegate(
         )
 
     fun setRequestId(requestId: String) {
-        _requestId.update { requestId }
+        this@NetworkDetailDelegate.requestId.update { requestId }
     }
 
     fun onAction(action: NetworkDetailAction) {
@@ -100,5 +101,4 @@ class NetworkDetailDelegate(
             onJsonDetail(NetworkDetailAction.JsonDetail(json = it))
         }
     }
-
 }

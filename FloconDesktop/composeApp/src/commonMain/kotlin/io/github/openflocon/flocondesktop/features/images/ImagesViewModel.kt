@@ -44,7 +44,7 @@ class ImagesViewModel(
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ImagesStateUiModel.Idle)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ImagesStateUiModel.Idle)
 
     fun onVisible() {
     }
@@ -54,7 +54,6 @@ class ImagesViewModel(
 
     fun onFilterChanged(text: String) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-
         }
     }
 
@@ -64,4 +63,3 @@ class ImagesViewModel(
         }
     }
 }
-

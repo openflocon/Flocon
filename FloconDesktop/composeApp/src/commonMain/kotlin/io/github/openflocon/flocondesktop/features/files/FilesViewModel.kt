@@ -43,7 +43,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-
 class FilesViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val observeFolderContentUseCase: ObserveFolderContentUseCase,
@@ -66,7 +65,8 @@ class FilesViewModel(
             withFoldersSize = withFoldersSize,
         )
     }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5_000), FilesStateUiModel.Options(
+        viewModelScope, SharingStarted.WhileSubscribed(5_000),
+        FilesStateUiModel.Options(
             withFoldersSize = false,
         )
     )
@@ -75,32 +75,32 @@ class FilesViewModel(
         current = null,
         backStack = emptyList(),
         files =
-            listOf(
-                FileUiModel(
-                    name = "Caches",
-                    type = FileTypeUiModel.Folder,
-                    path = FilePathUiModel.Constants.CachesDir,
-                    sizeFormatted = null,
-                    icon = Icons.Outlined.Folder,
-                    dateFormatted = null,
-                    contextualActions = buildContextualActions(
-                        isConstant = true,
-                        isFolder = true,
-                    ),
-                ),
-                FileUiModel(
-                    name = "Files",
-                    type = FileTypeUiModel.Folder,
-                    path = FilePathUiModel.Constants.FilesDir,
-                    sizeFormatted = null,
-                    icon = Icons.Outlined.Folder,
-                    dateFormatted = null,
-                    contextualActions = buildContextualActions(
-                        isConstant = true,
-                        isFolder = true,
-                    ),
+        listOf(
+            FileUiModel(
+                name = "Caches",
+                type = FileTypeUiModel.Folder,
+                path = FilePathUiModel.Constants.CachesDir,
+                sizeFormatted = null,
+                icon = Icons.Outlined.Folder,
+                dateFormatted = null,
+                contextualActions = buildContextualActions(
+                    isConstant = true,
+                    isFolder = true,
                 ),
             ),
+            FileUiModel(
+                name = "Files",
+                type = FileTypeUiModel.Folder,
+                path = FilePathUiModel.Constants.FilesDir,
+                sizeFormatted = null,
+                icon = Icons.Outlined.Folder,
+                dateFormatted = null,
+                contextualActions = buildContextualActions(
+                    isConstant = true,
+                    isFolder = true,
+                ),
+            ),
+        ),
         headerState = FilesHeaderStateUiModel(
             sortedBy = sortedBy.value,
             totalSizeFormatted = null,
@@ -141,8 +141,10 @@ class FilesViewModel(
                         FilesStateUiModel(
                             backStack = selectedFile.backStack.map { it.toUi(options.withFoldersSize) },
                             current = selectedFile.current.toUi(options.withFoldersSize),
-                            files = (sorted
-                                ?: emptyList()).map { it.toUi(options.withFoldersSize) },
+                            files = (
+                                sorted
+                                    ?: emptyList()
+                                ).map { it.toUi(options.withFoldersSize) },
                             headerState = FilesHeaderStateUiModel(
                                 sortedBy = sortedBy,
                                 totalSizeFormatted = computeTotalSize(
@@ -159,12 +161,11 @@ class FilesViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), defaultValue())
 
     private fun computeTotalSize(
-        withFoldersSize: Boolean, sorted: List<FileDomainModel>?
-    ): String? {
-        return if (!withFoldersSize) null
-        else sorted?.sumOf { it.size }?.let {
-            ByteFormatter.formatBytes(it)
-        }
+        withFoldersSize: Boolean,
+        sorted: List<FileDomainModel>?
+    ): String? = if (!withFoldersSize) null
+    else sorted?.sumOf { it.size }?.let {
+        ByteFormatter.formatBytes(it)
     }
 
     private fun sort(
@@ -250,7 +251,7 @@ class FilesViewModel(
             FileTypeUiModel.Video,
             FileTypeUiModel.Text,
             FileTypeUiModel.Other,
-                -> {
+            -> {
                 (fileUiModel.path.toDomain() as? FilePathDomainModel.Real)?.let {
                     viewModelScope.launch(dispatcherProvider.viewModel) {
                         downloadFileUseCase(it).alsoSuccess {

@@ -17,7 +17,7 @@ fun DeviceDataBaseDomainModel.toUi(selected: DatabaseAndTablesDomainModel): Devi
         id = this.id,
         name = this.name,
         isSelected = isSelected,
-        tables = if(isSelected) {
+        tables = if (isSelected) {
             selected.tables.map {
                 it.toUi()
             }
@@ -25,23 +25,21 @@ fun DeviceDataBaseDomainModel.toUi(selected: DatabaseAndTablesDomainModel): Devi
     )
 }
 
-fun DatabaseTableDomainModel.toUi() : TableUiModel {
-    return TableUiModel(
-        name = this.tableName,
-        columns = this.columns.map {
-            TableUiModel.ColumnUiModel(
-                name = it.name,
-                isPrimaryKey = it.primaryKey,
-                type = buildString {
-                    append(it.type)
-                    if(!it.nullable) {
-                        append(", NOT NULL")
-                    }
-                },
-            )
-        }
-    )
-}
+fun DatabaseTableDomainModel.toUi(): TableUiModel = TableUiModel(
+    name = this.tableName,
+    columns = this.columns.map {
+        TableUiModel.ColumnUiModel(
+            name = it.name,
+            isPrimaryKey = it.primaryKey,
+            type = buildString {
+                append(it.type)
+                if (!it.nullable) {
+                    append(", NOT NULL")
+                }
+            },
+        )
+    }
+)
 
 fun DatabaseExecuteSqlResponseDomainModel.toUi(): QueryResultUiModel = when (this) {
     is DatabaseExecuteSqlResponseDomainModel.Error -> QueryResultUiModel.Text(this.message)
@@ -51,18 +49,16 @@ fun DatabaseExecuteSqlResponseDomainModel.toUi(): QueryResultUiModel = when (thi
         QueryResultUiModel.Values(
             columns = this.columns,
             rows =
-                values.map {
-                    DatabaseRowUiModel(it)
-                },
+            values.map {
+                DatabaseRowUiModel(it)
+            },
         )
 
     is DatabaseExecuteSqlResponseDomainModel.UpdateDelete -> QueryResultUiModel.Text("Done, affected=$affectedCount")
 }
 
-internal fun DatabaseFavoriteQueryDomainModel.mapToUi() : DatabaseFavoriteQueryUiModel {
-    return DatabaseFavoriteQueryUiModel(
-        id = id,
-        databaseId = databaseId,
-        title = title,
-    )
-}
+internal fun DatabaseFavoriteQueryDomainModel.mapToUi(): DatabaseFavoriteQueryUiModel = DatabaseFavoriteQueryUiModel(
+    id = id,
+    databaseId = databaseId,
+    title = title,
+)

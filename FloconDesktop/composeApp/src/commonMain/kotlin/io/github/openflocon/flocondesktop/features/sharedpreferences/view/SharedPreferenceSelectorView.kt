@@ -17,9 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Collections
-import androidx.compose.material.icons.outlined.DataArray
-import androidx.compose.material.icons.outlined.Dataset
 import androidx.compose.material.icons.outlined.TableRows
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -81,8 +78,8 @@ fun SharedPreferenceSelectorView(
                     SharedPrefsStateUiModel.Loading -> Unit
                     is SharedPrefsStateUiModel.WithContent -> {
                         val filterText = remember { mutableStateOf("") }
-                        val filtered = remember(filterText.value,state) {
-                            if(filterText.value.isBlank()) {
+                        val filtered = remember(filterText.value, state) {
+                            if (filterText.value.isBlank()) {
                                 state
                             } else {
                                 state.copy(

@@ -205,7 +205,6 @@ private fun Request(
                     )
                 }
 
-
                 FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Request Size",
@@ -520,19 +519,19 @@ private fun NetworkDetailViewPreview() {
                 method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
                 statusLabel = "Status",
                 status =
-                    NetworkStatusUi(
-                        text = "200",
-                        status = NetworkStatusUi.Status.SUCCESS,
-                    ),
+                NetworkStatusUi(
+                    text = "200",
+                    status = NetworkStatusUi.Status.SUCCESS,
+                ),
                 requestHeaders =
-                    listOf(
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                    ),
+                listOf(
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                ),
                 requestBodyTitle = "Request - Body",
                 requestBody =
-                    """
+                """
                         {
                             "id": "123",
                             "name": "Flocon App",
@@ -550,7 +549,7 @@ private fun NetworkDetailViewPreview() {
                 requestSize = "0kb",
                 response = NetworkDetailViewState.Response.Success(
                     body =
-                        """
+                    """
                         {
                             "networkStatusUi": "success",
                             "message": "Data received and processed.",
@@ -564,13 +563,13 @@ private fun NetworkDetailViewPreview() {
                     canOpenResponseBody = true,
                     responseBodyIsNotBlank = true,
                     headers =
-                        listOf(
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                        ),
+                    listOf(
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                    ),
                 ),
                 graphQlSection = null,
                 imageUrl = null,

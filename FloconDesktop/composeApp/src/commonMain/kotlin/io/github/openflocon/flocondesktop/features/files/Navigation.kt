@@ -10,7 +10,6 @@ sealed interface FilesRoutes : FloconRoute {
 
     @Serializable
     data object Main : FilesRoutes
-
 }
 
 fun EntryProviderScope<FloconRoute>.filesRoutes() {

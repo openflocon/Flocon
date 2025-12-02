@@ -7,19 +7,17 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkIte
 
 fun FloconNetworkCallDomainModel.toUi(
     deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?
-): NetworkItemViewState {
-    return NetworkItemViewState(
-        uuid = callId,
-        dateFormatted = request.startTimeFormatted,
-        timeFormatted = response?.durationFormatted,
-        requestSize = request.byteSizeFormatted,
-        responseSize = responseByteSizeFormatted(),
-        domain = request.domainFormatted,
-        type = toTypeUi(this),
-        method = getMethodUi(this),
-        status = getStatusUi(this),
-        isMocked = request.isMocked,
-        isReplayed = isReplayed,
-        isFromOldAppInstance = deviceIdAndPackageName?.appInstance?.let { it != appInstance } ?: false
-    )
-}
+): NetworkItemViewState = NetworkItemViewState(
+    uuid = callId,
+    dateFormatted = request.startTimeFormatted,
+    timeFormatted = response?.durationFormatted,
+    requestSize = request.byteSizeFormatted,
+    responseSize = responseByteSizeFormatted(),
+    domain = request.domainFormatted,
+    type = toTypeUi(this),
+    method = getMethodUi(this),
+    status = getStatusUi(this),
+    isMocked = request.isMocked,
+    isReplayed = isReplayed,
+    isFromOldAppInstance = deviceIdAndPackageName?.appInstance?.let { it != appInstance } ?: false
+)

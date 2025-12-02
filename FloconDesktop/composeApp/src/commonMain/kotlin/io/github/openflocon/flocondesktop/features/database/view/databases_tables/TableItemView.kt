@@ -42,7 +42,6 @@ internal fun TableItemView(
 ) {
     var isOpened by remember(item.name) { mutableStateOf(false) }
     Column(modifier = modifier) {
-
         ContextualView(
             modifier = Modifier.fillMaxWidth(),
             items = remember(item) {

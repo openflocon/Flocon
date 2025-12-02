@@ -5,7 +5,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUi
 
 @Immutable
 data class FilesHeaderStateUiModel(
-    val sortedBy : SortedBy?,
+    val sortedBy: SortedBy?,
     val totalSizeFormatted: String?,
 ) {
 
@@ -21,5 +21,4 @@ fun previewFilesHeaderStateUiModel() = FilesHeaderStateUiModel(
     totalSizeFormatted = "2 MB"
 )
 
-fun FilesHeaderStateUiModel.isSorted(columnUiModel: FileColumnUiModel) : SortedByUiModel =
-    this.sortedBy?.takeIf { it.column == columnUiModel }?.sortedBy ?: SortedByUiModel.None
+fun FilesHeaderStateUiModel.isSorted(columnUiModel: FileColumnUiModel): SortedByUiModel = this.sortedBy?.takeIf { it.column == columnUiModel }?.sortedBy ?: SortedByUiModel.None

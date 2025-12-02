@@ -15,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
@@ -80,7 +79,7 @@ internal fun TableSelectorView(
                 .verticalScroll(rememberScrollState())
         ) {
             if (tablesState is TablesStateUiModel.WithContent) {
-                val filteredItems = remember(filterText,  tablesState.tables) {
+                val filteredItems = remember(filterText, tablesState.tables) {
                     tablesState.tables.filter {
                         it.name.contains(
                             filterText,

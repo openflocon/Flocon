@@ -39,7 +39,7 @@ internal class NetworkReplayDataSourceImpl : NetworkReplayDataSource {
             val duration = (endTime - startTime).toDouble()
             val body = result.bodyAsText()
             val size = body.length.toLong()
-            
+
             FloconNetworkCallDomainModel.Response.Success(
                 headers = result.headers.toMap().mapValues { it.value.joinToString(",") },
                 body = body,

@@ -68,26 +68,21 @@ internal class SettingsDataSourcePrefs(
         private val serializer: KSerializer<T>
     ) : ReadWriteProperty<SettingsDataSourcePrefs, T?> {
 
-        override fun getValue(thisRef: SettingsDataSourcePrefs, property: KProperty<*>): T {
-            return thisRef.settings.getStringOrNull(key)
-                ?.let { json.decodeFromString(serializer, it) }
-                ?: default
-        }
+        override fun getValue(thisRef: SettingsDataSourcePrefs, property: KProperty<*>): T = thisRef.settings.getStringOrNull(key)
+            ?.let { json.decodeFromString(serializer, it) }
+            ?: default
 
         override fun setValue(thisRef: SettingsDataSourcePrefs, property: KProperty<*>, value: T?) {
             thisRef.settings
                 .putString(key = key, value = json.encodeToString(serializer, value ?: return))
         }
-
     }
 
-    private inline fun <reified T : Any> String.classDelegateOf(default: T): ClassDelegate<T> {
-        return ClassDelegate(
-            key = this,
-            default = default,
-            serializer = serializer<T>()
-        )
-    }
+    private inline fun <reified T : Any> String.classDelegateOf(default: T): ClassDelegate<T> = ClassDelegate(
+        key = this,
+        default = default,
+        serializer = serializer<T>()
+    )
 
     companion object {
         private const val ADB_PATH = "adb_path"
@@ -95,5 +90,4 @@ internal class SettingsDataSourcePrefs(
 
         private const val NETWORK_SETTINGS = "network_settings"
     }
-
 }

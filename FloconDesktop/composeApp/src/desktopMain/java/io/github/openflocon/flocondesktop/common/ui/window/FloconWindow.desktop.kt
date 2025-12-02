@@ -23,15 +23,13 @@ data class FloconWindowStateDesktop(
     val windowState: WindowState,
 ) : FloconWindowState
 
-actual fun createFloconWindowState(size: DpSize?): FloconWindowState {
-    return FloconWindowStateDesktop(
-        WindowState(
-            placement = WindowPlacement.Floating,
-            position = WindowPosition(Alignment.Center),
-            size = size ?: defaultWindowSize
-        )
+actual fun createFloconWindowState(size: DpSize?): FloconWindowState = FloconWindowStateDesktop(
+    WindowState(
+        placement = WindowPlacement.Floating,
+        position = WindowPosition(Alignment.Center),
+        size = size ?: defaultWindowSize
     )
-}
+)
 
 // TODO Use this component for main window too
 @Composable

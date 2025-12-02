@@ -12,11 +12,9 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.deeplinks.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -34,10 +32,12 @@ class DeepLinkViewModel(
         observeCurrentDeviceDeeplinkUseCase(),
         observeCurrentDeviceDeeplinkHistoryUseCase()
     )
-        .mapLatest { (deepLinks, history) -> mapToUi(
-            deepLinks = deepLinks,
-            history = history,
-        ) }
+        .mapLatest { (deepLinks, history) ->
+            mapToUi(
+                deepLinks = deepLinks,
+                history = history,
+            )
+        }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,

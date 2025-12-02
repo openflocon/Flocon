@@ -28,7 +28,7 @@ fun generateInsertQuery(table: TableUiModel): String {
         appendLine(") VALUES (")
         table.columns.forEachIndexed { index, it ->
             append("\t     /*${it.name}*/")
-            if(index != table.columns.lastIndex) {
+            if (index != table.columns.lastIndex) {
                 append(",")
             }
             append("\n")

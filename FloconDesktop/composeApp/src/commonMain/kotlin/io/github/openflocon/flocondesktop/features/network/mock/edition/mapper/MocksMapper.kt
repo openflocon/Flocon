@@ -22,7 +22,7 @@ fun MockNetworkUiModel.toDomain(): MockNetworkDomainModel = MockNetworkDomainMod
         method = expectation.method.text,
     ),
     isShared = isShared,
-    response = when(response) {
+    response = when (response) {
         is MockNetworkUiModel.Response.Body -> MockNetworkDomainModel.Response.Body(
             httpCode = response.httpCode,
             body = response.body,
@@ -45,7 +45,7 @@ fun MockNetworkDomainModel.toUi(): MockNetworkUiModel = MockNetworkUiModel(
     ),
     isEnabled = isEnabled,
     isShared = isShared,
-    response = when(val r = response) {
+    response = when (val r = response) {
         is MockNetworkDomainModel.Response.Body -> MockNetworkUiModel.Response.Body(
             httpCode = r.httpCode,
             body = r.body,
@@ -65,29 +65,27 @@ fun createEditable(initialMock: SelectedMockUiModel): EditableMockNetworkUiModel
     is SelectedMockUiModel.Edition -> createEditable(initialMock.existing)
 }
 
-fun createEditable(initialMock: MockNetworkUiModel?): EditableMockNetworkUiModel {
-    return EditableMockNetworkUiModel(
-        id = initialMock?.id,
-        isEnabled = initialMock?.isEnabled ?: true, // true by default
-        expectation = EditableMockNetworkUiModel.Expectation(
-            urlPattern = initialMock?.expectation?.urlPattern,
-            method = initialMock?.expectation?.method ?: MockNetworkMethodUi.GET,
-        ),
-        delay = initialMock?.response?.delay ?: 0,
-        exceptionResponse = EditableMockNetworkUiModel.Response.Exception(
-            classPath = (initialMock?.response as? MockNetworkUiModel.Response.Exception)?.classPath
-                ?: possibleExceptions.first().classPath,
-        ),
-        bodyResponse = editableBodyResponse(initialMock),
-        isShared = initialMock?.isShared ?: false,
-        responseType = when (initialMock?.response) {
-            null,
-            is MockNetworkUiModel.Response.Body -> EditableMockNetworkUiModel.ResponseType.BODY
+fun createEditable(initialMock: MockNetworkUiModel?): EditableMockNetworkUiModel = EditableMockNetworkUiModel(
+    id = initialMock?.id,
+    isEnabled = initialMock?.isEnabled ?: true, // true by default
+    expectation = EditableMockNetworkUiModel.Expectation(
+        urlPattern = initialMock?.expectation?.urlPattern,
+        method = initialMock?.expectation?.method ?: MockNetworkMethodUi.GET,
+    ),
+    delay = initialMock?.response?.delay ?: 0,
+    exceptionResponse = EditableMockNetworkUiModel.Response.Exception(
+        classPath = (initialMock?.response as? MockNetworkUiModel.Response.Exception)?.classPath
+            ?: possibleExceptions.first().classPath,
+    ),
+    bodyResponse = editableBodyResponse(initialMock),
+    isShared = initialMock?.isShared ?: false,
+    responseType = when (initialMock?.response) {
+        null,
+        is MockNetworkUiModel.Response.Body -> EditableMockNetworkUiModel.ResponseType.BODY
 
-            is MockNetworkUiModel.Response.Exception -> EditableMockNetworkUiModel.ResponseType.EXCEPTION
-        },
-    )
-}
+        is MockNetworkUiModel.Response.Exception -> EditableMockNetworkUiModel.ResponseType.EXCEPTION
+    },
+)
 
 private fun editableBodyResponse(initialMock: MockNetworkUiModel?): EditableMockNetworkUiModel.Response.Body {
     val bodyResponse = (initialMock?.response as? MockNetworkUiModel.Response.Body)
@@ -114,7 +112,7 @@ fun editableToUi(editable: EditableMockNetworkUiModel): Either<Throwable, MockNe
         ),
         isEnabled = editable.isEnabled,
         isShared = editable.isShared,
-        response = when(editable.responseType) {
+        response = when (editable.responseType) {
             ResponseType.BODY -> MockNetworkUiModel.Response.Body(
                 httpCode = editable.bodyResponse.httpCode,
                 body = editable.bodyResponse.body,

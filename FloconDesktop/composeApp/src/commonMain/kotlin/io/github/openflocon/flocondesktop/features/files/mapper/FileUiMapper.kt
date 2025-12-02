@@ -6,7 +6,6 @@ import androidx.compose.material.icons.outlined.Drafts
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.openflocon.domain.common.ByteFormatter
-import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
@@ -27,7 +26,7 @@ fun FileDomainModel.toUi(withFoldersSize: Boolean): FileUiModel = FileUiModel(
         FileTypeUiModel.Other // TODO
     },
     path = path.toUi(),
-    sizeFormatted = if(this.isDirectory && withFoldersSize.not()) null else ByteFormatter.formatBytes(size),
+    sizeFormatted = if (this.isDirectory && withFoldersSize.not()) null else ByteFormatter.formatBytes(size),
     icon = if (this.isDirectory) {
         Icons.Outlined.Folder
     } else {
@@ -40,16 +39,14 @@ fun FileDomainModel.toUi(withFoldersSize: Boolean): FileUiModel = FileUiModel(
     ),
 )
 
-private fun formatDate(date: Instant) : String? {
-    return try {
-        val formateur = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
-            .withZone(ZoneId.systemDefault())
+private fun formatDate(date: Instant): String? = try {
+    val formateur = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+        .withZone(ZoneId.systemDefault())
 
-        formateur.format(date.toJavaInstant())
-    } catch (t: Throwable) {
-        t.printStackTrace()
-        null
-    }
+    formateur.format(date.toJavaInstant())
+} catch (t: Throwable) {
+    t.printStackTrace()
+    null
 }
 
 fun FileUiModel.toDomain(): FileDomainModel = FileDomainModel(

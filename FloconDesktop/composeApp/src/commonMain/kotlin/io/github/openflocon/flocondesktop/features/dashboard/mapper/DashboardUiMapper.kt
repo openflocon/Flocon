@@ -8,10 +8,10 @@ import io.github.openflocon.domain.dashboard.models.DashboardElementDomainModel
 import io.github.openflocon.domain.dashboard.models.FormContainerConfigDomainModel
 import io.github.openflocon.domain.dashboard.models.SectionContainerConfigDomainModel
 import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
+import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArrangement
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState.ContainerConfig
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
-import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArrangement
 
 internal fun DashboardDomainModel.toUi(): DashboardViewState = DashboardViewState(
     items = containers.map { container ->
@@ -64,18 +64,16 @@ internal fun DashboardDomainModel.toUi(): DashboardViewState = DashboardViewStat
     },
 )
 
-internal fun ContainerConfigDomainModel.toUI(): ContainerConfig =
-    when (this) {
-        is FormContainerConfigDomainModel -> ContainerConfig.Form(
-            formId = formId,
-            submitText = submitText,
-        )
+internal fun ContainerConfigDomainModel.toUI(): ContainerConfig = when (this) {
+    is FormContainerConfigDomainModel -> ContainerConfig.Form(
+        formId = formId,
+        submitText = submitText,
+    )
 
-        SectionContainerConfigDomainModel -> ContainerConfig.Section
-    }
+    SectionContainerConfigDomainModel -> ContainerConfig.Section
+}
 
-internal fun DashboardArrangementDomainModel.toUi(): DashboardArrangement =
-    when (this) {
-        is DashboardArrangementDomainModel.Adaptive -> DashboardArrangement.Adaptive
-        is DashboardArrangementDomainModel.Fixed -> DashboardArrangement.Fixed(itemsPerRow = itemsPerRow)
-    }
+internal fun DashboardArrangementDomainModel.toUi(): DashboardArrangement = when (this) {
+    is DashboardArrangementDomainModel.Adaptive -> DashboardArrangement.Adaptive
+    is DashboardArrangementDomainModel.Fixed -> DashboardArrangement.Fixed(itemsPerRow = itemsPerRow)
+}

@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,7 +63,7 @@ fun NetworkItemView(
     val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
 
     val errorColor = remember(state) {
-        when(state.status.status) {
+        when (state.status.status) {
             NetworkStatusUi.Status.ERROR -> errorTagText
             NetworkStatusUi.Status.EXCEPTION -> exceptionTagText
             else -> null
@@ -86,7 +85,7 @@ fun NetworkItemView(
                     } else Modifier
                 )
                 .then(
-                    if(state.isReplayed) {
+                    if (state.isReplayed) {
                         Modifier.background(replayColor)
                     } else if (state.isMocked) {
                         Modifier.background(FloconTheme.colorPalette.accent)
@@ -211,13 +210,16 @@ private fun contextualActions(
             if (state.type !is NetworkItemViewState.NetworkTypeUi.Grpc && state.type !is NetworkItemViewState.NetworkTypeUi.WebSocket) {
                 item(
                     label = "Copy cUrl",
-                    onClick = { onActionCallback(NetworkAction.CopyCUrl(state)) })
+                    onClick = { onActionCallback(NetworkAction.CopyCUrl(state)) }
+                )
                 item(
                     label = "Create Mock",
-                    onClick = { onActionCallback(NetworkAction.CreateMock(state)) })
+                    onClick = { onActionCallback(NetworkAction.CreateMock(state)) }
+                )
                 item(
                     label = "Replay",
-                    onClick = { onActionCallback(NetworkAction.Replay(state)) })
+                    onClick = { onActionCallback(NetworkAction.Replay(state)) }
+                )
             }
             separator()
             subMenu(label = "Filter") {
@@ -270,10 +272,12 @@ private fun contextualActions(
             item(label = "Remove", onClick = { onActionCallback(NetworkAction.Remove(state)) })
             item(
                 label = "Remove lines above",
-                onClick = { onActionCallback(NetworkAction.RemoveLinesAbove(state)) })
+                onClick = { onActionCallback(NetworkAction.RemoveLinesAbove(state)) }
+            )
             item(
                 label = "Clear old sessions",
-                onClick = { onActionCallback(NetworkAction.ClearOldSession) })
+                onClick = { onActionCallback(NetworkAction.ClearOldSession) }
+            )
         }
     }
 }
