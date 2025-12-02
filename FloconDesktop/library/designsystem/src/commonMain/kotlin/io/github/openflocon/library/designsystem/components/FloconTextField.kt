@@ -289,7 +289,6 @@ private fun DecorationBox(
     )
 }
 
-
 @Composable
 private fun ContainerBox(
     enabled: Boolean,
@@ -325,10 +324,10 @@ fun defaultPlaceHolder(text: String?, color: Color? = null): @Composable (() -> 
     null
 else {
     {
-        val style =  FloconTheme.typography.bodySmall
+        val style = FloconTheme.typography.bodySmall
         Text(
             text = text,
-            style = if(color != null) {
+            style = if (color != null) {
                 style.copy(color = color)
             } else {
                 style

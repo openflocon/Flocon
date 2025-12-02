@@ -1,7 +1,7 @@
 package io.github.openflocon.domain.dashboard.usecase
 
-import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.dashboard.repository.DashboardRepository
+import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 
 class SubmitTextFieldToDeviceDeviceUseCase(
     private val dashboardRepository: DashboardRepository,

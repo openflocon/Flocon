@@ -15,7 +15,7 @@ class StartRecordingVideoUseCase(
     private val applicationScope: CoroutineScope,
 ) {
 
-    suspend operator fun invoke() : Either<Throwable, RecordingDomainModel> {
+    suspend operator fun invoke(): Either<Throwable, RecordingDomainModel> {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("No device selected"))
 
         val fileName = "record_${current.packageName}_${System.currentTimeMillis()}.mp4"
@@ -28,7 +28,6 @@ class StartRecordingVideoUseCase(
                 target = AdbCommandTargetDomainModel.Device(current.deviceId),
                 command = "shell $processName $onDeviceFilePath &",
             )
-
         }
 
         return RecordingDomainModel(

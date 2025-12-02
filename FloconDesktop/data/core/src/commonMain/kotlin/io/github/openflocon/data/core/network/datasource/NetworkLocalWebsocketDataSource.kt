@@ -12,5 +12,5 @@ interface NetworkLocalWebsocketDataSource {
 
     suspend fun observeWebsocketClients(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : Flow<List<NetworkWebsocketId>>
+    ): Flow<List<NetworkWebsocketId>>
 }

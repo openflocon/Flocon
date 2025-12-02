@@ -46,17 +46,13 @@ internal class DialogScene<T : Any>(
             dialogProperties == other.dialogProperties
     }
 
-    override fun hashCode(): Int {
-        return key.hashCode() * 31 +
-            previousEntries.hashCode() * 31 +
-            overlaidEntries.hashCode() * 31 +
-            entry.hashCode() * 31 +
-            dialogProperties.hashCode() * 31
-    }
+    override fun hashCode(): Int = key.hashCode() * 31 +
+        previousEntries.hashCode() * 31 +
+        overlaidEntries.hashCode() * 31 +
+        entry.hashCode() * 31 +
+        dialogProperties.hashCode() * 31
 
-    override fun toString(): String {
-        return "DialogScene(key=$key, entry=$entry, previousEntries=$previousEntries, overlaidEntries=$overlaidEntries, dialogProperties=$dialogProperties)"
-    }
+    override fun toString(): String = "DialogScene(key=$key, entry=$entry, previousEntries=$previousEntries, overlaidEntries=$overlaidEntries, dialogProperties=$dialogProperties)"
 }
 
 /**
@@ -65,7 +61,7 @@ internal class DialogScene<T : Any>(
  *
  * This strategy should always be added before any non-overlay scene strategies.
  */
-public class DialogSceneStrategy<T : Any>() : SceneStrategy<T> {
+public class DialogSceneStrategy<T : Any> : SceneStrategy<T> {
 
     public override fun SceneStrategyScope<T>.calculateScene(
         entries: List<NavEntry<T>>

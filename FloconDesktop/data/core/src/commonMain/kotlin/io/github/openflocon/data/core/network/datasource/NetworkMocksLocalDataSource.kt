@@ -16,11 +16,11 @@ interface NetworkMocksLocalDataSource {
 
     suspend fun getAllEnabledMocks(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : List<MockNetworkDomainModel>
+    ): List<MockNetworkDomainModel>
 
     suspend fun observeAll(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : Flow<List<MockNetworkDomainModel>>
+    ): Flow<List<MockNetworkDomainModel>>
 
     suspend fun deleteMock(
         id: String,

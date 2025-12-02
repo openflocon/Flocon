@@ -12,7 +12,7 @@ class ObserveIsCurrentDeviceIAndAppIsActiveUseCase(
     private val devicesRepository: DevicesRepository,
 ) {
     operator fun invoke(): Flow<Boolean> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { current ->
-        if(current == null) {
+        if (current == null) {
             flowOf(false)
         } else {
             devicesRepository.activeDevices

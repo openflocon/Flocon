@@ -49,7 +49,7 @@ private fun CodeBlockViewPreview() {
     FloconTheme {
         FloconCodeBlock(
             code =
-                """
+            """
                 {
                    "code" : "value"
                 }

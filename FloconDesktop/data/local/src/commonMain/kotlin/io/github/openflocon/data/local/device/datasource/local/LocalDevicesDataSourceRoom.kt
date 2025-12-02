@@ -20,13 +20,9 @@ class LocalDevicesDataSourceRoom(
         get() = dao.observeDevices()
             .map { it.map { device -> device.toDomainModel() } }
 
-    override fun observeDeviceById(it: DeviceId): Flow<DeviceDomainModel?> {
-        return dao.observeDeviceById(deviceId = it).map { it?.toDomainModel() }
-    }
+    override fun observeDeviceById(it: DeviceId): Flow<DeviceDomainModel?> = dao.observeDeviceById(deviceId = it).map { it?.toDomainModel() }
 
-    override suspend fun getDeviceById(it: DeviceId): DeviceDomainModel? {
-        return dao.getDeviceById(deviceId = it)?.toDomainModel()
-    }
+    override suspend fun getDeviceById(it: DeviceId): DeviceDomainModel? = dao.getDeviceById(deviceId = it)?.toDomainModel()
 
     override suspend fun insertDevice(device: DeviceDomainModel): InsertResult {
         val deviceEntity = dao.getDeviceById(device.deviceId)
@@ -45,7 +41,7 @@ class LocalDevicesDataSourceRoom(
         val appEntity =
             dao.getDeviceAppByPackageName(deviceId = deviceId, packageName = app.packageName)
 
-        return if (appEntity ==  null) {
+        return if (appEntity == null) {
             dao.insertDeviceApp(
                 app.toEntity(
                     deviceId = deviceId,
@@ -65,37 +61,29 @@ class LocalDevicesDataSourceRoom(
         }
     }
 
-    override fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>> {
-        return dao.observeDeviceApps(deviceId = deviceId)
-            .map { it.map { deviceApp -> deviceApp.toDomainModel() } }
-    }
+    override fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>> = dao.observeDeviceApps(deviceId = deviceId)
+        .map { it.map { deviceApp -> deviceApp.toDomainModel() } }
 
     override suspend fun getDeviceAppByPackage(
         deviceId: DeviceId,
         packageName: AppPackageName
-    ): DeviceAppDomainModel? {
-        return dao.getDeviceAppByPackageName(
-            deviceId = deviceId,
-            packageName = packageName,
-        )?.toDomainModel()
-    }
+    ): DeviceAppDomainModel? = dao.getDeviceAppByPackageName(
+        deviceId = deviceId,
+        packageName = packageName,
+    )?.toDomainModel()
 
     override fun observeDeviceAppByPackage(
         deviceId: DeviceId,
         packageName: AppPackageName
-    ): Flow<DeviceAppDomainModel?> {
-        return dao.observeDeviceAppByPackageName(
-            deviceId = deviceId,
-            packageName = packageName,
-        ).map { it?.toDomainModel() }
-    }
+    ): Flow<DeviceAppDomainModel?> = dao.observeDeviceAppByPackageName(
+        deviceId = deviceId,
+        packageName = packageName,
+    ).map { it?.toDomainModel() }
 
-    override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> {
-        return dao.observeDeviceAppByPackageName(
-            deviceId = deviceId,
-            packageName = appPackageName,
-        ).map { it?.floconVersionOnDevice }
-    }
+    override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = dao.observeDeviceAppByPackageName(
+        deviceId = deviceId,
+        packageName = appPackageName,
+    ).map { it?.floconVersionOnDevice }
 
     override suspend fun saveAppIcon(
         deviceId: DeviceId,
@@ -112,17 +100,11 @@ class LocalDevicesDataSourceRoom(
     override suspend fun hasAppIcon(
         deviceId: DeviceId,
         appPackageName: String
-    ): Boolean {
-        return dao.hasAppIcon(deviceId, appPackageName)
-    }
+    ): Boolean = dao.hasAppIcon(deviceId, appPackageName)
 
-    override suspend fun delete(deviceId: DeviceId) {
-        return dao.deleteDevice(deviceId)
-    }
+    override suspend fun delete(deviceId: DeviceId) = dao.deleteDevice(deviceId)
 
-    override suspend fun deleteApp(deviceId: DeviceId, packageName: AppPackageName) {
-        return dao.deleteApp(deviceId = deviceId, packageName = packageName)
-    }
+    override suspend fun deleteApp(deviceId: DeviceId, packageName: AppPackageName) = dao.deleteApp(deviceId = deviceId, packageName = packageName)
 
     override suspend fun clear() {
         dao.clear()

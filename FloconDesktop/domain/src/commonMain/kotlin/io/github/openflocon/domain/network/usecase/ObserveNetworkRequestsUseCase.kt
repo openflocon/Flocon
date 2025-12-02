@@ -17,7 +17,7 @@ class ObserveNetworkRequestsUseCase(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?,
         sortedBy: NetworkSortDomainModel?,
         filter: NetworkFilterDomainModel,
-    ): Flow<PagingData<FloconNetworkCallDomainModel>> = if(deviceIdAndPackageName == null) {
+    ): Flow<PagingData<FloconNetworkCallDomainModel>> = if (deviceIdAndPackageName == null) {
         flowOf(PagingData.empty())
     } else {
         networkRepository.observeRequests(

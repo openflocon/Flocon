@@ -17,5 +17,4 @@ interface DeviceSharedPreferencesValuesDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sharedPreferenceId: DeviceSharedPreferenceId,
     ): Flow<List<SharedPreferenceRowDomainModel>>
-
 }

@@ -72,8 +72,10 @@ internal fun List<FloconNetworkCallDomainModel>.exportToCsv(file: File) {
             } ?: 0L
 
             val grpcStatus = when (val r = call.response) {
-                is FloconNetworkCallDomainModel.Response.Success -> when (val s =
-                    r.specificInfos) {
+                is FloconNetworkCallDomainModel.Response.Success -> when (
+                    val s =
+                        r.specificInfos
+                ) {
                     is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> s.grpcStatus
                     else -> null
                 }

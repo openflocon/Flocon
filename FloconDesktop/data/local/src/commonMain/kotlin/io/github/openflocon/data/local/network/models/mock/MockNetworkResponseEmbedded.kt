@@ -16,6 +16,7 @@ data class MockNetworkResponseEmbedded(
             val mediaType: String,
             val headers: Map<String, String>,
         ) : Type
+
         @Serializable
         data class Exception(
             val classPath: String,

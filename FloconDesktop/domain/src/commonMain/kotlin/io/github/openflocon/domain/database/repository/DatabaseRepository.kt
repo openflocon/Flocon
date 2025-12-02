@@ -1,7 +1,6 @@
 package io.github.openflocon.domain.database.repository
 
 import io.github.openflocon.domain.common.Either
-import io.github.openflocon.domain.database.models.DatabaseAndTablesDomainModel
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
@@ -68,12 +67,11 @@ interface DatabaseRepository {
 
     fun observeFavorites(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) : Flow<List<DatabaseFavoriteQueryDomainModel>>
+    ): Flow<List<DatabaseFavoriteQueryDomainModel>>
 
     suspend fun getFavorite(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: String,
         id: Long
     ): DatabaseFavoriteQueryDomainModel?
-
 }

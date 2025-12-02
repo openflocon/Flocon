@@ -17,10 +17,12 @@ fun <T> FloconAnimateVisibility(
     state: T?,
     modifier: Modifier = Modifier,
     transitionSpec: AnimatedContentTransitionScope<T?>.() -> ContentTransform = {
-        (fadeIn(animationSpec = tween(220, delayMillis = 90)) + slideIntoContainer(
-            towards = AnimatedContentTransitionScope.SlideDirection.Start,
-            animationSpec = tween(220, delayMillis = 90)
-        ))
+        (
+            fadeIn(animationSpec = tween(220, delayMillis = 90)) + slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                animationSpec = tween(220, delayMillis = 90)
+            )
+            )
             .togetherWith(fadeOut(animationSpec = tween(90)))
     },
     content: @Composable AnimatedContentScope.(T & Any) -> Unit

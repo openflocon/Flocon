@@ -6,13 +6,11 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import io.github.openflocon.data.local.dashboard.mapper.toEntity
+import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
-import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardWithContainersAndElements
 import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
-import io.github.openflocon.domain.dashboard.models.DashboardId
-import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json

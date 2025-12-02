@@ -70,7 +70,7 @@ internal data class InnerWindowScene<T : Any>(
     }
 }
 
-public class InnerWindowSceneStrategy<T : Any>() : SceneStrategy<T> {
+public class InnerWindowSceneStrategy<T : Any> : SceneStrategy<T> {
 
     public override fun SceneStrategyScope<T>.calculateScene(
         entries: List<NavEntry<T>>

@@ -1,14 +1,10 @@
 package io.github.openflocon.data.local.device.datasource.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import androidx.room.Upsert
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
-import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
 
 @Dao

@@ -16,7 +16,7 @@ class ExecuteDeeplinkUseCase(
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return
 
         // must been done before executing the deeplink, because the new launch overrides the list of deeplinks in the DB
-        val originalModel = if(deeplinkId == -1L) {
+        val originalModel = if (deeplinkId == -1L) {
             null
         } else {
             deeplinkRepository.getDeeplinkById(deeplinkId = deeplinkId, current)
@@ -26,7 +26,7 @@ class ExecuteDeeplinkUseCase(
             target = AdbCommandTargetDomainModel.Device(current.deviceId),
             command = "shell am start -W -a android.intent.action.VIEW -d \"$deeplink\" ${current.packageName}",
         ).alsoSuccess {
-            if(saveIntoHistory) {
+            if (saveIntoHistory) {
                 originalModel?.let { model ->
                     // from an existing deeplink
                     addToDeeplinkHistoryUseCase(

@@ -57,15 +57,13 @@ class LocalFilesDataSourceRoom(
         }
     }
 
-    override fun observeWithFoldersSize(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> {
-        return fileDao
-            .observeFileOptions(
-                deviceId = deviceIdAndPackageName.deviceId,
-                packageName = deviceIdAndPackageName.packageName
-            )
-            .map { it?.withFoldersSize ?: false }
-            .distinctUntilChanged()
-    }
+    override fun observeWithFoldersSize(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> = fileDao
+        .observeFileOptions(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName
+        )
+        .map { it?.withFoldersSize ?: false }
+        .distinctUntilChanged()
 
     override suspend fun saveWithFoldersSize(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

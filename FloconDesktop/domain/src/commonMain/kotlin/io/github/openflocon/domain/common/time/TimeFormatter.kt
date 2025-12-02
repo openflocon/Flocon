@@ -6,7 +6,6 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 import kotlin.time.Instant
 
-
 fun formatDuration(duration: Double): String = duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)
 
 fun formatTimestamp(timestamp: Long): String {

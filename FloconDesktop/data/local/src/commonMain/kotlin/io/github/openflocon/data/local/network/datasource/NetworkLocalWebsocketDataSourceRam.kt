@@ -20,8 +20,5 @@ class NetworkLocalWebsocketDataSourceRam : NetworkLocalWebsocketDataSource {
         websocketsIds.update { it + (deviceIdAndPackageName to ids) }
     }
 
-    override suspend fun observeWebsocketClients(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<NetworkWebsocketId>> {
-       return websocketsIds.map { it.get(deviceIdAndPackageName) ?: emptyList() }.map { it.distinct() }
-    }
-
+    override suspend fun observeWebsocketClients(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<NetworkWebsocketId>> = websocketsIds.map { it.get(deviceIdAndPackageName) ?: emptyList() }.map { it.distinct() }
 }

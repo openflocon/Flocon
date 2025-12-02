@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 interface FloconScrollAdapter
 
 @Composable
-expect fun rememberFloconScrollbarAdapter(scrollState: LazyListState) : FloconScrollAdapter
+expect fun rememberFloconScrollbarAdapter(scrollState: LazyListState): FloconScrollAdapter
 
 @Composable
 expect fun rememberFloconScrollbarAdapter(scrollState: ScrollState): FloconScrollAdapter

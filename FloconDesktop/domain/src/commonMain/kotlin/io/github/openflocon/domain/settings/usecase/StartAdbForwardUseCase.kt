@@ -8,15 +8,13 @@ import io.github.openflocon.domain.common.Either
 class StartAdbForwardUseCase(
     private val executeAdbCommandUseCase: ExecuteAdbCommandUseCase,
 ) {
-    suspend operator fun invoke(): Either<Throwable, Unit> {
-        return executeAdbCommandUseCase(
-            command = "reverse tcp:${Constant.SERVER_WEBSOCKET_PORT} tcp:${Constant.SERVER_WEBSOCKET_PORT}",
+    suspend operator fun invoke(): Either<Throwable, Unit> = executeAdbCommandUseCase(
+        command = "reverse tcp:${Constant.SERVER_WEBSOCKET_PORT} tcp:${Constant.SERVER_WEBSOCKET_PORT}",
+        target = AdbCommandTargetDomainModel.AllDevices,
+    ).alsoSuccess {
+        executeAdbCommandUseCase(
+            command = "reverse tcp:${Constant.SERVER_HTTP_PORT} tcp:${Constant.SERVER_HTTP_PORT}",
             target = AdbCommandTargetDomainModel.AllDevices,
-        ).alsoSuccess {
-            executeAdbCommandUseCase(
-                command = "reverse tcp:${Constant.SERVER_HTTP_PORT} tcp:${Constant.SERVER_HTTP_PORT}",
-                target = AdbCommandTargetDomainModel.AllDevices,
-            )
-        }.mapSuccess { }
-    }
+        )
+    }.mapSuccess { }
 }

@@ -10,5 +10,4 @@ interface MessageRemoteDataSource {
 
     fun listenMessages(): Flow<FloconIncomingMessageDomainModel>
     fun listenReceivedFiles(): Flow<FloconReceivedFileDomainModel>
-
 }

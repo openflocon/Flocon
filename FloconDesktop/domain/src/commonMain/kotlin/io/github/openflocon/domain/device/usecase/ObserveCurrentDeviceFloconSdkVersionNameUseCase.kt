@@ -10,12 +10,11 @@ class ObserveCurrentDeviceFloconSdkVersionNameUseCase(
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val devicesRepository: DevicesRepository,
 ) {
-    operator fun invoke(): Flow<String?> =
-        observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { current ->
-            if (current == null) {
-                flowOf(null)
-            } else {
-                devicesRepository.observeDeviceSdkVersion(deviceId = current.deviceId, appPackageName = current.packageName)
-            }
-        }.distinctUntilChanged()
+    operator fun invoke(): Flow<String?> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { current ->
+        if (current == null) {
+            flowOf(null)
+        } else {
+            devicesRepository.observeDeviceSdkVersion(deviceId = current.deviceId, appPackageName = current.packageName)
+        }
+    }.distinctUntilChanged()
 }

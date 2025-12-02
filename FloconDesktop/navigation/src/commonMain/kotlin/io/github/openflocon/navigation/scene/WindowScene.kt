@@ -32,7 +32,6 @@ data class WindowScene(
             entry.Content()
         }
     }
-
 }
 
 class WindowSceneStrategy : SceneStrategy<FloconRoute> {
@@ -56,5 +55,4 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
 
         fun window() = mapOf(IS_WINDOW to true)
     }
-
 }

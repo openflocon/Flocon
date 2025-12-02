@@ -16,13 +16,10 @@ internal class VersionCheckerRepositoryImpl(
     private val _lastVersion = MutableStateFlow<String?>(null)
     override val lastVersion = _lastVersion.asStateFlow()
 
-    override suspend fun checkIsLastVersion(): Either<Throwable, String> {
-        return withContext(dispatcherProvider.data) {
-            versionCheckerDatasource.fetchLatestVersion()
-                .alsoSuccess {
-                    _lastVersion.value = it
-                }
-        }
+    override suspend fun checkIsLastVersion(): Either<Throwable, String> = withContext(dispatcherProvider.data) {
+        versionCheckerDatasource.fetchLatestVersion()
+            .alsoSuccess {
+                _lastVersion.value = it
+            }
     }
-
 }

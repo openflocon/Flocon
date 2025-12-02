@@ -9,7 +9,6 @@ import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.serialization.json.Json
 
-
 internal fun DatabaseTableDomainModel.toEntity(
     json: Json,
     databaseId: DeviceDataBaseId,
@@ -29,7 +28,6 @@ internal fun DatabaseTableDomainModel.toEntity(
         }
     )
 }
-
 
 internal fun DatabaseTableEntity.toDomain(
     json: Json,

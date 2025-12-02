@@ -6,7 +6,5 @@ import kotlinx.coroutines.flow.Flow
 class ObserveLastAvailableFloconVersionUseCase(
     private val versionsCheckerRepository: VersionsCheckerRepository,
 ) {
-    operator fun invoke(): Flow<String?> {
-        return versionsCheckerRepository.lastVersion
-    }
+    operator fun invoke(): Flow<String?> = versionsCheckerRepository.lastVersion
 }

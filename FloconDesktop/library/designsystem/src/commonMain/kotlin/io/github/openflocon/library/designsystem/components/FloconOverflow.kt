@@ -30,9 +30,7 @@ data class FloconOverflowItem(
         return true
     }
 
-    override fun hashCode(): Int {
-        return text.hashCode()
-    }
+    override fun hashCode(): Int = text.hashCode()
 }
 
 @Composable

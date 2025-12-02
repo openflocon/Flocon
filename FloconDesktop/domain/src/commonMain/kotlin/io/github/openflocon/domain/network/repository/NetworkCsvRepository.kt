@@ -11,10 +11,10 @@ interface NetworkCsvRepository {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         requests: List<FloconNetworkCallDomainModel>,
         file: File
-    ) : Either<Throwable, Unit>
+    ): Either<Throwable, Unit>
 
     suspend fun importCallsFromCsv(
         file: File,
         appInstance: AppInstance
-    ) : Either<Throwable, List<FloconNetworkCallDomainModel>>
+    ): Either<Throwable, List<FloconNetworkCallDomainModel>>
 }

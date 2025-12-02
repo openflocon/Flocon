@@ -67,7 +67,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconToggleButt
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
-import io.github.openflocon.library.designsystem.components.panel.PanelWidth
+import io.github.openflocon.library.designsystem.components.panel.PANEL_WIDTH
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.viewmodel.koinViewModel
@@ -332,7 +332,7 @@ fun NetworkScreen(
                     uiState = it,
                     onAction = { action -> onAction(NetworkAction.DetailAction(action)) },
                     modifier = Modifier
-                        .width(PanelWidth)
+                        .width(PANEL_WIDTH)
                         .clip(FloconTheme.shapes.medium)
                 )
             }

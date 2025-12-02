@@ -7,10 +7,10 @@ import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 
 @Entity(
     primaryKeys = [
-                  "deviceId",
-                  "packageName",
-                  "databaseId",
-                  "tableName"
+        "deviceId",
+        "packageName",
+        "databaseId",
+        "tableName"
     ],
     indices = [
         Index(value = ["databaseId"]),
@@ -31,4 +31,3 @@ data class DatabaseTableEntity(
     val tableName: String,
     val columnsAsString: String, // json formatted of List<DababaseTableEntity>
 )
-

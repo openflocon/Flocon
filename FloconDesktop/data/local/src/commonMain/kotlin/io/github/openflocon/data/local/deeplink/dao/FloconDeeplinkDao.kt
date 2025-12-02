@@ -1,13 +1,11 @@
 package io.github.openflocon.data.local.deeplink.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
-import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
 
@@ -83,5 +81,5 @@ interface FloconDeeplinkDao {
             LIMIT 1
             """,
     )
-    suspend fun getById(deviceId: String, packageName: String, deeplinkId: Long) : DeeplinkEntity?
+    suspend fun getById(deviceId: String, packageName: String, deeplinkId: Long): DeeplinkEntity?
 }

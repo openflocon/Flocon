@@ -5,5 +5,4 @@ import io.github.openflocon.domain.table.models.TableDomainModel
 
 interface TableRemoteDataSource {
     fun getItems(message: FloconIncomingMessageDomainModel): List<TableDomainModel>
-
 }

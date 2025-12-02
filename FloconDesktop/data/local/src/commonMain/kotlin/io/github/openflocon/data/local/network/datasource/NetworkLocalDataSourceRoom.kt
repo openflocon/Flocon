@@ -34,30 +34,27 @@ class NetworkLocalDataSourceRoom(
         )
     ).mapNotNull(FloconNetworkCallEntity::toDomainModel)
 
-
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
         filter: NetworkFilterDomainModel,
-    ): Flow<PagingData<FloconNetworkCallDomainModel>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-            ),
-            pagingSourceFactory = {
-                floconNetworkDao.observeRequestsWithPaging(
-                    generateNetworkRequestsRawQuery(
-                        deviceIdAndPackageName = deviceIdAndPackageName,
-                        sortedBy = sortedBy,
-                        filter = filter,
-                    )
+    ): Flow<PagingData<FloconNetworkCallDomainModel>> = Pager(
+        config = PagingConfig(
+            pageSize = 20,
+        ),
+        pagingSourceFactory = {
+            floconNetworkDao.observeRequestsWithPaging(
+                generateNetworkRequestsRawQuery(
+                    deviceIdAndPackageName = deviceIdAndPackageName,
+                    sortedBy = sortedBy,
+                    filter = filter,
                 )
-            }
-        ).flow
-            .map { pagingData ->
-                pagingData.map { entity -> entity.toDomainModel() }
-            }
-    }
+            )
+        }
+    ).flow
+        .map { pagingData ->
+            pagingData.map { entity -> entity.toDomainModel() }
+        }
 
     private fun generateNetworkRequestsRawQuery(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -131,7 +128,7 @@ class NetworkLocalDataSourceRoom(
                 appendLine("AND (")
                 methodFilter.forEachIndexed { includedFilterIndex, filterItem ->
                     appendLine("\trequest_methodFormatted LIKE ? COLLATE NOCASE")
-                    args.add("%${filterItem}%")
+                    args.add("%$filterItem%")
 
                     if (includedFilterIndex != methodFilter.lastIndex) {
                         appendLine("\tOR")
@@ -140,7 +137,7 @@ class NetworkLocalDataSourceRoom(
                 appendLine(")")
             }
 
-            if(!filter.displayOldSessions) {
+            if (!filter.displayOldSessions) {
                 appendLine("AND appInstance = ?")
                 args.add(deviceIdAndPackageName.appInstance)
             }
@@ -172,13 +169,11 @@ class NetworkLocalDataSourceRoom(
     override suspend fun getCalls(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         ids: List<String>
-    ): List<FloconNetworkCallDomainModel> {
-        return floconNetworkDao.getRequests(
-            ids = ids,
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-        ).mapNotNull { entities -> entities.toDomainModel() }
-    }
+    ): List<FloconNetworkCallDomainModel> = floconNetworkDao.getRequests(
+        ids = ids,
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    ).mapNotNull { entities -> entities.toDomainModel() }
 
     override suspend fun save(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -205,15 +200,13 @@ class NetworkLocalDataSourceRoom(
     override suspend fun getCall(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         callId: String,
-    ): FloconNetworkCallDomainModel? {
-        return floconNetworkDao
-            .getCallById(
-                deviceId = deviceIdAndPackageName.deviceId,
-                packageName = deviceIdAndPackageName.packageName,
-                callId = callId,
-            )
-            ?.toDomainModel()
-    }
+    ): FloconNetworkCallDomainModel? = floconNetworkDao
+        .getCallById(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            callId = callId,
+        )
+        ?.toDomainModel()
 
     override fun observeCall(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

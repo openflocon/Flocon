@@ -14,20 +14,19 @@ class ObserveCurrentDeviceSelectedDatabaseAndTablesUseCase(
     private val databaseRepository: DatabaseRepository,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(database: DeviceDataBaseDomainModel): Flow<DatabaseAndTablesDomainModel?> =
-        observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { deviceIdAndPackageName ->
-            if (deviceIdAndPackageName == null) {
-                flowOf(null)
-            } else {
-                databaseRepository.observe(
-                    deviceIdAndPackageName = deviceIdAndPackageName,
-                    databaseId = database.id
-                ).map { tables ->
-                    DatabaseAndTablesDomainModel(
-                        database = database,
-                        tables = tables,
-                    )
-                }
+    operator fun invoke(database: DeviceDataBaseDomainModel): Flow<DatabaseAndTablesDomainModel?> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { deviceIdAndPackageName ->
+        if (deviceIdAndPackageName == null) {
+            flowOf(null)
+        } else {
+            databaseRepository.observe(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                databaseId = database.id
+            ).map { tables ->
+                DatabaseAndTablesDomainModel(
+                    database = database,
+                    tables = tables,
+                )
             }
-        }.distinctUntilChanged()
+        }
+    }.distinctUntilChanged()
 }

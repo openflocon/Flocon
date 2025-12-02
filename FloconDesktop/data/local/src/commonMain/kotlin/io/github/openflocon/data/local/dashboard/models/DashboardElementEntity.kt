@@ -9,19 +9,19 @@ import kotlinx.serialization.Serializable
 
 @Entity(
     foreignKeys =
-        [
-            ForeignKey(
-                entity = DashboardContainerEntity::class,
-                parentColumns = ["id"],
-                childColumns = ["containerId"],
-                onDelete = ForeignKey.CASCADE,
-            ),
-        ],
+    [
+        ForeignKey(
+            entity = DashboardContainerEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["containerId"],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
     indices =
-        [
-            Index(value = ["containerId"]),
-            Index(value = ["containerId", "elementOrder"], unique = true),
-        ],
+    [
+        Index(value = ["containerId"]),
+        Index(value = ["containerId", "elementOrder"], unique = true),
+    ],
 )
 data class DashboardElementEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

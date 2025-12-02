@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface RemoteDeviceDataSource {
     val activeDevices: Flow<Set<DeviceIdAndPackageNameDomainModel>> // devices with active websocket connection
 
-    fun getDeviceSerial(message: FloconIncomingMessageDomainModel) : String?
+    fun getDeviceSerial(message: FloconIncomingMessageDomainModel): String?
     suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     suspend fun restartApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)

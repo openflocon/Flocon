@@ -1,3 +1,4 @@
+@file:Suppress("ktlint")
 package io.github.openflocon.domain
 
 object Protocol {
@@ -18,7 +19,6 @@ object Protocol {
                 const val Update = "update"
             }
         }
-
 
         object Device {
             const val Plugin = "device"
@@ -156,8 +156,7 @@ object Protocol {
         object Table {
             const val Plugin = "Table"
 
-            object Method {
-            }
+            object Method
         }
     }
 }

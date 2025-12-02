@@ -34,14 +34,16 @@ import io.github.openflocon.library.designsystem.theme.multiplyFontSizeBy
 object FloconTheme {
 
     val colorPalette: FloconColorPaletteNew
-        @Composable @ReadOnlyComposable get() = LocalFloconColorPalette.current
+        @Composable @ReadOnlyComposable
+        get() = LocalFloconColorPalette.current
 
     val typography: Typography
-        @Composable @ReadOnlyComposable get() = MaterialTheme.typography
+        @Composable @ReadOnlyComposable
+        get() = MaterialTheme.typography
 
     val shapes: FloconShape
-        @Composable @ReadOnlyComposable get() = LocalFloconShape.current
-
+        @Composable @ReadOnlyComposable
+        get() = LocalFloconShape.current
 }
 
 @Composable

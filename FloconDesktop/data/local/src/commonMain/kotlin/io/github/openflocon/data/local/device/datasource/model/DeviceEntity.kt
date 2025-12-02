@@ -10,4 +10,3 @@ data class DeviceEntity(
     val deviceName: String,
     val platform: String,
 )
-

@@ -14,4 +14,3 @@ data class FloconIncomingMessageDomainModel(
     val platform: String,
     val floconVersionOnDevice: String,
 )
-

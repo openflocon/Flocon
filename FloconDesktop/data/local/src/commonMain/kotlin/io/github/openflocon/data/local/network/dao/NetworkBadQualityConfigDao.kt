@@ -16,42 +16,51 @@ interface NetworkBadQualityConfigDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun saveIfNotExists(configs: List<BadQualityConfigEntity>)
 
-    @Query("""
+    @Query(
+        """
         SELECT * 
         FROM BadQualityConfigEntity 
         WHERE deviceId = :deviceId AND packageName = :packageName
         AND id = :configId
         LIMIT 1
-    """)
+    """
+    )
     suspend fun get(deviceId: String, packageName: String, configId: String): BadQualityConfigEntity?
 
-    @Query("""
+    @Query(
+        """
         SELECT * 
         FROM BadQualityConfigEntity 
         WHERE deviceId = :deviceId AND packageName = :packageName
         AND isEnabled = 1
         LIMIT 1
-    """)
-    suspend fun getTheOnlyEnabledNetworkQuality(deviceId: DeviceId, packageName: String) : BadQualityConfigEntity?
+    """
+    )
+    suspend fun getTheOnlyEnabledNetworkQuality(deviceId: DeviceId, packageName: String): BadQualityConfigEntity?
 
-    @Query("""
+    @Query(
+        """
         SELECT * 
         FROM BadQualityConfigEntity 
         WHERE deviceId = :deviceId AND packageName = :packageName
         AND id = :configId
         LIMIT 1
-    """)
+    """
+    )
     fun observe(deviceId: String, packageName: String, configId: String): Flow<BadQualityConfigEntity?>
 
-    @Query("""
+    @Query(
+        """
         SELECT * 
         FROM BadQualityConfigEntity 
         WHERE deviceId = :deviceId AND packageName = :packageName
         ORDER BY createdAt
-    """)
+    """
+    )
     fun observeAll(deviceId: String, packageName: String): Flow<List<BadQualityConfigEntity>>
 
-    @Query("""
+    @Query(
+        """
         UPDATE BadQualityConfigEntity
         SET isEnabled = CASE 
             WHEN id = :configId THEN 1 
@@ -59,14 +68,16 @@ interface NetworkBadQualityConfigDao {
         END
         WHERE deviceId = :deviceId 
         AND packageName = :packageName
-    """)
+    """
+    )
     suspend fun setEnabledConfig(
         deviceId: String,
         packageName: String,
         configId: String?,
     )
 
-    @Query("""
+    @Query(
+        """
         DELETE FROM BadQualityConfigEntity
         WHERE deviceId = :deviceId AND packageName = :packageName
         AND id = :configId

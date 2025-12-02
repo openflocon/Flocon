@@ -29,39 +29,33 @@ class NetworkMocksLocalDataSourceImpl(
 
     override suspend fun getMock(
         id: String
-    ): MockNetworkDomainModel? {
-        return dao.getMock(
-            mockId = id
-        )?.toDomain(
+    ): MockNetworkDomainModel? = dao.getMock(
+        mockId = id
+    )?.toDomain(
+        json = json,
+    )
+
+    override suspend fun getAllEnabledMocks(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): List<MockNetworkDomainModel> = dao.getAllEnabledMocks(
+        deviceIdAndPackageName.deviceId,
+        deviceIdAndPackageName.packageName
+    ).mapNotNull {
+        it.toDomain(
             json = json,
         )
     }
 
-    override suspend fun getAllEnabledMocks(
+    override suspend fun observeAll(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): List<MockNetworkDomainModel> {
-        return dao.getAllEnabledMocks(
-            deviceIdAndPackageName.deviceId,
-            deviceIdAndPackageName.packageName
-        ).mapNotNull {
+    ): Flow<List<MockNetworkDomainModel>> = dao.observeAllMocks(
+        deviceIdAndPackageName.deviceId,
+        deviceIdAndPackageName.packageName
+    ).map { entities ->
+        entities.mapNotNull {
             it.toDomain(
                 json = json,
             )
-        }
-    }
-
-    override suspend fun observeAll(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): Flow<List<MockNetworkDomainModel>> {
-        return dao.observeAllMocks(
-            deviceIdAndPackageName.deviceId,
-            deviceIdAndPackageName.packageName
-        ).map { entities ->
-            entities.mapNotNull {
-                it.toDomain(
-                    json = json,
-                )
-            }
         }
     }
 

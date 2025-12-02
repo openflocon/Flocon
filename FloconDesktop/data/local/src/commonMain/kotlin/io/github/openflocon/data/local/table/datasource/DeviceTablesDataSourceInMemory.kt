@@ -14,10 +14,9 @@ internal class DeviceTablesDataSourceInMemory : DeviceTablesDataSource {
     private val selectedDeviceTables =
         MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, TableIdentifierDomainModel?>>(emptyMap())
 
-    override fun observeSelectedDeviceTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<TableIdentifierDomainModel?> =
-        selectedDeviceTables
-            .map { it[deviceIdAndPackageName] }
-            .distinctUntilChanged()
+    override fun observeSelectedDeviceTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<TableIdentifierDomainModel?> = selectedDeviceTables
+        .map { it[deviceIdAndPackageName] }
+        .distinctUntilChanged()
 
     override fun selectDeviceTable(
         deviceTables: List<TableIdentifierDomainModel>,

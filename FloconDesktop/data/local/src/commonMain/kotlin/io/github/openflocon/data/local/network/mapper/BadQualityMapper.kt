@@ -31,27 +31,22 @@ fun BadQualityConfigEntity.toDomain(json: Json): BadQualityConfigDomainModel {
     )
 }
 
-fun ErrorEmbedded.toDomain(): BadQualityConfigDomainModel.Error {
-    return BadQualityConfigDomainModel.Error(
-        weight = weight,
-        type = type.toDomain(),
+fun ErrorEmbedded.toDomain(): BadQualityConfigDomainModel.Error = BadQualityConfigDomainModel.Error(
+    weight = weight,
+    type = type.toDomain(),
+)
+
+private fun ErrorEmbedded.Type.toDomain(): BadQualityConfigDomainModel.Error.Type = when (this) {
+    is ErrorEmbedded.Type.Body -> BadQualityConfigDomainModel.Error.Type.Body(
+        httpCode = httpCode,
+        body = body,
+        contentType = contentType,
+    )
+
+    is ErrorEmbedded.Type.Exception -> BadQualityConfigDomainModel.Error.Type.Exception(
+        classPath = classPath,
     )
 }
-
-private fun ErrorEmbedded.Type.toDomain(): BadQualityConfigDomainModel.Error.Type {
-    return when (this) {
-        is ErrorEmbedded.Type.Body -> BadQualityConfigDomainModel.Error.Type.Body(
-            httpCode = httpCode,
-            body = body,
-            contentType = contentType,
-        )
-
-        is ErrorEmbedded.Type.Exception -> BadQualityConfigDomainModel.Error.Type.Exception(
-            classPath = classPath,
-        )
-    }
-}
-
 
 fun BadQualityConfigDomainModel.toEntity(
     json: Json,
