@@ -51,14 +51,14 @@ room {
 }
 
 ktlint {
-   android.set(false)
-   outputToConsole.set(true)
-   filter {
-       exclude { element ->
-           val path = element.file.path
-           path.contains("/generated/")
-       }
-       include("**/kotlin/**")
-       exclude("**/generated/**")
-   }
+    android.set(false)
+    outputToConsole.set(true)
+    filter {
+        exclude { element ->
+            val path = element.file.path
+            path.contains("/generated/")
+        }
+        include("**/kotlin/**")
+        exclude("**/generated/**")
+    }
 }

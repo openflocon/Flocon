@@ -111,7 +111,7 @@ ktlint {
 
 dependencies {
     ksp(libs.androidx.room.compiler)
-    // ktlintRuleset("io.nlopez.compose.rules:ktlint:0.4.24")
+    ktlintRuleset("io.nlopez.compose.rules:ktlint:0.4.24")
 }
 
 room {

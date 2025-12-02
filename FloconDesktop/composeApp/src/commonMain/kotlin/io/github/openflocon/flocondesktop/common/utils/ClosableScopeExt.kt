@@ -7,10 +7,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
 context(closableScope: CloseableScoped)
-fun <T> Flow<T>.stateInWhileSubscribed(default: T): StateFlow<T> {
-    return stateIn(
-        scope = closableScope.coroutineScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = default
-    )
-}
+fun <T> Flow<T>.stateInWhileSubscribed(default: T): StateFlow<T> = stateIn(
+    scope = closableScope.coroutineScope,
+    started = SharingStarted.WhileSubscribed(5_000),
+    initialValue = default
+)
