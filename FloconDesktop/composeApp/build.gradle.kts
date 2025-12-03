@@ -75,6 +75,8 @@ kotlin {
 
             implementation(projects.domain)
 
+           implementation("io.github.alexzhirkevich:compottie:2.0.2")
+
             implementation(projects.library.designsystem)
 
             implementation(projects.navigation)

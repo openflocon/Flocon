@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,7 +19,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.app_icon_small
+import io.github.alexzhirkevich.compottie.LottieCompositionSpec
+import io.github.alexzhirkevich.compottie.rememberLottieComposition
+import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
@@ -26,7 +29,6 @@ import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActions
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun MainScreenTopBar(
@@ -78,11 +80,20 @@ private fun Title(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        val composition by rememberLottieComposition {
+            LottieCompositionSpec.JsonString(
+                Res.readBytes("files/animation.json").decodeToString()
+            )
+        }
+
         Image(
             modifier = Modifier
-                .size(28.dp)
+                .size(64.dp)
                 .clip(RoundedCornerShape(8.dp)),
-            painter = painterResource(Res.drawable.app_icon_small),
+            painter = rememberLottiePainter(
+                composition = composition,
+                iterations = Int.MAX_VALUE
+            ),
             contentDescription = "Description de mon image",
         )
 
