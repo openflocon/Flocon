@@ -50,7 +50,7 @@ internal class FloconCrashReporterDataSourceAndroid(
         try {
             File(crashesDir, "$crashId.json").delete()
         } catch (t: Throwable) {
-            t.printStackTrace()
+            FloconLogger.logError("Failed to delete crash report: $crashId.json", t)
         }
     }
 }
