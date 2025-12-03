@@ -20,9 +20,13 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composeunstyled.Text
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.close
+import flocondesktop.composeapp.generated.resources.download
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconOutlinedButton
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -112,14 +116,14 @@ private fun VersionCheckerDialog(
                         onDismiss(version)
                     }
                 ) {
-                    Text("Download", color = FloconTheme.colorPalette.onPrimary)
+                    Text(stringResource(Res.string.download), color = FloconTheme.colorPalette.onPrimary)
                 }
                 FloconOutlinedButton(
                     onClick = {
                         onDismiss(version)
                     }, borderColor = FloconTheme.colorPalette.primary
                 ) {
-                    Text("Close", color = FloconTheme.colorPalette.primary)
+                    Text(stringResource(Res.string.close), color = FloconTheme.colorPalette.primary)
                 }
             }
         }

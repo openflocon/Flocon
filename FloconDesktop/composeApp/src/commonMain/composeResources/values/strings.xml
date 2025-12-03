@@ -18,4 +18,9 @@
     <string name="deeplink_removed">Deeplink removed from history</string>
     <string name="fill_deeplink_parts">All deeplink parts should be filled</string>
     <string name="freeform_link">freeform link</string>
+    <string name="download">Download</string>
+    <string name="close">Close</string>
+    <string name="new_desktop_version">New destkop version available: %s</string>
+    <string name="new_client_version">New client version available: %s</string>
+    <string name="new_client_version_desc">Don’t forget to update the app version\n(current: %s)</string>
 </resources>

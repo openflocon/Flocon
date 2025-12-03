@@ -2,6 +2,10 @@ package io.github.openflocon.flocondesktop.app.version
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.new_client_version
+import flocondesktop.composeapp.generated.resources.new_client_version_desc
+import flocondesktop.composeapp.generated.resources.new_desktop_version
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
 import io.github.openflocon.domain.versions.usecase.CheckIsDesktopOnLastVersionUseCase
@@ -14,6 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class VersionCheckerViewModel(
     private val checkIsDesktopOnLastVersionUseCase: CheckIsDesktopOnLastVersionUseCase,
@@ -71,12 +76,12 @@ class VersionCheckerViewModel(
         }
     }
 
-    private fun IsLastVersionDomainModel.toUiDesktop(): VersionAvailableUiModel? = when (this) {
+    private suspend fun IsLastVersionDomainModel.toUiDesktop(): VersionAvailableUiModel? = when (this) {
         is IsLastVersionDomainModel.NewVersionAvailable -> {
             VersionAvailableUiModel(
                 version = this.name,
                 link = this.link,
-                title = "New destkop version available: $name",
+                title = getString(Res.string.new_desktop_version, name),
                 subtitle = null,
             )
         }
@@ -86,13 +91,13 @@ class VersionCheckerViewModel(
         }
     }
 
-    private fun IsLastVersionDomainModel.toUiClient(): VersionAvailableUiModel? = when (this) {
+    private suspend fun IsLastVersionDomainModel.toUiClient(): VersionAvailableUiModel? = when (this) {
         is IsLastVersionDomainModel.NewVersionAvailable -> {
             VersionAvailableUiModel(
                 version = this.name,
                 link = this.link,
-                title = "New client version available: $name",
-                subtitle = "Don’t forget to update the app version\n(current: ${this.oldVersion})",
+                title = getString(Res.string.new_client_version, name),
+                subtitle = getString(Res.string.new_client_version_desc, this.oldVersion),
             )
         }
 
