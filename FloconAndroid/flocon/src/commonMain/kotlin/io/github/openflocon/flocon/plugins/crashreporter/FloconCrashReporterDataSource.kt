@@ -15,5 +15,3 @@ internal expect fun setupUncaughtExceptionHandler(
     context: FloconContext,
     onCrash: (Throwable) -> Unit
 )
-
-internal expect fun getOsVersion(): String

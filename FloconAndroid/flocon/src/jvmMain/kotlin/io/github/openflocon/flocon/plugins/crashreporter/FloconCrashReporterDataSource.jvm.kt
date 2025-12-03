@@ -25,9 +25,17 @@ internal actual fun setupUncaughtExceptionHandler(
     context: FloconContext,
     onCrash: (Throwable) -> Unit
 ) {
-    // No-op for JVM
-}
+    val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
 
-internal actual fun getOsVersion(): String {
-    return System.getProperty("os.name") ?: "Unknown"
+    Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+        try {
+            // Save crash
+            onCrash(throwable)
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        } finally {
+            // Call original handler to let the app crash normally
+            defaultHandler?.uncaughtException(thread, throwable)
+        }
+    }
 }

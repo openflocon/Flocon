@@ -5,10 +5,8 @@ import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.FloconPlugin
-import io.github.openflocon.flocon.core.getAppInfos
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.crashreporter.model.CrashReportDataModel
-import io.github.openflocon.flocon.plugins.crashreporter.model.DeviceInfoDataModel
 import io.github.openflocon.flocon.plugins.crashreporter.model.crashReportsListToJson
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import io.github.openflocon.flocondesktop.BuildConfig
@@ -17,14 +15,6 @@ import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-interface FloconCrashReporterPlugin {
-    /**
-     * Setup the crash handler
-     * Should be called once during app initialization
-     */
-    fun setupCrashHandler()
-}
-
 internal class FloconCrashReporterPluginImpl(
     private val context: FloconContext,
     private var sender: FloconMessageSender,
@@ -32,9 +22,8 @@ internal class FloconCrashReporterPluginImpl(
 ) : FloconPlugin, FloconCrashReporterPlugin {
 
     private val dataSource = buildFloconCrashReporterDataSource(context)
-    private val appInfos = getAppInfos(context)
 
-    override fun setupCrashHandler() {
+    fun setupCrashHandler() {
         setupUncaughtExceptionHandler(context) { throwable ->
             val crash = createCrashReport(throwable)
             dataSource.saveCrash(crash)
@@ -82,12 +71,6 @@ internal class FloconCrashReporterPluginImpl(
             exceptionMessage = throwable.message ?: "No message",
             stackTrace = throwable.stackTraceToString(),
             appVersion = BuildConfig.APP_VERSION,
-            deviceInfo = DeviceInfoDataModel(
-                deviceId = appInfos.deviceId,
-                deviceName = appInfos.deviceName,
-                osVersion = getOsVersion(),
-                appPackageName = appInfos.appPackageName,
-            ),
         )
     }
 }

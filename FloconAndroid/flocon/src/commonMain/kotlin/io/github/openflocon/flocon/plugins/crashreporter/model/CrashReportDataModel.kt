@@ -10,13 +10,4 @@ data class CrashReportDataModel(
     val exceptionMessage: String,
     val stackTrace: String,
     val appVersion: String,
-    val deviceInfo: DeviceInfoDataModel,
-)
-
-@Serializable
-data class DeviceInfoDataModel(
-    val deviceId: String,
-    val deviceName: String,
-    val osVersion: String,
-    val appPackageName: String,
 )

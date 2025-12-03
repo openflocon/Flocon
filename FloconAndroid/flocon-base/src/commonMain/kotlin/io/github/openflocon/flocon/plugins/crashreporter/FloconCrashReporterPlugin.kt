@@ -1,0 +1,3 @@
+package io.github.openflocon.flocon.plugins.crashreporter
+
+interface FloconCrashReporterPlugin

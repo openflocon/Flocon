@@ -21,7 +21,3 @@ internal actual fun setupUncaughtExceptionHandler(
         }
     }
 }
-
-internal actual fun getOsVersion(): String {
-    return "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})"
-}
