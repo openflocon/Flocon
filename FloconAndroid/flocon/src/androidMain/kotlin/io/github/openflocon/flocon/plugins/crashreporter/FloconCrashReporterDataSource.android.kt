@@ -24,8 +24,7 @@ internal class FloconCrashReporterDataSourceAndroid(
             val jsonString = crash.toJson()
             file.writeText(jsonString)
         } catch (t: Throwable) {
-            // Can't log to Flocon since we might be in a crash state
-            t.printStackTrace()
+            FloconLogger.logError("Error saving crash", t)
         }
     }
 
