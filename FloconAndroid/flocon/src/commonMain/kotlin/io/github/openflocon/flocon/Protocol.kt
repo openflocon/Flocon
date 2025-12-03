@@ -89,6 +89,15 @@ object Protocol {
             }
         }
 
+        object CrashReporter {
+            const val Plugin = "CrashReporter"
+
+            object Method {
+                const val ReportCrash = "reportCrash"
+            }
+        }
+
+
 
     }
 
