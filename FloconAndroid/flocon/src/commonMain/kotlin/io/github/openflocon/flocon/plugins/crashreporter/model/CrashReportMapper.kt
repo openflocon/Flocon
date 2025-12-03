@@ -1,23 +1,23 @@
 package io.github.openflocon.flocon.plugins.crashreporter.model
 
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.core.FloconEncoder
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-private val json = Json { ignoreUnknownKeys = true }
-
-fun CrashReportDataModel.toJson(): String {
-    return json.encodeToString(this)
+internal fun CrashReportDataModel.toJson(): String {
+    return FloconEncoder.json.encodeToString(this)
 }
 
-fun crashReportFromJson(jsonString: String): CrashReportDataModel? {
+internal fun crashReportFromJson(jsonString: String): CrashReportDataModel? {
     return try {
-        json.decodeFromString<CrashReportDataModel>(jsonString)
+        FloconEncoder.json.decodeFromString<CrashReportDataModel>(jsonString)
     } catch (t: Throwable) {
-        t.printStackTrace()
+        FloconLogger.logError("Crash report parsing error", t)
         null
     }
 }
 
-fun crashReportsListToJson(crashes: List<CrashReportDataModel>): String {
-    return json.encodeToString(crashes)
+internal fun crashReportsListToJson(crashes: List<CrashReportDataModel>): String {
+    return FloconEncoder.json.encodeToString(crashes)
 }
