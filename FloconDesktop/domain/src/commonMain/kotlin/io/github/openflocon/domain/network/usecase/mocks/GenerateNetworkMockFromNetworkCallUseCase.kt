@@ -22,7 +22,7 @@ class GenerateNetworkMockFromNetworkCallUseCase(
         MockNetworkDomainModel(
             id = Uuid.random().toString(), // generate
             expectation = MockNetworkDomainModel.Expectation(
-                urlPattern = request.request.url,
+                urlPattern = Regex.escape(request.request.url),
                 method = request.request.method,
             ),
             isEnabled = true, // enabled by default
