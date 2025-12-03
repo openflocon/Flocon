@@ -56,7 +56,8 @@ fun main() {
     System.setProperty("apple.awt.application.appearance", "system")
     System.setProperty("apple.laf.useScreenMenuBar", "true")
 
-    // to force in FR : Locale.setDefault(Locale.FRENCH)
+    // to force in FR :
+    // Locale.setDefault(Locale.FRENCH)
 
     return application {
         var openAbout by remember { mutableStateOf(false) }

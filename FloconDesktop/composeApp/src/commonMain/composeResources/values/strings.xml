@@ -23,4 +23,11 @@
     <string name="new_desktop_version">New destkop version available: %s</string>
     <string name="new_client_version">New client version available: %s</string>
     <string name="new_client_version_desc">Don’t forget to update the app version\n(current: %s)</string>
+    <string name="settings_adb_setup_title">Please setup ADB first, this field is mandatory</string>
+    <string name="settings_adb_valid">ADB configuraton is valid</string>
+    <string name="general_save">Save</string>
+    <string name="general_success">Success</string>
+    <string name="general_failed">Failed</string>
+    <string name="settings_test">Test</string>
+    <string name="settings_font_size_multiplier">Font Size Multiplier : %sx</string>
 </resources>
