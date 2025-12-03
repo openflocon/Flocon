@@ -1,19 +1,57 @@
 package io.github.openflocon.flocon.plugins.crashreporter
 
 import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.plugins.crashreporter.model.CrashReportDataModel
+import io.github.openflocon.flocon.plugins.crashreporter.model.crashReportFromJson
+import io.github.openflocon.flocon.plugins.crashreporter.model.toJson
+import java.io.File
 
 internal class FloconCrashReporterDataSourceJvm : FloconCrashReporterDataSource {
+    
+    private val crashesDir: File by lazy {
+        val userHome = System.getProperty("user.home") ?: System.getProperty("java.io.tmpdir") ?: "."
+        val floconDir = File(userHome, ".flocon")
+        val crashDir = File(floconDir, "crashes")
+        crashDir.mkdirs()
+        crashDir
+    }
+
     override fun saveCrash(crash: CrashReportDataModel) {
-        // No-op for JVM
+        try {
+            val file = File(crashesDir, "${crash.crashId}.json")
+            val jsonString = crash.toJson()
+            file.writeText(jsonString)
+        } catch (t: Throwable) {
+            // Can't log to Flocon since we might be in a crash state
+            t.printStackTrace()
+        }
     }
 
     override fun loadPendingCrashes(): List<CrashReportDataModel> {
-        return emptyList()
+        return try {
+            crashesDir.listFiles()
+                ?.filter { it.extension == "json" }
+                ?.mapNotNull { file ->
+                    try {
+                        crashReportFromJson(file.readText())
+                    } catch (t: Throwable) {
+                        t.printStackTrace()
+                        null
+                    }
+                } ?: emptyList()
+        } catch (t: Throwable) {
+            FloconLogger.logError("Error loading pending crashes", t)
+            emptyList()
+        }
     }
 
     override fun deleteCrash(crashId: String) {
-        // No-op for JVM
+        try {
+            File(crashesDir, "$crashId.json").delete()
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        }
     }
 }
 
@@ -26,7 +64,7 @@ internal actual fun setupUncaughtExceptionHandler(
     onCrash: (Throwable) -> Unit
 ) {
     val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
-
+    
     Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
         try {
             // Save crash
