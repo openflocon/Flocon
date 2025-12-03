@@ -70,7 +70,6 @@ internal class FloconCrashReporterPluginImpl(
             exceptionType = throwable::class.simpleName ?: "Unknown",
             exceptionMessage = throwable.message ?: "No message",
             stackTrace = throwable.stackTraceToString(),
-            appVersion = BuildConfig.APP_VERSION,
         )
     }
 }

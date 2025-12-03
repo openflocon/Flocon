@@ -9,5 +9,4 @@ data class CrashReportDataModel(
     val exceptionType: String,
     val exceptionMessage: String,
     val stackTrace: String,
-    val appVersion: String,
 )
