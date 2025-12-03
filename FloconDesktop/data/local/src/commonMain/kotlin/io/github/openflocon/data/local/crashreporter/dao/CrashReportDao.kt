@@ -1,0 +1,39 @@
+package io.github.openflocon.data.local.crashreporter.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Upsert
+import io.github.openflocon.data.local.crashreporter.models.CrashReportEntity
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface CrashReportDao {
+    @Upsert
+    suspend fun insertAll(crashes: List<CrashReportEntity>)
+
+    @Query("""
+        SELECT * FROM CrashReportEntity
+        WHERE deviceId = :deviceId
+        AND packageName = :packageName
+        ORDER BY timestamp DESC
+    """)
+    fun observeAll(
+        deviceId: String,
+        packageName: String,
+    ): Flow<List<CrashReportEntity>>
+
+    @Query("DELETE FROM CrashReportEntity WHERE crashId = :crashId")
+    suspend fun delete(crashId: String)
+
+    @Query("""
+        DELETE FROM CrashReportEntity
+        WHERE deviceId = :deviceId
+        AND packageName = :packageName
+    """)
+    suspend fun clearAll(
+        deviceId: String,
+        packageName: String,
+    )
+}

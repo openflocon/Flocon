@@ -115,6 +115,7 @@ internal fun buildMenu() = MenuState(
                 item(SubScreen.Dashboard),
                 item(SubScreen.Analytics),
                 item(SubScreen.Tables),
+                item(SubScreen.CrashReporter),
             ),
         ),
         MenuSection(

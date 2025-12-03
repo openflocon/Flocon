@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.app.ui.view
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.NetworkWifi
+import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.DatasetLinked
 import androidx.compose.material.icons.outlined.Folder
@@ -26,6 +27,7 @@ fun SubScreen.displayName(): String = when (this) {
     SubScreen.Dashboard -> "Dashboard"
     SubScreen.Settings -> "Settings"
     SubScreen.Deeplinks -> "Deeplinks"
+    SubScreen.CrashReporter -> "Crashes"
 }
 
 // Extension function to get the icon for each SubScreen
@@ -40,4 +42,5 @@ fun SubScreen.icon(): ImageVector = when (this) {
     SubScreen.Settings -> Icons.Outlined.Settings
     SubScreen.Dashboard -> Icons.Outlined.Dashboard
     SubScreen.Deeplinks -> Icons.Filled.Link
+    SubScreen.CrashReporter -> Icons.Outlined.BugReport
 }

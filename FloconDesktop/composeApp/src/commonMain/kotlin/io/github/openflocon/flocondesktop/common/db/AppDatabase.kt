@@ -40,13 +40,15 @@ import io.github.openflocon.data.local.network.models.mock.MockNetworkEntity
 import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.data.local.table.models.TableItemEntity
+import io.github.openflocon.data.local.crashreporter.models.CrashReportEntity
+import io.github.openflocon.data.local.crashreporter.dao.CrashReportDao
 import io.github.openflocon.flocondesktop.common.db.converters.DashboardConverters
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 73,
+    version = 74,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -69,6 +71,7 @@ import kotlinx.coroutines.Dispatchers
         DeviceEntity::class,
         DeviceAppEntity::class,
         DatabaseTableEntity::class,
+        CrashReportEntity::class,
     ],
 )
 @TypeConverters(
@@ -92,6 +95,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val networkBadQualityConfigDao: NetworkBadQualityConfigDao
     abstract val devicesDao: DevicesDao
     abstract val tablesDao: TablesDao
+    abstract val crashReportDao: CrashReportDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()
