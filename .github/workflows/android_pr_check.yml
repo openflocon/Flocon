@@ -1,4 +1,4 @@
-name: Android PR Check
+name: Android Pull Request Check
 on:
   pull_request:
     branches: [ main ]
