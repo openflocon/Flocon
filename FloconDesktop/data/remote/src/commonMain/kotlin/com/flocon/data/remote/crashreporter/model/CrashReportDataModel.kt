@@ -3,7 +3,7 @@ package com.flocon.data.remote.crashreporter.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CrashReportDataModel(
+internal data class CrashReportDataModel(
     val crashId: String,
     val timestamp: Long,
     val exceptionType: String,

@@ -83,9 +83,9 @@ internal fun CrashReportDetailView(
 
 @Composable
 private fun Actions(
-    modifier: Modifier = Modifier,
     onCopy: () -> Unit,
     onDelete: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
@@ -94,9 +94,8 @@ private fun Actions(
     ) {
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp))
-                .clickable {
-                    onDelete()
-                }.aspectRatio(1f, true),
+                .clickable(onClick = onDelete)
+                .aspectRatio(1f, true),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -108,9 +107,8 @@ private fun Actions(
         }
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp))
-                .clickable {
-                    onCopy()
-                }.aspectRatio(1f, true),
+                .clickable(onClick = onCopy)
+                .aspectRatio(1f, true),
             contentAlignment = Alignment.Center
         ) {
             Image(
