@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.detail
 
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
@@ -24,6 +26,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -89,7 +93,9 @@ class NetworkDetailDelegate(
 
     private fun onCopyText(action: NetworkDetailAction.CopyText) {
         copyToClipboard(action.text)
-        feedbackDisplayer.displayMessage("copied")
+        coroutineScope.launch {
+            feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
+        }
     }
 
     private fun onJsonDetail(action: NetworkDetailAction.JsonDetail) {

@@ -34,6 +34,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sebastianneubauer.jsontree.search.rememberSearchState
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.search
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.body.model.previewNetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -43,6 +45,7 @@ import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -127,7 +130,7 @@ private fun SearchBar(
         FloconTextField(
             value = query,
             onValueChange = { queryChanged(it) },
-            placeholder = defaultPlaceHolder("Search"),
+            placeholder = defaultPlaceHolder(stringResource(Res.string.search)),
             modifier = Modifier
                 .weight(1f)
                 .padding(vertical = 8.dp, horizontal = 12.dp)

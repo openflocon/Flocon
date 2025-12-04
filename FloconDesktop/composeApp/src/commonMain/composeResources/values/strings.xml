@@ -20,9 +20,9 @@
     <string name="freeform_link">freeform link</string>
     <string name="download">Download</string>
     <string name="close">Close</string>
-    <string name="new_desktop_version">New destkop version available: %s</string>
-    <string name="new_client_version">New client version available: %s</string>
-    <string name="new_client_version_desc">Don’t forget to update the app version\n(current: %s)</string>
+    <string name="new_desktop_version">New destkop version available: %1$s</string>
+    <string name="new_client_version">New client version available: %1$s</string>
+    <string name="new_client_version_desc">Don’t forget to update the app version\n(current: %1$s)</string>
     <string name="settings_adb_setup_title">Please setup ADB first, this field is mandatory</string>
     <string name="settings_adb_valid">ADB configuraton is valid</string>
     <string name="general_save">Save</string>
@@ -30,7 +30,7 @@
     <string name="general_delete">Delete</string>
     <string name="general_failed">Failed</string>
     <string name="settings_test">Test</string>
-    <string name="settings_font_size_multiplier">Font Size Multiplier : %sx</string>
+    <string name="settings_font_size_multiplier">Font Size Multiplier : %1$sx</string>
     <string name="menu_network">Network</string>
     <string name="menu_storage">Storage</string>
     <string name="menu_data">Data</string>
@@ -47,7 +47,7 @@
      <string name="menu_item_settings">Settings</string>
      <string name="menu_item_deeplinks">Deeplinks</string>
      <string name="menu_item_crashReporter">Crashes</string>
-     <string name="screenshot_saved_at">Success, file saved at %s</string>
+     <string name="screenshot_saved_at">Success, file saved at %1$s</string>
      <string name="record_saved_at">Record saved at %s</string>
      <string name="no_devices_found">No Devices Found</string>
      <string name="devices_disconnected">Disconnected</string>
@@ -59,7 +59,8 @@
      <string name="dashboard_empty">No dashboard</string>
      <string name="database_run_query">Run Query</string>
      <string name="auto_update">Auto Update</string>
-     <string name="nb_lines">%s rows</string>
+     <string name="nb_lines">%1$s rows</string>
      <string name="databases_favorites">Favorites</string>
      <string name="saved">Saved</string>
+     <string name="search">Search</string>
 </resources>
