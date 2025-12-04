@@ -15,11 +15,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.no_devices_found
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.TopBarSelector
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TopBarDeviceDropdown(
@@ -86,7 +89,7 @@ private fun Empty() {
         onClick = {},
     ) {
         Text(
-            text = "No Devices Found",
+            text = stringResource(Res.string.no_devices_found),
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
             style = FloconTheme.typography.bodyMedium,
             color = FloconTheme.colorPalette.onSurface,

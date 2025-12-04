@@ -8,6 +8,5 @@ import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 data class MenuItem(
     val screen: SubScreen,
     val icon: ImageVector,
-    val text: String,
     val isEnabled: Boolean,
 )

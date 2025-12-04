@@ -38,6 +38,11 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.auto_scroll
+import flocondesktop.composeapp.generated.resources.clear_old_sessions
+import flocondesktop.composeapp.generated.resources.export_csv
+import flocondesktop.composeapp.generated.resources.invert_list
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsViewModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
@@ -57,6 +62,7 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.flow.flowOf
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.max
@@ -141,25 +147,25 @@ fun AnalyticsScreen(
             actions = {
                 FloconOverflow {
                     FloconDropdownMenuItem(
-                        text = "Export CSV",
+                        text = stringResource(Res.string.export_csv),
                         leadingIcon = Icons.Outlined.ImportExport,
                         onClick = { onAction(AnalyticsAction.ExportCsv) }
                     )
                     FloconDropdownMenuItem(
                         checked = screenState.autoScroll,
-                        text = "Auto scroll",
+                        text = stringResource(Res.string.auto_scroll),
                         leadingIcon = Icons.Outlined.PlayCircle,
                         onCheckedChange = { onAction(AnalyticsAction.ToggleAutoScroll) }
                     )
                     FloconDropdownMenuItem(
                         checked = screenState.invertList,
-                        text = "Invert list",
+                        text = stringResource(Res.string.invert_list),
                         leadingIcon = Icons.AutoMirrored.Outlined.List,
                         onCheckedChange = { onAction(AnalyticsAction.InvertList(it)) }
                     )
                     FloconDropdownSeparator()
                     FloconDropdownMenuItem(
-                        text = "Clear old sessions",
+                        text = stringResource(Res.string.clear_old_sessions),
                         leadingIcon = Icons.Outlined.CleaningServices,
                         onClick = { onAction(AnalyticsAction.ClearOldSession) }
                     )

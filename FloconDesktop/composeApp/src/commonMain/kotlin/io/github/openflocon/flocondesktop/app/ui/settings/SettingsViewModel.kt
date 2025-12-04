@@ -2,6 +2,9 @@ package io.github.openflocon.flocondesktop.app.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_failed
+import flocondesktop.composeapp.generated.resources.general_success
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.settings.repository.SettingsRepository
@@ -15,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
@@ -79,11 +83,11 @@ class SettingsViewModel(
             saveAdb()
             testAdbUseCase().fold(
                 doOnFailure = {
-                    feedbackDisplayer.displayMessage("failed")
+                    feedbackDisplayer.displayMessage(getString(Res.string.general_success))
                     initialSetupStateHolder.setRequiresInitialSetup()
                 },
                 doOnSuccess = {
-                    feedbackDisplayer.displayMessage("success")
+                    feedbackDisplayer.displayMessage(getString(Res.string.general_failed))
                     initialSetupStateHolder.setAdbIsWorking()
                 },
             )

@@ -15,12 +15,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.remove
+import flocondesktop.composeapp.generated.resources.remove_lines_above
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.table.model.TableAction
 import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.flocondesktop.features.table.model.previewTableRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -64,11 +68,13 @@ private fun contextualActions(
     state: TableRowUiModel
 ): List<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
+    val removeString = stringResource(Res.string.remove)
+    val removeAboveString = stringResource(Res.string.remove_lines_above)
     return remember(state) {
         buildList {
             add(
                 FloconContextMenuItem.Item(
-                    label = "Remove",
+                    label = removeString,
                     onClick = {
                         onActionCallback(TableAction.Remove(state))
                     }
@@ -76,7 +82,7 @@ private fun contextualActions(
             )
             add(
                 FloconContextMenuItem.Item(
-                    label = "Remove lines above ",
+                    label = removeAboveString,
                     onClick = {
                         onActionCallback(TableAction.RemoveLinesAbove(state))
                     }

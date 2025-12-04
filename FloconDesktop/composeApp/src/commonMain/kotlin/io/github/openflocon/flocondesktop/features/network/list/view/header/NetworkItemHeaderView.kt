@@ -9,6 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.network_header_domain
+import flocondesktop.composeapp.generated.resources.network_header_method
+import flocondesktop.composeapp.generated.resources.network_header_query
+import flocondesktop.composeapp.generated.resources.network_header_request_time
+import flocondesktop.composeapp.generated.resources.network_header_status
+import flocondesktop.composeapp.generated.resources.network_header_time
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
@@ -21,6 +28,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.flocondesktop.features.network.list.view.filters.MethodFilterDropdownContent
 import io.github.openflocon.flocondesktop.features.network.list.view.filters.TextFilterDropdownContent
 import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -40,7 +48,7 @@ fun NetworkItemHeaderView(
         verticalAlignment = Alignment.Bottom,
     ) {
         HeaderDropdown(
-            label = "Request Time",
+            label = stringResource(Res.string.network_header_request_time),
             filtered = state.requestTime.isFiltered(),
             sortedBy = state.requestTime.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.RequestTime, it) },
@@ -52,7 +60,7 @@ fun NetworkItemHeaderView(
             )
         }
         HeaderDropdown(
-            label = "Method",
+            label = stringResource(Res.string.network_header_method),
             filtered = state.method.isFiltered(),
             sortedBy = state.method.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Method, it) },
@@ -64,7 +72,7 @@ fun NetworkItemHeaderView(
             )
         }
         HeaderDropdown(
-            label = "Domain",
+            label = stringResource(Res.string.network_header_domain),
             filtered = state.domain.isFiltered(),
             sortedBy = state.domain.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Domain, it) },
@@ -77,7 +85,7 @@ fun NetworkItemHeaderView(
             )
         }
         HeaderDropdown(
-            label = "Query",
+            label = stringResource(Res.string.network_header_query),
             filtered = state.query.isFiltered(),
             sortedBy = state.query.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Query, it) },
@@ -90,7 +98,7 @@ fun NetworkItemHeaderView(
             )
         }
         HeaderDropdown(
-            label = "Status",
+            label = stringResource(Res.string.network_header_status),
             filtered = state.status.isFiltered(),
             sortedBy = state.status.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Status, it) },
@@ -102,7 +110,7 @@ fun NetworkItemHeaderView(
             )
         }
         HeaderDropdown(
-            label = "Time",
+            label = stringResource(Res.string.network_header_time),
             filtered = state.time.isFiltered(),
             sortedBy = state.time.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Time, it) },

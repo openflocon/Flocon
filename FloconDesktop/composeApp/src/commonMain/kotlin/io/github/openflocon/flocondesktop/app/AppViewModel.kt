@@ -2,6 +2,8 @@ package io.github.openflocon.flocondesktop.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.screenshot_saved_at
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
@@ -32,6 +34,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 internal class AppViewModel(
     messagesServerDelegate: MessagesServerDelegate,
@@ -174,7 +177,7 @@ internal class AppViewModel(
                     feedbackDisplayer.displayMessage(it.message ?: "Unknown error")
                 },
                 doOnSuccess = {
-                    feedbackDisplayer.displayMessage("Success, file saved at $it")
+                    feedbackDisplayer.displayMessage(getString(Res.string.screenshot_saved_at, it))
                 },
             )
         }

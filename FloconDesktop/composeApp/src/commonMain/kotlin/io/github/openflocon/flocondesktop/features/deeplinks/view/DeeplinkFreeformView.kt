@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.freeform_link
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -25,6 +27,7 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val freeformItem = DeeplinkViewState(
@@ -56,7 +59,7 @@ fun DeeplinkFreeformItemView(
             FloconTextFieldWithoutM3(
                 value = value,
                 onValueChange = { value = it },
-                placeholder = defaultPlaceHolder("freeform link"),
+                placeholder = defaultPlaceHolder(stringResource(Res.string.freeform_link)),
                 textStyle = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 containerColor = FloconTheme.colorPalette.secondary,
                 modifier = Modifier.weight(1f),

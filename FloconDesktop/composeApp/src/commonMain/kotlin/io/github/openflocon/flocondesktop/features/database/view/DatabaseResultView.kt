@@ -42,6 +42,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.nb_lines
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
@@ -49,6 +51,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.mp.KoinPlatform
 
@@ -271,7 +274,7 @@ private fun ResultHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            "${result.rows.size} rows",
+            stringResource(Res.string.nb_lines, result.rows.size),
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
             color = FloconTheme.colorPalette.onPrimary,
             modifier = Modifier

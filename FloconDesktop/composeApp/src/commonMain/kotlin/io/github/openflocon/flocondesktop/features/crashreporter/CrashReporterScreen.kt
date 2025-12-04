@@ -34,6 +34,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composeunstyled.Text
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.crashes
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterAction
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterSelectedUiModel
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterUiModel
@@ -41,6 +43,7 @@ import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashRepor
 import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportItemView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -132,7 +135,7 @@ fun LeftPannel(
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    "Crashes",
+                    stringResource(Res.string.crashes),
                     color = FloconTheme.colorPalette.onSurface,
                     style = FloconTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,

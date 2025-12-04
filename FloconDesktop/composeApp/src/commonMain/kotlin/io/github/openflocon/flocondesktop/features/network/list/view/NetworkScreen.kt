@@ -42,6 +42,8 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.filter
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailContent
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
@@ -70,6 +72,7 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.panel.PANEL_WIDTH
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -153,7 +156,7 @@ fun NetworkScreen(
                 filterBar = {
                     FilterBar(
                         filterText = filterText,
-                        placeholderText = "Filter route",
+                        placeholderText = stringResource(Res.string.filter),
                         onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
                         modifier = Modifier.fillMaxWidth(.7f),
                     )

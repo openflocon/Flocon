@@ -8,8 +8,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.filter
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SharedPreferencesFilterBar(
@@ -37,7 +40,7 @@ fun SharedPreferencesFilterBar(
     }
 
     FilterBar(
-        placeholderText = "Filter",
+        placeholderText = stringResource(Res.string.filter),
         modifier = modifier,
         onTextChange = {
             filterText = it

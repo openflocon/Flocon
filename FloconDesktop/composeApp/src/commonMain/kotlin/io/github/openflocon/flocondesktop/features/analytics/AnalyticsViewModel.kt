@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.error_exporting_csv
 import io.github.openflocon.domain.analytics.usecase.ExportAnalyticsToCsvUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveAnalyticsByIdUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
@@ -42,6 +44,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class AnalyticsViewModel(
     private val dispatcherProvider: DispatcherProvider,
@@ -160,7 +163,7 @@ class AnalyticsViewModel(
             ).fold(
                 doOnFailure = {
                     feedbackDisplayer.displayMessage(
-                        "Error while exporting csv"
+                        getString(Res.string.error_exporting_csv)
                     )
                 },
                 doOnSuccess = { path ->

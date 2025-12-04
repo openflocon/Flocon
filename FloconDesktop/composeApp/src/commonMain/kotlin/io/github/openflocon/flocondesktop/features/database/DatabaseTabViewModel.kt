@@ -4,6 +4,8 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.seconds
 
@@ -150,7 +153,7 @@ class DatabaseTabViewModel(
                 is DatabaseTabAction.UpdateAutoUpdate -> updateAutoUpdate(action.value)
                 DatabaseTabAction.Copy -> {
                     copyToClipboard(query.value)
-                    feedbackDisplayer.displayMessage("copied")
+                    feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
                 }
 
                 DatabaseTabAction.Import -> {

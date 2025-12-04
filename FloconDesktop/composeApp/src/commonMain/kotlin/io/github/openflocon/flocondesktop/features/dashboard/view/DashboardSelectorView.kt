@@ -25,6 +25,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.dashboard_empty
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -34,6 +36,7 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DashboardSelectorView(
@@ -58,7 +61,7 @@ internal fun DashboardSelectorView(
             ) {
                 when (dashboardsState) {
                     DashboardsStateUiModel.Empty -> Text(
-                        "No dashboard",
+                        stringResource(Res.string.dashboard_empty),
                         style = FloconTheme.typography.bodySmall
                     )
 

@@ -17,6 +17,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.tables_empty
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -26,6 +28,7 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TableSelectorView(
@@ -51,7 +54,7 @@ internal fun TableSelectorView(
                 containerColor = FloconTheme.colorPalette.secondary
             ) {
                 when (tablesState) {
-                    TablesStateUiModel.Empty -> Text("No tables", style = FloconTheme.typography.bodySmall)
+                    TablesStateUiModel.Empty -> Text(stringResource(Res.string.tables_empty), style = FloconTheme.typography.bodySmall)
                     TablesStateUiModel.Loading -> FloconLinearProgressIndicator()
                     is TablesStateUiModel.WithContent -> {
                         Text(text = tablesState.selected.name, style = FloconTheme.typography.bodySmall)

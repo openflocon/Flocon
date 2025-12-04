@@ -2,6 +2,8 @@ package io.github.openflocon.flocondesktop.features.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.dashboard_removed
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.dashboard.models.DashboardArrangementDomainModel
 import io.github.openflocon.domain.dashboard.usecase.DeleteCurrentDeviceSelectedDashboardUseCase
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class DashboardViewModel(
     private val observeCurrentDeviceDashboardUseCase: ObserveCurrentDeviceDashboardUseCase,
@@ -106,14 +109,14 @@ class DashboardViewModel(
     fun deleteCurrentDashboard() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             deleteCurrentDeviceSelectedDashboardUseCase()
-            feedbackDisplayer.displayMessage("Dashboard removed")
+            feedbackDisplayer.displayMessage(getString(Res.string.dashboard_removed))
         }
     }
 
     fun onDeleteClicked(dashboard: DeviceDashboardUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             deleteDashboardUseCase(dashboard.id)
-            feedbackDisplayer.displayMessage("Dashboard removed")
+            feedbackDisplayer.displayMessage(getString(Res.string.dashboard_removed))
         }
     }
 

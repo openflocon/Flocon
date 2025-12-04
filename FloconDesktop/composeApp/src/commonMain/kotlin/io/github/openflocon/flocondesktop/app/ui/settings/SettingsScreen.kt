@@ -23,6 +23,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_save
+import flocondesktop.composeapp.generated.resources.settings_adb_setup_title
+import flocondesktop.composeapp.generated.resources.settings_adb_valid
+import flocondesktop.composeapp.generated.resources.settings_font_size_multiplier
+import flocondesktop.composeapp.generated.resources.settings_test
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconFeature
@@ -31,6 +37,7 @@ import io.github.openflocon.library.designsystem.components.FloconSection
 import io.github.openflocon.library.designsystem.components.FloconSlider
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -83,7 +90,7 @@ private fun SettingsScreen(
             ) {
                 if (needsAdbSetup) {
                     Text(
-                        text = "Please setup ADB first, this field is mandatory",
+                        text = stringResource(Res.string.settings_adb_setup_title),
                         color = FloconTheme.colorPalette.onError,
                         style = FloconTheme.typography.bodySmall,
                     )
@@ -98,7 +105,7 @@ private fun SettingsScreen(
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = "ADB configuraton is valid",
+                            text = stringResource(Res.string.settings_adb_valid),
                             color = FloconTheme.colorPalette.onAccent,
                             style = FloconTheme.typography.bodySmall
                         )
@@ -115,18 +122,18 @@ private fun SettingsScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     SettingsButton(
-                        text = "Save",
+                        text = stringResource(Res.string.general_save),
                         onClick = saveAdbPath
                     )
                     SettingsButton(
                         onClick = testAdbPath,
-                        text = "Test",
+                        text = stringResource(Res.string.settings_test),
                     )
                 }
             }
         }
         FloconSection(
-            title = "Font Size Multiplier : ${uiState.fontSizeMultiplier}x",
+            title = stringResource(Res.string.settings_font_size_multiplier, uiState.fontSizeMultiplier),
             initialValue = true
         ) {
             Column(

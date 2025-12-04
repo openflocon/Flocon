@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import coil3.compose.AsyncImage
 import com.composeunstyled.Text
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.copyToClipboard
@@ -43,6 +46,8 @@ import io.github.openflocon.library.designsystem.common.isImageUrl
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 
 @Composable
@@ -55,6 +60,7 @@ fun DatabaseRowDetailView(
 
     val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
 
+    val scope = rememberCoroutineScope()
     val feedbackDisplayer = koinInject<FeedbackDisplayer>()
 
     Box(
@@ -82,7 +88,9 @@ fun DatabaseRowDetailView(
                                 columns = columns,
                             )
                         )
-                        feedbackDisplayer.displayMessage("Copied")
+                        scope.launch {
+                            feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
+                        }
                     },
                     imageVector = Icons.Outlined.CopyAll,
                 )
@@ -100,7 +108,9 @@ fun DatabaseRowDetailView(
                             column = column,
                             copyValue = {
                                 copyToClipboard(it)
-                                feedbackDisplayer.displayMessage("Copied")
+                                scope.launch {
+                                    feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
+                                }
                             },
                             value = state.item.items.getOrNull(index),
                             modifier = Modifier.fillMaxSize()

@@ -2,6 +2,8 @@ package io.github.openflocon.flocondesktop.features.crashreporter
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.crashreporter.usecase.ClearAllCrashReportUseCase
 import io.github.openflocon.domain.crashreporter.usecase.DeleteCrashReportUseCase
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 internal class CrashReporterViewModel(
     observeCrashReportsUseCase: ObserveCrashReportsUseCase,
@@ -72,7 +75,7 @@ internal class CrashReporterViewModel(
                 }
                 is CrashReporterAction.Copy -> {
                     copyToClipboard(action.crash.stackTrace)
-                    feedbackDisplayer.displayMessage("Copied to clipboard")
+                    feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
                 }
                 is CrashReporterAction.Delete -> deleteCrashReportUseCase(action.crashId)
             }

@@ -10,11 +10,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.date
+import flocondesktop.composeapp.generated.resources.name
+import flocondesktop.composeapp.generated.resources.size
 import io.github.openflocon.flocondesktop.features.files.model.FileColumnUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesHeaderStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.isSorted
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FilesListHeader(
@@ -30,7 +36,7 @@ internal fun FilesListHeader(
         Spacer(modifier = Modifier.width(40.dp))
 
         FilesListHeaderButton(
-            "Name",
+            stringResource(Res.string.name),
             sortedBy = state.isSorted(FileColumnUiModel.Name),
             clickOnSort = {
                 clickOnSort(FileColumnUiModel.Name, it)
@@ -40,7 +46,7 @@ internal fun FilesListHeader(
         )
 
         FilesListHeaderButton(
-            title = "Date",
+            title = stringResource(Res.string.date),
             textAlign = TextAlign.Center,
             sortedBy = state.isSorted(FileColumnUiModel.Date),
             clickOnSort = {
@@ -50,7 +56,7 @@ internal fun FilesListHeader(
         )
 
         FilesListHeaderButton(
-            title = "Size",
+            title = stringResource(Res.string.size),
             subtitle = state.totalSizeFormatted,
             textAlign = TextAlign.End,
             modifier = Modifier.width(100.dp),

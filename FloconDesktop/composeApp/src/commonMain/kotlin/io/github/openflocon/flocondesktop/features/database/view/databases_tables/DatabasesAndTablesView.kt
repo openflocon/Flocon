@@ -17,10 +17,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.Text
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.databases_favorites
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DatabasesAndTablesView(
@@ -102,7 +105,7 @@ fun DatabasesAndTablesView(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        "Favorites",
+                        stringResource(Res.string.databases_favorites),
                         color = FloconTheme.colorPalette.onSurface,
                         style = FloconTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
