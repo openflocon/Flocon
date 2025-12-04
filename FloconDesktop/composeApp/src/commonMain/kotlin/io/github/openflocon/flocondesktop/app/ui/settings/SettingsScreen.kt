@@ -20,12 +20,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
-import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_save
 import flocondesktop.composeapp.generated.resources.settings_adb_setup_title
@@ -136,7 +133,10 @@ private fun SettingsScreen(
             }
         }
         FloconSection(
-            title = stringResource(Res.string.settings_font_size_multiplier, uiState.fontSizeMultiplier),
+            title = stringResource(
+                Res.string.settings_font_size_multiplier,
+                uiState.fontSizeMultiplier
+            ),
             initialValue = true
         ) {
             Column(
