@@ -25,7 +25,6 @@ fun formatTimestamp(timestamp: Long): String {
     }"
 }
 
-
 fun formatDate(timestamp: Long): String {
     val instant = Instant.fromEpochMilliseconds(timestamp)
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -40,9 +39,9 @@ fun formatDate(timestamp: Long): String {
 
     val millis = localDateTime.nanosecond / 1_000_000
 
-    return "${padZero(day, 2)}/${padZero(month, 2)}/${year} " +
-            "${padZero(hours, 2)}:${padZero(minutes, 2)}:${padZero(seconds, 2)}." +
-            padZero(millis, 3)
+    return "${padZero(day, 2)}/${padZero(month, 2)}/$year " +
+        "${padZero(hours, 2)}:${padZero(minutes, 2)}:${padZero(seconds, 2)}." +
+        padZero(millis, 3)
 }
 
 fun padZero(

@@ -17,19 +17,21 @@ class CrashReporterLocalDataSourceRoom(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         crashes: List<CrashReportDomainModel>
     ) {
-        crashReportDao.insertAll(crashes.map { it.toEntity(
-            deviceIdAndPackageName = deviceIdAndPackageName
-        ) })
+        crashReportDao.insertAll(
+            crashes.map {
+                it.toEntity(
+                    deviceIdAndPackageName = deviceIdAndPackageName
+                )
+            }
+        )
     }
 
     override fun observeAll(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): Flow<List<CrashReportDomainModel>> {
-        return crashReportDao.observeAll(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-        ).map { list -> list.map { it.toDomain() } }
-    }
+    ): Flow<List<CrashReportDomainModel>> = crashReportDao.observeAll(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    ).map { list -> list.map { it.toDomain() } }
 
     override suspend fun delete(crashId: String) {
         crashReportDao.delete(crashId)
@@ -47,12 +49,9 @@ class CrashReporterLocalDataSourceRoom(
     override fun observeCrashReportById(
         id: String,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): Flow<CrashReportDomainModel?> {
-        return crashReportDao.observeCrashReportById(
-            id = id,
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-        ).map { it?.toDomain() }
-    }
-
+    ): Flow<CrashReportDomainModel?> = crashReportDao.observeCrashReportById(
+        id = id,
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    ).map { it?.toDomain() }
 }

@@ -8,6 +8,8 @@ import io.github.openflocon.data.local.adb.dao.AdbDevicesDao
 import io.github.openflocon.data.local.adb.model.DeviceWithSerialEntity
 import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
+import io.github.openflocon.data.local.crashreporter.dao.CrashReportDao
+import io.github.openflocon.data.local.crashreporter.models.CrashReportEntity
 import io.github.openflocon.data.local.dashboard.dao.FloconDashboardDao
 import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
@@ -40,8 +42,6 @@ import io.github.openflocon.data.local.network.models.mock.MockNetworkEntity
 import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.data.local.table.models.TableItemEntity
-import io.github.openflocon.data.local.crashreporter.models.CrashReportEntity
-import io.github.openflocon.data.local.crashreporter.dao.CrashReportDao
 import io.github.openflocon.flocondesktop.common.db.converters.DashboardConverters
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters

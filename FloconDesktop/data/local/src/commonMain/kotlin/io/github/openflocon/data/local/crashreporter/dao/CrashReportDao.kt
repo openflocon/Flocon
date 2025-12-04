@@ -11,25 +11,29 @@ interface CrashReportDao {
     @Upsert
     suspend fun insertAll(crashes: List<CrashReportEntity>)
 
-    @Query("""
+    @Query(
+        """
         SELECT * 
         FROM CrashReportEntity 
         WHERE crashId = :id
         AND deviceId = :deviceId
         AND packageName = :packageName
-    """)
+    """
+    )
     fun observeCrashReportById(
         id: String,
         deviceId: String,
         packageName: String,
-    ) : Flow<CrashReportEntity?>
+    ): Flow<CrashReportEntity?>
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM CrashReportEntity
         WHERE deviceId = :deviceId
         AND packageName = :packageName
         ORDER BY timestamp DESC
-    """)
+    """
+    )
     fun observeAll(
         deviceId: String,
         packageName: String,
@@ -38,14 +42,15 @@ interface CrashReportDao {
     @Query("DELETE FROM CrashReportEntity WHERE crashId = :crashId")
     suspend fun delete(crashId: String)
 
-    @Query("""
+    @Query(
+        """
         DELETE FROM CrashReportEntity
         WHERE deviceId = :deviceId
         AND packageName = :packageName
-    """)
+    """
+    )
     suspend fun clearAll(
         deviceId: String,
         packageName: String,
     )
-
 }

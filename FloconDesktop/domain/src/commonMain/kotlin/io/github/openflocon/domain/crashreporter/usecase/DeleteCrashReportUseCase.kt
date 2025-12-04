@@ -5,7 +5,5 @@ import io.github.openflocon.domain.crashreporter.repository.CrashReporterReposit
 class DeleteCrashReportUseCase(
     private val repository: CrashReporterRepository,
 ) {
-    suspend operator fun invoke(id: String) {
-        return repository.deleteCrashReport(id)
-    }
+    suspend operator fun invoke(id: String) = repository.deleteCrashReport(id)
 }

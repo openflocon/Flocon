@@ -94,7 +94,7 @@ private fun Actions(
     ) {
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp))
-                .clickable() {
+                .clickable {
                     onDelete()
                 }.aspectRatio(1f, true),
             contentAlignment = Alignment.Center
@@ -108,7 +108,7 @@ private fun Actions(
         }
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp))
-                .clickable() {
+                .clickable {
                     onCopy()
                 }.aspectRatio(1f, true),
             contentAlignment = Alignment.Center

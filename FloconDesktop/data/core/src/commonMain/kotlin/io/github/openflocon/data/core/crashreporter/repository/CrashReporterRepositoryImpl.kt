@@ -18,7 +18,8 @@ class CrashReporterRepositoryImpl(
     private val localDataSource: CrashReporterLocalDataSource,
     private val remoteDataSource: CrashReportRemoteDataSource,
     private val dispatcherProvider: DispatcherProvider,
-) : CrashReporterRepository, MessagesReceiverRepository {
+) : CrashReporterRepository,
+    MessagesReceiverRepository {
 
     override val pluginName = listOf(Protocol.FromDevice.CrashReporter.Plugin)
 
@@ -60,11 +61,9 @@ class CrashReporterRepositoryImpl(
 
     override fun observeCrashReports(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): Flow<List<CrashReportDomainModel>> {
-        return localDataSource.observeAll(
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        ).flowOn(dispatcherProvider.data)
-    }
+    ): Flow<List<CrashReportDomainModel>> = localDataSource.observeAll(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    ).flowOn(dispatcherProvider.data)
 
     override suspend fun deleteCrashReport(crashId: String) {
         withContext(dispatcherProvider.data) {
@@ -83,11 +82,9 @@ class CrashReporterRepositoryImpl(
     override fun observeCrashReportById(
         id: String,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): Flow<CrashReportDomainModel?> {
-        return localDataSource.observeCrashReportById(
-            id = id,
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        )
-            .flowOn(dispatcherProvider.data)
-    }
+    ): Flow<CrashReportDomainModel?> = localDataSource.observeCrashReportById(
+        id = id,
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    )
+        .flowOn(dispatcherProvider.data)
 }

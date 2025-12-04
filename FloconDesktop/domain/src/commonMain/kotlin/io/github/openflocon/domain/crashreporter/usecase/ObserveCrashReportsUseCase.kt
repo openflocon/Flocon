@@ -11,14 +11,12 @@ class ObserveCrashReportsUseCase(
     private val repository: CrashReporterRepository,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(): Flow<List<CrashReportDomainModel>> {
-        return observeCurrentDeviceIdAndPackageNameUseCase()
-            .flatMapLatest { current ->
-                if (current == null) {
-                    flowOf(emptyList())
-                } else {
-                    repository.observeCrashReports(current)
-                }
+    operator fun invoke(): Flow<List<CrashReportDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
+        .flatMapLatest { current ->
+            if (current == null) {
+                flowOf(emptyList())
+            } else {
+                repository.observeCrashReports(current)
             }
-    }
+        }
 }

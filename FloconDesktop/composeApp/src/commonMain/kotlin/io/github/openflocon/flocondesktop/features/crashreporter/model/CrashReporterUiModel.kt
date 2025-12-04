@@ -8,7 +8,7 @@ data class CrashReporterUiModel(
     val dateFormatted: String,
     val exceptionType: String,
     val exceptionMessage: String,
-    //val stackTrace: String,
+    // val stackTrace: String,
 )
 
 fun previewCrashReportItem() = CrashReporterUiModel(

@@ -19,7 +19,8 @@ sealed interface DatabaseRoutes : FloconRoute {
     data class Detail(
         val result: DetailResultItem,
         val columns: List<String>
-    ) : DatabaseRoutes, PanelRoute
+    ) : DatabaseRoutes,
+        PanelRoute
 }
 
 fun EntryProviderScope<FloconRoute>.databaseRoutes() {

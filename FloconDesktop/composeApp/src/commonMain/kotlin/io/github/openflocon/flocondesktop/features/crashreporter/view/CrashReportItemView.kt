@@ -70,7 +70,6 @@ internal fun CrashReportItemView(
     }
 }
 
-
 @Composable
 private fun contextualActions(
     onDelete: () -> Unit,
@@ -89,7 +88,6 @@ private fun contextualActions(
         }
     }
 }
-
 
 @Preview
 @Composable

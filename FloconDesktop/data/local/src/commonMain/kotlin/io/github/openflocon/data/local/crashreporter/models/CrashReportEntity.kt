@@ -25,7 +25,7 @@ data class CrashReportEntity(
 
     val deviceId: String,
     val packageName: String,
-    
+
     val timestamp: Long,
     val exceptionType: String,
     val exceptionMessage: String,

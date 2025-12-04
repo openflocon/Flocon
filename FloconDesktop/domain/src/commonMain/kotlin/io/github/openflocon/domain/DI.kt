@@ -2,6 +2,7 @@ package io.github.openflocon.domain
 
 import io.github.openflocon.domain.adb.adbModule
 import io.github.openflocon.domain.analytics.analyticsModule
+import io.github.openflocon.domain.crashreporter.crashReporterDomainModule
 import io.github.openflocon.domain.dashboard.dashboardModule
 import io.github.openflocon.domain.database.databaseModule
 import io.github.openflocon.domain.deeplink.deeplinkModule
@@ -14,7 +15,6 @@ import io.github.openflocon.domain.settings.settingsModule
 import io.github.openflocon.domain.sharedpreference.sharedPreferencesModule
 import io.github.openflocon.domain.table.tableModule
 import io.github.openflocon.domain.versions.versionModule
-import io.github.openflocon.domain.crashreporter.crashReporterDomainModule
 import org.koin.dsl.module
 
 val domainModule = module {
