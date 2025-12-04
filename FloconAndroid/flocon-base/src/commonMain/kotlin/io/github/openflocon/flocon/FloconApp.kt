@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPlugin
+import io.github.openflocon.flocon.plugins.crashreporter.FloconCrashReporterPlugin
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPlugin
 import io.github.openflocon.flocon.plugins.database.FloconDatabasePlugin
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPlugin
@@ -31,6 +32,7 @@ abstract class FloconApp {
         val networkPlugin: FloconNetworkPlugin
         val devicePlugin: FloconDevicePlugin
         val preferencesPlugin: FloconPreferencesPlugin
+        val crashReporterPlugin: FloconCrashReporterPlugin
     }
 
     open val client: FloconApp.Client? = null

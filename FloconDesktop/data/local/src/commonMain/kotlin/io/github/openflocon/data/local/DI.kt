@@ -2,6 +2,7 @@ package io.github.openflocon.data.local
 
 import io.github.openflocon.data.local.adb.adbModule
 import io.github.openflocon.data.local.analytics.analyticsModule
+import io.github.openflocon.data.local.crashreporter.crashReporterLocalModule
 import io.github.openflocon.data.local.dashboard.dashboardModule
 import io.github.openflocon.data.local.database.databaseModule
 import io.github.openflocon.data.local.deeplink.deeplinkModule
@@ -25,6 +26,7 @@ val dataLocalModule = module {
         imagesModule,
         networkModule,
         sharedPreferenceModule,
-        tableModule
+        tableModule,
+        crashReporterLocalModule,
     )
 }

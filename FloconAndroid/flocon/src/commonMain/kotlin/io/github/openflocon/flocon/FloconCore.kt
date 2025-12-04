@@ -31,6 +31,10 @@ abstract class FloconCore : FloconApp() {
     protected fun initializeFlocon(context: FloconContext) {
         val newClient = FloconClientImpl(context)
         _client = newClient
+        
+        // Setup crash handler early to catch crashes during initialization
+        newClient.crashReporterPlugin.setupCrashHandler()
+        
         _isInitialized.value = true
 
         scope.launch {

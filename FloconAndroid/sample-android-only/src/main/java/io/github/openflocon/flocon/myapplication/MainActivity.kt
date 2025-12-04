@@ -151,6 +151,13 @@ class MainActivity : ComponentActivity() {
                             }
                             Button(
                                 onClick = {
+                                    throw Throwable("my custom crash")
+                                }
+                            ) {
+                                Text("crash")
+                            }
+                            Button(
+                                onClick = {
                                     val value = Random.nextInt(from = 0, until = 1000).toString()
                                     Flocon.table("analytics").log(
                                         "name" toParam "new name $value",

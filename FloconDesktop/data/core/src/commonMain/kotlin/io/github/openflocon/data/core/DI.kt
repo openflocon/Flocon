@@ -1,6 +1,7 @@
 package io.github.openflocon.data.core
 
 import io.github.openflocon.data.core.analytics.analyticsModule
+import io.github.openflocon.data.core.crashreporter.crashReporterModule
 import io.github.openflocon.data.core.dashboard.dashboardModule
 import io.github.openflocon.data.core.database.databaseModule
 import io.github.openflocon.data.core.deeplink.deeplinkModule
@@ -25,6 +26,7 @@ val dataCoreModule = module {
         sharedPreferenceModule,
         tableModule,
         messageModule,
-        versionModule
+        versionModule,
+        crashReporterModule,
     )
 }
