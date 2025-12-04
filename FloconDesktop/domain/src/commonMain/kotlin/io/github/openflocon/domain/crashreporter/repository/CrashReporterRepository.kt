@@ -10,5 +10,5 @@ interface CrashReporterRepository {
     ): Flow<List<CrashReportDomainModel>>
     suspend fun deleteCrashReport(crashId: String)
     suspend fun clearAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,)
-    fun observeCrashReportById(id: String): Flow<CrashReportDomainModel?>
+    fun observeCrashReportById(id: String, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<CrashReportDomainModel?>
 }

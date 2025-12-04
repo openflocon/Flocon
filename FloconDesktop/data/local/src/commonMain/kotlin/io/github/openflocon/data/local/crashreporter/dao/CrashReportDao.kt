@@ -11,8 +11,18 @@ interface CrashReportDao {
     @Upsert
     suspend fun insertAll(crashes: List<CrashReportEntity>)
 
-    @Query("SELECT * FROM CrashReportEntity WHERE crashId = :id")
-    fun observeCrashReportById(id: String) : Flow<CrashReportEntity?>
+    @Query("""
+        SELECT * 
+        FROM CrashReportEntity 
+        WHERE crashId = :id
+        AND deviceId = :deviceId
+        AND packageName = :packageName
+    """)
+    fun observeCrashReportById(
+        id: String,
+        deviceId: String,
+        packageName: String,
+    ) : Flow<CrashReportEntity?>
 
     @Query("""
         SELECT * FROM CrashReportEntity

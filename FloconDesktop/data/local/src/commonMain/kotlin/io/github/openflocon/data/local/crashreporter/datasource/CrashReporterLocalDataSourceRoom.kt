@@ -44,8 +44,15 @@ class CrashReporterLocalDataSourceRoom(
         )
     }
 
-    override fun observeCrashReportById(id: String): Flow<CrashReportDomainModel?> {
-        return crashReportDao.observeCrashReportById(id).map { it?.toDomain() }
+    override fun observeCrashReportById(
+        id: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<CrashReportDomainModel?> {
+        return crashReportDao.observeCrashReportById(
+            id = id,
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+        ).map { it?.toDomain() }
     }
 
 }

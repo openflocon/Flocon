@@ -1,5 +1,6 @@
 package com.flocon.data.remote.crashreporter.datasource
 
+import co.touchlab.kermit.Logger
 import com.flocon.data.remote.crashreporter.mapper.toDomain
 import com.flocon.data.remote.crashreporter.model.CrashReportDataModel
 import io.github.openflocon.data.core.crashreporter.datasources.CrashReportRemoteDataSource
@@ -23,7 +24,7 @@ class CrashReportRemoteDataSourceImpl(
     private fun decodeAddItems(message: FloconIncomingMessageDomainModel): List<CrashReportDataModel> = try {
         json.decodeFromString<List<CrashReportDataModel>>(message.body)
     } catch (t: Throwable) {
-        t.printStackTrace()
+        Logger.e("error on decodeAddItems / crashes", t)
         emptyList()
     }
 }

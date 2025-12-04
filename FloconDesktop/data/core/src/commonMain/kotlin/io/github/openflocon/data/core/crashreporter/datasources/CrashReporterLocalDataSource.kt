@@ -12,5 +12,8 @@ interface CrashReporterLocalDataSource {
     fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<CrashReportDomainModel>>
     suspend fun delete(crashId: String)
     suspend fun clearAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
-    fun observeCrashReportById(id: String): Flow<CrashReportDomainModel?>
+    fun observeCrashReportById(
+        id: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<CrashReportDomainModel?>
 }

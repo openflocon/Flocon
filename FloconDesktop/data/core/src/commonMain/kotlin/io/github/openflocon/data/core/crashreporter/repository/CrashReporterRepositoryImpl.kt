@@ -80,8 +80,14 @@ class CrashReporterRepositoryImpl(
         }
     }
 
-    override fun observeCrashReportById(id: String): Flow<CrashReportDomainModel?> {
-        return localDataSource.observeCrashReportById(id)
+    override fun observeCrashReportById(
+        id: String,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<CrashReportDomainModel?> {
+        return localDataSource.observeCrashReportById(
+            id = id,
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        )
             .flowOn(dispatcherProvider.data)
     }
 }
