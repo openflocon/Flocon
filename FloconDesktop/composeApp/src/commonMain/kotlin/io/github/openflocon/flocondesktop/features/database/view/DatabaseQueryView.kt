@@ -38,10 +38,14 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.auto_update
+import flocondesktop.composeapp.generated.resources.database_run_query
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 interface SqlColorPalette {
@@ -207,7 +211,7 @@ fun DatabaseQueryView(
                         modifier = Modifier.size(20.dp),
                         colorFilter = ColorFilter.tint(contentColor)
                     )
-                    Text("Run Query", color = contentColor)
+                    Text(stringResource(Res.string.database_run_query), color = contentColor)
                 }
             }
 
@@ -227,7 +231,7 @@ fun DatabaseQueryView(
                     )
                 )
                 Text(
-                    "Auto Update",
+                    stringResource(Res.string.auto_update),
                     color = FloconTheme.colorPalette.onPrimary,
                     style = FloconTheme.typography.bodySmall
                 )

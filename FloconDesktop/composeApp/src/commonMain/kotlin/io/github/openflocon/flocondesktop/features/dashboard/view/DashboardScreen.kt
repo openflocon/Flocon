@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.dashboard_action_delete
 import io.github.openflocon.flocondesktop.features.dashboard.DashboardViewModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArrangement
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
@@ -24,6 +26,7 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownMenuIt
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -96,7 +99,7 @@ fun DashboardScreen(
 
                 FloconOverflow {
                     FloconDropdownMenuItem(
-                        text = "Delete Dashboards",
+                        text = stringResource(Res.string.dashboard_action_delete),
                         leadingIcon = Icons.Outlined.Delete,
                         onClick = { deleteCurrentDashboard() }
                     )

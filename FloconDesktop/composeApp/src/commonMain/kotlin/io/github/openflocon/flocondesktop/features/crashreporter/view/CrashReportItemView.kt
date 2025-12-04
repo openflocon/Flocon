@@ -15,11 +15,14 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_delete
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterUiModel
 import io.github.openflocon.flocondesktop.features.crashreporter.model.previewCrashReportItem
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -75,11 +78,12 @@ private fun contextualActions(
     onDelete: () -> Unit,
 ): List<FloconContextMenuItem> {
     val onDeleteCallback by rememberUpdatedState(onDelete)
+    val deleteString = stringResource(Res.string.general_delete)
     return remember {
         buildList {
             add(
                 FloconContextMenuItem.Item(
-                    label = "Delete",
+                    label = deleteString,
                     onClick = {
                         onDeleteCallback()
                     }

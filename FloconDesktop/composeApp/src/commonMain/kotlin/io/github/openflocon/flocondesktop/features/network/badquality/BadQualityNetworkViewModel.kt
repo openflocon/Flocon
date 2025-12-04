@@ -2,6 +2,9 @@ package io.github.openflocon.flocondesktop.features.network.badquality
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.record_saved_at
+import flocondesktop.composeapp.generated.resources.saved
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.models.BadQualityConfigId
@@ -26,6 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class BadQualityNetworkViewModel(
     private val observeAllNetworkBadQualitiesUseCase: ObserveAllNetworkBadQualitiesUseCase,
@@ -89,7 +93,7 @@ class BadQualityNetworkViewModel(
             saveNetworkBadQualityUseCase(uiModel.toDomain())
             // close
             selectedItem.value = null
-            feedbackDisplayer.displayMessage("Saved")
+            feedbackDisplayer.displayMessage(getString(Res.string.saved))
         }
     }
 

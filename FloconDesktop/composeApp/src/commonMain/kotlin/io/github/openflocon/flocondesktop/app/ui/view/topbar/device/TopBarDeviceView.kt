@@ -32,10 +32,14 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.devices_connected
+import flocondesktop.composeapp.generated.resources.devices_disconnected
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TopBarDeviceView(
@@ -111,8 +115,10 @@ internal fun TopBarDeviceView(
 
                 Text(
                     text = if (device.isActive.not()) {
-                        "Disconnected"
-                    } else "Connected",
+                        stringResource(Res.string.devices_disconnected)
+                    } else {
+                        stringResource(Res.string.devices_connected)
+                    },
                     color = FloconTheme.colorPalette.onPrimary,
                     style = FloconTheme.typography.bodySmall.copy(
                         fontSize = 10.sp,

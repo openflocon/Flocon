@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.app.ui.delegates
 
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.record_saved_at
+import flocondesktop.composeapp.generated.resources.screenshot_saved_at
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.RecordingDomainModel
 import io.github.openflocon.domain.device.usecase.StartRecordingVideoUseCase
@@ -14,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import org.jetbrains.compose.resources.getString
 
 class RecordVideoDelegate(
     private val dispatcherProvider: DispatcherProvider,
@@ -47,7 +51,7 @@ class RecordVideoDelegate(
             },
             doOnSuccess = {
                 recording.update { null }
-                feedbackDisplayer.displayMessage("Record saved at $it")
+                feedbackDisplayer.displayMessage(getString(Res.string.record_saved_at, it))
             }
         )
     }
