@@ -1,4 +1,5 @@
 <resources>
+    <!-- disabled for now
     <string name="open_external">Ouvrir dans un éditeur</string>
     <string name="error_exporting_csv">Erreur lors de l\'export CSV</string>
     <string name="no_analytics">Aucune analytique</string>
@@ -21,4 +22,5 @@
     <string name="close">Fermer</string>
     <string name="new_desktop_version">Une nouvelle version de l'app destkop est disponible: %s</string>
     <string name="new_client_version_desc">N'oubliez pas de mettre à jour votre dépendance\n(actuelle: %s)</string>
+    -->
 </resources>
