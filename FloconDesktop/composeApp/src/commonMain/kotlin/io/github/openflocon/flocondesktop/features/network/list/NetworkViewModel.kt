@@ -14,6 +14,7 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPacka
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel.Filters
@@ -257,10 +258,25 @@ class NetworkViewModel(
             is NetworkAction.Up -> selectRequest(action.itemIdToSelect)
             is NetworkAction.UpdateDisplayOldSessions -> toggleDisplayOldSessions(action)
             NetworkAction.OpenWebsocketMocks -> openWebsocketMocks()
-            NetworkAction.CloseWebsocketMocks -> contentState.update { it.copy(websocketMocksDisplayed = false) }
+            NetworkAction.CloseWebsocketMocks -> contentState.update {
+                it.copy(
+                    websocketMocksDisplayed = false
+                )
+            }
+
             is NetworkAction.Pinned -> onPinned(action)
             is NetworkAction.DetailAction -> detailDelegate.onAction(action.action)
             is NetworkAction.SelectLine -> onSelectLine(action)
+            NetworkAction.ClearMultiSelect -> onClearMultiSelect()
+        }
+    }
+
+    private fun onClearMultiSelect() {
+        contentState.update { state ->
+            state.copy(
+                selecting = false,
+                multiSelectedIds = emptySet()
+            )
         }
     }
 
@@ -439,12 +455,19 @@ class NetworkViewModel(
     private fun onExportCsv() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val sortAndFilter = sortAndFilter.firstOrNull() ?: return@launch
-            getNetworkRequestsUseCase(
+            val requestIds = getNetworkRequestsUseCase(
                 sortedBy = sortAndFilter.first,
                 filter = sortAndFilter.second,
-            ).let {
-                val ids = it.map { it.callId }
-                exportNetworkCallsToCsv(ids).fold(
+            )
+                .map(FloconNetworkCallDomainModel::callId)
+            val ids = if (uiState.value.contentState.selecting) {
+                requestIds.filter { it in uiState.value.contentState.multiSelectedIds }
+            } else {
+                requestIds
+            }
+
+            exportNetworkCallsToCsv(ids)
+                .fold(
                     doOnFailure = {
                         feedbackDisplayer.displayMessage(
                             "Error while exporting csv"
@@ -456,32 +479,40 @@ class NetworkViewModel(
                         )
                     }
                 )
-            }
+                .also {
+                    contentState.update {
+                        it.copy(
+                            selecting = false,
+                            multiSelectedIds = emptySet()
+                        )
+                    }
+                }
         }
     }
 }
 
-private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters> = buildList {
-    this@toDomain.forEach { (column, filter) ->
-        if (filter.isEnabled) {
-            val includedFilters = filter.includedFilters.mapNotNull {
-                it.toDomain()
-            }
-            val excludedFilters = filter.excludedFilters.mapNotNull {
-                it.toDomain()
-            }
-            if (includedFilters.isNotEmpty() || excludedFilters.isNotEmpty()) {
-                add(
-                    Filters(
-                        column = column,
-                        includedFilters = includedFilters,
-                        excludedFilters = excludedFilters,
+private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters> =
+    buildList {
+        this@toDomain.forEach { (column, filter) ->
+            if (filter.isEnabled) {
+                val includedFilters = filter.includedFilters.mapNotNull {
+                    it.toDomain()
+                }
+                val excludedFilters = filter.excludedFilters.mapNotNull {
+                    it.toDomain()
+                }
+                if (includedFilters.isNotEmpty() || excludedFilters.isNotEmpty()) {
+                    add(
+                        Filters(
+                            column = column,
+                            includedFilters = includedFilters,
+                            excludedFilters = excludedFilters,
+                        )
                     )
-                )
+                }
             }
         }
     }
-}
 
 private fun TextFilterStateUiModel.FilterItem.toDomain(): Filters.FilterItem? = if (isActive) {
     Filters.FilterItem(

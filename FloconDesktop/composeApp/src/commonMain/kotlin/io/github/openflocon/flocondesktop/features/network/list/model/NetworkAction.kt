@@ -58,6 +58,8 @@ sealed interface NetworkAction {
         val itemIdToSelect: String,
     ) : NetworkAction
 
+    data object ClearMultiSelect : NetworkAction
+
     sealed interface HeaderAction : NetworkAction {
         data class ClickOnSort(
             val type: NetworkColumnsTypeUiModel,

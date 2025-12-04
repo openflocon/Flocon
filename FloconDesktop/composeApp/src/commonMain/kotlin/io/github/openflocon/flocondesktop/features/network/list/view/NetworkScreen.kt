@@ -1,7 +1,11 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,6 +26,7 @@ import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material.icons.outlined.WifiTethering
+import androidx.compose.material.icons.sharp.ImportExport
 import androidx.compose.material.icons.sharp.PushPin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +34,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.Key
@@ -42,6 +49,7 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
@@ -59,6 +67,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.header.Netw
 import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockWindow
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconAnimateVisibility
+import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
 import io.github.openflocon.library.designsystem.components.FloconFeature
@@ -66,6 +75,7 @@ import io.github.openflocon.library.designsystem.components.FloconHorizontalDivi
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
+import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
@@ -103,7 +113,8 @@ fun NetworkScreen(
 ) {
     val lazyListState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
-    val columnWidths: NetworkItemColumnWidths = remember { NetworkItemColumnWidths() } // Default widths provided
+    val columnWidths: NetworkItemColumnWidths =
+        remember { NetworkItemColumnWidths() } // Default widths provided
 
     LaunchedEffect(uiState.settings.autoScroll, rows.itemCount) {
         if (uiState.settings.autoScroll && rows.itemCount != -1) {
@@ -242,7 +253,13 @@ fun NetworkScreen(
                             checked = uiState.settings.autoScroll,
                             text = "Auto scroll",
                             leadingIcon = Icons.Outlined.PlayCircle,
-                            onCheckedChange = { checked -> onAction(NetworkAction.ToggleAutoScroll(checked)) }
+                            onCheckedChange = { checked ->
+                                onAction(
+                                    NetworkAction.ToggleAutoScroll(
+                                        checked
+                                    )
+                                )
+                            }
                         )
                         FloconDropdownMenuItem(
                             checked = uiState.settings.invertList,
@@ -291,32 +308,76 @@ fun NetworkScreen(
                 Row(
                     Modifier.fillMaxSize()
                 ) {
-                    LazyColumn(
-                        state = lazyListState,
-                        reverseLayout = uiState.settings.invertList,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f)
+                    Box(
+                        modifier = Modifier.weight(1f)
                     ) {
-                        items(
-                            count = rows.itemCount,
-                            key = rows.itemKey { it.uuid },
-                        ) { index ->
-                            val item = rows[index]
-                            if (item != null) {
-                                NetworkItemView(
-                                    state = item,
-                                    selected = item.uuid == uiState.contentState.selectedRequestId,
-                                    columnWidths = columnWidths,
-                                    onAction = onAction,
-                                    multiSelect = uiState.contentState.selecting,
-                                    multiSelected = uiState.contentState.multiSelectedIds.contains(item.uuid),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem(),
+                        LazyColumn(
+                            state = lazyListState,
+                            reverseLayout = uiState.settings.invertList,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                        ) {
+                            items(
+                                count = rows.itemCount,
+                                key = rows.itemKey { it.uuid },
+                            ) { index ->
+                                val item = rows[index]
+                                if (item != null) {
+                                    NetworkItemView(
+                                        state = item,
+                                        selected = item.uuid == uiState.contentState.selectedRequestId,
+                                        columnWidths = columnWidths,
+                                        onAction = onAction,
+                                        multiSelect = uiState.contentState.selecting,
+                                        multiSelected = uiState.contentState.multiSelectedIds.contains(
+                                            item.uuid
+                                        ),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .animateItem(),
+                                    )
+                                } else {
+                                    Box(Modifier) // display nothing during load
+                                }
+                            }
+                        }
+                        this@Row.AnimatedVisibility(
+                            visible = uiState.contentState.selecting,
+                            enter = slideInVertically { it },
+                            exit = slideOutVertically { it },
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                                    .clip(FloconTheme.shapes.medium)
+                                    .background(FloconTheme.colorPalette.secondary)
+                                    .padding(8.dp)
+                            ) {
+                                Text(
+                                    text = "${uiState.contentState.multiSelectedIds.size} items selected",
+                                    color = FloconTheme.colorPalette.onSecondary
                                 )
-                            } else {
-                                Box(Modifier) // display nothing during load
+                                Spacer(Modifier.weight(1f))
+                                FloconIconTonalButton(
+                                    onClick = { onAction(NetworkAction.ExportCsv) },
+                                    containerColor = FloconTheme.colorPalette.tertiary
+                                ) {
+                                    FloconIcon(
+                                        Icons.Sharp.ImportExport
+                                    )
+                                }
+                                FloconButton(
+                                    onClick = { onAction(NetworkAction.ClearMultiSelect) },
+                                    containerColor = FloconTheme.colorPalette.tertiary
+                                ) {
+                                    Text(
+                                        text = "Clear"
+                                    )
+                                }
                             }
                         }
                     }
@@ -364,32 +425,34 @@ fun NetworkScreen(
 private fun selectPreviousRow(
     rows: LazyPagingItems<NetworkItemViewState>,
     uiState: NetworkUiState
-): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
-    .takeIf { it != -1 }
-    ?.let { selectedIndex ->
-        val newIndex = if (uiState.settings.invertList)
-            selectedIndex + 1
-        else
-            selectedIndex - 1
-        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
-    }?.let {
-        rows[it]
-    }
+): NetworkItemViewState? =
+    rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
+        .takeIf { it != -1 }
+        ?.let { selectedIndex ->
+            val newIndex = if (uiState.settings.invertList)
+                selectedIndex + 1
+            else
+                selectedIndex - 1
+            newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+        }?.let {
+            rows[it]
+        }
 
 private fun selectNextRow(
     rows: LazyPagingItems<NetworkItemViewState>,
     uiState: NetworkUiState
-): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
-    .takeIf { it != -1 }
-    ?.let { selectedIndex ->
-        val newIndex = if (uiState.settings.invertList)
-            selectedIndex - 1
-        else
-            selectedIndex + 1
-        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
-    }?.let {
-        rows[it]
-    }
+): NetworkItemViewState? =
+    rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
+        .takeIf { it != -1 }
+        ?.let { selectedIndex ->
+            val newIndex = if (uiState.settings.invertList)
+                selectedIndex - 1
+            else
+                selectedIndex + 1
+            newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+        }?.let {
+            rows[it]
+        }
 
 @Composable
 @Preview
