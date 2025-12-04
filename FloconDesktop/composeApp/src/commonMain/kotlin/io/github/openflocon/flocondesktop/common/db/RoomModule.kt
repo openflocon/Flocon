@@ -52,4 +52,7 @@ val roomModule =
         single {
             get<AppDatabase>().tablesDao
         }
+        single {
+            get<AppDatabase>().crashReportDao
+        }
     }

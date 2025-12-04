@@ -89,6 +89,15 @@ object Protocol {
                 const val AddItems = "AddItems"
             }
         }
+
+        object CrashReporter {
+            const val Plugin = "CrashReporter"
+
+            object Method {
+                const val ReportCrash = "reportCrash"
+            }
+        }
+
     }
 
     object ToDevice {

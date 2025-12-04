@@ -1,6 +1,7 @@
 package com.flocon.data.remote
 
 import com.flocon.data.remote.analytics.analyticsModule
+import com.flocon.data.remote.crashreporter.crashReportModule
 import com.flocon.data.remote.dashboard.dashboardModule
 import com.flocon.data.remote.database.databaseModule
 import com.flocon.data.remote.deeplink.deeplinkModule
@@ -27,6 +28,7 @@ val dataRemoteModule = module {
         tableModule,
         deviceModule,
         versionModule,
+        crashReportModule,
     )
 
     single {

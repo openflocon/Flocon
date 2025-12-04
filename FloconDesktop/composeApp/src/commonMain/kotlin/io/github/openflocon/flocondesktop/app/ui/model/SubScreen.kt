@@ -18,6 +18,7 @@ sealed interface SubScreen {
     data object Settings : SubScreen
 
     data object Deeplinks : SubScreen
+    data object CrashReporter : SubScreen
 }
 
 val SubScreen.id: String

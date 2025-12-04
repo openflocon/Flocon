@@ -22,6 +22,7 @@ import io.github.openflocon.flocon.plugins.files.FloconFilesPluginImpl
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPluginImpl
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferencesPluginImpl
 import io.github.openflocon.flocon.plugins.tables.FloconTablePluginImpl
+import io.github.openflocon.flocon.plugins.crashreporter.FloconCrashReporterPluginImpl
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import io.github.openflocon.flocon.websocket.FloconHttpClient
 import io.github.openflocon.flocon.websocket.FloconWebSocketClient
@@ -77,6 +78,11 @@ internal class FloconClientImpl(
         sender = this,
         coroutineScope = coroutineScope,
     )
+    override val crashReporterPlugin = FloconCrashReporterPluginImpl(
+        context = appContext,
+        sender = this,
+        coroutineScope = coroutineScope,
+    )
 
     private val allPlugins = listOf<FloconPlugin>(
         databasePlugin,
@@ -88,6 +94,7 @@ internal class FloconClientImpl(
         analyticsPlugin,
         networkPlugin,
         devicePlugin,
+        crashReporterPlugin,
     )
 
     @Throws(Throwable::class)

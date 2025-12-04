@@ -1,0 +1,12 @@
+package io.github.openflocon.flocon.plugins.crashreporter.model
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class CrashReportDataModel(
+    val crashId: String,
+    val timestamp: Long,
+    val exceptionType: String,
+    val exceptionMessage: String,
+    val stackTrace: String,
+)
