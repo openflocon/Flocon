@@ -2,6 +2,8 @@ package io.github.openflocon.flocondesktop.features.network.mock
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.saved
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.models.MockDeviceTarget
@@ -32,6 +34,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class NetworkMocksViewModel(
     private val observeNetworkMocksUseCase: ObserveNetworkMocksUseCase,
@@ -171,7 +174,7 @@ class NetworkMocksViewModel(
             editionWindow.update {
                 null
             }
-            feedbackDisplayer.displayMessage("Saved")
+            feedbackDisplayer.displayMessage(getString(Res.string.saved))
         }
     }
 }

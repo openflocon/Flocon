@@ -16,11 +16,15 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.auto_update
+import flocondesktop.composeapp.generated.resources.refresh
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import org.jetbrains.compose.resources.stringResource
 
 @Immutable
 sealed interface PreferenceAutoUpdate {
@@ -72,7 +76,7 @@ fun PreferenceAutoUpdate(
             )
         )
         Text(
-            "Auto Update",
+            stringResource(Res.string.auto_update),
             color = FloconTheme.colorPalette.onPrimary,
             style = FloconTheme.typography.bodySmall,
             modifier = Modifier.clickable {
@@ -83,7 +87,7 @@ fun PreferenceAutoUpdate(
 
         FloconIconButton(
             onClick = refreshClicked,
-            tooltip = "refresh",
+            tooltip = stringResource(Res.string.refresh),
         ) {
             FloconIcon(
                 imageVector = Icons.Outlined.Refresh,

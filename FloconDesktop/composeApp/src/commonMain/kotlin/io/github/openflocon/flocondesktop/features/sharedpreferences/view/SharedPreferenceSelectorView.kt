@@ -30,10 +30,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.Text
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.filter
+import flocondesktop.composeapp.generated.resources.preferences
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SharedPreferenceSelectorView(
@@ -64,7 +68,7 @@ fun SharedPreferenceSelectorView(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    "Preferences",
+                    stringResource(Res.string.preferences),
                     color = FloconTheme.colorPalette.onSurface,
                     style = FloconTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
@@ -91,7 +95,7 @@ fun SharedPreferenceSelectorView(
                         }
                         FilterBar(
                             filterText = filterText,
-                            placeholderText = "Filter Preferences",
+                            placeholderText = stringResource(Res.string.filter),
                             onTextChange = {
                                 filterText.value = it
                             },
