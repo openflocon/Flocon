@@ -25,7 +25,9 @@ import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuItem
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuSection
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuState
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.previewMenuState
+import io.github.openflocon.flocondesktop.app.ui.view.displayName
 import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.resources.stringResource
 
 val PanelMaxWidth = 275.dp
 val PanelMinWidth = 64.dp
@@ -72,7 +74,7 @@ private fun ColumnScope.MenuSection(
     items.fastForEachIndexed { index, section ->
         PannelLabel(
             expanded = expanded,
-            text = section.title,
+            text = stringResource(section.title),
         )
         MenuItems(
             current = current,
@@ -96,7 +98,7 @@ private fun ColumnScope.MenuItems(
                 .height(PanelContentMinSize)
                 .fillMaxWidth(),
             icon = item.icon,
-            text = item.text,
+            text = stringResource(item.screen.displayName()),
             expanded = expanded,
             isSelected = current == item.screen,
             isEnabled = item.isEnabled,

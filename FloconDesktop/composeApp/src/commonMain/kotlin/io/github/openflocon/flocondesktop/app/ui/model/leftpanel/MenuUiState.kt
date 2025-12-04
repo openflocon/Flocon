@@ -3,9 +3,15 @@ package io.github.openflocon.flocondesktop.app.ui.model.leftpanel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Immutable
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.menu_actions
+import flocondesktop.composeapp.generated.resources.menu_data
+import flocondesktop.composeapp.generated.resources.menu_network
+import flocondesktop.composeapp.generated.resources.menu_storage
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.view.displayName
 import io.github.openflocon.flocondesktop.app.ui.view.icon
+import org.jetbrains.compose.resources.getString
 
 @Immutable
 data class MenuState(
@@ -18,70 +24,61 @@ fun previewMenuState() = MenuState(
         MenuItem(
             screen = SubScreen.Settings,
             icon = Icons.Outlined.Settings,
-            text = "Settings",
             isEnabled = true,
         ),
     ),
     sections = listOf(
         MenuSection(
-            title = "Network",
+            title = Res.string.menu_network,
             items = listOf(
                 MenuItem(
                     screen = SubScreen.Network,
                     icon = Icons.Outlined.Settings,
-                    text = "Http",
                     isEnabled = true,
                 ),
                 MenuItem(
                     screen = SubScreen.Images,
                     icon = Icons.Outlined.Settings,
-                    text = "Images",
                     isEnabled = true,
                 ),
                 MenuItem(
                     screen = SubScreen.Network,
                     icon = Icons.Outlined.Settings,
-                    text = "Grpc",
                     isEnabled = true,
                 ),
             ),
         ),
         MenuSection(
-            title = "Storage",
+            title = Res.string.menu_storage,
             items = listOf(
                 MenuItem(
                     screen = SubScreen.Network,
                     icon = Icons.Outlined.Settings,
-                    text = "Database",
                     isEnabled = true,
                 ),
                 MenuItem(
                     screen = SubScreen.SharedPreferences,
                     icon = Icons.Outlined.Settings,
-                    text = "SharedPreferences",
                     isEnabled = true,
                 ),
                 MenuItem(
                     screen = SubScreen.Files,
                     icon = Icons.Outlined.Settings,
-                    text = "Files",
                     isEnabled = true,
                 ),
             ),
         ),
         MenuSection(
-            title = "Data",
+            title = Res.string.menu_data,
             items = listOf(
                 MenuItem(
                     screen = SubScreen.Dashboard,
                     icon = Icons.Outlined.Settings,
-                    text = "Dashboard",
                     isEnabled = true,
                 ),
                 MenuItem(
                     screen = SubScreen.Tables,
                     icon = Icons.Outlined.Settings,
-                    text = "Tables",
                     isEnabled = true,
                 ),
             ),
@@ -95,14 +92,14 @@ internal fun buildMenu() = MenuState(
     ),
     sections = listOf(
         MenuSection(
-            title = "Network",
+            title = Res.string.menu_network,
             items = listOf(
                 item(subScreen = SubScreen.Network),
                 item(subScreen = SubScreen.Images),
             ),
         ),
         MenuSection(
-            title = "Storage",
+            title = Res.string.menu_storage,
             items = listOf(
                 item(SubScreen.Database),
                 item(SubScreen.SharedPreferences),
@@ -110,7 +107,7 @@ internal fun buildMenu() = MenuState(
             ),
         ),
         MenuSection(
-            title = "Data",
+            title = Res.string.menu_data,
             items = listOf(
                 item(SubScreen.Dashboard),
                 item(SubScreen.Analytics),
@@ -119,7 +116,7 @@ internal fun buildMenu() = MenuState(
             ),
         ),
         MenuSection(
-            title = "Actions",
+            title = Res.string.menu_actions,
             items = listOf(
                 item(SubScreen.Deeplinks)
             ),
@@ -132,6 +129,5 @@ private fun item(
 ): MenuItem = MenuItem(
     screen = subScreen,
     icon = subScreen.icon(),
-    text = subScreen.displayName(),
     isEnabled = true
 )
