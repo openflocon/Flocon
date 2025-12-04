@@ -8,7 +8,7 @@ import io.github.openflocon.domain.crashreporter.models.CrashReportDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import kotlinx.serialization.json.Json
 
-class CrashReportRemoteDataSourceImpl(
+internal class CrashReportRemoteDataSourceImpl(
     private val json: Json,
 ) : CrashReportRemoteDataSource {
 

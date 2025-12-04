@@ -9,7 +9,7 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class CrashReporterLocalDataSourceRoom(
+internal class CrashReporterLocalDataSourceRoom(
     private val crashReportDao: CrashReportDao,
 ) : CrashReporterLocalDataSource {
 
