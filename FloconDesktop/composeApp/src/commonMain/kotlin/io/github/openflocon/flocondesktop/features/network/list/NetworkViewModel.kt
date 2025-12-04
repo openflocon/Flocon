@@ -479,14 +479,7 @@ class NetworkViewModel(
                         )
                     }
                 )
-                .also {
-                    contentState.update {
-                        it.copy(
-                            selecting = false,
-                            multiSelectedIds = emptySet()
-                        )
-                    }
-                }
+                .also { onClearMultiSelect() }
         }
     }
 }
