@@ -1,8 +1,6 @@
 package io.github.openflocon.data.local.crashreporter.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import io.github.openflocon.data.local.crashreporter.models.CrashReportEntity
@@ -12,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 interface CrashReportDao {
     @Upsert
     suspend fun insertAll(crashes: List<CrashReportEntity>)
+
+    @Query("SELECT * FROM CrashReportEntity WHERE crashId = :id")
+    fun observeCrashReportById(id: String) : Flow<CrashReportEntity?>
 
     @Query("""
         SELECT * FROM CrashReportEntity
@@ -36,4 +37,5 @@ interface CrashReportDao {
         deviceId: String,
         packageName: String,
     )
+
 }

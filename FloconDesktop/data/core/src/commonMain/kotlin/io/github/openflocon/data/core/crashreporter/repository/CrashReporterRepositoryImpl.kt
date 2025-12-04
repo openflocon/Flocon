@@ -4,7 +4,6 @@ import co.touchlab.kermit.Logger
 import io.github.openflocon.data.core.crashreporter.datasources.CrashReportRemoteDataSource
 import io.github.openflocon.data.core.crashreporter.datasources.CrashReporterLocalDataSource
 import io.github.openflocon.domain.Protocol
-import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.crashreporter.models.CrashReportDomainModel
 import io.github.openflocon.domain.crashreporter.repository.CrashReporterRepository
@@ -14,7 +13,6 @@ import io.github.openflocon.domain.messages.repository.MessagesReceiverRepositor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 
 class CrashReporterRepositoryImpl(
     private val localDataSource: CrashReporterLocalDataSource,
@@ -69,7 +67,7 @@ class CrashReporterRepositoryImpl(
     }
 
     override suspend fun deleteCrashReport(crashId: String) {
-        withContext(dispatcherProvider.domain) {
+        withContext(dispatcherProvider.data) {
             localDataSource.delete(crashId)
         }
     }
@@ -77,8 +75,13 @@ class CrashReporterRepositoryImpl(
     override suspend fun clearAll(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     ) {
-        withContext(dispatcherProvider.domain) {
+        withContext(dispatcherProvider.data) {
             localDataSource.clearAll(deviceIdAndPackageName)
         }
+    }
+
+    override fun observeCrashReportById(id: String): Flow<CrashReportDomainModel?> {
+        return localDataSource.observeCrashReportById(id)
+            .flowOn(dispatcherProvider.data)
     }
 }

@@ -1,11 +1,9 @@
 package io.github.openflocon.data.local.crashreporter.datasource
 
 import io.github.openflocon.data.core.crashreporter.datasources.CrashReporterLocalDataSource
-import io.github.openflocon.data.local.analytics.mapper.toEntity
 import io.github.openflocon.data.local.crashreporter.dao.CrashReportDao
 import io.github.openflocon.data.local.crashreporter.mapper.toDomain
 import io.github.openflocon.data.local.crashreporter.mapper.toEntity
-import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.crashreporter.models.CrashReportDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -44,6 +42,10 @@ class CrashReporterLocalDataSourceRoom(
             deviceId = deviceIdAndPackageName.deviceId,
             packageName = deviceIdAndPackageName.packageName,
         )
+    }
+
+    override fun observeCrashReportById(id: String): Flow<CrashReportDomainModel?> {
+        return crashReportDao.observeCrashReportById(id).map { it?.toDomain() }
     }
 
 }
