@@ -21,15 +21,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
+import androidx.compose.material.icons.outlined.Upgrade
 import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.material.icons.sharp.ArrowUpward
+import androidx.compose.material.icons.sharp.Close
 import androidx.compose.material.icons.sharp.Delete
 import androidx.compose.material.icons.sharp.PushPin
 import androidx.compose.material.icons.sharp.SelectAll
+import androidx.compose.material.icons.sharp.Upload
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -243,12 +248,12 @@ fun NetworkScreen(
                     FloconOverflow {
                         FloconDropdownMenuItem(
                             text = "Export CSV",
-                            leadingIcon = Icons.Outlined.ImportExport,
+                            leadingIcon = Icons.Outlined.Upload,
                             onClick = { onAction(NetworkAction.ExportCsv) }
                         )
                         FloconDropdownMenuItem(
                             text = "Import From CSV",
-                            leadingIcon = Icons.Outlined.Upload,
+                            leadingIcon = Icons.Outlined.Download,
                             onClick = { onAction(NetworkAction.ImportFromCsv) }
                         )
                         FloconDropdownMenuItem(
@@ -359,14 +364,16 @@ fun NetworkScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp)
+                                    .padding(vertical = 8.dp, horizontal = 12.dp)
                                     .clip(FloconTheme.shapes.medium)
                                     .background(FloconTheme.colorPalette.secondary)
                                     .padding(8.dp)
                             ) {
                                 Text(
                                     text = "${uiState.contentState.multiSelectedIds.size} items selected",
-                                    color = FloconTheme.colorPalette.onSecondary
+                                    style = FloconTheme.typography.bodySmall,
+                                    color = FloconTheme.colorPalette.onSecondary,
+                                    modifier = Modifier.padding(start = 8.dp),
                                 )
                                 Spacer(Modifier.weight(1f))
                                 FloconIconTonalButton(
@@ -374,7 +381,7 @@ fun NetworkScreen(
                                     containerColor = FloconTheme.colorPalette.tertiary
                                 ) {
                                     FloconIcon(
-                                        Icons.Sharp.ArrowUpward
+                                        Icons.Sharp.Upload
                                     )
                                 }
                                 FloconIconTonalButton(
@@ -387,10 +394,11 @@ fun NetworkScreen(
                                 }
                                 FloconButton(
                                     onClick = { onAction(NetworkAction.ClearMultiSelect) },
-                                    containerColor = FloconTheme.colorPalette.tertiary
+                                    containerColor = Color.Transparent,
                                 ) {
-                                    Text(
-                                        text = "Clear"
+                                    FloconIcon(
+                                        Icons.Sharp.Close,
+                                        tint = FloconTheme.colorPalette.onSecondary
                                     )
                                 }
                             }
