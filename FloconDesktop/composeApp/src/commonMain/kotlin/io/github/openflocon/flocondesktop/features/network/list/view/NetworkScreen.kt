@@ -26,8 +26,11 @@ import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material.icons.outlined.WifiTethering
-import androidx.compose.material.icons.sharp.ImportExport
+import androidx.compose.material.icons.sharp.ArrowUpward
+import androidx.compose.material.icons.sharp.Delete
 import androidx.compose.material.icons.sharp.PushPin
+import androidx.compose.material.icons.sharp.SelectAll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -49,7 +52,6 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
@@ -276,6 +278,11 @@ fun NetworkScreen(
                                 it()
                             }
                         )
+                        FloconDropdownMenuItem(
+                            text = "Select items",
+                            leadingIcon = Icons.Sharp.SelectAll,
+                            onClick = { onAction(NetworkAction.MultiSelect) }
+                        )
                         FloconDropdownSeparator()
                         FloconDropdownMenuItem(
                             text = "Clear old sessions",
@@ -367,7 +374,15 @@ fun NetworkScreen(
                                     containerColor = FloconTheme.colorPalette.tertiary
                                 ) {
                                     FloconIcon(
-                                        Icons.Sharp.ImportExport
+                                        Icons.Sharp.ArrowUpward
+                                    )
+                                }
+                                FloconIconTonalButton(
+                                    onClick = { onAction(NetworkAction.DeleteSelection) },
+                                    containerColor = FloconTheme.colorPalette.tertiary
+                                ) {
+                                    FloconIcon(
+                                        Icons.Sharp.Delete
                                     )
                                 }
                                 FloconButton(

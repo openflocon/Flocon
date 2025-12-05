@@ -51,6 +51,8 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.col
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -268,7 +270,22 @@ class NetworkViewModel(
             is NetworkAction.DetailAction -> detailDelegate.onAction(action.action)
             is NetworkAction.SelectLine -> onSelectLine(action)
             NetworkAction.ClearMultiSelect -> onClearMultiSelect()
+            NetworkAction.MultiSelect -> onMultiSelect()
+            NetworkAction.DeleteSelection -> onDeleteSelection()
         }
+    }
+
+    private fun onDeleteSelection() {
+        viewModelScope.launch {
+            contentState.value
+                .multiSelectedIds
+                .map { async { removeNetworkRequestUseCase(it) } }
+                .awaitAll()
+        }
+    }
+
+    private fun onMultiSelect() {
+        contentState.update { it.copy(selecting = true) }
     }
 
     private fun onClearMultiSelect() {
