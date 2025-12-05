@@ -2,9 +2,7 @@ package io.github.openflocon.flocon.myapplication.multi.dashboard
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import io.github.openflocon.flocon.myapplication.multi.dashboard.tokens.Tokens
 import io.github.openflocon.flocon.myapplication.multi.dashboard.tokens.tokensFlow
-import io.github.openflocon.flocon.myapplication.multi.dashboard.user.User
 import io.github.openflocon.flocon.myapplication.multi.dashboard.user.userFlow
 import io.github.openflocon.flocon.plugins.dashboard.dsl.button
 import io.github.openflocon.flocon.plugins.dashboard.dsl.checkBox
@@ -17,12 +15,6 @@ import io.github.openflocon.flocon.plugins.dashboard.floconDashboard
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-
-data class DashboardData(
-    val user: User?,
-    val tokens: Tokens?,
-)
 
 fun initializeDashboard() {
     GlobalScope.launch {
