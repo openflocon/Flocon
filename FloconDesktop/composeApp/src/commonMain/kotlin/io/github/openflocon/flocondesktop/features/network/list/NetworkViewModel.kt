@@ -14,6 +14,7 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPacka
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel.Filters
@@ -50,6 +51,8 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.col
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -98,7 +101,9 @@ class NetworkViewModel(
         ContentUiState(
             selectedRequestId = null,
             badNetworkQualityDisplayed = false,
-            websocketMocksDisplayed = false
+            websocketMocksDisplayed = false,
+            selecting = false,
+            multiSelectedIds = emptySet()
         )
     )
 
@@ -255,9 +260,53 @@ class NetworkViewModel(
             is NetworkAction.Up -> selectRequest(action.itemIdToSelect)
             is NetworkAction.UpdateDisplayOldSessions -> toggleDisplayOldSessions(action)
             NetworkAction.OpenWebsocketMocks -> openWebsocketMocks()
-            NetworkAction.CloseWebsocketMocks -> contentState.update { it.copy(websocketMocksDisplayed = false) }
+            NetworkAction.CloseWebsocketMocks -> contentState.update {
+                it.copy(
+                    websocketMocksDisplayed = false
+                )
+            }
+
             is NetworkAction.Pinned -> onPinned(action)
             is NetworkAction.DetailAction -> detailDelegate.onAction(action.action)
+            is NetworkAction.SelectLine -> onSelectLine(action)
+            NetworkAction.ClearMultiSelect -> onClearMultiSelect()
+            NetworkAction.MultiSelect -> onMultiSelect()
+            NetworkAction.DeleteSelection -> onDeleteSelection()
+        }
+    }
+
+    private fun onDeleteSelection() {
+        viewModelScope.launch {
+            contentState.value
+                .multiSelectedIds
+                .map { async { removeNetworkRequestUseCase(it) } }
+                .awaitAll()
+        }
+    }
+
+    private fun onMultiSelect() {
+        contentState.update { it.copy(selecting = true) }
+    }
+
+    private fun onClearMultiSelect() {
+        contentState.update { state ->
+            state.copy(
+                selecting = false,
+                multiSelectedIds = emptySet()
+            )
+        }
+    }
+
+    private fun onSelectLine(action: NetworkAction.SelectLine) {
+        contentState.update {
+            it.copy(
+                selecting = true,
+                multiSelectedIds = if (action.selected) {
+                    it.multiSelectedIds.plus(action.id)
+                } else {
+                    it.multiSelectedIds.minus(action.id)
+                }
+            )
         }
     }
 
@@ -423,12 +472,19 @@ class NetworkViewModel(
     private fun onExportCsv() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val sortAndFilter = sortAndFilter.firstOrNull() ?: return@launch
-            getNetworkRequestsUseCase(
+            val requestIds = getNetworkRequestsUseCase(
                 sortedBy = sortAndFilter.first,
                 filter = sortAndFilter.second,
-            ).let {
-                val ids = it.map { it.callId }
-                exportNetworkCallsToCsv(ids).fold(
+            )
+                .map(FloconNetworkCallDomainModel::callId)
+            val ids = if (uiState.value.contentState.selecting) {
+                requestIds.filter { it in uiState.value.contentState.multiSelectedIds }
+            } else {
+                requestIds
+            }
+
+            exportNetworkCallsToCsv(ids)
+                .fold(
                     doOnFailure = {
                         feedbackDisplayer.displayMessage(
                             "Error while exporting csv"
@@ -440,32 +496,33 @@ class NetworkViewModel(
                         )
                     }
                 )
-            }
+                .also { onClearMultiSelect() }
         }
     }
 }
 
-private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters> = buildList {
-    this@toDomain.forEach { (column, filter) ->
-        if (filter.isEnabled) {
-            val includedFilters = filter.includedFilters.mapNotNull {
-                it.toDomain()
-            }
-            val excludedFilters = filter.excludedFilters.mapNotNull {
-                it.toDomain()
-            }
-            if (includedFilters.isNotEmpty() || excludedFilters.isNotEmpty()) {
-                add(
-                    Filters(
-                        column = column,
-                        includedFilters = includedFilters,
-                        excludedFilters = excludedFilters,
+private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters> =
+    buildList {
+        this@toDomain.forEach { (column, filter) ->
+            if (filter.isEnabled) {
+                val includedFilters = filter.includedFilters.mapNotNull {
+                    it.toDomain()
+                }
+                val excludedFilters = filter.excludedFilters.mapNotNull {
+                    it.toDomain()
+                }
+                if (includedFilters.isNotEmpty() || excludedFilters.isNotEmpty()) {
+                    add(
+                        Filters(
+                            column = column,
+                            includedFilters = includedFilters,
+                            excludedFilters = excludedFilters,
+                        )
                     )
-                )
+                }
             }
         }
     }
-}
 
 private fun TextFilterStateUiModel.FilterItem.toDomain(): Filters.FilterItem? = if (isActive) {
     Filters.FilterItem(

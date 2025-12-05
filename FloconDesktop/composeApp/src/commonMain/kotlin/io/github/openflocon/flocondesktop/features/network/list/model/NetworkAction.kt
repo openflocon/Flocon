@@ -48,6 +48,12 @@ sealed interface NetworkAction {
 
     data class DetailAction(val action: NetworkDetailAction) : NetworkAction
 
+    data class SelectLine(val id: String, val selected: Boolean) : NetworkAction
+
+    data object MultiSelect : NetworkAction
+
+    data object DeleteSelection : NetworkAction
+
     data class Up(
         val itemIdToSelect: String,
     ) : NetworkAction
@@ -55,6 +61,8 @@ sealed interface NetworkAction {
     data class Down(
         val itemIdToSelect: String,
     ) : NetworkAction
+
+    data object ClearMultiSelect : NetworkAction
 
     sealed interface HeaderAction : NetworkAction {
         data class ClickOnSort(
