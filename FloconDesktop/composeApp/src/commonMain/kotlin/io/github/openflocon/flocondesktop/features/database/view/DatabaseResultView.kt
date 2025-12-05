@@ -126,8 +126,14 @@ fun DatabaseResultView(
                                                 )
 
                                                 selectedItem = item
-                                                KoinPlatform.getKoin().get<MainFloconNavigationState>()
-                                                    .navigate(DatabaseRoutes.Detail(item, result.columns))
+                                                KoinPlatform.getKoin()
+                                                    .get<MainFloconNavigationState>()
+                                                    .navigate(
+                                                        DatabaseRoutes.Detail(
+                                                            item,
+                                                            result.columns
+                                                        )
+                                                    )
                                             }
                                         }
 
@@ -144,8 +150,14 @@ fun DatabaseResultView(
                                                 )
 
                                                 selectedItem = item
-                                                KoinPlatform.getKoin().get<MainFloconNavigationState>()
-                                                    .navigate(DatabaseRoutes.Detail(item, result.columns))
+                                                KoinPlatform.getKoin()
+                                                    .get<MainFloconNavigationState>()
+                                                    .navigate(
+                                                        DatabaseRoutes.Detail(
+                                                            item,
+                                                            result.columns
+                                                        )
+                                                    )
                                             }
                                         }
 

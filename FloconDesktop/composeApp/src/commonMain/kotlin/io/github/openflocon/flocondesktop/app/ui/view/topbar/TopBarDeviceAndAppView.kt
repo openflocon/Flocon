@@ -6,6 +6,7 @@ package io.github.openflocon.flocondesktop.app.ui.view.topbar
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +27,7 @@ internal fun TopBarDeviceAndAppView(
     deleteDevice: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
     deleteApp: (DeviceAppUiModel) -> Unit,
+    onClickDetail: (DeviceItemUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -37,6 +39,8 @@ internal fun TopBarDeviceAndAppView(
             state = devicesState,
             onDeviceSelected = onDeviceSelected,
             deleteDevice = deleteDevice,
+            onClickDetail = onClickDetail,
+            modifier = Modifier.height(TopBarHeight)
         )
 
         AnimatedVisibility(devicesState is DevicesStateUiModel.WithDevices) {
