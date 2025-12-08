@@ -96,6 +96,12 @@ internal fun DashboardElementDomainModel.toEntity(
                     label = label,
                     value = value,
                 )
+
+            is DashboardElementDomainModel.Html ->
+                LocalDashboardElement.Html(
+                    label = label,
+                    value = value,
+                )
         }
 
     return DashboardElementEntity(

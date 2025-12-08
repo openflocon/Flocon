@@ -7,6 +7,7 @@ import com.flocon.data.remote.dashboard.models.DashboardConfigDataModel
 import com.flocon.data.remote.dashboard.models.DashboardContainerDataModel
 import com.flocon.data.remote.dashboard.models.DashboardElementDataModel
 import com.flocon.data.remote.dashboard.models.FormContainerConfigDataModel
+import com.flocon.data.remote.dashboard.models.HtmlConfigDataModel
 import com.flocon.data.remote.dashboard.models.LabelConfigDataModel
 import com.flocon.data.remote.dashboard.models.MarkdownConfigDataModel
 import com.flocon.data.remote.dashboard.models.PlainTextConfigDataModel
@@ -55,6 +56,9 @@ fun DashboardElementDataModel.toDomain(): DashboardElementDomainModel? {
     markdown?.let {
         return it.toDomain()
     }
+    html?.let {
+        return it.toDomain()
+    }
     return null
 }
 
@@ -97,6 +101,11 @@ private fun CheckBoxConfigDataModel.toDomain(): DashboardElementDomainModel.Chec
 )
 
 private fun MarkdownConfigDataModel.toDomain(): DashboardElementDomainModel.Markdown = DashboardElementDomainModel.Markdown(
+    value = value,
+    label = label,
+)
+
+fun HtmlConfigDataModel.toDomain(): DashboardElementDomainModel.Html = DashboardElementDomainModel.Html(
     value = value,
     label = label,
 )

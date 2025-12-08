@@ -12,6 +12,7 @@ import io.github.openflocon.flocon.myapplication.dashboard.tokens.tokensFlow
 import io.github.openflocon.flocon.myapplication.dashboard.user.userFlow
 import io.github.openflocon.flocon.plugins.dashboard.dsl.button
 import io.github.openflocon.flocon.plugins.dashboard.dsl.checkBox
+import io.github.openflocon.flocon.plugins.dashboard.dsl.html
 import io.github.openflocon.flocon.plugins.dashboard.dsl.json
 import io.github.openflocon.flocon.plugins.dashboard.dsl.label
 import io.github.openflocon.flocon.plugins.dashboard.dsl.markdown
@@ -20,7 +21,6 @@ import io.github.openflocon.flocon.plugins.dashboard.dsl.text
 import io.github.openflocon.flocon.plugins.dashboard.dsl.textField
 import io.github.openflocon.flocon.plugins.dashboard.floconDashboard
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -180,6 +180,16 @@ fun initializeDashboard(activity: ComponentActivity) {
                     Hello `world` !
                 """.trimIndent()
             )
+        }
+    }
+    activity.lifecycleScope.floconDashboard(id = "html") {
+        section(name = "html") {
+            section(name = "HTML Section") {
+                html(
+                    label = "HtmlTitle",
+                    value = "<h1>Title</h1><p>Paragraph with <b>bold</b> text.</p>"
+                )
+            }
         }
     }
 

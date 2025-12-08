@@ -58,6 +58,12 @@ data class DashboardContainerViewState(
             val label: String,
             val value: String,
         ) : RowItem
+
+        @Immutable
+        data class Html(
+            val label: String,
+            val value: String,
+        ) : RowItem
     }
 
     /** Any item that can be used to change the value of a field */
