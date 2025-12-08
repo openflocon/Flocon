@@ -51,7 +51,6 @@ data class MarkdownConfigDataModel(
     val value: String,
 )
 
-
 @Serializable
 data class ButtonConfigDataModel(
     val text: String,
