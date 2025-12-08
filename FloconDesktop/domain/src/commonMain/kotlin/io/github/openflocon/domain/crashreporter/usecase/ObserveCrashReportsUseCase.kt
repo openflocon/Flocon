@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.crashreporter.usecase
 
+import androidx.paging.PagingData
 import io.github.openflocon.domain.crashreporter.models.CrashReportDomainModel
 import io.github.openflocon.domain.crashreporter.repository.CrashReporterRepository
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
@@ -11,10 +12,10 @@ class ObserveCrashReportsUseCase(
     private val repository: CrashReporterRepository,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    operator fun invoke(): Flow<List<CrashReportDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
+    operator fun invoke(): Flow<PagingData<CrashReportDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase()
         .flatMapLatest { current ->
             if (current == null) {
-                flowOf(emptyList())
+                flowOf(PagingData.empty())
             } else {
                 repository.observeCrashReports(current)
             }
