@@ -58,6 +58,11 @@ internal fun DashboardDomainModel.toUi(): DashboardViewState = DashboardViewStat
                         value = element.value,
                         id = element.id,
                     )
+
+                    is DashboardElementDomainModel.Markdown -> DashboardContainerViewState.RowItem.Markdown(
+                        label = element.label,
+                        value = element.value,
+                    )
                 }
             },
         )

@@ -25,6 +25,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.previewDashbo
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardButtonView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardCheckBoxView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardLabelView
+import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardMarkdownView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardPlainTextView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextFieldView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextView
@@ -143,6 +144,13 @@ fun DashboardContainerView(
                                 modifier = Modifier.fillMaxWidth(),
                                 rowItem = rowItem,
                                 onOpenExternalClicked = onOpenExternalClicked,
+                            )
+                        }
+
+                        is DashboardContainerViewState.RowItem.Markdown -> {
+                            DashboardMarkdownView(
+                                modifier = Modifier.fillMaxWidth(),
+                                rowItem = rowItem,
                             )
                         }
                     }

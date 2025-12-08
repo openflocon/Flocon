@@ -8,6 +8,7 @@ import com.flocon.data.remote.dashboard.models.DashboardContainerDataModel
 import com.flocon.data.remote.dashboard.models.DashboardElementDataModel
 import com.flocon.data.remote.dashboard.models.FormContainerConfigDataModel
 import com.flocon.data.remote.dashboard.models.LabelConfigDataModel
+import com.flocon.data.remote.dashboard.models.MarkdownConfigDataModel
 import com.flocon.data.remote.dashboard.models.PlainTextConfigDataModel
 import com.flocon.data.remote.dashboard.models.SectionContainerConfigDataModel
 import com.flocon.data.remote.dashboard.models.TextConfigDataModel
@@ -51,21 +52,24 @@ fun DashboardElementDataModel.toDomain(): DashboardElementDomainModel? {
     label?.let {
         return it.toDomain()
     }
+    markdown?.let {
+        return it.toDomain()
+    }
     return null
 }
 
-fun ButtonConfigDataModel.toDomain(): DashboardElementDomainModel.Button = DashboardElementDomainModel.Button(
+private fun ButtonConfigDataModel.toDomain(): DashboardElementDomainModel.Button = DashboardElementDomainModel.Button(
     text = text,
     id = id,
 )
 
-fun TextConfigDataModel.toDomain(): DashboardElementDomainModel.Text = DashboardElementDomainModel.Text(
+private fun TextConfigDataModel.toDomain(): DashboardElementDomainModel.Text = DashboardElementDomainModel.Text(
     label = label,
     value = value,
     color = color,
 )
 
-fun PlainTextConfigDataModel.toDomain(): DashboardElementDomainModel.PlainText = DashboardElementDomainModel.PlainText(
+private fun PlainTextConfigDataModel.toDomain(): DashboardElementDomainModel.PlainText = DashboardElementDomainModel.PlainText(
     label = label,
     value = value,
     type = when (type) {
@@ -74,25 +78,30 @@ fun PlainTextConfigDataModel.toDomain(): DashboardElementDomainModel.PlainText =
     }
 )
 
-fun LabelConfigDataModel.toDomain(): DashboardElementDomainModel.Label = DashboardElementDomainModel.Label(
+private fun LabelConfigDataModel.toDomain(): DashboardElementDomainModel.Label = DashboardElementDomainModel.Label(
     label = label,
     color = color,
 )
 
-fun TextFieldConfigDataModel.toDomain(): DashboardElementDomainModel.TextField = DashboardElementDomainModel.TextField(
+private fun TextFieldConfigDataModel.toDomain(): DashboardElementDomainModel.TextField = DashboardElementDomainModel.TextField(
     value = value,
     label = label,
     placeHolder = placeHolder,
     id = id,
 )
 
-fun CheckBoxConfigDataModel.toDomain(): DashboardElementDomainModel.CheckBox = DashboardElementDomainModel.CheckBox(
+private fun CheckBoxConfigDataModel.toDomain(): DashboardElementDomainModel.CheckBox = DashboardElementDomainModel.CheckBox(
     value = value,
     label = label,
     id = id,
 )
 
-fun ContainerConfigDataModel.toDomain(): ContainerConfigDomainModel = when (this) {
+private fun MarkdownConfigDataModel.toDomain(): DashboardElementDomainModel.Markdown = DashboardElementDomainModel.Markdown(
+    value = value,
+    label = label,
+)
+
+private fun ContainerConfigDataModel.toDomain(): ContainerConfigDomainModel = when (this) {
     is FormContainerConfigDataModel -> FormContainerConfigDomainModel(
         formId = formId,
         submitText = submitText,

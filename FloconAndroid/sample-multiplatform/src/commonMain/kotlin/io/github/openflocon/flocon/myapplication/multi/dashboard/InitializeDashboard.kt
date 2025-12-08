@@ -9,6 +9,7 @@ import io.github.openflocon.flocon.plugins.dashboard.dsl.checkBox
 import io.github.openflocon.flocon.plugins.dashboard.dsl.json
 import io.github.openflocon.flocon.plugins.dashboard.dsl.label
 import io.github.openflocon.flocon.plugins.dashboard.dsl.plainText
+import io.github.openflocon.flocon.plugins.dashboard.dsl.markdown
 import io.github.openflocon.flocon.plugins.dashboard.dsl.text
 import io.github.openflocon.flocon.plugins.dashboard.dsl.textField
 import io.github.openflocon.flocon.plugins.dashboard.floconDashboard
@@ -87,6 +88,25 @@ fun initializeDashboard() {
                                   "status": "success",
                                   "message": "Test data loaded successfully."
                                 }
+                    """.trimIndent()
+                )
+            }
+        }
+    }
+    GlobalScope.launch {
+        floconDashboard(id = "markdown") {
+            section(name = "Markdown") {
+                markdown(
+                    label = "Release Note",
+                    value = """
+                        # Release Note
+                        
+                        This is a **markdown** text.
+                        
+                        * [x] item 1
+                        * [ ] item 2
+                        
+                        Hello `world` !
                     """.trimIndent()
                 )
             }

@@ -14,6 +14,7 @@ import io.github.openflocon.flocon.plugins.dashboard.model.config.ContainerConfi
 import io.github.openflocon.flocon.plugins.dashboard.model.config.ElementConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.FormConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.LabelConfig
+import io.github.openflocon.flocon.plugins.dashboard.model.config.MarkdownConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.PlainTextConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.SectionConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.TextConfig
@@ -92,6 +93,7 @@ private fun parseElementConfig(
     is LabelConfig -> element.toJson()
     is TextConfig -> element.toJson()
     is PlainTextConfig -> element.toJson()
+    is MarkdownConfig -> element.toJson()
     is TextFieldConfig -> {
         val actionId = createActionId(dashboardId, element.id)
 
@@ -232,5 +234,18 @@ internal fun PlainTextConfig.toJson() = buildJsonObject {
         put("label", label)
         put("value", value)
         put("type", type)
+    }
+}
+
+// {
+//     "markdown" : {
+//         "label": "Release note",
+//         "value": "# V 1.0",
+//     }
+// }
+internal fun MarkdownConfig.toJson() = buildJsonObject {
+    putJsonObject("markdown") {
+        put("label", label)
+        put("value", value)
     }
 }
