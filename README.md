@@ -425,31 +425,28 @@ Use cases include:
 Dashboards are defined programmatically on the mobile side via the SDK, and they update live as data changes — making them ideal for live demos, QA testing, or in-field diagnostics.
 
 ```kotlin
-userFlow.collect { user ->
-     Flocon.dashboard(id = "main") {
-        user?.let {
-            section(name = "User") {
-                text(label = "username", value = user.userName)
-                text(label = "fullName", value = user.fullName, color = Color.Red.toArgb())
-                text(label = "user id", value = user.id)
-                button(
-                    text = "Change User Id",
-                    id = "changeUserId",
-                    onClick = {
-                        userFlow.update { it.copy(userName = "__flo__") }
-                    }
-                )
-                textField(
-                    label = "Update Name",
-                    placeHolder = "name",
-                    id = "changeUserName",
-                    value = user.fullName,
-                    onSubmitted = { value ->
-                        userFlow.update { it.copy(fullName = value) }
-                    })
-            }
+floconDashboard(id = "main") {
+  section(name = "User", userStateFlow) { user ->
+    text(label = "username", value = user.userName)
+    text(label = "fullName", value = user.fullName, color = Color.Red.toArgb())
+    text(label = "user id", value = user.id)
+    button(
+        text = "Change User Id",
+        id = "changeUserId",
+        onClick = {
+            updateUser { it.copy(userName = "__flo__") }
         }
-    }
+    )
+    textField(
+        label = "Update Name",
+        placeHolder = "name",
+        id = "changeUserName",
+        value = user.fullName,
+        onSubmitted = { value ->
+            updateUser { it.copy(fullName = value) }
+        }
+    )
+  }
 }
 ```
 
