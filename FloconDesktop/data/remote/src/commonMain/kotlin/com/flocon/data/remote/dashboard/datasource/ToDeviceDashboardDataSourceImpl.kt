@@ -112,7 +112,7 @@ class ToDeviceDashboardDataSourceImpl(
         )
     }
 
-    override fun getItem(message: FloconIncomingMessageDomainModel): DashboardDomainModel? = decode(message)?.let { it.toDomain() }
+    override fun getItem(message: FloconIncomingMessageDomainModel): DashboardDomainModel? = decode(message)?.let { it.HBOtoDomain() }
 
     private fun decode(message: FloconIncomingMessageDomainModel): DashboardConfigDataModel? = try {
         json.decodeFromString<DashboardConfigDataModel>(message.body)

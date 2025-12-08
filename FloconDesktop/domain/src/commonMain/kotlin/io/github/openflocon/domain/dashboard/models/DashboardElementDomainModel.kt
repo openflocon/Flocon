@@ -40,4 +40,9 @@ sealed interface DashboardElementDomainModel {
         val value: Boolean,
         val id: String,
     ) : DashboardElementDomainModel
+
+    data class Markdown(
+        val label: String,
+        val value: String,
+    ) : DashboardElementDomainModel
 }

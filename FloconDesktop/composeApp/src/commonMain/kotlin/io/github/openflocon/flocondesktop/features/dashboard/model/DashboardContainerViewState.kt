@@ -52,6 +52,12 @@ data class DashboardContainerViewState(
             override val id: String,
         ) : RowItem,
             InputItem
+
+        @Immutable
+        data class Markdown(
+            val label: String,
+            val value: String,
+        ) : RowItem
     }
 
     /** Any item that can be used to change the value of a field */

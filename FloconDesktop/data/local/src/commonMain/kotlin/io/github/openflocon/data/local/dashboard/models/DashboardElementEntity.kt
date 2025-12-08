@@ -73,4 +73,10 @@ internal sealed interface LocalDashboardElement {
         val label: String,
         val value: Boolean,
     ) : LocalDashboardElement
+
+    @Serializable
+    data class Markdown(
+        val label: String,
+        val value: String,
+    ) : LocalDashboardElement
 }

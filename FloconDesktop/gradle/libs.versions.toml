@@ -110,6 +110,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 
 androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version = "3.4.0-alpha04" }
+markdown-renderer = { module = "com.mikepenz:multiplatform-markdown-renderer", version = "0.19.0" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }

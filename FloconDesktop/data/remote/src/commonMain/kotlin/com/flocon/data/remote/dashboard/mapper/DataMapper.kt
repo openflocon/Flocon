@@ -51,6 +51,9 @@ fun DashboardElementDataModel.toDomain(): DashboardElementDomainModel? {
     label?.let {
         return it.toDomain()
     }
+    markdown?.let {
+        return it.toDomain()
+    }
     return null
 }
 
@@ -90,6 +93,11 @@ fun CheckBoxConfigDataModel.toDomain(): DashboardElementDomainModel.CheckBox = D
     value = value,
     label = label,
     id = id,
+)
+
+fun MarkdownConfigDataModel.toDomain(): DashboardElementDomainModel.Markdown = DashboardElementDomainModel.Markdown(
+    value = value,
+    label = label,
 )
 
 fun ContainerConfigDataModel.toDomain(): ContainerConfigDomainModel = when (this) {

@@ -83,6 +83,12 @@ internal fun DashboardElementEntity.toDomain(json: Json): DashboardElementDomain
                 value = element.value,
                 id = element.actionId,
             )
+
+        is LocalDashboardElement.Markdown ->
+            DashboardElementDomainModel.Markdown(
+                label = element.label,
+                value = element.value,
+            )
     }
 } catch (e: Exception) {
     e.printStackTrace()
