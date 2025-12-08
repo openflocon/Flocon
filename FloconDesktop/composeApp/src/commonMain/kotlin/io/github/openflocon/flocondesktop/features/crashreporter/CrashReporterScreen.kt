@@ -16,12 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CleaningServices
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.crashes
@@ -51,7 +50,7 @@ fun CrashReporterScreen(
     modifier: Modifier = Modifier,
 ) {
     val viewModel: CrashReporterViewModel = koinViewModel()
-    val crashReports by viewModel.crashReports.collectAsStateWithLifecycle()
+    val crashReports = viewModel.crashReports.collectAsLazyPagingItems()
     val selected by viewModel.selected.collectAsStateWithLifecycle()
 
     CrashReportScreen(
@@ -66,7 +65,7 @@ fun CrashReporterScreen(
 private fun CrashReportScreen(
     modifier: Modifier = Modifier,
     onAction: (CrashReporterAction) -> Unit,
-    crashReports: List<CrashReporterUiModel>,
+    crashReports: LazyPagingItems<CrashReporterUiModel>,
     selected: CrashReporterSelectedUiModel?,
 ) {
     FloconFeature(
@@ -114,7 +113,7 @@ private fun CrashReportScreen(
 @Composable
 fun LeftPannel(
     onAction: (CrashReporterAction) -> Unit,
-    crashReports: List<CrashReporterUiModel>,
+    crashReports: LazyPagingItems<CrashReporterUiModel>,
     selected: CrashReporterSelectedUiModel?,
     modifier: Modifier = Modifier,
 ) {
@@ -167,18 +166,20 @@ fun LeftPannel(
                 contentPadding = PaddingValues(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(crashReports) { crash ->
-                    CrashReportItemView(
-                        crash = crash,
-                        isSelected = crash.id == selected?.id,
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            onAction(CrashReporterAction.Select(it.id))
-                        },
-                        onDelete = {
-                            onAction(CrashReporterAction.Delete(it.id))
-                        }
-                    )
+                items(count = crashReports.itemCount) { index ->
+                    crashReports[index]?.let { crash ->
+                        CrashReportItemView(
+                            crash = crash,
+                            isSelected = crash.id == selected?.id,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                onAction(CrashReporterAction.Select(it.id))
+                            },
+                            onDelete = {
+                                onAction(CrashReporterAction.Delete(it.id))
+                            }
+                        )
+                    }
                 }
             }
         }

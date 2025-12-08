@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.crashreporter
 
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
@@ -9,7 +12,6 @@ import io.github.openflocon.domain.crashreporter.usecase.ClearAllCrashReportUseC
 import io.github.openflocon.domain.crashreporter.usecase.DeleteCrashReportUseCase
 import io.github.openflocon.domain.crashreporter.usecase.ObserveCrashReportsByIdUseCase
 import io.github.openflocon.domain.crashreporter.usecase.ObserveCrashReportsUseCase
-import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.crashreporter.mapper.mapToDetailUi
 import io.github.openflocon.flocondesktop.features.crashreporter.mapper.mapToUi
@@ -17,6 +19,7 @@ import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashRepo
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterSelectedUiModel
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterUiModel
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -38,14 +41,10 @@ internal class CrashReporterViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel() {
 
-    val crashReports: StateFlow<List<CrashReporterUiModel>> = observeCrashReportsUseCase()
-        .map { list -> list.map { it.mapToUi() } }
+    val crashReports: Flow<PagingData<CrashReporterUiModel>> = observeCrashReportsUseCase()
+        .map { pagingData -> pagingData.map { it.mapToUi() } }
         .flowOn(dispatcherProvider.viewModel)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+        .cachedIn(viewModelScope)
 
     private val selectedId = MutableStateFlow<String?>(null)
     val selected: StateFlow<CrashReporterSelectedUiModel?> = selectedId

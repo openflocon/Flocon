@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.crashreporter.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
@@ -37,7 +38,7 @@ interface CrashReportDao {
     fun observeAll(
         deviceId: String,
         packageName: String,
-    ): Flow<List<CrashReportEntity>>
+    ): PagingSource<Int, CrashReportEntity>
 
     @Query("DELETE FROM CrashReportEntity WHERE crashId = :crashId")
     suspend fun delete(crashId: String)

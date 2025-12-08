@@ -1,5 +1,6 @@
 package io.github.openflocon.data.core.crashreporter.repository
 
+import androidx.paging.PagingData
 import co.touchlab.kermit.Logger
 import io.github.openflocon.data.core.crashreporter.datasources.CrashReportRemoteDataSource
 import io.github.openflocon.data.core.crashreporter.datasources.CrashReporterLocalDataSource
@@ -61,7 +62,7 @@ class CrashReporterRepositoryImpl(
 
     override fun observeCrashReports(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): Flow<List<CrashReportDomainModel>> = localDataSource.observeAll(
+    ): Flow<PagingData<CrashReportDomainModel>> = localDataSource.observeAll(
         deviceIdAndPackageName = deviceIdAndPackageName,
     ).flowOn(dispatcherProvider.data)
 

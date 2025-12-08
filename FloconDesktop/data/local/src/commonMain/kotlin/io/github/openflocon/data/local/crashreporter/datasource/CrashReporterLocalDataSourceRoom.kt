@@ -1,5 +1,9 @@
 package io.github.openflocon.data.local.crashreporter.datasource
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import io.github.openflocon.data.core.crashreporter.datasources.CrashReporterLocalDataSource
 import io.github.openflocon.data.local.crashreporter.dao.CrashReportDao
 import io.github.openflocon.data.local.crashreporter.mapper.toDomain
@@ -28,10 +32,17 @@ internal class CrashReporterLocalDataSourceRoom(
 
     override fun observeAll(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): Flow<List<CrashReportDomainModel>> = crashReportDao.observeAll(
-        deviceId = deviceIdAndPackageName.deviceId,
-        packageName = deviceIdAndPackageName.packageName,
-    ).map { list -> list.map { it.toDomain() } }
+    ): Flow<PagingData<CrashReportDomainModel>> = Pager(
+        config = PagingConfig(pageSize = 20),
+        pagingSourceFactory = {
+            crashReportDao.observeAll(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+            )
+        }
+    ).flow.map { pagingData ->
+        pagingData.map { it.toDomain() }
+    }
 
     override suspend fun delete(crashId: String) {
         crashReportDao.delete(crashId)
