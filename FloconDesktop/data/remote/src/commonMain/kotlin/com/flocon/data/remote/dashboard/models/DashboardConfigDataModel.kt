@@ -43,7 +43,15 @@ data class DashboardElementDataModel(
     val checkBox: CheckBoxConfigDataModel? = null,
     val label: LabelConfigDataModel? = null,
     val markdown: MarkdownConfigDataModel? = null,
+    val html: HtmlConfigDataModel? = null,
 )
+
+@Serializable
+data class HtmlConfigDataModel(
+    val label: String,
+    val value: String,
+)
+
 
 @Serializable
 data class MarkdownConfigDataModel(

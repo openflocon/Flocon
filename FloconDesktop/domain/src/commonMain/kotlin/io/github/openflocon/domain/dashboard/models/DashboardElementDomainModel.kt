@@ -45,4 +45,9 @@ sealed interface DashboardElementDomainModel {
         val label: String,
         val value: String,
     ) : DashboardElementDomainModel
+
+    data class Html(
+        val label: String,
+        val value: String,
+    ) : DashboardElementDomainModel
 }
