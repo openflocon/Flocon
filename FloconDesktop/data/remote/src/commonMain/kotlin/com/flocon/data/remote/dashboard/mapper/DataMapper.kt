@@ -105,7 +105,7 @@ private fun MarkdownConfigDataModel.toDomain(): DashboardElementDomainModel.Mark
     label = label,
 )
 
-fun HtmlConfigDataModel.toDomain(): DashboardElementDomainModel.Html = DashboardElementDomainModel.Html(
+private fun HtmlConfigDataModel.toDomain(): DashboardElementDomainModel.Html = DashboardElementDomainModel.Html(
     value = value,
     label = label,
 )
