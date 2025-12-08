@@ -14,11 +14,13 @@ import io.github.openflocon.flocon.plugins.dashboard.dsl.button
 import io.github.openflocon.flocon.plugins.dashboard.dsl.checkBox
 import io.github.openflocon.flocon.plugins.dashboard.dsl.json
 import io.github.openflocon.flocon.plugins.dashboard.dsl.label
+import io.github.openflocon.flocon.plugins.dashboard.dsl.markdown
 import io.github.openflocon.flocon.plugins.dashboard.dsl.plainText
 import io.github.openflocon.flocon.plugins.dashboard.dsl.text
 import io.github.openflocon.flocon.plugins.dashboard.dsl.textField
 import io.github.openflocon.flocon.plugins.dashboard.floconDashboard
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -163,4 +165,22 @@ fun initializeDashboard(activity: ComponentActivity) {
             }
         }
     }
+    activity.lifecycleScope.floconDashboard(id = "markdown") {
+        section(name = "Markdown") {
+            markdown(
+                label = "Release Note",
+                value = """
+                    # Release Note
+                    
+                    This is a **markdown** text.
+                    
+                    * [x] item 1
+                    * [ ] item 2
+                    
+                    Hello `world` !
+                """.trimIndent()
+            )
+        }
+    }
+
 }

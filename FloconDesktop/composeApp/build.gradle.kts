@@ -67,6 +67,7 @@ kotlin {
             implementation(libs.aboutlibraries.compose.m3) // Material 3
             implementation(libs.androidx.paging.common)
             implementation(libs.androidx.paging.compose)
+            implementation(libs.markdown.renderer)
 
             // TODO Remove
             implementation(projects.data.remote)
