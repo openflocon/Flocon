@@ -183,13 +183,11 @@ fun initializeDashboard(activity: ComponentActivity) {
         }
     }
     activity.lifecycleScope.floconDashboard(id = "html") {
-        section(name = "html") {
-            section(name = "HTML Section") {
-                html(
-                    label = "HtmlTitle",
-                    value = "<h1>Title</h1><p>Paragraph with <b>bold</b> text.</p>"
-                )
-            }
+        section(name = "HTML Section") {
+            html(
+                label = "HtmlTitle",
+                value = "<h1>Title</h1><p>Paragraph with <b>bold</b> text.</p>"
+            )
         }
     }
 
