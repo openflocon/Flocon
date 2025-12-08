@@ -79,4 +79,10 @@ internal sealed interface LocalDashboardElement {
         val label: String,
         val value: String,
     ) : LocalDashboardElement
+
+    @Serializable
+    data class Html(
+        val label: String,
+        val value: String,
+    ) : LocalDashboardElement
 }

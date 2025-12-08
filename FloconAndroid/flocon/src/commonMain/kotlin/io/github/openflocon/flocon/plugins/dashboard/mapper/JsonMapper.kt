@@ -13,6 +13,7 @@ import io.github.openflocon.flocon.plugins.dashboard.model.config.CheckBoxConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.ContainerConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.ElementConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.FormConfig
+import io.github.openflocon.flocon.plugins.dashboard.model.config.HtmlConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.LabelConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.MarkdownConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.config.PlainTextConfig
@@ -94,6 +95,7 @@ private fun parseElementConfig(
     is TextConfig -> element.toJson()
     is PlainTextConfig -> element.toJson()
     is MarkdownConfig -> element.toJson()
+    is HtmlConfig -> element.toJson()
     is TextFieldConfig -> {
         val actionId = createActionId(dashboardId, element.id)
 
@@ -245,6 +247,19 @@ internal fun PlainTextConfig.toJson() = buildJsonObject {
 // }
 internal fun MarkdownConfig.toJson() = buildJsonObject {
     putJsonObject("markdown") {
+        put("label", label)
+        put("value", value)
+    }
+}
+
+// {
+//     "html" : {
+//         "label": "Formatted Text",
+//         "value": "<h1>Title</h1>",
+//     }
+// }
+internal fun HtmlConfig.toJson() = buildJsonObject {
+    putJsonObject("html") {
         put("label", label)
         put("value", value)
     }

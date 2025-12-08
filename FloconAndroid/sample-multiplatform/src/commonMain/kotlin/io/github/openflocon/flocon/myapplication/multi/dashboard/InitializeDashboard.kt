@@ -10,6 +10,7 @@ import io.github.openflocon.flocon.plugins.dashboard.dsl.json
 import io.github.openflocon.flocon.plugins.dashboard.dsl.label
 import io.github.openflocon.flocon.plugins.dashboard.dsl.plainText
 import io.github.openflocon.flocon.plugins.dashboard.dsl.markdown
+import io.github.openflocon.flocon.plugins.dashboard.dsl.html
 import io.github.openflocon.flocon.plugins.dashboard.dsl.text
 import io.github.openflocon.flocon.plugins.dashboard.dsl.textField
 import io.github.openflocon.flocon.plugins.dashboard.floconDashboard
@@ -108,6 +109,17 @@ fun initializeDashboard() {
                         
                         Hello `world` !
                     """.trimIndent()
+                )
+            }
+        }
+    }
+
+    GlobalScope.launch {
+        floconDashboard(id = "html") {
+            section(name = "HTML Test") {
+                html(
+                    label = "Formatted Text",
+                    value = "<h1>Title</h1><p>Paragraph with <b>bold</b> text.</p>"
                 )
             }
         }
