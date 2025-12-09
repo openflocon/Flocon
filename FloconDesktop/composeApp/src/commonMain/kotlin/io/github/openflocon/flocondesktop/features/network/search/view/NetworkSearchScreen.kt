@@ -58,7 +58,7 @@ fun NetworkSearchScreen(
 }
 
 @Composable
-fun NetworkSearchScreen(
+private fun NetworkSearchScreen(
     query: String,
     onQueryChanged: (String) -> Unit,
     onScopeToggled: (SearchScope) -> Unit,

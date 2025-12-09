@@ -15,6 +15,7 @@ import io.github.openflocon.flocondesktop.features.network.search.view.NetworkSe
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.navigation.PanelRoute
+import io.github.openflocon.navigation.WindowRoute
 import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import kotlinx.serialization.Serializable
@@ -43,7 +44,9 @@ internal sealed interface NetworkRoutes : FloconRoute {
     ) : NetworkRoutes
 
     @Serializable
-    data object DeepSearch : NetworkRoutes
+    data object DeepSearch : NetworkRoutes, WindowRoute {
+        override val singleTopKey = "deepsearch"
+    }
 
     @Serializable
     data class JsonDetail(

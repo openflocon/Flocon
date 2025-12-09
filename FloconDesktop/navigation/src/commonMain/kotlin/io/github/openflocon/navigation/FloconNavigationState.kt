@@ -32,6 +32,11 @@ class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : Flo
             } else {
                 _stack.add(route)
             }
+        } else if(route is WindowRoute && route.singleTopKey != null) {
+            _stack.find { it is WindowRoute && it.singleTopKey == route.singleTopKey }?.let {
+                _stack.remove(it)
+            }
+            _stack.add(route)
         } else {
             _stack.add(route)
         }
