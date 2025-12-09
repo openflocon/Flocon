@@ -61,9 +61,10 @@ private const val LARGE_BODY_LENGHT = 30_000
 
 @Composable
 fun NetworkDetailScreen(
-    requestId: String
+    requestId: String,
+    key: String = requestId,
 ) {
-    val viewModel = koinViewModel<NetworkDetailViewModel>(key = requestId) {
+    val viewModel = koinViewModel<NetworkDetailViewModel>(key = key) {
         parametersOf(requestId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
