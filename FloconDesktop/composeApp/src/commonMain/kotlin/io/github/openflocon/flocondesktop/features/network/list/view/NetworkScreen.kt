@@ -444,17 +444,6 @@ fun NetworkScreen(
             }
         )
     }
-
-    uiState.contentState.openedWindowRequestIds.forEach { requestId ->
-        key(requestId) {
-            NetworkDetailWindow(
-                requestId = requestId,
-                onCloseRequest = {
-                    onAction(NetworkAction.CloseWindow(requestId))
-                }
-            )
-        }
-    }
 }
 
 private fun selectPreviousRow(

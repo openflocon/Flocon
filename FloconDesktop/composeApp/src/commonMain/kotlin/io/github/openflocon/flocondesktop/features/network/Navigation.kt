@@ -34,6 +34,9 @@ internal sealed interface NetworkRoutes : FloconRoute {
         PanelRoute
 
     @Serializable
+    data class WindowDetail(val requestId: String) : NetworkRoutes
+
+    @Serializable
     data class JsonDetail(
         val json: String,
         val id: String = Uuid.random().toString()
@@ -65,6 +68,11 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
         NetworkMocksWindow(
             fromNetworkCallId = it.id
         )
+    }
+    entry<NetworkRoutes.WindowDetail>(
+        metadata = WindowSceneStrategy.window()
+    ) {
+        NetworkDetailScreen(requestId = it.requestId)
     }
     entry<NetworkRoutes.JsonDetail>(
         metadata = WindowSceneStrategy.window()

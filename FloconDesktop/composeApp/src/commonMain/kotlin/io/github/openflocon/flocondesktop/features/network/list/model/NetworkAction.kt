@@ -63,7 +63,6 @@ sealed interface NetworkAction {
     ) : NetworkAction
 
     data class DoubleClicked(val item: NetworkItemViewState) : NetworkAction
-    data class CloseWindow(val requestId: String) : NetworkAction
 
     data object ClearMultiSelect : NetworkAction
 

@@ -273,7 +273,6 @@ class NetworkViewModel(
             NetworkAction.MultiSelect -> onMultiSelect()
             NetworkAction.DeleteSelection -> onDeleteSelection()
             is NetworkAction.DoubleClicked -> onDoubleClicked(action)
-            is NetworkAction.CloseWindow -> onCloseWindow(action)
         }
     }
 
@@ -502,16 +501,10 @@ class NetworkViewModel(
         }
     }
     private fun onDoubleClicked(action: NetworkAction.DoubleClicked) {
-        contentState.update {
-            it.copy(openedWindowRequestIds = it.openedWindowRequestIds + action.item.uuid)
-        }
+        navigationState.navigate(NetworkRoutes.WindowDetail(action.item.uuid))
     }
 
-    private fun onCloseWindow(action: NetworkAction.CloseWindow) {
-        contentState.update {
-            it.copy(openedWindowRequestIds = it.openedWindowRequestIds - action.requestId)
-        }
-    }
+
 }
 
 private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters> = buildList {

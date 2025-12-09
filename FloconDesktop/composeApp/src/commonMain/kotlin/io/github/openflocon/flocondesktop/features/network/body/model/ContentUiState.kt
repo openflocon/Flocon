@@ -8,8 +8,7 @@ data class ContentUiState(
     val websocketMocksDisplayed: Boolean,
     val badNetworkQualityDisplayed: Boolean,
     val selecting: Boolean,
-    val multiSelectedIds: Set<String>,
-    val openedWindowRequestIds: Set<String> = emptySet()
+    val multiSelectedIds: Set<String>
 )
 
 fun previewContentUiState() = ContentUiState(
@@ -17,6 +16,5 @@ fun previewContentUiState() = ContentUiState(
     badNetworkQualityDisplayed = false,
     websocketMocksDisplayed = false,
     selecting = false,
-    multiSelectedIds = emptySet(),
-    openedWindowRequestIds = emptySet()
+    multiSelectedIds = emptySet()
 )
