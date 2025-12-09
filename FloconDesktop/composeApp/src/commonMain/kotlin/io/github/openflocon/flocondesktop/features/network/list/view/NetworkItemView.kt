@@ -2,9 +2,11 @@ package io.github.openflocon.flocondesktop.features.network.list.view
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -54,6 +56,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val replayColor = Color(0xFF242D44)
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NetworkItemView(
     state: NetworkItemViewState,
@@ -95,7 +98,10 @@ fun NetworkItemView(
                         Modifier.background(FloconTheme.colorPalette.accent)
                     } else Modifier,
                 )
-                .clickable(onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) })
+                .combinedClickable(
+                    onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) },
+                    onDoubleClick = { onAction(NetworkAction.DoubleClicked(state)) }
+                )
                 .then(
                     if (selected) {
                         Modifier.border(

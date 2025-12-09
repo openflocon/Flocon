@@ -272,6 +272,8 @@ class NetworkViewModel(
             NetworkAction.ClearMultiSelect -> onClearMultiSelect()
             NetworkAction.MultiSelect -> onMultiSelect()
             NetworkAction.DeleteSelection -> onDeleteSelection()
+            is NetworkAction.DoubleClicked -> onDoubleClicked(action)
+            is NetworkAction.CloseWindow -> onCloseWindow(action)
         }
     }
 
@@ -497,6 +499,17 @@ class NetworkViewModel(
                     }
                 )
                 .also { onClearMultiSelect() }
+        }
+    }
+    private fun onDoubleClicked(action: NetworkAction.DoubleClicked) {
+        contentState.update {
+            it.copy(openedWindowRequestIds = it.openedWindowRequestIds + action.item.uuid)
+        }
+    }
+
+    private fun onCloseWindow(action: NetworkAction.CloseWindow) {
+        contentState.update {
+            it.copy(openedWindowRequestIds = it.openedWindowRequestIds - action.requestId)
         }
     }
 }

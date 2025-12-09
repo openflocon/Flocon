@@ -63,7 +63,7 @@ private const val LARGE_BODY_LENGHT = 30_000
 fun NetworkDetailScreen(
     requestId: String
 ) {
-    val viewModel = koinViewModel<NetworkDetailViewModel> {
+    val viewModel = koinViewModel<NetworkDetailViewModel>(key = requestId) {
         parametersOf(requestId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
