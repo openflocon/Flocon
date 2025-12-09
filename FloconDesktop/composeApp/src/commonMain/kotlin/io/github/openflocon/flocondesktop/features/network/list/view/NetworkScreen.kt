@@ -18,7 +18,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ManageSearch
 import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.filled.ManageSearch
+import androidx.compose.material.icons.filled.ScreenSearchDesktop
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
@@ -183,7 +186,7 @@ fun NetworkScreen(
                 },
                 actions = {
                     FloconIconButton(
-                        imageVector = Icons.Outlined.Search,
+                        imageVector = Icons.AutoMirrored.Filled.ManageSearch,
                         onClick = { onAction(NetworkAction.OpenDeepSearch) },
                         tooltip = "Deep Search"
                     )
