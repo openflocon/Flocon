@@ -9,3 +9,15 @@ enum class SearchScope {
     Method,
     Status
 }
+
+fun SearchScope.text() : String {
+    return when(this) {
+        SearchScope.RequestHeader -> "Request Header"
+        SearchScope.RequestBody -> "Request Body"
+        SearchScope.ResponseHeader -> "Response Header"
+        SearchScope.ResponseBody -> "Response Body"
+        SearchScope.Url -> "Url"
+        SearchScope.Method -> "Method"
+        SearchScope.Status -> "Status"
+    }
+}
