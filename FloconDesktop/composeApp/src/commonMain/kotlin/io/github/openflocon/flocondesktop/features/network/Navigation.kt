@@ -11,11 +11,14 @@ import io.github.openflocon.flocondesktop.features.network.body.model.NetworkBod
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailScreen
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
+import io.github.openflocon.flocondesktop.features.network.search.view.NetworkSearchScreen
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.navigation.PanelRoute
 import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import kotlinx.serialization.Serializable
+import org.koin.compose.koinInject
 import org.koin.mp.KoinPlatform
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -40,11 +43,13 @@ internal sealed interface NetworkRoutes : FloconRoute {
     ) : NetworkRoutes
 
     @Serializable
+    data object DeepSearch : NetworkRoutes
+
+    @Serializable
     data class JsonDetail(
         val json: String,
         val id: String = Uuid.random().toString()
     ) : NetworkRoutes
-}
 
 fun EntryProviderScope<FloconRoute>.networkRoutes() {
     entry<NetworkRoutes.Main>(
@@ -82,6 +87,17 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
     ) {
         NetworkBodyWindow(
             body = NetworkBodyDetailUi(text = it.json)
+        )
+    }
+    entry<NetworkRoutes.DeepSearch>(
+        metadata = WindowSceneStrategy.window()
+    ) {
+        val navigationState = koinInject<MainFloconNavigationState>()
+        NetworkSearchScreen(
+            onClose = {},
+            onNavigateToDetail = { requestId ->
+                navigationState.navigate(NetworkRoutes.WindowDetail(requestId))
+            }
         )
     }
 }

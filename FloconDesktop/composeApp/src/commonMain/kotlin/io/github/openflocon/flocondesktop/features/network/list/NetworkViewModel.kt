@@ -275,6 +275,7 @@ class NetworkViewModel(
             NetworkAction.MultiSelect -> onMultiSelect()
             NetworkAction.DeleteSelection -> onDeleteSelection()
             is NetworkAction.DoubleClicked -> onDoubleClicked(action)
+            NetworkAction.OpenDeepSearch -> navigationState.navigate(NetworkRoutes.DeepSearch)
         }
     }
 

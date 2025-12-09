@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.outlined.Upgrade
 import androidx.compose.material.icons.outlined.Upload
@@ -181,6 +182,11 @@ fun NetworkScreen(
                     )
                 },
                 actions = {
+                    FloconIconButton(
+                        imageVector = Icons.Outlined.Search,
+                        onClick = { onAction(NetworkAction.OpenDeepSearch) },
+                        tooltip = "Deep Search"
+                    )
                     FloconIconToggleButton(
                         value = uiState.filterState.hasMocks,
                         tooltip = "Mocks",

@@ -62,6 +62,8 @@ sealed interface NetworkAction {
         val itemIdToSelect: String,
     ) : NetworkAction
 
+    data object OpenDeepSearch : NetworkAction
+
     data class DoubleClicked(val item: NetworkItemViewState) : NetworkAction
 
     data object ClearMultiSelect : NetworkAction
