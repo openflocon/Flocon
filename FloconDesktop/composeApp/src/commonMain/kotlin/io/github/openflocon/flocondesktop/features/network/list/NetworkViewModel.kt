@@ -68,6 +68,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
@@ -272,6 +274,7 @@ class NetworkViewModel(
             NetworkAction.ClearMultiSelect -> onClearMultiSelect()
             NetworkAction.MultiSelect -> onMultiSelect()
             NetworkAction.DeleteSelection -> onDeleteSelection()
+            is NetworkAction.DoubleClicked -> onDoubleClicked(action)
         }
     }
 
@@ -499,6 +502,15 @@ class NetworkViewModel(
                 .also { onClearMultiSelect() }
         }
     }
+    @OptIn(ExperimentalUuidApi::class)
+    private fun onDoubleClicked(action: NetworkAction.DoubleClicked) {
+        navigationState.navigate(NetworkRoutes.WindowDetail(
+            requestId = action.item.uuid,
+            windowKey = Uuid.random().toString(),
+        ))
+    }
+
+
 }
 
 private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters> = buildList {
