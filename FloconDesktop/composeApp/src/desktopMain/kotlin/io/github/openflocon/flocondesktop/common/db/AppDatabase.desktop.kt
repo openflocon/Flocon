@@ -5,8 +5,7 @@ import androidx.room.RoomDatabase
 import java.io.File
 
 actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
-    val floconUserPath = System.getProperty("user.home") + File.separator + ".flocon"
-    val folder = File(floconUserPath)
+    val folder = File(System.getProperty("user.home"), ".flocon")
     folder.mkdirs()
     val dbFile = File(folder, "flocon_room.db")
     // UNCOMMENT TO TEST ON AN EMPTY DB
