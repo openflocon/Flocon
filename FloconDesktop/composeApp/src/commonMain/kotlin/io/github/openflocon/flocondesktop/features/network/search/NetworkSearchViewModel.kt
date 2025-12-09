@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.search
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
@@ -9,6 +12,7 @@ import io.github.openflocon.domain.network.models.SearchScope
 import io.github.openflocon.domain.network.usecase.search.SearchNetworkCallsUseCase
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
+import io.github.openflocon.library.designsystem.common.asState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,8 +25,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 
+@Immutable
 data class NetworkSearchUiState(
-    val query: String = "",
     val selectedScopes: Set<SearchScope> = SearchScope.entries.toSet(),
     val results: List<NetworkItemViewState> = emptyList(),
     val loading: Boolean = false
@@ -34,12 +38,13 @@ class NetworkSearchViewModel(
     private val dispatcherProvider: DispatcherProvider
 ) : ViewModel(), KoinComponent {
 
-    private val _query = MutableStateFlow("")
+    private val _query = mutableStateOf("")
+    val query = _query.asState()
     private val _selectedScopes = MutableStateFlow(SearchScope.entries.toSet())
     private val _loading = MutableStateFlow(false)
 
     val uiState: StateFlow<NetworkSearchUiState> = combine(
-        _query,
+        snapshotFlow { _query.value },
         _selectedScopes,
         observeCurrentDeviceIdAndPackageNameUseCase(),
         _loading
@@ -50,7 +55,6 @@ class NetworkSearchViewModel(
             val results = searchNetworkCallsUseCase(query, scopes)
             emit(
                 NetworkSearchUiState(
-                    query = query,
                     selectedScopes = scopes,
                     results = results.map { it.toUi(deviceInfo) },
                     loading = false

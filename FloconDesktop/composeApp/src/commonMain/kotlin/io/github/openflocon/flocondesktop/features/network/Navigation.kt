@@ -95,7 +95,6 @@ internal sealed interface NetworkRoutes : FloconRoute {
         ) {
             val navigationState = koinInject<MainFloconNavigationState>()
             NetworkSearchScreen(
-                onClose = {},
                 onNavigateToDetail = { requestId ->
                     navigationState.navigate(
                         NetworkRoutes.WindowDetail(
