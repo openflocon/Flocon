@@ -20,7 +20,7 @@ import io.github.openflocon.flocondesktop.features.database.databaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
 import io.github.openflocon.flocondesktop.features.files.filesRoutes
 import io.github.openflocon.flocondesktop.features.images.imageRoutes
-import io.github.openflocon.flocondesktop.features.network.NetworkRoutes.DeepSearch.networkRoutes
+import io.github.openflocon.flocondesktop.features.network.networkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
