@@ -11,6 +11,7 @@ import androidx.navigation3.scene.SinglePaneSceneStrategy
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
+import io.github.openflocon.flocondesktop.device.deviceRoutes
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
@@ -79,7 +80,8 @@ private fun Content(
                             onAppSelected = { onAction(AppAction.SelectApp(it)) },
                             onRecordClicked = { onAction(AppAction.Record) },
                             onRestartClicked = { onAction(AppAction.Restart) },
-                            onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) }
+                            onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
+                            onClickDetail = { onAction(AppAction.DeviceDetail(it)) }
                         )
                     }
                 )
@@ -100,5 +102,6 @@ private fun Content(
         tableRoutes()
         settingsRoutes()
         crashReporterRoutes()
+        deviceRoutes()
     }
 }

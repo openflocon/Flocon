@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,7 +26,6 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMet
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 val getMethodBackground = Color(0xFF007BFF).copy(alpha = 0.3f) // Muted blue for GET
 val getMethodText = Color(0xFF007BFF)
@@ -96,20 +96,20 @@ fun NetworkTag(
 ) {
     Row(
         modifier =
-        modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(
-                color = backgroundColor,
-            )
-            .then(
-                if (onClick != null) {
-                    Modifier.clickable(onClick = onClick)
-                } else {
-                    Modifier
-                },
-            )
-            .padding(horizontal = 4.dp, vertical = 2.dp)
-            .padding(contentPadding),
+            modifier
+                .clip(RoundedCornerShape(20.dp))
+                .background(
+                    color = backgroundColor,
+                )
+                .then(
+                    if (onClick != null) {
+                        Modifier.clickable(onClick = onClick)
+                    } else {
+                        Modifier
+                    },
+                )
+                .padding(horizontal = 4.dp, vertical = 2.dp)
+                .padding(contentPadding),
         // Padding inside the tag
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,

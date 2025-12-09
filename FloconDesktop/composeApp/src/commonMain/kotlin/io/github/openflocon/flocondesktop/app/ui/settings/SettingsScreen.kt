@@ -133,7 +133,10 @@ private fun SettingsScreen(
             }
         }
         FloconSection(
-            title = stringResource(Res.string.settings_font_size_multiplier, uiState.fontSizeMultiplier),
+            title = stringResource(
+                Res.string.settings_font_size_multiplier,
+                uiState.fontSizeMultiplier
+            ),
             initialValue = true
         ) {
             Column(
