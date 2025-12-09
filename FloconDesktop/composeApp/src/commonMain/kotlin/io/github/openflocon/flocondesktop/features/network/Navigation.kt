@@ -51,53 +51,60 @@ internal sealed interface NetworkRoutes : FloconRoute {
         val id: String = Uuid.random().toString()
     ) : NetworkRoutes
 
-fun EntryProviderScope<FloconRoute>.networkRoutes() {
-    entry<NetworkRoutes.Main>(
-        metadata = MenuSceneStrategy.menu()
-    ) {
-        NetworkScreen()
-    }
-    entry<NetworkRoutes.Panel>(
-        metadata = PanelSceneStrategy.panel(
-            pinnable = true,
-            closable = true,
-            onPin = {
-                val repository = KoinPlatform.getKoin().get<SettingsRepository>()
+    fun EntryProviderScope<FloconRoute>.networkRoutes() {
+        entry<NetworkRoutes.Main>(
+            metadata = MenuSceneStrategy.menu()
+        ) {
+            NetworkScreen()
+        }
+        entry<NetworkRoutes.Panel>(
+            metadata = PanelSceneStrategy.panel(
+                pinnable = true,
+                closable = true,
+                onPin = {
+                    val repository = KoinPlatform.getKoin().get<SettingsRepository>()
 
-                repository.networkSettings = repository.networkSettings.copy(pinnedDetails = true)
-            }
-        )
-    ) {
-        NetworkDetailScreen(requestId = it.requestId)
-    }
-    entry<NetworkRoutes.Mocks>(
-        metadata = DialogSceneStrategy.dialog()
-    ) {
-        NetworkMocksWindow(
-            fromNetworkCallId = it.id
-        )
-    }
-    entry<NetworkRoutes.WindowDetail>(
-        metadata = WindowSceneStrategy.window()
-    ) {
-        NetworkDetailScreen(requestId = it.requestId, key = it.windowKey)
-    }
-    entry<NetworkRoutes.JsonDetail>(
-        metadata = WindowSceneStrategy.window()
-    ) {
-        NetworkBodyWindow(
-            body = NetworkBodyDetailUi(text = it.json)
-        )
-    }
-    entry<NetworkRoutes.DeepSearch>(
-        metadata = WindowSceneStrategy.window()
-    ) {
-        val navigationState = koinInject<MainFloconNavigationState>()
-        NetworkSearchScreen(
-            onClose = {},
-            onNavigateToDetail = { requestId ->
-                navigationState.navigate(NetworkRoutes.WindowDetail(requestId))
-            }
-        )
+                    repository.networkSettings =
+                        repository.networkSettings.copy(pinnedDetails = true)
+                }
+            )
+        ) {
+            NetworkDetailScreen(requestId = it.requestId)
+        }
+        entry<NetworkRoutes.Mocks>(
+            metadata = DialogSceneStrategy.dialog()
+        ) {
+            NetworkMocksWindow(
+                fromNetworkCallId = it.id
+            )
+        }
+        entry<NetworkRoutes.WindowDetail>(
+            metadata = WindowSceneStrategy.window()
+        ) {
+            NetworkDetailScreen(requestId = it.requestId, key = it.windowKey)
+        }
+        entry<NetworkRoutes.JsonDetail>(
+            metadata = WindowSceneStrategy.window()
+        ) {
+            NetworkBodyWindow(
+                body = NetworkBodyDetailUi(text = it.json)
+            )
+        }
+        entry<NetworkRoutes.DeepSearch>(
+            metadata = WindowSceneStrategy.window()
+        ) {
+            val navigationState = koinInject<MainFloconNavigationState>()
+            NetworkSearchScreen(
+                onClose = {},
+                onNavigateToDetail = { requestId ->
+                    navigationState.navigate(
+                        NetworkRoutes.WindowDetail(
+                            requestId,
+                            Uuid.random().toString()
+                        )
+                    )
+                }
+            )
+        }
     }
 }

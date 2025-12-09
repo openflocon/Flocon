@@ -30,6 +30,7 @@ import io.github.openflocon.domain.network.usecase.mocks.SendNetworkWebsocketMoc
 import io.github.openflocon.domain.network.usecase.mocks.SetupNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.UpdateNetworkMockIsEnabledUseCase
 import io.github.openflocon.domain.network.usecase.mocks.UpdateNetworkMocksDeviceUseCase
+import io.github.openflocon.domain.network.usecase.search.GetAllNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.search.SearchNetworkCallsUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -69,4 +70,5 @@ internal val networkModule = module {
     factoryOf(::SetNetworkBadQualityEnabledConfigUseCase)
     factoryOf(::ObserveAllNetworkBadQualitiesUseCase)
     factoryOf(::SearchNetworkCallsUseCase)
+    factoryOf(::GetAllNetworkRequestsUseCase)
 }

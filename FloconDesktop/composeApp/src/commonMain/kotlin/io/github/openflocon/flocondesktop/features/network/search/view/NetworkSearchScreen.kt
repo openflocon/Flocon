@@ -46,7 +46,9 @@ fun NetworkSearchScreen(
         FloconTextField(
             value = uiState.query,
             onValueChange = viewModel::onQueryChanged,
-            placeholder = "Search...",
+            placeholder = {
+                Text("Search...")
+            },
             modifier = Modifier.fillMaxWidth()
         )
 

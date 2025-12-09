@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.models.SearchScope
 import io.github.openflocon.domain.network.usecase.search.SearchNetworkCallsUseCase
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -44,15 +46,17 @@ class NetworkSearchViewModel(
     ) { query, scopes, deviceInfo, loading ->
         SearchParams(query, scopes, deviceInfo, loading)
     }.flatMapLatest { (query, scopes, deviceInfo, loading) ->
-        searchNetworkCallsUseCase(query, scopes)
-            .map { results ->
+        flow {
+            val results = searchNetworkCallsUseCase(query, scopes)
+            emit(
                 NetworkSearchUiState(
                     query = query,
                     selectedScopes = scopes,
                     results = results.map { it.toUi(deviceInfo) },
                     loading = false
                 )
-            }
+            )
+        }
     }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(
@@ -80,7 +84,7 @@ class NetworkSearchViewModel(
     private data class SearchParams(
         val query: String,
         val scopes: Set<SearchScope>,
-        val deviceInfo: Pair<String?, String?>,
+        val deviceInfo: DeviceIdAndPackageNameDomainModel?,
         val loading: Boolean
     )
 }
