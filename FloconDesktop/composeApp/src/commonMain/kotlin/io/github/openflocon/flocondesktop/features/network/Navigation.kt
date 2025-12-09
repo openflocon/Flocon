@@ -96,17 +96,7 @@ internal sealed interface NetworkRoutes : FloconRoute {
         entry<NetworkRoutes.DeepSearch>(
             metadata = WindowSceneStrategy.window()
         ) {
-            val navigationState = koinInject<MainFloconNavigationState>()
-            NetworkSearchScreen(
-                onNavigateToDetail = { requestId ->
-                    navigationState.navigate(
-                        NetworkRoutes.WindowDetail(
-                            requestId,
-                            Uuid.random().toString()
-                        )
-                    )
-                }
-            )
+            NetworkSearchScreen()
         }
     }
 }

@@ -8,10 +8,8 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +27,7 @@ import io.github.openflocon.domain.network.models.SearchScope
 import io.github.openflocon.domain.network.models.text
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkItemView
-import io.github.openflocon.flocondesktop.features.network.search.NetworkSearchUiState
+import io.github.openflocon.flocondesktop.features.network.search.model.NetworkSearchUiState
 import io.github.openflocon.flocondesktop.features.network.search.NetworkSearchViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
@@ -41,9 +39,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun NetworkSearchScreen(
-    onNavigateToDetail: (String) -> Unit
-) {
+fun NetworkSearchScreen() {
     val viewModel = koinViewModel<NetworkSearchViewModel>()
     val query by viewModel.query
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -52,7 +48,7 @@ fun NetworkSearchScreen(
         query = query,
         uiState = uiState,
         onQueryChanged = viewModel::onQueryChanged,
-        onNavigateToDetail = onNavigateToDetail,
+        onNavigateToDetail = viewModel::onNavigateToDetail,
         onScopeToggled = viewModel::onScopeToggled,
     )
 }
