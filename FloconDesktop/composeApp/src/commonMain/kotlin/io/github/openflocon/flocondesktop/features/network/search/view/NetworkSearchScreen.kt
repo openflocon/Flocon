@@ -16,6 +16,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -101,7 +106,32 @@ private fun NetworkSearchScreen(
 
     FloconSurface(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .onPreviewKeyEvent { event ->
+                if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+
+                when (event.key) {
+                    Key.DirectionUp -> {
+                        val index = uiState.results.indexOfFirst { it.uuid == selectedRequestId }
+                        if (index > 0) {
+                            onSelectRequest(uiState.results[index - 1].uuid)
+                        }
+                        true
+                    }
+
+                    Key.DirectionDown -> {
+                        val index = uiState.results.indexOfFirst { it.uuid == selectedRequestId }
+                        if (index != -1 && index < uiState.results.lastIndex) {
+                            onSelectRequest(uiState.results[index + 1].uuid)
+                        } else if (index == -1 && uiState.results.isNotEmpty()) {
+                             onSelectRequest(uiState.results[0].uuid)
+                        }
+                        true
+                    }
+
+                    else -> false
+                }
+            },
     ) {
         Column(
             modifier = Modifier
