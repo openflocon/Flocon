@@ -43,7 +43,7 @@ internal fun ContributorView(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .width(120.dp)
-            .height(140.dp)
+            .height(120.dp)
             .clip(shape)
             .border(width = 2.dp, color = borderColor, shape = shape)
             .clickable(
@@ -63,7 +63,7 @@ internal fun ContributorView(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(80.dp)
+                .size(60.dp)
                 .clip(shape)
         )
         Spacer(Modifier.weight(1f))
