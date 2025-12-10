@@ -59,7 +59,7 @@ class NetworkSearchViewModel(
             emit(
                 NetworkSearchUiState(
                     selectedScopes = scopes,
-                    results = results.map { it.toUi(deviceInfo) },
+                    results = results.map { it.toUi(null /* don't check old instance here*/) },
                     loading = false
                 )
             )

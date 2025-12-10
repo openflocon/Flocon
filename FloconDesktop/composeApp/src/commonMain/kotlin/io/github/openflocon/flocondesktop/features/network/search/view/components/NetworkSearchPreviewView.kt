@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -167,18 +168,20 @@ internal fun NetworkSearchPreviewView(
                 }
             }
 
-            Text(
-                text = annotatedString,
-                style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                color = FloconTheme.colorPalette.onSurface,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(16.dp),
-                onTextLayout = {
-                    layoutResult = it
-                }
-            )
+            SelectionContainer {
+                Text(
+                    text = annotatedString,
+                    style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                    color = FloconTheme.colorPalette.onSurface,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .padding(16.dp),
+                    onTextLayout = {
+                        layoutResult = it
+                    }
+                )
+            }
         }
     }
 }

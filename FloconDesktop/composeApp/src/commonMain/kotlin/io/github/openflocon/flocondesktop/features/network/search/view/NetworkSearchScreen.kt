@@ -2,20 +2,24 @@ package io.github.openflocon.flocondesktop.features.network.search.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,7 +36,9 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
+import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -126,26 +132,39 @@ private fun NetworkSearchScreen(
             }
 
             Column(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    contentPadding = PaddingValues(all = 16.dp),
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxWidth()
                 ) {
-                    items(uiState.results) { item ->
-                        NetworkItemView(
-                            state = item,
-                            selected = item.uuid == selectedRequestId,
-                            multiSelect = false,
-                            multiSelected = false,
-                            onAction = { action ->
-                                if (action is NetworkAction.SelectRequest) {
-                                    onSelectRequest(action.id)
-                                } else if (action is NetworkAction.DoubleClicked) {
-                                    onNavigateToDetail(action.item.uuid)
+                    val listState = rememberLazyListState()
+                    val scgit rollAdapter = rememberFloconScrollbarAdapter(listState)
+
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.matchParentSize(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        contentPadding = PaddingValues(vertical = 12.dp),
+                    ) {
+                        items(uiState.results) { item ->
+                            NetworkItemView(
+                                state = item,
+                                selected = item.uuid == selectedRequestId,
+                                multiSelect = false,
+                                multiSelected = false,
+                                onAction = { action ->
+                                    if (action is NetworkAction.SelectRequest) {
+                                        onSelectRequest(action.id)
+                                    } else if (action is NetworkAction.DoubleClicked) {
+                                        onNavigateToDetail(action.item.uuid)
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
+                    FloconVerticalScrollbar(
+                        adapter = scrollAdapter,
+                        modifier = Modifier.fillMaxHeight()
+                            .align(Alignment.TopEnd)
+                    )
                 }
 
                 if (selectedRequestId != null && selectedRequest != null) {

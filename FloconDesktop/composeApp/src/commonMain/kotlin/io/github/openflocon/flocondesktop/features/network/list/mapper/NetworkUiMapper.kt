@@ -6,7 +6,7 @@ import io.github.openflocon.domain.network.models.responseByteSizeFormatted
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 
 fun FloconNetworkCallDomainModel.toUi(
-    deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?
+    deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?,
 ): NetworkItemViewState = NetworkItemViewState(
     uuid = callId,
     dateFormatted = request.startTimeFormatted,
