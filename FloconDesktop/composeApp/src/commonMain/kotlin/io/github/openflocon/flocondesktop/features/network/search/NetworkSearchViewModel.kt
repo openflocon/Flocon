@@ -26,6 +26,7 @@ import org.koin.core.component.KoinComponent
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.responseBody
+import io.github.openflocon.domain.network.models.responseHeaders
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -103,11 +104,60 @@ class NetworkSearchViewModel(
                 if (query.isBlank() || request == null) {
                     emptyList()
                 } else {
-                    val body = request.responseBody() ?: ""
                     val regex = query.toRegex(RegexOption.IGNORE_CASE)
-                    regex.findAll(body).map {
-                        Match(it.range.first, it.range.last - it.range.first + 1)
-                    }.toList()
+                    val matches = mutableListOf<Match>()
+
+                    // URL
+                    val url = request.request.url
+                    regex.findAll(url).forEach {
+                        matches.add(Match(it.range.first, it.range.last - it.range.first + 1, MatchLocation.Url, url))
+                    }
+
+                    // Method
+                    val method = request.request.method
+                    regex.findAll(method).forEach {
+                        matches.add(Match(it.range.first, it.range.last - it.range.first + 1, MatchLocation.Method, method))
+                    }
+
+                    // Status
+                    val status = request.response?.statusFormatted
+                    if (status != null) {
+                        regex.findAll(status).forEach {
+                            matches.add(Match(it.range.first, it.range.last - it.range.first + 1, MatchLocation.Status, status))
+                        }
+                    }
+
+                    // Request Headers
+                    val reqHeaders = request.request.headers.entries.joinToString("\n") { "${it.key}: ${it.value}" }
+                    regex.findAll(reqHeaders).forEach {
+                        matches.add(Match(it.range.first, it.range.last - it.range.first + 1, MatchLocation.RequestHeaders, reqHeaders))
+                    }
+
+                    // Request Body
+                    val reqBody = request.request.body
+                    if (reqBody != null) {
+                        regex.findAll(reqBody).forEach {
+                            matches.add(Match(it.range.first, it.range.last - it.range.first + 1, MatchLocation.RequestBody, reqBody))
+                        }
+                    }
+
+                    // Response Headers
+                    val resHeaders = request.responseHeaders()?.entries?.joinToString("\n") { "${it.key}: ${it.value}" }
+                    if (resHeaders != null) {
+                        regex.findAll(resHeaders).forEach {
+                            matches.add(Match(it.range.first, it.range.last - it.range.first + 1, MatchLocation.ResponseHeaders, resHeaders))
+                        }
+                    }
+
+                    // Response Body
+                    val resBody = request.responseBody()
+                    if (resBody != null) {
+                        regex.findAll(resBody).forEach {
+                            matches.add(Match(it.range.first, it.range.last - it.range.first + 1, MatchLocation.ResponseBody, resBody))
+                        }
+                    }
+                    
+                    matches
                 }
             }.collect {
                 _matches.value = it
@@ -161,4 +211,19 @@ class NetworkSearchViewModel(
 }
 
 @Immutable
-data class Match(val start: Int, val length: Int)
+data class Match(
+    val start: Int,
+    val length: Int,
+    val location: MatchLocation,
+    val content: String
+)
+
+enum class MatchLocation(val label: String) {
+    Url("URL"),
+    Method("Method"),
+    Status("Status"),
+    RequestHeaders("Request Headers"),
+    RequestBody("Request Body"),
+    ResponseHeaders("Response Headers"),
+    ResponseBody("Response Body")
+}

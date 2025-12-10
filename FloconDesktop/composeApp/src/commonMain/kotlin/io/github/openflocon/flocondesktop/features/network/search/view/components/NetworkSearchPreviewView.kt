@@ -99,52 +99,85 @@ internal fun NetworkSearchPreviewView(
 
         // Content
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            val body = request.responseBody() ?: "No response body"
+            val content = remember(matches, currentMatchIndex, request) {
+                if (matches.isNotEmpty() && matches.indices.contains(currentMatchIndex)) {
+                     matches[currentMatchIndex].content
+                } else {
+                     request.responseBody() ?: "No content"
+                }
+            }
+            
+            val locationLabel = remember(matches, currentMatchIndex) {
+                if (matches.isNotEmpty() && matches.indices.contains(currentMatchIndex)) {
+                     matches[currentMatchIndex].location.label
+                } else {
+                     "Preview"
+                }
+            }
+            
             val scrollState = rememberScrollState()
 
-            val annotatedString = remember(body, matches, currentMatchIndex) {
+            val annotatedString = remember(content, matches, currentMatchIndex) {
                  buildAnnotatedString {
-                    append(body)
-                    matches.forEachIndexed { index, match ->
-                        addStyle(
-                            style = SpanStyle(
-                                background = if (index == currentMatchIndex) Color.Red.copy(alpha = 0.5f) else Color.Yellow.copy(alpha = 0.3f),
-                                color = if (index == currentMatchIndex) Color.White else Color.Black
-                            ),
-                            start = match.start,
-                            end = match.start + match.length
-                        )
+                    append(content)
+                    // Highlighting
+                    if (matches.isNotEmpty()) {
+                        val currentMatch = matches.getOrNull(currentMatchIndex)
+                         // Only highlight matches that belong to the SAME location/content
+                        matches.filter { it.location == currentMatch?.location }.forEach { match ->
+                            addStyle(
+                                style = SpanStyle(
+                                    background = if (match == currentMatch) Color.Red.copy(alpha = 0.5f) else Color.Yellow.copy(alpha = 0.3f),
+                                    color = if (match == currentMatch) Color.White else Color.Black
+                                ),
+                                start = match.start,
+                                end = match.start + match.length
+                            )
+                        }
                     }
                 }
             }
 
             var layoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
 
-            LaunchedEffect(currentMatchIndex, matches, layoutResult) {
+            // Scroll to top when switching content or match
+            LaunchedEffect(currentMatchIndex) {
                 if (matches.isNotEmpty()) {
                     val match = matches.getOrNull(currentMatchIndex)
                     if (match != null) {
-                        layoutResult?.let { layout ->
-                            val line = layout.getLineForOffset(match.start)
-                            val y = layout.getLineTop(line)
-                            scrollState.animateScrollTo(y.toInt())
+                         layoutResult?.let { layout ->
+                            // Ensure the offset is valid for the current content
+                            if (match.start < layout.layoutInput.text.length) {
+                                val line = layout.getLineForOffset(match.start)
+                                val y = layout.getLineTop(line)
+                                scrollState.animateScrollTo(y.toInt())
+                            }
                         }
                     }
                 }
             }
             
-            Text(
-                text = annotatedString,
-                style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                color = FloconTheme.colorPalette.onSurface,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(16.dp),
-                onTextLayout = {
-                    layoutResult = it
-                }
-            )
+            Column {
+                 Text(
+                    text = locationLabel,
+                    style = FloconTheme.typography.titleSmall,
+                    color = FloconTheme.colorPalette.primary,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+                
+                Text(
+                    text = annotatedString,
+                    style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                    color = FloconTheme.colorPalette.onSurface,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .padding(16.dp),
+                    onTextLayout = {
+                        layoutResult = it
+                    }
+                )
+            }
         }
     }
 }
