@@ -26,11 +26,13 @@ import io.github.openflocon.flocondesktop.features.network.search.NetworkSearchV
 import io.github.openflocon.flocondesktop.features.network.search.model.NetworkSearchUiState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.HorizontalDivider
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.flocondesktop.features.network.search.Match
 import io.github.openflocon.flocondesktop.features.network.search.view.components.NetworkSearchPreviewView
 import io.github.openflocon.flocondesktop.features.network.search.view.components.ScopeChipsView
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
@@ -153,7 +155,7 @@ private fun NetworkSearchScreen(
                         }
                         
                         // Divider
-                        Box(Modifier.fillMaxWidth().height(1.dp).background(FloconTheme.colorPalette.tertiary))
+                        FloconHorizontalDivider(Modifier.fillMaxWidth())
                         
                         NetworkSearchPreviewView(
                             request = selectedRequest,

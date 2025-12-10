@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -20,24 +19,23 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.TextLayoutResult
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.responseBody
 import io.github.openflocon.flocondesktop.features.network.search.Match
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import kotlinx.coroutines.delay
 
 @Composable
 internal fun NetworkSearchPreviewView(
@@ -49,9 +47,16 @@ internal fun NetworkSearchPreviewView(
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val locationLabel = remember(matches, currentMatchIndex) {
+        if (matches.isNotEmpty() && matches.indices.contains(currentMatchIndex)) {
+            matches[currentMatchIndex].location.label
+        } else {
+            "Preview"
+        }
+    }
     Column(
         modifier = modifier
-            .background(FloconTheme.colorPalette.surface)
+            .background(FloconTheme.colorPalette.primary)
     ) {
         // Toolbar
         Row(
@@ -63,7 +68,7 @@ internal fun NetworkSearchPreviewView(
             Text(
                 text = "${matches.size} matches",
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onSurface
+                color = FloconTheme.colorPalette.onPrimary
             )
 
             Spacer(Modifier.width(16.dp))
@@ -72,7 +77,7 @@ internal fun NetworkSearchPreviewView(
                 Text(
                     text = "${currentMatchIndex + 1} / ${matches.size}",
                     style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.onSurface
+                    color = FloconTheme.colorPalette.onPrimary
                 )
                 Spacer(Modifier.width(8.dp))
                 FloconIcon(
@@ -88,6 +93,13 @@ internal fun NetworkSearchPreviewView(
                 )
             }
 
+            Text(
+                text = locationLabel,
+                style = FloconTheme.typography.titleSmall,
+                color = FloconTheme.colorPalette.onPrimary,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+            )
+
             Spacer(Modifier.weight(1f))
 
             FloconIcon(
@@ -101,33 +113,27 @@ internal fun NetworkSearchPreviewView(
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             val content = remember(matches, currentMatchIndex, request) {
                 if (matches.isNotEmpty() && matches.indices.contains(currentMatchIndex)) {
-                     matches[currentMatchIndex].content
+                    matches[currentMatchIndex].content
                 } else {
-                     request.responseBody() ?: "No content"
+                    request.responseBody() ?: "No content"
                 }
             }
-            
-            val locationLabel = remember(matches, currentMatchIndex) {
-                if (matches.isNotEmpty() && matches.indices.contains(currentMatchIndex)) {
-                     matches[currentMatchIndex].location.label
-                } else {
-                     "Preview"
-                }
-            }
-            
+
             val scrollState = rememberScrollState()
 
             val annotatedString = remember(content, matches, currentMatchIndex) {
-                 buildAnnotatedString {
+                buildAnnotatedString {
                     append(content)
                     // Highlighting
                     if (matches.isNotEmpty()) {
                         val currentMatch = matches.getOrNull(currentMatchIndex)
-                         // Only highlight matches that belong to the SAME location/content
+                        // Only highlight matches that belong to the SAME location/content
                         matches.filter { it.location == currentMatch?.location }.forEach { match ->
                             addStyle(
                                 style = SpanStyle(
-                                    background = if (match == currentMatch) Color.Red.copy(alpha = 0.5f) else Color.Yellow.copy(alpha = 0.3f),
+                                    background = if (match == currentMatch) Color.Red.copy(alpha = 0.5f) else Color.Yellow.copy(
+                                        alpha = 0.3f
+                                    ),
                                     color = if (match == currentMatch) Color.White else Color.Black
                                 ),
                                 start = match.start,
@@ -145,7 +151,7 @@ internal fun NetworkSearchPreviewView(
                 if (matches.isNotEmpty()) {
                     val match = matches.getOrNull(currentMatchIndex)
                     if (match != null) {
-                         layoutResult?.let { layout ->
+                        layoutResult?.let { layout ->
                             // Ensure the offset is valid for the current content
                             if (match.start < layout.layoutInput.text.length) {
                                 val line = layout.getLineForOffset(match.start)
@@ -156,28 +162,19 @@ internal fun NetworkSearchPreviewView(
                     }
                 }
             }
-            
-            Column {
-                 Text(
-                    text = locationLabel,
-                    style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.primary,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                )
-                
-                Text(
-                    text = annotatedString,
-                    style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                    color = FloconTheme.colorPalette.onSurface,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(16.dp),
-                    onTextLayout = {
-                        layoutResult = it
-                    }
-                )
-            }
+
+            Text(
+                text = annotatedString,
+                style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                color = FloconTheme.colorPalette.onSurface,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(16.dp),
+                onTextLayout = {
+                    layoutResult = it
+                }
+            )
         }
     }
 }
