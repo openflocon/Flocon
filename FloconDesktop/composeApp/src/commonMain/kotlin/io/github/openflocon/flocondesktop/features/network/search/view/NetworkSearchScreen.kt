@@ -136,7 +136,7 @@ private fun NetworkSearchScreen(
                     modifier = Modifier.weight(1f).fillMaxWidth()
                 ) {
                     val listState = rememberLazyListState()
-                    val scgit rollAdapter = rememberFloconScrollbarAdapter(listState)
+                    val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
                     LazyColumn(
                         state = listState,
