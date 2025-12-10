@@ -24,6 +24,11 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAct
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkItemView
 import io.github.openflocon.flocondesktop.features.network.search.NetworkSearchViewModel
 import io.github.openflocon.flocondesktop.features.network.search.model.NetworkSearchUiState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.flocondesktop.features.network.search.Match
+import io.github.openflocon.flocondesktop.features.network.search.view.components.NetworkSearchPreviewView
 import io.github.openflocon.flocondesktop.features.network.search.view.components.ScopeChipsView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
@@ -38,13 +43,25 @@ fun NetworkSearchScreen() {
     val viewModel = koinViewModel<NetworkSearchViewModel>()
     val query by viewModel.query
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val selectedRequestId by viewModel.selectedRequestId.collectAsStateWithLifecycle()
+    val selectedRequest by viewModel.selectedRequest.collectAsStateWithLifecycle()
+    val matches by viewModel.matches.collectAsStateWithLifecycle()
+    val currentMatchIndex by viewModel.currentMatchIndex.collectAsStateWithLifecycle()
 
     NetworkSearchScreen(
         query = query,
         uiState = uiState,
+        selectedRequestId = selectedRequestId,
+        selectedRequest = selectedRequest,
+        matches = matches,
+        currentMatchIndex = currentMatchIndex,
         onQueryChanged = viewModel::onQueryChanged,
         onNavigateToDetail = viewModel::onNavigateToDetail,
         onScopeToggled = viewModel::onScopeToggled,
+        onSelectRequest = viewModel::onSelectRequest,
+        onClosePreview = viewModel::onClosePreview,
+        onNextMatch = viewModel::onNextMatch,
+        onPrevMatch = viewModel::onPrevMatch,
     )
 }
 
@@ -54,6 +71,14 @@ private fun NetworkSearchScreen(
     onQueryChanged: (String) -> Unit,
     onScopeToggled: (SearchScope) -> Unit,
     uiState: NetworkSearchUiState,
+    selectedRequestId: String?,
+    selectedRequest: FloconNetworkCallDomainModel?,
+    matches: List<Match>,
+    currentMatchIndex: Int,
+    onNextMatch: () -> Unit,
+    onPrevMatch: () -> Unit,
+    onSelectRequest: (String) -> Unit,
+    onClosePreview: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
 ) {
     FloconSurface(
@@ -102,25 +127,66 @@ private fun NetworkSearchScreen(
                 }
             }
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                contentPadding = PaddingValues(all = 16.dp),
-            ) {
-                items(uiState.results) { item ->
-                    NetworkItemView(
-                        state = item,
-                        selected = false,
-                        multiSelect = false,
-                        multiSelected = false,
-                        onAction = { action ->
-                            if (action is NetworkAction.SelectRequest) {
-                                onNavigateToDetail(action.id)
-                            } else if (action is NetworkAction.DoubleClicked) {
-                                onNavigateToDetail(action.item.uuid)
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                if (selectedRequestId != null && selectedRequest != null) {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        LazyColumn(
+                            modifier = Modifier.weight(0.5f).fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            contentPadding = PaddingValues(all = 16.dp),
+                        ) {
+                            items(uiState.results) { item ->
+                                NetworkItemView(
+                                    state = item,
+                                    selected = item.uuid == selectedRequestId,
+                                    multiSelect = false,
+                                    multiSelected = false,
+                                    onAction = { action ->
+                                        if (action is NetworkAction.SelectRequest) {
+                                            onSelectRequest(action.id)
+                                        } else if (action is NetworkAction.DoubleClicked) {
+                                            onNavigateToDetail(action.item.uuid)
+                                        }
+                                    }
+                                )
                             }
                         }
-                    )
+                        
+                        // Divider
+                        Box(Modifier.fillMaxWidth().height(1.dp).background(FloconTheme.colorPalette.tertiary))
+                        
+                        NetworkSearchPreviewView(
+                            request = selectedRequest,
+                            matches = matches,
+                            currentMatchIndex = currentMatchIndex,
+                            onNextMatch = onNextMatch,
+                            onPrevMatch = onPrevMatch,
+                            onClose = onClosePreview,
+                            modifier = Modifier.weight(0.5f).fillMaxWidth()
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        contentPadding = PaddingValues(all = 16.dp),
+                    ) {
+                        items(uiState.results) { item ->
+                            NetworkItemView(
+                                state = item,
+                                selected = false, // No selection in basic view? or maintain selection?
+                                multiSelect = false,
+                                multiSelected = false,
+                                onAction = { action ->
+                                    if (action is NetworkAction.SelectRequest) {
+                                        onSelectRequest(action.id)
+                                    } else if (action is NetworkAction.DoubleClicked) {
+                                        onNavigateToDetail(action.item.uuid)
+                                    }
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
