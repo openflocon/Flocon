@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.features.crashreporter
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.common.DispatcherProvider

@@ -2,6 +2,8 @@
 
 package io.github.openflocon.flocondesktop.features.network
 
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.scene.DialogSceneStrategy
 import io.github.openflocon.domain.settings.repository.SettingsRepository
@@ -11,8 +13,10 @@ import io.github.openflocon.flocondesktop.features.network.body.model.NetworkBod
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailScreen
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
+import io.github.openflocon.flocondesktop.features.network.search.view.NetworkSearchScreen
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.PanelRoute
+import io.github.openflocon.navigation.WindowRoute
 import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import kotlinx.serialization.Serializable
@@ -40,6 +44,11 @@ internal sealed interface NetworkRoutes : FloconRoute {
     ) : NetworkRoutes
 
     @Serializable
+    data object DeepSearch : NetworkRoutes, WindowRoute {
+        override val singleTopKey = "deepsearch"
+    }
+
+    @Serializable
     data class JsonDetail(
         val json: String,
         val id: String = Uuid.random().toString()
@@ -59,7 +68,8 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
             onPin = {
                 val repository = KoinPlatform.getKoin().get<SettingsRepository>()
 
-                repository.networkSettings = repository.networkSettings.copy(pinnedDetails = true)
+                repository.networkSettings =
+                    repository.networkSettings.copy(pinnedDetails = true)
             }
         )
     ) {
@@ -83,5 +93,15 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
         NetworkBodyWindow(
             body = NetworkBodyDetailUi(text = it.json)
         )
+    }
+    entry<NetworkRoutes.DeepSearch>(
+        metadata = WindowSceneStrategy.window(
+            size = DpSize(
+                width = 1200.0.dp,
+                height = 800.0.dp
+            )
+        )
+    ) {
+        NetworkSearchScreen()
     }
 }

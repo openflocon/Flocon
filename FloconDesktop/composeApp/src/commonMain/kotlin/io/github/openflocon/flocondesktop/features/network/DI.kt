@@ -10,6 +10,7 @@ import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBod
 import io.github.openflocon.flocondesktop.features.network.mock.NetworkMocksViewModel
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ExportMocksProcessor
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ImportMocksProcessor
+import io.github.openflocon.flocondesktop.features.network.search.NetworkSearchViewModel
 import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockViewModel
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import org.koin.core.module.dsl.factoryOf
@@ -32,4 +33,5 @@ internal val networkModule = module {
 
     viewModelOf(::BadQualityNetworkViewModel)
     viewModelOf(::NetworkWebsocketMockViewModel)
+    viewModelOf(::NetworkSearchViewModel)
 }

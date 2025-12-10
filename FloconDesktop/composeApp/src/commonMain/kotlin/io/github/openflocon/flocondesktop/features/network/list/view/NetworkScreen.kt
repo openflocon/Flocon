@@ -18,12 +18,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ManageSearch
 import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.filled.ManageSearch
+import androidx.compose.material.icons.filled.ScreenSearchDesktop
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.outlined.Upgrade
 import androidx.compose.material.icons.outlined.Upload
@@ -48,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
@@ -166,6 +171,15 @@ fun NetworkScreen(
                             true
                         }
 
+                        Key.F -> {
+                            if (event.isMetaPressed) {
+                                onAction(NetworkAction.OpenDeepSearch)
+                                true
+                            } else {
+                                false
+                            }
+                        }
+
                         else -> false
                     }
                 }
@@ -181,6 +195,11 @@ fun NetworkScreen(
                     )
                 },
                 actions = {
+                    FloconIconButton(
+                        imageVector = Icons.AutoMirrored.Filled.ManageSearch,
+                        onClick = { onAction(NetworkAction.OpenDeepSearch) },
+                        tooltip = "Deep Search"
+                    )
                     FloconIconToggleButton(
                         value = uiState.filterState.hasMocks,
                         tooltip = "Mocks",

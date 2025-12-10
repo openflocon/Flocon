@@ -108,6 +108,18 @@ fun FloconNetworkCallDomainModel.responseByteSizeFormatted(): String? = when (th
     null -> null
 }
 
+fun FloconNetworkCallDomainModel.responseHeaders(): Map<String, String>? = when (this.response) {
+    is FloconNetworkCallDomainModel.Response.Failure -> null
+    is FloconNetworkCallDomainModel.Response.Success -> this.response.headers
+    null -> null
+}
+
+fun FloconNetworkCallDomainModel.responseBody(): String? = when (this.response) {
+    is FloconNetworkCallDomainModel.Response.Failure -> null
+    is FloconNetworkCallDomainModel.Response.Success -> this.response.body
+    null -> null
+}
+
 fun FloconNetworkCallDomainModel.Response.getContentType(): String? = when (this) {
     is FloconNetworkCallDomainModel.Response.Failure -> null
     is FloconNetworkCallDomainModel.Response.Success -> this.contentType

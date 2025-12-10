@@ -1,6 +1,8 @@
 package io.github.openflocon.library.designsystem.components
 
+import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.ScrollbarStyle
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
@@ -20,5 +22,6 @@ expect fun rememberFloconScrollbarAdapter(scrollState: LazyGridState): FloconScr
 @Composable
 expect fun FloconVerticalScrollbar(
     adapter: FloconScrollAdapter,
-    modifier: Modifier = Modifier
+    style: ScrollbarStyle = LocalScrollbarStyle.current,
+    modifier: Modifier = Modifier,
 )
