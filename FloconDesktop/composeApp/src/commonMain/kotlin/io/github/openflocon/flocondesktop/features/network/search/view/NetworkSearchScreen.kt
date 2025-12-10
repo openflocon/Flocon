@@ -129,6 +129,16 @@ private fun NetworkSearchScreen(
                         true
                     }
 
+                    Key.DirectionRight -> {
+                        onNextMatch()
+                        true
+                    }
+
+                    Key.DirectionLeft -> {
+                        onPrevMatch()
+                        true
+                    }
+
                     else -> false
                 }
             },
