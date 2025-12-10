@@ -4,7 +4,10 @@ package io.github.openflocon.navigation.scene
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.rememberWindowState
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
@@ -26,8 +29,18 @@ data class WindowScene(
     override val entries: List<NavEntry<FloconRoute>> = listOf(entry)
 
     override val content: @Composable (() -> Unit) = {
+        val width = entry.metadata[WindowSceneStrategy.SIZE_WIDTH] as? Number
+        val height = entry.metadata[WindowSceneStrategy.SIZE_HEIGHT] as? Number
+        val size = if (width != null && height != null) {
+            DpSize(width.toInt().dp, height.toInt().dp)
+        } else null
+
+        val state = rememberWindowState(
+            size = size ?: DpSize(800.dp, 600.dp),
+        )
         Window(
-            onCloseRequest = onBack
+            onCloseRequest = onBack,
+            state = state,
         ) {
             entry.Content()
         }
@@ -52,7 +65,15 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
 
     companion object {
         private const val IS_WINDOW = "is_window"
+        internal const val SIZE_WIDTH = "SIZE_WIDTH"
+        internal const val SIZE_HEIGHT = "SIZE_HEIGHT"
 
-        fun window() = mapOf(IS_WINDOW to true)
+        fun window(size: DpSize? = null) = buildMap {
+            put(IS_WINDOW, true)
+            size?.let {
+                put(SIZE_WIDTH, it.width.value)
+                put(SIZE_HEIGHT, it.height.value)
+            }
+        }
     }
 }

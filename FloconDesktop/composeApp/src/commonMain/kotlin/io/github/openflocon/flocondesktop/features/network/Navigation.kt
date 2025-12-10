@@ -2,6 +2,8 @@
 
 package io.github.openflocon.flocondesktop.features.network
 
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.scene.DialogSceneStrategy
 import io.github.openflocon.domain.settings.repository.SettingsRepository
@@ -93,7 +95,12 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
         )
     }
     entry<NetworkRoutes.DeepSearch>(
-        metadata = WindowSceneStrategy.window()
+        metadata = WindowSceneStrategy.window(
+            size = DpSize(
+                width = 1200.0.dp,
+                height = 800.0.dp
+            )
+        )
     ) {
         NetworkSearchScreen()
     }
