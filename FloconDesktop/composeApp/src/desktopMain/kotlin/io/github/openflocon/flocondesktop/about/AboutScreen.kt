@@ -71,7 +71,7 @@ internal fun AboutScreen(
                     onClick = {
                         openInBrowser(URI.create("https://github.com/openflocon/Flocon"))
                     },
-                    containerColor = FloconTheme.colorPalette.secondary
+                    containerColor = FloconTheme.colorPalette.tertiary
                 ) {
                     Text(
                         text = "GitHub"
