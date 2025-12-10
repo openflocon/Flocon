@@ -48,6 +48,7 @@ internal class AppViewModel(
     private val restartAppUseCase: RestartAppUseCase,
     private val recordVideoDelegate: RecordVideoDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
+    private val startIosForwardUseCase: io.github.openflocon.domain.settings.usecase.StartIosForwardUseCase,
 ) : ViewModel(messagesServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -96,6 +97,7 @@ internal class AppViewModel(
                 while (isActive) {
                     // ensure we have the forward enabled
                     startAdbForwardUseCase()
+                    startIosForwardUseCase()
                     delay(1_500)
                 }
             }

@@ -111,7 +111,7 @@ fun main() {
         ) {
             CompositionLocalProvider(LocalEscapeHandlerStack provides handlers) {
                 window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
-                App()
+                App(platformSpecificModule = io.github.openflocon.flocondesktop.common.di.platformModule)
                 if (ACTIVATE_TRAY_NOTIFICATION) {
                     FloconTray()
                 }

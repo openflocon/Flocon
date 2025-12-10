@@ -13,6 +13,7 @@ import io.github.openflocon.data.local.dataLocalModule
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.domainModule
 import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUseCase
+import io.github.openflocon.domain.settings.usecase.StartIosForwardUseCase
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
 import io.github.openflocon.flocondesktop.app.AppScreen
 import io.github.openflocon.flocondesktop.app.di.appModule
@@ -29,12 +30,15 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 @Composable
-fun App() {
+fun App(
+    platformSpecificModule: org.koin.core.module.Module = org.koin.dsl.module { }
+) {
     ComposeFoundationFlags.isNewContextMenuEnabled = true
 
     KoinApplication(
         application = {
             modules(
+                platformSpecificModule,
                 commonModule,
                 appModule,
                 coreModule,
@@ -50,6 +54,7 @@ fun App() {
 //                    }
                     single { MainFloconNavigationState(NetworkRoutes.Main) }
                     singleOf(::AdbRepositoryImpl) bind AdbRepository::class
+                    singleOf(::StartIosForwardUseCase)
                 },
             )
         },
