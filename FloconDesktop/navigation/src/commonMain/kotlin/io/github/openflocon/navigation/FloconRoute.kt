@@ -7,5 +7,5 @@ interface FloconRoute : NavKey
 interface PanelRoute : NavKey
 
 interface WindowRoute : NavKey {
-    val singleTopKey : String?
+    val singleTopKey: String?
 }

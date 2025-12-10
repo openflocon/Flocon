@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.search
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
@@ -7,7 +8,11 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.SearchScope
+import io.github.openflocon.domain.network.models.responseBody
+import io.github.openflocon.domain.network.models.responseHeaders
+import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.search.SearchNetworkCallsUseCase
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
@@ -17,21 +22,16 @@ import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import org.koin.core.component.KoinComponent
-import androidx.compose.runtime.Immutable
-import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
-import io.github.openflocon.domain.network.models.responseBody
-import io.github.openflocon.domain.network.models.responseHeaders
-import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -41,18 +41,19 @@ class NetworkSearchViewModel(
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
-) : ViewModel(), KoinComponent {
+) : ViewModel(),
+    KoinComponent {
 
     private val _query = mutableStateOf("")
     val query = _query.asState()
-    private val _selectedScopes = MutableStateFlow(SearchScope.entries.toSet())
-    private val _loading = MutableStateFlow(false)
+    private val selectedScopes = MutableStateFlow(SearchScope.entries.toSet())
+    private val loading = MutableStateFlow(false)
 
     val uiState: StateFlow<NetworkSearchUiState> = combines(
         snapshotFlow { _query.value },
-        _selectedScopes,
+        selectedScopes,
         observeCurrentDeviceIdAndPackageNameUseCase(),
-        _loading
+        loading
     ).flatMapLatest { (query, scopes, deviceInfo, loading) ->
         flow {
             val results = searchNetworkCallsUseCase(query, scopes)
@@ -74,7 +75,7 @@ class NetworkSearchViewModel(
 
     fun onQueryChanged(query: String) {
         _query.value = query
-        _loading.value = true
+        loading.value = true
     }
 
     private val _selectedRequestId = MutableStateFlow<String?>(null)
@@ -156,7 +157,7 @@ class NetworkSearchViewModel(
                             matches.add(Match(it.range.first, it.range.last - it.range.first + 1, MatchLocation.ResponseBody, resBody))
                         }
                     }
-                    
+
                     matches
                 }
             }.collect {
@@ -199,14 +200,14 @@ class NetworkSearchViewModel(
     }
 
     fun onScopeToggled(scope: SearchScope) {
-        _selectedScopes.update { current ->
+        selectedScopes.update { current ->
             if (current.contains(scope)) {
                 current - scope
             } else {
                 current + scope
             }
         }
-        _loading.value = true
+        loading.value = true
     }
 }
 

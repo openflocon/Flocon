@@ -503,15 +503,16 @@ class NetworkViewModel(
                 .also { onClearMultiSelect() }
         }
     }
+
     @OptIn(ExperimentalUuidApi::class)
     private fun onDoubleClicked(action: NetworkAction.DoubleClicked) {
-        navigationState.navigate(NetworkRoutes.WindowDetail(
-            requestId = action.item.uuid,
-            windowKey = Uuid.random().toString(),
-        ))
+        navigationState.navigate(
+            NetworkRoutes.WindowDetail(
+                requestId = action.item.uuid,
+                windowKey = Uuid.random().toString(),
+            )
+        )
     }
-
-
 }
 
 private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters> = buildList {

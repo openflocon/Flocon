@@ -93,13 +93,13 @@ internal fun NetworkSearchPreviewView(
                 Spacer(Modifier.width(8.dp))
                 FloconIcon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack, // Left Arrow
-                    //contentDescription = "Previous Match",
+                    // contentDescription = "Previous Match",
                     modifier = Modifier.clickable { onPrevMatch() }
                 )
                 Spacer(Modifier.width(8.dp))
                 FloconIcon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowForward, // Right Arrow
-                    //contentDescription = "Next Match",
+                    // contentDescription = "Next Match",
                     modifier = Modifier.clickable { onNextMatch() }
                 )
             }
@@ -115,7 +115,7 @@ internal fun NetworkSearchPreviewView(
 
             FloconIcon(
                 imageVector = Icons.Outlined.Close,
-                //contentDescription = "Close Preview",
+                // contentDescription = "Close Preview",
                 modifier = Modifier.clickable { onClose() }
             )
         }

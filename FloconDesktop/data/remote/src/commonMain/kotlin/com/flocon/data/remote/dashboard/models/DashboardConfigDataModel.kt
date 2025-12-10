@@ -52,7 +52,6 @@ data class HtmlConfigDataModel(
     val value: String,
 )
 
-
 @Serializable
 data class MarkdownConfigDataModel(
     val label: String,
