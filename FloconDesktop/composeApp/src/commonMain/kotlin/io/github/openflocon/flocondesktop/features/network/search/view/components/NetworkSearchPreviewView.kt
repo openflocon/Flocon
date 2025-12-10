@@ -1,16 +1,19 @@
 package io.github.openflocon.flocondesktop.features.network.search.view.components
 
+import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
@@ -26,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
@@ -38,6 +42,8 @@ import io.github.openflocon.flocondesktop.features.network.search.Match
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 
 @Composable
 internal fun NetworkSearchPreviewView(
@@ -67,7 +73,7 @@ internal fun NetworkSearchPreviewView(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(vertical = 8.dp, horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -125,6 +131,7 @@ internal fun NetworkSearchPreviewView(
             }
 
             val scrollState = rememberScrollState()
+            val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
 
             val annotatedString = remember(content, matches, currentMatchIndex) {
                 buildAnnotatedString {
@@ -168,18 +175,36 @@ internal fun NetworkSearchPreviewView(
                 }
             }
 
-            SelectionContainer {
-                Text(
-                    text = annotatedString,
-                    style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                    color = FloconTheme.colorPalette.onSurface,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(16.dp),
-                    onTextLayout = {
-                        layoutResult = it
-                    }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .padding(bottom = 8.dp)
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .background(FloconTheme.colorPalette.secondary)
+            ) {
+                SelectionContainer {
+                    Text(
+                        text = annotatedString,
+                        style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                        color = FloconTheme.colorPalette.onSurface,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(scrollState)
+                            .padding(16.dp),
+                        onTextLayout = {
+                            layoutResult = it
+                        }
+                    )
+                }
+                FloconVerticalScrollbar(
+                    adapter = scrollAdapter,
+                    style = LocalScrollbarStyle.current.copy(
+                        unhoverColor = FloconTheme.colorPalette.onSurface.copy(alpha = 0.2f),
+                        hoverColor = FloconTheme.colorPalette.onSurface.copy(alpha = 0.8f),
+                    ),
+                    modifier = Modifier.fillMaxHeight()
+                        .align(Alignment.TopEnd)
                 )
             }
         }

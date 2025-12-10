@@ -18,9 +18,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
@@ -85,6 +90,15 @@ private fun NetworkSearchScreen(
     onClosePreview: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
 ) {
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        try {
+            focusRequester.requestFocus()
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        }
+    }
+
     FloconSurface(
         modifier = Modifier
             .fillMaxSize(),
@@ -113,7 +127,9 @@ private fun NetworkSearchScreen(
                     },
                     containerColor = FloconTheme.colorPalette.secondary,
                     textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .focusRequester(focusRequester)
+                        .fillMaxWidth()
                 )
 
                 FlowRow(
