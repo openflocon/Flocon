@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
@@ -168,6 +169,15 @@ fun NetworkScreen(
                                     onAction(NetworkAction.Down(it.uuid))
                                 }
                             true
+                        }
+
+                        Key.F -> {
+                            if (event.isMetaPressed) {
+                                onAction(NetworkAction.OpenDeepSearch)
+                                true
+                            } else {
+                                false
+                            }
                         }
 
                         else -> false
