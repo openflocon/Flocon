@@ -49,7 +49,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
         val floconNetworkPlugin = FloconApp.instance?.client?.networkPlugin
         val request: HttpRequestBuilder = context
 
-        if (floconNetworkPlugin == null || shouldLogCallback(request)) {
+        if (floconNetworkPlugin == null || !shouldLogCallback(request)) {
             request.attributes.put(FLOCON_SHOULD_LOG, false)
             proceed()
             return@intercept
