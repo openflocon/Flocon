@@ -35,6 +35,7 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.responseBody
 import io.github.openflocon.flocondesktop.features.network.search.Match
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIcon
 
 @Composable
@@ -58,6 +59,9 @@ internal fun NetworkSearchPreviewView(
         modifier = modifier
             .background(FloconTheme.colorPalette.primary)
     ) {
+        // Divider
+        FloconHorizontalDivider(Modifier.fillMaxWidth())
+
         // Toolbar
         Row(
             modifier = Modifier

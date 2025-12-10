@@ -19,20 +19,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.SearchScope
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkItemView
+import io.github.openflocon.flocondesktop.features.network.search.Match
 import io.github.openflocon.flocondesktop.features.network.search.NetworkSearchViewModel
 import io.github.openflocon.flocondesktop.features.network.search.model.NetworkSearchUiState
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.HorizontalDivider
-import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
-import io.github.openflocon.flocondesktop.features.network.search.Match
 import io.github.openflocon.flocondesktop.features.network.search.view.components.NetworkSearchPreviewView
 import io.github.openflocon.flocondesktop.features.network.search.view.components.ScopeChipsView
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
@@ -129,66 +125,39 @@ private fun NetworkSearchScreen(
                 }
             }
 
-            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                if (selectedRequestId != null && selectedRequest != null) {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        LazyColumn(
-                            modifier = Modifier.weight(0.5f).fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                            contentPadding = PaddingValues(all = 16.dp),
-                        ) {
-                            items(uiState.results) { item ->
-                                NetworkItemView(
-                                    state = item,
-                                    selected = item.uuid == selectedRequestId,
-                                    multiSelect = false,
-                                    multiSelected = false,
-                                    onAction = { action ->
-                                        if (action is NetworkAction.SelectRequest) {
-                                            onSelectRequest(action.id)
-                                        } else if (action is NetworkAction.DoubleClicked) {
-                                            onNavigateToDetail(action.item.uuid)
-                                        }
-                                    }
-                                )
+            Column(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    contentPadding = PaddingValues(all = 16.dp),
+                ) {
+                    items(uiState.results) { item ->
+                        NetworkItemView(
+                            state = item,
+                            selected = item.uuid == selectedRequestId,
+                            multiSelect = false,
+                            multiSelected = false,
+                            onAction = { action ->
+                                if (action is NetworkAction.SelectRequest) {
+                                    onSelectRequest(action.id)
+                                } else if (action is NetworkAction.DoubleClicked) {
+                                    onNavigateToDetail(action.item.uuid)
+                                }
                             }
-                        }
-                        
-                        // Divider
-                        FloconHorizontalDivider(Modifier.fillMaxWidth())
-                        
-                        NetworkSearchPreviewView(
-                            request = selectedRequest,
-                            matches = matches,
-                            currentMatchIndex = currentMatchIndex,
-                            onNextMatch = onNextMatch,
-                            onPrevMatch = onPrevMatch,
-                            onClose = onClosePreview,
-                            modifier = Modifier.weight(0.5f).fillMaxWidth()
                         )
                     }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        contentPadding = PaddingValues(all = 16.dp),
-                    ) {
-                        items(uiState.results) { item ->
-                            NetworkItemView(
-                                state = item,
-                                selected = false, // No selection in basic view? or maintain selection?
-                                multiSelect = false,
-                                multiSelected = false,
-                                onAction = { action ->
-                                    if (action is NetworkAction.SelectRequest) {
-                                        onSelectRequest(action.id)
-                                    } else if (action is NetworkAction.DoubleClicked) {
-                                        onNavigateToDetail(action.item.uuid)
-                                    }
-                                }
-                            )
-                        }
-                    }
+                }
+
+                if (selectedRequestId != null && selectedRequest != null) {
+                    NetworkSearchPreviewView(
+                        request = selectedRequest,
+                        matches = matches,
+                        currentMatchIndex = currentMatchIndex,
+                        onNextMatch = onNextMatch,
+                        onPrevMatch = onPrevMatch,
+                        onClose = onClosePreview,
+                        modifier = Modifier.weight(1f).fillMaxWidth()
+                    )
                 }
             }
         }
