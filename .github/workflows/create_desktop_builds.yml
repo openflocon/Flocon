@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-13   # runner Intel (x64)
+          - os: macos-15   # runner Intel (x64)
             arch: x64
             jdk_url: "https://corretto.aws/downloads/latest/amazon-corretto-17-x64-macos-jdk.pkg"
           - os: macos-latest 
@@ -55,12 +55,12 @@ jobs:
           path: FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg
 
       - name: Rename macOS x64 dmg
-        if: matrix.os == 'macos-13'
+        if: matrix.os == 'macos-15'
         run: |
           mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg FloconDesktop/composeApp/build/compose/binaries/main/dmg/macos-x64.dmg
 
       - name: Upload macOS x64 artifact
-        if: matrix.os == 'macos-13'
+        if: matrix.os == 'macos-15'
         uses: actions/upload-artifact@v4
         with:
           name: macos-x64-dmg
