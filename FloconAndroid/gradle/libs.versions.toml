@@ -31,6 +31,7 @@ processPhoenix = "3.0.0"
 sqlite = "2.5.2"
 sqliteJdbc = "3.50.3.0"
 buildconfig = "5.6.8"
+brotli = "0.1.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +39,7 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+brotli-dec = { module = "org.brotli:dec", version.ref = "brotli" }
 apollo-http-okhttprealization = { module = "com.apollographql.apollo:apollo-http-okhttprealization", version.ref = "apollo" }
 apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
