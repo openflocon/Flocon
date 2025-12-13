@@ -32,3 +32,15 @@ and more — without needing root access or tedious ADB commands.
 It’s designed for modern multiplatform development, accelerating debugging, QA, and iteration cycles.
 
 <img width="1294" height="837" alt="Screenshot 2025-09-12 at 15 39 45" src="https://github.com/user-attachments/assets/3d585adb-6441-4cdb-ad25-69d771ad4ff6" />
+
+---
+
+## 🚀 What Can Flocon Do?
+
+Once your device (Android / iOS / Desktop) is connected and your app includes the Flocon SDK, you can use the desktop companion app to access the following features:
+
+## ✨ Upcoming features 
+
+Flocon is still evolving, next features : 
+
+- Preview & Download files
