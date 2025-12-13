@@ -181,7 +181,13 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
         val floconCallResponse = FloconNetworkResponse(
             httpCode = response.status.value,
             contentType = contentType,
-            body = if(isImage) null else originalBodyBytes.decodeToString(),
+            body = if (isImage) null else {
+                if (responseHeadersMap.isBrotli()) {
+                    decodeNetworkBody(originalBodyBytes, responseHeadersMap)
+                } else {
+                    originalBodyBytes.decodeToString()
+                }
+            },
             headers = responseHeadersMap,
             size = responseSize,
             grpcStatus = null,
