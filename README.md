@@ -667,9 +667,9 @@ Thanks to these amazing people for making Flocon better every day!
   </tr>
   <tr>
     <td align="center">
-      <a href="https://github.com/Flakebi">
-        <img src="https://github.com/Flakebi.png" width="100px;" alt="Sebastian Neubauer"/><br />
-        <sub><b>Flakebi</b></sub>
+      <a href="https://github.com/snappdevelopment">
+        <img src="https://github.com/snappdevelopment.png" width="100px;" alt="Sebastian Neubauer"/><br />
+        <sub><b>snappdevelopment</b></sub>
       </a>
     </td>
     <td align="center">

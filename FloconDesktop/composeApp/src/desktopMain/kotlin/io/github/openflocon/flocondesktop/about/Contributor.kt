@@ -44,8 +44,8 @@ internal val contributors = listOf(
     Contributor(
         firstName = "Sebastian",
         lastName = "Neubauer",
-        profile = "https://github.com/Flakebi",
-        image = "https://github.com/Flakebi.png"
+        profile = "https://github.com/snappdevelopment",
+        image = "https://github.com/snappdevelopment.png"
     ),
     Contributor(
         firstName = "Simon",
