@@ -91,11 +91,10 @@ internal fun extractResponseBodyInfo(
         }
 
         bodyString = buffer.clone().readString(charset)
-        bodySize = buffer.size
     } else {
         bodyString = buffer.clone().readString(charset)
-        bodySize = buffer.size
     }
+    bodySize = buffer.size
 
     return bodyString to bodySize
 }
@@ -131,12 +130,16 @@ internal fun extractRequestBodyInfo(
     return bodyString to bodySize
 }
 
+private fun Map<String, String>.getContentEncoding() : String? {
+    return get("Content-Encoding") ?: get("content-encoding")
+}
+
 private fun Map<String, String>.isGzipped(): Boolean {
-    val contentEncoding = get("Content-Encoding") ?: get("content-encoding") ?: return false
+    val contentEncoding = getContentEncoding() ?: return false
     return "gzip".equals(contentEncoding, ignoreCase = true)
 }
 
 private fun Map<String, String>.isBrotli(): Boolean {
-    val contentEncoding = get("Content-Encoding") ?: get("content-encoding") ?: return false
+    val contentEncoding = getContentEncoding() ?: return false
     return "br".equals(contentEncoding, ignoreCase = true)
 }
