@@ -14,4 +14,6 @@ sealed interface NetworkDetailAction {
         data class Request(val item: NetworkDetailViewState) : OpenBodyExternally
         data class Response(val item: NetworkDetailViewState.Response.Success) : OpenBodyExternally
     }
+
+    data object ShareAsMarkdown : NetworkDetailAction
 }
