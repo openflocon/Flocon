@@ -76,6 +76,7 @@ internal fun extractResponseBodyInfo(
     }
 
     val charset = responseBody.contentType().charsetOrUtf8()
+    bodySize = buffer.size
     if (responseHeaders.isGzipped()) {
         GzipSource(buffer.clone()).use { gzippedResponseBody ->
             buffer = Buffer()
@@ -83,7 +84,6 @@ internal fun extractResponseBodyInfo(
         }
 
         bodyString = buffer.clone().readString(charset)
-        bodySize = buffer.size
     } else if (responseHeaders.isBrotli()) {
         BrotliInputStream(buffer.clone().inputStream()).source().buffer().use { brotliResponseBody ->
             buffer = Buffer()
@@ -94,7 +94,6 @@ internal fun extractResponseBodyInfo(
     } else {
         bodyString = buffer.clone().readString(charset)
     }
-    bodySize = buffer.size
 
     return bodyString to bodySize
 }
