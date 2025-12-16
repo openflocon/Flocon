@@ -110,14 +110,13 @@ internal fun extractRequestBodyInfo(
     var buffer = Buffer()
     requestBody.writeTo(buffer)
 
+    bodySize = buffer.size
     if (requestHeaders.isGzipped()) {
-        bodySize = buffer.size
         GzipSource(buffer).use { gzippedResponseBody ->
             buffer = Buffer()
             buffer.writeAll(gzippedResponseBody)
         }
     } else if (requestHeaders.isBrotli()) {
-        bodySize = buffer.size
         BrotliInputStream(buffer.inputStream()).source().buffer().use { brotliResponseBody ->
             buffer = Buffer()
             buffer.writeAll(brotliResponseBody)
