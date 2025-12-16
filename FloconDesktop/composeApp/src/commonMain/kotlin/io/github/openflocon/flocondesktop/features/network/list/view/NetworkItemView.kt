@@ -237,6 +237,10 @@ private fun contextualActions(
                     label = "Replay",
                     onClick = { onActionCallback(NetworkAction.Replay(state)) }
                 )
+                item(
+                    label = "Share as Markdown",
+                    onClick = { onActionCallback(NetworkAction.ShareAsMarkdown(state)) }
+                )
             }
             item(label = "Select Item", onClick = { onActionCallback(NetworkAction.SelectLine(state.uuid, selected = true)) })
             separator()

@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.common.ui
 
 import co.touchlab.kermit.Logger
+import io.github.openflocon.domain.common.JsonFormatter
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
@@ -36,4 +37,12 @@ object JsonPrettyPrinter {
             jsonString
         }
     }
+}
+
+
+class JsonFormatterImpl : JsonFormatter {
+    override fun toPrettyJson(text: String) : String {
+        return JsonPrettyPrinter.prettyPrint(text)
+    }
+
 }

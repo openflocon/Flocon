@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.ScreenSearchDesktop
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Search
@@ -216,6 +217,15 @@ fun NetworkScreen(
                     ) {
                         FloconIcon(
                             imageVector = Icons.Outlined.SignalWifiStatusbarConnectedNoInternet4
+                        )
+                    }
+                    FloconIconToggleButton(
+                        value = uiState.filterState.displayOldSessions,
+                        tooltip = "Display old sessions",
+                        onValueChange = { onAction(NetworkAction.UpdateDisplayOldSessions(it)) }
+                    ) {
+                        FloconIcon(
+                            imageVector = Icons.Outlined.History
                         )
                     }
                     FloconIconButton(
