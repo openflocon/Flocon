@@ -11,3 +11,10 @@ sealed interface FilePathDomainModel {
         val absolutePath: String,
     ) : FilePathDomainModel
 }
+
+val FilePathDomainModel.path: String
+    get() = when (this) {
+        is FilePathDomainModel.Constants.CachesDir -> "caches"
+        is FilePathDomainModel.Constants.FilesDir -> "files"
+        is FilePathDomainModel.Real -> absolutePath
+    }

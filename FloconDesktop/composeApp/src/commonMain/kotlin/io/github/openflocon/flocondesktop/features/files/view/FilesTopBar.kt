@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.FolderOpen
@@ -36,6 +37,10 @@ fun FilesTopBar(
     onBack: () -> Unit,
     onDeleteContent: () -> Unit,
     onRefresh: () -> Unit,
+    onToggleMultiSelection: () -> Unit,
+    onDeleteSelectedFiles: () -> Unit,
+    multiSelectionEnabled: Boolean,
+    selectedCount: Int,
     updateWithFoldersSize: (Boolean) -> Unit,
     filterBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
@@ -57,7 +62,7 @@ fun FilesTopBar(
                 )
             }
             Text(
-                text = current?.name.orEmpty(),
+                text = if (multiSelectionEnabled && selectedCount > 0) "$selectedCount selected" else current?.name.orEmpty(),
                 style = FloconTheme.typography.bodyMedium,
                 maxLines = 1,
                 color = FloconTheme.colorPalette.onPrimary,
@@ -65,6 +70,16 @@ fun FilesTopBar(
                     .weight(1f)
                     .padding(vertical = 4.dp, horizontal = 8.dp),
             )
+
+            FloconIconToggleButton(
+                value = multiSelectionEnabled,
+                onValueChange = { onToggleMultiSelection() },
+                tooltip = "Multi-Selection", // TODO resource
+            ) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.CheckCircle
+                )
+            }
 
             FloconIconToggleButton(
                 value = options.withFoldersSize,
@@ -78,11 +93,22 @@ fun FilesTopBar(
             filterBar()
         },
         actions = {
-            FloconIconButton(
-                imageVector = Icons.Outlined.Delete,
-                enabled = isDirectory,
-                onClick = onDeleteContent,
-            )
+            if (multiSelectionEnabled && selectedCount > 0) {
+                 FloconIconButton(
+                    imageVector = Icons.Outlined.Delete,
+                    enabled = true,
+                    onClick = onDeleteSelectedFiles,
+                    tooltip = "Delete Selected"
+                )
+            } else {
+                FloconIconButton(
+                    imageVector = Icons.Outlined.Delete,
+                    enabled = isDirectory,
+                    onClick = onDeleteContent,
+                    tooltip = "Delete Content"
+                )
+            }
+            
             FloconIconButton(
                 imageVector = Icons.Outlined.Refresh,
                 enabled = isDirectory,
@@ -101,6 +127,10 @@ private fun FilesTopBarPreview_noParent() {
             onBack = {},
             onDeleteContent = {},
             onRefresh = {},
+            onToggleMultiSelection = {},
+            onDeleteSelectedFiles = {},
+            multiSelectionEnabled = false,
+            selectedCount = 0,
             filterBar = {},
             modifier = Modifier.fillMaxWidth(),
             updateWithFoldersSize = {},
@@ -127,6 +157,10 @@ private fun FilesTopBarPreview() {
             onBack = {},
             onDeleteContent = {},
             onRefresh = {},
+            onToggleMultiSelection = {},
+            onDeleteSelectedFiles = {},
+            multiSelectionEnabled = true,
+            selectedCount = 2,
             filterBar = {
                 Button(onClick = {}) {
                     Text(text = "Filter")

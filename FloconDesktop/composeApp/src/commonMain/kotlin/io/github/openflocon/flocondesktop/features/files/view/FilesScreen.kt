@@ -26,6 +26,7 @@ import io.github.openflocon.flocondesktop.features.files.FilesViewModel
 import io.github.openflocon.flocondesktop.features.files.model.FileColumnUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
+import io.github.openflocon.flocondesktop.features.files.model.path
 import io.github.openflocon.flocondesktop.features.files.model.previewFilesStateUiModel
 import io.github.openflocon.flocondesktop.features.files.view.header.FilesListHeader
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
@@ -60,7 +61,10 @@ fun FilesScreen(modifier: Modifier = Modifier) {
         filterText = filterText,
         clickOnSort = viewModel::clickOnSort,
         onFilterTextChanged = viewModel::onFilterTextChanged,
-        updateWithFoldersSize = viewModel::updateWithFoldersSize
+        updateWithFoldersSize = viewModel::updateWithFoldersSize,
+        onToggleMultiSelection = viewModel::toggleMultiSelection,
+        onDeleteSelectedFiles = viewModel::deleteSelectedFiles,
+        onSelectionChange = viewModel::onFileSelectionChanged,
     )
 }
 
@@ -74,6 +78,9 @@ private fun FilesScreen(
     onDeleteContent: () -> Unit,
     onFileClicked: (FileUiModel) -> Unit,
     updateWithFoldersSize: (Boolean) -> Unit,
+    onToggleMultiSelection: () -> Unit,
+    onDeleteSelectedFiles: () -> Unit,
+    onSelectionChange: (FileUiModel, Boolean, Boolean) -> Unit,
     onContextualAction: (FileUiModel, FileUiModel.ContextualAction.Action) -> Unit,
     clickOnSort: (FileColumnUiModel, SortedByUiModel) -> Unit,
     modifier: Modifier = Modifier,
@@ -100,6 +107,10 @@ private fun FilesScreen(
             },
             onDeleteContent = onDeleteContent,
             updateWithFoldersSize = updateWithFoldersSize,
+            onToggleMultiSelection = onToggleMultiSelection,
+            onDeleteSelectedFiles = onDeleteSelectedFiles,
+            multiSelectionEnabled = state.multiSelection.enabled,
+            selectedCount = state.multiSelection.selectedPaths.size,
         )
         Column(
             modifier = Modifier
@@ -128,6 +139,11 @@ private fun FilesScreen(
                             onClick = onFileClicked,
                             modifier = Modifier.fillMaxWidth(),
                             onContextualAction = onContextualAction,
+                            selected = state.multiSelection.selectedPaths.contains(item.path.path),
+                            selectionEnabled = state.multiSelection.enabled,
+                            onSelectionChange = { selected, shiftPressed ->
+                                onSelectionChange(item, selected, shiftPressed)
+                            }
                         )
                         if (index != state.files.lastIndex) {
                             HorizontalDivider(modifier = Modifier.fillMaxWidth())
@@ -154,11 +170,14 @@ private fun FilesScreenPreview() {
             onFileClicked = {},
             onRefresh = {},
             onDeleteContent = {},
+            updateWithFoldersSize = {},
+            onToggleMultiSelection = {},
+            onDeleteSelectedFiles = {},
+            onSelectionChange = { _, _, _ -> },
             onContextualAction = { _, _ -> },
             filterText = mutableStateOf(""),
             onFilterTextChanged = {},
             clickOnSort = { _, _ -> },
-            updateWithFoldersSize = {},
         )
     }
 }

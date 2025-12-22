@@ -9,10 +9,18 @@ data class FilesStateUiModel(
     val files: List<FileUiModel>,
     val headerState: FilesHeaderStateUiModel,
     val options: Options,
+    val multiSelection: MultiSelection = MultiSelection(),
 ) {
     @Immutable
     data class Options(
         val withFoldersSize: Boolean,
+    )
+
+    @Immutable
+    data class MultiSelection(
+        val enabled: Boolean = false,
+        val selectedPaths: Set<String> = emptySet(),
+        val lastSelectedPath: String? = null,
     )
 }
 

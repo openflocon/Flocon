@@ -13,6 +13,7 @@ import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
+import io.github.openflocon.domain.files.models.path
 import io.github.openflocon.domain.files.usecase.DeleteFileUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.DownloadFileUseCase
@@ -71,6 +72,8 @@ class FilesViewModel(
         )
     )
 
+    private val multiSelection = MutableStateFlow(FilesStateUiModel.MultiSelection())
+
     private fun defaultValue() = FilesStateUiModel(
         current = null,
         backStack = emptyList(),
@@ -118,9 +121,10 @@ class FilesViewModel(
         combines(
             selectedFile,
             sortedBy,
-            options
+            options,
+            multiSelection,
         )
-            .flatMapLatest { (selectedFile, sortedBy, options) ->
+            .flatMapLatest { (selectedFile, sortedBy, options, multiSelection) ->
                 if (selectedFile == null) {
                     flowOf(defaultValue())
                 } else {
@@ -152,7 +156,8 @@ class FilesViewModel(
                                     sorted
                                 )
                             ),
-                            options = options
+                            options = options,
+                            multiSelection = multiSelection,
                         )
                     }
                 }
@@ -323,5 +328,93 @@ class FilesViewModel(
     }
 
     fun onNotVisible() {
+    }
+
+    fun toggleMultiSelection() {
+        multiSelection.update {
+            it.copy(
+                enabled = !it.enabled,
+                selectedPaths = emptySet(),
+                lastSelectedPath = null
+            )
+        }
+    }
+
+    fun clearSelection() {
+        multiSelection.update {
+            it.copy(
+                selectedPaths = emptySet(),
+                lastSelectedPath = null
+            )
+        }
+    }
+
+    /* TODO
+    fun selectAll() {
+        val allPaths = state.value.files.map { it.path.toDomain().path }.toSet()
+        multiSelection.update {
+            it.copy(
+                selectedPaths = allPaths,
+                lastSelectedPath = null
+            )
+        }
+    }
+     */
+
+
+    fun onFileSelectionChanged(file: FileUiModel, selected: Boolean, shiftPressed: Boolean) {
+        multiSelection.update { currentSelection ->
+            if (shiftPressed && currentSelection.lastSelectedPath != null) {
+                // Range selection
+                val files = state.value.files
+                val lastIndex = files.indexOfFirst { it.path.toDomain().path == currentSelection.lastSelectedPath }
+                val currentIndex = files.indexOf(file)
+
+                if (lastIndex != -1 && currentIndex != -1) {
+                    val start = minOf(lastIndex, currentIndex)
+                    val end = maxOf(lastIndex, currentIndex)
+                    val rangePaths = files.subList(start, end + 1).map { it.path.toDomain().path }
+
+                    currentSelection.copy(
+                        selectedPaths = currentSelection.selectedPaths + rangePaths,
+                        lastSelectedPath = file.path.toDomain().path
+                    )
+                } else {
+                    currentSelection.copy(
+                        selectedPaths = if (selected) currentSelection.selectedPaths + file.path.toDomain().path else currentSelection.selectedPaths - file.path.toDomain().path,
+                        lastSelectedPath = if (selected) file.path.toDomain().path else currentSelection.lastSelectedPath
+                    )
+                }
+            } else {
+                // Single selection
+                currentSelection.copy(
+                    selectedPaths = if (selected) currentSelection.selectedPaths + file.path.toDomain().path else currentSelection.selectedPaths - file.path.toDomain().path,
+                    lastSelectedPath = if (selected) file.path.toDomain().path else currentSelection.lastSelectedPath
+                )
+            }
+        }
+    }
+
+    fun deleteSelectedFiles() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val parent = selectedFile.value?.current?.path ?: return@launch
+            val selectedPaths = multiSelection.value.selectedPaths
+            if (selectedPaths.isNotEmpty()) {
+                selectedPaths.forEach { pathString ->
+                    // We need to reconstruct domain model or find it from list.
+                    // Finding from list is safer to get correct type/model if needed,
+                    // but DeleteFileUseCase just needs FilePathDomainModel.
+                    // We used path string for ID, assuming it's unique and sufficient.
+                    // Ideally we should have kept FilePathDomainModel in set or map.
+                    // But re-creating FilePathDomainModel.Real/Constants from string is tricky if we don't know type.
+                    // Let's find it in the current list since we can only select visible files.
+                    val fileUi = state.value.files.find { it.path.toDomain().path == pathString }
+                    if (fileUi != null) {
+                        deleteFileUseCase(path = fileUi.path.toDomain(), parentPath = parent)
+                    }
+                }
+                clearSelection()
+            }
+        }
     }
 }

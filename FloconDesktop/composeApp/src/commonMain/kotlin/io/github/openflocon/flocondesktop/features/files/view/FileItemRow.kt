@@ -1,6 +1,9 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,8 +17,17 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isShiftPressed
+import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -25,13 +37,18 @@ import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
+@OptIn(ExperimentalComposeUiApi::class)
 fun FileItemRow(
     file: FileUiModel,
+    selected: Boolean,
+    selectionEnabled: Boolean,
+    onSelectionChange: (Boolean, Boolean) -> Unit, // selected, shiftPressed
     onClick: (FileUiModel) -> Unit,
     onContextualAction: (FileUiModel, FileUiModel.ContextualAction.Action) -> Unit,
     modifier: Modifier = Modifier,
@@ -49,12 +66,67 @@ fun FileItemRow(
             )
         },
     ) {
+        val interactionSource = remember { MutableInteractionSource() }
         Row(
             modifier = modifier
                 .clickable { onClick(file) }
                 .padding(vertical = 8.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            AnimatedVisibility(visible = selectionEnabled) {
+                Box(
+                    modifier = Modifier.padding(end = 16.dp)
+                        .pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    val event = awaitPointerEvent()
+                                    if (event.type == PointerEventType.Press && event.changes.first().pressed) {
+                                        val shiftPressed = event.keyboardModifiers.isShiftPressed
+                                        // We handle the click here for the checkbox area
+                                        // But FloconCheckbox might capture it?
+                                        // Let's rely on FloconCheckbox onCheckedChange if possible,
+                                        // but it doesn't give modifiers.
+                                        // So we wrap it.
+                                    }
+                                }
+                            }
+                        }
+                ) {
+                   // actually simpler: FloconCheckbox doesn't support modifiers in callback.
+                   // We can use a custom Clickable modifier that checks keys?
+                   // Or just use the Box wrapper for the click itself and ignore FloconCheckbox internal click?
+                   // FloconCheckbox usually consumes click.
+
+                   // Using a workaround: Wrap Checkbox in a Box that intercepts clicks?
+                   // No, let's just use FloconCheckbox and maybe we can use `LocalInputModeManager` or similar? No.
+                   // Let's use `createPointerInput` on the Checkbox to detect the modifier on Press
+                   // and store it in a generic variable, then use it in onCheckedChange?
+                   // A bit hacky.
+
+                   // Better approach for Desktop:
+                   // Use `onClick` with `PointerMatcher` if available, or `onPointerEvent`.
+                   // Let's try `PointerInput`.
+                }
+                
+                // Let's use a simpler approach:
+                // Provide a lambda that captures standard click, and use a separate modifier for Shift+Click on the checkbox area?
+                // Or: Make the checkbox not clickable (enabled=false?) and handle click on parent Box?
+                // No, checkbox visual state handles animation.
+
+                // OK, let's go with:
+                var shiftPressed by remember { mutableStateOf(false) }
+                
+                FloconCheckbox(
+                    checked = selected,
+                    onCheckedChange = { onSelectionChange(it, shiftPressed) },
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .onPointerEvent(PointerEventType.Press) {
+                            shiftPressed = it.keyboardModifiers.isShiftPressed
+                        }
+                )
+            }
+
             FloconIcon(
                 imageVector = file.icon,
                 modifier = Modifier.size(24.dp)
@@ -120,6 +192,9 @@ private fun FileItemRowPreview_folder() {
     FloconTheme {
         FileItemRow(
             file = file,
+            selected = false,
+            selectionEnabled = false,
+            onSelectionChange = { _, _ -> },
             onClick = {},
             onContextualAction = { _, _ -> },
         )
@@ -141,6 +216,9 @@ private fun FileItemRowPreview_file() {
     FloconTheme {
         FileItemRow(
             file = file,
+            selected = false,
+            selectionEnabled = true,
+            onSelectionChange = { _, _ -> },
             onClick = {},
             onContextualAction = { _, _ -> },
         )
@@ -163,6 +241,9 @@ private fun FileItemRowPreview() {
                         contextualActions = emptyList(),
                         dateFormatted = "2022-01-01 12:10",
                     ),
+                    selected = false,
+                    selectionEnabled = false,
+                    onSelectionChange = { _, _ -> },
                     onClick = {},
                     onContextualAction = { _, _ -> },
                 )
@@ -176,6 +257,9 @@ private fun FileItemRowPreview() {
                         contextualActions = emptyList(),
                         dateFormatted = "2022-01-01 12:10",
                     ),
+                    selected = true,
+                    selectionEnabled = true,
+                    onSelectionChange = { _, _ -> },
                     onClick = {},
                     onContextualAction = { _, _ -> },
                 )
