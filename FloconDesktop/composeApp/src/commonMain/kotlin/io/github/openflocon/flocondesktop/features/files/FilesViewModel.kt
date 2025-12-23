@@ -14,6 +14,7 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.usecase.DeleteFileUseCase
+import io.github.openflocon.domain.files.usecase.DeleteFilesUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.DownloadFileUseCase
 import io.github.openflocon.domain.files.usecase.ObserveFolderContentUseCase
@@ -28,6 +29,7 @@ import io.github.openflocon.flocondesktop.features.files.model.FileColumnUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FilesAction
 import io.github.openflocon.flocondesktop.features.files.model.FilesHeaderStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
@@ -48,6 +50,7 @@ class FilesViewModel(
     private val observeFolderContentUseCase: ObserveFolderContentUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val deleteFileUseCase: DeleteFileUseCase,
+    private val deleteFilesUseCase: DeleteFilesUseCase,
     private val downloadFileUseCase: DownloadFileUseCase,
     private val deleteFolderContentUseCase: DeleteFolderContentUseCase,
     private val refreshFolderContentUseCase: RefreshFolderContentUseCase,
@@ -59,6 +62,11 @@ class FilesViewModel(
     val filterText: State<String> = _filterText
 
     private val sortedBy = MutableStateFlow<FilesHeaderStateUiModel.SortedBy?>(null)
+
+    // Multi-selection state
+    private val _selecting = MutableStateFlow(false)
+    private val _multiSelectedPaths = MutableStateFlow<Set<String>>(emptySet())
+    private var _lastSelectedIndex: Int? = null
 
     private val options = observeWithFoldersSizeUseCase().map { withFoldersSize ->
         FilesStateUiModel.Options(
@@ -105,7 +113,12 @@ class FilesViewModel(
             sortedBy = sortedBy.value,
             totalSizeFormatted = null,
         ),
-        options = options.value
+        options = options.value,
+        isSelecting = _selecting.value,
+        multiSelectedPaths = _multiSelectedPaths.value,
+        selectingAll = false,
+        numberOfFiles = null,
+        canSelect = false,
     )
 
     private data class SelectedFile(
@@ -118,11 +131,13 @@ class FilesViewModel(
         combines(
             selectedFile,
             sortedBy,
-            options
+            options,
+            _selecting,
+            _multiSelectedPaths,
         )
-            .flatMapLatest { (selectedFile, sortedBy, options) ->
+            .flatMapLatest { (selectedFile, sortedBy, options, selecting, multiSelectedPaths) ->
                 if (selectedFile == null) {
-                    flowOf(defaultValue())
+                    flowOf(defaultValue().copy(isSelecting = selecting, multiSelectedPaths = multiSelectedPaths))
                 } else {
                     combines(
                         observeFolderContentUseCase(
@@ -145,6 +160,7 @@ class FilesViewModel(
                                 sorted
                                     ?: emptyList()
                                 ).map { it.toUi(options.withFoldersSize) },
+                            numberOfFiles = sorted?.size,
                             headerState = FilesHeaderStateUiModel(
                                 sortedBy = sortedBy,
                                 totalSizeFormatted = computeTotalSize(
@@ -152,7 +168,11 @@ class FilesViewModel(
                                     sorted
                                 )
                             ),
-                            options = options
+                            canSelect = true,
+                            options = options,
+                            isSelecting = selecting,
+                            multiSelectedPaths = multiSelectedPaths,
+                            selectingAll = multiSelectedPaths.isNotEmpty() && multiSelectedPaths.size == sorted?.size
                         )
                     }
                 }
@@ -200,7 +220,7 @@ class FilesViewModel(
         }
     }
 
-    fun onNavigateUp() {
+    private fun onNavigateUp() {
         selectedFile.update {
             if (it == null) {
                 it // no op
@@ -215,20 +235,22 @@ class FilesViewModel(
             }
         }
         _filterText.value = "" // clear
+        // Clear selection when navigating
+        onClearMultiSelect()
     }
 
-    fun onFilterTextChanged(value: String) {
+    private fun onFilterTextChanged(value: String) {
         _filterText.value = value
     }
 
-    fun updateWithFoldersSize(value: Boolean) {
+    private fun updateWithFoldersSize(value: Boolean) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             updateWithFoldersSizeUseCase(value)
             onRefresh() // then perform a refresh
         }
     }
 
-    fun onFileClicked(fileUiModel: FileUiModel) {
+    private fun onFileClicked(fileUiModel: FileUiModel) {
         val newCurrent = fileUiModel.toDomain()
         when (fileUiModel.type) {
             FileTypeUiModel.Folder -> {
@@ -245,6 +267,8 @@ class FilesViewModel(
                         )
                     }
                 }
+                // Clear selection when navigating into folder
+                onClearMultiSelect()
             }
 
             FileTypeUiModel.Image,
@@ -268,14 +292,14 @@ class FilesViewModel(
         }
     }
 
-    fun onRefresh() {
+    private fun onRefresh() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val current = selectedFile.value?.current?.path ?: return@launch
             refreshFolderContentUseCase(path = current)
         }
     }
 
-    fun clickOnSort(column: FileColumnUiModel, sortedBy: SortedByUiModel) {
+    private fun clickOnSort(column: FileColumnUiModel, sortedBy: SortedByUiModel) {
         when (sortedBy) {
             SortedByUiModel.None -> {
                 this.sortedBy.value = null
@@ -290,14 +314,14 @@ class FilesViewModel(
         }
     }
 
-    fun onDeleteContent() {
+    private fun onDeleteContent() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val current = selectedFile.value?.current?.path ?: return@launch
             deleteFolderContentUseCase(path = current)
         }
     }
 
-    fun onContextualAction(file: FileUiModel, action: FileUiModel.ContextualAction.Action) {
+    private fun onContextualAction(file: FileUiModel, action: FileUiModel.ContextualAction.Action) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
                 FileUiModel.ContextualAction.Action.Open -> onFileClicked(file)
@@ -323,5 +347,98 @@ class FilesViewModel(
     }
 
     fun onNotVisible() {
+    }
+
+    fun onAction(action: FilesAction) {
+        when (action) {
+            is FilesAction.FileClicked -> onFileClicked(action.file)
+            is FilesAction.NavigateUp -> onNavigateUp()
+            is FilesAction.ContextualAction -> onContextualAction(action.file, action.action)
+            is FilesAction.Refresh -> onRefresh()
+            is FilesAction.DeleteContent -> onDeleteContent()
+            is FilesAction.FilterTextChanged -> onFilterTextChanged(action.value)
+            is FilesAction.ClickOnSort -> clickOnSort(action.column, action.sortedBy)
+            is FilesAction.UpdateWithFoldersSize -> updateWithFoldersSize(action.value)
+            is FilesAction.MultiSelect -> onMultiSelect()
+            is FilesAction.ClearMultiSelect -> onClearMultiSelect()
+            is FilesAction.SelectFile -> onSelectFile(action.path, action.selected, action.index, action.shiftHeld)
+            is FilesAction.DeleteSelection -> onDeleteSelection()
+            is FilesAction.SelectAll -> onSelectAll(action.selectingAll)
+        }
+    }
+
+    // Multi-selection methods
+    private fun onMultiSelect() {
+        _selecting.update { !it }
+        if (!_selecting.value) {
+            _multiSelectedPaths.value = emptySet()
+            _lastSelectedIndex = null
+        }
+    }
+
+    private fun onClearMultiSelect() {
+        _selecting.value = false
+        _multiSelectedPaths.value = emptySet()
+        _lastSelectedIndex = null
+    }
+
+    private fun onSelectFile(path: String, selected: Boolean, index: Int, shiftHeld: Boolean) {
+        val currentFiles = state.value.files
+        
+        if (shiftHeld && _lastSelectedIndex != null) {
+            // Shift+Click: select range
+            val startIndex = minOf(_lastSelectedIndex!!, index)
+            val endIndex = maxOf(_lastSelectedIndex!!, index)
+            val pathsInRange = currentFiles
+                .subList(startIndex, endIndex + 1)
+                .mapNotNull { file ->
+                    (file.path as? FilePathUiModel.Real)?.absolutePath
+                }
+                .toSet()
+            _multiSelectedPaths.update { it + pathsInRange }
+        } else {
+            // Regular click: toggle single item
+            _multiSelectedPaths.update {
+                if (selected) {
+                    it + path
+                } else {
+                    it - path
+                }
+            }
+            _lastSelectedIndex = index
+        }
+    }
+
+    private fun onSelectAll(selectAll: Boolean) {
+        if(selectAll) {
+            _multiSelectedPaths.update {
+                state.value.files
+                    .mapNotNull { (it.path as? FilePathUiModel.Real)?.absolutePath }
+                    .toSet()
+            }
+        } else {
+            _multiSelectedPaths.update {
+                emptySet()
+            }
+        }
+    }
+
+    private fun onDeleteSelection() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val parent = selectedFile.value?.current?.path ?: return@launch
+            val selectedPaths = _multiSelectedPaths.value
+                .map { FilePathDomainModel.Real(it) }
+            
+            deleteFilesUseCase(
+                paths = selectedPaths,
+                parentPath = parent
+            )
+            
+            // Clear selection after deletion
+            onClearMultiSelect()
+            
+            // Refresh the folder content
+            onRefresh()
+        }
     }
 }

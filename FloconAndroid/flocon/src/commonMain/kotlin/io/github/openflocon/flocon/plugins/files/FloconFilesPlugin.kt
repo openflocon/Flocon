@@ -12,6 +12,7 @@ import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FilesResultDataModel
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFileMessage
+import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFilesMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFolderContentMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFileMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFilesMessage
@@ -22,6 +23,7 @@ internal interface FileDataSource {
     fun getFile(path: String, isConstantPath: Boolean): FloconFile?
     fun getFolderContent(path: String, isConstantPath: Boolean, withFoldersSize: Boolean): List<FileDataModel>
     fun deleteFile(path: String)
+    fun deleteFiles(path: List<String>)
     fun deleteFolderContent(folder: FloconFile)
 }
 
@@ -72,6 +74,21 @@ internal class FloconFilesPluginImpl(
 
                 fileDataSource.deleteFile(
                     path = deleteFilesMessage.filePath,
+                )
+
+                executeGetFile(
+                    path = deleteFilesMessage.parentPath,
+                    isConstantPath = deleteFilesMessage.isConstantParentPath,
+                    requestId = deleteFilesMessage.requestId,
+                )
+            }
+
+            Protocol.ToDevice.Files.Method.DeleteFiles -> {
+                val deleteFilesMessage =
+                    ToDeviceDeleteFilesMessage.fromJson(message = messageFromServer.body) ?: return
+
+                fileDataSource.deleteFiles(
+                    path = deleteFilesMessage.filePaths,
                 )
 
                 executeGetFile(

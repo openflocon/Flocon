@@ -23,12 +23,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.files.FilesViewModel
-import io.github.openflocon.flocondesktop.features.files.model.FileColumnUiModel
-import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FilesAction
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.previewFilesStateUiModel
 import io.github.openflocon.flocondesktop.features.files.view.header.FilesListHeader
-import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
@@ -52,15 +51,8 @@ fun FilesScreen(modifier: Modifier = Modifier) {
     FilesScreen(
         state = state,
         modifier = modifier,
-        onFileClicked = viewModel::onFileClicked,
-        onNavigateUp = viewModel::onNavigateUp,
-        onContextualAction = viewModel::onContextualAction,
-        onRefresh = viewModel::onRefresh,
-        onDeleteContent = viewModel::onDeleteContent,
         filterText = filterText,
-        clickOnSort = viewModel::clickOnSort,
-        onFilterTextChanged = viewModel::onFilterTextChanged,
-        updateWithFoldersSize = viewModel::updateWithFoldersSize
+        onAction = viewModel::onAction,
     )
 }
 
@@ -68,14 +60,7 @@ fun FilesScreen(modifier: Modifier = Modifier) {
 private fun FilesScreen(
     state: FilesStateUiModel,
     filterText: State<String>,
-    onFilterTextChanged: (String) -> Unit,
-    onNavigateUp: () -> Unit,
-    onRefresh: () -> Unit,
-    onDeleteContent: () -> Unit,
-    onFileClicked: (FileUiModel) -> Unit,
-    updateWithFoldersSize: (Boolean) -> Unit,
-    onContextualAction: (FileUiModel, FileUiModel.ContextualAction.Action) -> Unit,
-    clickOnSort: (FileColumnUiModel, SortedByUiModel) -> Unit,
+    onAction: (FilesAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -87,19 +72,26 @@ private fun FilesScreen(
         FilesTopBar(
             modifier = Modifier.fillMaxWidth(),
             current = state.current,
-            onBack = onNavigateUp,
-            onRefresh = onRefresh,
+            numberOfFiles = state.numberOfFiles,
+            onBack = { onAction(FilesAction.NavigateUp) },
+            onRefresh = { onAction(FilesAction.Refresh) },
             options = state.options,
+            selecting = state.isSelecting,
+            canSelect = state.canSelect,
+            selectedCount = state.multiSelectedPaths.size,
             filterBar = {
                 FilterBar(
                     filterText = filterText,
                     placeholderText = "Filter files",
-                    onTextChange = onFilterTextChanged,
+                    onTextChange = { onAction(FilesAction.FilterTextChanged(it)) },
                     modifier = Modifier.width(250.dp),
                 )
             },
-            onDeleteContent = onDeleteContent,
-            updateWithFoldersSize = updateWithFoldersSize,
+            onDeleteContent = { onAction(FilesAction.DeleteContent) },
+            updateWithFoldersSize = { onAction(FilesAction.UpdateWithFoldersSize(it)) },
+            onDeleteSelection = { onAction(FilesAction.DeleteSelection) },
+            onMultiSelect = { onAction(FilesAction.MultiSelect) },
+            onClearMultiSelect = { onAction(FilesAction.ClearMultiSelect) },
         )
         Column(
             modifier = Modifier
@@ -110,7 +102,10 @@ private fun FilesScreen(
             FilesListHeader(
                 modifier = Modifier.fillMaxWidth(),
                 state = state.headerState,
-                clickOnSort = clickOnSort,
+                clickOnSort = { column, sortedBy -> onAction(FilesAction.ClickOnSort(column, sortedBy)) },
+                isSelecting = state.isSelecting,
+                selectingAll = state.selectingAll,
+                onSelectAll = { onAction(FilesAction.SelectAll(it)) },
             )
             Box(
                 modifier = Modifier
@@ -123,11 +118,18 @@ private fun FilesScreen(
                         .fillMaxSize(),
                 ) {
                     itemsIndexed(state.files) { index, item ->
+                        val path = (item.path as? FilePathUiModel.Real)?.absolutePath
                         FileItemRow(
-                            item,
-                            onClick = onFileClicked,
+                            file = item,
+                            index = index,
+                            multiSelect = state.isSelecting,
+                            multiSelected = path != null && state.multiSelectedPaths.contains(path),
+                            onClick = { onAction(FilesAction.FileClicked(it)) },
                             modifier = Modifier.fillMaxWidth(),
-                            onContextualAction = onContextualAction,
+                            onContextualAction = { file, action -> onAction(FilesAction.ContextualAction(file, action)) },
+                            onSelectFile = { p, selected, i, shiftHeld -> 
+                                onAction(FilesAction.SelectFile(p, selected, i, shiftHeld)) 
+                            },
                         )
                         if (index != state.files.lastIndex) {
                             HorizontalDivider(modifier = Modifier.fillMaxWidth())
@@ -150,15 +152,8 @@ private fun FilesScreenPreview() {
     FloconTheme {
         FilesScreen(
             state = previewFilesStateUiModel(),
-            onNavigateUp = {},
-            onFileClicked = {},
-            onRefresh = {},
-            onDeleteContent = {},
-            onContextualAction = { _, _ -> },
             filterText = mutableStateOf(""),
-            onFilterTextChanged = {},
-            clickOnSort = { _, _ -> },
-            updateWithFoldersSize = {},
+            onAction = {},
         )
     }
 }

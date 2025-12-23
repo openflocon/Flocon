@@ -1,6 +1,7 @@
 package io.github.openflocon.domain.files
 
 import io.github.openflocon.domain.files.usecase.DeleteFileUseCase
+import io.github.openflocon.domain.files.usecase.DeleteFilesUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.DownloadFileUseCase
 import io.github.openflocon.domain.files.usecase.ObserveFolderContentUseCase
@@ -14,6 +15,7 @@ internal val filesModule = module {
     factoryOf(::ObserveFolderContentUseCase)
     factoryOf(::DeleteFolderContentUseCase)
     factoryOf(::DeleteFileUseCase)
+    factoryOf(::DeleteFilesUseCase)
     factoryOf(::RefreshFolderContentUseCase)
     factoryOf(::DownloadFileUseCase)
     factoryOf(::UpdateWithFoldersSizeUseCase)

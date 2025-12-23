@@ -69,6 +69,12 @@ internal class FileDataSourceAndroid(
         }
     }
 
+    override fun deleteFiles(path: List<String>) {
+        path.forEach {
+            deleteFile(it)
+        }
+    }
+
     override fun deleteFolderContent(folder: FloconFile) {
         deleteFolderContent(folder.file)
     }

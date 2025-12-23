@@ -30,6 +30,12 @@ interface FilesRepository {
         path: FilePathDomainModel,
     ): Either<Throwable, Unit>
 
+    suspend fun deleteFiles(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        parentPath: FilePathDomainModel,
+        paths: List<FilePathDomainModel>,
+    ): Either<Throwable, Unit>
+
     suspend fun downloadFile(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         path: String
