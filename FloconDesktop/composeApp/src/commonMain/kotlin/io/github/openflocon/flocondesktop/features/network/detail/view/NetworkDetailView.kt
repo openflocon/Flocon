@@ -2,8 +2,10 @@ package io.github.openflocon.flocondesktop.features.network.detail.view
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.outlined.OpenInFull
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -95,6 +98,17 @@ fun NetworkDetailContent(
                 .verticalScroll(scrollState)
                 .padding(vertical = 8.dp, horizontal = 4.dp),
         ) {
+            Row(
+                modifier = Modifier.fillMaxSize()
+                    .padding(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                FloconIconButton(
+                    tooltip = "Share as Markdown",
+                    imageVector = Icons.Outlined.Share,
+                    onClick = { onAction(NetworkDetailAction.ShareAsMarkdown) }
+                )
+            }
             Request(
                 modifier = Modifier
                     .fillMaxWidth(),

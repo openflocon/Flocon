@@ -58,6 +58,8 @@ sealed interface NetworkAction {
         val itemIdToSelect: String,
     ) : NetworkAction
 
+    data class ShareAsMarkdown(val item: NetworkItemViewState) : NetworkAction
+
     data class Down(
         val itemIdToSelect: String,
     ) : NetworkAction
