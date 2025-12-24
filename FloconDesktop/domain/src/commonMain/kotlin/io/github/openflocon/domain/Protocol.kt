@@ -137,6 +137,7 @@ object Protocol {
             object Method {
                 const val ListFiles = "listFiles"
                 const val DeleteFile = "deleteFile"
+                const val DeleteFiles = "deleteFiles"
                 const val DeleteFolderContent = "deleteFolderContent"
                 const val GetFile = "getFile"
             }

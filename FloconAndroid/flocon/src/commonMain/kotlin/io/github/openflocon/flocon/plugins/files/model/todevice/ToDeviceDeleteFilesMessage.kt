@@ -5,16 +5,16 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class ToDeviceDeleteFileMessage(
+internal data class ToDeviceDeleteFilesMessage(
     val requestId: String,
     val parentPath: String,
-    val filePath: String,
+    val filePaths: List<String>,
     val isConstantParentPath: Boolean, // ex: context.files / context.caches
 ) {
     companion object {
-        fun fromJson(message: String): ToDeviceDeleteFileMessage? {
+        fun fromJson(message: String): ToDeviceDeleteFilesMessage? {
             return try {
-                FloconEncoder.json.decodeFromString<ToDeviceDeleteFileMessage>(message)
+                FloconEncoder.json.decodeFromString<ToDeviceDeleteFilesMessage>(message)
             } catch (t: Throwable) {
                 FloconLogger.logError("parsing issue", t)
                 null
@@ -22,4 +22,3 @@ internal data class ToDeviceDeleteFileMessage(
         }
     }
 }
-

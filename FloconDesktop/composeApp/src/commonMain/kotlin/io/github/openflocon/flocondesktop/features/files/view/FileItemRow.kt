@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,8 +16,15 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isShiftPressed
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -25,17 +34,25 @@ import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun FileItemRow(
     file: FileUiModel,
+    index: Int,
+    multiSelect: Boolean,
+    multiSelected: Boolean,
     onClick: (FileUiModel) -> Unit,
     onContextualAction: (FileUiModel, FileUiModel.ContextualAction.Action) -> Unit,
+    onSelectFile: (path: String, selected: Boolean, index: Int, shiftHeld: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val shiftPressed = remember { mutableStateOf(false) }
+    
     ContextualView(
         items = file.contextualActions.map { action ->
             FloconContextMenuItem.Item(
@@ -51,10 +68,44 @@ fun FileItemRow(
     ) {
         Row(
             modifier = modifier
-                .clickable { onClick(file) }
+                .onPointerEvent(PointerEventType.Press) {
+                    shiftPressed.value = it.keyboardModifiers.isShiftPressed
+                }
+                .combinedClickable(
+                    onClick = {
+                        if (multiSelect) {
+                            val path = (file.path as? FilePathUiModel.Real)?.absolutePath
+                            if (path != null) {
+                                onSelectFile(path, !multiSelected, index, shiftPressed.value)
+                            }
+                        } else {
+                            onClick(file)
+                        }
+                    },
+                    onDoubleClick = {
+                        // Always allow navigation/opening on double-click
+                        onClick(file)
+                    }
+                )
                 .padding(vertical = 8.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            AnimatedVisibility(multiSelect) {
+                Row {
+                    FloconCheckbox(
+                        checked = multiSelected,
+                        onCheckedChange = { selected ->
+                            val path = (file.path as? FilePathUiModel.Real)?.absolutePath
+                            if (path != null) {
+                                onSelectFile(path, selected, index, shiftPressed.value)
+                            }
+                        },
+                        uncheckedColor = FloconTheme.colorPalette.secondary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+            }
+            
             FloconIcon(
                 imageVector = file.icon,
                 modifier = Modifier.size(24.dp)
@@ -120,8 +171,12 @@ private fun FileItemRowPreview_folder() {
     FloconTheme {
         FileItemRow(
             file = file,
+            index = 0,
+            multiSelect = false,
+            multiSelected = false,
             onClick = {},
             onContextualAction = { _, _ -> },
+            onSelectFile = { _, _, _, _ -> },
         )
     }
 }
@@ -141,8 +196,12 @@ private fun FileItemRowPreview_file() {
     FloconTheme {
         FileItemRow(
             file = file,
+            index = 0,
+            multiSelect = true,
+            multiSelected = true,
             onClick = {},
             onContextualAction = { _, _ -> },
+            onSelectFile = { _, _, _, _ -> },
         )
     }
 }
@@ -163,8 +222,12 @@ private fun FileItemRowPreview() {
                         contextualActions = emptyList(),
                         dateFormatted = "2022-01-01 12:10",
                     ),
+                    index = 0,
+                    multiSelect = false,
+                    multiSelected = false,
                     onClick = {},
                     onContextualAction = { _, _ -> },
+                    onSelectFile = { _, _, _, _ -> },
                 )
                 FileItemRow(
                     file = FileUiModel(
@@ -176,10 +239,15 @@ private fun FileItemRowPreview() {
                         contextualActions = emptyList(),
                         dateFormatted = "2022-01-01 12:10",
                     ),
+                    index = 1,
+                    multiSelect = true,
+                    multiSelected = false,
                     onClick = {},
                     onContextualAction = { _, _ -> },
+                    onSelectFile = { _, _, _, _ -> },
                 )
             }
         }
     }
 }
+

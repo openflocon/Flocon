@@ -29,6 +29,10 @@ internal class FileDataSourceIOs : FileDataSource {
         // TODO
     }
 
+    override fun deleteFiles(path: List<String>) {
+        // no op
+    }
+
     override fun deleteFolderContent(folder: FloconFile) {
         // TODO
     }

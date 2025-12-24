@@ -131,6 +131,26 @@ class FilesRepositoryImpl(
             }.mapSuccess { }
     }
 
+    override suspend fun deleteFiles(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        parentPath: FilePathDomainModel,
+        paths: List<FilePathDomainModel>,
+    ): Either<Throwable, Unit> = withContext(dispatcherProvider.data) {
+        remoteFilesDataSource
+            .executeDeleteFiles(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                filePaths = paths,
+                folderPath = parentPath,
+            ).alsoSuccess {
+                localFilesDataSource.storeFiles(
+                    deviceIdAndPackageName = deviceIdAndPackageName,
+                    parentPath = parentPath,
+                    files = it,
+                )
+                // store the result
+            }.mapSuccess { }
+    }
+
     override fun observeWithFoldersSize(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> = localFilesDataSource.observeWithFoldersSize(deviceIdAndPackageName)
         .flowOn(dispatcherProvider.data)
 

@@ -238,7 +238,8 @@ fun FloconIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     tooltip: String? = null,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    tint: Color = LocalContentColor.current
 ) {
     WithTooltip(tooltip) {
         FloconIconButton(
@@ -247,7 +248,8 @@ fun FloconIconButton(
             modifier = modifier
         ) {
             FloconIcon(
-                imageVector = imageVector
+                imageVector = imageVector,
+                tint = tint,
             )
         }
     }
