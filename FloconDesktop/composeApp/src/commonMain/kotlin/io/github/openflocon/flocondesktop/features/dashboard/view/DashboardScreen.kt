@@ -13,6 +13,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.dashboard_action_delete
@@ -78,50 +84,60 @@ fun DashboardScreen(
     FloconFeature(
         modifier = modifier
     ) {
-        FloconPageTopBar(
-            modifier = Modifier.fillMaxWidth(),
-            selector = {
-                DashboardSelectorView(
-                    dashboardsState = deviceDashboards,
+        Column(Modifier.fillMaxSize()) {
+            FloconPageTopBar(
+                modifier = Modifier.fillMaxWidth(),
+                selector = null,
+                filterBar = {
+                    Box(modifier = Modifier.weight(1f)) // to have actions on the right
+                },
+                actions = {
+                    DashboardArrangementView(
+                        onArrangementClicked = onArrangementClicked,
+                        arrangement = arrangement
+                    )
+
+                    FloconOverflow {
+                        FloconDropdownMenuItem(
+                            text = stringResource(Res.string.dashboard_action_delete),
+                            leadingIcon = Icons.Outlined.Delete,
+                            onClick = { deleteCurrentDashboard() }
+                        )
+                    }
+                }
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(Modifier.fillMaxSize()) {
+                DashboardSidebarView(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(340.dp),
+                    state = deviceDashboards,
                     onDashboardSelected = onDashboardSelected,
-                    modifier = Modifier.fillMaxWidth(),
                     onDeleteClicked = onDeleteClicked,
                 )
-            },
-            filterBar = {
-                Box(modifier = Modifier.weight(1f)) // to have actions on the right
-            },
-            actions = {
-                DashboardArrangementView(
-                    onArrangementClicked = onArrangementClicked,
-                    arrangement = arrangement
-                )
 
-                FloconOverflow {
-                    FloconDropdownMenuItem(
-                        text = stringResource(Res.string.dashboard_action_delete),
-                        leadingIcon = Icons.Outlined.Delete,
-                        onClick = { deleteCurrentDashboard() }
+                Spacer(modifier = Modifier.width(12.dp))
+
+                state?.let {
+                    DashboardView(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(FloconTheme.shapes.medium)
+                            .background(FloconTheme.colorPalette.primary)
+                            .padding(all = 8.dp),
+                        viewState = state,
+                        onClickButton = onClickButton,
+                        submitTextField = submitTextField,
+                        submitForm = submitForm,
+                        onUpdateCheckBox = onUpdateCheckBox,
+                        arrangement = arrangement,
+                        onOpenExternalClicked = onOpenExternalClicked,
                     )
                 }
             }
-        )
-
-        state?.let {
-            DashboardView(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary)
-                    .padding(all = 8.dp),
-                viewState = state,
-                onClickButton = onClickButton,
-                submitTextField = submitTextField,
-                submitForm = submitForm,
-                onUpdateCheckBox = onUpdateCheckBox,
-                arrangement = arrangement,
-                onOpenExternalClicked = onOpenExternalClicked,
-            )
         }
     }
 }
