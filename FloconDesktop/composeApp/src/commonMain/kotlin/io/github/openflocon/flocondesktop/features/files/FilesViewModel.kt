@@ -64,9 +64,9 @@ class FilesViewModel(
     private val sortedBy = MutableStateFlow<FilesHeaderStateUiModel.SortedBy?>(null)
 
     // Multi-selection state
-    private val _selecting = MutableStateFlow(false)
-    private val _multiSelectedPaths = MutableStateFlow<Set<String>>(emptySet())
-    private var _lastSelectedIndex: Int? = null
+    private val selecting = MutableStateFlow(false)
+    private val multiSelectedPaths = MutableStateFlow<Set<String>>(emptySet())
+    private var lastSelectedIndex: Int? = null
 
     private val options = observeWithFoldersSizeUseCase().map { withFoldersSize ->
         FilesStateUiModel.Options(
@@ -114,8 +114,8 @@ class FilesViewModel(
             totalSizeFormatted = null,
         ),
         options = options.value,
-        isSelecting = _selecting.value,
-        multiSelectedPaths = _multiSelectedPaths.value,
+        isSelecting = selecting.value,
+        multiSelectedPaths = multiSelectedPaths.value,
         selectingAll = false,
         numberOfFiles = null,
         canSelect = false,
@@ -132,8 +132,8 @@ class FilesViewModel(
             selectedFile,
             sortedBy,
             options,
-            _selecting,
-            _multiSelectedPaths,
+            selecting,
+            multiSelectedPaths,
         )
             .flatMapLatest { (selectedFile, sortedBy, options, selecting, multiSelectedPaths) ->
                 if (selectedFile == null) {
@@ -369,55 +369,55 @@ class FilesViewModel(
 
     // Multi-selection methods
     private fun onMultiSelect() {
-        _selecting.update { !it }
-        if (!_selecting.value) {
-            _multiSelectedPaths.value = emptySet()
-            _lastSelectedIndex = null
+        selecting.update { !it }
+        if (!selecting.value) {
+            multiSelectedPaths.value = emptySet()
+            lastSelectedIndex = null
         }
     }
 
     private fun onClearMultiSelect() {
-        _selecting.value = false
-        _multiSelectedPaths.value = emptySet()
-        _lastSelectedIndex = null
+        selecting.value = false
+        multiSelectedPaths.value = emptySet()
+        lastSelectedIndex = null
     }
 
     private fun onSelectFile(path: String, selected: Boolean, index: Int, shiftHeld: Boolean) {
         val currentFiles = state.value.files
         
-        if (shiftHeld && _lastSelectedIndex != null) {
+        if (shiftHeld && lastSelectedIndex != null) {
             // Shift+Click: select range
-            val startIndex = minOf(_lastSelectedIndex!!, index)
-            val endIndex = maxOf(_lastSelectedIndex!!, index)
+            val startIndex = minOf(lastSelectedIndex!!, index)
+            val endIndex = maxOf(lastSelectedIndex!!, index)
             val pathsInRange = currentFiles
                 .subList(startIndex, endIndex + 1)
                 .mapNotNull { file ->
                     (file.path as? FilePathUiModel.Real)?.absolutePath
                 }
                 .toSet()
-            _multiSelectedPaths.update { it + pathsInRange }
+            multiSelectedPaths.update { it + pathsInRange }
         } else {
             // Regular click: toggle single item
-            _multiSelectedPaths.update {
+            multiSelectedPaths.update {
                 if (selected) {
                     it + path
                 } else {
                     it - path
                 }
             }
-            _lastSelectedIndex = index
+            lastSelectedIndex = index
         }
     }
 
     private fun onSelectAll(selectAll: Boolean) {
         if(selectAll) {
-            _multiSelectedPaths.update {
+            multiSelectedPaths.update {
                 state.value.files
                     .mapNotNull { (it.path as? FilePathUiModel.Real)?.absolutePath }
                     .toSet()
             }
         } else {
-            _multiSelectedPaths.update {
+            multiSelectedPaths.update {
                 emptySet()
             }
         }
@@ -426,7 +426,7 @@ class FilesViewModel(
     private fun onDeleteSelection() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val parent = selectedFile.value?.current?.path ?: return@launch
-            val selectedPaths = _multiSelectedPaths.value
+            val selectedPaths = multiSelectedPaths.value
                 .map { FilePathDomainModel.Real(it) }
             
             deleteFilesUseCase(
