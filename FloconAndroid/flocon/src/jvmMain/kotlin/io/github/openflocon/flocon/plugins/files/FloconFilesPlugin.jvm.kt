@@ -28,6 +28,10 @@ internal class FileDataSourceJvm : FileDataSource {
         // no op
     }
 
+    override fun deleteFiles(path: List<String>) {
+        // no op
+    }
+
     override fun deleteFolderContent(folder: FloconFile) {
         // no op
     }

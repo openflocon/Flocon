@@ -5,6 +5,9 @@ import okhttp3.Request
 import okhttp3.Response
 import okio.Buffer
 import okio.GzipSource
+import okio.buffer
+import okio.source
+import org.brotli.dec.BrotliInputStream
 import java.nio.charset.Charset
 
 internal fun getHttpMessage(httpCode: Int): String {
@@ -73,6 +76,7 @@ internal fun extractResponseBodyInfo(
     }
 
     val charset = responseBody.contentType().charsetOrUtf8()
+    bodySize = buffer.size
     if (responseHeaders.isGzipped()) {
         GzipSource(buffer.clone()).use { gzippedResponseBody ->
             buffer = Buffer()
@@ -80,10 +84,15 @@ internal fun extractResponseBodyInfo(
         }
 
         bodyString = buffer.clone().readString(charset)
-        bodySize = buffer.size
+    } else if (responseHeaders.isBrotli()) {
+        BrotliInputStream(buffer.clone().inputStream()).source().buffer().use { brotliResponseBody ->
+            buffer = Buffer()
+            buffer.writeAll(brotliResponseBody)
+        }
+
+        bodyString = buffer.clone().readString(charset)
     } else {
         bodyString = buffer.clone().readString(charset)
-        bodySize = buffer.size
     }
 
     return bodyString to bodySize
@@ -100,11 +109,16 @@ internal fun extractRequestBodyInfo(
     var buffer = Buffer()
     requestBody.writeTo(buffer)
 
+    bodySize = buffer.size
     if (requestHeaders.isGzipped()) {
-        bodySize = buffer.size
         GzipSource(buffer).use { gzippedResponseBody ->
             buffer = Buffer()
             buffer.writeAll(gzippedResponseBody)
+        }
+    } else if (requestHeaders.isBrotli()) {
+        BrotliInputStream(buffer.inputStream()).source().buffer().use { brotliResponseBody ->
+            buffer = Buffer()
+            buffer.writeAll(brotliResponseBody)
         }
     }
 
@@ -114,7 +128,16 @@ internal fun extractRequestBodyInfo(
     return bodyString to bodySize
 }
 
+private fun Map<String, String>.getContentEncoding() : String? {
+    return get("Content-Encoding") ?: get("content-encoding")
+}
+
 private fun Map<String, String>.isGzipped(): Boolean {
-    val contentEncoding = get("Content-Encoding") ?: get("content-encoding") ?: return false
+    val contentEncoding = getContentEncoding() ?: return false
     return "gzip".equals(contentEncoding, ignoreCase = true)
+}
+
+private fun Map<String, String>.isBrotli(): Boolean {
+    val contentEncoding = getContentEncoding() ?: return false
+    return "br".equals(contentEncoding, ignoreCase = true)
 }

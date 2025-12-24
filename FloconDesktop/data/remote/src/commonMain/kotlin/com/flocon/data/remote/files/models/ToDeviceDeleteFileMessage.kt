@@ -9,3 +9,5 @@ data class ToDeviceDeleteFileMessage(
     val filePath: String,
     val isConstantParentPath: Boolean, // ex: context.files / context.caches
 )
+
+

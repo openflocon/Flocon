@@ -5,6 +5,8 @@ import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableD
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProviderImpl
 import io.github.openflocon.flocondesktop.common.db.roomModule
+import io.github.openflocon.flocondesktop.common.ui.JsonFormatterImpl
+import io.github.openflocon.domain.common.JsonFormatter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.dsl.bind
@@ -17,6 +19,9 @@ val commonModule =
         includes(roomModule)
         singleOf(::DispatcherProviderImpl) {
             bind<DispatcherProvider>()
+        }
+        singleOf(::JsonFormatterImpl) {
+            bind<JsonFormatter>()
         }
         single {
             val dispatcherProvider = get<DispatcherProvider>()

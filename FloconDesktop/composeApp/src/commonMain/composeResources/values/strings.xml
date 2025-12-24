@@ -6,6 +6,7 @@
     <string name="close">Close</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="crashes">Crashes</string>
+    <string name="dashboards">Dashboards</string>
     <string name="dashboard_action_delete">Delete Dashboards</string>
     <string name="dashboard_empty">No dashboard</string>
     <string name="dashboard_removed">Dashboard removed</string>

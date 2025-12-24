@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.flocon.data.remote.common.safeDecodeFromString
 import com.flocon.data.remote.files.models.FromDeviceFilesResultDataModel
 import com.flocon.data.remote.files.models.ToDeviceDeleteFileMessage
+import com.flocon.data.remote.files.models.ToDeviceDeleteFilesMessage
 import com.flocon.data.remote.files.models.ToDeviceDeleteFolderContentMessage
 import com.flocon.data.remote.files.models.ToDeviceGetFileMessage
 import com.flocon.data.remote.files.models.ToDeviceGetFilesMessage
@@ -71,8 +72,7 @@ class FilesRemoteDataSourceImpl(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.ListFiles,
-                body =
-                Json.Default.encodeToString(
+                body = json.encodeToString(
                     ToDeviceGetFilesMessage(
                         requestId = requestId,
                         path = filePath,
@@ -96,8 +96,7 @@ class FilesRemoteDataSourceImpl(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.GetFile,
-                body =
-                Json.Default.encodeToString(
+                body = json.encodeToString(
                     ToDeviceGetFileMessage(
                         requestId = requestId,
                         path = path,
@@ -128,8 +127,7 @@ class FilesRemoteDataSourceImpl(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFolderContent,
-                body =
-                Json.Default.encodeToString(
+                body = json.encodeToString(
                     ToDeviceDeleteFolderContentMessage(
                         requestId = requestId,
                         path = realPath,
@@ -169,12 +167,53 @@ class FilesRemoteDataSourceImpl(
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Files.Plugin,
                 method = Protocol.ToDevice.Files.Method.DeleteFile,
-                body =
-                Json.Default.encodeToString(
+                body = json.encodeToString(
                     ToDeviceDeleteFileMessage(
                         requestId = requestId,
                         parentPath = parentPath,
                         filePath = filePathValue,
+                        isConstantParentPath = isConstantParentPath,
+                    ),
+                ),
+            ),
+        )
+
+        // wait for result
+        return waitForResult(requestId)
+    }
+
+    override suspend fun executeDeleteFiles(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        folderPath: FilePathDomainModel,
+        filePaths: List<FilePathDomainModel>,
+    ): Either<Exception, List<FileDomainModel>> {
+        val requestId = newRequestId()
+
+        val (parentPath, isConstantParentPath) =
+            when (folderPath) {
+                FilePathDomainModel.Constants.CachesDir -> "caches" to true
+                FilePathDomainModel.Constants.FilesDir -> "files" to true
+                is FilePathDomainModel.Real -> folderPath.absolutePath to false
+            }
+
+        val filePathsValue = filePaths.map { filePath ->
+            when (filePath) {
+                FilePathDomainModel.Constants.CachesDir -> return Failure(Exception("cannot delete cachedir"))
+                FilePathDomainModel.Constants.FilesDir -> return Failure(Exception("cannot delete FilesDir"))
+                is FilePathDomainModel.Real -> filePath.absolutePath
+            }
+        }
+
+        server.sendMessageToClient(
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
+            message = FloconOutgoingMessageDataModel(
+                plugin = Protocol.ToDevice.Files.Plugin,
+                method = Protocol.ToDevice.Files.Method.DeleteFiles,
+                body = json.encodeToString(
+                    ToDeviceDeleteFilesMessage(
+                        requestId = requestId,
+                        parentPath = parentPath,
+                        filePaths = filePathsValue,
                         isConstantParentPath = isConstantParentPath,
                     ),
                 ),

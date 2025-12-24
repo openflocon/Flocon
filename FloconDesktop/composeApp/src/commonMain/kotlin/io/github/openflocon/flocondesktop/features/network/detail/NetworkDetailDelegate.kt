@@ -6,6 +6,7 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
+import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
@@ -42,6 +43,7 @@ class NetworkDetailDelegate(
     KoinComponent {
 
     private val openBodyDelegate: OpenBodyDelegate by inject()
+    private val getNetworkCallAsMarkdownUseCase: GetNetworkCallAsMarkdownUseCase by inject()
 
     private val requestId = MutableStateFlow("")
 
@@ -88,6 +90,7 @@ class NetworkDetailDelegate(
             is NetworkDetailAction.JsonDetail -> onJsonDetail(action)
             is NetworkDetailAction.OpenBodyExternally.Request -> openBodyDelegate.openBodyExternally(action.item)
             is NetworkDetailAction.OpenBodyExternally.Response -> openBodyDelegate.openBodyExternally(action.item)
+            is NetworkDetailAction.ShareAsMarkdown -> copyAsMarkdown(requestId.value)
         }
     }
 
@@ -105,6 +108,15 @@ class NetworkDetailDelegate(
     private fun displayBearerJwt(token: String) {
         decodeJwtTokenUseCase(token)?.let {
             onJsonDetail(NetworkDetailAction.JsonDetail(json = it))
+        }
+    }
+
+    private fun copyAsMarkdown(requestId: String) {
+        coroutineScope.launch {
+            getNetworkCallAsMarkdownUseCase(requestId)?.let {
+                copyToClipboard(it)
+                feedbackDisplayer.displayMessage("Markdown copied to clipboard")
+            }
         }
     }
 }

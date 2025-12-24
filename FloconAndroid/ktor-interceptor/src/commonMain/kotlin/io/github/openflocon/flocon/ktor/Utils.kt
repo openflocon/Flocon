@@ -57,3 +57,20 @@ internal suspend fun extractAndReplaceRequestBody(request: HttpRequestBuilder): 
         else -> originalBody?.toString()
     }
 }
+
+private fun Map<String, String>.getContentEncoding() : String? {
+    return get("Content-Encoding") ?: get("content-encoding")
+}
+
+private fun Map<String, String>.isGzipped(): Boolean {
+    return "gzip".equals(getContentEncoding(), ignoreCase = true)
+}
+
+internal fun Map<String, String>.isBrotli(): Boolean {
+    return "br".equals(getContentEncoding(), ignoreCase = true)
+}
+
+internal expect fun decodeNetworkBody(
+    bytes: ByteArray,
+    headers: Map<String, String>
+): String

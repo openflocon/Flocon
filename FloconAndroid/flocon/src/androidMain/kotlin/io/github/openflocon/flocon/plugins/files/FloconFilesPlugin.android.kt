@@ -62,8 +62,24 @@ internal class FileDataSourceAndroid(
 
 
     override fun deleteFile(path: String) {
+        deleteInternal(path)
+    }
+
+    override fun deleteFiles(path: List<String>) {
+        path.forEach {
+            deleteInternal(it)
+        }
+    }
+
+    private fun deleteInternal(path: String) {
+        deleteInternal(File(path))
+    }
+
+    private fun deleteInternal(file: File) {
         try {
-            File(path).delete()
+            if (!file.exists()) return
+
+            file.deleteRecursively()
         } catch (t: Throwable) {
             t.printStackTrace()
         }
@@ -76,15 +92,7 @@ internal class FileDataSourceAndroid(
     private fun deleteFolderContent(folder: File) {
         if (folder.isDirectory) {
             folder.listFiles()?.forEach { file ->
-                if (file.isDirectory) {
-                    deleteFolderContent(file)
-                } else {
-                    try {
-                        file.delete()
-                    } catch (t: Throwable) {
-                        t.printStackTrace()
-                    }
-                }
+                deleteInternal(file)
             }
         }
     }

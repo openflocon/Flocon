@@ -38,5 +38,11 @@ interface FilesRemoteDataSource {
         filePath: FilePathDomainModel,
     ): Either<Exception, List<FileDomainModel>>
 
+    suspend fun executeDeleteFiles(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        folderPath: FilePathDomainModel,
+        filePaths: List<FilePathDomainModel>,
+    ): Either<Exception, List<FileDomainModel>>
+
     fun getItems(message: FloconIncomingMessageDomainModel): FromDeviceFilesResultDomainModel?
 }

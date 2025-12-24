@@ -21,6 +21,7 @@ import io.github.openflocon.domain.network.models.NetworkFilterDomainModel.Filte
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
+import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.ImportNetworkCallsFromCsvUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
@@ -98,6 +99,7 @@ class NetworkViewModel(
     private val feedbackDisplayer: FeedbackDisplayer by inject()
     private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase by inject()
     private val replayNetworkCallUseCase: ReplayNetworkCallUseCase by inject()
+    private val getNetworkCallAsMarkdownUseCase: GetNetworkCallAsMarkdownUseCase by inject()
 
     private val contentState = MutableStateFlow(
         ContentUiState(
@@ -276,6 +278,16 @@ class NetworkViewModel(
             NetworkAction.DeleteSelection -> onDeleteSelection()
             is NetworkAction.DoubleClicked -> onDoubleClicked(action)
             NetworkAction.OpenDeepSearch -> navigationState.navigate(NetworkRoutes.DeepSearch)
+            is NetworkAction.ShareAsMarkdown -> onShareAsMarkdown(action)
+        }
+    }
+
+    private fun onShareAsMarkdown(action: NetworkAction.ShareAsMarkdown) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            getNetworkCallAsMarkdownUseCase(action.item.uuid)?.let {
+                copyToClipboard(it)
+                feedbackDisplayer.displayMessage("Markdown copied to clipboard")
+            }
         }
     }
 
