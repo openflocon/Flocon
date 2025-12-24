@@ -169,9 +169,9 @@ private fun DashboardItemView(
             Modifier.clip(RoundedCornerShape(4.dp))
                 .background(
                     Color.White.copy(alpha = 0.1f)
-                ).padding(2.dp).clickable {
+                ).clickable {
                     onDelete()
-                },
+                }.padding(2.dp),
             contentAlignment = Alignment.Center,
         ) {
             FloconIcon(
