@@ -1,7 +1,5 @@
 🛠️ Getting Started
 
-`This library is lightweight, contributing just 140KB to the overall app size`
-
 ## 🧰 Requirements
 
 ### for android
