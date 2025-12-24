@@ -6,6 +6,10 @@ Inspired from [Flipper](https://github.com/facebook/flipper) by Meta, while leve
 
 It allows developers to connect a Kotlin Multiplatform or Android app to their computer and launch a **desktop interface** that can **observe, inspect, and interact with the running app** in real time — across shared Kotlin code and platform-specific implementations.
 
+<img width="1294" height="837" alt="Screenshot 2025-09-12 at 15 39 45" src="https://github.com/user-attachments/assets/3d585adb-6441-4cdb-ad25-69d771ad4ff6" />
+
+----> [Getting Started](setup.md) <----
+
 **Works on**
 <table>
     <thead>
@@ -105,17 +109,3 @@ With Flocon, you gain deep access to critical app internals — such as
 and more — without needing root access or tedious ADB commands.
 
 It’s designed for modern multiplatform development, accelerating debugging, QA, and iteration cycles.
-
-<img width="1294" height="837" alt="Screenshot 2025-09-12 at 15 39 45" src="https://github.com/user-attachments/assets/3d585adb-6441-4cdb-ad25-69d771ad4ff6" />
-
----
-
-## 🚀 What Can Flocon Do?
-
-Once your device (Android / iOS / Desktop) is connected and your app includes the Flocon SDK, you can use the desktop companion app to access the following features:
-
-## ✨ Upcoming features 
-
-Flocon is still evolving, next features : 
-
-- Preview & Download files
