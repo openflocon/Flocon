@@ -1,4 +1,63 @@
-site_name: My Docs
+site_name: Flocon
 site_url: https://github.com/openflocon/Flocon
 theme:
   name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: lime
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Starting:
+    - Setup: setup.md
+    - MacOS Install: macos-install.md
+    - Troubleshooting: troubleshooting.md
+  - Features:
+    - Network:
+      - REST: network.md
+      - GraphQL: graphql.md
+      - Websocket: websocket.md
+      - GRPC: grpc.md
+      - Images: image.md
+    - Database: database.md
+    - Analytics: analytics.md
+    - Files: files.md
+    - Shared Preferences: sharedpref.md
+    - Dashboard: dashboard.md
+    - Tables: table.md
+    - Deeplinks: deeplink.md
+  - About:
+    - Story: about.md
+    - Contributors: contributors.md
