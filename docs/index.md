@@ -7,17 +7,92 @@ Inspired from [Flipper](https://github.com/facebook/flipper) by Meta, while leve
 It allows developers to connect a Kotlin Multiplatform or Android app to their computer and launch a **desktop interface** that can **observe, inspect, and interact with the running app** in real time — across shared Kotlin code and platform-specific implementations.
 
 **Works on**
-|   | Android | Desktop (jvm) | iOS (simulator) | iOS (device) | wasm |
-|---|:---:|:---:|:---:|:---:|:---:|
-| Network | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Database | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Preference | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Table | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Analytics | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Deeplink | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Files | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Images | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Dashboards | ✅ | ❌ | ❌ | ❌ | ❌ |
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>Android</th>
+            <th>Desktop (jvm)</th>
+            <th>iOS (simulator)</th>
+            <th>iOS (device)</th>
+            <th>wasm</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="feature-name">Network</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td class="feature-name">Database</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td class="feature-name">Preference</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td class="feature-name">Table</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td class="feature-name">Analytics</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td class="feature-name">Deeplink</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td class="feature-name">Files</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td class="feature-name">Images</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td class="feature-name">Dashboards</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+    </tbody>
+</table>
 
 With Flocon, you gain deep access to critical app internals — such as
 - network requests (HTTP, gRPC, GraphQL, WebSockets)
