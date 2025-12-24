@@ -44,6 +44,9 @@ dependencies {
 
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp3.okhttp)
+    implementation(libs.brotli.dec)
+
+    testImplementation(libs.junit)
 }
 
 
