@@ -88,21 +88,22 @@ fun DashboardSidebarView(
                     DashboardsStateUiModel.Empty -> Unit
                     DashboardsStateUiModel.Loading -> Unit
                     is DashboardsStateUiModel.WithContent -> {
-                        var filterText by remember { mutableStateOf("") }
-                        val filteredDashboards = remember(filterText, state.dashboards) {
-                            if (filterText.isBlank()) {
+                        var filterText = remember { mutableStateOf("") }
+                        val filteredDashboards = remember(filterText.value, state.dashboards) {
+                            val filterTextValue = filterText.value
+                            if (filterTextValue.isBlank()) {
                                 state.dashboards
                             } else {
                                 state.dashboards.filter {
-                                    it.id.contains(filterText, ignoreCase = true)
+                                    it.id.contains(filterTextValue, ignoreCase = true)
                                 }
                             }
                         }
                         FilterBar(
-                            filterText = remember { mutableStateOf(filterText) }.apply { value = filterText },
+                            filterText = filterText,
                             placeholderText = stringResource(Res.string.filter),
                             onTextChange = {
-                                filterText = it
+                                filterText.value = it
                             },
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp).padding(bottom = 12.dp),
                         )
