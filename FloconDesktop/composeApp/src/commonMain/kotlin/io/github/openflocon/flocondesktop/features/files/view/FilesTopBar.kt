@@ -8,12 +8,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.FormatSize
+import androidx.compose.material.icons.filled.MonitorWeight
+import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.outlined.CheckBox
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -112,7 +116,7 @@ fun FilesTopBar(
                 tooltip = stringResource(Res.string.with_folders_size),
             ) {
                 FloconIcon(
-                    imageVector = Icons.Outlined.FolderOpen
+                    imageVector = Icons.Outlined.RemoveRedEye
                 )
             }
 
@@ -173,6 +177,7 @@ private fun SelectingView(
         FloconIconButton(
             imageVector = if (selecting) Icons.Outlined.Close else Icons.Outlined.CheckBox,
             onClick = if (selecting) onClearMultiSelect else onMultiSelect,
+            tooltip = if (selecting) "Delete Selection" else "Select multiple files"
         )
     }
 }
