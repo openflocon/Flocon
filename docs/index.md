@@ -98,7 +98,7 @@ It allows developers to connect a Kotlin Multiplatform or Android app to their c
     </tbody>
 </table>
 
-With Flocon, you gain deep access to critical app internals — such as
+With Flocon, you gain deep access to critical app internals, such as
 - network requests (HTTP, gRPC, GraphQL, WebSockets)
 - mock network calls
 - local storage (sharedpref, databases, app files)

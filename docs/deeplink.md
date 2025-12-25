@@ -13,21 +13,23 @@ From the desktop UI, you can:
 
 No more typing long `adb shell am start` commands — Flocon makes deeplink testing accessible and efficient.
 
-**You can configure deeplinks directly from your android code !**
+**You can configure deeplinks directly from your Android code!**
+
 ```kotlin
-Flocon.deeplinks(
-        listOf(
-            Deeplink("flocon://home"),
-            Deeplink("flocon://test"),
-            Deeplink(
-                "flocon://user/[userId]",
-                label = "User"
-            ),
-            Deeplink(
-                "flocon://post/[postId]?comment=[commentText]",
-                label = "Post",
-                description = "Open a post and send a comment"
-            ),
-        )
+floconDeeplink {
+    deeplink("flocon://home")
+    deeplink("flocon://test")
+    deeplink(
+        "flocon://user/[userId]",
+        label = "User",
+        parameters = {
+            "userId" withAutoComplete listOf("Florent", "David", "Guillaume")
+        }
     )
+    deeplink(
+        "flocon://post/[postId]?comment=[commentText]",
+        label = "Post",
+        description = "Open a post and send a comment"
+    )
+}
 ```
