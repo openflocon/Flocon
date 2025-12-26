@@ -9,14 +9,4 @@ data class DatabaseQueryLogModel(
     val sqlQuery: String,
     val bindArgs: List<String>?,
     val timestamp: Long,
-) {
-    companion object {
-        fun fromJson(json: String): DatabaseQueryLogModel? {
-            return try {
-                io.github.openflocon.domain.common.FloconJson.json.decodeFromString<DatabaseQueryLogModel>(json)
-            } catch (t: Throwable) {
-                null
-            }
-        }
-    }
-}
+)

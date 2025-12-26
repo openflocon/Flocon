@@ -88,7 +88,7 @@ class QueryDatabaseRemoteDataSourceImpl(
     override fun getReceiveQuery(message: FloconIncomingMessageDomainModel): ResponseAndRequestIdDomainModel? = json.decodeReceivedQuery(message.body)?.toDomain()
 
     override fun getQueryLogs(message: FloconIncomingMessageDomainModel): DatabaseQueryLogDomainModel? {
-        return DatabaseQueryLogModel.fromJson(message.body)?.let {
+        return json.decodeFromString<DatabaseQueryLogModel>(message.body)?.let {
             DatabaseQueryLogDomainModel(
                 dbName = it.dbName,
                 path = it.path,

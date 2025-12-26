@@ -95,14 +95,9 @@ class DatabaseRepositoryImpl(
                 }
 
                 Protocol.FromDevice.Database.Method.LogQuery -> {
-                    val items = queryDatabaseDataSource.getQueryLogs(message)
-                        com.flocon.data.remote.database.models.DatabaseQueryLogModel.fromJson(message.body)?.let {
+                    queryDatabaseDataSource.getQueryLogs(message)?.let {
                         localDatabaseDataSource.saveQueryLog(
-                            dbName = it.dbName,
-                            path = it.path,
-                            sqlQuery = it.sqlQuery,
-                            bindArgs = it.bindArgs,
-                            timestamp = it.timestamp,
+                            it
                         )
                     }
                 }

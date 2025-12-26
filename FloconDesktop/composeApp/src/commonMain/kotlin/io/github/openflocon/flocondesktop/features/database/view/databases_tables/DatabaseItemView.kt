@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.view.databases_tables
 
+import androidx.compose.foundation.ContextMenuArea
+import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -84,10 +86,10 @@ private fun DatabaseView(
         Color.Transparent to FloconTheme.colorPalette.onSurface
     }
 
-    io.github.openflocon.library.designsystem.components.ContextMenuArea(
+    ContextMenuArea(
         items = {
             listOf(
-                io.github.openflocon.library.designsystem.components.ContextMenuItem("See all Queries") {
+                ContextMenuItem("See all Queries") {
                     onSeeAllQueriesClicked(state.id, state.name)
                 }
             )
