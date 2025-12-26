@@ -93,7 +93,8 @@ class DatabaseRepositoryImpl(
                 }
 
                 Protocol.FromDevice.Database.Method.LogQuery -> {
-                    com.flocon.data.remote.database.models.DatabaseQueryLogModel.fromJson(message.body)?.let {
+                    val items = queryDatabaseDataSource.getQueryLogs(message)
+                        com.flocon.data.remote.database.models.DatabaseQueryLogModel.fromJson(message.body)?.let {
                         localDatabaseDataSource.saveQueryLog(
                             dbName = it.dbName,
                             path = it.path,

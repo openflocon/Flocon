@@ -14,6 +14,7 @@ import kotlinx.serialization.encodeToString
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
+import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -168,6 +169,10 @@ internal class LocalDatabaseDataSourceRoom(
         }
     }.distinctUntilChanged()
 
+    override suspend fun getFavorite(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        databaseId: String,
+        id: Long
     ): DatabaseFavoriteQueryDomainModel? = queryDao.getFavorite(
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
@@ -175,26 +180,22 @@ internal class LocalDatabaseDataSourceRoom(
     )?.toDomain()
 
     override suspend fun saveQueryLog(
-        dbName: String,
-        path: String,
-        sqlQuery: String,
-        bindArgs: List<String>?,
-        timestamp: Long,
+        log: DatabaseQueryLogDomainModel,
     ) {
         databaseQueryLogDao.insert(
             DatabaseQueryLogEntity(
-                dbName = dbName,
-                path = path,
-                sqlQuery = sqlQuery,
-                bindArgs = bindArgs?.let { json.encodeToString(it) },
-                timestamp = timestamp,
+                dbName = log.dbName,
+                path = log.path,
+                sqlQuery = log.sqlQuery,
+                bindArgs = log.bindArgs.takeIf { it.isNotEmpty() }?.let { json.encodeToString(it) },
+                timestamp = log.timestamp,
             )
         )
     }
 
-    override fun getQueryLogsPagingSource(dbName: String): androidx.paging.PagingSource<Int, io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel> {
+    override fun getQueryLogsPagingSource(dbName: String): androidx.paging.PagingSource<Int, DatabaseQueryLogDomainModel> {
         return databaseQueryLogDao.getPagingSource(dbName).map { entity ->
-            io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel(
+            DatabaseQueryLogDomainModel(
                 dbName = entity.dbName,
                 path = entity.path,
                 sqlQuery = entity.sqlQuery,

@@ -2,6 +2,7 @@ package io.github.openflocon.data.core.database.datasource
 
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
+import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -60,11 +61,7 @@ interface LocalDatabaseDataSource {
     ): DatabaseFavoriteQueryDomainModel?
 
     suspend fun saveQueryLog(
-        dbName: String,
-        path: String,
-        sqlQuery: String,
-        bindArgs: List<String>?,
-        timestamp: Long,
+        log: DatabaseQueryLogDomainModel,
     )
 
     fun getQueryLogsPagingSource(dbName: String): androidx.paging.PagingSource<Int, io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel>
