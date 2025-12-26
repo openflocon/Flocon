@@ -1,23 +1,40 @@
-### 📋 Configurable Data Tables (kotlin multi platform compatible)
+### 📋 Structured Data Tables
 
 <img width="1196" height="768" alt="tables" src="https://github.com/user-attachments/assets/ff3090fa-8f37-4138-a492-20b9159314af" />
 
-In addition to dashboards, Flocon supports structured **data tables** that can be configured and updated by the mobile app.
+In addition to dashboards, Flocon supports structured **data tables** (compatible with Kotlin Multiplatform). These allow you to visualize lists of items with multiple columns directly in the desktop interface.
 
-These tables can be used to visualize:
+Use cases include:
+- Displaying active user sessions.
+- Inspecting items in local memory or cache.
+- Monitoring custom business events.
+- Comparing simulated backend responses.
 
-- Lists of active users
-- Items in memory or cache
-- Custom logs or metrics
-- Backend response simulations
+Tables are interactive, scrollable, and provide a clear way to inspect real-time collections.
 
-Tables are interactive, scrollable, and they give developers and testers a straightforward way to inspect lists or collections in real time.
+#### Usage
 
-To create a dynamic row :
+To log a new row in a table, identify the table by name and use the `log` method with the `toParam` DSL to define column values.
+
 ```kotlin
-floconTable("analytics").log(
-   "name" toParam "nameValue",
-   "value1" toParam "value1Value",
-   "value2" toParam "value2Value",
+floconTable("active_sessions").log(
+    "user_id" toParam "1024",
+    "name" toParam "Florent",
+    "status" toParam "Active",
+    "last_seen" toParam "2023-10-27 10:00"
 )
+```
+
+#### Real-time Updates
+
+Whenever you call `.log()`, a new row is appended to the corresponding table in Flocon Desktop. This makes it ideal for tracking events or state changes over time.
+
+```kotlin
+fun onUserAction(user: User, action: String) {
+    floconTable("user_actions").log(
+        "timestamp" toParam currentTimeMillis().toString(),
+        "user" toParam user.name,
+        "action" toParam action
+    )
+}
 ```
