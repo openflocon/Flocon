@@ -159,6 +159,7 @@ class DatabaseViewModel(
         val generatedName = table.name
         createTab(
             databaseId = databaseId,
+            databaseName = "", // not used here
             tableName = null,
             generatedName = generatedName,
             favoriteId = null,
@@ -169,6 +170,7 @@ class DatabaseViewModel(
     private suspend fun createTabForQueryLogs(databaseId: DeviceDataBaseId, dbName: String) {
         createTab(
             databaseId = databaseId,
+            databaseName = dbName, // only used here
             tableName = null,
             generatedName = "Logs ($dbName)",
             favoriteId = null,
@@ -292,6 +294,7 @@ class DatabaseViewModel(
         generatedName: String,
         query: String?,
         isQueryLogs: Boolean = false,
+        databaseName: String? = null, // only used for isQueryLogs
     ) {
         val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
 
@@ -308,6 +311,7 @@ class DatabaseViewModel(
 
         val addedTab = DatabaseTabState(
             databaseId = databaseId,
+            databaseName = databaseName ?: "",
             tableName = tableName,
             generatedName = generatedName,
             index = index,

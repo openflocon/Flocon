@@ -28,7 +28,7 @@ fun DatabaseTabView(
 ) {
     if (tab.isQueryLogs) {
         io.github.openflocon.flocondesktop.features.database.view.logs.DatabaseQueryLogsView(
-            dbName = tab.databaseId,
+            dbName = tab.databaseName,
             modifier = Modifier.fillMaxSize()
         )
     } else {
