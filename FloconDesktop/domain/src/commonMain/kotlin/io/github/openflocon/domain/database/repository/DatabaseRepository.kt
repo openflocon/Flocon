@@ -74,4 +74,6 @@ interface DatabaseRepository {
         databaseId: String,
         id: Long
     ): DatabaseFavoriteQueryDomainModel?
+
+    fun getQueryLogsPagingSource(dbName: String): androidx.paging.PagingSource<Int, io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel>
 }

@@ -34,6 +34,7 @@ object Protocol {
             object Method {
                 const val Query = "query"
                 const val GetDatabases = "getDatabases"
+                const val LogQuery = "logQuery"
             }
         }
 

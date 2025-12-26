@@ -91,6 +91,18 @@ class DatabaseRepositoryImpl(
                         databases = items,
                     )
                 }
+
+                Protocol.FromDevice.Database.Method.LogQuery -> {
+                    com.flocon.data.remote.database.models.DatabaseQueryLogModel.fromJson(message.body)?.let {
+                        localDatabaseDataSource.saveQueryLog(
+                            dbName = it.dbName,
+                            path = it.path,
+                            sqlQuery = it.sqlQuery,
+                            bindArgs = it.bindArgs,
+                            timestamp = it.timestamp,
+                        )
+                    }
+                }
             }
         }
     }
@@ -190,5 +202,9 @@ class DatabaseRepositoryImpl(
             databaseId = databaseId,
             id = id,
         )
+    }
+
+    override fun getQueryLogsPagingSource(dbName: String): androidx.paging.PagingSource<Int, io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel> {
+        return localDatabaseDataSource.getQueryLogsPagingSource(dbName)
     }
 }

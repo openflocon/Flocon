@@ -58,4 +58,14 @@ interface LocalDatabaseDataSource {
         databaseId: String,
         id: Long
     ): DatabaseFavoriteQueryDomainModel?
+
+    suspend fun saveQueryLog(
+        dbName: String,
+        path: String,
+        sqlQuery: String,
+        bindArgs: List<String>?,
+        timestamp: Long,
+    )
+
+    fun getQueryLogsPagingSource(dbName: String): androidx.paging.PagingSource<Int, io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel>
 }

@@ -28,4 +28,5 @@ internal val databaseModule = module {
     factoryOf(::ObserveFavoriteQueriesUseCase)
     factoryOf(::SaveQueryAsFavoriteDatabaseUseCase)
     factoryOf(::GetFavoriteQueryByIdDatabaseUseCase)
+    factoryOf(::io.github.openflocon.domain.database.usecase.GetDatabaseQueryLogsUseCase)
 }

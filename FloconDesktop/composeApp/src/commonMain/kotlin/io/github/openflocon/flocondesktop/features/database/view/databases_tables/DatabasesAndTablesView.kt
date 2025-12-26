@@ -89,6 +89,9 @@ fun DatabasesAndTablesView(
                                 },
                                 onInsertContentClicked = { id, table ->
                                     onAction(DatabaseScreenAction.OnInsertContentClicked(id, table))
+                                },
+                                onSeeAllQueriesClicked = { id, dbName ->
+                                    onAction(DatabaseScreenAction.OnSeeAllQueriesClicked(id, dbName))
                                 }
                             )
                         }

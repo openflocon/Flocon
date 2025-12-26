@@ -135,6 +135,11 @@ class DatabaseViewModel(
                     table = action.table,
                     query = generateInsertQuery(action.table)
                 )
+
+                is DatabaseScreenAction.OnSeeAllQueriesClicked -> createTabForQueryLogs(
+                    databaseId = action.databaseId,
+                    dbName = action.dbName
+                )
             }
         }
     }
@@ -158,6 +163,17 @@ class DatabaseViewModel(
             generatedName = generatedName,
             favoriteId = null,
             query = query,
+        )
+    }
+
+    private suspend fun createTabForQueryLogs(databaseId: DeviceDataBaseId, dbName: String) {
+        createTab(
+            databaseId = databaseId,
+            tableName = null,
+            generatedName = "Logs ($dbName)",
+            favoriteId = null,
+            query = null,
+            isQueryLogs = true,
         )
     }
 
@@ -275,6 +291,7 @@ class DatabaseViewModel(
         favoriteId: Long?,
         generatedName: String,
         query: String?,
+        isQueryLogs: Boolean = false,
     ) {
         val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
 
@@ -297,6 +314,7 @@ class DatabaseViewModel(
             favoriteId = favoriteId,
             query = query,
             id = UUID.randomUUID().toString(),
+            isQueryLogs = isQueryLogs,
         )
 
         val newList = list.toMutableList().apply {

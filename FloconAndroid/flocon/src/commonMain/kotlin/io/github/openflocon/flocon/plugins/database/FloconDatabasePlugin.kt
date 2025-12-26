@@ -13,6 +13,7 @@ import io.github.openflocon.flocon.plugins.database.model.fromdevice.QueryResult
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.listDeviceDataBaseDataModelToJson
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.toJson
 import io.github.openflocon.flocon.plugins.database.model.todevice.DatabaseQueryMessage
+import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseQueryLogModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -93,5 +94,23 @@ internal class FloconDatabasePluginImpl(
     override fun register(floconDatabaseModel: FloconDatabaseModel) {
         registeredDatabases.update { it + floconDatabaseModel }
         sendAllDatabases(sender)
+    }
+
+    override fun logQuery(dbName: String, path: String, sqlQuery: String, bindArgs: List<Any?>) {
+        try {
+            sender.send(
+                plugin = Protocol.FromDevice.Database.Plugin,
+                method = Protocol.FromDevice.Database.Method.LogQuery,
+                body = DatabaseQueryLogModel(
+                    dbName = dbName,
+                    path = path,
+                    sqlQuery = sqlQuery,
+                    bindArgs = bindArgs.map { it.toString() },
+                    timestamp = kotlinx.datetime.Clock.System.now().toEpochMilliseconds(),
+                ).toJson(),
+            )
+        } catch (t: Throwable) {
+            FloconLogger.logError("Database logging error", t)
+        }
     }
 }

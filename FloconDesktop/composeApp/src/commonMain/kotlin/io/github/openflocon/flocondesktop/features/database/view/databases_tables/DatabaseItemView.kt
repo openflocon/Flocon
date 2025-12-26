@@ -36,6 +36,7 @@ internal fun DatabaseItemView(
     onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
     onDeleteContentClicked: (databaseId: DeviceDataBaseId, TableUiModel) -> Unit,
     onInsertContentClicked: (databaseId: DeviceDataBaseId, TableUiModel) -> Unit,
+    onSeeAllQueriesClicked: (DeviceDataBaseId, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -44,6 +45,7 @@ internal fun DatabaseItemView(
             onSelect = onSelect,
             state = state,
             onDatabaseDoubleClicked = onDatabaseDoubleClicked,
+            onSeeAllQueriesClicked = onSeeAllQueriesClicked,
         )
         state.tables?.let { tables ->
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -73,6 +75,7 @@ private fun DatabaseView(
     onSelect: (DeviceDataBaseId) -> Unit,
     state: DeviceDataBaseUiModel,
     onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
+    onSeeAllQueriesClicked: (DeviceDataBaseId, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val (background, textColor) = if (state.isSelected) {
@@ -81,32 +84,42 @@ private fun DatabaseView(
         Color.Transparent to FloconTheme.colorPalette.onSurface
     }
 
-    Row(
-        modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(background)
-            .combinedClickable(
-                onClick = {
-                    onSelect(state.id)
-                }, onDoubleClick = {
-                    onDatabaseDoubleClicked(state)
+    io.github.openflocon.library.designsystem.components.ContextMenuArea(
+        items = {
+            listOf(
+                io.github.openflocon.library.designsystem.components.ContextMenuItem("See all Queries") {
+                    onSeeAllQueriesClicked(state.id, state.name)
                 }
-            ).padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            )
+        }
     ) {
-        Image(
-            modifier = Modifier.width(14.dp),
-            imageVector = Icons.Outlined.Dataset,
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(textColor),
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(
-            state.name,
-            color = textColor,
-            style = FloconTheme.typography.bodyMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row(
+            modifier = modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(background)
+                .combinedClickable(
+                    onClick = {
+                        onSelect(state.id)
+                    }, onDoubleClick = {
+                        onDatabaseDoubleClicked(state)
+                    }
+                ).padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                modifier = Modifier.width(14.dp),
+                imageVector = Icons.Outlined.Dataset,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(textColor),
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                state.name,
+                color = textColor,
+                style = FloconTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }

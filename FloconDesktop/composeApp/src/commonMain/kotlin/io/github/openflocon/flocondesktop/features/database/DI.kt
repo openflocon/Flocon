@@ -13,4 +13,5 @@ internal val databaseModule = module {
     factoryOf(::DatabaseSelectorDelegate)
     factoryOf(::ImportSqlQueryProcessor)
     factoryOf(::ExportDatabaseResultToCsvProcessor)
+    viewModelOf(::DatabaseQueryLogsViewModel)
 }

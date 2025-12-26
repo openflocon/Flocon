@@ -26,40 +26,47 @@ fun DatabaseTabView(
     tab: DatabaseTabState,
     favoritesTitles: Set<String>,
 ) {
-    val viewModel: DatabaseTabViewModel = koinViewModel(
-        key = tab.id,
-        parameters = {
-            parametersOf(
-                DatabaseTabViewModel.Params(
-                    databaseId = tab.databaseId,
-                    tableName = tab.tableName,
-                    favoriteId = tab.favoriteId,
-                    query = tab.query,
+    if (tab.isQueryLogs) {
+        io.github.openflocon.flocondesktop.features.database.view.logs.DatabaseQueryLogsView(
+            dbName = tab.databaseId,
+            modifier = Modifier.fillMaxSize()
+        )
+    } else {
+        val viewModel: DatabaseTabViewModel = koinViewModel(
+            key = tab.id,
+            parameters = {
+                parametersOf(
+                    DatabaseTabViewModel.Params(
+                        databaseId = tab.databaseId,
+                        tableName = tab.tableName,
+                        favoriteId = tab.favoriteId,
+                        query = tab.query,
+                    )
                 )
-            )
-        }
-    )
+            }
+        )
 
-    DisposableEffect(viewModel) {
-        viewModel.onVisible()
-        onDispose {
-            viewModel.onNotVisible()
+        DisposableEffect(viewModel) {
+            viewModel.onVisible()
+            onDispose {
+                viewModel.onNotVisible()
+            }
         }
+
+        val state: DatabaseScreenState by viewModel.state.collectAsStateWithLifecycle()
+        val autoUpdate by viewModel.isAutoUpdateEnabled.collectAsStateWithLifecycle()
+        val lastQueries by viewModel.lastQueries.collectAsStateWithLifecycle()
+
+        DatabaseTabViewContent(
+            query = viewModel.query.value,
+            autoUpdate = autoUpdate,
+            updateQuery = viewModel::updateQuery,
+            onAction = viewModel::onAction,
+            state = state,
+            lastQueries = lastQueries,
+            favoritesTitles = favoritesTitles,
+        )
     }
-
-    val state: DatabaseScreenState by viewModel.state.collectAsStateWithLifecycle()
-    val autoUpdate by viewModel.isAutoUpdateEnabled.collectAsStateWithLifecycle()
-    val lastQueries by viewModel.lastQueries.collectAsStateWithLifecycle()
-
-    DatabaseTabViewContent(
-        query = viewModel.query.value,
-        autoUpdate = autoUpdate,
-        updateQuery = viewModel::updateQuery,
-        onAction = viewModel::onAction,
-        state = state,
-        lastQueries = lastQueries,
-        favoritesTitles = favoritesTitles,
-    )
 }
 
 @Composable
