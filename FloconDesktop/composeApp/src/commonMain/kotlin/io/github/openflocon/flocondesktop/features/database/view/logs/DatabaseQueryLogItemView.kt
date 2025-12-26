@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -18,7 +19,7 @@ import java.util.Locale
 
 @Composable
 fun DatabaseQueryLogItemView(
-    log: DatabaseQueryLogDomainModel,
+    log: DatabaseQueryUiModel,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -35,7 +36,7 @@ fun DatabaseQueryLogItemView(
             style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
             color = FloconTheme.colorPalette.onSurface
         )
-        if (!log.bindArgs.isNullOrEmpty()) {
+        log.bindArgs?.let {
             Spacer(Modifier.height(4.dp))
             Text(
                 text = "Args: ${log.bindArgs}",
