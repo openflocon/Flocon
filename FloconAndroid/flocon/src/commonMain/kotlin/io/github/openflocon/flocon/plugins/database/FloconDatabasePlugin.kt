@@ -14,6 +14,7 @@ import io.github.openflocon.flocon.plugins.database.model.fromdevice.listDeviceD
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.toJson
 import io.github.openflocon.flocon.plugins.database.model.todevice.DatabaseQueryMessage
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseQueryLogModel
+import io.github.openflocon.flocon.utils.currentTimeMillis
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -106,7 +107,7 @@ internal class FloconDatabasePluginImpl(
                     path = path,
                     sqlQuery = sqlQuery,
                     bindArgs = bindArgs.map { it.toString() },
-                    timestamp = kotlinx.datetime.Clock.System.now().toEpochMilliseconds(),
+                    timestamp = currentTimeMillis(),
                 ).toJson(),
             )
         } catch (t: Throwable) {
