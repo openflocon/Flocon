@@ -190,7 +190,6 @@ internal class LocalDatabaseDataSourceRoom(
         databaseQueryLogDao.insert(
             DatabaseQueryLogEntity(
                 dbName = log.dbName,
-                path = log.path,
                 sqlQuery = log.sqlQuery,
                 bindArgs = log.bindArgs.takeIf { it.isNotEmpty() }?.let { json.encodeToString(it) },
                 timestamp = log.timestamp,
@@ -213,7 +212,6 @@ internal class LocalDatabaseDataSourceRoom(
                 pagingData.map { entity ->
                     DatabaseQueryLogDomainModel(
                         dbName = entity.dbName,
-                        path = entity.path,
                         sqlQuery = entity.sqlQuery,
                         bindArgs = entity.bindArgs?.let {
                             json.decodeFromString(it)

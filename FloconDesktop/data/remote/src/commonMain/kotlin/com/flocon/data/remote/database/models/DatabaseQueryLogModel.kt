@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DatabaseQueryLogModel(
     val dbName: String,
-    val path: String,
     val sqlQuery: String,
     val bindArgs: List<String>?,
     val timestamp: Long,

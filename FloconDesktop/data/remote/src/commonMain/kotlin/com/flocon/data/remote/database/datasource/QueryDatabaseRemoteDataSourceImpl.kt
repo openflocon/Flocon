@@ -91,7 +91,6 @@ class QueryDatabaseRemoteDataSourceImpl(
         return json.decodeFromString<DatabaseQueryLogModel>(message.body)?.let {
             DatabaseQueryLogDomainModel(
                 dbName = it.dbName,
-                path = it.path,
                 sqlQuery = it.sqlQuery,
                 bindArgs = it.bindArgs.orEmpty(),
                 timestamp = it.timestamp

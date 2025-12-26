@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 data class DatabaseQueryLogEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val dbName: String,
-    val path: String,
     val sqlQuery: String,
     val bindArgs: String?,
     val timestamp: Long

@@ -28,12 +28,6 @@ fun DatabaseQueryLogItemView(
                 style = FloconTheme.typography.bodySmall,
                 color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.6f)
             )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = log.path,
-                style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.6f)
-            )
         }
         Spacer(Modifier.height(4.dp))
         Text(
