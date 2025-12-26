@@ -97,14 +97,13 @@ internal class FloconDatabasePluginImpl(
         sendAllDatabases(sender)
     }
 
-    override fun logQuery(dbName: String, path: String, sqlQuery: String, bindArgs: List<Any?>) {
+    override fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>) {
         try {
             sender.send(
                 plugin = Protocol.FromDevice.Database.Plugin,
                 method = Protocol.FromDevice.Database.Method.LogQuery,
                 body = DatabaseQueryLogModel(
                     dbName = dbName,
-                    path = path,
                     sqlQuery = sqlQuery,
                     bindArgs = bindArgs.map { it.toString() },
                     timestamp = currentTimeMillis(),

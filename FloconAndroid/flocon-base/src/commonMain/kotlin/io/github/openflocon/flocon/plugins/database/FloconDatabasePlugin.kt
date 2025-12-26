@@ -19,10 +19,9 @@ fun floconRegisterDatabase(displayName: String, absolutePath: String) {
     )
 }
 
-fun floconLogDatabaseQuery(dbName: String, path: String, sqlQuery: String, bindArgs: List<Any?>) {
+fun floconLogDatabaseQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>) {
     FloconApp.instance?.client?.databasePlugin?.logQuery(
         dbName = dbName,
-        path = path,
         sqlQuery = sqlQuery,
         bindArgs = bindArgs,
     )
@@ -30,5 +29,5 @@ fun floconLogDatabaseQuery(dbName: String, path: String, sqlQuery: String, bindA
 
 interface FloconDatabasePlugin {
     fun register(floconDatabaseModel: FloconDatabaseModel)
-    fun logQuery(dbName: String, path: String, sqlQuery: String, bindArgs: List<Any?>)
+    fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>)
 }

@@ -7,7 +7,6 @@ import kotlinx.serialization.encodeToString
 @Serializable
 internal data class DatabaseQueryLogModel(
     val dbName: String,
-    val path: String,
     val sqlQuery: String,
     val bindArgs: List<String>?,
     val timestamp: Long,
