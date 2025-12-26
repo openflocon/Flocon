@@ -1,5 +1,6 @@
 package io.github.openflocon.data.core.database.repository
 
+import androidx.paging.PagingData
 import io.github.openflocon.data.core.database.datasource.DeviceDatabasesRemoteDataSource
 import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
 import io.github.openflocon.data.core.database.datasource.QueryDatabaseRemoteDataSource
@@ -8,6 +9,7 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
+import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
@@ -205,7 +207,7 @@ class DatabaseRepositoryImpl(
         )
     }
 
-    override fun getQueryLogsPagingSource(dbName: String): androidx.paging.PagingSource<Int, io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel> {
-        return localDatabaseDataSource.getQueryLogsPagingSource(dbName)
+    override fun observeQueryLogs(dbName: String): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+        return localDatabaseDataSource.observeQueryLogs(dbName)
     }
 }

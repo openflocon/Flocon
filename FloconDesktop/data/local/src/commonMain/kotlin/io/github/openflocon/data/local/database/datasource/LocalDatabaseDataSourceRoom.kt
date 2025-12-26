@@ -1,5 +1,8 @@
 package io.github.openflocon.data.local.database.datasource
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
 import io.github.openflocon.data.local.database.dao.DatabaseQueryLogDao
 import io.github.openflocon.data.local.database.dao.QueryDao
@@ -21,7 +24,9 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlin.let
 
 internal class LocalDatabaseDataSourceRoom(
     private val queryDao: QueryDao,
@@ -193,15 +198,29 @@ internal class LocalDatabaseDataSourceRoom(
         )
     }
 
-    override fun getQueryLogsPagingSource(dbName: String): androidx.paging.PagingSource<Int, DatabaseQueryLogDomainModel> {
-        return databaseQueryLogDao.getPagingSource(dbName).map { entity ->
-            DatabaseQueryLogDomainModel(
-                dbName = entity.dbName,
-                path = entity.path,
-                sqlQuery = entity.sqlQuery,
-                bindArgs = entity.bindArgs,
-                timestamp = entity.timestamp,
-            )
-        }
+    override fun observeQueryLogs(dbName: String): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+            ),
+            pagingSourceFactory = {
+                databaseQueryLogDao.getPagingSource(
+                    dbName = dbName,
+                )
+            }
+        ).flow
+            .map { pagingData ->
+                pagingData.map { entity ->
+                    DatabaseQueryLogDomainModel(
+                        dbName = entity.dbName,
+                        path = entity.path,
+                        sqlQuery = entity.sqlQuery,
+                        bindArgs = entity.bindArgs?.let {
+                            json.decodeFromString(it)
+                        } ?: emptyList(),
+                        timestamp = entity.timestamp,
+                    )
+                }
+            }
     }
 }

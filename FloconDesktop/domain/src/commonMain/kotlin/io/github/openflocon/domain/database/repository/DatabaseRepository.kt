@@ -1,8 +1,10 @@
 package io.github.openflocon.domain.database.repository
 
+import androidx.paging.PagingData
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
+import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
@@ -75,5 +77,5 @@ interface DatabaseRepository {
         id: Long
     ): DatabaseFavoriteQueryDomainModel?
 
-    fun getQueryLogsPagingSource(dbName: String): androidx.paging.PagingSource<Int, io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel>
+    fun observeQueryLogs(dbName: String): Flow<PagingData<DatabaseQueryLogDomainModel>>
 }
