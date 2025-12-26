@@ -25,9 +25,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
+import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 
 @Composable
 internal fun DatabaseItemView(
@@ -86,14 +88,13 @@ private fun DatabaseView(
         Color.Transparent to FloconTheme.colorPalette.onSurface
     }
 
-    ContextMenuArea(
-        items = {
-            listOf(
-                ContextMenuItem("See all Queries") {
-                    onSeeAllQueriesClicked(state.id, state.name)
-                }
-            )
-        }
+    ContextualView(
+        listOf(FloconContextMenuItem.Item(
+            label = "See all queries",
+            onClick = {
+                onSeeAllQueriesClicked(state.id, state.name)
+            }
+        ))
     ) {
         Row(
             modifier = modifier
