@@ -1,55 +1,63 @@
-### 🧩 Database (kotlin multi platform compatible)
+### 🧩 Database Explorer & SQL Editor
 
 <img width="1726" height="1080" alt="Screenshot 2025-10-14 at 23 40 58" src="https://github.com/user-attachments/assets/47360e06-43af-4713-b0ed-a6728a6b49ad" />
-
 <img width="1728" height="1077" alt="Screenshot 2025-10-14 at 23 44 16" src="https://github.com/user-attachments/assets/f351970f-0511-4b54-af5e-55dcd209f2e2" />
 
-Flocon gives you direct access to your app’s **local databases** (SQLite, Room, etc.), with a clean interface for exploring and querying data.
+Flocon gives you direct access to your app’s **local databases** (SQLite, Room, SQLDelight, etc.), with a clean interface for exploring schemas and querying data.
 
-Features include:
+Key capabilities include:
+- **Automatic detection** of all SQLite databases on Android.
+- Listing all tables and their schemas.
+- Running **custom SQL queries** with syntax highlighting.
+- Auto-updating queries and saving favorites.
+- Generating `INSERT` and `DELETE` queries automatically.
 
-- Listing all available databases
-- Display all database tables & schemas
-- Running **custom SQL queries** in tabs
-- Auto update queries
-- Save queries as favorite
-- Generate Insert & Delete queries
-  
+#### Android (Automatic Detection)
 
-This makes it easy to debug persistent storage issues, verify migrations, or test app behavior with specific data sets — all without leaving your IDE.
+On Android, Flocon automatically scans your app's internal storage and lists all SQLite databases. You don't need additional configuration to see them in the desktop app.
 
-On android there's nothing to add, but on a multi platform project, you need to provide the database's path to flocon
+#### Manual Registration (Android)
+
+If you want to use a custom display name or register an **in-memory database**, you can use `floconRegisterDatabase`:
 
 ```kotlin
-// on a desktop project
-val dbFile = File(System.getProperty("java.io.tmpdir"), "flocon_food_database.db")
+// Register an In-Memory Room Database
+val dogDatabase = Room.inMemoryDatabaseBuilder(context, DogDatabase::class.java).build()
 
 floconRegisterDatabase(
-    displayName = "food",
+    displayName = "In-Memory Dogs",
+    openHelper = dogDatabase.openHelper
+)
+```
+
+#### Multiplatform (Desktop & iOS)
+
+For Kotlin Multiplatform projects (Desktop and iOS), you must provide the absolute path to the database file:
+
+```kotlin
+// On Desktop
+val dbFile = File(System.getProperty("java.io.tmpdir"), "app_database.db")
+
+floconRegisterDatabase(
+    displayName = "App DB",
     absolutePath = dbFile.absolutePath,
 )
-
-return Room.databaseBuilder<FoodDatabase>(
-        name = dbFile.absolutePath,
-    )
-    .setDriver(BundledSQLiteDriver())
-    .setQueryCoroutineContext(Dispatchers.IO)
-    .build()
 ```
-
 
 ```kotlin
-// on an ios project
-val dbFile = "${documentDirectory()}/dog_database.db"
+// On iOS
+val dbPath = "${documentDirectory()}/app_database.db"
 
 floconRegisterDatabase(
-    absolutePath = dbFile, 
-    displayName = "Dog Database"
+    displayName = "App DB",
+    absolutePath = dbPath
 )
-
-return Room.databaseBuilder<DogDatabase>(
-        name = dbFile,
-    )
-    .setDriver(NativeSQLiteDriver())
-    .build()
 ```
+
+#### SQL Workspace
+
+The Flocon Desktop app provides a full SQL workspace where you can:
+1. **Explore**: See all tables and their columns.
+2. **Query**: Write any SQL query and see the results in a formatted table.
+3. **Favorites**: Save your most used queries for quick access later.
+4. **Toolbox**: Quickly generate common SQL statements from the UI.
