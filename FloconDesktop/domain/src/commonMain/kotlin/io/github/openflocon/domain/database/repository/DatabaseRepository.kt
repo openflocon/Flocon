@@ -74,8 +74,13 @@ interface DatabaseRepository {
     suspend fun getFavorite(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: String,
-        id: Long
+        id: Long,
     ): DatabaseFavoriteQueryDomainModel?
 
-    fun observeQueryLogs(dbName: String, showTransactions: Boolean, keywords: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>>
+    fun observeQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        keywords: List<String>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<PagingData<DatabaseQueryLogDomainModel>>
 }

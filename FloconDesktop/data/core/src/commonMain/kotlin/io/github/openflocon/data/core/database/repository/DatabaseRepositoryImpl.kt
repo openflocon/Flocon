@@ -95,9 +95,12 @@ class DatabaseRepositoryImpl(
                 }
 
                 Protocol.FromDevice.Database.Method.LogQuery -> {
-                    queryDatabaseDataSource.getQueryLogs(message)?.let {
+                    queryDatabaseDataSource.getQueryLogs(
+                        message,
+                    )?.let {
                         localDatabaseDataSource.saveQueryLog(
-                            it
+                            it,
+                            deviceIdAndPackageName = deviceIdAndPackageName
                         )
                     }
                 }
@@ -202,11 +205,17 @@ class DatabaseRepositoryImpl(
         )
     }
 
-    override fun observeQueryLogs(dbName: String, showTransactions: Boolean, keywords: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+    override fun observeQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        keywords: List<String>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<PagingData<DatabaseQueryLogDomainModel>> {
         return localDatabaseDataSource.observeQueryLogs(
             dbName = dbName,
             showTransactions = showTransactions,
-            keywords = keywords
+            keywords = keywords,
+            deviceIdAndPackageName = deviceIdAndPackageName,
         )
     }
 }

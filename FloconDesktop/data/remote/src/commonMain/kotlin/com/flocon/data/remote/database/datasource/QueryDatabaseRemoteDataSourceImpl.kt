@@ -87,7 +87,9 @@ class QueryDatabaseRemoteDataSourceImpl(
 
     override fun getReceiveQuery(message: FloconIncomingMessageDomainModel): ResponseAndRequestIdDomainModel? = json.decodeReceivedQuery(message.body)?.toDomain()
 
-    override fun getQueryLogs(message: FloconIncomingMessageDomainModel): DatabaseQueryLogDomainModel? {
+    override fun getQueryLogs(
+        message: FloconIncomingMessageDomainModel,
+    ): DatabaseQueryLogDomainModel? {
         return json.decodeFromString<DatabaseQueryLogModel>(message.body)?.let {
 
             val upperQuery = it.sqlQuery.trim().uppercase()

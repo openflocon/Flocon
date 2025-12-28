@@ -63,7 +63,13 @@ interface LocalDatabaseDataSource {
 
     suspend fun saveQueryLog(
         log: DatabaseQueryLogDomainModel,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     )
 
-    fun observeQueryLogs(dbName: String, showTransactions: Boolean, keywords: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>>
+    fun observeQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
+        keywords: List<String>
+    ): Flow<PagingData<DatabaseQueryLogDomainModel>>
 }

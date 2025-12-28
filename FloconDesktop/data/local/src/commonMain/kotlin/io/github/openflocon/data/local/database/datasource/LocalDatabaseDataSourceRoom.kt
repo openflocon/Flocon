@@ -185,6 +185,7 @@ internal class LocalDatabaseDataSourceRoom(
 
     override suspend fun saveQueryLog(
         log: DatabaseQueryLogDomainModel,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ) {
         databaseQueryLogDao.insert(
             DatabaseQueryLogEntity(
@@ -193,20 +194,33 @@ internal class LocalDatabaseDataSourceRoom(
                 bindArgs = log.bindArgs?.let { json.encodeToString(it) },
                 timestamp = log.timestamp,
                 isTransaction = log.isTransaction,
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+                appInstance = deviceIdAndPackageName.appInstance
             )
         )
     }
 
-    override fun observeQueryLogs(dbName: String, showTransactions: Boolean, keywords: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+    override fun observeQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
+        keywords: List<String>
+    ): Flow<PagingData<DatabaseQueryLogDomainModel>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 20,
             ),
             pagingSourceFactory = {
-                val query = buildQuery(dbName, showTransactions, keywords)
+                val query = buildQuery(
+                    dbName = dbName,
+                    showTransactions = showTransactions,
+                    keywords = keywords,
+                    deviceIdAndPackageName = deviceIdAndPackageName
+                )
 
                 databaseQueryLogDao.getPagingSource(
-                    query = query
+                    query = query,
                 )
             }
         ).flow
@@ -228,10 +242,13 @@ internal class LocalDatabaseDataSourceRoom(
     private fun buildQuery(
         dbName: String,
         showTransactions: Boolean,
-        keywords: List<String>
+        keywords: List<String>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): RoomRawQuery {
         val queryParams = ArrayList<Any>()
-        var queryString = "SELECT * FROM DatabaseQueryLogEntity WHERE dbName = ?"
+        var queryString = "SELECT * FROM DatabaseQueryLogEntity WHERE deviceId = ? AND packageName = ? AND dbName = ?"
+        queryParams.add(deviceIdAndPackageName.deviceId)
+        queryParams.add(deviceIdAndPackageName.packageName)
         queryParams.add(dbName)
 
         if (!showTransactions) {

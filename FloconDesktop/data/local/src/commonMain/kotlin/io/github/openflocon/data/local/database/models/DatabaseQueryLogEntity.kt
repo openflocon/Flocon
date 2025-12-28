@@ -11,4 +11,8 @@ data class DatabaseQueryLogEntity(
     val bindArgs: String?,
     val timestamp: Long,
     val isTransaction: Boolean,
+
+    val deviceId: String,
+    val packageName: String,
+    val appInstance: Long,
 )
