@@ -10,10 +10,10 @@ import io.github.openflocon.data.local.database.dao.TablesDao
 import io.github.openflocon.data.local.database.mapper.toDomain
 import io.github.openflocon.data.local.database.mapper.toEntity
 import androidx.paging.map
+import androidx.room.RoomRawQuery
 import io.github.openflocon.data.local.database.models.DatabaseQueryLogEntity
 import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
-import kotlinx.serialization.encodeToString
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
@@ -24,7 +24,6 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlin.let
 
@@ -204,9 +203,10 @@ internal class LocalDatabaseDataSourceRoom(
                 pageSize = 20,
             ),
             pagingSourceFactory = {
+                val query = buildQuery(dbName, showTransactions)
+
                 databaseQueryLogDao.getPagingSource(
-                    dbName = dbName,
-                    showTransactions = showTransactions,
+                    query = query
                 )
             }
         ).flow
@@ -223,5 +223,38 @@ internal class LocalDatabaseDataSourceRoom(
                     )
                 }
             }
+    }
+
+    private fun buildQuery(
+        dbName: String,
+        showTransactions: Boolean
+    ): RoomRawQuery {
+        val queryParams = ArrayList<Any>()
+        var queryString = "SELECT * FROM DatabaseQueryLogEntity WHERE dbName = ?"
+        queryParams.add(dbName)
+
+        if (!showTransactions) {
+            queryString += " AND isTransaction = 0"
+        }
+
+        queryString += " ORDER BY timestamp DESC"
+
+        val query = RoomRawQuery(
+            sql = queryString,
+            onBindStatement = { statement ->
+                queryParams.forEachIndexed { index, arg ->
+                    when (arg) {
+                        is String -> statement.bindText(index + 1, arg)
+                        is Long -> statement.bindLong(index + 1, arg)
+                        is Int -> statement.bindLong(index + 1, arg.toLong())
+                        is Boolean -> statement.bindLong(index + 1, if (arg) 1L else 0L)
+                        is Double -> statement.bindDouble(index + 1, arg)
+                        is Float -> statement.bindDouble(index + 1, arg.toDouble())
+                        else -> statement.bindText(index + 1, arg.toString())
+                    }
+                }
+            }
+        )
+        return query
     }
 }

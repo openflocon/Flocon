@@ -11,11 +11,6 @@ interface DatabaseQueryLogDao {
     @Insert
     suspend fun insert(entity: DatabaseQueryLogEntity)
 
-    @Query("""
-        SELECT * FROM DatabaseQueryLogEntity 
-        WHERE dbName = :dbName 
-        AND (:showTransactions = 1 OR isTransaction = 0) 
-        ORDER BY timestamp DESC
-    """)
-    fun getPagingSource(dbName: String, showTransactions: Boolean): PagingSource<Int, DatabaseQueryLogEntity>
+    @androidx.room.RawQuery(observedEntities = [DatabaseQueryLogEntity::class])
+    fun getPagingSource(query: androidx.room.RoomRawQuery): PagingSource<Int, DatabaseQueryLogEntity>
 }
