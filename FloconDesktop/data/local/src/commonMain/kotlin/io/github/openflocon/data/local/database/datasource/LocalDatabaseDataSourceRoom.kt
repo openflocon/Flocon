@@ -197,13 +197,13 @@ internal class LocalDatabaseDataSourceRoom(
         )
     }
 
-    override fun observeQueryLogs(dbName: String, showTransactions: Boolean): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+    override fun observeQueryLogs(dbName: String, showTransactions: Boolean, filterChips: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 20,
             ),
             pagingSourceFactory = {
-                val query = buildQuery(dbName, showTransactions)
+                val query = buildQuery(dbName, showTransactions, filterChips)
 
                 databaseQueryLogDao.getPagingSource(
                     query = query
@@ -227,7 +227,8 @@ internal class LocalDatabaseDataSourceRoom(
 
     private fun buildQuery(
         dbName: String,
-        showTransactions: Boolean
+        showTransactions: Boolean,
+        filterChips: List<String>
     ): RoomRawQuery {
         val queryParams = ArrayList<Any>()
         var queryString = "SELECT * FROM DatabaseQueryLogEntity WHERE dbName = ?"
@@ -235,6 +236,17 @@ internal class LocalDatabaseDataSourceRoom(
 
         if (!showTransactions) {
             queryString += " AND isTransaction = 0"
+        }
+
+        if (filterChips.isNotEmpty()) {
+            queryString += " AND ("
+            filterChips.forEachIndexed { index, chip ->
+                if (index > 0) queryString += " OR "
+                queryString += "(sqlQuery LIKE ? OR bindArgs LIKE ?)"
+                queryParams.add("%${chip}%")
+                queryParams.add("%${chip}%")
+            }
+            queryString += ")"
         }
 
         queryString += " ORDER BY timestamp DESC"

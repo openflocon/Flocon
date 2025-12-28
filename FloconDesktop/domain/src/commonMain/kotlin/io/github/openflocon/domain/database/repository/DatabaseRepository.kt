@@ -77,5 +77,5 @@ interface DatabaseRepository {
         id: Long
     ): DatabaseFavoriteQueryDomainModel?
 
-    fun observeQueryLogs(dbName: String, showTransactions: Boolean): Flow<PagingData<DatabaseQueryLogDomainModel>>
+    fun observeQueryLogs(dbName: String, showTransactions: Boolean, filterChips: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>>
 }

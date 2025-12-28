@@ -202,7 +202,7 @@ class DatabaseRepositoryImpl(
         )
     }
 
-    override fun observeQueryLogs(dbName: String, showTransactions: Boolean): Flow<PagingData<DatabaseQueryLogDomainModel>> {
-        return localDatabaseDataSource.observeQueryLogs(dbName, showTransactions)
+    override fun observeQueryLogs(dbName: String, showTransactions: Boolean, filterChips: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+        return localDatabaseDataSource.observeQueryLogs(dbName, showTransactions, filterChips)
     }
 }

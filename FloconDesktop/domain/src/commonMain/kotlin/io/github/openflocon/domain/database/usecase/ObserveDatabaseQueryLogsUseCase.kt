@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 class ObserveDatabaseQueryLogsUseCase(
     private val databaseRepository: DatabaseRepository,
 ) {
-    operator fun invoke(dbName: String, showTransactions: Boolean): Flow<PagingData<DatabaseQueryLogDomainModel>> {
-        return databaseRepository.observeQueryLogs(dbName, showTransactions)
+    operator fun invoke(dbName: String, showTransactions: Boolean, filterChips: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+        return databaseRepository.observeQueryLogs(dbName, showTransactions, filterChips)
     }
 }

@@ -28,10 +28,18 @@ class DatabaseQueryLogsViewModel(
     private val _showTransactions = MutableStateFlow(false)
     val showTransactions = _showTransactions.asStateFlow()
 
+    private val _filterChips = MutableStateFlow<List<String>>(emptyList())
+    val filterChips = _filterChips.asStateFlow()
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val logs: Flow<PagingData<DatabaseQueryUiModel>> =
-        _showTransactions.flatMapLatest { showTransactions ->
-            observeDatabaseQueryLogsUseCase(dbName, showTransactions)
+        combine(_showTransactions, _filterChips) { showTransactions, filterChips ->
+            showTransactions to filterChips
+        }.flatMapLatest { (showTransactions, filterChips) ->
+            observeDatabaseQueryLogsUseCase(dbName, showTransactions, filterChips)
         }
             .map {
                 it.map {
@@ -43,6 +51,22 @@ class DatabaseQueryLogsViewModel(
 
     fun toggleShowTransactions() {
         _showTransactions.value = !_showTransactions.value
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        _searchQuery.value = query
+    }
+
+    fun addFilterChip() {
+        val query = _searchQuery.value.trim()
+        if (query.isNotEmpty() && !_filterChips.value.contains(query)) {
+            _filterChips.value = _filterChips.value + query
+            _searchQuery.value = ""
+        }
+    }
+
+    fun removeFilterChip(chip: String) {
+        _filterChips.value = _filterChips.value - chip
     }
 }
 

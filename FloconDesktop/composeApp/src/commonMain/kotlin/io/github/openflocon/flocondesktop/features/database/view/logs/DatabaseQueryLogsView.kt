@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -39,29 +41,78 @@ fun DatabaseQueryLogsView(
 
     val logs = viewModel.logs.collectAsLazyPagingItems()
     val showTransactions by viewModel.showTransactions.collectAsStateWithLifecycle()
+    val filterChips by viewModel.filterChips.collectAsStateWithLifecycle()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
 
     Column(modifier = modifier) {
-        Row(
+        Column(
             modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.End
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            FilterChip(
-                selected = !showTransactions,
-                onClick = {
-                    viewModel.toggleShowTransactions()
-                },
-                label = {
-                    Text("Hide transactions")
-                },
-                leadingIcon = {
-                    if (!showTransactions) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null
+            androidx.compose.material3.OutlinedTextField(
+                value = searchQuery,
+                onValueChange = viewModel::onSearchQueryChanged,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Filter logs...") },
+                singleLine = true,
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
+                keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                    onDone = {
+                        viewModel.addFilterChip()
+                    }
+                )
+            )
+
+            if (filterChips.isNotEmpty()) {
+                androidx.compose.foundation.lazy.LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(filterChips.size) { index ->
+                        val chip = filterChips[index]
+                        androidx.compose.material3.InputChip(
+                            selected = true,
+                            onClick = { },
+                            label = { Text(chip) },
+                            trailingIcon = {
+                                androidx.compose.material3.IconButton(
+                                    onClick = { viewModel.removeFilterChip(chip) },
+                                    modifier = Modifier.size(16.dp)
+                                ) {
+                                   Icon(
+                                       imageVector = Icons.Default.Close,
+                                       contentDescription = "Remove",
+                                       modifier = Modifier.size(12.dp)
+                                   )
+                                }
+                            }
                         )
                     }
                 }
-            )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                FilterChip(
+                    selected = !showTransactions,
+                    onClick = {
+                        viewModel.toggleShowTransactions()
+                    },
+                    label = {
+                        Text("Hide transactions")
+                    },
+                    leadingIcon = {
+                        if (!showTransactions) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                )
+            }
         }
 
 
