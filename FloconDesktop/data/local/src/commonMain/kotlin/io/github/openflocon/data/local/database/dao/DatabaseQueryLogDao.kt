@@ -11,6 +11,11 @@ interface DatabaseQueryLogDao {
     @Insert
     suspend fun insert(entity: DatabaseQueryLogEntity)
 
-    @Query("SELECT * FROM DatabaseQueryLogEntity WHERE dbName = :dbName ORDER BY timestamp DESC")
-    fun getPagingSource(dbName: String): PagingSource<Int, DatabaseQueryLogEntity>
+    @Query("""
+        SELECT * FROM DatabaseQueryLogEntity 
+        WHERE dbName = :dbName 
+        AND (:showTransactions = 1 OR isTransaction = 0) 
+        ORDER BY timestamp DESC
+    """)
+    fun getPagingSource(dbName: String, showTransactions: Boolean): PagingSource<Int, DatabaseQueryLogEntity>
 }

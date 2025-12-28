@@ -7,4 +7,5 @@ data class DatabaseQueryUiModel(
     val sqlQuery: String,
     val bindArgs: List<String>?,
     val timestamp: Long,
+    val isTransaction: Boolean = false,
 )

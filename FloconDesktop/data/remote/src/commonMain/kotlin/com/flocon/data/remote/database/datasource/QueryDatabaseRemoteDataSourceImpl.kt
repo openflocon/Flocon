@@ -89,11 +89,21 @@ class QueryDatabaseRemoteDataSourceImpl(
 
     override fun getQueryLogs(message: FloconIncomingMessageDomainModel): DatabaseQueryLogDomainModel? {
         return json.decodeFromString<DatabaseQueryLogModel>(message.body)?.let {
+
+            val upperQuery = it.sqlQuery.trim().uppercase()
+            val isTransaction = upperQuery == "BEGIN TRANSACTION" ||
+                    upperQuery == "COMMIT" ||
+                    upperQuery == "ROLLBACK" ||
+                    upperQuery == "END TRANSACTION" ||
+                    upperQuery == "TRANSACTION SUCCESSFUL" ||
+                    upperQuery == "BEGIN IMMEDIATE TRANSACTION"
+
             DatabaseQueryLogDomainModel(
                 dbName = it.dbName,
                 sqlQuery = it.sqlQuery,
                 bindArgs = it.bindArgs.orEmpty(),
-                timestamp = it.timestamp
+                timestamp = it.timestamp,
+                isTransaction = isTransaction,
             )
         }
     }

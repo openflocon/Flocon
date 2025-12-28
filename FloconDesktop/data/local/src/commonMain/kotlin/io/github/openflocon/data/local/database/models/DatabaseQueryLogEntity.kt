@@ -9,5 +9,6 @@ data class DatabaseQueryLogEntity(
     val dbName: String,
     val sqlQuery: String,
     val bindArgs: String?,
-    val timestamp: Long
+    val timestamp: Long,
+    val isTransaction: Boolean,
 )

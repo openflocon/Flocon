@@ -191,13 +191,14 @@ internal class LocalDatabaseDataSourceRoom(
             DatabaseQueryLogEntity(
                 dbName = log.dbName,
                 sqlQuery = log.sqlQuery,
-                bindArgs = log.bindArgs.takeIf { it.isNotEmpty() }?.let { json.encodeToString(it) },
+                bindArgs = log.bindArgs?.let { json.encodeToString(it) },
                 timestamp = log.timestamp,
+                isTransaction = log.isTransaction,
             )
         )
     }
 
-    override fun observeQueryLogs(dbName: String): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+    override fun observeQueryLogs(dbName: String, showTransactions: Boolean): Flow<PagingData<DatabaseQueryLogDomainModel>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 20,
@@ -205,6 +206,7 @@ internal class LocalDatabaseDataSourceRoom(
             pagingSourceFactory = {
                 databaseQueryLogDao.getPagingSource(
                     dbName = dbName,
+                    showTransactions = showTransactions,
                 )
             }
         ).flow
@@ -217,6 +219,7 @@ internal class LocalDatabaseDataSourceRoom(
                             json.decodeFromString(it)
                         } ?: emptyList(),
                         timestamp = entity.timestamp,
+                        isTransaction = entity.isTransaction,
                     )
                 }
             }
