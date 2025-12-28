@@ -39,7 +39,11 @@ class DatabaseQueryLogsViewModel(
         combine(_showTransactions, _filterChips) { showTransactions, filterChips ->
             showTransactions to filterChips
         }.flatMapLatest { (showTransactions, filterChips) ->
-            observeDatabaseQueryLogsUseCase(dbName, showTransactions, filterChips)
+            observeDatabaseQueryLogsUseCase(
+                dbName = dbName,
+                showTransactions = showTransactions,
+                keywords = filterChips
+            )
         }
             .map {
                 it.map {

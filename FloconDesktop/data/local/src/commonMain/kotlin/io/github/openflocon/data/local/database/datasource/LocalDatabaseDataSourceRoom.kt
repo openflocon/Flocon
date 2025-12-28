@@ -197,13 +197,13 @@ internal class LocalDatabaseDataSourceRoom(
         )
     }
 
-    override fun observeQueryLogs(dbName: String, showTransactions: Boolean, filterChips: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+    override fun observeQueryLogs(dbName: String, showTransactions: Boolean, keywords: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 20,
             ),
             pagingSourceFactory = {
-                val query = buildQuery(dbName, showTransactions, filterChips)
+                val query = buildQuery(dbName, showTransactions, keywords)
 
                 databaseQueryLogDao.getPagingSource(
                     query = query
@@ -228,7 +228,7 @@ internal class LocalDatabaseDataSourceRoom(
     private fun buildQuery(
         dbName: String,
         showTransactions: Boolean,
-        filterChips: List<String>
+        keywords: List<String>
     ): RoomRawQuery {
         val queryParams = ArrayList<Any>()
         var queryString = "SELECT * FROM DatabaseQueryLogEntity WHERE dbName = ?"
@@ -238,13 +238,13 @@ internal class LocalDatabaseDataSourceRoom(
             queryString += " AND isTransaction = 0"
         }
 
-        if (filterChips.isNotEmpty()) {
+        if (keywords.isNotEmpty()) {
             queryString += " AND ("
-            filterChips.forEachIndexed { index, chip ->
+            keywords.forEachIndexed { index, keyword ->
                 if (index > 0) queryString += " OR "
                 queryString += "(sqlQuery LIKE ? OR bindArgs LIKE ?)"
-                queryParams.add("%${chip}%")
-                queryParams.add("%${chip}%")
+                queryParams.add("%${keyword}%")
+                queryParams.add("%${keyword}%")
             }
             queryString += ")"
         }

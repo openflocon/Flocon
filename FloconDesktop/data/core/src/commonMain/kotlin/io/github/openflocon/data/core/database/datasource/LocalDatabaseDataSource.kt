@@ -65,5 +65,5 @@ interface LocalDatabaseDataSource {
         log: DatabaseQueryLogDomainModel,
     )
 
-    fun observeQueryLogs(dbName: String, showTransactions: Boolean, filterChips: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>>
+    fun observeQueryLogs(dbName: String, showTransactions: Boolean, keywords: List<String>): Flow<PagingData<DatabaseQueryLogDomainModel>>
 }
