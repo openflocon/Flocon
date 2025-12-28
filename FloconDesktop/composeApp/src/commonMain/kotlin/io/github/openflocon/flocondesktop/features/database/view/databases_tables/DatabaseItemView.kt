@@ -1,10 +1,13 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package io.github.openflocon.flocondesktop.features.database.view.databases_tables
 
-import androidx.compose.foundation.ContextMenuArea
-import androidx.compose.foundation.ContextMenuItem
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Dataset
+import androidx.compose.material.icons.outlined.Preview
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,6 +35,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBase
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import io.github.openflocon.library.designsystem.components.WithTooltip
 
 @Composable
 internal fun DatabaseItemView(
@@ -89,7 +95,8 @@ private fun DatabaseView(
     }
 
     ContextualView(
-        listOf(FloconContextMenuItem.Item(
+        listOf(
+            FloconContextMenuItem.Item(
             label = "See all queries",
             onClick = {
                 onSeeAllQueriesClicked(state.id, state.name)
@@ -121,8 +128,24 @@ private fun DatabaseView(
                 color = textColor,
                 style = FloconTheme.typography.bodyMedium,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
             )
+            WithTooltip("See logs") {
+                Box(
+                    modifier = Modifier.width(20.dp)
+                        .clickable(onClick = {
+                            onSeeAllQueriesClicked(state.id, state.name)
+                        })
+                ) {
+                    Image(
+                        modifier = Modifier.width(16.dp),
+                        imageVector = Icons.Outlined.Preview,
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(textColor),
+                    )
+                }
+            }
         }
     }
 }
