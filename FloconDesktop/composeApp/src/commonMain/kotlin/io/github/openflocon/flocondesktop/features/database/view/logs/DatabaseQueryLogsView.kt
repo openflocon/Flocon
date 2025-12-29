@@ -28,6 +28,7 @@ import androidx.compose.material3.InputChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +51,7 @@ fun DatabaseQueryLogsView(
     modifier: Modifier = Modifier
 ) {
     val viewModel: DatabaseQueryLogsViewModel = koinViewModel(
+        key = dbName,
         parameters = { parametersOf(dbName) }
     )
 
