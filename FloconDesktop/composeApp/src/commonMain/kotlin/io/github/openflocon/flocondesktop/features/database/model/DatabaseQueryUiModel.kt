@@ -7,5 +7,15 @@ data class DatabaseQueryUiModel(
     val sqlQuery: String,
     val bindArgs: List<String>?,
     val dateFormatted: String,
-    val isTransaction: Boolean = false,
-)
+    val isTransaction: Boolean,
+    val isFromOldSession: Boolean,
+    val type: Type?,
+) {
+    enum class Type {
+        Select,
+        Insert,
+        Update,
+        Delete,
+        Transaction,
+    }
+}

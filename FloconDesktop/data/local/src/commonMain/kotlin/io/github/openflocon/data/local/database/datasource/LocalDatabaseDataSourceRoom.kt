@@ -196,7 +196,7 @@ internal class LocalDatabaseDataSourceRoom(
                 isTransaction = log.isTransaction,
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
-                appInstance = deviceIdAndPackageName.appInstance
+                appInstance = log.appInstance
             )
         )
     }
@@ -234,6 +234,7 @@ internal class LocalDatabaseDataSourceRoom(
                         } ?: emptyList(),
                         timestamp = entity.timestamp,
                         isTransaction = entity.isTransaction,
+                        appInstance = entity.appInstance
                     )
                 }
             }

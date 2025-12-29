@@ -106,6 +106,7 @@ class QueryDatabaseRemoteDataSourceImpl(
                 bindArgs = it.bindArgs.orEmpty(),
                 timestamp = it.timestamp,
                 isTransaction = isTransaction,
+                appInstance = message.appInstance,
             )
         }
     }
