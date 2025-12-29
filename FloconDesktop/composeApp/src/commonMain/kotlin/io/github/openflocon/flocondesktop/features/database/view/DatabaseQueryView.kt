@@ -154,9 +154,6 @@ fun DatabaseQueryView(
             isQueryEmpty = query.isBlank(),
         )
 
-        val highlightedText = remember(query) {
-        }
-
         FloconTextField(
             value = query,
             onValueChange = updateQuery,

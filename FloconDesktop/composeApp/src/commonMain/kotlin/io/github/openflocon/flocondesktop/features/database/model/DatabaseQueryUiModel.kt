@@ -6,6 +6,6 @@ import androidx.compose.runtime.Immutable
 data class DatabaseQueryUiModel(
     val sqlQuery: String,
     val bindArgs: List<String>?,
-    val timestamp: Long,
+    val dateFormatted: String,
     val isTransaction: Boolean = false,
 )

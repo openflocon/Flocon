@@ -18,6 +18,10 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.update
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DatabaseQueryLogsViewModel(
     private val dbName: String,
@@ -54,7 +58,7 @@ class DatabaseQueryLogsViewModel(
             .cachedIn(viewModelScope)
 
     fun toggleShowTransactions() {
-        _showTransactions.value = !_showTransactions.value
+        _showTransactions.update { !it }
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -64,19 +68,19 @@ class DatabaseQueryLogsViewModel(
     fun addFilterChip() {
         val query = _searchQuery.value.trim()
         if (query.isNotEmpty() && !_filterChips.value.contains(query)) {
-            _filterChips.value = _filterChips.value + query
+            _filterChips.update { it + query }
             _searchQuery.value = ""
         }
     }
 
     fun removeFilterChip(chip: String) {
-        _filterChips.value = _filterChips.value - chip
+        _filterChips.update { it - chip }
     }
 }
 
 private fun DatabaseQueryLogDomainModel.toUi() = DatabaseQueryUiModel(
     sqlQuery = sqlQuery,
     bindArgs = bindArgs,
-    timestamp = timestamp,
+    dateFormatted = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(timestamp)),
     isTransaction = isTransaction,
 )
