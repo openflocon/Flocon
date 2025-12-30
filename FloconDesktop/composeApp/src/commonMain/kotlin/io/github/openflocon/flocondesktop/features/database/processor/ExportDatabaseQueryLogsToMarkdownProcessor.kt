@@ -57,18 +57,25 @@ class ExportDatabaseQueryLogsToMarkdownProcessor {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
         val markdown = buildString {
-            appendLine("# Database Query Logs")
-            appendLine()
-            appendLine("| Date | SQL Query | Arguments | Full SQL |")
-            appendLine("| --- | --- | --- | --- |")
-
             logs.forEach { log ->
                 val date = dateFormat.format(Date(log.timestamp))
                 val sql = log.sqlQuery.replace("|", "\\|").replace("\n", " ")
                 val args = (log.bindArgs?.toString() ?: "[]").replace("|", "\\|")
                 val fullSql = log.toFullSql().replace("|", "\\|").replace("\n", " ")
                 
-                appendLine("| $date | `$sql` | `$args` | `$fullSql` |")
+                appendLine("# $date")
+                appendLine()
+                appendLine("### query")
+                appendLine(sql)
+                appendLine()
+                appendLine("### args")
+                appendLine(args)
+                appendLine()
+                appendLine("### SQL")
+                appendLine(fullSql)
+                appendLine()
+                appendLine("--------------------")
+                appendLine()
             }
         }
         
