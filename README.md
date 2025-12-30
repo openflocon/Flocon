@@ -8,6 +8,8 @@ It allows developers to connect a Kotlin Multiplatform or Android app to their c
 
 ---
 
+<img width="1294" height="837" alt="Screenshot 2025-09-12 at 15 39 45" src="https://github.com/user-attachments/assets/3d585adb-6441-4cdb-ad25-69d771ad4ff6" />
+
 ## 📖 Documentation
 
 Visit the full documentation site for setup guides, feature details, and advanced usage:  
@@ -45,7 +47,7 @@ Visit the full documentation site for setup guides, feature details, and advance
 |---|:---:|:---:|
 | **Network (HTTP/Mocking)** | ✅ | ✅ |
 | **Database (Room/SQLite)** | ✅ | ✅ |
-| **SharedPreferences** | ✅ | ❌ |
+| **Preferences** | ✅ | ❌ |
 | **Dashboards & Tables** | ✅ | ✅ |
 | **Analytics & Images** | ✅ | ✅ |
 | **Deeplink & Files** | ✅ | ❌ |
@@ -67,17 +69,6 @@ For detailed platform-specific requirements, see the [Setup Guide](https://openf
 Thanks to these amazing people for making Flocon better every day!
 
 [See all contributors](https://openflocon.github.io/Flocon/contributors)
-
----
-
-## 🐶 Why the name "Flocon" ✨ ?
-
-I was looking for a short, cute animal-inspired name — something in the spirit of "Flipper".  
-I turned my head and saw my golden retriever, Flocon, smiling to me... and that was it. 
-
-No brainstorming, no hesitation — just the perfect name at the perfect time.
-
-<img width="540" height="501" alt="Flocon - Golden Retriever" src="https://github.com/user-attachments/assets/6ea7acd9-abea-4062-b375-17cb8337ce11" />
 
 ---
 
