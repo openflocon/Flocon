@@ -20,6 +20,7 @@ import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainMo
 import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
+import io.github.openflocon.domain.database.models.FilterQueryLogDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -205,7 +206,7 @@ internal class LocalDatabaseDataSourceRoom(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dbName: String,
         showTransactions: Boolean,
-        keywords: List<String>
+        filters: List<FilterQueryLogDomainModel>
     ): Flow<PagingData<DatabaseQueryLogDomainModel>> {
         return Pager(
             config = PagingConfig(
@@ -215,7 +216,7 @@ internal class LocalDatabaseDataSourceRoom(
                 val query = buildQuery(
                     dbName = dbName,
                     showTransactions = showTransactions,
-                    keywords = keywords,
+                    filters = filters,
                     deviceIdAndPackageName = deviceIdAndPackageName
                 )
 
@@ -243,7 +244,7 @@ internal class LocalDatabaseDataSourceRoom(
     private fun buildQuery(
         dbName: String,
         showTransactions: Boolean,
-        keywords: List<String>,
+        filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): RoomRawQuery {
         val queryParams = ArrayList<Any>()
@@ -256,15 +257,26 @@ internal class LocalDatabaseDataSourceRoom(
             queryString += " AND isTransaction = 0"
         }
 
-        if (keywords.isNotEmpty()) {
+        val includes = filters.filter { it.type == FilterQueryLogDomainModel.FilterType.INCLUDE }
+        val excludes = filters.filter { it.type == FilterQueryLogDomainModel.FilterType.EXCLUDE }
+
+        if (includes.isNotEmpty()) {
             queryString += " AND ("
-            keywords.forEachIndexed { index, keyword ->
+            includes.forEachIndexed { index, filter ->
                 if (index > 0) queryString += " OR "
                 queryString += "(sqlQuery LIKE ? OR bindArgs LIKE ?)"
-                queryParams.add("%${keyword}%")
-                queryParams.add("%${keyword}%")
+                queryParams.add("%${filter.text}%")
+                queryParams.add("%${filter.text}%")
             }
             queryString += ")"
+        }
+
+        if (excludes.isNotEmpty()) {
+            excludes.forEach { filter ->
+                queryString += " AND NOT (sqlQuery LIKE ? OR bindArgs LIKE ?)"
+                queryParams.add("%${filter.text}%")
+                queryParams.add("%${filter.text}%")
+            }
         }
 
         queryString += " ORDER BY timestamp DESC"

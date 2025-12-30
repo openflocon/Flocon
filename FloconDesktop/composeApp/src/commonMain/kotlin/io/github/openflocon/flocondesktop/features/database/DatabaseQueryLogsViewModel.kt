@@ -12,9 +12,12 @@ import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogsUseC
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryUiModel
+import io.github.openflocon.flocondesktop.features.database.model.FilterChipUiModel
+import io.github.openflocon.flocondesktop.features.database.model.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -33,7 +36,7 @@ class DatabaseQueryLogsViewModel(
     private val _showTransactions = MutableStateFlow(false)
     val showTransactions = _showTransactions.asStateFlow()
 
-    private val _filterChips = MutableStateFlow<List<String>>(emptyList())
+    private val _filterChips = MutableStateFlow<List<FilterChipUiModel>>(emptyList())
     val filterChips = _filterChips.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
@@ -43,13 +46,13 @@ class DatabaseQueryLogsViewModel(
     val logs: Flow<PagingData<DatabaseQueryUiModel>> =
         combines(
             _showTransactions,
-            _filterChips,
+            _filterChips.map { it.map { it.toDomain() } }.distinctUntilChanged(),
             observeCurrentDeviceIdAndPackageNameUseCase(),
         ).flatMapLatest { (showTransactions, filterChips, currentDeviceAndPackage) ->
             observeDatabaseQueryLogsUseCase(
                 dbName = dbName,
                 showTransactions = showTransactions,
-                keywords = filterChips
+                filters = filterChips,
             ).map {
                 it.map {
                     it.toUi(currentDeviceAndPackage = currentDeviceAndPackage)
@@ -67,15 +70,45 @@ class DatabaseQueryLogsViewModel(
         _searchQuery.value = query
     }
 
-    fun addFilterChip() {
+    fun addIncludeFilter() {
         val query = _searchQuery.value.trim()
-        if (query.isNotEmpty() && !_filterChips.value.contains(query)) {
-            _filterChips.update { it + query }
+        if (query.isNotEmpty() && !_filterChips.value.any { it.text == query }) {
+            _filterChips.update { it + FilterChipUiModel(query, FilterChipUiModel.FilterType.INCLUDE) }
             _searchQuery.value = ""
         }
     }
+    
+    fun addExcludeFilter() {
+        val query = _searchQuery.value.trim()
+        if (query.isNotEmpty() && !_filterChips.value.any { it.text == query }) {
+            _filterChips.update { it + FilterChipUiModel(query, FilterChipUiModel.FilterType.EXCLUDE) }
+            _searchQuery.value = ""
+        }
+    }
+    
+    fun toggleFilterType(chip: FilterChipUiModel) {
+        _filterChips.update { list ->
+            list.map {
+                if (it == chip) {
+                    it.copy(type = if (it.type == FilterChipUiModel.FilterType.INCLUDE)
+                        FilterChipUiModel.FilterType.EXCLUDE
+                    else
+                        FilterChipUiModel.FilterType.INCLUDE
+                    )
+                } else {
+                    it
+                }
+            }
+        }
+    }
+    
+    fun addFilter(text: String, type: FilterChipUiModel.FilterType) {
+         if (text.isNotEmpty() && !_filterChips.value.any { it.text == text }) {
+            _filterChips.update { it + FilterChipUiModel(text, type) }
+        }
+    }
 
-    fun removeFilterChip(chip: String) {
+    fun removeFilterChip(chip: FilterChipUiModel) {
         _filterChips.update { it - chip }
     }
 }

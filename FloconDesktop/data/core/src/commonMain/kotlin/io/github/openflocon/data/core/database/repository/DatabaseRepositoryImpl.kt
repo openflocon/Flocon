@@ -13,6 +13,7 @@ import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
+import io.github.openflocon.domain.database.models.FilterQueryLogDomainModel
 import io.github.openflocon.domain.database.repository.DatabaseRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
@@ -208,13 +209,13 @@ class DatabaseRepositoryImpl(
     override fun observeQueryLogs(
         dbName: String,
         showTransactions: Boolean,
-        keywords: List<String>,
+        filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Flow<PagingData<DatabaseQueryLogDomainModel>> {
         return localDatabaseDataSource.observeQueryLogs(
             dbName = dbName,
             showTransactions = showTransactions,
-            keywords = keywords,
+            filters = filters,
             deviceIdAndPackageName = deviceIdAndPackageName,
         )
     }
