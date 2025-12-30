@@ -15,4 +15,9 @@ interface DatabaseQueryLogDao {
     fun getPagingSource(
         query: RoomRawQuery,
     ): PagingSource<Int, DatabaseQueryLogEntity>
+
+    @androidx.room.RawQuery(observedEntities = [DatabaseQueryLogEntity::class])
+    suspend fun getLogs(
+        query: RoomRawQuery,
+    ): List<DatabaseQueryLogEntity>
 }

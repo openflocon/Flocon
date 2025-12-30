@@ -73,4 +73,11 @@ interface LocalDatabaseDataSource {
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>
     ): Flow<PagingData<DatabaseQueryLogDomainModel>>
+
+    suspend fun getQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>
+    ): List<DatabaseQueryLogDomainModel>
 }

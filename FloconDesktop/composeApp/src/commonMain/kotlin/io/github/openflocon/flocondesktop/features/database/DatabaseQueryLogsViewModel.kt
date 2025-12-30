@@ -8,6 +8,7 @@ import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
+import io.github.openflocon.domain.database.usecase.GetDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
@@ -15,6 +16,8 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.FilterChipUiModel
 import io.github.openflocon.flocondesktop.features.database.model.toDomain
+import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToCsvProcessor
+import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToMarkdownProcessor
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +27,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -31,8 +35,11 @@ import java.util.Locale
 class DatabaseQueryLogsViewModel(
     private val dbName: String,
     private val observeDatabaseQueryLogsUseCase: ObserveDatabaseQueryLogsUseCase,
+    private val getDatabaseQueryLogsUseCase: GetDatabaseQueryLogsUseCase,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
+    private val exportDatabaseQueryLogsToCsvProcessor: ExportDatabaseQueryLogsToCsvProcessor,
+    private val exportDatabaseQueryLogsToMarkdownProcessor: ExportDatabaseQueryLogsToMarkdownProcessor,
     dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
 
@@ -138,6 +145,42 @@ class DatabaseQueryLogsViewModel(
         }
         copyToClipboard(fullSql)
         feedbackDisplayer.displayMessage("SQL with arguments copied to clipboard")
+    }
+
+    fun exportToCsv() {
+        viewModelScope.launch {
+            val logs = getDatabaseQueryLogsUseCase(
+                dbName = dbName,
+                showTransactions = _showTransactions.value,
+                filters = _filterChips.value.map { it.toDomain() }
+            )
+            exportDatabaseQueryLogsToCsvProcessor(logs).fold(
+                doOnSuccess = {
+                    feedbackDisplayer.displayMessage("Logs exported to $it")
+                },
+                doOnFailure = {
+                    feedbackDisplayer.displayMessage("Export failed: ${it.message}")
+                }
+            )
+        }
+    }
+
+    fun exportToMarkdown() {
+        viewModelScope.launch {
+            val logs = getDatabaseQueryLogsUseCase(
+                dbName = dbName,
+                showTransactions = _showTransactions.value,
+                filters = _filterChips.value.map { it.toDomain() }
+            )
+            exportDatabaseQueryLogsToMarkdownProcessor(logs).fold(
+                doOnSuccess = {
+                    feedbackDisplayer.displayMessage("Logs exported to $it")
+                },
+                doOnFailure = {
+                    feedbackDisplayer.displayMessage("Export failed: ${it.message}")
+                }
+            )
+        }
     }
 }
 

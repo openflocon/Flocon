@@ -241,6 +241,32 @@ internal class LocalDatabaseDataSourceRoom(
             }
     }
 
+    override suspend fun getQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>
+    ): List<DatabaseQueryLogDomainModel> {
+        val query = buildQuery(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName
+        )
+        return databaseQueryLogDao.getLogs(query).map { entity ->
+            DatabaseQueryLogDomainModel(
+                dbName = entity.dbName,
+                sqlQuery = entity.sqlQuery,
+                bindArgs = entity.bindArgs?.let {
+                    json.decodeFromString(it)
+                } ?: emptyList(),
+                timestamp = entity.timestamp,
+                isTransaction = entity.isTransaction,
+                appInstance = entity.appInstance
+            )
+        }
+    }
+
     private fun buildQuery(
         dbName: String,
         showTransactions: Boolean,

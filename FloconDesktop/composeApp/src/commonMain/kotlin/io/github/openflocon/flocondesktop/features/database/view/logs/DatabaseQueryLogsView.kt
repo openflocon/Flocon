@@ -24,7 +24,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Upload
+import androidx.compose.material.icons.outlined.UploadFile
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -43,9 +46,14 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.database.DatabaseQueryLogsViewModel
 import io.github.openflocon.flocondesktop.features.database.model.FilterChipUiModel
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
+import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
@@ -82,7 +90,9 @@ fun DatabaseQueryLogsView(
             addExcludeFilter = viewModel::addExcludeFilter,
             toggleFilterType = viewModel::toggleFilterType,
             showTransactions = showTransactions,
-            filterChips = filterChips
+            filterChips = filterChips,
+            exportToCsv = viewModel::exportToCsv,
+            exportToMarkdown = viewModel::exportToMarkdown,
         )
 
         Box(
@@ -153,6 +163,8 @@ private fun DatabaseLogsHeader(
     toggleShowTransactions: () -> Unit,
     toggleFilterType: (FilterChipUiModel) -> Unit,
     removeFilterChip: (FilterChipUiModel) -> Unit,
+    exportToCsv: () -> Unit,
+    exportToMarkdown: () -> Unit,
     filterChips: List<FilterChipUiModel>,
     modifier: Modifier = Modifier,
 ) {
@@ -214,6 +226,19 @@ private fun DatabaseLogsHeader(
                         }
                     }
                 )
+
+                FloconOverflow {
+                    FloconDropdownMenuItem(
+                        text = "Export CSV",
+                        leadingIcon = Icons.Outlined.Upload,
+                        onClick = { exportToCsv() }
+                    )
+                    FloconDropdownMenuItem(
+                        text = "Export Markdown",
+                        leadingIcon = Icons.Outlined.UploadFile,
+                        onClick = { exportToMarkdown() }
+                    )
+                }
 
             }
             FilterChips(

@@ -219,4 +219,18 @@ class DatabaseRepositoryImpl(
             deviceIdAndPackageName = deviceIdAndPackageName,
         )
     }
+
+    override suspend fun getQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): List<DatabaseQueryLogDomainModel> {
+        return localDatabaseDataSource.getQueryLogs(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        )
+    }
 }

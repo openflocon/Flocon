@@ -84,4 +84,11 @@ interface DatabaseRepository {
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Flow<PagingData<DatabaseQueryLogDomainModel>>
+
+    suspend fun getQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): List<DatabaseQueryLogDomainModel>
 }

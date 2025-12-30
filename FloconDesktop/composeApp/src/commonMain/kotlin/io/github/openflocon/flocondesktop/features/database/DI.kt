@@ -1,6 +1,9 @@
 package io.github.openflocon.flocondesktop.features.database
 
+import io.github.openflocon.domain.database.usecase.GetDatabaseQueryLogsUseCase
 import io.github.openflocon.flocondesktop.features.database.delegate.DatabaseSelectorDelegate
+import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToCsvProcessor
+import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToMarkdownProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseResultToCsvProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ImportSqlQueryProcessor
 import org.koin.core.module.dsl.factoryOf
@@ -13,5 +16,8 @@ internal val databaseModule = module {
     factoryOf(::DatabaseSelectorDelegate)
     factoryOf(::ImportSqlQueryProcessor)
     factoryOf(::ExportDatabaseResultToCsvProcessor)
+    factoryOf(::ExportDatabaseQueryLogsToCsvProcessor)
+    factoryOf(::ExportDatabaseQueryLogsToMarkdownProcessor)
+    factoryOf(::GetDatabaseQueryLogsUseCase)
     viewModelOf(::DatabaseQueryLogsViewModel)
 }
