@@ -113,6 +113,7 @@ fun DatabaseQueryLogsView(
                                 FloconContextMenuItem.Item("Copy as SQL") {
                                     viewModel.copyAsSql(log.sqlQuery, log.bindArgs)
                                 },
+                                FloconContextMenuItem.Separator(),
                                 FloconContextMenuItem.Item("Filter In") {
                                     viewModel.addFilter(
                                         log.sqlQuery,
