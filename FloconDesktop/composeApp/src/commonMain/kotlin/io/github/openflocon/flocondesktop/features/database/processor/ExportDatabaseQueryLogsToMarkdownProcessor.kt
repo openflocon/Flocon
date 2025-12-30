@@ -74,7 +74,7 @@ class ExportDatabaseQueryLogsToMarkdownProcessor {
                 appendLine("### SQL")
                 appendLine(fullSql)
                 appendLine()
-                appendLine("--------------------")
+                appendLine("--------------------------------------------------------------------------------")
                 appendLine()
             }
         }
