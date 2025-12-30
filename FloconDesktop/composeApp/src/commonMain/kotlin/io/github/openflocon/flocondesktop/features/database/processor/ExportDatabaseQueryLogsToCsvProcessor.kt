@@ -4,6 +4,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
+import io.github.openflocon.domain.database.models.toFullSql
 import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
@@ -53,7 +54,7 @@ class ExportDatabaseQueryLogsToCsvProcessor {
         file: File,
         logs: List<DatabaseQueryLogDomainModel>,
     ) {
-        val columns = listOf("Date", "SQL Query", "Arguments")
+        val columns = listOf("Date", "SQL Query", "Arguments", "Full SQL")
         file.writeText(columns.joinToString(separator = ",", postfix = "\n"))
 
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -63,6 +64,7 @@ class ExportDatabaseQueryLogsToCsvProcessor {
                 dateFormat.format(Date(log.timestamp)),
                 log.sqlQuery,
                 log.bindArgs?.toString() ?: "[]",
+                log.toFullSql()
             )
             val escapedRow = row.map { csvEscape(it) }
             file.appendText(escapedRow.joinToString(separator = ",", postfix = "\n"))

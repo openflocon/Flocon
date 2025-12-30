@@ -4,6 +4,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
+import io.github.openflocon.domain.database.models.toFullSql
 import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
@@ -58,15 +59,16 @@ class ExportDatabaseQueryLogsToMarkdownProcessor {
         val markdown = buildString {
             appendLine("# Database Query Logs")
             appendLine()
-            appendLine("| Date | SQL Query | Arguments |")
+            appendLine("| Date | SQL Query | Arguments | Full SQL |")
             appendLine("| --- | --- | --- | --- |")
 
             logs.forEach { log ->
                 val date = dateFormat.format(Date(log.timestamp))
                 val sql = log.sqlQuery.replace("|", "\\|").replace("\n", " ")
                 val args = (log.bindArgs?.toString() ?: "[]").replace("|", "\\|")
+                val fullSql = log.toFullSql().replace("|", "\\|").replace("\n", " ")
                 
-                appendLine("| $date | `$sql` | `$args` |")
+                appendLine("| $date | `$sql` | `$args` | `$fullSql` |")
             }
         }
         

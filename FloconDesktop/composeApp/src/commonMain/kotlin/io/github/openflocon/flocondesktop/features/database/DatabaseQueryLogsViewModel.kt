@@ -32,6 +32,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+import io.github.openflocon.domain.database.utils.injectSqlArgs
+
 class DatabaseQueryLogsViewModel(
     private val dbName: String,
     private val observeDatabaseQueryLogsUseCase: ObserveDatabaseQueryLogsUseCase,
@@ -134,15 +136,7 @@ class DatabaseQueryLogsViewModel(
     }
 
     fun copyAsSql(query: String, args: List<String>?) {
-        val fullSql = if (args.isNullOrEmpty()) {
-            query
-        } else {
-            var result = query
-            args.forEach { arg ->
-                result = result.replaceFirst("?", "'$arg'")
-            }
-            result
-        }
+        val fullSql = injectSqlArgs(query, args)
         copyToClipboard(fullSql)
         feedbackDisplayer.displayMessage("SQL with arguments copied to clipboard")
     }
