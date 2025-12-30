@@ -55,4 +55,7 @@ val roomModule =
         single {
             get<AppDatabase>().crashReportDao
         }
+        single {
+            get<AppDatabase>().databaseQueryLogDao
+        }
     }

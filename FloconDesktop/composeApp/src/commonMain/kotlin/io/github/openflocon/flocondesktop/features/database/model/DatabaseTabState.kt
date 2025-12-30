@@ -5,11 +5,13 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class DatabaseTabState(
     val databaseId: String,
+    val databaseName: String,
     val tableName: String?,
     val generatedName: String,
     val index: Int,
     val favoriteId: Long?,
     val query: String?,
+    val isQueryLogs: Boolean = false,
     val id: String,
 ) {
     val displayName: String = generatedName + if (index > 0) " ($index)" else ""

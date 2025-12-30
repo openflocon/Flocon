@@ -5,6 +5,7 @@ import com.flocon.data.remote.database.mapper.decodeDeviceDatabases
 import com.flocon.data.remote.database.mapper.decodeReceivedQuery
 import com.flocon.data.remote.database.models.DatabaseExecuteSqlResponseDataModel
 import com.flocon.data.remote.database.models.DatabaseOutgoingQueryMessage
+import com.flocon.data.remote.database.models.DatabaseQueryLogModel
 import com.flocon.data.remote.database.models.ResponseAndRequestIdDataModel
 import com.flocon.data.remote.database.models.toDeviceDatabasesDomain
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
@@ -17,6 +18,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.models.ResponseAndRequestIdDomainModel
@@ -84,6 +86,30 @@ class QueryDatabaseRemoteDataSourceImpl(
     override fun getDeviceDatabases(message: FloconIncomingMessageDomainModel): List<DeviceDataBaseDomainModel> = toDeviceDatabasesDomain(json.decodeDeviceDatabases(message.body).orEmpty())
 
     override fun getReceiveQuery(message: FloconIncomingMessageDomainModel): ResponseAndRequestIdDomainModel? = json.decodeReceivedQuery(message.body)?.toDomain()
+
+    override fun getQueryLogs(
+        message: FloconIncomingMessageDomainModel,
+    ): DatabaseQueryLogDomainModel? {
+        return json.decodeFromString<DatabaseQueryLogModel>(message.body)?.let {
+
+            val upperQuery = it.sqlQuery.trim().uppercase()
+            val isTransaction = upperQuery == "BEGIN TRANSACTION" ||
+                    upperQuery == "COMMIT" ||
+                    upperQuery == "ROLLBACK" ||
+                    upperQuery == "END TRANSACTION" ||
+                    upperQuery == "TRANSACTION SUCCESSFUL" ||
+                    upperQuery == "BEGIN IMMEDIATE TRANSACTION"
+
+            DatabaseQueryLogDomainModel(
+                dbName = it.dbName,
+                sqlQuery = it.sqlQuery,
+                bindArgs = it.bindArgs.orEmpty(),
+                timestamp = it.timestamp,
+                isTransaction = isTransaction,
+                appInstance = message.appInstance,
+            )
+        }
+    }
 }
 
 // TODO internal

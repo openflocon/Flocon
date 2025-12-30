@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconLogger
@@ -24,6 +26,7 @@ import io.github.openflocon.flocon.myapplication.dashboard.initializeDashboard
 import io.github.openflocon.flocon.myapplication.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.database.initializeInMemoryDatabases
+import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.deeplinks.initializeDeeplinks
 import io.github.openflocon.flocon.myapplication.graphql.GraphQlTester
 import io.github.openflocon.flocon.myapplication.grpc.GrpcController
@@ -95,6 +98,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    val scope = rememberCoroutineScope()
+                    val context = LocalContext.current
+
                     Column(Modifier.fillMaxSize().padding(innerPadding)) {
                         FlowRow(
                             modifier = Modifier
@@ -187,6 +193,23 @@ class MainActivity : ComponentActivity() {
                                 }
                             ) {
                                 Text("send analytics event")
+                            }
+                            Button(
+                                onClick = {
+                                    scope.launch {
+                                        DogDatabase.getDatabase(context).dogDao().insertDog(
+                                            DogEntity(
+                                                id = System.currentTimeMillis(),
+                                                name = "Flocon",
+                                                breed = "Golden Retriever ${System.currentTimeMillis()}",
+                                                age = 6,
+                                                pictureUrl = "https://picsum.photos/501/500.jpg",
+                                            )
+                                        )
+                                    }
+                                }
+                            ) {
+                                Text("Insert dog in DB")
                             }
                         }
 

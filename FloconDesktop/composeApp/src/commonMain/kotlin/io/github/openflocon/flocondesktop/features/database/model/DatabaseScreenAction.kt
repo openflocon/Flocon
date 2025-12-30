@@ -12,4 +12,5 @@ sealed interface DatabaseScreenAction {
     data class DeleteFavorite(val favoriteQuery: DatabaseFavoriteQueryUiModel) : DatabaseScreenAction
     data class OnDeleteContentClicked(val databaseId: DeviceDataBaseId, val table: TableUiModel) : DatabaseScreenAction
     data class OnInsertContentClicked(val databaseId: DeviceDataBaseId, val table: TableUiModel) : DatabaseScreenAction
+    data class OnSeeAllQueriesClicked(val databaseId: DeviceDataBaseId, val dbName: String) : DatabaseScreenAction
 }

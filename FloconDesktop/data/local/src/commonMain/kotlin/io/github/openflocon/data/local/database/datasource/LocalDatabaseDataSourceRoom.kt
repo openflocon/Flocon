@@ -1,26 +1,37 @@
 package io.github.openflocon.data.local.database.datasource
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
+import io.github.openflocon.data.local.database.dao.DatabaseQueryLogDao
 import io.github.openflocon.data.local.database.dao.QueryDao
 import io.github.openflocon.data.local.database.dao.TablesDao
 import io.github.openflocon.data.local.database.mapper.toDomain
 import io.github.openflocon.data.local.database.mapper.toEntity
+import androidx.paging.map
+import androidx.room.RoomRawQuery
+import io.github.openflocon.data.local.database.models.DatabaseQueryLogEntity
 import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
+import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
+import io.github.openflocon.domain.database.models.FilterQueryLogDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
+import kotlin.let
 
 internal class LocalDatabaseDataSourceRoom(
     private val queryDao: QueryDao,
     private val tablesDao: TablesDao,
+    private val databaseQueryLogDao: DatabaseQueryLogDao,
     private val json: Json,
 ) : LocalDatabaseDataSource {
 
@@ -172,4 +183,146 @@ internal class LocalDatabaseDataSourceRoom(
         packageName = deviceIdAndPackageName.packageName,
         id = id,
     )?.toDomain()
+
+    override suspend fun saveQueryLog(
+        log: DatabaseQueryLogDomainModel,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ) {
+        databaseQueryLogDao.insert(
+            DatabaseQueryLogEntity(
+                dbName = log.dbName,
+                sqlQuery = log.sqlQuery,
+                bindArgs = log.bindArgs?.let { json.encodeToString(it) },
+                timestamp = log.timestamp,
+                isTransaction = log.isTransaction,
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+                appInstance = log.appInstance
+            )
+        )
+    }
+
+    override fun observeQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>
+    ): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+            ),
+            pagingSourceFactory = {
+                val query = buildQuery(
+                    dbName = dbName,
+                    showTransactions = showTransactions,
+                    filters = filters,
+                    deviceIdAndPackageName = deviceIdAndPackageName
+                )
+
+                databaseQueryLogDao.getPagingSource(
+                    query = query,
+                )
+            }
+        ).flow
+            .map { pagingData ->
+                pagingData.map { entity ->
+                    DatabaseQueryLogDomainModel(
+                        dbName = entity.dbName,
+                        sqlQuery = entity.sqlQuery,
+                        bindArgs = entity.bindArgs?.let {
+                            json.decodeFromString(it)
+                        } ?: emptyList(),
+                        timestamp = entity.timestamp,
+                        isTransaction = entity.isTransaction,
+                        appInstance = entity.appInstance
+                    )
+                }
+            }
+    }
+
+    override suspend fun getQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>
+    ): List<DatabaseQueryLogDomainModel> {
+        val query = buildQuery(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName
+        )
+        return databaseQueryLogDao.getLogs(query).map { entity ->
+            DatabaseQueryLogDomainModel(
+                dbName = entity.dbName,
+                sqlQuery = entity.sqlQuery,
+                bindArgs = entity.bindArgs?.let {
+                    json.decodeFromString(it)
+                } ?: emptyList(),
+                timestamp = entity.timestamp,
+                isTransaction = entity.isTransaction,
+                appInstance = entity.appInstance
+            )
+        }
+    }
+
+    private fun buildQuery(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): RoomRawQuery {
+        val queryParams = ArrayList<Any>()
+        var queryString = "SELECT * FROM DatabaseQueryLogEntity WHERE deviceId = ? AND packageName = ? AND dbName = ?"
+        queryParams.add(deviceIdAndPackageName.deviceId)
+        queryParams.add(deviceIdAndPackageName.packageName)
+        queryParams.add(dbName)
+
+        if (!showTransactions) {
+            queryString += " AND isTransaction = 0"
+        }
+
+        val includes = filters.filter { it.type == FilterQueryLogDomainModel.FilterType.INCLUDE }
+        val excludes = filters.filter { it.type == FilterQueryLogDomainModel.FilterType.EXCLUDE }
+
+        if (includes.isNotEmpty()) {
+            queryString += " AND ("
+            includes.forEachIndexed { index, filter ->
+                if (index > 0) queryString += " OR "
+                queryString += "(sqlQuery LIKE ? OR bindArgs LIKE ?)"
+                queryParams.add("%${filter.text}%")
+                queryParams.add("%${filter.text}%")
+            }
+            queryString += ")"
+        }
+
+        if (excludes.isNotEmpty()) {
+            excludes.forEach { filter ->
+                queryString += " AND NOT (sqlQuery LIKE ? OR bindArgs LIKE ?)"
+                queryParams.add("%${filter.text}%")
+                queryParams.add("%${filter.text}%")
+            }
+        }
+
+        queryString += " ORDER BY timestamp DESC"
+
+        val query = RoomRawQuery(
+            sql = queryString,
+            onBindStatement = { statement ->
+                queryParams.forEachIndexed { index, arg ->
+                    when (arg) {
+                        is String -> statement.bindText(index + 1, arg)
+                        is Long -> statement.bindLong(index + 1, arg)
+                        is Int -> statement.bindLong(index + 1, arg.toLong())
+                        is Boolean -> statement.bindLong(index + 1, if (arg) 1L else 0L)
+                        is Double -> statement.bindDouble(index + 1, arg)
+                        is Float -> statement.bindDouble(index + 1, arg.toDouble())
+                        else -> statement.bindText(index + 1, arg.toString())
+                    }
+                }
+            }
+        )
+        return query
+    }
 }

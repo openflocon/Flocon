@@ -3,6 +3,7 @@ package io.github.openflocon.domain.database
 import io.github.openflocon.domain.database.usecase.AskForDeviceDatabasesUseCase
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
 import io.github.openflocon.domain.database.usecase.GetDatabaseByIdUseCase
+import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.GetDeviceDatabaseTablesUseCase
 import io.github.openflocon.domain.database.usecase.GetTableColumnsUseCase
 import io.github.openflocon.domain.database.usecase.ObserveCurrentDeviceSelectedDatabaseAndTablesUseCase
@@ -28,4 +29,5 @@ internal val databaseModule = module {
     factoryOf(::ObserveFavoriteQueriesUseCase)
     factoryOf(::SaveQueryAsFavoriteDatabaseUseCase)
     factoryOf(::GetFavoriteQueryByIdDatabaseUseCase)
+    factoryOf(::ObserveDatabaseQueryLogsUseCase)
 }

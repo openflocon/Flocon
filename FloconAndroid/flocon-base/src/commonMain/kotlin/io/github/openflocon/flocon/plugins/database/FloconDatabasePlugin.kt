@@ -19,6 +19,15 @@ fun floconRegisterDatabase(displayName: String, absolutePath: String) {
     )
 }
 
+fun floconLogDatabaseQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>) {
+    FloconApp.instance?.client?.databasePlugin?.logQuery(
+        dbName = dbName,
+        sqlQuery = sqlQuery,
+        bindArgs = bindArgs,
+    )
+}
+
 interface FloconDatabasePlugin {
     fun register(floconDatabaseModel: FloconDatabaseModel)
+    fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>)
 }

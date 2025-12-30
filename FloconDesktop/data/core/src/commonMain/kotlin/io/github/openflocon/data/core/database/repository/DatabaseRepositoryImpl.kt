@@ -1,5 +1,6 @@
 package io.github.openflocon.data.core.database.repository
 
+import androidx.paging.PagingData
 import io.github.openflocon.data.core.database.datasource.DeviceDatabasesRemoteDataSource
 import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
 import io.github.openflocon.data.core.database.datasource.QueryDatabaseRemoteDataSource
@@ -8,9 +9,11 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
+import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
+import io.github.openflocon.domain.database.models.FilterQueryLogDomainModel
 import io.github.openflocon.domain.database.repository.DatabaseRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
@@ -90,6 +93,17 @@ class DatabaseRepositoryImpl(
                         deviceIdAndPackageName = deviceIdAndPackageName,
                         databases = items,
                     )
+                }
+
+                Protocol.FromDevice.Database.Method.LogQuery -> {
+                    queryDatabaseDataSource.getQueryLogs(
+                        message,
+                    )?.let {
+                        localDatabaseDataSource.saveQueryLog(
+                            it,
+                            deviceIdAndPackageName = deviceIdAndPackageName
+                        )
+                    }
                 }
             }
         }
@@ -189,6 +203,34 @@ class DatabaseRepositoryImpl(
             deviceIdAndPackageName = deviceIdAndPackageName,
             databaseId = databaseId,
             id = id,
+        )
+    }
+
+    override fun observeQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+        return localDatabaseDataSource.observeQueryLogs(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        )
+    }
+
+    override suspend fun getQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): List<DatabaseQueryLogDomainModel> {
+        return localDatabaseDataSource.getQueryLogs(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName,
         )
     }
 }

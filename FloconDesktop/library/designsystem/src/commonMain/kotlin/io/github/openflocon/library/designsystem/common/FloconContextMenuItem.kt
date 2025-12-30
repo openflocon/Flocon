@@ -1,20 +1,25 @@
 package io.github.openflocon.library.designsystem.common
 
 import androidx.compose.foundation.ContextMenuItem
+import androidx.compose.runtime.Immutable
 
+@Immutable
 sealed class FloconContextMenuItem(
     label: String,
     onClick: () -> Unit
 ) : ContextMenuItem(label = label, onClick = onClick) {
 
     // TODO Add icon
+    @Immutable
     class Item(label: String, onClick: () -> Unit) : FloconContextMenuItem(label, onClick)
 
+    @Immutable
     class SubMenu(
         label: String,
         val items: List<FloconContextMenuItem>
     ) : FloconContextMenuItem(label, onClick = {})
 
+    @Immutable
     class Separator : FloconContextMenuItem(label = "", onClick = {})
 }
 

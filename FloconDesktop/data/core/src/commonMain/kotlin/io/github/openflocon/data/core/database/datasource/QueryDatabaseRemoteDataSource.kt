@@ -2,6 +2,7 @@ package io.github.openflocon.data.core.database.datasource
 
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
+import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.domain.database.models.ResponseAndRequestIdDomainModel
@@ -23,4 +24,6 @@ interface QueryDatabaseRemoteDataSource {
     fun getDeviceDatabases(message: FloconIncomingMessageDomainModel): List<DeviceDataBaseDomainModel>
 
     fun getReceiveQuery(message: FloconIncomingMessageDomainModel): ResponseAndRequestIdDomainModel?
+
+    fun getQueryLogs(message: FloconIncomingMessageDomainModel): DatabaseQueryLogDomainModel?
 }

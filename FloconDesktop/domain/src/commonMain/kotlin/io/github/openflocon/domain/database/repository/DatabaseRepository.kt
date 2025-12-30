@@ -1,11 +1,14 @@
 package io.github.openflocon.domain.database.repository
 
+import androidx.paging.PagingData
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
+import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
+import io.github.openflocon.domain.database.models.FilterQueryLogDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
@@ -72,6 +75,20 @@ interface DatabaseRepository {
     suspend fun getFavorite(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         databaseId: String,
-        id: Long
+        id: Long,
     ): DatabaseFavoriteQueryDomainModel?
+
+    fun observeQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<PagingData<DatabaseQueryLogDomainModel>>
+
+    suspend fun getQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): List<DatabaseQueryLogDomainModel>
 }

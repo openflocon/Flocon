@@ -1,9 +1,12 @@
 package io.github.openflocon.data.core.database.datasource
 
+import androidx.paging.PagingData
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
+import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.DatabaseTableDomainModel
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
+import io.github.openflocon.domain.database.models.FilterQueryLogDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
@@ -58,4 +61,23 @@ interface LocalDatabaseDataSource {
         databaseId: String,
         id: Long
     ): DatabaseFavoriteQueryDomainModel?
+
+    suspend fun saveQueryLog(
+        log: DatabaseQueryLogDomainModel,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    )
+
+    fun observeQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>
+    ): Flow<PagingData<DatabaseQueryLogDomainModel>>
+
+    suspend fun getQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>
+    ): List<DatabaseQueryLogDomainModel>
 }
