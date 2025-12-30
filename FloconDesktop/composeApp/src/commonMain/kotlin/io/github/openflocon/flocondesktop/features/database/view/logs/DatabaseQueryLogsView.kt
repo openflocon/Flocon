@@ -104,6 +104,15 @@ fun DatabaseQueryLogsView(
                     if (log != null) {
                         ContextualView(
                             items = listOf(
+                                FloconContextMenuItem.Item("Copy Query") {
+                                    viewModel.copyQuery(log.sqlQuery)
+                                },
+                                FloconContextMenuItem.Item("Copy Args") {
+                                    viewModel.copyArgs(log.bindArgs)
+                                },
+                                FloconContextMenuItem.Item("Copy as SQL") {
+                                    viewModel.copyAsSql(log.sqlQuery, log.bindArgs)
+                                },
                                 FloconContextMenuItem.Item("Filter In") {
                                     viewModel.addFilter(
                                         log.sqlQuery,

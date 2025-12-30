@@ -11,9 +11,11 @@ import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.FilterChipUiModel
 import io.github.openflocon.flocondesktop.features.database.model.toDomain
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +32,7 @@ class DatabaseQueryLogsViewModel(
     private val dbName: String,
     private val observeDatabaseQueryLogsUseCase: ObserveDatabaseQueryLogsUseCase,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
+    private val feedbackDisplayer: FeedbackDisplayer,
     dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
 
@@ -110,6 +113,31 @@ class DatabaseQueryLogsViewModel(
 
     fun removeFilterChip(chip: FilterChipUiModel) {
         _filterChips.update { it - chip }
+    }
+
+    fun copyQuery(query: String) {
+        copyToClipboard(query)
+        feedbackDisplayer.displayMessage("Query copied to clipboard")
+    }
+
+    fun copyArgs(args: List<String>?) {
+        val argsString = args?.toString() ?: "[]"
+        copyToClipboard(argsString)
+        feedbackDisplayer.displayMessage("Arguments copied to clipboard")
+    }
+
+    fun copyAsSql(query: String, args: List<String>?) {
+        val fullSql = if (args.isNullOrEmpty()) {
+            query
+        } else {
+            var result = query
+            args.forEach { arg ->
+                result = result.replaceFirst("?", "'$arg'")
+            }
+            result
+        }
+        copyToClipboard(fullSql)
+        feedbackDisplayer.displayMessage("SQL with arguments copied to clipboard")
     }
 }
 
