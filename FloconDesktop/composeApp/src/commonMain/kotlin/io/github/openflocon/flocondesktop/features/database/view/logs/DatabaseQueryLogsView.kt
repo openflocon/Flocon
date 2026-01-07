@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -56,7 +58,9 @@ import io.github.openflocon.library.designsystem.components.FloconIconToggleButt
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
+import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -74,6 +78,9 @@ fun DatabaseQueryLogsView(
     val showTransactions by viewModel.showTransactions.collectAsStateWithLifecycle()
     val filterChips by viewModel.filterChips.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+
+    val lazyListState = rememberLazyListState()
+    val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
 
     Column(modifier = modifier) {
         DatabaseLogsHeader(
@@ -108,7 +115,10 @@ fun DatabaseQueryLogsView(
                     shape = FloconTheme.shapes.medium
                 )
         ) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = lazyListState,
+            ) {
                 items(logs.itemCount) { index ->
                     val log = logs[index]
                     if (log != null) {
@@ -149,6 +159,11 @@ fun DatabaseQueryLogsView(
                     }
                 }
             }
+            FloconVerticalScrollbar(
+                adapter = scrollAdapter,
+                modifier = Modifier.fillMaxHeight()
+                    .align(Alignment.TopEnd),
+            )
         }
     }
 }
