@@ -305,7 +305,7 @@ internal class LocalDatabaseDataSourceRoom(
             }
         }
 
-        queryString += " ORDER BY timestamp DESC"
+        queryString += " ORDER BY timestamp ASC"
 
         val query = RoomRawQuery(
             sql = queryString,

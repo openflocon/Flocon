@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,35 +20,33 @@ fun DatabaseQueryLogItemView(
     log: DatabaseQueryUiModel,
     modifier: Modifier = Modifier
 ) {
-    SelectionContainer {
-        Row(
-            modifier = modifier.then(
-                if (log.isFromOldSession) {
-                    Modifier.alpha(0.8f)
-                } else Modifier
-            ), horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+    Row(
+        modifier = modifier.then(
+            if (log.isFromOldSession) {
+                Modifier.alpha(0.8f)
+            } else Modifier
+        ), horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            modifier = Modifier.width(60.dp),
+            text = log.dateFormatted,
+            style = FloconTheme.typography.bodySmall,
+            textAlign = TextAlign.Center,
+            color = FloconTheme.colorPalette.onSurface
+                .copy(alpha = 0.6f)
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
-                modifier = Modifier.width(60.dp),
-                text = log.dateFormatted,
-                style = FloconTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
-                color = FloconTheme.colorPalette.onSurface
-                    .copy(alpha = 0.6f)
+                text = log.sqlQuery,
+                style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+                color = findColor(log.type)
             )
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            log.bindArgs?.let {
                 Text(
-                    text = log.sqlQuery,
-                    style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
-                    color = findColor(log.type)
+                    text = "Args: ${log.bindArgs}",
+                    style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.8f)
                 )
-                log.bindArgs?.let {
-                    Text(
-                        text = "Args: ${log.bindArgs}",
-                        style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.8f)
-                    )
-                }
             }
         }
     }
