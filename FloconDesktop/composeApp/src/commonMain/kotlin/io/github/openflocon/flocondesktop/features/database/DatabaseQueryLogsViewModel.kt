@@ -67,14 +67,19 @@ class DatabaseQueryLogsViewModel(
 
     private val PAGE_SIZE = 100
 
+    private val filtersFlow = combines(
+        _showTransactions,
+        _filterChips.map { it.map { it.toDomain() } }.distinctUntilChanged(),
+        observeCurrentDeviceIdAndPackageNameUseCase(),
+    )
+
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val logs: StateFlow<List<DatabaseQueryUiModel>> =
         combines(
-            _showTransactions,
-            _filterChips.map { it.map { it.toDomain() } }.distinctUntilChanged(),
-            observeCurrentDeviceIdAndPackageNameUseCase(),
+            filtersFlow,
             _page,
-        ).flatMapLatest { (showTransactions, filterChips, currentDeviceAndPackage, page) ->
+        ).flatMapLatest { (filter, page) ->
+            val (showTransactions, filterChips, currentDeviceAndPackage) = filter
             observeDatabaseQueryLogsUseCase(
                 dbName = dbName,
                 showTransactions = showTransactions,
@@ -92,11 +97,7 @@ class DatabaseQueryLogsViewModel(
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val totalCount: Flow<Int> =
-        combines(
-            _showTransactions,
-            _filterChips.map { it.map { it.toDomain() } }.distinctUntilChanged(),
-            observeCurrentDeviceIdAndPackageNameUseCase(),
-        ).flatMapLatest { (showTransactions, filterChips, _) ->
+        filtersFlow.flatMapLatest { (showTransactions, filterChips, _) ->
             countDatabaseQueryLogsUseCase(
                 dbName = dbName,
                 showTransactions = showTransactions,
