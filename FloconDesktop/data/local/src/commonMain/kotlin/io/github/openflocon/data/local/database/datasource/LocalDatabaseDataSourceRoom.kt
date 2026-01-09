@@ -293,38 +293,14 @@ internal class LocalDatabaseDataSourceRoom(
         limit: Int?,
         offset: Int?,
     ): RoomRawQuery {
-        val queryParams = ArrayList<Any>()
-        var queryString = "SELECT * FROM DatabaseQueryLogEntity WHERE deviceId = ? AND packageName = ? AND dbName = ?"
-        queryParams.add(deviceIdAndPackageName.deviceId)
-        queryParams.add(deviceIdAndPackageName.packageName)
-        queryParams.add(dbName)
+        val (whereClause, queryParams) = buildWhereClauseAndParams(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        )
 
-        if (!showTransactions) {
-            queryString += " AND isTransaction = 0"
-        }
-
-        val includes = filters.filter { it.type == FilterQueryLogDomainModel.FilterType.INCLUDE }
-        val excludes = filters.filter { it.type == FilterQueryLogDomainModel.FilterType.EXCLUDE }
-
-        if (includes.isNotEmpty()) {
-            queryString += " AND ("
-            includes.forEachIndexed { index, filter ->
-                if (index > 0) queryString += " OR "
-                queryString += "(sqlQuery LIKE ? OR bindArgs LIKE ?)"
-                queryParams.add("%${filter.text}%")
-                queryParams.add("%${filter.text}%")
-            }
-            queryString += ")"
-        }
-
-        if (excludes.isNotEmpty()) {
-            excludes.forEach { filter ->
-                queryString += " AND NOT (sqlQuery LIKE ? OR bindArgs LIKE ?)"
-                queryParams.add("%${filter.text}%")
-                queryParams.add("%${filter.text}%")
-            }
-        }
-
+        var queryString = "SELECT * FROM DatabaseQueryLogEntity $whereClause"
         queryString += " ORDER BY timestamp ASC"
 
         if (limit != null && offset != null) {
@@ -333,23 +309,7 @@ internal class LocalDatabaseDataSourceRoom(
             queryParams.add(offset)
         }
 
-        val query = RoomRawQuery(
-            sql = queryString,
-            onBindStatement = { statement ->
-                queryParams.forEachIndexed { index, arg ->
-                    when (arg) {
-                        is String -> statement.bindText(index + 1, arg)
-                        is Long -> statement.bindLong(index + 1, arg)
-                        is Int -> statement.bindLong(index + 1, arg.toLong())
-                        is Boolean -> statement.bindLong(index + 1, if (arg) 1L else 0L)
-                        is Double -> statement.bindDouble(index + 1, arg)
-                        is Float -> statement.bindDouble(index + 1, arg.toDouble())
-                        else -> statement.bindText(index + 1, arg.toString())
-                    }
-                }
-            }
-        )
-        return query
+        return createRawQuery(queryString, queryParams)
     }
 
     private fun buildCountQuery(
@@ -358,42 +318,62 @@ internal class LocalDatabaseDataSourceRoom(
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): RoomRawQuery {
+        val (whereClause, queryParams) = buildWhereClauseAndParams(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        )
+
+        val queryString = "SELECT COUNT(*) FROM DatabaseQueryLogEntity $whereClause"
+        return createRawQuery(queryString, queryParams)
+    }
+
+    private fun buildWhereClauseAndParams(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Pair<String, ArrayList<Any>> {
         val queryParams = ArrayList<Any>()
-        var queryString = "SELECT COUNT(*) FROM DatabaseQueryLogEntity WHERE deviceId = ? AND packageName = ? AND dbName = ?"
+        var whereClause = "WHERE deviceId = ? AND packageName = ? AND dbName = ?"
         queryParams.add(deviceIdAndPackageName.deviceId)
         queryParams.add(deviceIdAndPackageName.packageName)
         queryParams.add(dbName)
 
         if (!showTransactions) {
-            queryString += " AND isTransaction = 0"
+            whereClause += " AND isTransaction = 0"
         }
 
         val includes = filters.filter { it.type == FilterQueryLogDomainModel.FilterType.INCLUDE }
         val excludes = filters.filter { it.type == FilterQueryLogDomainModel.FilterType.EXCLUDE }
 
         if (includes.isNotEmpty()) {
-            queryString += " AND ("
+            whereClause += " AND ("
             includes.forEachIndexed { index, filter ->
-                if (index > 0) queryString += " OR "
-                queryString += "(sqlQuery LIKE ? OR bindArgs LIKE ?)"
+                if (index > 0) whereClause += " OR "
+                whereClause += "(sqlQuery LIKE ? OR bindArgs LIKE ?)"
                 queryParams.add("%${filter.text}%")
                 queryParams.add("%${filter.text}%")
             }
-            queryString += ")"
+            whereClause += ")"
         }
 
         if (excludes.isNotEmpty()) {
             excludes.forEach { filter ->
-                queryString += " AND NOT (sqlQuery LIKE ? OR bindArgs LIKE ?)"
+                whereClause += " AND NOT (sqlQuery LIKE ? OR bindArgs LIKE ?)"
                 queryParams.add("%${filter.text}%")
                 queryParams.add("%${filter.text}%")
             }
         }
+        return whereClause to queryParams
+    }
 
+    private fun createRawQuery(sql: String, params: List<Any>): RoomRawQuery {
         return RoomRawQuery(
-            sql = queryString,
+            sql = sql,
             onBindStatement = { statement ->
-                queryParams.forEachIndexed { index, arg ->
+                params.forEachIndexed { index, arg ->
                     when (arg) {
                         is String -> statement.bindText(index + 1, arg)
                         is Long -> statement.bindLong(index + 1, arg)
