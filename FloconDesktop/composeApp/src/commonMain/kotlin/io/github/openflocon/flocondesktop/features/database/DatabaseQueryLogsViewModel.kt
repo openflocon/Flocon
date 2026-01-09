@@ -131,6 +131,7 @@ class DatabaseQueryLogsViewModel(
 
     fun toggleShowTransactions() {
         _showTransactions.update { !it }
+        _page.value = 0
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -142,6 +143,7 @@ class DatabaseQueryLogsViewModel(
         if (query.isNotEmpty() && !_filterChips.value.any { it.text == query }) {
             _filterChips.update { it + FilterChipUiModel(query, FilterChipUiModel.FilterType.INCLUDE) }
             _searchQuery.value = ""
+            _page.value = 0
         }
     }
     
@@ -168,16 +170,19 @@ class DatabaseQueryLogsViewModel(
                 }
             }
         }
+        _page.value = 0
     }
     
     fun addFilter(text: String, type: FilterChipUiModel.FilterType) {
          if (text.isNotEmpty() && !_filterChips.value.any { it.text == text }) {
             _filterChips.update { it + FilterChipUiModel(text, type) }
+            _page.value = 0
         }
     }
 
     fun removeFilterChip(chip: FilterChipUiModel) {
         _filterChips.update { it - chip }
+        _page.value = 0
     }
 
     fun copyQuery(query: String) {
