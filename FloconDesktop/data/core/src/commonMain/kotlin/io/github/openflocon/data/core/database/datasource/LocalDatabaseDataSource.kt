@@ -71,8 +71,17 @@ interface LocalDatabaseDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dbName: String,
         showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        limit: Int,
+        offset: Int,
+    ): Flow<List<DatabaseQueryLogDomainModel>>
+
+    fun countQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>
-    ): Flow<PagingData<DatabaseQueryLogDomainModel>>
+    ): Flow<Int>
 
     suspend fun getQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -80,4 +89,8 @@ interface LocalDatabaseDataSource {
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>
     ): List<DatabaseQueryLogDomainModel>
+
+    suspend fun deleteAllQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    )
 }

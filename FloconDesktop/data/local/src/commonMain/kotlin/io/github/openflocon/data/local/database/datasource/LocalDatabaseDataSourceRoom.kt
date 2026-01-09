@@ -206,39 +206,48 @@ internal class LocalDatabaseDataSourceRoom(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dbName: String,
         showTransactions: Boolean,
-        filters: List<FilterQueryLogDomainModel>
-    ): Flow<PagingData<DatabaseQueryLogDomainModel>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-            ),
-            pagingSourceFactory = {
-                val query = buildQuery(
-                    dbName = dbName,
-                    showTransactions = showTransactions,
-                    filters = filters,
-                    deviceIdAndPackageName = deviceIdAndPackageName
-                )
+        filters: List<FilterQueryLogDomainModel>,
+        limit: Int,
+        offset: Int,
+    ): Flow<List<DatabaseQueryLogDomainModel>> {
+        val query = buildQuery(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            limit = limit,
+            offset = offset,
+        )
 
-                databaseQueryLogDao.getPagingSource(
-                    query = query,
+        return databaseQueryLogDao.observeLogs(query).map { list ->
+            list.map { entity ->
+                DatabaseQueryLogDomainModel(
+                    dbName = entity.dbName,
+                    sqlQuery = entity.sqlQuery,
+                    bindArgs = entity.bindArgs?.let {
+                        json.decodeFromString(it)
+                    } ?: emptyList(),
+                    timestamp = entity.timestamp,
+                    isTransaction = entity.isTransaction,
+                    appInstance = entity.appInstance
                 )
             }
-        ).flow
-            .map { pagingData ->
-                pagingData.map { entity ->
-                    DatabaseQueryLogDomainModel(
-                        dbName = entity.dbName,
-                        sqlQuery = entity.sqlQuery,
-                        bindArgs = entity.bindArgs?.let {
-                            json.decodeFromString(it)
-                        } ?: emptyList(),
-                        timestamp = entity.timestamp,
-                        isTransaction = entity.isTransaction,
-                        appInstance = entity.appInstance
-                    )
-                }
-            }
+        }
+    }
+
+    override fun countQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>
+    ): Flow<Int> {
+        val query = buildCountQuery(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName
+        )
+        return databaseQueryLogDao.countLogs(query)
     }
 
     override suspend fun getQueryLogs(
@@ -251,7 +260,9 @@ internal class LocalDatabaseDataSourceRoom(
             dbName = dbName,
             showTransactions = showTransactions,
             filters = filters,
-            deviceIdAndPackageName = deviceIdAndPackageName
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            limit = null,
+            offset = null,
         )
         return databaseQueryLogDao.getLogs(query).map { entity ->
             DatabaseQueryLogDomainModel(
@@ -267,50 +278,102 @@ internal class LocalDatabaseDataSourceRoom(
         }
     }
 
+    override suspend fun deleteAllQueryLogs(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        databaseQueryLogDao.deleteAll(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+        )
+    }
+
     private fun buildQuery(
         dbName: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        limit: Int?,
+        offset: Int?,
     ): RoomRawQuery {
+        val (whereClause, queryParams) = buildWhereClauseAndParams(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        )
+
+        var queryString = "SELECT * FROM DatabaseQueryLogEntity $whereClause"
+        queryString += " ORDER BY timestamp ASC"
+
+        if (limit != null && offset != null) {
+            queryString += " LIMIT ? OFFSET ?"
+            queryParams.add(limit)
+            queryParams.add(offset)
+        }
+
+        return createRawQuery(queryString, queryParams)
+    }
+
+    private fun buildCountQuery(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): RoomRawQuery {
+        val (whereClause, queryParams) = buildWhereClauseAndParams(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName,
+        )
+
+        val queryString = "SELECT COUNT(*) FROM DatabaseQueryLogEntity $whereClause"
+        return createRawQuery(queryString, queryParams)
+    }
+
+    private fun buildWhereClauseAndParams(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Pair<String, ArrayList<Any>> {
         val queryParams = ArrayList<Any>()
-        var queryString = "SELECT * FROM DatabaseQueryLogEntity WHERE deviceId = ? AND packageName = ? AND dbName = ?"
+        var whereClause = "WHERE deviceId = ? AND packageName = ? AND dbName = ?"
         queryParams.add(deviceIdAndPackageName.deviceId)
         queryParams.add(deviceIdAndPackageName.packageName)
         queryParams.add(dbName)
 
         if (!showTransactions) {
-            queryString += " AND isTransaction = 0"
+            whereClause += " AND isTransaction = 0"
         }
 
         val includes = filters.filter { it.type == FilterQueryLogDomainModel.FilterType.INCLUDE }
         val excludes = filters.filter { it.type == FilterQueryLogDomainModel.FilterType.EXCLUDE }
 
         if (includes.isNotEmpty()) {
-            queryString += " AND ("
+            whereClause += " AND ("
             includes.forEachIndexed { index, filter ->
-                if (index > 0) queryString += " OR "
-                queryString += "(sqlQuery LIKE ? OR bindArgs LIKE ?)"
+                if (index > 0) whereClause += " OR "
+                whereClause += "(sqlQuery LIKE ? OR bindArgs LIKE ?)"
                 queryParams.add("%${filter.text}%")
                 queryParams.add("%${filter.text}%")
             }
-            queryString += ")"
+            whereClause += ")"
         }
 
         if (excludes.isNotEmpty()) {
             excludes.forEach { filter ->
-                queryString += " AND NOT (sqlQuery LIKE ? OR bindArgs LIKE ?)"
+                whereClause += " AND NOT (sqlQuery LIKE ? OR bindArgs LIKE ?)"
                 queryParams.add("%${filter.text}%")
                 queryParams.add("%${filter.text}%")
             }
         }
+        return whereClause to queryParams
+    }
 
-        queryString += " ORDER BY timestamp ASC"
-
-        val query = RoomRawQuery(
-            sql = queryString,
+    private fun createRawQuery(sql: String, params: List<Any>): RoomRawQuery {
+        return RoomRawQuery(
+            sql = sql,
             onBindStatement = { statement ->
-                queryParams.forEachIndexed { index, arg ->
+                params.forEachIndexed { index, arg ->
                     when (arg) {
                         is String -> statement.bindText(index + 1, arg)
                         is Long -> statement.bindLong(index + 1, arg)
@@ -323,6 +386,5 @@ internal class LocalDatabaseDataSourceRoom(
                 }
             }
         )
-        return query
     }
 }
