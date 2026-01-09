@@ -30,4 +30,7 @@ interface DatabaseQueryLogDao {
     suspend fun getLogs(
         query: RoomRawQuery,
     ): List<DatabaseQueryLogEntity>
+
+    @androidx.room.Query("DELETE FROM DatabaseQueryLogEntity WHERE deviceId = :deviceId AND packageName = :packageName")
+    suspend fun deleteAll(deviceId: String, packageName: String)
 }

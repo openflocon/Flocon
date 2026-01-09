@@ -251,4 +251,10 @@ class DatabaseRepositoryImpl(
             deviceIdAndPackageName = deviceIdAndPackageName,
         )
     }
+
+    override suspend fun deleteAllQueryLogs(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        withContext(dispatcherProvider.data) {
+            localDatabaseDataSource.deleteAllQueryLogs(deviceIdAndPackageName)
+        }
+    }
 }

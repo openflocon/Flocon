@@ -278,6 +278,13 @@ internal class LocalDatabaseDataSourceRoom(
         }
     }
 
+    override suspend fun deleteAllQueryLogs(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        databaseQueryLogDao.deleteAll(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+        )
+    }
+
     private fun buildQuery(
         dbName: String,
         showTransactions: Boolean,

@@ -100,4 +100,8 @@ interface DatabaseRepository {
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): List<DatabaseQueryLogDomainModel>
+
+    suspend fun deleteAllQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    )
 }

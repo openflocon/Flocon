@@ -89,4 +89,8 @@ interface LocalDatabaseDataSource {
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>
     ): List<DatabaseQueryLogDomainModel>
+
+    suspend fun deleteAllQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    )
 }

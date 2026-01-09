@@ -8,6 +8,7 @@ import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
+import io.github.openflocon.domain.database.usecase.ClearDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.CountDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.GetDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogsUseCase
@@ -48,6 +49,7 @@ class DatabaseQueryLogsViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
     private val exportDatabaseQueryLogsToCsvProcessor: ExportDatabaseQueryLogsToCsvProcessor,
     private val exportDatabaseQueryLogsToMarkdownProcessor: ExportDatabaseQueryLogsToMarkdownProcessor,
+    private val clearDatabaseQueryLogsUseCase: ClearDatabaseQueryLogsUseCase,
     private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
 
@@ -227,6 +229,12 @@ class DatabaseQueryLogsViewModel(
                     feedbackDisplayer.displayMessage("Export failed: ${it.message}")
                 }
             )
+        }
+    }
+
+    fun clearLogs() {
+        viewModelScope.launch {
+            clearDatabaseQueryLogsUseCase()
         }
     }
 }

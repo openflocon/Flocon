@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material.icons.outlined.UploadFile
@@ -35,9 +36,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
-import androidx.paging.LoadState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -54,6 +53,7 @@ import io.github.openflocon.flocondesktop.features.database.model.FilterChipUiMo
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
+import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
@@ -103,6 +103,7 @@ fun DatabaseQueryLogsView(
             filterChips = filterChips,
             exportToCsv = viewModel::exportToCsv,
             exportToMarkdown = viewModel::exportToMarkdown,
+            clearLogs = viewModel::clearLogs,
             paginationLabel = paginationLabel,
             onNextPage = viewModel::nextPage,
             onPreviousPage = viewModel::previousPage,
@@ -187,6 +188,7 @@ private fun DatabaseLogsHeader(
     removeFilterChip: (FilterChipUiModel) -> Unit,
     exportToCsv: () -> Unit,
     exportToMarkdown: () -> Unit,
+    clearLogs: () -> Unit,
     paginationLabel: String,
     onNextPage: () -> Unit,
     onPreviousPage: () -> Unit,
@@ -254,52 +256,33 @@ private fun DatabaseLogsHeader(
                     }
                 )
 
-                FloconOverflow {
-                    FloconDropdownMenuItem(
-                        text = "Export CSV",
-                        leadingIcon = Icons.Outlined.Upload,
-                        onClick = { exportToCsv() }
-                    )
-                    FloconDropdownMenuItem(
-                        text = "Export Markdown",
-                        leadingIcon = Icons.Outlined.UploadFile,
-                        onClick = { exportToMarkdown() }
-                    )
-                }
+                PageSelectorView(
+                    onPreviousPage = onPreviousPage,
+                    isPreviousEnabled = isPreviousEnabled,
+                    paginationLabel = paginationLabel,
+                    onNextPage = onNextPage,
+                    isNextEnabled = isNextEnabled,
+                    modifier = Modifier.padding(start = 16.dp),
+                )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(start = 16.dp)
-                ) {
-                    IconButton(
-                        onClick = onPreviousPage,
-                        enabled = isPreviousEnabled
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ChevronLeft,
-                            contentDescription = "Previous Page",
-                            modifier = Modifier.size(16.dp)
+                    FloconOverflow {
+                        FloconDropdownMenuItem(
+                            text = "Export CSV",
+                            leadingIcon = Icons.Outlined.Upload,
+                            onClick = { exportToCsv() }
+                        )
+                        FloconDropdownMenuItem(
+                            text = "Export Markdown",
+                            leadingIcon = Icons.Outlined.UploadFile,
+                            onClick = { exportToMarkdown() }
+                        )
+                        FloconDropdownSeparator()
+                        FloconDropdownMenuItem(
+                            text = "Clear",
+                            leadingIcon = Icons.Outlined.Delete,
+                            onClick = { clearLogs() }
                         )
                     }
-
-                    Text(
-                        text = paginationLabel,
-                        style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onPrimary
-                    )
-
-                    IconButton(
-                        onClick = onNextPage,
-                        enabled = isNextEnabled
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ChevronRight,
-                            contentDescription = "Next Page",
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
 
             }
             FilterChips(
@@ -308,6 +291,50 @@ private fun DatabaseLogsHeader(
                 filterChips = filterChips,
                 toggleFilterType = toggleFilterType,
                 removeFilterChip = removeFilterChip,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PageSelectorView(
+    modifier: Modifier = Modifier,
+    onPreviousPage: () -> Unit,
+    isPreviousEnabled: Boolean,
+    paginationLabel: String,
+    onNextPage: () -> Unit,
+    isNextEnabled: Boolean
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier,
+    ) {
+        IconButton(
+            onClick = onPreviousPage,
+            enabled = isPreviousEnabled
+        ) {
+            Icon(
+                imageVector = Icons.Default.ChevronLeft,
+                contentDescription = "Previous Page",
+                modifier = Modifier.size(16.dp)
+            )
+        }
+
+        Text(
+            text = paginationLabel,
+            style = FloconTheme.typography.bodySmall,
+            color = FloconTheme.colorPalette.onPrimary
+        )
+
+        IconButton(
+            onClick = onNextPage,
+            enabled = isNextEnabled
+        ) {
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = "Next Page",
+                modifier = Modifier.size(16.dp)
             )
         }
     }
