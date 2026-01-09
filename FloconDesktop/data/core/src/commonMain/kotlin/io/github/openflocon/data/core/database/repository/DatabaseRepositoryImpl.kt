@@ -211,8 +211,26 @@ class DatabaseRepositoryImpl(
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): Flow<PagingData<DatabaseQueryLogDomainModel>> {
+        limit: Int,
+        offset: Int,
+    ): Flow<List<DatabaseQueryLogDomainModel>> {
         return localDatabaseDataSource.observeQueryLogs(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            limit = limit,
+            offset = offset,
+        )
+    }
+
+    override fun countQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<Int> {
+        return localDatabaseDataSource.countQueryLogs(
             dbName = dbName,
             showTransactions = showTransactions,
             filters = filters,

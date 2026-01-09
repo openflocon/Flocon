@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +23,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.Search
@@ -30,8 +33,11 @@ import androidx.compose.material.icons.outlined.UploadFile
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
+import androidx.paging.LoadState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -41,9 +47,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.database.DatabaseQueryLogsViewModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.FilterChipUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
@@ -68,10 +74,13 @@ fun DatabaseQueryLogsView(
         parameters = { parametersOf(dbName) }
     )
 
-    val logs = viewModel.logs.collectAsLazyPagingItems()
+    val logs: List<DatabaseQueryUiModel> by viewModel.logs.collectAsStateWithLifecycle()
     val showTransactions by viewModel.showTransactions.collectAsStateWithLifecycle()
     val filterChips by viewModel.filterChips.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val paginationLabel by viewModel.paginationLabel.collectAsStateWithLifecycle()
+    val totalPages by viewModel.totalPages.collectAsStateWithLifecycle()
+    val page by viewModel.page.collectAsStateWithLifecycle()
 
     val lazyListState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
@@ -94,6 +103,11 @@ fun DatabaseQueryLogsView(
             filterChips = filterChips,
             exportToCsv = viewModel::exportToCsv,
             exportToMarkdown = viewModel::exportToMarkdown,
+            paginationLabel = paginationLabel,
+            onNextPage = viewModel::nextPage,
+            onPreviousPage = viewModel::previousPage,
+            isNextEnabled = page < totalPages - 1,
+            isPreviousEnabled = page > 0,
         )
 
         Box(
@@ -113,46 +127,43 @@ fun DatabaseQueryLogsView(
                 modifier = Modifier.fillMaxSize(),
                 state = lazyListState,
             ) {
-                items(logs.itemCount) { index ->
-                    val log = logs[index]
-                    if (log != null) {
-                        ContextualView(
+                items(logs) { log ->
+                    ContextualView(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        items = listOf(
+                            FloconContextMenuItem.Item("Copy Query") {
+                                viewModel.copyQuery(log.sqlQuery)
+                            },
+                            FloconContextMenuItem.Item("Copy Args") {
+                                viewModel.copyArgs(log.bindArgs)
+                            },
+                            FloconContextMenuItem.Item("Copy as SQL") {
+                                viewModel.copyAsSql(log.sqlQuery, log.bindArgs)
+                            },
+                            FloconContextMenuItem.Separator(),
+                            FloconContextMenuItem.Item("Filter In") {
+                                viewModel.addFilter(
+                                    log.sqlQuery,
+                                    FilterChipUiModel.FilterType.INCLUDE
+                                )
+                            },
+                            FloconContextMenuItem.Item("Filter Out") {
+                                viewModel.addFilter(
+                                    log.sqlQuery,
+                                    FilterChipUiModel.FilterType.EXCLUDE
+                                )
+                            }
+                        )
+                    ) {
+                        DatabaseQueryLogItemView(
+                            log = log,
                             modifier = Modifier
-                                .fillMaxWidth(),
-                            items = listOf(
-                                FloconContextMenuItem.Item("Copy Query") {
-                                    viewModel.copyQuery(log.sqlQuery)
-                                },
-                                FloconContextMenuItem.Item("Copy Args") {
-                                    viewModel.copyArgs(log.bindArgs)
-                                },
-                                FloconContextMenuItem.Item("Copy as SQL") {
-                                    viewModel.copyAsSql(log.sqlQuery, log.bindArgs)
-                                },
-                                FloconContextMenuItem.Separator(),
-                                FloconContextMenuItem.Item("Filter In") {
-                                    viewModel.addFilter(
-                                        log.sqlQuery,
-                                        FilterChipUiModel.FilterType.INCLUDE
-                                    )
-                                },
-                                FloconContextMenuItem.Item("Filter Out") {
-                                    viewModel.addFilter(
-                                        log.sqlQuery,
-                                        FilterChipUiModel.FilterType.EXCLUDE
-                                    )
-                                }
-                            )
-                        ) {
-                            DatabaseQueryLogItemView(
-                                log = log,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp, vertical = 8.dp)
-                            )
-                        }
-                        HorizontalDivider(color = FloconTheme.colorPalette.secondary)
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp, vertical = 8.dp)
+                        )
                     }
+                    HorizontalDivider(color = FloconTheme.colorPalette.secondary)
                 }
             }
             FloconVerticalScrollbar(
@@ -176,6 +187,11 @@ private fun DatabaseLogsHeader(
     removeFilterChip: (FilterChipUiModel) -> Unit,
     exportToCsv: () -> Unit,
     exportToMarkdown: () -> Unit,
+    paginationLabel: String,
+    onNextPage: () -> Unit,
+    onPreviousPage: () -> Unit,
+    isNextEnabled: Boolean,
+    isPreviousEnabled: Boolean,
     filterChips: List<FilterChipUiModel>,
     modifier: Modifier = Modifier,
 ) {
@@ -212,10 +228,10 @@ private fun DatabaseLogsHeader(
                         },
                     )
 
-                    androidx.compose.material3.IconButton(onClick = addIncludeFilter) {
+                    IconButton(onClick = addIncludeFilter) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = "Include")
                     }
-                    androidx.compose.material3.IconButton(onClick = addExcludeFilter) {
+                    IconButton(onClick = addExcludeFilter) {
                         Icon(imageVector = Icons.Default.Remove, contentDescription = "Exclude")
                     }
                 }
@@ -249,6 +265,40 @@ private fun DatabaseLogsHeader(
                         leadingIcon = Icons.Outlined.UploadFile,
                         onClick = { exportToMarkdown() }
                     )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(start = 16.dp)
+                ) {
+                    IconButton(
+                        onClick = onPreviousPage,
+                        enabled = isPreviousEnabled
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ChevronLeft,
+                            contentDescription = "Previous Page",
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    Text(
+                        text = paginationLabel,
+                        style = FloconTheme.typography.bodySmall,
+                        color = FloconTheme.colorPalette.onPrimary
+                    )
+
+                    IconButton(
+                        onClick = onNextPage,
+                        enabled = isNextEnabled
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = "Next Page",
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
 
             }

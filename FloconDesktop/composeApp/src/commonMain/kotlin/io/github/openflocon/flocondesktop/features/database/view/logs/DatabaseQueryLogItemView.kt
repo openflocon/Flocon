@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -36,17 +37,21 @@ fun DatabaseQueryLogItemView(
                 .copy(alpha = 0.6f)
         )
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(
-                text = log.sqlQuery,
-                style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
-                color = findColor(log.type)
-            )
-            log.bindArgs?.let {
+            SelectionContainer {
                 Text(
-                    text = "Args: ${log.bindArgs}",
-                    style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                    color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.8f)
+                    text = log.sqlQuery,
+                    style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+                    color = findColor(log.type)
                 )
+            }
+            SelectionContainer {
+                log.bindArgs?.let {
+                    Text(
+                        text = "Args: ${log.bindArgs}",
+                        style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.8f)
+                    )
+                }
             }
         }
     }

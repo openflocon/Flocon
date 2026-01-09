@@ -8,6 +8,7 @@ import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
+import io.github.openflocon.domain.database.usecase.CountDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.GetDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -21,11 +22,14 @@ import io.github.openflocon.flocondesktop.features.database.processor.ExportData
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -33,16 +37,18 @@ import java.util.Date
 import java.util.Locale
 
 import io.github.openflocon.domain.database.utils.injectSqlArgs
+import kotlinx.coroutines.flow.StateFlow
 
 class DatabaseQueryLogsViewModel(
     private val dbName: String,
     private val observeDatabaseQueryLogsUseCase: ObserveDatabaseQueryLogsUseCase,
+    private val countDatabaseQueryLogsUseCase: CountDatabaseQueryLogsUseCase,
     private val getDatabaseQueryLogsUseCase: GetDatabaseQueryLogsUseCase,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val exportDatabaseQueryLogsToCsvProcessor: ExportDatabaseQueryLogsToCsvProcessor,
     private val exportDatabaseQueryLogsToMarkdownProcessor: ExportDatabaseQueryLogsToMarkdownProcessor,
-    dispatcherProvider: DispatcherProvider,
+    private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
 
     private val _showTransactions = MutableStateFlow(false)
@@ -54,25 +60,71 @@ class DatabaseQueryLogsViewModel(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
+    private val _page = MutableStateFlow(0)
+    val page = _page.asStateFlow()
+
+    private val PAGE_SIZE = 100
+
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-    val logs: Flow<PagingData<DatabaseQueryUiModel>> =
+    val logs: StateFlow<List<DatabaseQueryUiModel>> =
         combines(
             _showTransactions,
             _filterChips.map { it.map { it.toDomain() } }.distinctUntilChanged(),
             observeCurrentDeviceIdAndPackageNameUseCase(),
-        ).flatMapLatest { (showTransactions, filterChips, currentDeviceAndPackage) ->
+            _page,
+        ).flatMapLatest { (showTransactions, filterChips, currentDeviceAndPackage, page) ->
             observeDatabaseQueryLogsUseCase(
                 dbName = dbName,
                 showTransactions = showTransactions,
                 filters = filterChips,
-            ).map {
-                it.map {
+                limit = PAGE_SIZE,
+                offset = page * PAGE_SIZE,
+            ).map { list ->
+                list.map {
                     it.toUi(currentDeviceAndPackage = currentDeviceAndPackage)
                 }
             }
         }
             .flowOn(dispatcherProvider.viewModel)
-            .cachedIn(viewModelScope)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val totalCount: Flow<Int> =
+        combines(
+            _showTransactions,
+            _filterChips.map { it.map { it.toDomain() } }.distinctUntilChanged(),
+            observeCurrentDeviceIdAndPackageNameUseCase(),
+        ).flatMapLatest { (showTransactions, filterChips, _) ->
+            countDatabaseQueryLogsUseCase(
+                dbName = dbName,
+                showTransactions = showTransactions,
+                filters = filterChips,
+            )
+        }
+            .flowOn(dispatcherProvider.viewModel)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    val totalPages = totalCount.map { (it + PAGE_SIZE - 1) / PAGE_SIZE }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    val paginationLabel = combine(page, totalCount) { page, totalCount ->
+        val start = page * PAGE_SIZE
+        val end = minOf((page + 1) * PAGE_SIZE, totalCount)
+        if (totalCount == 0) "0 - 0" else "${start + 1} - $end"
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "0 - 0")
+
+    fun nextPage() {
+        if (_page.value < totalPages.value - 1) {
+            _page.update { it + 1 }
+        }
+    }
+
+    fun previousPage() {
+        if (_page.value > 0) {
+            _page.update { it - 1 }
+        }
+    }
 
     fun toggleShowTransactions() {
         _showTransactions.update { !it }
@@ -95,6 +147,7 @@ class DatabaseQueryLogsViewModel(
         if (query.isNotEmpty() && !_filterChips.value.any { it.text == query }) {
             _filterChips.update { it + FilterChipUiModel(query, FilterChipUiModel.FilterType.EXCLUDE) }
             _searchQuery.value = ""
+            _page.value = 0
         }
     }
     
