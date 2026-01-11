@@ -24,6 +24,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.files.FilesRoutes
 import io.github.openflocon.flocondesktop.features.images.ImageRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
+import io.github.openflocon.flocondesktop.features.performance.PerformanceRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.TableRoutes
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
@@ -110,6 +111,7 @@ internal class AppViewModel(
             AppAction.Record -> onRecord()
             AppAction.Restart -> onRestart()
             AppAction.Screenshoot -> onTakeScreenshot()
+            AppAction.Performance -> onPerformance()
             is AppAction.SelectApp -> onAppSelected(action)
             is AppAction.SelectDevice -> onDeviceSelected(action)
         }
@@ -181,5 +183,9 @@ internal class AppViewModel(
                 },
             )
         }
+    }
+
+    private fun onPerformance() {
+        navigationState.navigate(PerformanceRoutes.Main)
     }
 }
