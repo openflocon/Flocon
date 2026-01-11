@@ -186,6 +186,6 @@ internal class AppViewModel(
     }
 
     private fun onPerformance() {
-        navigationState.navigate(PerformanceRoutes.Main)
+        navigationState.navigate(PerformanceRoutes.Performance)
     }
 }
