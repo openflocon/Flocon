@@ -481,15 +481,24 @@ private fun Response(
                         var jsonError by remember { mutableStateOf(false) }
 
                         if(!jsonError) {
-                            FloconJsonTree(
-                                json = response.body,
-                                initialState = TreeState.EXPANDED,
-                                onError = { jsonError = true },
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(600.dp)
                                     .padding(12.dp)
-                            )
+                                    .background(
+                                        FloconTheme.colorPalette.secondary,
+                                        shape = FloconTheme.shapes.medium,
+                                    )
+                                    .padding(12.dp),
+                            ) {
+                                FloconJsonTree(
+                                    json = response.body,
+                                    initialState = TreeState.EXPANDED,
+                                    onError = { jsonError = true },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
                         } else {
                             var displayBody by remember(response.body) {
                                 val isLargeResponse = response.body.length > LARGE_BODY_LENGTH
