@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.github.openflocon.flocondesktop.features.performance.MetricEvent
 import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,6 +104,23 @@ private fun MetricText(label: String, value: String) {
             text = value,
             style = FloconTheme.typography.bodyLarge,
             color = FloconTheme.colorPalette.onSurface
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PerformanceDetailScreenPreview() {
+    FloconTheme {
+        PerformanceDetailScreen(
+            event = MetricEvent(
+                timestamp = "10:55:38.123",
+                ramMb = "150",
+                fps = "60.0",
+                jankPercentage = "0.0%",
+                battery = "85%",
+                screenshotPath = null
+            )
         )
     }
 }

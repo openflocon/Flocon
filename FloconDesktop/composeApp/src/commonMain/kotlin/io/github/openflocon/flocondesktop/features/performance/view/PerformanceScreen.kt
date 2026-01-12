@@ -143,62 +143,10 @@ fun PerformanceScreen() {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(metrics) { event ->
-                    MetricItem(
+                    MetricItemView(
                         event = event,
                         onClick = viewModel::onEventClicked
                     )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun MetricItem(
-    event: MetricEvent,
-    onClick: (MetricEvent) -> Unit,
-) {
-    FloconSurface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = FloconTheme.shapes.medium,
-        tonalElevation = 2.dp,
-        onClick = { onClick(event) }
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = event.timestamp,
-                    style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.primary
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("RAM: ${event.ramMb} MB", style = FloconTheme.typography.bodyMedium)
-                    Text("FPS: ${event.fps}", style = FloconTheme.typography.bodyMedium)
-                    Text("Jank: ${event.jankPercentage}", style = FloconTheme.typography.bodyMedium)
-                    Text("Battery: ${event.battery}", style = FloconTheme.typography.bodyMedium)
-                }
-            }
-
-            if (event.screenshotPath != null) {
-                AsyncImage(
-                    model = File(event.screenshotPath),
-                    contentDescription = "Screenshot at ${event.timestamp}",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(4.dp),
-                    contentScale = ContentScale.Fit
-                )
-            } else {
-                Box(
-                    modifier = Modifier.size(100.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    FloconCircularProgressIndicator()
                 }
             }
         }
