@@ -3,16 +3,16 @@ package io.github.openflocon.flocondesktop.features.performance
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MetricEvent(
+data class MetricEventUiModel(
     val timestamp: String,
-    val ramMb: String,
+    val ramMb: String?,
     val fps: String,
     val jankPercentage: String,
     val battery: String,
     val screenshotPath: String?,
 )
 
-fun previewMetricsEvent() = MetricEvent(
+fun previewMetricsEvent() = MetricEventUiModel(
     timestamp = "10:55:38.123",
     ramMb = "150",
     fps = "60.0",

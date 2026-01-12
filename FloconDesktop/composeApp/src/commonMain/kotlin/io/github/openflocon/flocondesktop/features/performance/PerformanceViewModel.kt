@@ -2,7 +2,9 @@ package io.github.openflocon.flocondesktop.features.performance
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.performance.usecase.FetchPerformanceMetricsUseCase
 import io.github.openflocon.domain.performance.usecase.GetAdbDevicesUseCase
 import io.github.openflocon.domain.performance.usecase.GetDeviceRefreshRateUseCase
@@ -10,10 +12,7 @@ import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -24,6 +23,7 @@ import java.time.format.DateTimeFormatter
 
 class PerformanceViewModel(
     private val fetchPerformanceMetricsUseCase: FetchPerformanceMetricsUseCase,
+    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val getAdbDevicesUseCase: GetAdbDevicesUseCase,
     private val getDeviceRefreshRateUseCase: GetDeviceRefreshRateUseCase,
     private val navigationState: MainFloconNavigationState,
@@ -42,7 +42,7 @@ class PerformanceViewModel(
     private val _intervalMs = MutableStateFlow(1000L)
     val intervalMs = _intervalMs.asStateFlow()
 
-    private val _metrics = MutableStateFlow<List<MetricEvent>>(emptyList())
+    private val _metrics = MutableStateFlow<List<MetricEventUiModel>>(emptyList())
     val metrics = _metrics.asStateFlow()
 
     private val _isMonitoring = MutableStateFlow(false)
@@ -60,6 +60,11 @@ class PerformanceViewModel(
             _devices.value = deviceList
             if (_selectedDevice.value == null && deviceList.isNotEmpty()) {
                 _selectedDevice.value = deviceList.first()
+            }
+        }
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            getCurrentDeviceIdAndPackageNameUseCase()?.let { (_, packageName) ->
+                _packageName.value = packageName
             }
         }
     }
@@ -95,7 +100,7 @@ class PerformanceViewModel(
             if (deviceSerial != null) {
                 refreshRate = getDeviceRefreshRateUseCase(deviceSerial)
             }
- 
+
             while (isActive) {
                 fetchMetrics()
                 delay(_intervalMs.value)
@@ -124,10 +129,13 @@ class PerformanceViewModel(
         lastFrameCount = domainModel.totalFrames
         lastFetchTime = domainModel.timestamp
 
-        val event = MetricEvent(
-            timestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(domainModel.timestamp), ZoneId.systemDefault())
+        val event = MetricEventUiModel(
+            timestamp = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(domainModel.timestamp),
+                ZoneId.systemDefault()
+            )
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")),
-            ramMb = domainModel.ramMb,
+            ramMb = domainModel.ramMb?.let { ByteFormatter.formatBytes(it) },
             fps = if (domainModel.fps > 0) String.format("%.1f", domainModel.fps) else "0",
             jankPercentage = String.format("%.1f%%", domainModel.jankPercentage),
             battery = domainModel.battery,
@@ -137,7 +145,7 @@ class PerformanceViewModel(
         _metrics.update { listOf(event) + it }
     }
 
-    fun onEventClicked(event: MetricEvent) {
+    fun onEventClicked(event: MetricEventUiModel) {
         navigationState.navigate(PerformanceRoutes.Detail(event))
     }
 }

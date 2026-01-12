@@ -18,10 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import io.github.openflocon.flocondesktop.common.ui.isInPreview
-import io.github.openflocon.flocondesktop.features.performance.MetricEvent
+import io.github.openflocon.flocondesktop.features.performance.MetricEventUiModel
 import io.github.openflocon.flocondesktop.features.performance.previewMetricsEvent
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -29,8 +28,8 @@ private val imageSize = 40.dp
 
 @Composable
 internal fun MetricItemView(
-    event: MetricEvent,
-    onClick: (MetricEvent) -> Unit,
+    event: MetricEventUiModel,
+    onClick: (MetricEventUiModel) -> Unit,
 ) {
     val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
 
@@ -81,7 +80,7 @@ internal fun MetricItemView(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("RAM: ${event.ramMb} MB", style = bodySmall)
+                    event.ramMb?.let { Text("RAM: $it", style = bodySmall) }
                     Text("Battery: ${event.battery}", style = bodySmall)
                 }
             }

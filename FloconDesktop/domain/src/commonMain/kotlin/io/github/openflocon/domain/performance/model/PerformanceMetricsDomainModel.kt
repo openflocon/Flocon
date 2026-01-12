@@ -1,7 +1,7 @@
 package io.github.openflocon.domain.performance.model
 
 data class PerformanceMetricsDomainModel(
-    val ramMb: String,
+    val ramMb: Long?,
     val fps: Double,
     val jankPercentage: Double,
     val battery: String,

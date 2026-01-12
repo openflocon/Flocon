@@ -2,9 +2,11 @@
 
 package io.github.openflocon.flocondesktop.features.performance.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
@@ -12,16 +14,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import io.github.openflocon.flocondesktop.features.performance.MetricEvent
 import io.github.openflocon.flocondesktop.features.performance.PerformanceViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.*
 import org.koin.compose.viewmodel.koinViewModel
-import java.io.File
 
 @Composable
 fun PerformanceScreen() {
@@ -33,7 +32,7 @@ fun PerformanceScreen() {
     val metrics by viewModel.metrics.collectAsStateWithLifecycle()
     val isMonitoring by viewModel.isMonitoring.collectAsStateWithLifecycle()
 
-    FloconScaffold() { paddingValues ->
+    FloconScaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -54,7 +53,8 @@ fun PerformanceScreen() {
                         onExpandedChange = { expanded = it }
                     ) {
                         Text(
-                            modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                            modifier = Modifier.fillMaxWidth()
+                                .menuAnchor(MenuAnchorType.PrimaryNotEditable),
                             text = selectedDevice ?: "Select Device",
                             //onValueChange = {},
                             //readOnly = true,
@@ -137,17 +137,34 @@ fun PerformanceScreen() {
 
             HorizontalDivider()
 
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                contentPadding = PaddingValues(vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .weight(1f)
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.primary),
+                contentAlignment = Alignment.Center
             ) {
-                items(metrics) { event ->
-                    MetricItemView(
-                        event = event,
-                        onClick = viewModel::onEventClicked
-                    )
+                val listState = rememberLazyListState()
+                val scrollAdapter = rememberFloconScrollbarAdapter(listState)
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentPadding = PaddingValues(vertical = 8.dp, horizontal = 6.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(metrics) { event ->
+                        MetricItemView(
+                            event = event,
+                            onClick = viewModel::onEventClicked
+                        )
+                    }
                 }
+                FloconVerticalScrollbar(
+                    adapter = scrollAdapter,
+                    modifier = Modifier.fillMaxHeight()
+                        .align(Alignment.TopEnd)
+                )
             }
         }
     }

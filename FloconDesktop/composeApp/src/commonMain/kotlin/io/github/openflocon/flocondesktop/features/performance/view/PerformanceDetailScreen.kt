@@ -21,14 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import io.github.openflocon.flocondesktop.features.performance.MetricEvent
+import io.github.openflocon.flocondesktop.features.performance.MetricEventUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PerformanceDetailScreen(
-    event: MetricEvent,
+    event: MetricEventUiModel,
 ) {
     Scaffold(
         topBar = {
@@ -62,7 +62,7 @@ fun PerformanceDetailScreen(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    MetricText(label = "RAM Usage", value = "${event.ramMb} MB")
+                    event.ramMb?.let { MetricText(label = "RAM Usage", value = "$it MB") }
                     MetricText(label = "FPS", value = event.fps)
                     MetricText(label = "Jank Percentage", value = event.jankPercentage)
                     MetricText(label = "Battery", value = event.battery)
@@ -113,7 +113,7 @@ private fun MetricText(label: String, value: String) {
 private fun PerformanceDetailScreenPreview() {
     FloconTheme {
         PerformanceDetailScreen(
-            event = MetricEvent(
+            event = MetricEventUiModel(
                 timestamp = "10:55:38.123",
                 ramMb = "150",
                 fps = "60.0",

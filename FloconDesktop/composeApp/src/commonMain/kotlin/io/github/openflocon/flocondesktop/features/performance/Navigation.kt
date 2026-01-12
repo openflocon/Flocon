@@ -18,7 +18,7 @@ internal sealed interface PerformanceRoutes : FloconRoute {
     }
  
     @Serializable
-    data class Detail(val event: MetricEvent) : PerformanceRoutes, WindowRoute {
+    data class Detail(val event: MetricEventUiModel) : PerformanceRoutes, WindowRoute {
         override val singleTopKey = null
     }
 }
