@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
@@ -196,6 +197,7 @@ fun WithTooltip(
                 Text(
                     text = tooltip,
                     style = FloconTheme.typography.labelSmall,
+                    color = FloconTheme.colorPalette.onSurface,
                     modifier = Modifier
                         .clip(FloconTheme.shapes.small)
                         .background(FloconTheme.colorPalette.primary)
@@ -239,7 +241,6 @@ fun FloconIconButton(
     modifier: Modifier = Modifier,
     tooltip: String? = null,
     enabled: Boolean = true,
-    tint: Color = LocalContentColor.current
 ) {
     WithTooltip(tooltip) {
         FloconIconButton(
@@ -249,7 +250,6 @@ fun FloconIconButton(
         ) {
             FloconIcon(
                 imageVector = imageVector,
-                tint = tint,
             )
         }
     }
