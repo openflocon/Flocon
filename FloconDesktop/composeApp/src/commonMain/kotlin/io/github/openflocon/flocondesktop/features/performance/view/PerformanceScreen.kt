@@ -8,8 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,7 +26,6 @@ fun PerformanceScreen() {
     val devices by viewModel.devices.collectAsStateWithLifecycle()
     val selectedDevice by viewModel.selectedDevice.collectAsStateWithLifecycle()
     val packageName by viewModel.packageName.collectAsStateWithLifecycle()
-    val intervalMs by viewModel.intervalMs.collectAsStateWithLifecycle()
     val metrics by viewModel.metrics.collectAsStateWithLifecycle()
     val isMonitoring by viewModel.isMonitoring.collectAsStateWithLifecycle()
 
@@ -90,37 +87,13 @@ fun PerformanceScreen() {
                 )
             }
 
+            HorizontalDivider()
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Interval Control
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text("Fetch every:", style = FloconTheme.typography.bodyMedium)
-                    FloconIconButton(
-                        imageVector = Icons.Default.Remove,
-                        onClick = viewModel::decrementInterval,
-                        tooltip = "Decrease interval"
-                    )
-                    FloconTextField(
-                        modifier = Modifier.width(100.dp),
-                        value = intervalMs.toString(),
-                        onValueChange = { /* Read only or handle numeric input */ },
-                        trailingComponent = { Text("ms") }
-                    )
-                    FloconIconButton(
-                        imageVector = Icons.Default.Add,
-                        onClick = viewModel::incrementInterval,
-                        tooltip = "Increase interval"
-                    )
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
                 FloconButton(
                     onClick = viewModel::toggleMonitoring,
                     // TODO colors = if (isMonitoring) {

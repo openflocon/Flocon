@@ -14,12 +14,15 @@ class FetchPerformanceMetricsUseCase(
         lastFrameCount: Int?,
         lastFetchTime: Long?,
         refreshRate: Double,
+        captureScreenshot: Boolean = true,
     ): PerformanceMetricsDomainModel {
         val currentTime = System.currentTimeMillis()
 
         val ramInfo = getRamUsageUseCase(deviceSerial, packageName)
         val batteryInfo = getBatteryLevelUseCase(deviceSerial)
-        val screenshotPath = capturePerformanceScreenshotUseCase(deviceSerial, packageName)
+        val screenshotPath = if (captureScreenshot) {
+            capturePerformanceScreenshotUseCase(deviceSerial, packageName)
+        } else null
         val fpsResult = getFpsUseCase(
             deviceSerial = deviceSerial,
             packageName = packageName,

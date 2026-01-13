@@ -15,7 +15,7 @@ class CapturePerformanceScreenshotUseCase(
         val fileName = "perf_screenshot_${packageName}_$timestamp.png"
         val onDeviceFilePath = "/sdcard/$fileName"
         
-        val metricsDir = Paths.get(System.getProperty("user.home"), "Desktop", "Flocon", "Metrics").toFile()
+        val metricsDir = Paths.get(System.getProperty("user.home"), "Desktop", "Flocon", "performances", "${deviceSerial}_$packageName").toFile()
         if (!metricsDir.exists()) metricsDir.mkdirs()
         
         val localFilePath = File(metricsDir, fileName).absolutePath

@@ -39,9 +39,6 @@ class PerformanceViewModel(
     private val _packageName = MutableStateFlow("")
     val packageName = _packageName.asStateFlow()
 
-    private val _intervalMs = MutableStateFlow(1000L)
-    val intervalMs = _intervalMs.asStateFlow()
-
     private val _metrics = MutableStateFlow<List<MetricEventUiModel>>(emptyList())
     val metrics = _metrics.asStateFlow()
 
@@ -77,14 +74,6 @@ class PerformanceViewModel(
         _packageName.value = name
     }
 
-    fun incrementInterval() {
-        _intervalMs.update { it + 100 }
-    }
-
-    fun decrementInterval() {
-        _intervalMs.update { (it - 100).coerceAtLeast(100) }
-    }
-
     fun toggleMonitoring() {
         if (_isMonitoring.value) {
             stopMonitoring()
@@ -101,9 +90,12 @@ class PerformanceViewModel(
                 refreshRate = getDeviceRefreshRateUseCase(deviceSerial)
             }
 
+            var tickCount = 0
             while (isActive) {
-                fetchMetrics()
-                delay(_intervalMs.value)
+                val shouldCaptureScreenshot = tickCount % 3 == 0
+                fetchMetrics(shouldCaptureScreenshot)
+                delay(333)
+                tickCount++
             }
         }
     }
@@ -114,7 +106,7 @@ class PerformanceViewModel(
         monitoringJob = null
     }
 
-    private suspend fun fetchMetrics() {
+    private suspend fun fetchMetrics(shouldCaptureScreenshot: Boolean = true) {
         val deviceSerial = _selectedDevice.value ?: return
         val pkg = _packageName.value
 
@@ -123,7 +115,8 @@ class PerformanceViewModel(
             packageName = pkg,
             lastFrameCount = lastFrameCount,
             lastFetchTime = lastFetchTime,
-            refreshRate = refreshRate
+            refreshRate = refreshRate,
+            captureScreenshot = shouldCaptureScreenshot
         )
 
         lastFrameCount = domainModel.totalFrames
