@@ -22,6 +22,7 @@ import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -478,7 +479,7 @@ private fun Response(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        var jsonError by remember { mutableStateOf(false) }
+                        var jsonError by remember(response.body) { mutableStateOf(false) }
 
                         if(!jsonError) {
                             Box(
