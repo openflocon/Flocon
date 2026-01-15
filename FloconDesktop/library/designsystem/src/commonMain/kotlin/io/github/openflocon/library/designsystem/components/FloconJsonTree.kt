@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.sebastianneubauer.jsontree.JsonTree
+import com.sebastianneubauer.jsontree.TreeState
 import com.sebastianneubauer.jsontree.defaultDarkColors
 import com.sebastianneubauer.jsontree.search.SearchState
 import com.sebastianneubauer.jsontree.search.rememberSearchState
@@ -15,6 +16,7 @@ import com.sebastianneubauer.jsontree.search.rememberSearchState
 fun FloconJsonTree(
     json: String,
     modifier: Modifier = Modifier,
+    initialState: TreeState = TreeState.FIRST_ITEM_EXPANDED,
     onError: (Throwable) -> Unit = {},
     searchState: SearchState = rememberSearchState()
 ) {
@@ -24,6 +26,7 @@ fun FloconJsonTree(
             onLoading = {
                 FloconCircularProgressIndicator() // TODO Better?
             },
+            initialState = initialState,
             icon = Icons.Outlined.ChevronLeft,
             searchState = searchState,
             colors = defaultDarkColors,
