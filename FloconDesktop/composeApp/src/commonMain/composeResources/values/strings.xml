@@ -69,6 +69,8 @@
     <string name="settings_adb_valid">ADB configuraton is valid</string>
     <string name="settings_font_size_multiplier">Font Size Multiplier : %1$sx</string>
     <string name="settings_test">Test</string>
+    <string name="settings_about_title">About</string>
+    <string name="settings_licenses">Licenses</string>
     <string name="size">Size</string>
     <string name="tables_empty">No Tables</string>
     <string name="time">Time</string>

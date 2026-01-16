@@ -25,10 +25,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_save
+import flocondesktop.composeapp.generated.resources.settings_about_title
 import flocondesktop.composeapp.generated.resources.settings_adb_setup_title
 import flocondesktop.composeapp.generated.resources.settings_adb_valid
 import flocondesktop.composeapp.generated.resources.settings_font_size_multiplier
+import flocondesktop.composeapp.generated.resources.settings_licenses
 import flocondesktop.composeapp.generated.resources.settings_test
+import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
+import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconFeature
@@ -73,6 +77,8 @@ private fun SettingsScreen(
     onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showLicenses by remember { mutableStateOf(false) }
+
     FloconFeature(
         modifier = modifier.fillMaxSize()
     ) {
@@ -151,6 +157,22 @@ private fun SettingsScreen(
                 )
             }
         }
+        FloconSection(
+            title = stringResource(Res.string.settings_about_title),
+            initialValue = true
+        ) {
+            SettingsButton(
+                onClick = { showLicenses = true },
+                text = stringResource(Res.string.settings_licenses),
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+    }
+
+    if (showLicenses) {
+        LicensesWindow(
+            onCloseRequest = { showLicenses = false }
+        )
     }
 }
 
@@ -170,6 +192,25 @@ private fun SettingsButton(
             style = FloconTheme.typography.bodySmall
         )
     }
+}
+
+@Composable
+private fun LicensesWindow(
+    onCloseRequest: () -> Unit
+) {
+    FloconWindow(
+        title = "Licenses",
+        state = createFloconWindowState(),
+        alwaysOnTop = true,
+        onCloseRequest = onCloseRequest,
+    ) {
+        AboutScreen(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(FloconTheme.colorPalette.primary),
+        )
+    }
+
 }
 
 @Preview
