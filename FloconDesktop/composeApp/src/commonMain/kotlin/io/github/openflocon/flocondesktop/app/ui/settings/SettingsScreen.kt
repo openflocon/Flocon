@@ -77,6 +77,8 @@ private fun SettingsScreen(
     onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showLicenses by remember { mutableStateOf(false) }
+
     FloconFeature(
         modifier = modifier.fillMaxSize()
     ) {
@@ -159,20 +161,18 @@ private fun SettingsScreen(
             title = stringResource(Res.string.settings_about_title),
             initialValue = true
         ) {
-            var showLicenses by remember { mutableStateOf(false) }
-
             SettingsButton(
                 onClick = { showLicenses = true },
                 text = stringResource(Res.string.settings_licenses),
                 modifier = Modifier.padding(8.dp)
             )
-
-            if (showLicenses) {
-                LicensesWindow(
-                    onCloseRequest = { showLicenses = false }
-                )
-            }
         }
+    }
+
+    if (showLicenses) {
+        LicensesWindow(
+            onCloseRequest = { showLicenses = false }
+        )
     }
 }
 
