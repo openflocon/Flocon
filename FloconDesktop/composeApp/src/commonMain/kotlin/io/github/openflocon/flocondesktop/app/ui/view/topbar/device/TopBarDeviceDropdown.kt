@@ -2,10 +2,9 @@
 
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.device
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +21,8 @@ import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.TopBarSelector
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
+import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenu
+import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -33,7 +34,7 @@ internal fun TopBarDeviceDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    ExposedDropdownMenuBox(
+    FloconExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = {
             expanded = it
@@ -55,17 +56,15 @@ internal fun TopBarDeviceDropdown(
                 )
             }
         }
-        ExposedDropdownMenu(
+        FloconExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            containerColor = FloconTheme.colorPalette.primary,
-            shadowElevation = 0.dp,
-            shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-            modifier = Modifier.exposedDropdownSize(),
+            modifier = Modifier.exposedDropdownSize(matchAnchorWidth = false),
         ) {
             if (state is DevicesStateUiModel.WithDevices) {
                 state.devices.forEach { device ->
                     TopBarDeviceView(
+                        modifier = Modifier.fillMaxWidth(),
                         device = device,
                         selected = state.deviceSelected.id == device.id,
                         onClick = {

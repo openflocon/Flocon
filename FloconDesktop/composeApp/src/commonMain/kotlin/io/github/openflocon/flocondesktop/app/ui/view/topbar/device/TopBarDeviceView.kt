@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -59,11 +60,10 @@ internal fun TopBarDeviceView(
             )
             .padding(horizontal = 8.dp, 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Box(
             modifier = Modifier
-                .padding(horizontal = 4.dp)
                 .graphicsLayer {
                     alpha = if (device.isActive) 1f else 0.4f
                 }
@@ -100,48 +100,41 @@ internal fun TopBarDeviceView(
             )
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(
-                modifier = Modifier,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = device.deviceName,
-                    color = FloconTheme.colorPalette.onPrimary,
-                    style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                )
+        Column {
+            Text(
+                text = device.deviceName,
+                color = FloconTheme.colorPalette.onPrimary,
+                style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            )
 
-                Text(
-                    text = if (device.isActive.not()) {
-                        stringResource(Res.string.devices_disconnected)
-                    } else {
-                        stringResource(Res.string.devices_connected)
+            Text(
+                text = if (device.isActive.not()) {
+                    stringResource(Res.string.devices_disconnected)
+                } else {
+                    stringResource(Res.string.devices_connected)
+                },
+                color = FloconTheme.colorPalette.onPrimary,
+                style = FloconTheme.typography.bodySmall.copy(
+                    fontSize = 10.sp,
+                ),
+            )
+        }
+        if (!selected && onDelete != null) {
+            Spacer(modifier = Modifier.weight(1f))
+            Box(
+                Modifier.clip(RoundedCornerShape(4.dp))
+                    .background(
+                        Color.White.copy(alpha = 0.8f)
+                    ).padding(2.dp).clickable {
+                        onDelete()
                     },
-                    color = FloconTheme.colorPalette.onPrimary,
-                    style = FloconTheme.typography.bodySmall.copy(
-                        fontSize = 10.sp,
-                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.Close,
+                    tint = FloconTheme.colorPalette.primary,
+                    modifier = Modifier.size(14.dp)
                 )
-            }
-            if (!selected && onDelete != null) {
-                Spacer(modifier = Modifier.weight(1f))
-                Box(
-                    Modifier.clip(RoundedCornerShape(4.dp))
-                        .background(
-                            Color.White.copy(alpha = 0.8f)
-                        ).padding(2.dp).clickable {
-                            onDelete()
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    FloconIcon(
-                        imageVector = Icons.Outlined.Close,
-                        tint = FloconTheme.colorPalette.primary,
-                        modifier = Modifier.size(14.dp)
-                    )
-                }
             }
         }
     }
