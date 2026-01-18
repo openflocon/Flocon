@@ -3,6 +3,7 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.app
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
@@ -67,7 +68,7 @@ internal fun TopBarAppDropdown(
                     FloconExposedDropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.exposedDropdownSize()
+                        modifier = Modifier.exposedDropdownSize(matchAnchorWidth = false)
                     ) {
                         appsState.apps
                             .fastForEach { app ->
@@ -79,10 +80,12 @@ internal fun TopBarAppDropdown(
                                         deleteApp(app)
                                         expanded = false
                                     },
-                                    modifier = Modifier.clickable {
-                                        onAppSelected(app)
-                                        expanded = false
-                                    }
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            onAppSelected(app)
+                                            expanded = false
+                                        }
                                 )
                             }
                     }
