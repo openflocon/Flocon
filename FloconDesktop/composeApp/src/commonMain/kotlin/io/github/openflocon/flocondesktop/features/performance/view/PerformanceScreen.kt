@@ -147,7 +147,7 @@ fun PerformanceScreen() {
             ) {
                 PerformanceChartView(
                     title = "RAM Usage (MB)",
-                    data = metrics.reversed().mapNotNull { it.rawRamMb?.toDouble() },
+                    data = metrics.reversed().mapNotNull { it.rawRamMb?.toDouble()?.let { it / 1024.0 }},
                     color = Color.Yellow,
                     modifier = Modifier.weight(1f).fillMaxHeight()
                 )
