@@ -37,7 +37,9 @@ internal fun MetricItemView(
         modifier = Modifier.fillMaxWidth(),
         shape = FloconTheme.shapes.medium,
         tonalElevation = 2.dp,
-        onClick = { onClick(event) }
+        color = if (event.isFpsDrop) Color.Red.copy(alpha = 0.2f) else FloconTheme.colorPalette.surface,
+        onClick = { onClick(event) },
+        contentColor = FloconTheme.colorPalette.onSurface,
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp),

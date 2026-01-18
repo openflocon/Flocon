@@ -12,6 +12,7 @@ data class MetricEventUiModel(
     val jankPercentage: String,
     val battery: String,
     val screenshotPath: String?,
+    val isFpsDrop: Boolean,
 )
 
 fun previewMetricsEvent() = MetricEventUiModel(
@@ -22,5 +23,6 @@ fun previewMetricsEvent() = MetricEventUiModel(
     rawFps = 60.0,
     jankPercentage = "0.0%",
     battery = "85%",
-    screenshotPath = null
+    screenshotPath = null,
+    isFpsDrop = false,
 )

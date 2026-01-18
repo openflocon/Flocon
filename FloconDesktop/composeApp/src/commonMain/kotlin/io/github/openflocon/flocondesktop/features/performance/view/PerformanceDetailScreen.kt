@@ -121,7 +121,8 @@ private fun PerformanceDetailScreenPreview() {
                 battery = "85%",
                 screenshotPath = null,
                 rawFps = 60.0,
-                rawRamMb = 150
+                rawRamMb = 150,
+                isFpsDrop = false,
             )
         )
     }

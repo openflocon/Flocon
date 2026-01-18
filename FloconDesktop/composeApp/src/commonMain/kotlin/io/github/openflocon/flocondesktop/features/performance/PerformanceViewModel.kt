@@ -122,6 +122,10 @@ class PerformanceViewModel(
         lastFrameCount = domainModel.totalFrames
         lastFetchTime = domainModel.timestamp
 
+        val isFpsDrop = _metrics.value.firstOrNull()?.let { lastEvent ->
+            domainModel.fps < lastEvent.rawFps
+        } ?: false
+
         val event = MetricEventUiModel(
             timestamp = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(domainModel.timestamp),
@@ -134,7 +138,8 @@ class PerformanceViewModel(
             rawFps = domainModel.fps,
             jankPercentage = String.format("%.1f%%", domainModel.jankPercentage),
             battery = domainModel.battery,
-            screenshotPath = domainModel.screenshotPath
+            screenshotPath = domainModel.screenshotPath,
+            isFpsDrop = isFpsDrop
         )
 
         _metrics.update { listOf(event) + it }
