@@ -2,6 +2,7 @@
 
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.device
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,14 +65,15 @@ internal fun TopBarDeviceDropdown(
             if (state is DevicesStateUiModel.WithDevices) {
                 state.devices.forEach { device ->
                     TopBarDeviceView(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onDeviceSelected(device)
+                                expanded = false
+                            },
                         device = device,
                         selected = state.deviceSelected.id == device.id,
-                        onClick = {
-                            onDeviceSelected(device)
-                            expanded = false
-                        },
-                        onDelete = {
+                        deleteClick = {
                             deleteDevice(device)
                             expanded = false
                         },
