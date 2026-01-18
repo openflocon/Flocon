@@ -119,7 +119,9 @@ private fun PerformanceDetailScreenPreview() {
                 fps = "60.0",
                 jankPercentage = "0.0%",
                 battery = "85%",
-                screenshotPath = null
+                screenshotPath = null,
+                rawFps = 60.0,
+                rawRamMb = 150
             )
         )
     }

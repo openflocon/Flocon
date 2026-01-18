@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.performance.PerformanceViewModel
@@ -137,6 +138,24 @@ fun PerformanceScreen() {
                     adapter = scrollAdapter,
                     modifier = Modifier.fillMaxHeight()
                         .align(Alignment.TopEnd)
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth().height(200.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                PerformanceChartView(
+                    title = "RAM Usage (MB)",
+                    data = metrics.reversed().mapNotNull { it.rawRamMb?.toDouble() },
+                    color = Color.Yellow,
+                    modifier = Modifier.weight(1f).fillMaxHeight()
+                )
+                PerformanceChartView(
+                    title = "FPS",
+                    data = metrics.reversed().map { it.rawFps },
+                    color = Color.Red,
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
             }
         }

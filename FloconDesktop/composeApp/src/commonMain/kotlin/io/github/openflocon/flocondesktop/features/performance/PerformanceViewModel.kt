@@ -129,7 +129,9 @@ class PerformanceViewModel(
             )
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")),
             ramMb = domainModel.ramMb?.let { ByteFormatter.formatBytes(it) },
+            rawRamMb = domainModel.ramMb,
             fps = if (domainModel.fps > 0) String.format("%.1f", domainModel.fps) else "0",
+            rawFps = domainModel.fps,
             jankPercentage = String.format("%.1f%%", domainModel.jankPercentage),
             battery = domainModel.battery,
             screenshotPath = domainModel.screenshotPath
