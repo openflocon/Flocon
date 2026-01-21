@@ -38,7 +38,7 @@ paging = "3.3.2"
 opencsv = "5.9"
 
 # TODO Sort
-nav3Core = "1.0.0-alpha04+dev3147"#"1.0.0-alpha03"
+nav3Core = "1.1.0-alpha02+dev3508"#"1.0.0-alpha03"
 material3-adaptive = "1.0.0-alpha03"
 kotlinxSerializationCore = "1.8.1"
 

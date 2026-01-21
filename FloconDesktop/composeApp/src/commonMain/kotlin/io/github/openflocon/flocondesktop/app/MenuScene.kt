@@ -43,14 +43,13 @@ import io.github.openflocon.navigation.FloconRoute
 
 @Immutable
 data class MenuScene(
-    override val entries: List<NavEntry<FloconRoute>>,
-    override val previousEntries: List<NavEntry<FloconRoute>>,
-    val entry: NavEntry<FloconRoute>,
-    val menuContent: @Composable (expanded: Boolean) -> Unit,
+    val scene: Scene<FloconRoute>,
+    val menuContent: @Composable ((expanded: Boolean) -> Unit),
     val topBarContent: @Composable (() -> Unit)?
 ) : Scene<FloconRoute> {
-    override val key: Any
-        get() = Unit
+    override val key: Any = Unit
+    override val entries: List<NavEntry<FloconRoute>> = scene.entries
+    override val previousEntries: List<NavEntry<FloconRoute>> = scene.previousEntries
 
     override val content: @Composable (() -> Unit) = {
         var expanded by remember { mutableStateOf(true) }
@@ -84,7 +83,7 @@ data class MenuScene(
                     ) {
                         menuContent(expanded)
                     }
-                    entry.Content()
+                    scene.content()
                 }
             }
             Box(
@@ -115,21 +114,19 @@ class MenuSceneStrategy(
     private val topBarContent: @Composable (() -> Unit)? = null
 ) : SceneStrategy<FloconRoute> {
 
-    override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? {
-        val entry = entries.lastOrNull() ?: return null
-
-        if (entry.metadata.containsKey(MENU_KEY)) {
+    override fun SceneStrategyScope<FloconRoute>.calculateScene(scene: Scene<FloconRoute>): Scene<FloconRoute> {
+        if (scene.metadata.containsKey(MENU_KEY)) {
             return MenuScene(
-                entries = listOf(entry),
-                previousEntries = entries.dropLast(1),
-                entry = entry,
+                scene = scene,
                 menuContent = menuContent,
                 topBarContent = topBarContent
             )
         }
 
-        return null
+        return scene
     }
+
+    override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? = null
 
     companion object {
         private const val MENU_KEY = "menu_key"
