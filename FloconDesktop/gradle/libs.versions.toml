@@ -39,6 +39,10 @@ runner = "1.7.0"
 sqlite = "2.6.2"
 ui-tooling-preview-desktop = "1.8.2"
 
+# TODO Sort
+nav3Core = "1.1.0-alpha02+dev3508"#"1.0.0-alpha03"
+material3-adaptive = "1.0.0-alpha03"
+kotlinxSerializationCore = "1.8.1"
 [libraries]
 # AboutLibraries
 aboutlibraries-compose-core = { module = "com.mikepenz:aboutlibraries-compose-core", version.ref = "about-libraries" }
