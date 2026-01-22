@@ -42,6 +42,6 @@ fun EntryProviderScope<FloconRoute>.performanceRoutes() {
             )
         )
     ) {
-        PerformanceDetailScreen(event = it.event)
+        PerformanceDetailScreen(initialEvent = it.event)
     }
 }

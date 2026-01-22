@@ -26,6 +26,7 @@ class PerformanceViewModel(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val getAdbDevicesUseCase: GetAdbDevicesUseCase,
     private val getDeviceRefreshRateUseCase: GetDeviceRefreshRateUseCase,
+    private val performanceMetricsRepository: PerformanceMetricsRepository,
     private val navigationState: MainFloconNavigationState,
     private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
@@ -39,8 +40,7 @@ class PerformanceViewModel(
     private val _packageName = MutableStateFlow("")
     val packageName = _packageName.asStateFlow()
 
-    private val _metrics = MutableStateFlow<List<MetricEventUiModel>>(emptyList())
-    val metrics = _metrics.asStateFlow()
+    val metrics = performanceMetricsRepository.metrics
 
     private val _isMonitoring = MutableStateFlow(false)
     val isMonitoring = _isMonitoring.asStateFlow()
@@ -122,7 +122,7 @@ class PerformanceViewModel(
         lastFrameCount = domainModel.totalFrames
         lastFetchTime = domainModel.timestamp
 
-        val isFpsDrop = _metrics.value.firstOrNull()?.let { lastEvent ->
+        val isFpsDrop = performanceMetricsRepository.metrics.value.firstOrNull()?.let { lastEvent ->
             domainModel.fps < lastEvent.rawFps
         } ?: false
 
@@ -142,7 +142,7 @@ class PerformanceViewModel(
             isFpsDrop = isFpsDrop
         )
 
-        _metrics.update { listOf(event) + it }
+        performanceMetricsRepository.addMetric(event)
     }
 
     fun onEventClicked(event: MetricEventUiModel) {
