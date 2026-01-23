@@ -51,7 +51,7 @@ internal fun TopBarDeviceView(
     deleteClick: (() -> Unit)? = null,
 ) {
     Row(
-        modifier = modifier.padding(horizontal = 8.dp, 4.dp),
+        modifier = modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
