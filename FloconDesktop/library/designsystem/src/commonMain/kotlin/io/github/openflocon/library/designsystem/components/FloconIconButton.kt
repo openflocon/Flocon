@@ -197,7 +197,7 @@ fun WithTooltip(
                 Text(
                     text = tooltip,
                     style = FloconTheme.typography.labelSmall,
-                    color = FloconTheme.colorPalette.onSurface,
+                    color = FloconTheme.colorPalette.onPrimary,
                     modifier = Modifier
                         .clip(FloconTheme.shapes.small)
                         .background(FloconTheme.colorPalette.primary)
