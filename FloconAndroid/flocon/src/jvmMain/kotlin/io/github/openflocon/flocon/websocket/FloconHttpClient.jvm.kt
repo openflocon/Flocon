@@ -12,6 +12,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.forms.*
+import io.ktor.client.plugins.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
@@ -31,6 +32,9 @@ internal class FloconHttpClientJvm() : FloconHttpClient {
         }
         install(Logging) {
             level = LogLevel.INFO
+        }
+        defaultRequest {
+            header(HttpHeaders.UserAgent, "Flocon")
         }
     }
 
