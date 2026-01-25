@@ -152,6 +152,7 @@ private fun PerformanceDetailScreenPreview() {
                 rawFps = 60.0,
                 rawRamMb = 150,
                 isFpsDrop = false,
+                rawJankPercentage = 0.0
             )
         )
     }

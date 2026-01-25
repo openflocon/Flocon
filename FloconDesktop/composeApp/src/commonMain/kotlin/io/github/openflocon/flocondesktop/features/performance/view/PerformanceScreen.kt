@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.performance.PerformanceViewModel
+import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.*
 import org.koin.compose.viewmodel.koinViewModel
@@ -29,6 +30,9 @@ fun PerformanceScreen() {
     val packageName by viewModel.packageName.collectAsStateWithLifecycle()
     val metrics by viewModel.metrics.collectAsStateWithLifecycle()
     val isMonitoring by viewModel.isMonitoring.collectAsStateWithLifecycle()
+    val averageFps by viewModel.averageFps.collectAsStateWithLifecycle()
+    val averageRam by viewModel.averageRam.collectAsStateWithLifecycle()
+    val averageJank by viewModel.averageJank.collectAsStateWithLifecycle()
 
     FloconScaffold { paddingValues ->
         Column(
@@ -111,6 +115,27 @@ fun PerformanceScreen() {
 
             HorizontalDivider()
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                AverageMetricBox(
+                    modifier = Modifier.weight(1f),
+                    title = "Avg. FPS",
+                    value = if (averageFps > 0) String.format("%.1f", averageFps) else "-"
+                )
+                AverageMetricBox(
+                    modifier = Modifier.weight(1f),
+                    title = "Avg. RAM",
+                    value = if (averageRam > 0) ByteFormatter.formatBytes(averageRam) else "-"
+                )
+                AverageMetricBox(
+                    modifier = Modifier.weight(1f),
+                    title = "Avg. Jank",
+                    value = if (metrics.isNotEmpty()) String.format("%.1f%%", averageJank) else "-"
+                )
+            }
+
             Box(
                 modifier = Modifier.fillMaxWidth()
                     .weight(1f)
@@ -158,6 +183,37 @@ fun PerformanceScreen() {
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun AverageMetricBox(
+    title: String,
+    value: String,
+    modifier: Modifier = Modifier,
+) {
+    FloconSurface(
+        modifier = modifier,
+        shape = FloconTheme.shapes.medium,
+        tonalElevation = 2.dp,
+        color = FloconTheme.colorPalette.surface,
+        contentColor = FloconTheme.colorPalette.onSurface,
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = title,
+                style = FloconTheme.typography.labelSmall,
+                color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.6f)
+            )
+            Text(
+                text = value,
+                style = FloconTheme.typography.titleMedium,
+            )
         }
     }
 }
