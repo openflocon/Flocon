@@ -119,6 +119,10 @@ fun PerformanceScreen() {
                 modifier = Modifier.fillMaxWidth(),
             )
 
+            MetricsHeaderView(
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Box(
                 modifier = Modifier.fillMaxWidth()
                     .weight(1f)
