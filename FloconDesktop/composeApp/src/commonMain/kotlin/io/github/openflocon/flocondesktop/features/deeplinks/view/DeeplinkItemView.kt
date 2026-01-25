@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
@@ -43,7 +44,6 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeepli
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DeeplinkItemView(

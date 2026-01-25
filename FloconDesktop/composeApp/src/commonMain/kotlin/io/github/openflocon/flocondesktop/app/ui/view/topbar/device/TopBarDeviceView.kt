@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DesktopAccessDisabled
 import androidx.compose.material.icons.filled.DesktopWindows
@@ -20,6 +19,8 @@ import androidx.compose.material.icons.filled.MobileOff
 import androidx.compose.material.icons.filled.PhoneIphone
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Details
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +39,9 @@ import flocondesktop.composeapp.generated.resources.devices_disconnected
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -46,6 +49,7 @@ internal fun TopBarDeviceView(
     device: DeviceItemUiModel,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
+    onClickDetail: (() -> Unit)? = null,
     selected: Boolean = false,
     onDelete: (() -> Unit)? = null,
 ) {
@@ -57,7 +61,7 @@ internal fun TopBarDeviceView(
                 else
                     Modifier
             )
-            .padding(horizontal = 8.dp, 4.dp),
+            .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
@@ -101,6 +105,7 @@ internal fun TopBarDeviceView(
         }
 
         Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
@@ -125,15 +130,23 @@ internal fun TopBarDeviceView(
                     ),
                 )
             }
+            FloconVerticalDivider(color = FloconTheme.colorPalette.secondary)
+            FloconIconButton(
+                onClick = { onClickDetail?.invoke() }
+            ) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.Info
+                )
+            }
             if (!selected && onDelete != null) {
+                FloconVerticalDivider(color = FloconTheme.colorPalette.secondary)
                 Spacer(modifier = Modifier.weight(1f))
                 Box(
-                    Modifier.clip(RoundedCornerShape(4.dp))
-                        .background(
-                            Color.White.copy(alpha = 0.8f)
-                        ).padding(2.dp).clickable {
-                            onDelete()
-                        },
+                    Modifier
+                        .clip(FloconTheme.shapes.small)
+                        .background(Color.White.copy(alpha = 0.8f))
+                        .padding(2.dp)
+                        .clickable(onClick = onDelete),
                     contentAlignment = Alignment.Center,
                 ) {
                     FloconIcon(

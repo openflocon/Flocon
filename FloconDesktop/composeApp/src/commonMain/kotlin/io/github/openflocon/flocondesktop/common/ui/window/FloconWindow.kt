@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.common.ui.window
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.FrameWindowScope
 
 interface FloconWindowState
 
@@ -18,5 +19,5 @@ expect fun FloconWindow(
     state: FloconWindowState,
     onCloseRequest: () -> Unit,
     alwaysOnTop: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable FrameWindowScope.() -> Unit,
 )

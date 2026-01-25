@@ -16,6 +16,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.buildMenu
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
+import io.github.openflocon.flocondesktop.device.DeviceRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.DashboardRoutes
@@ -112,7 +113,12 @@ internal class AppViewModel(
             AppAction.Screenshoot -> onTakeScreenshot()
             is AppAction.SelectApp -> onAppSelected(action)
             is AppAction.SelectDevice -> onDeviceSelected(action)
+            is AppAction.DeviceDetail -> onDeviceDetail(action)
         }
+    }
+
+    private fun onDeviceDetail(action: AppAction.DeviceDetail) {
+        navigationState.navigate(DeviceRoutes.Detail(action.item.id))
     }
 
     private fun onSelectMenu(action: AppAction.SelectMenu) {

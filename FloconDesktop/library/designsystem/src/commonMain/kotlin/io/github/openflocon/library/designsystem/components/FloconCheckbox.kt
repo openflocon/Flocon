@@ -10,7 +10,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 @Composable
 fun FloconCheckbox(
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
+    onCheckedChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
     uncheckedColor: Color = FloconTheme.colorPalette.primary
 ) {

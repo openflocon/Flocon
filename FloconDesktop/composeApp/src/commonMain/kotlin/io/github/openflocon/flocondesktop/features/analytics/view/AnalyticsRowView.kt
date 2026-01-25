@@ -73,7 +73,10 @@ fun AnalyticsRowView(
                 color = FloconTheme.colorPalette.onPrimary,
             )
 
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 model.properties.fastForEach {
                     Row(
                         Modifier
@@ -99,8 +102,8 @@ fun AnalyticsRowView(
                     Text(
                         text = "...",
                         modifier =
-                        Modifier
-                            .padding(horizontal = 4.dp),
+                            Modifier
+                                .padding(horizontal = 4.dp),
                         style = FloconTheme.typography.bodySmall,
                         color = FloconTheme.colorPalette.onPrimary,
                     )

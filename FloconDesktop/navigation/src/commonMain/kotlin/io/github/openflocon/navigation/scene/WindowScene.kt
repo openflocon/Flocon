@@ -17,9 +17,10 @@ import io.github.openflocon.navigation.FloconRoute
 import kotlin.uuid.ExperimentalUuidApi
 
 @Immutable
-data class WindowScene(
-    private val entry: NavEntry<FloconRoute>,
+private data class WindowScene(
     override val previousEntries: List<NavEntry<FloconRoute>>,
+    private val entry: NavEntry<FloconRoute>,
+    private val properties: WindowProperties,
     private val onBack: () -> Unit
 ) : OverlayScene<FloconRoute> {
 
@@ -51,10 +52,12 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
 
     override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? {
         val entry = entries.last()
+        val properties = entry.metadata[WINDOW_KEY] ?: return null
 
-        if (entry.metadata[IS_WINDOW] == true) {
+        if (properties is WindowProperties) {
             return WindowScene(
                 entry = entry,
+                properties = properties,
                 previousEntries = entries.dropLast(1),
                 onBack = onBack
             )
@@ -77,3 +80,7 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
         }
     }
 }
+
+private data class WindowProperties(
+    val title: String
+)
