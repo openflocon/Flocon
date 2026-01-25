@@ -25,11 +25,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
@@ -45,25 +47,16 @@ import org.jetbrains.compose.resources.stringResource
 internal fun TopBarDeviceView(
     device: DeviceItemUiModel,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null,
     selected: Boolean = false,
-    onDelete: (() -> Unit)? = null,
+    deleteClick: (() -> Unit)? = null,
 ) {
     Row(
-        modifier = modifier
-            .then(
-                if (onClick != null)
-                    Modifier.clickable(onClick = onClick)
-                else
-                    Modifier
-            )
-            .padding(horizontal = 8.dp, 4.dp),
+        modifier = modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Box(
             modifier = Modifier
-                .padding(horizontal = 4.dp)
                 .graphicsLayer {
                     alpha = if (device.isActive) 1f else 0.4f
                 }
@@ -100,48 +93,47 @@ internal fun TopBarDeviceView(
             )
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(
-                modifier = Modifier,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = device.deviceName,
-                    color = FloconTheme.colorPalette.onPrimary,
-                    style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                )
-
-                Text(
-                    text = if (device.isActive.not()) {
-                        stringResource(Res.string.devices_disconnected)
-                    } else {
-                        stringResource(Res.string.devices_connected)
-                    },
-                    color = FloconTheme.colorPalette.onPrimary,
-                    style = FloconTheme.typography.bodySmall.copy(
-                        fontSize = 10.sp,
-                    ),
-                )
-            }
-            if (!selected && onDelete != null) {
-                Spacer(modifier = Modifier.weight(1f))
-                Box(
-                    Modifier.clip(RoundedCornerShape(4.dp))
-                        .background(
-                            Color.White.copy(alpha = 0.8f)
-                        ).padding(2.dp).clickable {
-                            onDelete()
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    FloconIcon(
-                        imageVector = Icons.Outlined.Close,
-                        tint = FloconTheme.colorPalette.primary,
-                        modifier = Modifier.size(14.dp)
-                    )
+        Column(
+            modifier = Modifier
+                .graphicsLayer {
+                    alpha = if (device.isActive) 1f else 0.4f
                 }
+        ) {
+            Text(
+                text = device.deviceName,
+                style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = FloconTheme.colorPalette.onPrimary,
+            )
+
+            Text(
+                text = if (device.isActive.not()) {
+                    stringResource(Res.string.devices_disconnected)
+                } else {
+                    stringResource(Res.string.devices_connected)
+                },
+                color = FloconTheme.colorPalette.onPrimary,
+                style = FloconTheme.typography.bodySmall.copy(
+                    fontSize = 10.sp,
+                ),
+            )
+        }
+        if (!selected && deleteClick != null) {
+            Spacer(modifier = Modifier.weight(1f))
+            Box(
+                Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.White.copy(alpha = 0.8f))
+                    .padding(2.dp)
+                    .clickable(onClick = deleteClick),
+                contentAlignment = Alignment.Center,
+            ) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.Close,
+                    tint = FloconTheme.colorPalette.primary,
+                    modifier = Modifier.size(14.dp)
+                )
             }
         }
     }
@@ -162,8 +154,7 @@ private fun TopBarDeviceViewPreview_desktop_enabled() {
                 canRestart = true,
             ),
             selected = false,
-            onDelete = {},
-            onClick = {}
+            deleteClick = {},
         )
     }
 }
@@ -183,8 +174,7 @@ private fun TopBarDeviceViewPreview_desktop_disabled() {
                 canRestart = true,
             ),
             selected = false,
-            onDelete = {},
-            onClick = {}
+            deleteClick = {},
         )
     }
 }
@@ -205,8 +195,7 @@ private fun TopBarDeviceViewPreview_iphone() {
                     canRestart = true,
                 ),
                 selected = false,
-                onDelete = {},
-                onClick = {}
+                deleteClick = {},
             )
         }
     }
@@ -228,8 +217,7 @@ private fun TopBarDeviceViewPreview_iphone_disabled() {
                     canRestart = true,
                 ),
                 selected = false,
-                onDelete = {},
-                onClick = {}
+                deleteClick = {},
             )
         }
     }
