@@ -8,21 +8,27 @@ import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNa
 import io.github.openflocon.domain.performance.usecase.FetchPerformanceMetricsUseCase
 import io.github.openflocon.domain.performance.usecase.GetAdbDevicesUseCase
 import io.github.openflocon.domain.performance.usecase.GetDeviceRefreshRateUseCase
+import io.github.openflocon.flocondesktop.features.performance.model.MetricsAverageUiModel
+import io.github.openflocon.flocondesktop.features.performance.model.MetricsGraphsDataUiModel
 import io.github.openflocon.navigation.MainFloconNavigationState
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.collections.map
 
 class PerformanceViewModel(
     private val fetchPerformanceMetricsUseCase: FetchPerformanceMetricsUseCase,
@@ -44,18 +50,55 @@ class PerformanceViewModel(
     val packageName = _packageName.asStateFlow()
 
     val metrics = performanceMetricsRepository.metrics
-    
-    val averageFps = metrics.map { list ->
-        if (list.isEmpty()) 0.0 else list.map { it.rawFps }.average()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
 
-    val averageRam = metrics.map { list ->
-        if (list.isEmpty()) 0L else list.mapNotNull { it.rawRamMb }.average().toLong()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+    val graphs = metrics.map {
+        val fps = mutableListOf<Double>()
+        val ram = mutableListOf<Double>()
+        it.reversed().forEach {
+            it.rawRamMb?.toDouble()?.let { it / 1024.0 }?.let {
+                ram.add(it)
+            }
+            fps.add(it.rawFps)
+        }
+        MetricsGraphsDataUiModel(
+            ram = ram.toPersistentList(),
+            fps = fps.toPersistentList()
+        )
+    }.flowOn(
+        dispatcherProvider.viewModel
+    ).stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        MetricsGraphsDataUiModel(persistentListOf(), persistentListOf())
+    )
 
-    val averageJank = metrics.map { list ->
-        if (list.isEmpty()) 0.0 else list.map { it.rawJankPercentage }.average()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+    val average = combine(
+        metrics.map { list ->
+            if (list.isEmpty()) null else list.map { it.rawFps }.average()
+        },
+        metrics.map { list ->
+            if (list.isEmpty()) null else list.mapNotNull { it.rawRamMb }.average()
+        },
+        metrics.map { list ->
+            if (list.isEmpty()) null else list.map { it.rawJankPercentage }.average()
+        }
+    ) { averageFps, averageRam, averageJank ->
+        MetricsAverageUiModel(
+            fps = averageFps?.let {
+                String.format("%.1f", it)
+            },
+            ram = averageRam?.let {
+                ByteFormatter.formatBytes(it.toLong())
+            },
+            jank = averageJank?.let { String.format("%.1f%%", it) } ?: "",
+        )
+    }.flowOn(
+        dispatcherProvider.viewModel
+    ).stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        MetricsAverageUiModel(null, null, null)
+    )
 
     private val _isMonitoring = MutableStateFlow(false)
     val isMonitoring = _isMonitoring.asStateFlow()

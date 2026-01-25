@@ -22,12 +22,13 @@ import io.github.koalaplot.core.xygraph.autoScaleXRange
 import io.github.koalaplot.core.xygraph.autoScaleYRange
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import kotlinx.collections.immutable.PersistentList
 
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
 fun PerformanceChartView(
     title: String,
-    data: List<Double>,
+    data: PersistentList<Double>,
     color: Color,
     modifier: Modifier = Modifier,
     maxPoints: Int = 100,

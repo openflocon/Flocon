@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.performance.PerformanceViewModel
-import io.github.openflocon.domain.common.ByteFormatter
+import io.github.openflocon.flocondesktop.features.performance.model.MetricsAverageUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.*
 import org.koin.compose.viewmodel.koinViewModel
@@ -29,10 +28,10 @@ fun PerformanceScreen() {
     val selectedDevice by viewModel.selectedDevice.collectAsStateWithLifecycle()
     val packageName by viewModel.packageName.collectAsStateWithLifecycle()
     val metrics by viewModel.metrics.collectAsStateWithLifecycle()
+    val graphs by viewModel.graphs.collectAsStateWithLifecycle()
     val isMonitoring by viewModel.isMonitoring.collectAsStateWithLifecycle()
-    val averageFps by viewModel.averageFps.collectAsStateWithLifecycle()
-    val averageRam by viewModel.averageRam.collectAsStateWithLifecycle()
-    val averageJank by viewModel.averageJank.collectAsStateWithLifecycle()
+
+    val average by viewModel.average.collectAsStateWithLifecycle()
 
     FloconScaffold { paddingValues ->
         Column(
@@ -115,26 +114,10 @@ fun PerformanceScreen() {
 
             HorizontalDivider()
 
-            Row(
+            PerformanceAverageView(
+                average = average,
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                AverageMetricBox(
-                    modifier = Modifier.weight(1f),
-                    title = "Avg. FPS",
-                    value = if (averageFps > 0) String.format("%.1f", averageFps) else "-"
-                )
-                AverageMetricBox(
-                    modifier = Modifier.weight(1f),
-                    title = "Avg. RAM",
-                    value = if (averageRam > 0) ByteFormatter.formatBytes(averageRam) else "-"
-                )
-                AverageMetricBox(
-                    modifier = Modifier.weight(1f),
-                    title = "Avg. Jank",
-                    value = if (metrics.isNotEmpty()) String.format("%.1f%%", averageJank) else "-"
-                )
-            }
+            )
 
             Box(
                 modifier = Modifier.fillMaxWidth()
@@ -172,48 +155,17 @@ fun PerformanceScreen() {
             ) {
                 PerformanceChartView(
                     title = "RAM Usage (MB)",
-                    data = metrics.reversed().mapNotNull { it.rawRamMb?.toDouble()?.let { it / 1024.0 }},
+                    data = graphs.ram,
                     color = Color.Yellow,
                     modifier = Modifier.weight(1f).fillMaxHeight()
                 )
                 PerformanceChartView(
                     title = "FPS",
-                    data = metrics.reversed().map { it.rawFps },
+                    data = graphs.fps,
                     color = Color.Red,
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun AverageMetricBox(
-    title: String,
-    value: String,
-    modifier: Modifier = Modifier,
-) {
-    FloconSurface(
-        modifier = modifier,
-        shape = FloconTheme.shapes.medium,
-        tonalElevation = 2.dp,
-        color = FloconTheme.colorPalette.surface,
-        contentColor = FloconTheme.colorPalette.onSurface,
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = title,
-                style = FloconTheme.typography.labelSmall,
-                color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.6f)
-            )
-            Text(
-                text = value,
-                style = FloconTheme.typography.titleMedium,
-            )
         }
     }
 }
