@@ -6,6 +6,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.plugins.*
+import io.ktor.client.request.header
 import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*

@@ -5,6 +5,10 @@ import io.github.openflocon.flocon.FloconLogger
 import io.ktor.client.*
 import io.ktor.client.engine.darwin.Darwin
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
+import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.plugins.websocket.webSocketSession
+import io.ktor.client.request.header
 import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
