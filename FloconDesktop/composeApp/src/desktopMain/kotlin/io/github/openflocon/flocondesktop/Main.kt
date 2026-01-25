@@ -1,7 +1,5 @@
 package io.github.openflocon.flocondesktop
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -10,14 +8,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.window.ApplicationScope
-import androidx.compose.ui.window.FrameWindowScope
-import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Notification
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
@@ -32,21 +27,17 @@ import flocondesktop.composeapp.generated.resources.app_icon_small
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
 import io.github.openflocon.flocondesktop.about.AboutScreen
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
-import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_HEIGHT
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_WIDTH
 import io.github.openflocon.flocondesktop.window.WindowStateData
 import io.github.openflocon.flocondesktop.window.WindowStateSaver
 import io.github.openflocon.flocondesktop.window.size
 import io.github.openflocon.flocondesktop.window.windowPosition
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.escape.LocalEscapeHandlerStack
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 import java.awt.Desktop
 import java.awt.Dimension
-import java.util.Locale
 
 private const val ACTIVATE_TRAY_NOTIFICATION = false
 
@@ -117,7 +108,6 @@ fun main() {
                 if (ACTIVATE_TRAY_NOTIFICATION) {
                     FloconTray()
                 }
-                FloconMenu()
 
                 if (openAbout) {
                     AboutScreen(
@@ -125,39 +115,6 @@ fun main() {
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun FrameWindowScope.FloconMenu() {
-    var openLicenses by remember { mutableStateOf(false) }
-
-    MenuBar {
-        Menu(
-            text = "Settings"
-        ) {
-            Item(
-                text = "Licences",
-                onClick = {
-                    openLicenses = true
-                }
-            )
-        }
-    }
-
-    if (openLicenses) {
-        FloconWindow(
-            title = "Licenses",
-            state = createFloconWindowState(),
-            alwaysOnTop = true,
-            onCloseRequest = { openLicenses = false },
-        ) {
-            io.github.openflocon.flocondesktop.app.ui.settings.AboutScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(FloconTheme.colorPalette.primary),
-            )
         }
     }
 }

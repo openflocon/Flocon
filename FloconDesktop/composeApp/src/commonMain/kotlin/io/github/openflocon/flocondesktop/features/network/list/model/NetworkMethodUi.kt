@@ -31,6 +31,11 @@ sealed interface NetworkMethodUi {
             override val text: String = "DELETE"
             override val icon = null
         }
+
+        data object PATCH : Http {
+            override val text: String = "PATCH"
+            override val icon = null
+        }
     }
 
     sealed interface GraphQl : NetworkMethodUi {
@@ -70,6 +75,7 @@ sealed interface NetworkMethodUi {
             Http.POST,
             Http.PUT,
             Http.DELETE,
+            Http.PATCH,
             GraphQl.QUERY,
             GraphQl.MUTATION,
             Grpc,
