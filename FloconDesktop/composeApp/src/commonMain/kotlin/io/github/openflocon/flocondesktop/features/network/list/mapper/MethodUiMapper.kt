@@ -19,5 +19,6 @@ fun toHttpMethodUi(httpMethod: String): NetworkMethodUi = when (httpMethod.lower
     "put" -> NetworkMethodUi.Http.PUT
     "post" -> NetworkMethodUi.Http.POST
     "delete" -> NetworkMethodUi.Http.DELETE
+    "patch" -> NetworkMethodUi.Http.PATCH
     else -> NetworkMethodUi.OTHER(httpMethod, icon = null)
 }

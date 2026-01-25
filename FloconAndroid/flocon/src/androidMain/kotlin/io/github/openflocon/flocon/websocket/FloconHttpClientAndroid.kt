@@ -49,6 +49,7 @@ internal class FloconHttpClientAndroid : FloconHttpClient {
 
         val request = Request.Builder()
             .url(uploadUrl)
+            .header("User-Agent", "Flocon")
             .post(multipartBody)
             .build()
 
