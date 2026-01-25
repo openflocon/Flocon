@@ -42,6 +42,9 @@ val deleteMethodText = Color(0xFFDC3545)
 val otherMethodBackground = Color(0xFF6C757D).copy(alpha = 0.3f) // Muted gray for OTHER
 val otherMethodText = Color(0xFF6C757D)
 
+val patchMethodBackground = Color(0xFF6f42c1).copy(alpha = 0.3f) // Muted purple for PATCH
+val patchMethodText = Color(0xFF6f42c1)
+
 val websocketMethodBackground = Color(0xFF17A2B8).copy(alpha = 0.3f) // Muted cyan for WEBSOCKET
 val websocketMethodText = Color(0xFF17A2B8)
 
@@ -66,6 +69,7 @@ fun MethodView(
             is NetworkMethodUi.OTHER -> otherMethodBackground to otherMethodText
             is NetworkMethodUi.Http.POST -> postMethodBackground to postMethodText
             is NetworkMethodUi.Http.PUT -> putMethodBackground to putMethodText
+            is NetworkMethodUi.Http.PATCH -> patchMethodBackground to patchMethodText
             is NetworkMethodUi.GraphQl.QUERY -> graphQlQueryMethodBackground to graphQlQueryMethodText
             is NetworkMethodUi.GraphQl.MUTATION -> graphQlQueryMethodBackground to graphQlQueryMethodText
             is NetworkMethodUi.Grpc -> grpcMethodBackground to grpcMethodText

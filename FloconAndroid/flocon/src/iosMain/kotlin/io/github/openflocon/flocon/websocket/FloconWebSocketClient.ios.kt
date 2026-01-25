@@ -4,8 +4,8 @@ package io.github.openflocon.flocon.websocket
 import io.github.openflocon.flocon.FloconLogger
 import io.ktor.client.*
 import io.ktor.client.engine.darwin.Darwin
-import io.ktor.client.plugins.websocket.*
-import io.ktor.http.HttpMethod
+import io.ktor.client.plugins.*
+import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
 
@@ -17,6 +17,9 @@ internal class FloconWebSocketClientIOs() : FloconWebSocketClient {
 
     private val client = HttpClient(Darwin.create()) {
         install(WebSockets)
+        defaultRequest {
+            header(HttpHeaders.UserAgent, "Flocon")
+        }
     }
 
     private var session: DefaultClientWebSocketSession? = null
