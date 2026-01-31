@@ -1,6 +1,8 @@
 package io.github.openflocon.library.designsystem.components
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronLeft
@@ -18,7 +20,8 @@ fun FloconJsonTree(
     modifier: Modifier = Modifier,
     initialState: TreeState = TreeState.FIRST_ITEM_EXPANDED,
     onError: (Throwable) -> Unit = {},
-    searchState: SearchState = rememberSearchState()
+    searchState: SearchState = rememberSearchState(),
+    lazyListState: LazyListState = rememberLazyListState()
 ) {
     SelectionContainer(modifier = modifier) {
         JsonTree(
@@ -29,6 +32,7 @@ fun FloconJsonTree(
             initialState = initialState,
             icon = Icons.Outlined.ChevronLeft,
             searchState = searchState,
+            lazyListState = lazyListState,
             colors = defaultDarkColors,
             onError = onError,
             modifier = Modifier.fillMaxSize()
