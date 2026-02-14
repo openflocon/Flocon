@@ -131,6 +131,8 @@ compose.desktop {
             }
             windows {
                 iconFile.set(project.file("src/desktopMain/resources/files/flocon_big.ico"))
+                menu = true
+                upgradeUuid = "5c6d2b4c-360a-4135-a445-68bfa25ce450"
             }
         }
     }
