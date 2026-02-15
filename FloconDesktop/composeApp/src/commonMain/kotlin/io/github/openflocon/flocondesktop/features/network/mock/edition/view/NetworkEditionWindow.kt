@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import com.sebastianneubauer.jsontree.TreeState
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
@@ -49,9 +51,11 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.model.He
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.SelectedMockUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.DefaultLabel
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
+import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultLabel
@@ -67,7 +71,7 @@ fun NetworkEditionWindow(
 ) {
     val windowState: FloconWindowState = remember(instanceId) {
         createFloconWindowState(
-            size = DpSize(900.dp, 700.dp)
+            size = DpSize(900.dp, 800.dp)
         )
     }
     key(windowState, instanceId) {
@@ -365,16 +369,62 @@ fun MockEditorScreen(
                             }
                         }
 
-                        FloconTextField(
-                            label = defaultLabel("Body"),
-                            value = bodyResponse.body,
-                            minLines = 4,
-                            onValueChange = { newValue ->
-                                mock = mock.copy(bodyResponse = bodyResponse.copy(body = newValue))
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            containerColor = FloconTheme.colorPalette.primary
-                        )
+                        DefaultLabel("Body")
+
+                        var isEditSelected by remember { mutableStateOf(true) }
+
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Tab(
+                                text = "Edit",
+                                isSelected = isEditSelected,
+                                onSelected = { isEditSelected = true }
+                            )
+                            Tab(
+                                text = "Validate",
+                                isSelected = !isEditSelected,
+                                onSelected = { isEditSelected = false }
+                            )
+                        }
+
+                        if(isEditSelected) {
+                            FloconTextField(
+                                value = bodyResponse.body,
+                                minLines = 10,
+                                onValueChange = { newValue ->
+                                    mock = mock.copy(bodyResponse = bodyResponse.copy(body = newValue))
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                containerColor = FloconTheme.colorPalette.primary
+                            )
+                        } else {
+                            var jsonError by remember(bodyResponse.body) { mutableStateOf<Throwable?>(null) }
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(400.dp)
+                                    .background(
+                                        color = FloconTheme.colorPalette.primary,
+                                        shape = FloconTheme.shapes.medium,
+                                    )
+                                    .padding(vertical = 4.dp, horizontal = 8.dp),
+                            ) {
+                                val throwable = jsonError
+                                if(throwable == null) {
+                                    FloconJsonTree(
+                                        json = bodyResponse.body,
+                                        initialState = TreeState.EXPANDED,
+                                        onError = { jsonError = it },
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                } else {
+                                    Text(
+                                        text = throwable.localizedMessage,
+                                        style = FloconTheme.typography.bodySmall
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
