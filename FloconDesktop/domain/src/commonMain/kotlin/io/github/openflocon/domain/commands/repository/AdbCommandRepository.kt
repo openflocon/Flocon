@@ -9,6 +9,7 @@ interface AdbCommandRepository {
 
     suspend fun delete(adbCommand: AdbCommand)
 
-    fun getAll(): Flow<List<AdbCommand>>
+    suspend fun get(id: Long): AdbCommand?
 
+    fun getAll(): Flow<List<AdbCommand>>
 }

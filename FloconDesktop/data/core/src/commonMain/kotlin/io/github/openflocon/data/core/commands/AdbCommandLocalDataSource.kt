@@ -9,6 +9,7 @@ interface AdbCommandLocalDataSource {
 
     suspend fun delete(adbCommand: AdbCommand)
 
-    fun getAll(): Flow<List<AdbCommand>>
+    suspend fun getById(id: Long): AdbCommand?
 
+    fun getAll(): Flow<List<AdbCommand>>
 }

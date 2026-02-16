@@ -10,18 +10,20 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AdbCommandDao {
 
-    @Upsert
-    suspend fun upsertAll(commands: List<AdbCommandEntity>)
+    @Upsert suspend fun upsertAll(commands: List<AdbCommandEntity>)
 
-    @Delete
-    suspend fun delete(command: AdbCommandEntity)
+    @Delete suspend fun delete(command: AdbCommandEntity)
 
-    @Query(
-        """
+    @Query("""
         SELECT * 
         FROM AdbCommandEntity
-    """
-    )
-    fun getAll(): Flow<List<AdbCommandEntity>>
+        WHERE id = :id
+    """)
+    suspend fun getById(id: Long): AdbCommandEntity?
 
+    @Query("""
+        SELECT * 
+        FROM AdbCommandEntity
+    """)
+    fun getAll(): Flow<List<AdbCommandEntity>>
 }

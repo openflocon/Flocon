@@ -5,9 +5,8 @@ import io.github.openflocon.domain.commands.models.AdbCommand
 import io.github.openflocon.domain.commands.repository.AdbCommandRepository
 import kotlinx.coroutines.flow.Flow
 
-internal class AdbCommandRepositoryImpl(
-    private val local: AdbCommandLocalDataSource
-) : AdbCommandRepository {
+internal class AdbCommandRepositoryImpl(private val local: AdbCommandLocalDataSource) :
+        AdbCommandRepository {
 
     override suspend fun insertOrUpdate(adbCommand: AdbCommand) {
         local.insertOrReplace(adbCommand)
@@ -17,6 +16,7 @@ internal class AdbCommandRepositoryImpl(
         local.delete(adbCommand)
     }
 
-    override fun getAll(): Flow<List<AdbCommand>> = local.getAll()
+    override suspend fun get(id: Long): AdbCommand? = local.getById(id)
 
+    override fun getAll(): Flow<List<AdbCommand>> = local.getAll()
 }

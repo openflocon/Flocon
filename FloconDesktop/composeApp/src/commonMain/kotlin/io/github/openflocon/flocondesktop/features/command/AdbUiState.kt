@@ -6,23 +6,19 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
-internal data class AdbUiState(
-    val commands: ImmutableList<AdbCommandUi>
+data class AdbUiState(
+        val commands: ImmutableList<AdbCommandUi>,
+        val history: ImmutableList<AdbCommandUi> = persistentListOf()
 )
 
-internal fun previewAdbUiState() = AdbUiState(
-    commands = persistentListOf()
-)
+fun previewAdbUiState() = AdbUiState(commands = persistentListOf(), history = persistentListOf())
 
 @Immutable
-internal data class AdbCommandUi(
-    val id: Long,
-    val command: String,
-    val loading: Boolean
+data class AdbCommandUi(
+        val id: Long,
+        val command: String,
+        val loading: Boolean = false,
+        val output: String? = null
 )
 
-internal fun AdbCommand.toUi() = AdbCommandUi(
-    id = id,
-    command = command,
-    loading = false
-)
+fun AdbCommand.toUi() = AdbCommandUi(id = id, command = command, loading = false)
