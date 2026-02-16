@@ -17,6 +17,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.buildMenu
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
+import io.github.openflocon.flocondesktop.features.command.AdbCommandRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.DashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
@@ -130,6 +131,7 @@ internal class AppViewModel(
                 SubScreen.SharedPreferences -> SharedPreferencesRoutes.Main
                 SubScreen.Tables -> TableRoutes.Main
                 SubScreen.CrashReporter -> CrashReporterRoutes.Main
+                SubScreen.Commands -> AdbCommandRoutes.Main
             }
         )
     }

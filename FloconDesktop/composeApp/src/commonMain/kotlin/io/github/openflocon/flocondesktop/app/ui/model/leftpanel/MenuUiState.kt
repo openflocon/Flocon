@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.app.ui.model.leftpanel
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Commit
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Immutable
 import flocondesktop.composeapp.generated.resources.Res
@@ -8,10 +9,9 @@ import flocondesktop.composeapp.generated.resources.menu_actions
 import flocondesktop.composeapp.generated.resources.menu_data
 import flocondesktop.composeapp.generated.resources.menu_network
 import flocondesktop.composeapp.generated.resources.menu_storage
+import flocondesktop.composeapp.generated.resources.menu_utils
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
-import io.github.openflocon.flocondesktop.app.ui.view.displayName
 import io.github.openflocon.flocondesktop.app.ui.view.icon
-import org.jetbrains.compose.resources.getString
 
 @Immutable
 data class MenuState(
@@ -83,6 +83,16 @@ fun previewMenuState() = MenuState(
                 ),
             ),
         ),
+        MenuSection(
+            title = Res.string.menu_utils,
+            items = listOf(
+                MenuItem(
+                    screen = SubScreen.Commands,
+                    icon = Icons.Outlined.Commit,
+                    isEnabled = true,
+                )
+            ),
+        )
     ),
 )
 
@@ -121,6 +131,12 @@ internal fun buildMenu() = MenuState(
                 item(SubScreen.Deeplinks)
             ),
         ),
+        MenuSection(
+            title = Res.string.menu_utils,
+            items = listOf(
+                item(SubScreen.Commands)
+            ),
+        )
     ),
 )
 

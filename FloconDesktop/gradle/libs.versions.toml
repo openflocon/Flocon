@@ -12,7 +12,7 @@ androidx-lifecycle = "2.10.0-alpha03"
 androidx-testExt = "1.3.0"
 coil = "3.3.0"
 composeHotReload = "1.0.0"
-composeMultiplatform = "1.10.0-alpha03"
+composeMultiplatform = "1.11.0-alpha02"
 junit = "4.13.2"
 kermit = "2.0.8"
 koin = "4.1.0"
@@ -38,8 +38,8 @@ paging = "3.3.2"
 opencsv = "5.9"
 
 # TODO Sort
-nav3Core = "1.0.0-alpha04+dev3147"#"1.0.0-alpha03"
-material3-adaptive = "1.0.0-alpha03"
+nav3Core = "1.1.0-alpha02"
+material3-adaptive = "1.3.0-alpha04"
 kotlinxSerializationCore = "1.8.1"
 
 [libraries]

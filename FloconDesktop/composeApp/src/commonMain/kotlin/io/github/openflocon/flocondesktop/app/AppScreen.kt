@@ -14,6 +14,7 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
+import io.github.openflocon.flocondesktop.features.command.adbCommandRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.databaseRoutes
@@ -100,5 +101,6 @@ private fun Content(
         tableRoutes()
         settingsRoutes()
         crashReporterRoutes()
+        adbCommandRoutes()
     }
 }

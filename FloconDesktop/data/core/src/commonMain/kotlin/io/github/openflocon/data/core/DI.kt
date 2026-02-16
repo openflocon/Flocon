@@ -1,6 +1,7 @@
 package io.github.openflocon.data.core
 
 import io.github.openflocon.data.core.analytics.analyticsModule
+import io.github.openflocon.data.core.commands.adbCommandModule
 import io.github.openflocon.data.core.crashreporter.crashReporterModule
 import io.github.openflocon.data.core.dashboard.dashboardModule
 import io.github.openflocon.data.core.database.databaseModule
@@ -28,5 +29,6 @@ val dataCoreModule = module {
         messageModule,
         versionModule,
         crashReporterModule,
+        adbCommandModule
     )
 }
