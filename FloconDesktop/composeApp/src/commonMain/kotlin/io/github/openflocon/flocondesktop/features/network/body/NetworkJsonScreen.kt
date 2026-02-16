@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
@@ -68,9 +69,17 @@ private fun NetworkBodyContent(
 
     val scope = rememberCoroutineScope()
     val searchState = rememberSearchState()
+    val listState = rememberLazyListState()
 
     LaunchedEffect(query) {
         searchState.query = query
+    }
+
+    val resultIndex = searchState.selectedResultListIndex
+    LaunchedEffect(resultIndex) {
+        if(resultIndex != null && !listState.isScrollInProgress) {
+            listState.animateScrollToItem(resultIndex)
+        }
     }
 
     FloconSurface(
@@ -101,6 +110,7 @@ private fun NetworkBodyContent(
             FloconJsonTree(
                 json = body.text,
                 searchState = searchState,
+                lazyListState = listState,
                 onError = { jsonError = true },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -160,7 +170,7 @@ private fun SearchBar(
                         imageVector = Icons.Outlined.ArrowUpward,
                         onClick = previousClicked,
                         contentPadding = PaddingValues(all = 4.dp),
-                        enabled = selectedResultIndex != null && selectedResultIndex > 0,
+                        enabled = selectedResultIndex != null,
                         modifier = Modifier.fillMaxHeight().aspectRatio(1f),
                     )
                     VerticalDivider(modifier = Modifier.fillMaxHeight())
@@ -168,7 +178,7 @@ private fun SearchBar(
                         imageVector = Icons.Outlined.ArrowDownward,
                         onClick = nextClicked,
                         contentPadding = PaddingValues(all = 4.dp),
-                        enabled = selectedResultIndex != null && selectedResultIndex < totalResults - 1,
+                        enabled = selectedResultIndex != null,
                         modifier = Modifier.fillMaxHeight().aspectRatio(1f),
                     )
                 }
