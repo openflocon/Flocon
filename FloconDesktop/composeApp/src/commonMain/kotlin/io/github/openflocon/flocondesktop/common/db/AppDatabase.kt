@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.common.db
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -8,19 +9,21 @@ import io.github.openflocon.data.local.adb.dao.AdbDevicesDao
 import io.github.openflocon.data.local.adb.model.DeviceWithSerialEntity
 import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
+import io.github.openflocon.data.local.commands.dao.AdbCommandDao
+import io.github.openflocon.data.local.commands.model.AdbCommandEntity
 import io.github.openflocon.data.local.crashreporter.dao.CrashReportDao
 import io.github.openflocon.data.local.crashreporter.models.CrashReportEntity
 import io.github.openflocon.data.local.dashboard.dao.FloconDashboardDao
 import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
+import io.github.openflocon.data.local.database.dao.DatabaseQueryLogDao
 import io.github.openflocon.data.local.database.dao.QueryDao
 import io.github.openflocon.data.local.database.dao.TablesDao
+import io.github.openflocon.data.local.database.models.DatabaseQueryLogEntity
 import io.github.openflocon.data.local.database.models.DatabaseTableEntity
 import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
-import io.github.openflocon.data.local.database.dao.DatabaseQueryLogDao
-import io.github.openflocon.data.local.database.models.DatabaseQueryLogEntity
 import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkDao
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
 import io.github.openflocon.data.local.device.datasource.dao.DevicesDao
@@ -50,7 +53,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 78,
+    version = 79,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -75,7 +78,11 @@ import kotlinx.coroutines.Dispatchers
         DatabaseTableEntity::class,
         CrashReportEntity::class,
         DatabaseQueryLogEntity::class,
+        AdbCommandEntity::class
     ],
+    autoMigrations = [
+        AutoMigration(from = 78, to = 79),
+    ]
 )
 @TypeConverters(
     DashboardConverters::class,
@@ -95,6 +102,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val networkFilterDao: NetworkFilterDao
     abstract val networkMocksDao: NetworkMocksDao
     abstract val adbDevicesDao: AdbDevicesDao
+    abstract val adbCommandDao: AdbCommandDao
     abstract val networkBadQualityConfigDao: NetworkBadQualityConfigDao
     abstract val devicesDao: DevicesDao
     abstract val tablesDao: TablesDao

@@ -29,8 +29,10 @@
     <string name="invert_list">Invert list</string>
     <string name="menu_actions">Actions</string>
     <string name="menu_data">Data</string>
+    <string name="menu_utils">Utils</string>
     <string name="menu_item_analytics">Analytics</string>
     <string name="menu_item_crashReporter">Crashes</string>
+    <string name="menu_item_adb_commands">ADB Commands</string>
     <string name="menu_item_dashboard">Dashboard</string>
     <string name="menu_item_database">Database</string>
     <string name="menu_item_deeplinks">Deeplinks</string>

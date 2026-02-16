@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features
 
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsModule
 import io.github.openflocon.flocondesktop.features.analytics.analyticsModule
+import io.github.openflocon.flocondesktop.features.command.adbCommandModule
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterModule
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardModule
 import io.github.openflocon.flocondesktop.features.database.databaseModule
@@ -28,5 +29,6 @@ val featuresModule = module {
         deeplinkModule,
         settingsModule,
         crashReporterModule,
+        adbCommandModule
     )
 }

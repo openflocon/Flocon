@@ -3,6 +3,7 @@ package io.github.openflocon.library.designsystem.components
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,6 +19,8 @@ fun FloconScaffold(
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
+    floatingActionButton: @Composable () -> Unit = {},
+    floatingActionButtonPosition: FabPosition = FabPosition.End,
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
@@ -27,6 +30,8 @@ fun FloconScaffold(
         snackbarHost = snackbarHost,
         containerColor = containerColor,
         contentColor = contentColor,
+        floatingActionButton = floatingActionButton,
+        floatingActionButtonPosition = floatingActionButtonPosition,
         contentWindowInsets = WindowInsets.systemBars,
         content = content
     )
