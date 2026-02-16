@@ -57,7 +57,9 @@ import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconTab
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.TabType
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 
@@ -206,17 +208,21 @@ fun MockEditorScreen(
                 )
 
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Tab(
+                    FloconTab(
+                        modifier = Modifier.weight(1F),
                         text = "HttpCode + Body",
                         isSelected = mock.responseType == EditableMockNetworkUiModel.ResponseType.BODY,
+                        tabType = TabType.Start,
                         onSelected = {
                             mock =
                                 mock.copy(responseType = EditableMockNetworkUiModel.ResponseType.BODY)
                         }
                     )
-                    Tab(
+                    FloconTab(
+                        modifier = Modifier.weight(1F),
                         text = "Exception",
                         isSelected = mock.responseType == EditableMockNetworkUiModel.ResponseType.EXCEPTION,
+                        tabType = TabType.End,
                         onSelected = {
                             mock =
                                 mock.copy(responseType = EditableMockNetworkUiModel.ResponseType.EXCEPTION)
@@ -374,15 +380,19 @@ fun MockEditorScreen(
                         var isEditSelected by remember { mutableStateOf(true) }
 
                         Row(modifier = Modifier.fillMaxWidth()) {
-                            Tab(
+                            FloconTab(
+                                modifier = Modifier.weight(1F),
                                 text = "Edit",
                                 isSelected = isEditSelected,
-                                onSelected = { isEditSelected = true }
+                                onSelected = { isEditSelected = true },
+                                tabType = TabType.Start
                             )
-                            Tab(
+                            FloconTab(
+                                modifier = Modifier.weight(1F),
                                 text = "Validate",
                                 isSelected = !isEditSelected,
-                                onSelected = { isEditSelected = false }
+                                onSelected = { isEditSelected = false },
+                                tabType = TabType.End
                             )
                         }
 
@@ -520,33 +530,4 @@ private fun HeaderInputField(
             )
         }
     }
-}
-
-@Composable
-fun RowScope.Tab(
-    text: String,
-    isSelected: Boolean,
-    onSelected: () -> Unit
-) {
-    Text(
-        modifier = Modifier.weight(1f)
-            .clip(RoundedCornerShape(4.dp))
-            .background(
-                color = if (isSelected) {
-                    Color.White.copy(alpha = 0.8f)
-                } else {
-                    Color.White.copy(alpha = 0.1f)
-                },
-            ).clickable {
-                onSelected()
-            }.padding(vertical = 8.dp),
-        text = text,
-        textAlign = TextAlign.Center,
-        style = FloconTheme.typography.bodyMedium,
-        color = if (isSelected) {
-            FloconTheme.colorPalette.primary
-        } else {
-            FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f)
-        },
-    )
 }
