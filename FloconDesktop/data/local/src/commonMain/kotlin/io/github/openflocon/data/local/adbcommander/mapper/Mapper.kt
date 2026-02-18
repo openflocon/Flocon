@@ -3,6 +3,7 @@ package io.github.openflocon.data.local.adbcommander.mapper
 import io.github.openflocon.data.local.adbcommander.models.AdbCommandHistoryEntity
 import io.github.openflocon.data.local.adbcommander.models.AdbFlowEntity
 import io.github.openflocon.data.local.adbcommander.models.AdbFlowStepEntity
+import io.github.openflocon.data.local.adbcommander.models.AdbFlowWithSteps
 import io.github.openflocon.data.local.adbcommander.models.AdbSavedCommandEntity
 import io.github.openflocon.domain.adbcommander.models.AdbCommandDomainModel
 import io.github.openflocon.domain.adbcommander.models.AdbCommandHistoryDomainModel
@@ -31,6 +32,13 @@ fun AdbCommandHistoryEntity.toDomainModel() = AdbCommandHistoryDomainModel(
     output = output,
     isSuccess = isSuccess,
     executedAt = executedAt,
+)
+
+fun AdbFlowWithSteps.toDomainModel() = AdbFlowDomainModel(
+    id = flow.id,
+    name = flow.name,
+    description = flow.description,
+    steps = steps.sortedBy { it.orderIndex }.map { it.toDomainModel() },
 )
 
 fun AdbFlowEntity.toDomainModel(steps: List<AdbFlowStepEntity>) = AdbFlowDomainModel(

@@ -9,6 +9,7 @@ import androidx.room.Update
 import io.github.openflocon.data.local.adbcommander.models.AdbCommandHistoryEntity
 import io.github.openflocon.data.local.adbcommander.models.AdbFlowEntity
 import io.github.openflocon.data.local.adbcommander.models.AdbFlowStepEntity
+import io.github.openflocon.data.local.adbcommander.models.AdbFlowWithSteps
 import io.github.openflocon.data.local.adbcommander.models.AdbSavedCommandEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -39,8 +40,9 @@ interface AdbCommanderDao {
     suspend fun clearHistory(deviceId: String)
 
     // Flows
+    @Transaction
     @Query("SELECT * FROM AdbFlowEntity WHERE deviceId = :deviceId ORDER BY createdAt DESC")
-    fun observeFlows(deviceId: String): Flow<List<AdbFlowEntity>>
+    fun observeFlowsWithSteps(deviceId: String): Flow<List<AdbFlowWithSteps>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFlow(flow: AdbFlowEntity): Long
