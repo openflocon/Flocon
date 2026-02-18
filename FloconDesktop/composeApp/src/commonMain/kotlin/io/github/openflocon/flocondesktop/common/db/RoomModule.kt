@@ -61,4 +61,7 @@ val roomModule =
         single {
             get<AppDatabase>().databaseQueryLogDao
         }
+        single {
+            get<AppDatabase>().adbCommanderDao
+        }
     }

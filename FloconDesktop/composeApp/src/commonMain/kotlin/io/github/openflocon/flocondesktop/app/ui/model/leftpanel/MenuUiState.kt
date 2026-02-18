@@ -118,7 +118,8 @@ internal fun buildMenu() = MenuState(
         MenuSection(
             title = Res.string.menu_actions,
             items = listOf(
-                item(SubScreen.Deeplinks)
+                item(SubScreen.Deeplinks),
+                item(SubScreen.AdbCommander),
             ),
         ),
     ),

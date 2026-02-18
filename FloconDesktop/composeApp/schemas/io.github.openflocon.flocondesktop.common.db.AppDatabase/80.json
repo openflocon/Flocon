@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 80,
-    "identityHash": "894da66ff62fe4653dcff3fea6827e2e",
+    "identityHash": "97e741d0850a836010fcc93c41419238",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -1050,96 +1050,6 @@
         ]
       },
       {
-        "tableName": "DeeplinkVariableEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `isHistory` INTEGER NOT NULL, `mode` TEXT NOT NULL, FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "deviceId",
-            "columnName": "deviceId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "packageName",
-            "columnName": "packageName",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "description",
-            "columnName": "description",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "isHistory",
-            "columnName": "isHistory",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "mode",
-            "columnName": "mode",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [
-          {
-            "name": "index_DeeplinkVariableEntity_deviceId_packageName",
-            "unique": false,
-            "columnNames": [
-              "deviceId",
-              "packageName"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_DeeplinkVariableEntity_deviceId_packageName` ON `${TABLE_NAME}` (`deviceId`, `packageName`)"
-          },
-          {
-            "name": "index_DeeplinkVariableEntity_deviceId_name",
-            "unique": true,
-            "columnNames": [
-              "deviceId",
-              "name"
-            ],
-            "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_DeeplinkVariableEntity_deviceId_name` ON `${TABLE_NAME}` (`deviceId`, `name`)"
-          }
-        ],
-        "foreignKeys": [
-          {
-            "table": "DeviceAppEntity",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "deviceId",
-              "packageName"
-            ],
-            "referencedColumns": [
-              "deviceId",
-              "packageName"
-            ]
-          }
-        ]
-      },
-      {
         "tableName": "AnalyticsItemEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`itemId` TEXT NOT NULL, `analyticsTableId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `appInstance` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `createdAtFormatted` TEXT NOT NULL, `eventName` TEXT NOT NULL, `propertiesColumnsNames` TEXT NOT NULL, `propertiesValues` TEXT NOT NULL, PRIMARY KEY(`itemId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
@@ -1345,7 +1255,7 @@
       },
       {
         "tableName": "MockNetworkEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mockId` TEXT NOT NULL, `deviceId` TEXT, `packageName` TEXT, `isEnabled` INTEGER NOT NULL, `response` TEXT NOT NULL, `displayName` TEXT NOT NULL, `expectation_urlPattern` TEXT NOT NULL, `expectation_method` TEXT NOT NULL, PRIMARY KEY(`mockId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mockId` TEXT NOT NULL, `deviceId` TEXT, `packageName` TEXT, `isEnabled` INTEGER NOT NULL, `response` TEXT NOT NULL, `expectation_urlPattern` TEXT NOT NULL, `expectation_method` TEXT NOT NULL, PRIMARY KEY(`mockId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "mockId",
@@ -1372,12 +1282,6 @@
           {
             "fieldPath": "response",
             "columnName": "response",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "displayName",
-            "columnName": "displayName",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -1877,11 +1781,251 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "AdbSavedCommandEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `command` TEXT NOT NULL, `description` TEXT, `createdAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "command",
+            "columnName": "command",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_AdbSavedCommandEntity_deviceId",
+            "unique": false,
+            "columnNames": [
+              "deviceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_AdbSavedCommandEntity_deviceId` ON `${TABLE_NAME}` (`deviceId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "AdbCommandHistoryEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `command` TEXT NOT NULL, `output` TEXT NOT NULL, `isSuccess` INTEGER NOT NULL, `executedAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "command",
+            "columnName": "command",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "output",
+            "columnName": "output",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSuccess",
+            "columnName": "isSuccess",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "executedAt",
+            "columnName": "executedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_AdbCommandHistoryEntity_deviceId",
+            "unique": false,
+            "columnNames": [
+              "deviceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_AdbCommandHistoryEntity_deviceId` ON `${TABLE_NAME}` (`deviceId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "AdbFlowEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `createdAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_AdbFlowEntity_deviceId",
+            "unique": false,
+            "columnNames": [
+              "deviceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_AdbFlowEntity_deviceId` ON `${TABLE_NAME}` (`deviceId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "AdbFlowStepEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `flowId` INTEGER NOT NULL, `orderIndex` INTEGER NOT NULL, `command` TEXT NOT NULL, `delayAfterMs` INTEGER NOT NULL, `label` TEXT, FOREIGN KEY(`flowId`) REFERENCES `AdbFlowEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flowId",
+            "columnName": "flowId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderIndex",
+            "columnName": "orderIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "command",
+            "columnName": "command",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "delayAfterMs",
+            "columnName": "delayAfterMs",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_AdbFlowStepEntity_flowId",
+            "unique": false,
+            "columnNames": [
+              "flowId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_AdbFlowStepEntity_flowId` ON `${TABLE_NAME}` (`flowId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "AdbFlowEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "flowId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '894da66ff62fe4653dcff3fea6827e2e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '97e741d0850a836010fcc93c41419238')"
     ]
   }
 }

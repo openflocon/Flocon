@@ -20,6 +20,7 @@ import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.DashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
+import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.files.FilesRoutes
 import io.github.openflocon.flocondesktop.features.images.ImageRoutes
@@ -123,6 +124,7 @@ internal class AppViewModel(
                 SubScreen.Dashboard -> DashboardRoutes.Main
                 SubScreen.Database -> DatabaseRoutes.Main
                 SubScreen.Deeplinks -> DeeplinkRoutes.Main
+                SubScreen.AdbCommander -> AdbCommanderRoutes.Main
                 SubScreen.Files -> FilesRoutes.Main
                 SubScreen.Images -> ImageRoutes.Main
                 SubScreen.Network -> NetworkRoutes.Main
