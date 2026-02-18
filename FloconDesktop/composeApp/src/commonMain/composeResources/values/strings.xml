@@ -33,6 +33,7 @@
     <string name="menu_item_crashReporter">Crashes</string>
     <string name="menu_item_dashboard">Dashboard</string>
     <string name="menu_item_database">Database</string>
+    <string name="menu_item_adbCommander">ADB Commander</string>
     <string name="menu_item_deeplinks">Deeplinks</string>
     <string name="menu_item_files">Files</string>
     <string name="menu_item_images">Images</string>
