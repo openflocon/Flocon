@@ -43,15 +43,18 @@ fun AdbFlowExecutionState.toUiModel() = FlowExecutionUiModel(
             command = stepState.step.command,
             status = stepState.status.name,
             output = stepState.output,
-            isActive = stepState.status == AdbFlowExecutionState.StepStatus.Running
-                    || stepState.status == AdbFlowExecutionState.StepStatus.WaitingDelay,
+            isActive = stepState.status in setOf(
+                AdbFlowExecutionState.StepStatus.Running,
+                AdbFlowExecutionState.StepStatus.WaitingDelay,
+            ),
         )
     },
     status = status.name,
     isRunning = status == AdbFlowExecutionState.FlowStatus.Running,
 )
 
+private val timestampFormatter = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+
 private fun formatTimestamp(epochMs: Long): String {
-    val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-    return sdf.format(Date(epochMs))
+    return timestampFormatter.format(Date(epochMs))
 }
