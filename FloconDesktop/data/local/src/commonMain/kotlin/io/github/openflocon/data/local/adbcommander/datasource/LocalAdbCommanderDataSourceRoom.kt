@@ -31,7 +31,12 @@ internal class LocalAdbCommanderDataSourceRoom(
     }
 
     override suspend fun updateSavedCommand(command: AdbCommandDomainModel, deviceId: String) {
-        dao.updateSavedCommand(command.toEntity(deviceId))
+        val existing = dao.getSavedCommandById(command.id)
+        dao.updateSavedCommand(
+            command.toEntity(deviceId).copy(
+                createdAt = existing?.createdAt ?: System.currentTimeMillis()
+            )
+        )
     }
 
     override fun observeHistory(deviceId: String): Flow<List<AdbCommandHistoryDomainModel>> =
@@ -91,13 +96,14 @@ internal class LocalAdbCommanderDataSourceRoom(
     }
 
     override suspend fun updateFlow(flow: AdbFlowDomainModel, deviceId: String) {
+        val existing = dao.getFlowById(flow.id)
         dao.updateFlow(
             AdbFlowEntity(
                 id = flow.id,
                 deviceId = deviceId,
                 name = flow.name,
                 description = flow.description,
-                createdAt = System.currentTimeMillis(),
+                createdAt = existing?.createdAt ?: System.currentTimeMillis(),
             )
         )
         dao.replaceFlowSteps(

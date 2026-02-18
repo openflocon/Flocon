@@ -26,6 +26,9 @@ interface AdbCommanderDao {
     @Update
     suspend fun updateSavedCommand(command: AdbSavedCommandEntity)
 
+    @Query("SELECT * FROM AdbSavedCommandEntity WHERE id = :id LIMIT 1")
+    suspend fun getSavedCommandById(id: Long): AdbSavedCommandEntity?
+
     @Query("DELETE FROM AdbSavedCommandEntity WHERE id = :id")
     suspend fun deleteSavedCommand(id: Long)
 
