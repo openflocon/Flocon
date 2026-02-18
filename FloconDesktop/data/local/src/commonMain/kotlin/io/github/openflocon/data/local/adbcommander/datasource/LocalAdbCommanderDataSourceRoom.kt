@@ -9,7 +9,6 @@ import io.github.openflocon.data.local.adbcommander.models.AdbFlowEntity
 import io.github.openflocon.domain.adbcommander.models.AdbCommandDomainModel
 import io.github.openflocon.domain.adbcommander.models.AdbCommandHistoryDomainModel
 import io.github.openflocon.domain.adbcommander.models.AdbFlowDomainModel
-import io.github.openflocon.domain.adbcommander.models.AdbFlowStepDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -62,13 +61,8 @@ internal class LocalAdbCommanderDataSourceRoom(
     }
 
     override fun observeFlows(deviceId: String): Flow<List<AdbFlowDomainModel>> =
-        dao.observeFlows(deviceId)
-            .map { entities ->
-                entities.map { flowEntity ->
-                    val steps = dao.getFlowSteps(flowEntity.id)
-                    flowEntity.toDomainModel(steps)
-                }
-            }
+        dao.observeFlowsWithSteps(deviceId)
+            .map { entities -> entities.map { it.toDomainModel() } }
             .distinctUntilChanged()
 
     override suspend fun getFlowWithSteps(flowId: Long): AdbFlowDomainModel? {
