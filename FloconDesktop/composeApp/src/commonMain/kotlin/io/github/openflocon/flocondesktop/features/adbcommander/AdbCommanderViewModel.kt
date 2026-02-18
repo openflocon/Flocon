@@ -20,6 +20,7 @@ import io.github.openflocon.domain.adbcommander.usecase.UpdateSavedCommandUseCas
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.adbcommander.mapper.toUiModel
+import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderTab
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderUiState
 import io.github.openflocon.flocondesktop.features.adbcommander.model.ConsoleOutputEntry
@@ -83,15 +84,43 @@ class AdbCommanderViewModel(
             initialValue = AdbCommanderUiState(),
         )
 
-    fun onTabSelected(tab: AdbCommanderTab) {
+    fun onAction(action: AdbCommanderAction) {
+        when (action) {
+            is AdbCommanderAction.TabSelected -> onTabSelected(action.tab)
+            is AdbCommanderAction.CommandInputChanged -> onCommandInputChanged(action.input)
+            is AdbCommanderAction.ExecuteCommand -> onExecuteCommand()
+            is AdbCommanderAction.SaveCurrentCommand -> onSaveCurrentCommand()
+            is AdbCommanderAction.RunSavedCommand -> onRunSavedCommand(action.command)
+            is AdbCommanderAction.DeleteSavedCommand -> onDeleteSavedCommand(action.id)
+            is AdbCommanderAction.SaveQuickCommand -> onSaveQuickCommand(action.name, action.command)
+            is AdbCommanderAction.ClearHistory -> onClearHistory()
+            is AdbCommanderAction.RerunCommand -> onRerunCommand(action.command)
+            is AdbCommanderAction.ClearConsole -> onClearConsole()
+            is AdbCommanderAction.ShowFlowEditor -> onShowFlowEditor(action.flowId)
+            is AdbCommanderAction.DismissFlowEditor -> onDismissFlowEditor()
+            is AdbCommanderAction.FlowEditorNameChanged -> onFlowEditorNameChanged(action.name)
+            is AdbCommanderAction.FlowEditorDescriptionChanged -> onFlowEditorDescriptionChanged(action.description)
+            is AdbCommanderAction.FlowEditorStepCommandChanged -> onFlowEditorStepCommandChanged(action.index, action.command)
+            is AdbCommanderAction.FlowEditorStepLabelChanged -> onFlowEditorStepLabelChanged(action.index, action.label)
+            is AdbCommanderAction.FlowEditorStepDelayChanged -> onFlowEditorStepDelayChanged(action.index, action.delay)
+            is AdbCommanderAction.FlowEditorAddStep -> onFlowEditorAddStep()
+            is AdbCommanderAction.FlowEditorRemoveStep -> onFlowEditorRemoveStep(action.index)
+            is AdbCommanderAction.SaveFlow -> onSaveFlow()
+            is AdbCommanderAction.DeleteFlow -> onDeleteFlow(action.id)
+            is AdbCommanderAction.ExecuteFlow -> onExecuteFlow(action.flowId)
+            is AdbCommanderAction.CancelFlowExecution -> onCancelFlowExecution()
+        }
+    }
+
+    private fun onTabSelected(tab: AdbCommanderTab) {
         localState.update { it.copy(selectedTab = tab) }
     }
 
-    fun onCommandInputChanged(input: String) {
+    private fun onCommandInputChanged(input: String) {
         localState.update { it.copy(commandInput = input) }
     }
 
-    fun onExecuteCommand() {
+    private fun onExecuteCommand() {
         val command = localState.value.commandInput.trim()
         if (command.isEmpty()) return
 
@@ -130,12 +159,12 @@ class AdbCommanderViewModel(
         }
     }
 
-    fun onRunSavedCommand(command: String) {
+    private fun onRunSavedCommand(command: String) {
         localState.update { it.copy(commandInput = command) }
         onExecuteCommand()
     }
 
-    fun onSaveCurrentCommand() {
+    private fun onSaveCurrentCommand() {
         val command = localState.value.commandInput.trim()
         if (command.isEmpty()) {
             feedbackDisplayer.displayMessage(
@@ -157,7 +186,7 @@ class AdbCommanderViewModel(
         }
     }
 
-    fun onSaveQuickCommand(name: String, command: String) {
+    private fun onSaveQuickCommand(name: String, command: String) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             saveCommandUseCase(
                 AdbCommandDomainModel(
@@ -171,27 +200,26 @@ class AdbCommanderViewModel(
         }
     }
 
-    fun onDeleteSavedCommand(id: Long) {
+    private fun onDeleteSavedCommand(id: Long) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             deleteSavedCommandUseCase(id)
             feedbackDisplayer.displayMessage("Command deleted")
         }
     }
 
-    fun onClearHistory() {
+    private fun onClearHistory() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             clearCommandHistoryUseCase()
             feedbackDisplayer.displayMessage("History cleared")
         }
     }
 
-    fun onRerunCommand(command: String) {
+    private fun onRerunCommand(command: String) {
         localState.update { it.copy(commandInput = command) }
         onExecuteCommand()
     }
 
-    // Flow editor
-    fun onShowFlowEditor(flowId: Long? = null) {
+    private fun onShowFlowEditor(flowId: Long? = null) {
         if (flowId != null) {
             val flow = domainFlows.value.find { it.id == flowId }
             localState.update {
@@ -221,23 +249,23 @@ class AdbCommanderViewModel(
         }
     }
 
-    fun onDismissFlowEditor() {
+    private fun onDismissFlowEditor() {
         localState.update { it.copy(showFlowEditor = false) }
     }
 
-    fun onFlowEditorNameChanged(name: String) {
+    private fun onFlowEditorNameChanged(name: String) {
         localState.update {
             it.copy(flowEditorState = it.flowEditorState.copy(name = name))
         }
     }
 
-    fun onFlowEditorDescriptionChanged(description: String) {
+    private fun onFlowEditorDescriptionChanged(description: String) {
         localState.update {
             it.copy(flowEditorState = it.flowEditorState.copy(description = description))
         }
     }
 
-    fun onFlowEditorStepCommandChanged(index: Int, command: String) {
+    private fun onFlowEditorStepCommandChanged(index: Int, command: String) {
         localState.update {
             val steps = it.flowEditorState.steps.toMutableList()
             if (index < steps.size) {
@@ -247,7 +275,7 @@ class AdbCommanderViewModel(
         }
     }
 
-    fun onFlowEditorStepLabelChanged(index: Int, label: String) {
+    private fun onFlowEditorStepLabelChanged(index: Int, label: String) {
         localState.update {
             val steps = it.flowEditorState.steps.toMutableList()
             if (index < steps.size) {
@@ -257,7 +285,7 @@ class AdbCommanderViewModel(
         }
     }
 
-    fun onFlowEditorStepDelayChanged(index: Int, delay: String) {
+    private fun onFlowEditorStepDelayChanged(index: Int, delay: String) {
         localState.update {
             val steps = it.flowEditorState.steps.toMutableList()
             if (index < steps.size) {
@@ -267,7 +295,7 @@ class AdbCommanderViewModel(
         }
     }
 
-    fun onFlowEditorAddStep() {
+    private fun onFlowEditorAddStep() {
         localState.update {
             it.copy(
                 flowEditorState = it.flowEditorState.copy(
@@ -277,7 +305,7 @@ class AdbCommanderViewModel(
         }
     }
 
-    fun onFlowEditorRemoveStep(index: Int) {
+    private fun onFlowEditorRemoveStep(index: Int) {
         localState.update {
             val steps = it.flowEditorState.steps.toMutableList()
             if (steps.size > 1 && index < steps.size) {
@@ -287,7 +315,7 @@ class AdbCommanderViewModel(
         }
     }
 
-    fun onSaveFlow() {
+    private fun onSaveFlow() {
         val editor = localState.value.flowEditorState
         if (editor.name.isBlank()) {
             feedbackDisplayer.displayMessage(
@@ -329,14 +357,14 @@ class AdbCommanderViewModel(
         }
     }
 
-    fun onDeleteFlow(id: Long) {
+    private fun onDeleteFlow(id: Long) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             deleteFlowUseCase(id)
             feedbackDisplayer.displayMessage("Flow deleted")
         }
     }
 
-    fun onExecuteFlow(flowId: Long) {
+    private fun onExecuteFlow(flowId: Long) {
         val flow = domainFlows.value.find { it.id == flowId } ?: return
 
         flowExecutionJob?.cancel()
@@ -349,12 +377,12 @@ class AdbCommanderViewModel(
         }
     }
 
-    fun onCancelFlowExecution() {
+    private fun onCancelFlowExecution() {
         flowExecutionJob?.cancel()
         flowExecutionJob = null
     }
 
-    fun onClearConsole() {
+    private fun onClearConsole() {
         localState.update { it.copy(consoleOutput = emptyList(), flowExecution = null) }
     }
 }

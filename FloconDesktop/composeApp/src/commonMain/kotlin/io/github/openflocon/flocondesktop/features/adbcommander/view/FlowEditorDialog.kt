@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowEditorState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
@@ -25,24 +26,31 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.adb_commander_edit_flow
+import flocondesktop.composeapp.generated.resources.adb_commander_new_flow
+import flocondesktop.composeapp.generated.resources.adb_commander_flow_name
+import flocondesktop.composeapp.generated.resources.adb_commander_flow_description
+import flocondesktop.composeapp.generated.resources.adb_commander_steps
+import flocondesktop.composeapp.generated.resources.adb_commander_add_step
+import flocondesktop.composeapp.generated.resources.adb_commander_step_command
+import flocondesktop.composeapp.generated.resources.adb_commander_step_label
+import flocondesktop.composeapp.generated.resources.adb_commander_step_delay
 
 @Composable
 fun FlowEditorDialog(
     state: FlowEditorState,
-    onDismiss: () -> Unit,
-    onNameChanged: (String) -> Unit,
-    onDescriptionChanged: (String) -> Unit,
-    onStepCommandChanged: (Int, String) -> Unit,
-    onStepLabelChanged: (Int, String) -> Unit,
-    onStepDelayChanged: (Int, String) -> Unit,
-    onAddStep: () -> Unit,
-    onRemoveStep: (Int) -> Unit,
-    onSave: () -> Unit,
+    onAction: (AdbCommanderAction) -> Unit,
 ) {
-    FloconDialog(onDismissRequest = onDismiss) {
+    FloconDialog(onDismissRequest = { onAction(AdbCommanderAction.DismissFlowEditor) }) {
         Column {
             FloconDialogHeader(
-                title = if (state.flowId != null) "Edit Flow" else "New Flow",
+                title = if (state.flowId != null) {
+                    stringResource(Res.string.adb_commander_edit_flow)
+                } else {
+                    stringResource(Res.string.adb_commander_new_flow)
+                },
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -54,15 +62,15 @@ fun FlowEditorDialog(
             ) {
                 FloconTextField(
                     value = state.name,
-                    onValueChange = onNameChanged,
-                    placeholder = defaultPlaceHolder("Flow name"),
+                    onValueChange = { onAction(AdbCommanderAction.FlowEditorNameChanged(it)) },
+                    placeholder = defaultPlaceHolder(stringResource(Res.string.adb_commander_flow_name)),
                     modifier = Modifier.fillMaxWidth(),
                 )
 
                 FloconTextField(
                     value = state.description,
-                    onValueChange = onDescriptionChanged,
-                    placeholder = defaultPlaceHolder("Description (optional)"),
+                    onValueChange = { onAction(AdbCommanderAction.FlowEditorDescriptionChanged(it)) },
+                    placeholder = defaultPlaceHolder(stringResource(Res.string.adb_commander_flow_description)),
                     modifier = Modifier.fillMaxWidth(),
                 )
 
@@ -72,13 +80,13 @@ fun FlowEditorDialog(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Steps",
+                        text = stringResource(Res.string.adb_commander_steps),
                         style = FloconTheme.typography.titleSmall,
                         color = FloconTheme.colorPalette.onPrimary,
                     )
-                    FloconButton(onClick = onAddStep) {
+                    FloconButton(onClick = { onAction(AdbCommanderAction.FlowEditorAddStep) }) {
                         FloconIcon(imageVector = Icons.Outlined.Add)
-                        Text("Add Step")
+                        Text(stringResource(Res.string.adb_commander_add_step))
                     }
                 }
 
@@ -91,10 +99,10 @@ fun FlowEditorDialog(
                             command = step.command,
                             label = step.label,
                             delayAfterMs = step.delayAfterMs,
-                            onCommandChanged = { onStepCommandChanged(index, it) },
-                            onLabelChanged = { onStepLabelChanged(index, it) },
-                            onDelayChanged = { onStepDelayChanged(index, it) },
-                            onRemove = { onRemoveStep(index) },
+                            onCommandChanged = { onAction(AdbCommanderAction.FlowEditorStepCommandChanged(index, it)) },
+                            onLabelChanged = { onAction(AdbCommanderAction.FlowEditorStepLabelChanged(index, it)) },
+                            onDelayChanged = { onAction(AdbCommanderAction.FlowEditorStepDelayChanged(index, it)) },
+                            onRemove = { onAction(AdbCommanderAction.FlowEditorRemoveStep(index)) },
                             canRemove = state.steps.size > 1,
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -102,8 +110,8 @@ fun FlowEditorDialog(
                 }
 
                 FloconDialogButtons(
-                    onCancel = onDismiss,
-                    onValidate = onSave,
+                    onCancel = { onAction(AdbCommanderAction.DismissFlowEditor) },
+                    onValidate = { onAction(AdbCommanderAction.SaveFlow) },
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
@@ -142,20 +150,20 @@ private fun StepEditorItem(
             FloconTextField(
                 value = command,
                 onValueChange = onCommandChanged,
-                placeholder = defaultPlaceHolder("ADB command"),
+                placeholder = defaultPlaceHolder(stringResource(Res.string.adb_commander_step_command)),
                 modifier = Modifier.fillMaxWidth(),
             )
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 FloconTextField(
                     value = label,
                     onValueChange = onLabelChanged,
-                    placeholder = defaultPlaceHolder("Label (optional)"),
+                    placeholder = defaultPlaceHolder(stringResource(Res.string.adb_commander_step_label)),
                     modifier = Modifier.weight(1f),
                 )
                 FloconTextField(
                     value = delayAfterMs,
                     onValueChange = onDelayChanged,
-                    placeholder = defaultPlaceHolder("Delay (ms)"),
+                    placeholder = defaultPlaceHolder(stringResource(Res.string.adb_commander_step_delay)),
                     modifier = Modifier.weight(0.5f),
                 )
             }
