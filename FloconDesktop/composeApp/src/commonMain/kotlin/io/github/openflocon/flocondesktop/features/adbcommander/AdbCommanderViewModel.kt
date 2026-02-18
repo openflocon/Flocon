@@ -55,16 +55,20 @@ class AdbCommanderViewModel(
 
     private val localState = MutableStateFlow(AdbCommanderUiState())
     private var flowExecutionJob: Job? = null
-    private var domainFlows: List<AdbFlowDomainModel> = emptyList()
+
+    private val domainFlows: StateFlow<List<AdbFlowDomainModel>> = observeFlowsUseCase()
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList(),
+        )
 
     val uiState: StateFlow<AdbCommanderUiState> = combine(
         localState,
         observeSavedCommandsUseCase().mapLatest { list -> list.map { it.toUiModel() } },
         observeCommandHistoryUseCase().mapLatest { list -> list.map { it.toUiModel() } },
-        observeFlowsUseCase().mapLatest { list ->
-            domainFlows = list
-            list.map { it.toUiModel() }
-        },
+        domainFlows.mapLatest { list -> list.map { it.toUiModel() } },
     ) { local, savedCommands, history, flows ->
         local.copy(
             savedCommands = savedCommands,
@@ -189,7 +193,7 @@ class AdbCommanderViewModel(
     // Flow editor
     fun onShowFlowEditor(flowId: Long? = null) {
         if (flowId != null) {
-            val flow = domainFlows.find { it.id == flowId }
+            val flow = domainFlows.value.find { it.id == flowId }
             localState.update {
                 it.copy(
                     showFlowEditor = true,
@@ -333,7 +337,7 @@ class AdbCommanderViewModel(
     }
 
     fun onExecuteFlow(flowId: Long) {
-        val flow = domainFlows.find { it.id == flowId } ?: return
+        val flow = domainFlows.value.find { it.id == flowId } ?: return
 
         flowExecutionJob?.cancel()
         localState.update { it.copy(selectedTab = AdbCommanderTab.Runner) }
