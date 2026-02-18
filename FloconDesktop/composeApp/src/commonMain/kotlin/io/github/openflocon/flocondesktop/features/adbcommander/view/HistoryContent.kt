@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material3.Text
@@ -23,17 +25,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.HistoryEntryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconTextButton
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.adb_commander_clear_all
+import flocondesktop.composeapp.generated.resources.adb_commander_no_history
 
 @Composable
 fun HistoryContent(
     history: List<HistoryEntryUiModel>,
-    onClearHistory: () -> Unit,
-    onRerunCommand: (String) -> Unit,
+    onAction: (AdbCommanderAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -41,15 +47,15 @@ fun HistoryContent(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
             horizontalArrangement = Arrangement.End,
         ) {
-            FloconTextButton(onClick = onClearHistory) {
+            FloconTextButton(onClick = { onAction(AdbCommanderAction.ClearHistory) }) {
                 FloconIcon(imageVector = Icons.Outlined.DeleteSweep)
-                Text("Clear All")
+                Text(stringResource(Res.string.adb_commander_clear_all))
             }
         }
 
         if (history.isEmpty()) {
             Text(
-                text = "No command history",
+                text = stringResource(Res.string.adb_commander_no_history),
                 style = FloconTheme.typography.bodySmall,
                 color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
                 modifier = Modifier.padding(16.dp),
@@ -64,7 +70,7 @@ fun HistoryContent(
             items(history) { entry ->
                 HistoryEntryView(
                     entry = entry,
-                    onRerun = { onRerunCommand(entry.command) },
+                    onRerun = { onAction(AdbCommanderAction.RerunCommand(entry.command)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -90,10 +96,9 @@ private fun HistoryEntryView(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = if (entry.isSuccess) "+" else "x",
-                style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                color = if (entry.isSuccess) {
+            FloconIcon(
+                imageVector = if (entry.isSuccess) Icons.Outlined.Check else Icons.Outlined.Close,
+                tint = if (entry.isSuccess) {
                     FloconTheme.colorPalette.onPrimary
                 } else {
                     FloconTheme.colorPalette.error

@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowUiModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.QuickCommand
 import io.github.openflocon.flocondesktop.features.adbcommander.model.SavedCommandUiModel
@@ -27,17 +28,20 @@ import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSection
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.adb_commander_saved_commands
+import flocondesktop.composeapp.generated.resources.adb_commander_no_saved_commands
+import flocondesktop.composeapp.generated.resources.adb_commander_automation_flows
+import flocondesktop.composeapp.generated.resources.adb_commander_new_flow
+import flocondesktop.composeapp.generated.resources.adb_commander_no_flows
+import flocondesktop.composeapp.generated.resources.adb_commander_steps_count
 
 @Composable
 fun LibraryContent(
     savedCommands: List<SavedCommandUiModel>,
     flows: List<FlowUiModel>,
-    onRunSavedCommand: (String) -> Unit,
-    onDeleteSavedCommand: (Long) -> Unit,
-    onShowFlowEditor: (Long?) -> Unit,
-    onDeleteFlow: (Long) -> Unit,
-    onExecuteFlow: (Long) -> Unit,
-    onSaveQuickCommand: (String, String) -> Unit,
+    onAction: (AdbCommanderAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val categories = defaultQuickCommands.groupBy { it.category }
@@ -49,13 +53,13 @@ fun LibraryContent(
     ) {
         item {
             FloconSection(
-                title = "Saved Commands",
+                title = stringResource(Res.string.adb_commander_saved_commands),
                 initialValue = true,
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     if (savedCommands.isEmpty()) {
                         Text(
-                            text = "No saved commands",
+                            text = stringResource(Res.string.adb_commander_no_saved_commands),
                             style = FloconTheme.typography.bodySmall,
                             color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
                             modifier = Modifier.padding(8.dp),
@@ -64,8 +68,8 @@ fun LibraryContent(
                     savedCommands.forEach { command ->
                         SavedCommandItem(
                             command = command,
-                            onRun = { onRunSavedCommand(command.command) },
-                            onDelete = { onDeleteSavedCommand(command.id) },
+                            onRun = { onAction(AdbCommanderAction.RunSavedCommand(command.command)) },
+                            onDelete = { onAction(AdbCommanderAction.DeleteSavedCommand(command.id)) },
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
@@ -74,19 +78,19 @@ fun LibraryContent(
         }
         item {
             FloconSection(
-                title = "Automation Flows",
+                title = stringResource(Res.string.adb_commander_automation_flows),
                 initialValue = true,
                 actions = {
-                    FloconButton(onClick = { onShowFlowEditor(null) }) {
+                    FloconButton(onClick = { onAction(AdbCommanderAction.ShowFlowEditor(null)) }) {
                         FloconIcon(imageVector = Icons.Outlined.Add)
-                        Text("New Flow")
+                        Text(stringResource(Res.string.adb_commander_new_flow))
                     }
                 },
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     if (flows.isEmpty()) {
                         Text(
-                            text = "No automation flows",
+                            text = stringResource(Res.string.adb_commander_no_flows),
                             style = FloconTheme.typography.bodySmall,
                             color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
                             modifier = Modifier.padding(8.dp),
@@ -95,9 +99,9 @@ fun LibraryContent(
                     flows.forEach { flow ->
                         FlowItem(
                             flow = flow,
-                            onRun = { onExecuteFlow(flow.id) },
-                            onEdit = { onShowFlowEditor(flow.id) },
-                            onDelete = { onDeleteFlow(flow.id) },
+                            onRun = { onAction(AdbCommanderAction.ExecuteFlow(flow.id)) },
+                            onEdit = { onAction(AdbCommanderAction.ShowFlowEditor(flow.id)) },
+                            onDelete = { onAction(AdbCommanderAction.DeleteFlow(flow.id)) },
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
@@ -114,8 +118,8 @@ fun LibraryContent(
                         commands.forEach { cmd ->
                             QuickCommandItem(
                                 command = cmd,
-                                onRun = { onRunSavedCommand(cmd.command) },
-                                onSave = { onSaveQuickCommand(cmd.name, cmd.command) },
+                                onRun = { onAction(AdbCommanderAction.RunSavedCommand(cmd.command)) },
+                                onSave = { onAction(AdbCommanderAction.SaveQuickCommand(cmd.name, cmd.command)) },
                                 modifier = Modifier.fillMaxWidth(),
                             )
                         }
@@ -219,7 +223,7 @@ private fun FlowItem(
                 color = FloconTheme.colorPalette.onPrimary,
             )
             Text(
-                text = "${flow.stepsCount} steps",
+                text = stringResource(Res.string.adb_commander_steps_count, flow.stepsCount),
                 style = FloconTheme.typography.bodySmall,
                 color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f),
             )
