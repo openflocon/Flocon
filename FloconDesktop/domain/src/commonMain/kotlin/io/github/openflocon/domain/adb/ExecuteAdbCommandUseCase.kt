@@ -18,6 +18,7 @@ class ExecuteAdbCommandUseCase(
 
         val deviceSerial = when (target) {
             is AdbCommandTargetDomainModel.Device -> adbRepository.getAdbSerial(target.deviceId)
+            is AdbCommandTargetDomainModel.DeviceSerial -> target.serial
             is AdbCommandTargetDomainModel.AllDevices -> null
         }
         return adbRepository.executeAdbCommand(

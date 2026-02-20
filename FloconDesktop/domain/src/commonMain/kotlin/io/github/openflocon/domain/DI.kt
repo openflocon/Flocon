@@ -11,6 +11,7 @@ import io.github.openflocon.domain.files.filesModule
 import io.github.openflocon.domain.images.imagesModule
 import io.github.openflocon.domain.messages.messagesModule
 import io.github.openflocon.domain.network.networkModule
+import io.github.openflocon.domain.performance.performanceDomainModule
 import io.github.openflocon.domain.settings.settingsModule
 import io.github.openflocon.domain.sharedpreference.sharedPreferencesModule
 import io.github.openflocon.domain.table.tableModule
@@ -34,5 +35,6 @@ val domainModule = module {
         messagesModule,
         versionModule,
         crashReporterDomainModule,
+        performanceDomainModule,
     )
 }

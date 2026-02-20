@@ -21,6 +21,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
 import io.github.openflocon.flocondesktop.features.files.filesRoutes
 import io.github.openflocon.flocondesktop.features.images.imageRoutes
 import io.github.openflocon.flocondesktop.features.network.networkRoutes
+import io.github.openflocon.flocondesktop.features.performance.performanceRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -79,6 +80,7 @@ private fun Content(
                             onAppSelected = { onAction(AppAction.SelectApp(it)) },
                             onRecordClicked = { onAction(AppAction.Record) },
                             onRestartClicked = { onAction(AppAction.Restart) },
+                            onPerformanceClicked = { onAction(AppAction.Performance) },
                             onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) }
                         )
                     }
@@ -100,5 +102,6 @@ private fun Content(
         tableRoutes()
         settingsRoutes()
         crashReporterRoutes()
+        performanceRoutes()
     }
 }

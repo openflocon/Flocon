@@ -68,6 +68,7 @@ kotlin {
             implementation(libs.androidx.paging.common)
             implementation(libs.androidx.paging.compose)
             implementation(libs.markdown.renderer)
+            implementation(libs.koalaplot.core)
 
             // TODO Remove
             implementation(projects.data.remote)

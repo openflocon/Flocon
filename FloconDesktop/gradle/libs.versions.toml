@@ -36,6 +36,7 @@ uiToolingPreviewDesktop = "1.8.2"
 buildconfig = "5.6.8"
 paging = "3.3.2"
 opencsv = "5.9"
+koalaplot = "0.10.4"
 
 # TODO Sort
 nav3Core = "1.0.0-alpha04+dev3147"#"1.0.0-alpha03"
@@ -111,6 +112,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version = "3.4.0-alpha04" }
 markdown-renderer = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version = "0.38.1" }
+koalaplot-core = { module = "io.github.koalaplot:koalaplot-core", version.ref = "koalaplot" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }

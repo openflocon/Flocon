@@ -21,4 +21,5 @@ internal sealed interface AppAction {
     data object Restart : AppAction
 
     data object Screenshoot : AppAction
+    data object Performance : AppAction
 }
