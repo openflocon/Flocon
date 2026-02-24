@@ -1,6 +1,5 @@
 package com.flocon.data.remote.network.mapper
 
-import com.flocon.data.remote.network.mapper.extractDomain
 import com.flocon.data.remote.network.models.BadQualityConfigDataModel
 import com.flocon.data.remote.network.models.FloconNetworkRequestDataModel
 import com.flocon.data.remote.network.models.FloconNetworkWebSocketEvent
@@ -13,7 +12,6 @@ import io.github.openflocon.domain.device.models.AppInstance
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
-import io.ktor.server.util.url
 import kotlinx.serialization.json.Json
 import java.net.URI
 import java.net.URLDecoder
@@ -139,12 +137,15 @@ fun extractGraphQl(decoded: FloconNetworkRequestDataModel): GraphQlExtracted? {
     decoded.url?.let { urlString ->
         try {
             val uri = URI(urlString)
-            val queryParams = uri.query
+            val queryParams = uri.rawQuery
                 ?.split("&")
-                ?.associate {
-                    val (k, v) = it.split("=")
-                    k to URLDecoder.decode(v, "UTF-8")
-                } ?: emptyMap()
+                ?.mapNotNull { param ->
+                    val idx = param.indexOf("=")
+                    if (idx == -1) null
+                    else URLDecoder.decode(param.substring(0, idx), "UTF-8") to
+                         URLDecoder.decode(param.substring(idx + 1), "UTF-8")
+                }
+                ?.toMap() ?: emptyMap()
 
             val queryName = queryParams["operationName"]
             val extensions = queryParams["extensions"]
