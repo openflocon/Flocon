@@ -137,15 +137,18 @@ fun extractGraphQl(decoded: FloconNetworkRequestDataModel): GraphQlExtracted? {
     decoded.url?.let { urlString ->
         try {
             val uri = URI(urlString)
-            val queryParams = uri.rawQuery
-                ?.split("&")
-                ?.mapNotNull { param ->
-                    val idx = param.indexOf("=")
-                    if (idx == -1) null
-                    else URLDecoder.decode(param.substring(0, idx), "UTF-8") to
-                         URLDecoder.decode(param.substring(idx + 1), "UTF-8")
+            val queryParams = uri.rawQuery?.let { rawQuery ->
+                buildMap {
+                    for (param in rawQuery.split('&')) {
+                        val idx = param.indexOf('=')
+                        if (idx != -1) {
+                            val key = URLDecoder.decode(param.substring(0, idx), "UTF-8")
+                            val value = URLDecoder.decode(param.substring(idx + 1), "UTF-8")
+                            put(key, value)
+                        }
+                    }
                 }
-                ?.toMap() ?: emptyMap()
+            } ?: emptyMap()
 
             val queryName = queryParams["operationName"]
             val extensions = queryParams["extensions"]
