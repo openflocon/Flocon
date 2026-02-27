@@ -25,7 +25,8 @@ To support Jetpack DataStore, ensure you have the `flocon-datastore` dependency:
 
 ```kotlin
 // build.gradle.kts
-implementation("io.github.openflocon:flocon-datastore:version")
+debugImplementation("io.github.openflocon:flocon-datastores:version")
+releaseImplementation("io.github.openflocon:flocon-datastores-no-op:version")
 ```
 
 Then register your DataStore:
