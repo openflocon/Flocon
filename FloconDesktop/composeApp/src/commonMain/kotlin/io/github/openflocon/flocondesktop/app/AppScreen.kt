@@ -17,6 +17,7 @@ import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.databaseRoutes
+import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
 import io.github.openflocon.flocondesktop.features.files.filesRoutes
 import io.github.openflocon.flocondesktop.features.images.imageRoutes
@@ -93,6 +94,7 @@ private fun Content(
         dashboardRoutes()
         databaseRoutes()
         deeplinkRoutes()
+        adbCommanderRoutes()
         filesRoutes()
         imageRoutes()
         networkRoutes()
