@@ -42,6 +42,8 @@ import java.awt.Dimension
 private const val ACTIVATE_TRAY_NOTIFICATION = false
 
 fun main() {
+    clearTmpFiles()
+
     System.setProperty("apple.awt.application.name", "Flocon")
 
     System.setProperty("apple.awt.application.appearance", "system")

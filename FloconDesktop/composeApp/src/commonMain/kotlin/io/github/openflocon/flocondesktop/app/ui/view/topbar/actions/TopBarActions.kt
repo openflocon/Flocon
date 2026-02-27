@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.app.ui.view.topbar.actions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.StopCircle
@@ -21,6 +22,7 @@ internal fun TopBarActions(
     devicesState: DevicesStateUiModel,
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
+    onPerformanceClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -51,6 +53,13 @@ internal fun TopBarActions(
             contentDescription = "screenshot",
             onClicked = onTakeScreenshotClicked,
             isEnabled = devicesState.deviceSelected?.canScreenshot == true && devicesState.deviceSelected?.isActive == true,
+        )
+        TopBarButton(
+            active = false,
+            imageVector = Icons.Outlined.Analytics,
+            contentDescription = "performances",
+            onClicked = onPerformanceClicked,
+            isEnabled = true,
         )
     }
 }
