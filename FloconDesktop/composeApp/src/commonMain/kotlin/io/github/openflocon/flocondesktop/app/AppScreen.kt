@@ -60,33 +60,33 @@ private fun Content(
             .then(WindowSceneStrategy())
             .then(DialogSceneStrategy())
             .then(BigDialogSceneStrategy())
-            .then(
-                MenuSceneStrategy(
-                    menuContent = {
-                        LeftPanelView(
-                            current = uiState.contentState.current,
-                            state = uiState.menuState,
-                            expanded = it,
-                            onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) }
-                        )
-                    },
-                    topBarContent = {
-                        MainScreenTopBar(
-                            devicesState = uiState.deviceState,
-                            appsState = uiState.appState,
-                            recordState = uiState.recordState,
-                            deleteApp = { onAction(AppAction.DeleteApp(it)) },
-                            deleteDevice = { onAction(AppAction.DeleteDevice(it)) },
-                            onDeviceSelected = { onAction(AppAction.SelectDevice(it)) },
-                            onAppSelected = { onAction(AppAction.SelectApp(it)) },
-                            onRecordClicked = { onAction(AppAction.Record) },
-                            onRestartClicked = { onAction(AppAction.Restart) },
-                            onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) }
-                        )
-                    }
-                )
-            )
             .then(SinglePaneSceneStrategy()),
+        sceneDecoratorStrategies = listOf(
+            MenuSceneStrategy(
+                menuContent = {
+                    LeftPanelView(
+                        current = uiState.contentState.current,
+                        state = uiState.menuState,
+                        expanded = it,
+                        onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) }
+                    )
+                },
+                topBarContent = {
+                    MainScreenTopBar(
+                        devicesState = uiState.deviceState,
+                        appsState = uiState.appState,
+                        recordState = uiState.recordState,
+                        deleteApp = { onAction(AppAction.DeleteApp(it)) },
+                        deleteDevice = { onAction(AppAction.DeleteDevice(it)) },
+                        onDeviceSelected = { onAction(AppAction.SelectDevice(it)) },
+                        onAppSelected = { onAction(AppAction.SelectApp(it)) },
+                        onRecordClicked = { onAction(AppAction.Record) },
+                        onRestartClicked = { onAction(AppAction.Restart) },
+                        onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) }
+                    )
+                }
+            )
+        ),
         modifier = Modifier
             .fillMaxSize()
             .background(FloconTheme.colorPalette.surface)

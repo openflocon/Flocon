@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
@@ -18,6 +19,7 @@ fun <T : Any> FloconNavigation(
     navigationState: FloconNavigationState<T>,
     modifier: Modifier = Modifier,
     sceneStrategy: SceneStrategy<T> = SinglePaneSceneStrategy(),
+    sceneDecoratorStrategies: List<SceneDecoratorStrategy<T>> = emptyList(),
     builder: EntryProviderScope<T>.() -> Unit
 ) {
     NavDisplay(
@@ -30,6 +32,7 @@ fun <T : Any> FloconNavigation(
             rememberViewModelStoreNavEntryDecorator()
         ),
         sceneStrategy = sceneStrategy,
+        sceneDecoratorStrategies = sceneDecoratorStrategies,
         onBack = { navigationState.back(1) }, // TODO
         entryProvider = entryProvider {
             builder()

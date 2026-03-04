@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.Scene
+import androidx.navigation3.scene.SceneDecoratorStrategy
+import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
@@ -112,9 +114,9 @@ data class MenuScene(
 class MenuSceneStrategy(
     private val menuContent: @Composable (expanded: Boolean) -> Unit,
     private val topBarContent: @Composable (() -> Unit)? = null
-) : SceneStrategy<FloconRoute> {
+) : SceneDecoratorStrategy<FloconRoute> {
 
-    override fun SceneStrategyScope<FloconRoute>.calculateScene(scene: Scene<FloconRoute>): Scene<FloconRoute> {
+    override fun SceneDecoratorStrategyScope<FloconRoute>.decorateScene(scene: Scene<FloconRoute>): Scene<FloconRoute> {
         if (scene.metadata.containsKey(MENU_KEY)) {
             return MenuScene(
                 scene = scene,
@@ -125,8 +127,6 @@ class MenuSceneStrategy(
 
         return scene
     }
-
-    override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? = null
 
     companion object {
         private const val MENU_KEY = "menu_key"
