@@ -3,7 +3,6 @@ plugins {
 
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeHotReload)
 }
 
 kotlin {
