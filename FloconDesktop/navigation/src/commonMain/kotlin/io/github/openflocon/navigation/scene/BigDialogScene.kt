@@ -65,9 +65,9 @@ private data class BigDialogScene(
                     )
                 )
             },
+            containerColor = FloconTheme.colorPalette.primary.copy(alpha = 0.5f),
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = FloconTheme.colorPalette.primary.copy(alpha = 0.5f))
                 .clickable(
                     onClick = onBack,
                     indication = null,
