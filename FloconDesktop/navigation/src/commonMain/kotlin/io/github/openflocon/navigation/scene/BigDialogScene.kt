@@ -35,6 +35,7 @@ import io.github.openflocon.navigation.FloconRoute
 @Immutable
 private data class BigDialogScene(
     private val entry: NavEntry<FloconRoute>,
+    private val properties: BigDialogProperties,
     override val previousEntries: List<NavEntry<FloconRoute>>,
     override val overlaidEntries: List<NavEntry<FloconRoute>>,
     private val onBack: () -> Unit,
@@ -46,7 +47,7 @@ private data class BigDialogScene(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text("Title")
+                        Text(properties.title)
                     },
                     actions = {
                         FloconIconButton(
@@ -95,16 +96,21 @@ private data class BigDialogScene(
     }
 }
 
+data class BigDialogProperties(
+    val title: String
+)
+
 class BigDialogSceneStrategy : SceneStrategy<FloconRoute> {
 
     override fun SceneStrategyScope<FloconRoute>.calculateScene(
         entries: List<NavEntry<FloconRoute>>
     ): Scene<FloconRoute>? {
         val lastEntry = entries.lastOrNull()
-        val dialogProperties = lastEntry?.metadata?.get(BIG_DIALOG) as? Boolean
+        val dialogProperties = lastEntry?.metadata?.get(BIG_DIALOG) as? BigDialogProperties
         return dialogProperties?.let { properties ->
             BigDialogScene(
                 entry = lastEntry,
+                properties = properties,
                 previousEntries = entries.dropLast(1),
                 overlaidEntries = entries.dropLast(1),
                 onBack = onBack,
@@ -115,7 +121,7 @@ class BigDialogSceneStrategy : SceneStrategy<FloconRoute> {
     companion object {
         const val BIG_DIALOG = "BIG_DIALOG"
 
-        fun bigDialog(): Map<String, Any> = mapOf(BIG_DIALOG to true)
+        fun bigDialog(properties: BigDialogProperties): Map<String, Any> = mapOf(BIG_DIALOG to properties)
     }
 
 }
