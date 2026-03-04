@@ -26,6 +26,7 @@ import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
+import io.github.openflocon.navigation.scene.BigDialogSceneStrategy
 import io.github.openflocon.navigation.scene.DialogSceneStrategy
 import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
@@ -58,6 +59,7 @@ private fun Content(
         sceneStrategy = PanelSceneStrategy()
             .then(WindowSceneStrategy())
             .then(DialogSceneStrategy())
+            .then(BigDialogSceneStrategy())
             .then(
                 MenuSceneStrategy(
                     menuContent = {
