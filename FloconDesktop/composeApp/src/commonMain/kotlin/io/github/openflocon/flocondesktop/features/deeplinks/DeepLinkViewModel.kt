@@ -38,7 +38,7 @@ class DeepLinkViewModel(
     )
         .mapLatest { (deepLinks, history) ->
             mapToUi(
-                deepLinks = deepLinks,
+                deepLinks = deepLinks.deeplinks,
                 history = history,
             )
         }
@@ -76,6 +76,7 @@ class DeepLinkViewModel(
                 when (it) {
                     is DeeplinkPart.Text -> it.value
                     is DeeplinkPart.TextField -> values[it] ?: ""
+                    is DeeplinkPart.Variable -> TODO()
                 }
             }
 
@@ -84,6 +85,12 @@ class DeepLinkViewModel(
                 deeplinkId = viewState.deeplinkId,
                 saveIntoHistory = viewState.deeplinkId == -1L || numberOfTextFields != 0
             )
+                .alsoFailure {
+                    it.printStackTrace()
+                    feedbackDisplayer.displayMessage(
+                        message = "Error while sending deeplink"
+                    )
+                }
         }
     }
 }

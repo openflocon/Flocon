@@ -54,48 +54,52 @@ internal fun getHttpMessage(httpCode: Int): String {
     }
 }
 
-
 internal fun MediaType?.charsetOrUtf8(): Charset = this?.charset() ?: Charsets.UTF_8
 
+// Try / catch fix crash
 internal fun extractResponseBodyInfo(
     response: Response,
     responseHeaders: Map<String, String>
 ): Pair<String?, Long?> {
-    val responseBody = response.body ?: return null to null
+    return try {
+        val responseBody = response.body ?: return null to null
 
-    var bodyString: String? = null
-    var bodySize: Long? = null
+        var bodyString: String? = null
+        var bodySize: Long? = null
 
-    val source = responseBody.source()
-    source.request(Long.MAX_VALUE) // Buffer the entire body, otherwise we have an empty string
+        val source = responseBody.source()
+        source.request(Long.MAX_VALUE) // Buffer the entire body, otherwise we have an empty string
 
-    var buffer = source.buffer
-    if (buffer.size <= 0L) {
-        // Do not attempt to read empty bodies, it would throw a EOFException in GzipSource
-        return "" to 0
-    }
-
-    val charset = responseBody.contentType().charsetOrUtf8()
-    bodySize = buffer.size
-    if (responseHeaders.isGzipped()) {
-        GzipSource(buffer.clone()).use { gzippedResponseBody ->
-            buffer = Buffer()
-            buffer.writeAll(gzippedResponseBody)
+        var buffer = source.buffer
+        if (buffer.size <= 0L) {
+            // Do not attempt to read empty bodies, it would throw a EOFException in GzipSource
+            return "" to 0
         }
 
-        bodyString = buffer.clone().readString(charset)
-    } else if (responseHeaders.isBrotli()) {
-        BrotliInputStream(buffer.clone().inputStream()).source().buffer().use { brotliResponseBody ->
-            buffer = Buffer()
-            buffer.writeAll(brotliResponseBody)
+        val charset = responseBody.contentType().charsetOrUtf8()
+        bodySize = buffer.size
+        if (responseHeaders.isGzipped()) {
+            GzipSource(buffer.clone()).use { gzippedResponseBody ->
+                buffer = Buffer()
+                buffer.writeAll(gzippedResponseBody)
+            }
+
+            bodyString = buffer.clone().readString(charset)
+        } else if (responseHeaders.isBrotli()) {
+            BrotliInputStream(buffer.clone().inputStream()).source().buffer().use { brotliResponseBody ->
+                buffer = Buffer()
+                buffer.writeAll(brotliResponseBody)
+            }
+
+            bodyString = buffer.clone().readString(charset)
+        } else {
+            bodyString = buffer.clone().readString(charset)
         }
 
-        bodyString = buffer.clone().readString(charset)
-    } else {
-        bodyString = buffer.clone().readString(charset)
+        bodyString to bodySize
+    } catch (_: Exception) {
+        null to null
     }
-
-    return bodyString to bodySize
 }
 
 internal fun extractRequestBodyInfo(
