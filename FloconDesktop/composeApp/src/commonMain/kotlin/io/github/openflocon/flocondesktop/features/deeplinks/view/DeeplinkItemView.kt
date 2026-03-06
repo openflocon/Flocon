@@ -196,6 +196,8 @@ private fun TextFieldPart(
                 ),
             )
         }
+
+        is DeeplinkPart.Variable -> TODO()
     }
 }
 

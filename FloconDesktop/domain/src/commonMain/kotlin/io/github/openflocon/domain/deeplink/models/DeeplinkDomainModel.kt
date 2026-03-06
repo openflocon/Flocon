@@ -7,8 +7,18 @@ data class DeeplinkDomainModel(
     val description: String?,
     val parameters: List<Parameter>,
 ) {
-    data class Parameter(
-        val paramName: String,
-        val autoComplete: List<String>,
-    )
+    sealed interface Parameter {
+        val name: String
+
+        data class AutoComplete(
+            override val name: String,
+            val autoComplete: List<String>
+        ) : Parameter
+
+        data class Variable(
+            override val name: String,
+            val variableName: String
+        ) : Parameter
+
+    }
 }

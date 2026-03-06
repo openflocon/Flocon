@@ -8,14 +8,11 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonClassDiscriminator
 
 @Entity(
     indices = [
         Index(value = ["deviceId", "packageName"]),
-        Index(value = ["deviceId", "link"], unique = true),
+        Index(value = ["deviceId", "name"], unique = true),
     ],
     foreignKeys = [
         ForeignKey(
@@ -26,37 +23,13 @@ import kotlinx.serialization.json.JsonClassDiscriminator
         )
     ],
 )
-data class DeeplinkEntity(
+data class DeeplinkVariableEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val deviceId: String,
     val packageName: String,
-    val link: String,
-    val label: String?,
+    val name: String,
     val description: String?,
-    val parametersAsJson: String,
-    val isHistory: Boolean,
-) {
-
-    @Serializable
-    @JsonClassDiscriminator("type")
-    sealed interface Parameter {
-        val name: String
-
-        @Serializable
-        @SerialName("auto_complete")
-        data class AutoComplete(
-            override val name: String,
-            val autoComplete: List<String>
-        ) : Parameter
-
-        @Serializable
-        @SerialName("variable")
-        data class Variable(
-            override val name: String,
-            val variableName: String
-        ) : Parameter
-
-    }
-}
+    val isHistory: Boolean
+)
 

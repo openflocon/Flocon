@@ -35,7 +35,7 @@ abstract class FloconApp {
         val crashReporterPlugin: FloconCrashReporterPlugin
     }
 
-    open val client: FloconApp.Client? = null
+    open val client: Client? = null
 
     abstract val isInitialized : StateFlow<Boolean>
 
