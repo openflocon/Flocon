@@ -13,7 +13,7 @@ internal fun toDeeplinksJson(
 ): String {
     val dto = DeeplinksRemote(
         deeplinks = deeplinks.map(DeeplinkModel::toRemote),
-        variables =  variables.map(DeeplinkVariable::toRemote)
+        variables = variables.map(DeeplinkVariable::toRemote)
     )
 
     return FloconEncoder.json
@@ -32,7 +32,11 @@ internal fun DeeplinkModel.toRemote(): DeeplinkRemote = DeeplinkRemote(
 
 internal fun DeeplinkVariable.toRemote(): DeeplinkVariableRemote = DeeplinkVariableRemote(
     name = name,
-    description = description
+    mode = when (val mode = mode) {
+        is DeeplinkVariable.Mode.AutoComplete -> DeeplinkVariableRemote.Mode.AutoComplete(suggestions = mode.suggestions)
+        DeeplinkVariable.Mode.Input -> DeeplinkVariableRemote.Mode.Input
+    },
+    description = description,
 )
 
 internal fun DeeplinkModel.Parameter.toRemote(): DeeplinkParameterRemote = when (this) {

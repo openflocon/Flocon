@@ -24,6 +24,10 @@ internal fun DeeplinksReceivedDataModel.toDomain(): Deeplinks = Deeplinks(
     variables = variables.map {
         DeeplinkVariableDomainModel(
             name = it.name,
+            mode = when (val mode = it.mode) {
+                is DeeplinkVariableReceivedDataModel.Mode.AutoComplete -> DeeplinkVariableDomainModel.Mode.AutoComplete(mode.suggestions)
+                DeeplinkVariableReceivedDataModel.Mode.Input -> DeeplinkVariableDomainModel.Mode.Input
+            },
             description = it.description
         )
     }

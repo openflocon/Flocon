@@ -25,6 +25,10 @@ fun DeeplinkEntity.toDomainModel(
 
 fun DeeplinkVariableEntity.toDomainModel(): DeeplinkVariableDomainModel = DeeplinkVariableDomainModel(
     name = name,
+    mode = when (mode) {
+        is DeeplinkVariableEntity.Mode.AutoComplete -> DeeplinkVariableDomainModel.Mode.AutoComplete(mode.suggestions)
+        DeeplinkVariableEntity.Mode.Input -> DeeplinkVariableDomainModel.Mode.Input
+    },
     description = description
 )
 
@@ -60,7 +64,11 @@ fun DeeplinkVariableDomainModel.toEntity(
     name = name,
     packageName = deviceIdAndPackageName.packageName,
     description = description,
-    isHistory = isHistory
+    isHistory = isHistory,
+    mode = when (val mode = mode) {
+        is DeeplinkVariableDomainModel.Mode.AutoComplete -> DeeplinkVariableEntity.Mode.AutoComplete(mode.suggestions)
+        DeeplinkVariableDomainModel.Mode.Input -> DeeplinkVariableEntity.Mode.Input
+    }
 )
 
 fun toDomainModels(

@@ -8,6 +8,9 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 @Entity(
     indices = [
@@ -30,6 +33,23 @@ data class DeeplinkVariableEntity(
     val packageName: String,
     val name: String,
     val description: String?,
-    val isHistory: Boolean
-)
+    val isHistory: Boolean,
+    val mode: Mode = Mode.Input
+) {
+
+    @Serializable
+    @JsonClassDiscriminator("type")
+    sealed interface Mode {
+
+        @Serializable
+        @SerialName("input")
+        object Input : Mode
+
+        @Serializable
+        @SerialName("auto_complete")
+        data class AutoComplete(val suggestions: List<String>) : Mode
+
+    }
+
+}
 

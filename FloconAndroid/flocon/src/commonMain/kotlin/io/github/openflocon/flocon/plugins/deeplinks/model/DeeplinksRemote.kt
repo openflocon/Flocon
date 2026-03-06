@@ -38,8 +38,25 @@ internal class DeeplinkRemote(
 @Serializable
 internal data class DeeplinkVariableRemote(
     val name: String,
+    val mode: Mode = Mode.Input,
     val description: String? = null
-)
+) {
+
+    @Serializable
+    @JsonClassDiscriminator("type")
+    sealed interface Mode {
+
+        @Serializable
+        @SerialName("input")
+        object Input : Mode
+
+        @Serializable
+        @SerialName("auto_complete")
+        data class AutoComplete(val suggestions: List<String>) : Mode
+
+    }
+
+}
 
 @Serializable
 internal class DeeplinksRemote(
