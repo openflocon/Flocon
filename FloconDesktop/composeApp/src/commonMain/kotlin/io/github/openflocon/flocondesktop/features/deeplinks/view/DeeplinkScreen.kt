@@ -3,10 +3,12 @@ package io.github.openflocon.flocondesktop.features.deeplinks.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -19,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.deeplinks.DeepLinkViewModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
+import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenState
+import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -32,44 +36,53 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun DeeplinkScreen(modifier: Modifier = Modifier) {
     val viewModel: DeepLinkViewModel = koinViewModel()
-    val deepLinks by viewModel.deepLinks.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     DeeplinkScreen(
-        deepLinks = deepLinks,
+        state = state,
         submit = viewModel::submit,
         removeFromHistory = viewModel::removeFromHistory,
+        setVariable = viewModel::setVariable,
         modifier = modifier,
     )
 }
 
 @Composable
 private fun DeeplinkScreen(
-    deepLinks: List<DeeplinkViewState>,
+    state: DeeplinkScreenState,
     submit: (DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) -> Unit,
     removeFromHistory: (DeeplinkViewState) -> Unit,
+    setVariable: (name: String, value: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
-    FloconFeature(
-        modifier = modifier
-    ) {
+    FloconFeature(modifier = modifier) {
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
             filterBar = {
-                DeeplinkFreeformItemView(
-                    submit = submit,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                Column {
+                    if (state.variables.isNotEmpty()) {
+                        DeeplinkVariablesPanelView(
+                            variables = state.variables,
+                            onVariableChanged = setVariable,
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                        )
+                    }
+                    DeeplinkFreeformItemView(
+                        submit = submit,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         )
 
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary)
+            modifier =
+                Modifier.fillMaxSize()
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.primary)
         ) {
             LazyColumn(
                 state = listState,
@@ -77,19 +90,19 @@ private fun DeeplinkScreen(
                 contentPadding = PaddingValues(all = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                itemsIndexed(deepLinks) { index, item ->
+                itemsIndexed(state.deepLinks) { _, item ->
                     DeeplinkItemView(
                         submit = submit,
                         removeFromHistory = removeFromHistory,
                         item = item,
+                        variableValues = state.variables.associate { it.name to it.value },
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
             }
             FloconVerticalScrollbar(
                 adapter = scrollAdapter,
-                modifier = Modifier.fillMaxHeight()
-                    .align(Alignment.TopEnd)
+                modifier = Modifier.fillMaxHeight().align(Alignment.TopEnd)
             )
         }
     }
@@ -100,14 +113,32 @@ private fun DeeplinkScreen(
 private fun DeeplinkScreenPreview() {
     FloconTheme {
         DeeplinkScreen(
-            deepLinks = listOf(
-                previewDeeplinkViewState(),
-                previewDeeplinkViewState(),
-                previewDeeplinkViewState(),
-            ),
+            state =
+                DeeplinkScreenState(
+                    deepLinks =
+                        listOf(
+                            previewDeeplinkViewState(),
+                            previewDeeplinkViewState(),
+                            previewDeeplinkViewState(),
+                        ),
+                    variables =
+                        listOf(
+                            DeeplinkVariableViewState(
+                                name = "userId",
+                                description = null,
+                                value = ""
+                            ),
+                            DeeplinkVariableViewState(
+                                name = "env",
+                                description = null,
+                                value = "staging"
+                            ),
+                        ),
+                ),
             submit = { _, _ -> },
-            modifier = Modifier.fillMaxSize(),
             removeFromHistory = {},
+            setVariable = { _, _ -> },
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }

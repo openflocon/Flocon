@@ -12,17 +12,18 @@ data class DeeplinkItem(
 internal fun mapToUi(
     history: List<DeeplinkDomainModel>,
     deepLinks: List<DeeplinkDomainModel>,
+    variableValues: Map<String, String>
 ): List<DeeplinkViewState> = buildList {
     addAll(history.map { DeeplinkItem(model = it, isHistory = true) })
     addAll(deepLinks.map { DeeplinkItem(model = it, isHistory = false) })
-}.distinctBy { it.model.link }
-    .map {
-        mapToUi(it.model, isHistory = it.isHistory)
-    }
+}
+    .distinctBy { it.model.link }
+    .map { mapToUi(deepLink = it.model, isHistory = it.isHistory, variableValues = variableValues) }
 
 internal fun mapToUi(
     deepLink: DeeplinkDomainModel,
-    isHistory: Boolean
+    isHistory: Boolean,
+    variableValues: Map<String, String>
 ): DeeplinkViewState = DeeplinkViewState(
     label = deepLink.label,
     description = deepLink.description,
@@ -33,14 +34,16 @@ internal fun mapToUi(
     } else {
         parseDeeplinkString(
             input = deepLink.link,
-            deepLink = deepLink
+            deepLink = deepLink,
+            variableValues = variableValues
         )
-    },
+    }
 )
 
 internal fun parseDeeplinkString(
     input: String,
-    deepLink: DeeplinkDomainModel
+    deepLink: DeeplinkDomainModel,
+    variableValues: Map<String, String>
 ): List<DeeplinkPart> {
     val regex = "\\[([^\\[\\]]*)\\]".toRegex() // Regex pour trouver [quelquechose]
     val result = mutableListOf<DeeplinkPart>()
@@ -70,7 +73,7 @@ internal fun parseDeeplinkString(
                     )
 
                     is DeeplinkDomainModel.Parameter.Variable -> DeeplinkPart.Variable(
-                        value = value // TODO Change
+                        value = variableValues[parameter.variableName] ?: "{${parameter.variableName}}"
                     )
                 }
             )

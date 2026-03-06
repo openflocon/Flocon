@@ -72,17 +72,26 @@ class DeeplinkBuilder {
         deeplinks.add(deeplink)
     }
 
-    internal fun build(): List<DeeplinkModel> {
-        return deeplinks.toList()
-    }
+    internal fun deeplinks(): List<DeeplinkModel> = deeplinks.toList()
+    internal fun variables(): List<DeeplinkVariable> = variables.toList()
 }
 
 fun FloconApp.deeplinks(deeplinksBlock: DeeplinkBuilder.() -> Unit) {
     this.client?.deeplinksPlugin?.let {
-        it.registerDeeplinks(DeeplinkBuilder().apply(deeplinksBlock).build())
+        val builder = DeeplinkBuilder().apply(deeplinksBlock)
+
+        it.registerDeeplinks(
+            deeplinks = builder.deeplinks(),
+            variables = builder.variables()
+        )
     }
 }
 
 interface FloconDeeplinksPlugin {
-    fun registerDeeplinks(deeplinks: List<DeeplinkModel>)
+
+    fun registerDeeplinks(
+        deeplinks: List<DeeplinkModel>,
+        variables: List<DeeplinkVariable>
+    )
+
 }
