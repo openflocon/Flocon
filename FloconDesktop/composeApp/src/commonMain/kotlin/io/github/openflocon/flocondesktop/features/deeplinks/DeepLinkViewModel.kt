@@ -22,64 +22,52 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 class DeepLinkViewModel(
-        private val dispatcherProvider: DispatcherProvider,
-        private val feedbackDisplayer: FeedbackDisplayer,
-        private val observeCurrentDeviceDeeplinkUseCase: ObserveCurrentDeviceDeeplinkUseCase,
-        private val observeCurrentDeviceDeeplinkHistoryUseCase:
-                ObserveCurrentDeviceDeeplinkHistoryUseCase,
-        private val executeDeeplinkUseCase: ExecuteDeeplinkUseCase,
-        private val removeFromDeeplinkHistoryUseCase: RemoveFromDeeplinkHistoryUseCase,
+    private val dispatcherProvider: DispatcherProvider,
+    private val feedbackDisplayer: FeedbackDisplayer,
+    observeCurrentDeviceDeeplinkUseCase: ObserveCurrentDeviceDeeplinkUseCase,
+    observeCurrentDeviceDeeplinkHistoryUseCase: ObserveCurrentDeviceDeeplinkHistoryUseCase,
+    private val executeDeeplinkUseCase: ExecuteDeeplinkUseCase,
+    private val removeFromDeeplinkHistoryUseCase: RemoveFromDeeplinkHistoryUseCase,
 ) : ViewModel() {
 
     private val variableValues = MutableStateFlow<Map<String, String>>(emptyMap())
 
-    val state: StateFlow<DeeplinkScreenState> =
-            combine(
-                            observeCurrentDeviceDeeplinkUseCase(),
-                            observeCurrentDeviceDeeplinkHistoryUseCase(),
-                            variableValues.asStateFlow()
-                    ) { deepLinks, history, variablesValues ->
-                        DeeplinkScreenState(
-                                deepLinks =
-                                        mapToUi(
-                                                history = history,
-                                                deepLinks = deepLinks.deeplinks,
-                                                variableValues = variablesValues
-                                        ),
-                                variables =
-                                        deepLinks.variables.map { variable ->
-                                            DeeplinkVariableViewState(
-                                                    name = variable.name,
-                                                    description = variable.description,
-                                                    value =
-                                                            variablesValues.getOrDefault(
-                                                                    variable.name,
-                                                                    ""
-                                                            ),
-                                                    mode =
-                                                            when (val m = variable.mode) {
-                                                                DeeplinkVariableDomainModel.Mode
-                                                                        .Input ->
-                                                                        DeeplinkVariableViewState
-                                                                                .Mode.Input
-                                                                is DeeplinkVariableDomainModel.Mode.AutoComplete ->
-                                                                        DeeplinkVariableViewState
-                                                                                .Mode.AutoComplete(
-                                                                                m.suggestions
-                                                                        )
-                                                            },
-                                            )
-                                        }
-                        )
+    val state: StateFlow<DeeplinkScreenState> = combine(
+        observeCurrentDeviceDeeplinkUseCase(),
+        observeCurrentDeviceDeeplinkHistoryUseCase(),
+        variableValues.asStateFlow()
+    ) { deepLinks, history, variablesValues ->
+        DeeplinkScreenState(
+            deepLinks = mapToUi(
+                history = history,
+                deepLinks = deepLinks.deeplinks,
+                variableValues = variablesValues
+            ),
+            variables = deepLinks.variables.map { variable ->
+                DeeplinkVariableViewState(
+                    name = variable.name,
+                    description = variable.description,
+                    value = variablesValues.getOrDefault(
+                        variable.name,
+                        ""
+                    ),
+                    mode = when (val m = variable.mode) {
+                        DeeplinkVariableDomainModel.Mode.Input ->
+                            DeeplinkVariableViewState.Mode.Input
+
+                        is DeeplinkVariableDomainModel.Mode.AutoComplete ->
+                            DeeplinkVariableViewState.Mode.AutoComplete(m.suggestions)
                     }
-                    .onEach { println(it) }
-                    .stateInWhileSubscribed(DeeplinkScreenState(emptyList(), emptyList()))
+                )
+            }
+        )
+    }
+        .stateInWhileSubscribed(DeeplinkScreenState(emptyList(), emptyList()))
 
     fun setVariable(name: String, value: String) {
         variableValues.update { current -> current + (name to value) }
@@ -88,11 +76,11 @@ class DeepLinkViewModel(
     fun removeFromHistory(viewState: DeeplinkViewState) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             removeFromDeeplinkHistoryUseCase(
-                    deeplinkId = viewState.deeplinkId,
+                deeplinkId = viewState.deeplinkId,
             )
             feedbackDisplayer.displayMessage(
-                    getString(Res.string.deeplink_removed),
-                    type = FeedbackDisplayer.MessageType.Error,
+                getString(Res.string.deeplink_removed),
+                type = FeedbackDisplayer.MessageType.Error,
             )
         }
     }
@@ -102,31 +90,30 @@ class DeepLinkViewModel(
             val numberOfTextFields = viewState.parts.count { it is DeeplinkPart.TextField }
             if (numberOfTextFields != values.values.filterNot { it.isBlank() }.size) {
                 feedbackDisplayer.displayMessage(
-                        getString(Res.string.fill_deeplink_parts),
-                        type = FeedbackDisplayer.MessageType.Error,
+                    getString(Res.string.fill_deeplink_parts),
+                    type = FeedbackDisplayer.MessageType.Error,
                 )
                 return@launch
             }
 
             val currentVariableValues = variableValues.value
-            val deeplink =
-                    viewState.parts.joinToString(separator = "") {
-                        when (it) {
-                            is DeeplinkPart.Text -> it.value
-                            is DeeplinkPart.TextField -> values[it] ?: ""
-                            is DeeplinkPart.Variable -> currentVariableValues[it.value] ?: it.value
-                        }
-                    }
+            val deeplink = viewState.parts.joinToString(separator = "") {
+                when (it) {
+                    is DeeplinkPart.Text -> it.value
+                    is DeeplinkPart.TextField -> values[it] ?: ""
+                    is DeeplinkPart.Variable -> currentVariableValues[it.value] ?: it.value
+                }
+            }
 
             executeDeeplinkUseCase(
-                            deeplink = deeplink,
-                            deeplinkId = viewState.deeplinkId,
-                            saveIntoHistory = viewState.deeplinkId == -1L || numberOfTextFields != 0
-                    )
-                    .alsoFailure {
-                        it.printStackTrace()
-                        feedbackDisplayer.displayMessage(message = "Error while sending deeplink")
-                    }
+                deeplink = deeplink,
+                deeplinkId = viewState.deeplinkId,
+                saveIntoHistory = viewState.deeplinkId == -1L || numberOfTextFields != 0
+            )
+                .alsoFailure {
+                    it.printStackTrace()
+                    feedbackDisplayer.displayMessage(message = "Error while sending deeplink")
+                }
         }
     }
 }
