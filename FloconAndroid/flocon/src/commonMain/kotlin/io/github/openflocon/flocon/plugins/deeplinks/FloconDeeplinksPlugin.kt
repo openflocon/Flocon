@@ -14,6 +14,7 @@ internal class FloconDeeplinksPluginImpl(
 ) : FloconPlugin, FloconDeeplinksPlugin {
 
     private val deeplinks = MutableStateFlow<List<DeeplinkModel>?>(null)
+    private val variables = MutableStateFlow<List<DeeplinkVariable>?>(null)
 
     override fun onMessageReceived(
         messageFromServer: FloconMessageFromServer,
@@ -24,20 +25,25 @@ internal class FloconDeeplinksPluginImpl(
     override fun onConnectedToServer() {
         // on connected, send known dashboard
         deeplinks.value?.let {
-            registerDeeplinks(it)
+            registerDeeplinks(it, variables.value.orEmpty())
         }
     }
 
-    override fun registerDeeplinks(deeplinks: List<DeeplinkModel>) {
-        this.deeplinks.update {
-            deeplinks
-        }
+    override fun registerDeeplinks(
+        deeplinks: List<DeeplinkModel>,
+        variables: List<DeeplinkVariable>
+    ) {
+        this.deeplinks.update { deeplinks }
+        this.variables.update { variables }
 
         try {
             sender.send(
                 plugin = Protocol.FromDevice.Deeplink.Plugin,
                 method = Protocol.FromDevice.Deeplink.Method.GetDeeplinks,
-                body = toDeeplinksJson(deeplinks)
+                body = toDeeplinksJson(
+                    deeplinks = deeplinks,
+                    variables = variables
+                )
             )
         } catch (t: Throwable) {
             FloconLogger.logError("deeplink mapping error", t)

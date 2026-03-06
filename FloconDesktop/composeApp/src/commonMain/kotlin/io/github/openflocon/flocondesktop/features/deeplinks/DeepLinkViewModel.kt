@@ -6,20 +6,23 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.deeplink_removed
 import flocondesktop.composeapp.generated.resources.fill_deeplink_parts
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.deeplink.usecase.ExecuteDeeplinkUseCase
 import io.github.openflocon.domain.deeplink.usecase.ObserveCurrentDeviceDeeplinkHistoryUseCase
 import io.github.openflocon.domain.deeplink.usecase.ObserveCurrentDeviceDeeplinkUseCase
 import io.github.openflocon.domain.deeplink.usecase.RemoveFromDeeplinkHistoryUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.deeplinks.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
+import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenState
+import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
@@ -27,27 +30,40 @@ class DeepLinkViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val observeCurrentDeviceDeeplinkUseCase: ObserveCurrentDeviceDeeplinkUseCase,
-    private val observeCurrentDeviceDeeplinkHistoryUseCase: ObserveCurrentDeviceDeeplinkHistoryUseCase,
+    private val observeCurrentDeviceDeeplinkHistoryUseCase:
+    ObserveCurrentDeviceDeeplinkHistoryUseCase,
     private val executeDeeplinkUseCase: ExecuteDeeplinkUseCase,
     private val removeFromDeeplinkHistoryUseCase: RemoveFromDeeplinkHistoryUseCase,
 ) : ViewModel() {
 
-    val deepLinks: StateFlow<List<DeeplinkViewState>> = combines(
+    private val variableValues = MutableStateFlow<Map<String, String>>(emptyMap())
+
+    val state: StateFlow<DeeplinkScreenState> = combine(
         observeCurrentDeviceDeeplinkUseCase(),
-        observeCurrentDeviceDeeplinkHistoryUseCase()
-    )
-        .mapLatest { (deepLinks, history) ->
-            mapToUi(
-                deepLinks = deepLinks.deeplinks,
+        observeCurrentDeviceDeeplinkHistoryUseCase(),
+        variableValues.asStateFlow()
+    ) { deepLinks, history, variablesValues ->
+        DeeplinkScreenState(
+            deepLinks = mapToUi(
                 history = history,
-            )
-        }
-        .flowOn(dispatcherProvider.viewModel)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList(),
+                deepLinks = deepLinks.deeplinks,
+                variableValues = variablesValues
+            ),
+            variables = deepLinks.variables.map { variable ->
+                DeeplinkVariableViewState(
+                    name = variable.name,
+                    description = variable.description,
+                    value = variablesValues.getOrDefault(variable.name, ""),
+                )
+            }
         )
+    }
+        .onEach { println(it) }
+        .stateInWhileSubscribed(DeeplinkScreenState(emptyList(), emptyList()))
+
+    fun setVariable(name: String, value: String) {
+        variableValues.update { current -> current + (name to value) }
+    }
 
     fun removeFromHistory(viewState: DeeplinkViewState) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
@@ -72,13 +88,15 @@ class DeepLinkViewModel(
                 return@launch
             }
 
-            val deeplink = viewState.parts.joinToString(separator = "") {
-                when (it) {
-                    is DeeplinkPart.Text -> it.value
-                    is DeeplinkPart.TextField -> values[it] ?: ""
-                    is DeeplinkPart.Variable -> TODO()
+            val currentVariableValues = variableValues.value
+            val deeplink =
+                viewState.parts.joinToString(separator = "") {
+                    when (it) {
+                        is DeeplinkPart.Text -> it.value
+                        is DeeplinkPart.TextField -> values[it] ?: ""
+                        is DeeplinkPart.Variable -> currentVariableValues[it.value] ?: it.value
+                    }
                 }
-            }
 
             executeDeeplinkUseCase(
                 deeplink = deeplink,
@@ -87,9 +105,7 @@ class DeepLinkViewModel(
             )
                 .alsoFailure {
                     it.printStackTrace()
-                    feedbackDisplayer.displayMessage(
-                        message = "Error while sending deeplink"
-                    )
+                    feedbackDisplayer.displayMessage(message = "Error while sending deeplink")
                 }
         }
     }
