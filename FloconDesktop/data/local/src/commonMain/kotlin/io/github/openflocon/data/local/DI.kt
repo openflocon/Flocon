@@ -7,6 +7,7 @@ import io.github.openflocon.data.local.dashboard.dashboardModule
 import io.github.openflocon.data.local.database.databaseModule
 import io.github.openflocon.data.local.deeplink.deeplinkModule
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
+import io.github.openflocon.data.local.deeplink.models.DeeplinkVariableEntity
 import io.github.openflocon.data.local.device.deviceModule
 import io.github.openflocon.data.local.files.filesModule
 import io.github.openflocon.data.local.images.imagesModule
@@ -33,6 +34,12 @@ val dataLocalModule = module {
                     subclass(DeeplinkEntity.Parameter.Variable::class)
 
                     defaultDeserializer { DeeplinkEntity.Parameter.AutoComplete.serializer() }
+                }
+                polymorphic(DeeplinkVariableEntity.Mode::class) {
+                    subclass(DeeplinkVariableEntity.Mode.Input::class)
+                    subclass(DeeplinkVariableEntity.Mode.AutoComplete::class)
+
+                    defaultDeserializer { DeeplinkVariableEntity.Mode.Input.serializer() }
                 }
             }
         }

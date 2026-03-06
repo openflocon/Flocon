@@ -21,6 +21,7 @@ import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import io.github.openflocon.data.local.database.dao.DatabaseQueryLogDao
 import io.github.openflocon.data.local.database.models.DatabaseQueryLogEntity
+import io.github.openflocon.data.local.deeplink.ModeConverter
 import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkDao
 import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkVariableDao
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
@@ -52,7 +53,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 79,
+    version = 80,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -84,6 +85,7 @@ import kotlinx.coroutines.Dispatchers
     DashboardConverters::class,
     MapStringsConverters::class,
     ListStringsConverters::class,
+    ModeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract val networkDao: FloconNetworkDao

@@ -38,11 +38,18 @@ class DeeplinkLinkBuilder internal constructor(
 class DeeplinkVariableBuilder internal constructor(
     private val name: String
 ) {
+    private var mode: DeeplinkVariable.Mode = DeeplinkVariable.Mode.Input
+
     var description: String? = null
+
+    fun autoComplete(suggestions: List<String>) {
+        mode = DeeplinkVariable.Mode.AutoComplete(suggestions)
+    }
 
     internal fun build(): DeeplinkVariable {
         return DeeplinkVariable(
             name = name,
+            mode = mode,
             description = description
         )
     }
@@ -51,8 +58,16 @@ class DeeplinkVariableBuilder internal constructor(
 
 data class DeeplinkVariable(
     val name: String,
+    val mode: Mode = Mode.Input,
     val description: String? = null
-)
+) {
+
+    sealed interface Mode {
+        object Input : Mode
+        data class AutoComplete(val suggestions: List<String>) : Mode
+    }
+
+}
 
 class DeeplinkBuilder {
     private val variables = mutableListOf<DeeplinkVariable>()
