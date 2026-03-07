@@ -32,6 +32,9 @@ val roomModule =
             get<AppDatabase>().deeplinkDao
         }
         single {
+            get<AppDatabase>().deeplinkVariableDao
+        }
+        single {
             get<AppDatabase>().analyticsDao
         }
         single {

@@ -12,15 +12,19 @@ data class DeeplinkItem(
 internal fun mapToUi(
     history: List<DeeplinkDomainModel>,
     deepLinks: List<DeeplinkDomainModel>,
+    variableValues: Map<String, String>
 ): List<DeeplinkViewState> = buildList {
     addAll(history.map { DeeplinkItem(model = it, isHistory = true) })
     addAll(deepLinks.map { DeeplinkItem(model = it, isHistory = false) })
-}.distinctBy { it.model.link }
-    .map {
-        mapToUi(it.model, isHistory = it.isHistory)
-    }
+}
+    .distinctBy { it.model.link }
+    .map { mapToUi(deepLink = it.model, isHistory = it.isHistory, variableValues = variableValues) }
 
-internal fun mapToUi(deepLink: DeeplinkDomainModel, isHistory: Boolean): DeeplinkViewState = DeeplinkViewState(
+internal fun mapToUi(
+    deepLink: DeeplinkDomainModel,
+    isHistory: Boolean,
+    variableValues: Map<String, String>
+): DeeplinkViewState = DeeplinkViewState(
     label = deepLink.label,
     description = deepLink.description,
     deeplinkId = deepLink.id,
@@ -28,11 +32,19 @@ internal fun mapToUi(deepLink: DeeplinkDomainModel, isHistory: Boolean): Deeplin
     parts = if (isHistory) {
         listOf(DeeplinkPart.Text(deepLink.link))
     } else {
-        parseDeeplinkString(deepLink.link, deepLink = deepLink)
-    },
+        parseDeeplinkString(
+            input = deepLink.link,
+            deepLink = deepLink,
+            variableValues = variableValues
+        )
+    }
 )
 
-internal fun parseDeeplinkString(input: String, deepLink: DeeplinkDomainModel): List<DeeplinkPart> {
+internal fun parseDeeplinkString(
+    input: String,
+    deepLink: DeeplinkDomainModel,
+    variableValues: Map<String, String>
+): List<DeeplinkPart> {
     val regex = "\\[([^\\[\\]]*)\\]".toRegex() // Regex pour trouver [quelquechose]
     val result = mutableListOf<DeeplinkPart>()
     var lastIndex = 0
@@ -50,12 +62,22 @@ internal fun parseDeeplinkString(input: String, deepLink: DeeplinkDomainModel): 
         }
 
         // 2. Ajouter la partie "TextField"
-        result.add(
-            DeeplinkPart.TextField(
-                label = value,
-                autoComplete = deepLink.parameters.find { it.paramName == value }?.autoComplete
+        val parameter = deepLink.parameters.find { it.name == value }
+
+        if (parameter != null) {
+            result.add(
+                when (parameter) {
+                    is DeeplinkDomainModel.Parameter.AutoComplete -> DeeplinkPart.TextField(
+                        label = value,
+                        autoComplete = parameter.autoComplete
+                    )
+
+                    is DeeplinkDomainModel.Parameter.Variable -> DeeplinkPart.Variable(
+                        value = variableValues[parameter.variableName] ?: "{${parameter.variableName}}"
+                    )
+                }
             )
-        )
+        }
 
         lastIndex = range.last + 1
     }

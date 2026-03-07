@@ -5,6 +5,7 @@ import io.github.openflocon.data.core.deeplink.datasource.DeeplinkRemoteDataSour
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
+import io.github.openflocon.domain.deeplink.models.Deeplinks
 import io.github.openflocon.domain.deeplink.repository.DeeplinkRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
@@ -28,13 +29,13 @@ class DeeplinkRepositoryImpl(
     ) {
         when (message.method) {
             Protocol.FromDevice.Deeplink.Method.GetDeeplinks -> {
-                val items = remote.getItems(message)
+                val deeplinks = remote.getItems(message) ?: return
 
-                println(items.toString())
+                println(deeplinks.toString())
 
                 localDeeplinkDataSource.update(
                     deviceIdAndPackageNameDomainModel = deviceIdAndPackageName,
-                    deeplinks = items
+                    deeplinks = deeplinks
                 )
             }
         }
@@ -47,8 +48,9 @@ class DeeplinkRepositoryImpl(
         // no op
     }
 
-    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observe(deviceIdAndPackageName)
-        .flowOn(dispatcherProvider.data)
+    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Deeplinks> =
+        localDeeplinkDataSource.observe(deviceIdAndPackageName)
+            .flowOn(dispatcherProvider.data)
 
     override suspend fun getDeeplinkById(
         deeplinkId: Long,
@@ -57,8 +59,9 @@ class DeeplinkRepositoryImpl(
         localDeeplinkDataSource.getDeeplinkById(deeplinkId, deviceIdAndPackageName)
     }
 
-    override fun observeHistory(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observeHistory(deviceIdAndPackageName)
-        .flowOn(dispatcherProvider.data)
+    override fun observeHistory(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
+        localDeeplinkDataSource.observeHistory(deviceIdAndPackageName)
+            .flowOn(dispatcherProvider.data)
 
     override suspend fun addToHistory(
         item: DeeplinkDomainModel,

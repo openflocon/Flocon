@@ -6,8 +6,19 @@ data class DeeplinkModel(
     val description: String? = null,
     val parameters: List<Parameter>,
 ) {
-    data class Parameter(
-        val paramName: String,
-        val autoComplete: List<String>,
-    )
+
+    sealed interface Parameter {
+        val paramName: String
+
+        data class AutoComplete(
+            override val paramName: String,
+            val autoComplete: List<String>
+        ) : Parameter
+
+        data class Variable(
+            override val paramName: String,
+            val variableName: String
+        ) : Parameter
+
+    }
 }

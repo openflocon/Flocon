@@ -15,7 +15,7 @@ import kotlinx.serialization.json.JsonClassDiscriminator
 @Entity(
     indices = [
         Index(value = ["deviceId", "packageName"]),
-        Index(value = ["deviceId", "link"], unique = true),
+        Index(value = ["deviceId", "name"], unique = true),
     ],
     foreignKeys = [
         ForeignKey(
@@ -26,37 +26,30 @@ import kotlinx.serialization.json.JsonClassDiscriminator
         )
     ],
 )
-data class DeeplinkEntity(
+data class DeeplinkVariableEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val deviceId: String,
     val packageName: String,
-    val link: String,
-    val label: String?,
+    val name: String,
     val description: String?,
-    val parametersAsJson: String,
     val isHistory: Boolean,
+    val mode: Mode = Mode.Input
 ) {
 
     @Serializable
     @JsonClassDiscriminator("type")
-    sealed interface Parameter {
-        val name: String
+    sealed interface Mode {
+
+        @Serializable
+        @SerialName("input")
+        object Input : Mode
 
         @Serializable
         @SerialName("auto_complete")
-        data class AutoComplete(
-            override val name: String,
-            val autoComplete: List<String>
-        ) : Parameter
-
-        @Serializable
-        @SerialName("variable")
-        data class Variable(
-            override val name: String,
-            val variableName: String
-        ) : Parameter
+        data class AutoComplete(val suggestions: List<String>) : Mode
 
     }
+
 }
 

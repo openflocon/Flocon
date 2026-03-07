@@ -1,14 +1,18 @@
 package io.github.openflocon.data.core.deeplink.datasource
 
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
+import io.github.openflocon.domain.deeplink.models.Deeplinks
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface DeeplinkLocalDataSource {
 
-    suspend fun update(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel, deeplinks: List<DeeplinkDomainModel>)
+    suspend fun update(
+        deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel,
+        deeplinks: Deeplinks
+    )
 
-    fun observe(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>>
+    fun observe(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<Deeplinks>
 
     fun observeHistory(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>>
 
@@ -26,4 +30,5 @@ interface DeeplinkLocalDataSource {
         deeplinkId: Long,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     ): DeeplinkDomainModel?
+
 }

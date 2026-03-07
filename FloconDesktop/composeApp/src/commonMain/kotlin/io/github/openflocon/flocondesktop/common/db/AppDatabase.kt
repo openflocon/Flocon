@@ -21,8 +21,11 @@ import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
 import io.github.openflocon.data.local.database.dao.DatabaseQueryLogDao
 import io.github.openflocon.data.local.database.models.DatabaseQueryLogEntity
+import io.github.openflocon.data.local.deeplink.ModeConverter
 import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkDao
+import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkVariableDao
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
+import io.github.openflocon.data.local.deeplink.models.DeeplinkVariableEntity
 import io.github.openflocon.data.local.device.datasource.dao.DevicesDao
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
@@ -50,7 +53,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 78,
+    version = 80,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -64,6 +67,7 @@ import kotlinx.coroutines.Dispatchers
         SuccessQueryEntity::class,
         FavoriteQueryEntity::class,
         DeeplinkEntity::class,
+        DeeplinkVariableEntity::class,
         AnalyticsItemEntity::class,
         NetworkFilterEntity::class,
         NetworkSettingsEntity::class,
@@ -74,13 +78,14 @@ import kotlinx.coroutines.Dispatchers
         DeviceAppEntity::class,
         DatabaseTableEntity::class,
         CrashReportEntity::class,
-        DatabaseQueryLogEntity::class,
-    ],
+        DatabaseQueryLogEntity::class
+    ]
 )
 @TypeConverters(
     DashboardConverters::class,
     MapStringsConverters::class,
     ListStringsConverters::class,
+    ModeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract val networkDao: FloconNetworkDao
@@ -91,6 +96,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val imageDao: FloconImageDao
     abstract val queryDao: QueryDao
     abstract val deeplinkDao: FloconDeeplinkDao
+    abstract val deeplinkVariableDao: FloconDeeplinkVariableDao
     abstract val analyticsDao: FloconAnalyticsDao
     abstract val networkFilterDao: NetworkFilterDao
     abstract val networkMocksDao: NetworkMocksDao

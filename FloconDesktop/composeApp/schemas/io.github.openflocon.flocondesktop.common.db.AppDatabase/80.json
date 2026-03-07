@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 78,
-    "identityHash": "fadb38ec8474f4083b36f3e1e0e12e70",
+    "version": 80,
+    "identityHash": "5b43a0b8688e41bbe05233fd1aee26a9",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -1051,7 +1051,7 @@
       },
       {
         "tableName": "DeeplinkVariableEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `isHistory` INTEGER NOT NULL, FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `isHistory` INTEGER NOT NULL, `mode` TEXT NOT NULL, FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -1086,6 +1086,12 @@
             "fieldPath": "isHistory",
             "columnName": "isHistory",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mode",
+            "columnName": "mode",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -1869,7 +1875,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fadb38ec8474f4083b36f3e1e0e12e70')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5b43a0b8688e41bbe05233fd1aee26a9')"
     ]
   }
 }
