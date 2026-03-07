@@ -1,19 +1,31 @@
 package io.github.openflocon.flocon.plugins.crashreporter
 
-import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.FloconPlugin
-import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.crashreporter.model.CrashReportDataModel
 import io.github.openflocon.flocon.plugins.crashreporter.model.crashReportsListToJson
 import io.github.openflocon.flocon.utils.currentTimeMillis
-import io.github.openflocon.flocondesktop.BuildConfig
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
+actual object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, FloconCrashReporterPlugin> {
+    override val name: String = "CrashReporter"
+    override val pluginId: String = Protocol.ToDevice.Analytics.Plugin // Crash reporter is usually write-only but we can set an ID
+    override fun createConfig() = FloconCrashReporterConfig()
+    override fun install(config: FloconCrashReporterConfig, app: FloconApp): FloconCrashReporterPlugin {
+        val client = app.client as FloconMessageSender
+        return FloconCrashReporterPluginImpl(
+            context = FloconContext(appContext = null), // Handled by datasource
+            sender = client,
+            coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+        )
+    }
+}
 
 internal class FloconCrashReporterPluginImpl(
     private val context: FloconContext,
@@ -23,7 +35,7 @@ internal class FloconCrashReporterPluginImpl(
 
     private val dataSource = buildFloconCrashReporterDataSource(context)
 
-    fun setupCrashHandler() {
+    override fun setupCrashHandler() {
         setupUncaughtExceptionHandler(context) { throwable ->
             val crash = createCrashReport(throwable)
             dataSource.saveCrash(crash)
@@ -46,7 +58,10 @@ internal class FloconCrashReporterPluginImpl(
         }
     }
 
-    override fun onMessageReceived(messageFromServer: FloconMessageFromServer) {
+    override fun onMessageReceived(
+        method: String,
+        body: String,
+    ) {
         // No messages from desktop for crashes (write-only plugin)
     }
 

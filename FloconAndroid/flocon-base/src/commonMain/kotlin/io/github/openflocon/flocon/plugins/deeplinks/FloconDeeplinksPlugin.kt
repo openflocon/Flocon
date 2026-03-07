@@ -1,50 +1,37 @@
 package io.github.openflocon.flocon.plugins.deeplinks
 
-import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
 
-class ParameterBuilder {
-    val parameters: MutableMap<String, DeeplinkModel.Parameter> = mutableMapOf()
+class FloconDeeplinksConfig {
+    val deeplinks = mutableListOf<DeeplinkModel>()
 
-    infix fun String.withAutoComplete(suggestions: List<String>) {
-        parameters[this] = DeeplinkModel.Parameter(paramName = this, suggestions.distinct())
+    fun register(link: String, label: String? = null, description: String? = null, block: DeeplinkBuilder.() -> Unit = {}) {
+        val builder = DeeplinkBuilder(link, label, description)
+        builder.block()
+        deeplinks.add(builder.build())
     }
 
-    fun build() : List<DeeplinkModel.Parameter> {
-        return parameters.values.toList()
-    }
-}
-
-class DeeplinkBuilder {
-    private val deeplinks = mutableListOf<DeeplinkModel>()
-
-    fun deeplink(
-        link: String,
-        label: String? = null,
-        description: String? = null,
-        parameters: (ParameterBuilder.() -> Unit)? = null,
-    ) {
-        deeplinks.add(
-            DeeplinkModel(
-                link = link,
-                label = label,
-                description = description,
-                parameters = parameters?.let { ParameterBuilder().apply(parameters).build() } ?: emptyList()
-            )
-        )
-    }
-
-    fun build(): List<DeeplinkModel> {
-        return deeplinks.toList()
+    fun register(link: String) {
+        deeplinks.add(DeeplinkModel(link = link, parameters = emptyList()))
     }
 }
 
-fun FloconApp.deeplinks(deeplinksBlock: DeeplinkBuilder.() -> Unit) {
-    this.client?.deeplinksPlugin?.let {
-        it.registerDeeplinks(DeeplinkBuilder().apply(deeplinksBlock).build())
+class DeeplinkBuilder(val link: String, var label: String? = null, var description: String? = null) {
+    private val parameters = mutableListOf<DeeplinkModel.Parameter>()
+
+    fun param(name: String, autoComplete: List<String> = emptyList()) {
+        parameters.add(DeeplinkModel.Parameter(name, autoComplete))
     }
+
+    fun build() = DeeplinkModel(
+        link = link,
+        label = label,
+        description = description,
+        parameters = parameters
+    )
 }
 
-interface FloconDeeplinksPlugin {
+interface FloconDeeplinksPlugin : FloconPlugin {
     fun registerDeeplinks(deeplinks: List<DeeplinkModel>)
 }

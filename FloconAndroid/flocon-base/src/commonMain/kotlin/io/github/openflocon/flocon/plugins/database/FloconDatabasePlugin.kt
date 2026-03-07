@@ -1,8 +1,16 @@
 package io.github.openflocon.flocon.plugins.database
 
-import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel
 import io.github.openflocon.flocon.plugins.database.model.FloconFileDatabaseModel
+
+class FloconDatabaseConfig
+
+/**
+ * Flocon Database Plugin.
+ * Used to inspect Room or other SQL databases.
+ */
+expect object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabasePlugin>
 
 fun floconRegisterDatabase(database: FloconDatabaseModel) {
     FloconApp.instance?.client?.databasePlugin?.register(
@@ -27,7 +35,7 @@ fun floconLogDatabaseQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?
     )
 }
 
-interface FloconDatabasePlugin {
+interface FloconDatabasePlugin : FloconPlugin {
     fun register(floconDatabaseModel: FloconDatabaseModel)
     fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>)
 }

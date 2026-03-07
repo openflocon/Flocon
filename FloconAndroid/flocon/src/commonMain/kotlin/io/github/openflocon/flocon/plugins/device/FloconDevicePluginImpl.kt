@@ -1,12 +1,20 @@
 package io.github.openflocon.flocon.plugins.device
 
-import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.FloconPlugin
-import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.device.model.fromdevice.RegisterDeviceDataModel
+
+actual object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin> {
+    override val name: String = "Device"
+    override val pluginId: String = Protocol.ToDevice.Device.Plugin
+    override fun createConfig() = FloconDeviceConfig()
+    override fun install(config: FloconDeviceConfig, app: FloconApp): FloconDevicePlugin {
+        return FloconDevicePluginImpl(
+            sender = app.client as FloconMessageSender,
+            context = app.context
+        )
+    }
+}
 
 internal expect fun restartApp(context: FloconContext)
 
@@ -28,9 +36,10 @@ internal class FloconDevicePluginImpl(
     }
 
     override fun onMessageReceived(
-        messageFromServer: FloconMessageFromServer,
+        method: String,
+        body: String,
     ) {
-        when (messageFromServer.method) {
+        when (method) {
             Protocol.ToDevice.Device.Method.GetAppIcon -> {
                 val icon = getAppIconBase64(context)
                 if (icon != null) {

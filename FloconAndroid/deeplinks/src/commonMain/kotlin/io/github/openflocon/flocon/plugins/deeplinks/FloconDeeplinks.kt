@@ -3,13 +3,12 @@ package io.github.openflocon.flocon.plugins.deeplinks
 import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
-import io.github.openflocon.flocon.plugins.deeplinks.mapper.toDeeplinksJson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-actual object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
+object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
     override val name: String = "Deeplinks"
-    override val pluginId: String = Protocol.ToDevice.Deeplink.Plugin
+    override val pluginId: String = FloconDeeplinks::class.simpleName!!
     override fun createConfig() = FloconDeeplinksConfig()
     override fun install(config: FloconDeeplinksConfig, app: FloconApp): FloconDeeplinksPlugin {
         val plugin = FloconDeeplinksPluginImpl(
@@ -57,4 +56,13 @@ internal class FloconDeeplinksPluginImpl(
             FloconLogger.logError("deeplink mapping error", t)
         }
     }
+}
+
+fun floconRegisterDeeplink(vararg deeplinks: String) {
+    val models = deeplinks.map { DeeplinkModel(link = it, parameters = emptyList()) }
+    FloconApp.instance?.client?.deeplinksPlugin?.registerDeeplinks(models)
+}
+
+fun floconRegisterDeeplinks(deeplinks: List<DeeplinkModel>) {
+    FloconApp.instance?.client?.deeplinksPlugin?.registerDeeplinks(deeplinks)
 }

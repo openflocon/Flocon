@@ -1,14 +1,9 @@
 package io.github.openflocon.flocon.plugins.files
 
-import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.FloconFile
-import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconFileInfo
-import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FilesResultDataModel
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFileMessage
@@ -18,6 +13,20 @@ import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFileM
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFilesMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+
+actual object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
+    override val name: String = "Files"
+    override val pluginId: String = Protocol.ToDevice.Files.Plugin
+    override fun createConfig() = FloconFilesConfig()
+    override fun install(config: FloconFilesConfig, app: FloconApp): FloconFilesPlugin {
+        val client = app.client
+        return FloconFilesPluginImpl(
+            context = app.context,
+            floconFileSender = client as FloconFileSender,
+            sender = client as FloconMessageSender
+        )
+    }
+}
 
 internal interface FileDataSource {
     fun getFile(path: String, isConstantPath: Boolean): FloconFile?
@@ -39,11 +48,12 @@ internal class FloconFilesPluginImpl(
     private val withFoldersSize = MutableStateFlow(false)
 
     override fun onMessageReceived(
-        messageFromServer: FloconMessageFromServer,
+        method: String,
+        body: String,
     ) {
-        when (messageFromServer.method) {
+        when (method) {
             Protocol.ToDevice.Files.Method.ListFiles -> {
-                val listFilesMessage = ToDeviceGetFilesMessage.fromJson(message = messageFromServer.body) ?: return
+                val listFilesMessage = ToDeviceGetFilesMessage.fromJson(message = body) ?: return
 
                 withFoldersSize.update { listFilesMessage.withFoldersSize }
 
@@ -55,7 +65,7 @@ internal class FloconFilesPluginImpl(
             }
 
             Protocol.ToDevice.Files.Method.GetFile -> {
-                val getFileMessage = ToDeviceGetFileMessage.fromJson(message = messageFromServer.body) ?: return
+                val getFileMessage = ToDeviceGetFileMessage.fromJson(message = body) ?: return
 
                 fileDataSource.getFile(path = getFileMessage.path, isConstantPath = false)?.let { file ->
                     floconFileSender.send(
@@ -70,7 +80,7 @@ internal class FloconFilesPluginImpl(
 
             Protocol.ToDevice.Files.Method.DeleteFile -> {
                 val deleteFilesMessage =
-                    ToDeviceDeleteFileMessage.fromJson(message = messageFromServer.body) ?: return
+                    ToDeviceDeleteFileMessage.fromJson(message = body) ?: return
 
                 fileDataSource.deleteFile(
                     path = deleteFilesMessage.filePath,
@@ -85,7 +95,7 @@ internal class FloconFilesPluginImpl(
 
             Protocol.ToDevice.Files.Method.DeleteFiles -> {
                 val deleteFilesMessage =
-                    ToDeviceDeleteFilesMessage.fromJson(message = messageFromServer.body) ?: return
+                    ToDeviceDeleteFilesMessage.fromJson(message = body) ?: return
 
                 fileDataSource.deleteFiles(
                     path = deleteFilesMessage.filePaths,
@@ -100,7 +110,7 @@ internal class FloconFilesPluginImpl(
 
             Protocol.ToDevice.Files.Method.DeleteFolderContent -> {
                 val deleteFolderContentMessage =
-                    ToDeviceDeleteFolderContentMessage.fromJson(message = messageFromServer.body)
+                    ToDeviceDeleteFolderContentMessage.fromJson(message = body)
                         ?: return
 
                 fileDataSource.getFile(

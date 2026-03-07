@@ -1,10 +1,7 @@
 package io.github.openflocon.flocon.plugins.dashboard
 
-import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.FloconPlugin
-import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.dashboard.mapper.toJson
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
@@ -15,6 +12,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+
+actual object FloconDashboard : FloconPluginFactory<FloconDashboardConfig, FloconDashboardPlugin> {
+    override val name: String = "Dashboard"
+    override val pluginId: String = Protocol.ToDevice.Dashboard.Plugin
+    override fun createConfig() = FloconDashboardConfig()
+    override fun install(config: FloconDashboardConfig, app: FloconApp): FloconDashboardPlugin {
+        return FloconDashboardPluginImpl(
+            sender = app.client as FloconMessageSender
+        )
+    }
+}
 
 internal class FloconDashboardPluginImpl(
     private val sender: FloconMessageSender,
@@ -28,17 +36,18 @@ internal class FloconDashboardPluginImpl(
     private val callbackMap = mutableMapOf<String, DashboardCallback>()
 
     override fun onMessageReceived(
-        messageFromServer: FloconMessageFromServer,
+        method: String,
+        body: String,
     ) {
         scope.launch {
-            when (messageFromServer.method) {
+            when (method) {
                 Protocol.ToDevice.Dashboard.Method.OnClick -> {
-                    val id = messageFromServer.body
+                    val id = body
                     callbackMap[id]?.let { it as? DashboardCallback.ButtonCallback }?.action?.invoke()
                 }
 
                 Protocol.ToDevice.Dashboard.Method.OnFormSubmitted -> {
-                    ToDeviceSubmittedFormMessage.fromJson(messageFromServer.body)?.let {
+                    ToDeviceSubmittedFormMessage.fromJson(body)?.let {
                         callbackMap[it.id]?.let { it as? DashboardCallback.FormCallback }?.actions?.invoke(
                             it.values
                         )
@@ -46,7 +55,7 @@ internal class FloconDashboardPluginImpl(
                 }
 
                 Protocol.ToDevice.Dashboard.Method.OnTextFieldSubmitted -> {
-                    ToDeviceSubmittedTextFieldMessage.fromJson(messageFromServer.body)?.let {
+                    ToDeviceSubmittedTextFieldMessage.fromJson(body)?.let {
                         callbackMap[it.id]?.let { it as? DashboardCallback.TextFieldCallback }?.action?.invoke(
                             it.value
                         )
@@ -54,7 +63,7 @@ internal class FloconDashboardPluginImpl(
                 }
 
                 Protocol.ToDevice.Dashboard.Method.OnCheckBoxValueChanged -> {
-                    ToDeviceCheckBoxValueChangedMessage.fromJson(messageFromServer.body)?.let {
+                    ToDeviceCheckBoxValueChangedMessage.fromJson(body)?.let {
                         callbackMap[it.id]?.let { it as? DashboardCallback.CheckBoxCallback }?.action?.invoke(
                             it.value
                         )
@@ -97,4 +106,3 @@ internal class FloconDashboardPluginImpl(
         }
     }
 }
-
