@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.update
 
 class DeviceDashboardsDataSourceInMemory : DeviceDashboardsDataSource {
     private val selectedDeviceDashboards = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DashboardId?>>(emptyMap())
-    private val selectedDashboardArrangements = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DashboardArrangementDomainModel>>(emptyMap())
+    private val selectedDashboardArrangements = MutableStateFlow<Map<String, DashboardArrangementDomainModel>>(emptyMap())
 
     override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> = selectedDeviceDashboards
         .map { it[deviceIdAndPackageName] }
@@ -32,16 +32,28 @@ class DeviceDashboardsDataSourceInMemory : DeviceDashboardsDataSource {
         }
     }
 
-    override fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel> = selectedDashboardArrangements
-        .map { it[deviceIdAndPackageName] ?: DashboardArrangementDomainModel.Adaptive }
+    override fun observeDashboardArrangement(dashboardId: DashboardId, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel> = selectedDashboardArrangements
+        .map {
+            val dashboardKey = getDashboardArrangementKey(dashboardId, deviceIdAndPackageName)
+            it[dashboardKey] ?: DashboardArrangementDomainModel.Adaptive
+        }
         .distinctUntilChanged()
 
     override fun selectDashboardArrangement(
+        dashboardId: DashboardId,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         arrangement: DashboardArrangementDomainModel
     ) {
+        val dashboardKey = getDashboardArrangementKey(dashboardId, deviceIdAndPackageName)
         selectedDashboardArrangements.update {
-            it + (deviceIdAndPackageName to arrangement)
+            it + (dashboardKey to arrangement)
         }
+    }
+
+    private fun getDashboardArrangementKey(
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): String {
+        return "${deviceIdAndPackageName.packageName}_$dashboardId"
     }
 }
