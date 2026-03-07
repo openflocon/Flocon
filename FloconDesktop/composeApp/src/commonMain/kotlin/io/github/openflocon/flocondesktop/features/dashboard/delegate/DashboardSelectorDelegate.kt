@@ -33,12 +33,14 @@ class DashboardSelectorDelegate(
             if (dashboards.isEmpty()) {
                 DashboardsStateUiModel.Empty
             } else {
+                val sortedDashboards = dashboards.sortedBy { it }
+
                 DashboardsStateUiModel.WithContent(
-                    dashboards = dashboards.map { toUi(it) },
+                    dashboards = sortedDashboards.map { toUi(it) },
                     selected =
                     toUi(
                         selected ?: run {
-                            dashboards.first().also {
+                            sortedDashboards.first().also {
                                 selectCurrentDeviceDashboardUseCase(it)
                             }
                         },
