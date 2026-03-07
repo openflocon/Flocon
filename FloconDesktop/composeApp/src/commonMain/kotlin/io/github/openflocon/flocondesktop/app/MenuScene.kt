@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.Scene
+import androidx.navigation3.scene.SceneDecoratorStrategy
+import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
@@ -43,14 +45,13 @@ import io.github.openflocon.navigation.FloconRoute
 
 @Immutable
 data class MenuScene(
-    override val entries: List<NavEntry<FloconRoute>>,
-    override val previousEntries: List<NavEntry<FloconRoute>>,
-    val entry: NavEntry<FloconRoute>,
-    val menuContent: @Composable (expanded: Boolean) -> Unit,
+    val scene: Scene<FloconRoute>,
+    val menuContent: @Composable ((expanded: Boolean) -> Unit),
     val topBarContent: @Composable (() -> Unit)?
 ) : Scene<FloconRoute> {
-    override val key: Any
-        get() = Unit
+    override val key: Any = Unit
+    override val entries: List<NavEntry<FloconRoute>> = scene.entries
+    override val previousEntries: List<NavEntry<FloconRoute>> = scene.previousEntries
 
     override val content: @Composable (() -> Unit) = {
         var expanded by remember { mutableStateOf(true) }
@@ -84,7 +85,7 @@ data class MenuScene(
                     ) {
                         menuContent(expanded)
                     }
-                    entry.Content()
+                    scene.content()
                 }
             }
             Box(
@@ -113,22 +114,18 @@ data class MenuScene(
 class MenuSceneStrategy(
     private val menuContent: @Composable (expanded: Boolean) -> Unit,
     private val topBarContent: @Composable (() -> Unit)? = null
-) : SceneStrategy<FloconRoute> {
+) : SceneDecoratorStrategy<FloconRoute> {
 
-    override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? {
-        val entry = entries.lastOrNull() ?: return null
-
-        if (entry.metadata.containsKey(MENU_KEY)) {
+    override fun SceneDecoratorStrategyScope<FloconRoute>.decorateScene(scene: Scene<FloconRoute>): Scene<FloconRoute> {
+        if (scene.metadata.containsKey(MENU_KEY)) {
             return MenuScene(
-                entries = listOf(entry),
-                previousEntries = entries.dropLast(1),
-                entry = entry,
+                scene = scene,
                 menuContent = menuContent,
                 topBarContent = topBarContent
             )
         }
 
-        return null
+        return scene
     }
 
     companion object {
