@@ -15,6 +15,8 @@ import io.github.openflocon.flocon.myapplication.multi.database.initializeDataba
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.multi.ui.App
+import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinks
+import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPlugin
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.coroutines.GlobalScope
@@ -55,7 +57,11 @@ class MainActivity : ComponentActivity() {
         )
 
         FloconLogger.enabled = true
-        Flocon.initialize(this)
+        Flocon.initialize(this) {
+            install(FloconDeeplinks) {
+
+            }
+        }
 
         setContent {
             App()

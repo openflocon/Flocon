@@ -6,7 +6,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-internal object FloconEncoder {
+object FloconEncoder {
     val json = Json {
         ignoreUnknownKeys = true
         isLenient = true

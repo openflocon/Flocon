@@ -1,19 +1,28 @@
 package io.github.openflocon.flocon.plugins.tables
 
-import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.FloconPlugin
-import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.tables.model.TableItem
 import io.github.openflocon.flocon.plugins.tables.model.tableItemListToJson
+
+actual object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
+    override val name: String = "Table"
+    override val pluginId: String = Protocol.ToDevice.Table.Plugin
+    override fun createConfig() = FloconTableConfig()
+    override fun install(config: FloconTableConfig, app: FloconApp): FloconTablePlugin {
+        return FloconTablePluginImpl(
+            sender = app.client as FloconMessageSender
+        )
+    }
+}
 
 internal class FloconTablePluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconPlugin, FloconTablePlugin {
 
     override fun onMessageReceived(
-        messageFromServer: FloconMessageFromServer,
+        method: String,
+        body: String,
     ) {
         // no op
     }
@@ -22,16 +31,16 @@ internal class FloconTablePluginImpl(
         // no op
     }
 
-    override fun registerTable(tableItem: TableItem) {
-        sendTable(tableItem)
+    override fun registerItems(tableItems: List<TableItem>) {
+        sendTable(tableItems)
     }
 
-    private fun sendTable(tableItem: TableItem) {
+    private fun sendTable(tableItems: List<TableItem>) {
         try {
             sender.send(
                 plugin = Protocol.FromDevice.Table.Plugin,
                 method = Protocol.FromDevice.Table.Method.AddItems,
-                body = tableItemListToJson(listOf(tableItem)).toString() // desktop is expecting an array of table items
+                body = tableItemListToJson(tableItems).toString()
             )
         } catch (t: Throwable) {
             FloconLogger.logError("Table json mapping error", t)

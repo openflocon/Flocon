@@ -1,6 +1,6 @@
 package io.github.openflocon.flocon.plugins.deeplinks
 
-import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
 
 class DeeplinkLinkBuilder internal constructor(

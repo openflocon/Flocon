@@ -1,10 +1,7 @@
 package io.github.openflocon.flocon.plugins.database
 
-import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.FloconPlugin
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
@@ -32,6 +29,18 @@ internal interface FloconDatabaseDataSource {
 
 internal expect fun buildFloconDatabaseDataSource(context: FloconContext): FloconDatabaseDataSource
 
+actual object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabasePlugin> {
+    override val name: String = "Database"
+    override val pluginId: String = Protocol.ToDevice.Database.Plugin
+    override fun createConfig() = FloconDatabaseConfig()
+    override fun install(config: FloconDatabaseConfig, app: FloconApp): FloconDatabasePlugin {
+        return FloconDatabasePluginImpl(
+            sender = app.client as FloconMessageSender,
+            context = FloconContext(appContext = null), // Handled by actual buildFloconDatabaseDataSource
+        )
+    }
+}
+
 internal class FloconDatabasePluginImpl(
     private var sender: FloconMessageSender,
     private val context: FloconContext,
@@ -42,16 +51,17 @@ internal class FloconDatabasePluginImpl(
     private val dataSource = buildFloconDatabaseDataSource(context)
 
     override fun onMessageReceived(
-        messageFromServer: FloconMessageFromServer,
+        method: String,
+        body: String,
     ) {
-        when (messageFromServer.method) {
+        when (method) {
             Protocol.ToDevice.Database.Method.GetDatabases -> {
                 sendAllDatabases(sender)
             }
 
             Protocol.ToDevice.Database.Method.Query -> {
                 val queryMessage =
-                    DatabaseQueryMessage.fromJson(message = messageFromServer.body) ?: return
+                    DatabaseQueryMessage.fromJson(message = body) ?: return
                 val result = dataSource.executeSQL(
                     registeredDatabases = registeredDatabases.value,
                     databaseName = queryMessage.database,

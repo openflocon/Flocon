@@ -1,29 +1,30 @@
 package io.github.openflocon.flocon.plugins.network
 
-import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.FloconPlugin
-import io.github.openflocon.flocon.model.FloconMessageFromServer
-import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallRequestToJson
-import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallResponseToJson
-import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkWebSocketEventToJson
-import io.github.openflocon.flocon.plugins.network.mapper.parseBadQualityConfig
-import io.github.openflocon.flocon.plugins.network.mapper.parseMockResponses
-import io.github.openflocon.flocon.plugins.network.mapper.parseWebSocketMockMessage
-import io.github.openflocon.flocon.plugins.network.mapper.webSocketIdsToJsonArray
-import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
-import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
-import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
-import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
-import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketMockListener
-import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
+import io.github.openflocon.flocon.plugins.network.mapper.*
+import io.github.openflocon.flocon.plugins.network.model.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+actual object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlugin> {
+    override val name: String = "Network"
+    override val pluginId: String = Protocol.ToDevice.Network.Plugin
+    override fun createConfig() = FloconNetworkConfig()
+    override fun install(config: FloconNetworkConfig, app: FloconApp): FloconNetworkPlugin {
+        return FloconNetworkPluginImpl(
+            context = app.context,
+            sender = app.client as FloconMessageSender,
+            coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+        )
+    }
+}
 
 internal const val FLOCON_NETWORK_MOCKS_JSON = "flocon_network_mocks.json"
 internal const val FLOCON_NETWORK_BAD_CONFIG_JSON = "flocon_network_bad_config.json"
@@ -54,9 +55,7 @@ internal class FloconNetworkPluginImpl(
     private val _badQualityConfig = MutableStateFlow<BadQualityConfig?>(dataSource.loadBadNetworkConfig())
 
     override val badQualityConfig: BadQualityConfig?
-        get() {
-             return _badQualityConfig.value
-        }
+        get() = _badQualityConfig.value
 
     override fun logRequest(request: FloconNetworkCallRequest) {
         try {
@@ -72,7 +71,7 @@ internal class FloconNetworkPluginImpl(
 
     override fun logResponse(response: FloconNetworkCallResponse) {
         coroutineScope.launch {
-            delay(200) // to be sure the request is handled before the response, in case of mocks or direct connection refused
+            delay(200) // to be sure the request is handled before the response
             try {
                 sender.send(
                     plugin = Protocol.FromDevice.Network.Plugin,
@@ -102,23 +101,24 @@ internal class FloconNetworkPluginImpl(
     }
 
     override fun onMessageReceived(
-        messageFromServer: FloconMessageFromServer,
+        method: String,
+        body: String,
     ) {
-        when (messageFromServer.method) {
+        when (method) {
             Protocol.ToDevice.Network.Method.SetupMocks -> {
-                val setup = parseMockResponses(jsonString = messageFromServer.body)
+                val setup = parseMockResponses(jsonString = body)
                 _mocks.update { setup }
                 dataSource.saveMocksToFile(mocks)
             }
 
             Protocol.ToDevice.Network.Method.SetupBadNetworkConfig -> {
-                val config = parseBadQualityConfig(jsonString = messageFromServer.body)
+                val config = parseBadQualityConfig(jsonString = body)
                 _badQualityConfig.update { config }
                 dataSource.saveBadNetworkConfig(config)
             }
 
             Protocol.ToDevice.Network.Method.WebsocketMockMessage -> {
-                val message = parseWebSocketMockMessage(jsonString = messageFromServer.body)
+                val message = parseWebSocketMockMessage(jsonString = body)
                 if(message != null) {
                     websocketListeners.value[message.id]?.onMessage(message.message)
                 }
@@ -147,5 +147,4 @@ internal class FloconNetworkPluginImpl(
             body = webSocketIdsToJsonArray(ids = websocketListeners.value.keys),
         )
     }
-
 }

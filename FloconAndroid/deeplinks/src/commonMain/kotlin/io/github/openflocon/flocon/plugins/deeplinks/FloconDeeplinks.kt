@@ -3,13 +3,12 @@ package io.github.openflocon.flocon.plugins.deeplinks
 import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
-import io.github.openflocon.flocon.plugins.deeplinks.mapper.toDeeplinksJson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-actual object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
+object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
     override val name: String = "Deeplinks"
-    override val pluginId: String = Protocol.ToDevice.Deeplink.Plugin
+    override val pluginId: String = FloconDeeplinks::class.simpleName!!
     override fun createConfig() = FloconDeeplinksConfig()
     override fun install(config: FloconDeeplinksConfig, app: FloconApp): FloconDeeplinksPlugin {
         val plugin = FloconDeeplinksPluginImpl(
@@ -27,7 +26,6 @@ internal class FloconDeeplinksPluginImpl(
 ) : FloconPlugin, FloconDeeplinksPlugin {
 
     private val deeplinks = MutableStateFlow<List<DeeplinkModel>?>(null)
-    private val variables = MutableStateFlow<List<DeeplinkVariable>?>(null)
 
     override fun onMessageReceived(
         method: String,
@@ -39,28 +37,32 @@ internal class FloconDeeplinksPluginImpl(
     override fun onConnectedToServer() {
         // on connected, send known deeplinks
         deeplinks.value?.let {
-            registerDeeplinks(it, variables.value.orEmpty())
+            registerDeeplinks(it)
         }
     }
 
-    override fun registerDeeplinks(
-        deeplinks: List<DeeplinkModel>,
-        variables: List<DeeplinkVariable>
-    ) {
-        this.deeplinks.update { deeplinks }
-        this.variables.update { variables }
+    override fun registerDeeplinks(deeplinks: List<DeeplinkModel>) {
+        this.deeplinks.update {
+            deeplinks
+        }
 
         try {
             sender.send(
                 plugin = Protocol.FromDevice.Deeplink.Plugin,
                 method = Protocol.FromDevice.Deeplink.Method.GetDeeplinks,
-                body = toDeeplinksJson(
-                    deeplinks = deeplinks,
-                    variables = variables
-                )
+                body = toDeeplinksJson(deeplinks)
             )
         } catch (t: Throwable) {
             FloconLogger.logError("deeplink mapping error", t)
         }
     }
+}
+
+fun floconRegisterDeeplink(vararg deeplinks: String) {
+    val models = deeplinks.map { DeeplinkModel(link = it, parameters = emptyList()) }
+    FloconApp.instance?.client?.deeplinksPlugin?.registerDeeplinks(models)
+}
+
+fun floconRegisterDeeplinks(deeplinks: List<DeeplinkModel>) {
+    FloconApp.instance?.client?.deeplinksPlugin?.registerDeeplinks(deeplinks)
 }

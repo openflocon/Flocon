@@ -28,12 +28,16 @@ abstract class FloconCore : FloconApp() {
     private val _isInitialized = MutableStateFlow(false)
     override val isInitialized: StateFlow<Boolean> = _isInitialized
 
-    protected fun initializeFlocon(context: FloconContext) {
-        val newClient = FloconClientImpl(context)
+    protected fun initializeFlocon(
+        context: FloconContext,
+        configuration: FloconConfiguration = FloconConfiguration()
+    ) {
+        super.initializeFlocon(context)
+        val newClient = FloconClientImpl(context, configuration)
         _client = newClient
         
         // Setup crash handler early to catch crashes during initialization
-        newClient.crashReporterPlugin.setupCrashHandler()
+        newClient.crashReporterPlugin?.setupCrashHandler()
         
         _isInitialized.value = true
 
