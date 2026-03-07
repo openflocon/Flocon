@@ -11,37 +11,71 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 class DeviceDashboardsDataSourceInMemory : DeviceDashboardsDataSource {
-    private val selectedDeviceDashboards = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DashboardId?>>(emptyMap())
-    private val selectedDashboardArrangements = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, DashboardArrangementDomainModel>>(emptyMap())
+    private val selectedDeviceDashboards = MutableStateFlow<Map<String, DashboardId?>>(emptyMap())
+    private val selectedDashboardArrangements = MutableStateFlow<Map<String, DashboardArrangementDomainModel>>(emptyMap())
 
-    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> = selectedDeviceDashboards
-        .map { it[deviceIdAndPackageName] }
+    override fun observeSelectedDeviceDashboard(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<DashboardId?> = selectedDeviceDashboards
+        .map {
+            val dashboardKey = getSelectedDashboardKey(deviceIdAndPackageName)
+            it[dashboardKey]
+        }
         .distinctUntilChanged()
 
-    override fun selectDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId) {
+    override fun selectDeviceDashboard(
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ) {
+        val dashboardKey = getSelectedDashboardKey(deviceIdAndPackageName)
         selectedDeviceDashboards.update {
-            it + (deviceIdAndPackageName to dashboardId)
+            it + (dashboardKey to dashboardId)
         }
     }
 
-    override fun deleteDashboard(dashboardId: DashboardId, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+    override fun deleteDashboard(
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ) {
+        val dashboardKey = getSelectedDashboardKey(deviceIdAndPackageName)
         selectedDeviceDashboards.update {
-            if (it[deviceIdAndPackageName] == dashboardId) {
-                it - deviceIdAndPackageName
+            if (it[dashboardKey] == dashboardId) {
+                it - dashboardKey
             } else it
         }
     }
 
-    override fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel> = selectedDashboardArrangements
-        .map { it[deviceIdAndPackageName] ?: DashboardArrangementDomainModel.Adaptive }
+    override fun observeDashboardArrangement(
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<DashboardArrangementDomainModel> = selectedDashboardArrangements
+        .map {
+            val dashboardArrangementKey = getDashboardArrangementKey(dashboardId, deviceIdAndPackageName)
+            it[dashboardArrangementKey] ?: DashboardArrangementDomainModel.Adaptive
+        }
         .distinctUntilChanged()
 
     override fun selectDashboardArrangement(
+        dashboardId: DashboardId,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         arrangement: DashboardArrangementDomainModel
     ) {
+        val dashboardArrangementKey = getDashboardArrangementKey(dashboardId, deviceIdAndPackageName)
         selectedDashboardArrangements.update {
-            it + (deviceIdAndPackageName to arrangement)
+            it + (dashboardArrangementKey to arrangement)
         }
+    }
+
+    private fun getSelectedDashboardKey(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): String {
+        return deviceIdAndPackageName.packageName
+    }
+
+    private fun getDashboardArrangementKey(
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): String {
+        return "${deviceIdAndPackageName.packageName}_$dashboardId"
     }
 }

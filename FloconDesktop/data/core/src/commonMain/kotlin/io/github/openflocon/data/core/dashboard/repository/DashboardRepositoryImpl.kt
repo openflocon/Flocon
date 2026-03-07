@@ -114,18 +114,20 @@ class DashboardRepositoryImpl(
     }
 
     override suspend fun selectDeviceDashboard(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        dashboardId: DashboardId
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     ) {
         withContext(dispatcherProvider.data) {
             deviceDashboardsDataSource.selectDeviceDashboard(
-                deviceIdAndPackageName = deviceIdAndPackageName,
                 dashboardId = dashboardId,
+                deviceIdAndPackageName = deviceIdAndPackageName,
             )
         }
     }
 
-    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> = deviceDashboardsDataSource.observeSelectedDeviceDashboard(
+    override fun observeSelectedDeviceDashboard(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<DashboardId?> = deviceDashboardsDataSource.observeSelectedDeviceDashboard(
         deviceIdAndPackageName = deviceIdAndPackageName,
     ).flowOn(dispatcherProvider.data)
 
@@ -133,16 +135,22 @@ class DashboardRepositoryImpl(
         deviceIdAndPackageName = deviceIdAndPackageName,
     ).flowOn(dispatcherProvider.data)
 
-    override fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel> = deviceDashboardsDataSource.observeDashboardArrangement(
+    override fun observeDashboardArrangement(
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<DashboardArrangementDomainModel> = deviceDashboardsDataSource.observeDashboardArrangement(
+        dashboardId = dashboardId,
         deviceIdAndPackageName = deviceIdAndPackageName,
     ).flowOn(dispatcherProvider.data)
 
     override suspend fun selectDashboardArrangement(
+        dashboardId: DashboardId,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         arrangement: DashboardArrangementDomainModel
     ) {
         withContext(dispatcherProvider.data) {
             deviceDashboardsDataSource.selectDashboardArrangement(
+                dashboardId = dashboardId,
                 deviceIdAndPackageName = deviceIdAndPackageName,
                 arrangement = arrangement,
             )

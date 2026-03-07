@@ -7,11 +7,14 @@ import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNa
 class SelectDashboardArrangementUseCase(
     private val dashboardRepository: DashboardRepository,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
+    private val getCurrentDeviceSelectedDashboardUseCase: GetCurrentDeviceSelectedDashboardUseCase,
 ) {
     suspend operator fun invoke(arrangement: DashboardArrangementDomainModel) {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return
+        val currentSelectedDashboard = getCurrentDeviceSelectedDashboardUseCase() ?: return
 
         dashboardRepository.selectDashboardArrangement(
+            dashboardId = currentSelectedDashboard,
             deviceIdAndPackageName = current,
             arrangement = arrangement,
         )

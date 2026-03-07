@@ -9,12 +9,20 @@ import kotlinx.coroutines.flow.Flow
 interface DashboardRepository {
     fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?>
 
-    suspend fun selectDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId)
+    suspend fun selectDeviceDashboard(dashboardId: DashboardId, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
     fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?>
     fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>>
 
-    fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel>
-    suspend fun selectDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, arrangement: DashboardArrangementDomainModel)
+    fun observeDashboardArrangement(
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<DashboardArrangementDomainModel>
+
+    suspend fun selectDashboardArrangement(
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        arrangement: DashboardArrangementDomainModel
+    )
 
     suspend fun sendClickEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
