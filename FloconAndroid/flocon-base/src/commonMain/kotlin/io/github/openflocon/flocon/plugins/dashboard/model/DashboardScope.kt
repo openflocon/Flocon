@@ -3,7 +3,6 @@ package io.github.openflocon.flocon.plugins.dashboard.model
 import io.github.openflocon.flocon.plugins.dashboard.builder.FormBuilder
 import io.github.openflocon.flocon.plugins.dashboard.builder.SectionBuilder
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 
 interface DashboardScope {
     fun <T> section(name: String, flow: Flow<T>, content: SectionBuilder.(T) -> Unit)
