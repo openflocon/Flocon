@@ -114,18 +114,20 @@ class DashboardRepositoryImpl(
     }
 
     override suspend fun selectDeviceDashboard(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        dashboardId: DashboardId
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     ) {
         withContext(dispatcherProvider.data) {
             deviceDashboardsDataSource.selectDeviceDashboard(
-                deviceIdAndPackageName = deviceIdAndPackageName,
                 dashboardId = dashboardId,
+                deviceIdAndPackageName = deviceIdAndPackageName,
             )
         }
     }
 
-    override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> = deviceDashboardsDataSource.observeSelectedDeviceDashboard(
+    override fun observeSelectedDeviceDashboard(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<DashboardId?> = deviceDashboardsDataSource.observeSelectedDeviceDashboard(
         deviceIdAndPackageName = deviceIdAndPackageName,
     ).flowOn(dispatcherProvider.data)
 
