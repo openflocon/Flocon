@@ -36,15 +36,13 @@ class DashboardSelectorDelegate(
                 val sortedDashboards = dashboards.sortedBy { it }
 
                 DashboardsStateUiModel.WithContent(
-                    dashboards = sortedDashboards.map { toUi(it) },
-                    selected =
-                    toUi(
-                        selected ?: run {
-                            sortedDashboards.first().also {
-                                selectCurrentDeviceDashboardUseCase(it)
-                            }
-                        },
-                    ),
+                    dashboards = sortedDashboards.map { it.toUi() },
+                    selected = selected?.toUi() ?: run {
+                        sortedDashboards.first().let {
+                            selectCurrentDeviceDashboardUseCase(it)
+                            it.toUi()
+                        }
+                    },
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)
@@ -54,8 +52,8 @@ class DashboardSelectorDelegate(
                 DashboardsStateUiModel.Loading,
             )
 
-    fun toUi(dashboardId: DashboardId) = DeviceDashboardUiModel(
-        id = dashboardId,
+    fun DashboardId.toUi() = DeviceDashboardUiModel(
+        id = this,
     )
 
     fun onDashboardSelected(dashboardId: DashboardId) {
