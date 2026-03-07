@@ -10,7 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -57,10 +56,10 @@ internal class DashboardScopeImpl : DashboardScope {
      * The section will be re-rendered whenever the [flow] emits a new value.
      *
      * @param name The name of the section.
-     * @param flow The [StateFlow] providing the data for the section.
+     * @param flow The [Flow] providing the data for the section.
      * @param content The builder to construct the section content based on the data.
      */
-    override fun <T> section(name: String, flow: StateFlow<T>, content: SectionBuilder.(T) -> Unit) {
+    override fun <T> section(name: String, flow: Flow<T>, content: SectionBuilder.(T) -> Unit) {
         val sectionFlow = flow.map { item ->
             SectionBuilder(name)
                 .apply { content(item) }
@@ -90,14 +89,14 @@ internal class DashboardScopeImpl : DashboardScope {
      * @param name The name of the form.
      * @param submitText The text to display on the submit button.
      * @param onSubmitted The callback to be invoked when the form is submitted.
-     * @param flow The [StateFlow] providing the data for the form.
+     * @param flow The [Flow] providing the data for the form.
      * @param content The builder to construct the form content based on the data.
      */
     override fun <T> form(
         name: String,
         submitText: String,
         onSubmitted: (Map<String, String>) -> Unit,
-        flow: StateFlow<T>,
+        flow: Flow<T>,
         content: FormBuilder.(T) -> Unit
     ) {
         val formFlow = flow.map { item ->
