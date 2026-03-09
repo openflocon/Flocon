@@ -1,7 +1,6 @@
 package io.github.openflocon.flocondesktop.features.adbcommander.model
 
 sealed interface AdbCommanderAction {
-    data class TabSelected(val tab: AdbCommanderTab) : AdbCommanderAction
     data class CommandInputChanged(val input: String) : AdbCommanderAction
     data object ExecuteCommand : AdbCommanderAction
     data object SaveCurrentCommand : AdbCommanderAction
@@ -11,6 +10,8 @@ sealed interface AdbCommanderAction {
     data object ClearHistory : AdbCommanderAction
     data class RerunCommand(val command: String) : AdbCommanderAction
     data object ClearConsole : AdbCommanderAction
+    data object CopyCommand : AdbCommanderAction
+    data object ClearCommand : AdbCommanderAction
 
     // Flow actions
     data class ShowFlowEditor(val flowId: Long? = null) : AdbCommanderAction

@@ -19,9 +19,9 @@ import io.github.openflocon.domain.adbcommander.usecase.UpdateFlowUseCase
 import io.github.openflocon.domain.adbcommander.usecase.UpdateSavedCommandUseCase
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.flocondesktop.features.adbcommander.mapper.toUiModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
-import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderTab
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderUiState
 import io.github.openflocon.flocondesktop.features.adbcommander.model.ConsoleOutputEntry
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowEditorState
@@ -86,7 +86,6 @@ class AdbCommanderViewModel(
 
     fun onAction(action: AdbCommanderAction) {
         when (action) {
-            is AdbCommanderAction.TabSelected -> onTabSelected(action.tab)
             is AdbCommanderAction.CommandInputChanged -> onCommandInputChanged(action.input)
             is AdbCommanderAction.ExecuteCommand -> onExecuteCommand()
             is AdbCommanderAction.SaveCurrentCommand -> onSaveCurrentCommand()
@@ -109,11 +108,9 @@ class AdbCommanderViewModel(
             is AdbCommanderAction.DeleteFlow -> onDeleteFlow(action.id)
             is AdbCommanderAction.ExecuteFlow -> onExecuteFlow(action.flowId)
             is AdbCommanderAction.CancelFlowExecution -> onCancelFlowExecution()
+            is AdbCommanderAction.CopyCommand -> onCopyCommand()
+            is AdbCommanderAction.ClearCommand -> onClearCommand()
         }
-    }
-
-    private fun onTabSelected(tab: AdbCommanderTab) {
-        localState.update { it.copy(selectedTab = tab) }
     }
 
     private fun onCommandInputChanged(input: String) {
@@ -137,7 +134,6 @@ class AdbCommanderViewModel(
                                 output = error.message ?: "Unknown error",
                                 isSuccess = false,
                             ),
-                            selectedTab = AdbCommanderTab.Runner,
                         )
                     }
                 },
@@ -151,7 +147,6 @@ class AdbCommanderViewModel(
                                 output = output.ifEmpty { "(no output)" },
                                 isSuccess = true,
                             ),
-                            selectedTab = AdbCommanderTab.Runner,
                         )
                     }
                 },
@@ -368,7 +363,6 @@ class AdbCommanderViewModel(
         val flow = domainFlows.value.find { it.id == flowId } ?: return
 
         flowExecutionJob?.cancel()
-        localState.update { it.copy(selectedTab = AdbCommanderTab.Runner) }
 
         flowExecutionJob = viewModelScope.launch(dispatcherProvider.viewModel) {
             executeFlowUseCase(flow).collect { state ->
@@ -384,5 +378,17 @@ class AdbCommanderViewModel(
 
     private fun onClearConsole() {
         localState.update { it.copy(consoleOutput = emptyList(), flowExecution = null) }
+    }
+
+    private fun onCopyCommand() {
+        val command = localState.value.commandInput.trim()
+        if (command.isNotEmpty()) {
+            copyToClipboard(command)
+            feedbackDisplayer.displayMessage("Command copied")
+        }
+    }
+
+    private fun onClearCommand() {
+        localState.update { it.copy(commandInput = "") }
     }
 }

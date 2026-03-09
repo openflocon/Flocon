@@ -52,6 +52,8 @@
     <string name="adb_commander_step_label">Label (optional)</string>
     <string name="adb_commander_step_delay">Delay (ms)</string>
     <string name="adb_commander_cancel_flow">Cancel Flow</string>
+    <string name="adb_commander_execute">Execute</string>
+    <string name="adb_commander_quick_commands">Quick Commands</string>
     <string name="menu_item_deeplinks">Deeplinks</string>
     <string name="menu_item_files">Files</string>
     <string name="menu_item_images">Images</string>

@@ -2,15 +2,8 @@ package io.github.openflocon.flocondesktop.features.adbcommander.model
 
 import androidx.compose.runtime.Immutable
 
-enum class AdbCommanderTab {
-    Runner,
-    Library,
-    History,
-}
-
 @Immutable
 data class AdbCommanderUiState(
-    val selectedTab: AdbCommanderTab = AdbCommanderTab.Runner,
     val commandInput: String = "",
     val consoleOutput: List<ConsoleOutputEntry> = emptyList(),
     val savedCommands: List<SavedCommandUiModel> = emptyList(),
