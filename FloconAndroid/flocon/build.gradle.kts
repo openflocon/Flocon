@@ -9,7 +9,11 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
+    androidTarget {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
+    }
     
     jvm()
 
@@ -78,7 +82,6 @@ buildConfig {
 
     buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String)
 }
-
 
 android {
     namespace = "io.github.openflocon.flocon"
