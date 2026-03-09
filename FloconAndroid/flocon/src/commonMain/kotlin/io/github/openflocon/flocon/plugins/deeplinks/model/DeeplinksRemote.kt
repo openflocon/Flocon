@@ -14,7 +14,7 @@ internal sealed interface DeeplinkParameterRemote {
 
     @Serializable
     @SerialName("auto_complete")
-    class AutoComplete(
+    data class AutoComplete(
         override val name: String,
         val autoComplete: List<String>
     ) : DeeplinkParameterRemote
@@ -48,7 +48,7 @@ internal data class DeeplinkVariableRemote(
 
         @Serializable
         @SerialName("input")
-        object Input : Mode
+        data object Input : Mode
 
         @Serializable
         @SerialName("auto_complete")
