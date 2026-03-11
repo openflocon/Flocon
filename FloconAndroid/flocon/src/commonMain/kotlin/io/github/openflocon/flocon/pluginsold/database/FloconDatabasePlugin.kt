@@ -16,10 +16,7 @@ object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabase
         TODO("Not yet implemented")
     }
 
-    override fun install(
-        config: FloconDatabaseConfig,
-        app: FloconApp
-    ): FloconDatabasePlugin {
+    override fun install(config: Any, app: FloconApp): FloconDatabasePlugin {
         TODO("Not yet implemented")
     }
 

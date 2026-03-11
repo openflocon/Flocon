@@ -12,10 +12,7 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
         TODO("Not yet implemented")
     }
 
-    override fun install(
-        config: FloconDeviceConfig,
-        app: FloconApp
-    ): FloconDevicePlugin {
+    override fun install(config: Any, app: FloconApp): FloconDevicePlugin {
         TODO("Not yet implemented")
     }
 

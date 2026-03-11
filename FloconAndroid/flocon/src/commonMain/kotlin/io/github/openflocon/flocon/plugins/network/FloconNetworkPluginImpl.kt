@@ -35,7 +35,7 @@ object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlu
     override val name: String = "Network"
     override val pluginId: String = Protocol.ToDevice.Network.Plugin
     override fun createConfig() = FloconNetworkConfig()
-    override fun install(config: FloconNetworkConfig, app: FloconApp): FloconNetworkPlugin {
+    override fun install(config: Any, app: FloconApp): FloconNetworkPlugin {
         return FloconNetworkPluginImpl(
             context = app.context,
             sender = app.client as FloconMessageSender,

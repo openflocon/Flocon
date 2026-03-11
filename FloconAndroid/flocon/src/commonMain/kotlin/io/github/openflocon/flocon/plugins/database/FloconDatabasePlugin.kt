@@ -38,7 +38,7 @@ object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabase
     override val name: String = "Database"
     override val pluginId: String = Protocol.ToDevice.Database.Plugin
     override fun createConfig() = FloconDatabaseConfig()
-    override fun install(config: FloconDatabaseConfig, app: FloconApp): FloconDatabasePlugin {
+    override fun install(config: Any, app: FloconApp): FloconDatabasePlugin {
         return FloconDatabasePluginImpl(
             sender = app.client as FloconMessageSender,
             context = TODO() // FloconContext(appContext = null), // Handled by actual buildFloconDatabaseDataSource

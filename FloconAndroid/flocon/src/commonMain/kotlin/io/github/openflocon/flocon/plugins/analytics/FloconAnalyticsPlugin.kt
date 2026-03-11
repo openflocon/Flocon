@@ -15,7 +15,7 @@ object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyt
     override val name: String = "Analytics"
     override val pluginId: String = Protocol.ToDevice.Analytics.Plugin
     override fun createConfig() = FloconAnalyticsConfig()
-    override fun install(config: FloconAnalyticsConfig, app: FloconApp): FloconAnalyticsPlugin {
+    override fun install(config: Any, app: FloconApp): FloconAnalyticsPlugin {
         return FloconAnalyticsPluginImpl(
             sender = app.client as FloconMessageSender
         )
