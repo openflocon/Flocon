@@ -23,7 +23,6 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":flocon-base"))
                 implementation(project(":flocon"))
                 implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
                 implementation(libs.kotlinx.serialization.json)

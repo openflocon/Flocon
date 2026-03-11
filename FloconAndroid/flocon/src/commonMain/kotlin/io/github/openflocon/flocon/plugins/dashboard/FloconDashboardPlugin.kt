@@ -4,16 +4,18 @@ import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.dashboard.mapper.toJson
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback
-import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
 import io.github.openflocon.flocon.plugins.dashboard.model.todevice.ToDeviceCheckBoxValueChangedMessage
 import io.github.openflocon.flocon.plugins.dashboard.model.todevice.ToDeviceSubmittedFormMessage
 import io.github.openflocon.flocon.plugins.dashboard.model.todevice.ToDeviceSubmittedTextFieldMessage
+import io.github.openflocon.flocon.pluginsold.dashboard.FloconDashboardConfig
+import io.github.openflocon.flocon.pluginsold.dashboard.FloconDashboardPlugin
+import io.github.openflocon.flocon.pluginsold.dashboard.model.DashboardConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-actual object FloconDashboard : FloconPluginFactory<FloconDashboardConfig, FloconDashboardPlugin> {
+ object FloconDashboard : FloconPluginFactory<FloconDashboardConfig, FloconDashboardPlugin> {
     override val name: String = "Dashboard"
     override val pluginId: String = Protocol.ToDevice.Dashboard.Plugin
     override fun createConfig() = FloconDashboardConfig()
@@ -27,6 +29,7 @@ actual object FloconDashboard : FloconPluginFactory<FloconDashboardConfig, Floco
 internal class FloconDashboardPluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconPlugin, FloconDashboardPlugin {
+    override val key: String = "DASHBOARD"
 
     private val DashboardDispatcher = Dispatchers.Default.limitedParallelism(1)
 

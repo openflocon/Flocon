@@ -21,13 +21,15 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    compilerOptions {
+        freeCompilerArgs.add("-XXLanguage:+ExpectRefinement")
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
                 implementation(libs.kotlinx.serialization.json)
-                api(project(":flocon-base"))
-                api(project(":deeplinks"))
             }
         }
         

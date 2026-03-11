@@ -3,8 +3,10 @@ package io.github.openflocon.flocon.plugins.device
 import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.device.model.fromdevice.RegisterDeviceDataModel
+import io.github.openflocon.flocon.pluginsold.device.FloconDeviceConfig
+import io.github.openflocon.flocon.pluginsold.device.FloconDevicePlugin
 
-actual object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin> {
+object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin> {
     override val name: String = "Device"
     override val pluginId: String = Protocol.ToDevice.Device.Plugin
     override fun createConfig() = FloconDeviceConfig()
@@ -22,6 +24,7 @@ internal class FloconDevicePluginImpl(
     private var sender: FloconMessageSender,
     private val context: FloconContext,
 ) : FloconPlugin, FloconDevicePlugin {
+    override val key: String = "DEVICE"
 
     override fun registerWithSerial(serial: String) {
         try {

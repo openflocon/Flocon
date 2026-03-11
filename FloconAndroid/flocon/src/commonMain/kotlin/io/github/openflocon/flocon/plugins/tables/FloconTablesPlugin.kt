@@ -2,10 +2,12 @@ package io.github.openflocon.flocon.plugins.tables
 
 import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.plugins.tables.model.TableItem
 import io.github.openflocon.flocon.plugins.tables.model.tableItemListToJson
+import io.github.openflocon.flocon.pluginsold.tables.FloconTableConfig
+import io.github.openflocon.flocon.pluginsold.tables.FloconTablePlugin
+import io.github.openflocon.flocon.pluginsold.tables.model.TableItem
 
-actual object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
+ object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
     override val name: String = "Table"
     override val pluginId: String = Protocol.ToDevice.Table.Plugin
     override fun createConfig() = FloconTableConfig()
@@ -19,6 +21,7 @@ actual object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePl
 internal class FloconTablePluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconPlugin, FloconTablePlugin {
+    override val key: String = "TABLE"
 
     override fun onMessageReceived(
         method: String,

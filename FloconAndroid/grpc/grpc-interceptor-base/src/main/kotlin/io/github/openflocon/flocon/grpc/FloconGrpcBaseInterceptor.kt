@@ -2,13 +2,12 @@
 
 package io.github.openflocon.flocon.grpc
 
-import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.grpc.model.RequestHolder
 import io.github.openflocon.flocon.grpc.model.toHeaders
-import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
-import io.github.openflocon.flocon.plugins.network.model.FloconNetworkRequest
-import io.github.openflocon.flocon.plugins.network.model.FloconNetworkResponse
+import io.github.openflocon.flocon.pluginsold.network.FloconNetworkPlugin
+import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkRequest
+import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkResponse
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.ClientCall
@@ -33,7 +32,7 @@ abstract class FloconGrpcBaseInterceptor(
         callOptions: CallOptions,
         next: Channel,
     ): ClientCall<ReqT, RespT> {
-        val networkPlugin = FloconApp.instance?.client?.networkPlugin
+        val networkPlugin = TODO()//FloconApp.instance?.client?.networkPlugin
         if (networkPlugin == null) {
             // do not intercept if no network plugin, just call
             return next.newCall(method, callOptions)
@@ -101,9 +100,9 @@ private class LoggingForwardingClientCall<ReqT, RespT>(
             callId = callId,
             request = request
         )
-        floconNetworkPlugin.badQualityConfig?.let {
-            executeBadQuality(it)
-        }
+//        floconNetworkPlugin.badQualityConfig?.let {
+//            executeBadQuality(it)
+//        }
         super.sendMessage(message)
     }
 }

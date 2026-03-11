@@ -10,17 +10,12 @@ import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.github.openflocon.flocon.myapplication.multi.Databases.getDogDatabase
 import io.github.openflocon.flocon.myapplication.multi.Databases.getFoodDatabase
-import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.initializeDatabases
-import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinks
-import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPlugin
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

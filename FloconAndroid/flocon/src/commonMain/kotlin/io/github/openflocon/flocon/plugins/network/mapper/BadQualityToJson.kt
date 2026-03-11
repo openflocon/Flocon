@@ -2,10 +2,9 @@ package io.github.openflocon.flocon.plugins.network.mapper
 
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
+import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 internal fun BadQualityConfig.toJsonString(): String {
     return FloconEncoder.json.encodeToString<BadQualityConfigSerializable>(
@@ -24,6 +23,7 @@ internal fun parseBadQualityConfig(jsonString: String): BadQualityConfig? {
         null
     }
 }
+
 @Serializable
 internal class BadQualityConfigSerializable(
     val latency: LatencySerializable,
@@ -63,6 +63,7 @@ internal fun BadQualityConfig.toSerializable(): BadQualityConfigSerializable {
                     errorBody = t.errorBody,
                     errorContentType = t.errorContentType
                 )
+
                 is BadQualityConfig.Error.Type.ErrorThrow -> BadQualityConfigSerializable.ErrorSerializable(
                     weight = error.weight,
                     errorException = t.classPath

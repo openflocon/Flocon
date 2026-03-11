@@ -8,7 +8,6 @@ import io.github.openflocon.flocon.myapplication.database.dao.DogDao
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanWithDogEntity
-import io.github.openflocon.flocon.plugins.database.floconLogDatabaseQuery
 import java.util.concurrent.Executors
 
 @Database(
@@ -30,17 +29,18 @@ abstract class DogDatabase : RoomDatabase() {
         fun getDatabase(context: Context): DogDatabase {
             val dbName = "dogs_database"
             return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    DogDatabase::class.java,
-                    dbName
-                ).setQueryCallback({ sqlQuery, bindArgs -> floconLogDatabaseQuery(
-                    dbName = dbName, sqlQuery = sqlQuery, bindArgs = bindArgs
-                ) }, Executors.newSingleThreadExecutor())
-                    .fallbackToDestructiveMigration()
-                    .build()
-                INSTANCE = instance
-                instance
+                TODO()
+//                val instance = Room.databaseBuilder(
+//                    context.applicationContext,
+//                    DogDatabase::class.java,
+//                    dbName
+//                ).setQueryCallback({ sqlQuery, bindArgs -> floconLogDatabaseQuery(
+//                    dbName = dbName, sqlQuery = sqlQuery, bindArgs = bindArgs
+//                ) }, Executors.newSingleThreadExecutor())
+//                    .fallbackToDestructiveMigration()
+//                    .build()
+//                INSTANCE = instance
+//                instance
             }
         }
     }

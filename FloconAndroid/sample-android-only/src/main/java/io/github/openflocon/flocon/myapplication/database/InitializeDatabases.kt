@@ -6,7 +6,7 @@ import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.database.model.FoodEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanWithDogEntity
-import io.github.openflocon.flocon.plugins.database.floconRegisterDatabase
+import io.github.openflocon.flocon.pluginsold.database.floconRegisterDatabase
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 

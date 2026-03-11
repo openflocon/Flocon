@@ -1,7 +1,7 @@
 package io.github.openflocon.flocon.ktor
 
-import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
-import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
+import io.github.openflocon.flocon.pluginsold.network.FloconNetworkPlugin
+import io.github.openflocon.flocon.pluginsold.network.model.MockNetworkResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.HttpClientCall
 import io.ktor.client.request.HttpRequestBuilder
@@ -13,14 +13,12 @@ import io.ktor.util.date.GMTDate
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.delay
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 internal fun findMock(
     request: HttpRequestBuilder,
     floconNetworkPlugin: FloconNetworkPlugin,
 ): MockNetworkResponse? {
-    val url =  request.url.toString()
+    val url = request.url.toString()
     val method = request.method.value
     return floconNetworkPlugin.mocks.firstOrNull {
         it.expectation.matches(
@@ -40,7 +38,7 @@ internal suspend fun executeMock(
         delay(mock.response.delay)
     }
 
-    when(val response = mock.response) {
+    when (val response = mock.response) {
         is MockNetworkResponse.Response.Body -> {
             val bodyBytes = response.body.encodeToByteArray()
             val headers = HeadersBuilder().apply {
@@ -58,6 +56,7 @@ internal suspend fun executeMock(
 
             return HttpClientCall(client, request.build(), responseData)
         }
+
         is MockNetworkResponse.Response.ErrorThrow -> {
             val error = response.generate()
             if (error != null) {

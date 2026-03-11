@@ -1,6 +1,6 @@
 package io.github.openflocon.flocon.ktor
 
-import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
+import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.call.HttpClientCall
 import io.ktor.client.request.HttpRequestBuilder
