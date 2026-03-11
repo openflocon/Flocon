@@ -27,6 +27,7 @@ import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.grpc.GrpcController
 import io.github.openflocon.flocon.myapplication.ui.ImagesListView
 import io.github.openflocon.flocon.myapplication.ui.theme.MyApplicationTheme
+import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinks
 import io.github.openflocon.flocon.startFlocon
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -212,21 +213,21 @@ class MainActivity : ComponentActivity() {
 
     private fun initFlocon() {
         startFlocon(FloconContext(this)) {
-//            install(FloconDeeplinks) {
-//                register("flocon://home")
-//                register("flocon://test")
-//                register(
-//                    "flocon://user/[userId]",
-//                    label = "User"
-//                ) {
-//                    param("userId", listOf("Florent", "David", "Guillaume"))
-//                }
-//                register(
-//                    "flocon://post/[postId]?comment=[commentText]",
-//                    label = "Post",
-//                    description = "Open a post and send a comment"
-//                )
-//            }
+            install(FloconDeeplinks) {
+                register("flocon://home")
+                register("flocon://test")
+                register(
+                    "flocon://user/[userId]",
+                    label = "User"
+                ) {
+                    param("userId", listOf("Florent", "David", "Guillaume"))
+                }
+                register(
+                    "flocon://post/[postId]?comment=[commentText]",
+                    label = "Post",
+                    description = "Open a post and send a comment"
+                )
+            }
         }
     }
 

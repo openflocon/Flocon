@@ -83,6 +83,10 @@ dependencies {
     } else {
         debugImplementation(project(":flocon"))
         releaseImplementation(project(":flocon-no-op"))
+
+        debugImplementation(project(":deeplinks"))
+        releaseImplementation(project(":deeplinks-no-op"))
+
         debugImplementation(project(":okhttp-interceptor"))
         releaseImplementation(project(":okhttp-interceptor-no-op"))
         implementation(project(":grpc:grpc-interceptor-lite"))
