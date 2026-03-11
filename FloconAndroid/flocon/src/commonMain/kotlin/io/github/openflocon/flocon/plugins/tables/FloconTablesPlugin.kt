@@ -11,7 +11,7 @@ import io.github.openflocon.flocon.pluginsold.tables.model.TableItem
     override val name: String = "Table"
     override val pluginId: String = Protocol.ToDevice.Table.Plugin
     override fun createConfig() = FloconTableConfig()
-    override fun install(config: FloconTableConfig, app: FloconApp): FloconTablePlugin {
+    override fun install(config: Any, app: FloconApp): FloconTablePlugin {
         return FloconTablePluginImpl(
             sender = app.client as FloconMessageSender
         )

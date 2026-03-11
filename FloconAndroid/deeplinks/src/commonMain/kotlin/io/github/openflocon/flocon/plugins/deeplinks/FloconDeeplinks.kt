@@ -10,7 +10,8 @@ object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeepli
     override val name: String = "Deeplinks"
     override val pluginId: String = FloconDeeplinks::class.simpleName!!
     override fun createConfig() = FloconDeeplinksConfig()
-    override fun install(config: FloconDeeplinksConfig, app: FloconApp): FloconDeeplinksPlugin {
+    override fun install(config: Any, app: FloconApp): FloconDeeplinksPlugin {
+        val config = config as FloconDeeplinksConfig // TODO
         val plugin = FloconDeeplinksPluginImpl(
             sender = app.client as FloconMessageSender
         )

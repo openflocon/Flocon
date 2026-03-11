@@ -21,10 +21,7 @@ class FloconNetworkConfig {
  */
 object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlugin> {
     override fun createConfig(): FloconNetworkConfig = TODO()
-    override fun install(
-        config: FloconNetworkConfig,
-        app: FloconApp
-    ): FloconNetworkPlugin = TODO()
+    override fun install(config: Any, app: FloconApp): FloconNetworkPlugin = TODO()
 
     override val name: String = ""
 }

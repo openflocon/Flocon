@@ -22,10 +22,7 @@ object FloconCrashReporter :
         Protocol.ToDevice.Analytics.Plugin // Crash reporter is usually write-only but we can set an ID
 
     override fun createConfig() = FloconCrashReporterConfig()
-    override fun install(
-        config: FloconCrashReporterConfig,
-        app: FloconApp
-    ): FloconCrashReporterPlugin {
+    override fun install(config: Any, app: FloconApp): FloconCrashReporterPlugin {
         val client = app.client as FloconMessageSender
         return FloconCrashReporterPluginImpl(
             context = TODO(), //FloconContext(appContext = null), // Handled by datasource

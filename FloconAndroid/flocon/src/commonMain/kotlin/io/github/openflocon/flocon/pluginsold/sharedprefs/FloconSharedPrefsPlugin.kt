@@ -14,10 +14,7 @@ object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPr
         TODO("Not yet implemented")
     }
 
-    override fun install(
-        config: FloconPreferencesConfig,
-        app: FloconApp
-    ): FloconPreferencesPlugin {
+    override fun install(config: Any, app: FloconApp): FloconPreferencesPlugin {
         TODO("Not yet implemented")
     }
 

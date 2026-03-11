@@ -15,10 +15,7 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
         TODO("Not yet implemented")
     }
 
-    override fun install(
-        config: FloconFilesConfig,
-        app: FloconApp
-    ): FloconFilesPlugin {
+    override fun install(config: Any, app: FloconApp): FloconFilesPlugin {
         TODO("Not yet implemented")
     }
 

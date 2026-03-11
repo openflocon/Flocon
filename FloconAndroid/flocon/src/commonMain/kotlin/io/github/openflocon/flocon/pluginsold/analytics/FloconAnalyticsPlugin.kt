@@ -12,10 +12,7 @@ class FloconAnalyticsConfig
  */
 object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyticsPlugin> {
     override fun createConfig(): FloconAnalyticsConfig = TODO()
-    override fun install(
-        config: FloconAnalyticsConfig,
-        app: FloconApp
-    ): FloconAnalyticsPlugin = TODO()
+    override fun install(config: Any, app: FloconApp): FloconAnalyticsPlugin = TODO()
 
     override val name: String = ""
 }

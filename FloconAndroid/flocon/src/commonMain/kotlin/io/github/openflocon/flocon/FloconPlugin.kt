@@ -36,5 +36,5 @@ interface FloconPluginFactory<Config : Any, PluginInstance : Any> : FloconPlugin
     /**
      * Install the plugin into the [io.github.openflocon.flocon.FloconApp] instance with the given [config].
      */
-    fun install(config: Config, app: FloconApp): PluginInstance
+    fun install(config: Any, app: FloconApp): PluginInstance // TODO
 }
