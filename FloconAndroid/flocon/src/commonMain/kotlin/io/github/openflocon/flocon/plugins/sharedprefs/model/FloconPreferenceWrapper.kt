@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.plugins.sharedprefs.model
 
 import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.pluginsold.sharedprefs.model.FloconPreference
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 

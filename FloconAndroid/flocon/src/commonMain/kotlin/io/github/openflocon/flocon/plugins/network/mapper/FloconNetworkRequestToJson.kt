@@ -3,9 +3,9 @@
 package io.github.openflocon.flocon.plugins.network.mapper
 
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallRequest
-import io.github.openflocon.flocon.plugins.network.model.FloconNetworkCallResponse
-import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
+import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallRequest
+import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallResponse
+import io.github.openflocon.flocon.pluginsold.network.model.FloconWebSocketEvent
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlin.uuid.ExperimentalUuidApi
@@ -14,8 +14,8 @@ import kotlin.uuid.Uuid
 @Serializable
 internal class FloconNetworkCallRequestRemote(
     val floconCallId: String,
-    val floconNetworkType : String,
-    val isMocked : Boolean,
+    val floconNetworkType: String,
+    val isMocked: Boolean,
 
     val url: String,
     val method: String,

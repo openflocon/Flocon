@@ -36,7 +36,7 @@ android {
 
 dependencies {
 
-    implementation(project(":flocon-base"))
+    implementation(project(":flocon"))
 
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.jetbrains.kotlinx.coroutines.core)

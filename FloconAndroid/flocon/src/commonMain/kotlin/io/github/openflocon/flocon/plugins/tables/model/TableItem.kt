@@ -1,6 +1,8 @@
 package io.github.openflocon.flocon.plugins.tables.model
 
 import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.pluginsold.tables.model.TableColumnConfig
+import io.github.openflocon.flocon.pluginsold.tables.model.TableItem
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 

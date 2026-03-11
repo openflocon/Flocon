@@ -1,19 +1,24 @@
 package io.github.openflocon.flocon.plugins.database
 
-import io.github.openflocon.flocon.*
+import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginFactory
+import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.model.FloconMessageFromServer
-import io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
+import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseQueryLogModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DeviceDataBaseDataModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.QueryResultDataModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.listDeviceDataBaseDataModelToJson
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.toJson
 import io.github.openflocon.flocon.plugins.database.model.todevice.DatabaseQueryMessage
-import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseQueryLogModel
+import io.github.openflocon.flocon.pluginsold.database.FloconDatabaseConfig
+import io.github.openflocon.flocon.pluginsold.database.FloconDatabasePlugin
+import io.github.openflocon.flocon.pluginsold.database.model.FloconDatabaseModel
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 
 internal interface FloconDatabaseDataSource {
     fun executeSQL(
@@ -29,14 +34,14 @@ internal interface FloconDatabaseDataSource {
 
 internal expect fun buildFloconDatabaseDataSource(context: FloconContext): FloconDatabaseDataSource
 
-actual object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabasePlugin> {
+object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabasePlugin> {
     override val name: String = "Database"
     override val pluginId: String = Protocol.ToDevice.Database.Plugin
     override fun createConfig() = FloconDatabaseConfig()
     override fun install(config: FloconDatabaseConfig, app: FloconApp): FloconDatabasePlugin {
         return FloconDatabasePluginImpl(
             sender = app.client as FloconMessageSender,
-            context = FloconContext(appContext = null), // Handled by actual buildFloconDatabaseDataSource
+            context = TODO() // FloconContext(appContext = null), // Handled by actual buildFloconDatabaseDataSource
         )
     }
 }
@@ -45,6 +50,7 @@ internal class FloconDatabasePluginImpl(
     private var sender: FloconMessageSender,
     private val context: FloconContext,
 ) : FloconPlugin, FloconDatabasePlugin {
+    override val key: String = "DATABASE"
 
     private val registeredDatabases = MutableStateFlow<List<FloconDatabaseModel>>(emptyList())
 
@@ -102,9 +108,13 @@ internal class FloconDatabasePluginImpl(
         }
     }
 
+//    override fun register(floconDatabaseModel: FloconDatabaseModel) {
+//        registeredDatabases.update { it + floconDatabaseModel }
+//        sendAllDatabases(sender)
+//    }
+
     override fun register(floconDatabaseModel: FloconDatabaseModel) {
-        registeredDatabases.update { it + floconDatabaseModel }
-        sendAllDatabases(sender)
+        TODO("Not yet implemented")
     }
 
     override fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>) {

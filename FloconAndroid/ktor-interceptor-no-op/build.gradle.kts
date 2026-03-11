@@ -22,7 +22,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":flocon-base"))
+                implementation(project(":flocon"))
                 implementation(libs.ktor.client.core)
             }
         }

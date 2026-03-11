@@ -1,11 +1,17 @@
 package io.github.openflocon.flocon.plugins.analytics
 
-import io.github.openflocon.flocon.*
+import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginFactory
+import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
 import io.github.openflocon.flocon.plugins.analytics.mapper.analyticsItemsToJson
+import io.github.openflocon.flocon.pluginsold.analytics.FloconAnalyticsConfig
+import io.github.openflocon.flocon.pluginsold.analytics.FloconAnalyticsPlugin
+import io.github.openflocon.flocon.pluginsold.analytics.model.AnalyticsItem
 
-actual object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyticsPlugin> {
+object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyticsPlugin> {
     override val name: String = "Analytics"
     override val pluginId: String = Protocol.ToDevice.Analytics.Plugin
     override fun createConfig() = FloconAnalyticsConfig()
@@ -19,6 +25,8 @@ actual object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, Floco
 internal class FloconAnalyticsPluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconPlugin, FloconAnalyticsPlugin {
+    override val key: String
+        get() = "ANALYTICS"
 
     override fun onMessageReceived(
         method: String,

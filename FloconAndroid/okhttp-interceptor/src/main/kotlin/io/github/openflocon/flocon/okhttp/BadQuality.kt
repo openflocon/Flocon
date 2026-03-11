@@ -1,6 +1,6 @@
 package io.github.openflocon.flocon.okhttp
 
-import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
+import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Protocol
 import okhttp3.Request
@@ -36,7 +36,8 @@ internal fun failResponseIfNeeded(
         badQualityConfig.selectRandomError()?.let { selectedError ->
             when (val t = selectedError.type) {
                 is BadQualityConfig.Error.Type.Body -> {
-                    val errorBody = t.errorBody.toResponseBody(t.errorContentType.toMediaTypeOrNull())
+                    val errorBody =
+                        t.errorBody.toResponseBody(t.errorContentType.toMediaTypeOrNull())
 
                     return Response.Builder()
                         .request(request)

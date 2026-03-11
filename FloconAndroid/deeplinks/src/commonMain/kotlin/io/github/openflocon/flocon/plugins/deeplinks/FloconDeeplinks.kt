@@ -24,6 +24,7 @@ object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeepli
 internal class FloconDeeplinksPluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconPlugin, FloconDeeplinksPlugin {
+    override val key: String = "DEEP_LINK"
 
     private val deeplinks = MutableStateFlow<List<DeeplinkModel>?>(null)
 
@@ -56,13 +57,4 @@ internal class FloconDeeplinksPluginImpl(
             FloconLogger.logError("deeplink mapping error", t)
         }
     }
-}
-
-fun floconRegisterDeeplink(vararg deeplinks: String) {
-    val models = deeplinks.map { DeeplinkModel(link = it, parameters = emptyList()) }
-    FloconApp.instance?.client?.deeplinksPlugin?.registerDeeplinks(models)
-}
-
-fun floconRegisterDeeplinks(deeplinks: List<DeeplinkModel>) {
-    FloconApp.instance?.client?.deeplinksPlugin?.registerDeeplinks(deeplinks)
 }

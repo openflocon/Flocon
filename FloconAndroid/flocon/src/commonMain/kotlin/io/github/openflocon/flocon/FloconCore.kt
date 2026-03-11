@@ -32,26 +32,24 @@ abstract class FloconCore : FloconApp() {
         context: FloconContext,
         configuration: FloconConfiguration = FloconConfiguration()
     ) {
-        super.initializeFlocon(context)
-        val newClient = FloconClientImpl(context, configuration)
-        _client = newClient
+        //super.initializeFlocon(context)
+       // val newClient = FloconClientImpl(context, configuration)
+        //_client = newClient
         
         // Setup crash handler early to catch crashes during initialization
-        newClient.crashReporterPlugin?.setupCrashHandler()
+        //newClient.crashReporterPlugin?.setupCrashHandler()
         
         _isInitialized.value = true
 
-        scope.launch {
-            start(
-                client = newClient,
-                context = context
-            )
-        }
-
-        super.initializeFlocon()
+//        scope.launch {
+//            start(
+//                client = newClient,
+//                context = context
+//            )
+//        }
     }
 
-    private suspend fun start(client: FloconApp.Client, context: FloconContext) {
+    private suspend fun start(client: Client, context: FloconContext) {
         // try to connect, it fail : try again in 3s
         try {
             client.connect(

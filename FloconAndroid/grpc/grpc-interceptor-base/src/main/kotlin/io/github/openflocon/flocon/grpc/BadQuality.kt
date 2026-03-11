@@ -1,6 +1,6 @@
 package io.github.openflocon.flocon.grpc
 
-import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
+import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
 import java.io.IOException
 
 @Throws(IOException::class)

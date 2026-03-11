@@ -1,6 +1,12 @@
 package io.github.openflocon.flocon.plugins.files
 
-import io.github.openflocon.flocon.*
+import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconFile
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginFactory
+import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconFileInfo
@@ -11,10 +17,12 @@ import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFi
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFolderContentMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFileMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFilesMessage
+import io.github.openflocon.flocon.pluginsold.files.FloconFilesConfig
+import io.github.openflocon.flocon.pluginsold.files.FloconFilesPlugin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-actual object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
+object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
     override val name: String = "Files"
     override val pluginId: String = Protocol.ToDevice.Files.Plugin
     override fun createConfig() = FloconFilesConfig()
@@ -30,13 +38,18 @@ actual object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPl
 
 internal interface FileDataSource {
     fun getFile(path: String, isConstantPath: Boolean): FloconFile?
-    fun getFolderContent(path: String, isConstantPath: Boolean, withFoldersSize: Boolean): List<FileDataModel>
+    fun getFolderContent(
+        path: String,
+        isConstantPath: Boolean,
+        withFoldersSize: Boolean
+    ): List<FileDataModel>
+
     fun deleteFile(path: String)
     fun deleteFiles(path: List<String>)
     fun deleteFolderContent(folder: FloconFile)
 }
 
-internal expect fun fileDataSource(context: FloconContext) : FileDataSource
+internal expect fun fileDataSource(context: FloconContext): FileDataSource
 
 internal class FloconFilesPluginImpl(
     private val context: FloconContext,
@@ -44,6 +57,7 @@ internal class FloconFilesPluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconPlugin, FloconFilesPlugin {
 
+    override val key: String = "FILES"
     private val fileDataSource = fileDataSource(context)
     private val withFoldersSize = MutableStateFlow(false)
 
@@ -67,15 +81,16 @@ internal class FloconFilesPluginImpl(
             Protocol.ToDevice.Files.Method.GetFile -> {
                 val getFileMessage = ToDeviceGetFileMessage.fromJson(message = body) ?: return
 
-                fileDataSource.getFile(path = getFileMessage.path, isConstantPath = false)?.let { file ->
-                    floconFileSender.send(
-                        file = file,
-                        infos = FloconFileInfo(
-                            requestId = getFileMessage.requestId,
-                            path = getFileMessage.path,
+                fileDataSource.getFile(path = getFileMessage.path, isConstantPath = false)
+                    ?.let { file ->
+                        floconFileSender.send(
+                            file = file,
+                            infos = FloconFileInfo(
+                                requestId = getFileMessage.requestId,
+                                path = getFileMessage.path,
+                            )
                         )
-                    )
-                }
+                    }
             }
 
             Protocol.ToDevice.Files.Method.DeleteFile -> {

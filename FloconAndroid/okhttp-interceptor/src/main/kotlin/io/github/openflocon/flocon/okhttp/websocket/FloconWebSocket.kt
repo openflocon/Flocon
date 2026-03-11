@@ -1,9 +1,7 @@
 package io.github.openflocon.flocon.okhttp.websocket
 
 import io.github.openflocon.flocon.FloconApp
-import io.github.openflocon.flocon.plugins.network.floconLogWebSocketEvent
-import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent
-import io.github.openflocon.flocon.plugins.network.model.FloconWebSocketMockListener
+import io.github.openflocon.flocon.pluginsold.network.model.FloconWebSocketEvent
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -19,15 +17,15 @@ object FloconWebSocket {
         error: Throwable? = null,
     ) {
         val size = message?.toByteArray()?.size?.toLong()
-        floconLogWebSocketEvent(
-            FloconWebSocketEvent(
-                websocketUrl = webSocket.request().url.toString(),
-                event = event,
-                message = message,
-                error = error,
-                size = size ?: 0L,
-            )
-        )
+//        floconLogWebSocketEvent(
+//            FloconWebSocketEvent(
+//                websocketUrl = webSocket.request().url.toString(),
+//                event = event,
+//                message = message,
+//                error = error,
+//                size = size ?: 0L,
+//            )
+//        )
     }
 
     fun send(webSocket: WebSocket, text: String) : Boolean {
@@ -53,13 +51,13 @@ object FloconWebSocket {
         private var websocketRef : WeakReference<WebSocket>? = null
 
         init {
-            FloconApp.instance?.client?.networkPlugin?.registerWebSocketMockListener(id = id, listener = object: FloconWebSocketMockListener {
-                override fun onMessage(message: String) {
-                    websocketRef?.get()?.let { websocket ->
-                        onMessage(websocket, message)
-                    }
-                }
-            })
+//            FloconApp.instance?.client?.networkPlugin?.registerWebSocketMockListener(id = id, listener = object: FloconWebSocketMockListener {
+//                override fun onMessage(message: String) {
+//                    websocketRef?.get()?.let { websocket ->
+//                        onMessage(websocket, message)
+//                    }
+//                }
+//            })
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {

@@ -3,7 +3,6 @@ package io.github.openflocon.flocon.plugins.crashreporter.model
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.core.FloconEncoder
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 internal fun CrashReportDataModel.toJson(): String {
     return FloconEncoder.json.encodeToString(this)

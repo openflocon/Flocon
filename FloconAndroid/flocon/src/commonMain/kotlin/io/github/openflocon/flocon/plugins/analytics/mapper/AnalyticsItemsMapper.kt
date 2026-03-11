@@ -1,7 +1,7 @@
 package io.github.openflocon.flocon.plugins.analytics.mapper
 
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
+import io.github.openflocon.flocon.pluginsold.analytics.model.AnalyticsItem
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 

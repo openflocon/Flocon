@@ -23,7 +23,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
-                api(project(":flocon-base"))
+                api(project(":flocon"))
             }
         }
         

@@ -3,12 +3,9 @@
 package io.github.openflocon.flocon.myapplication.sharedpreferences
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import androidx.core.content.edit
-import io.github.openflocon.flocon.plugins.sharedprefs.FloconSharedPreference
-import io.github.openflocon.flocon.plugins.sharedprefs.floconRegisterPreference
-import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
+import io.github.openflocon.flocon.pluginsold.sharedprefs.FloconSharedPreference
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.uuid.Uuid
@@ -17,7 +14,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 fun initializeSharedPreferencesAfterInit(context: Context) {
     val referencedPref = context.getSharedPreferences("ref_pref", Context.MODE_PRIVATE)
-    floconRegisterPreference(FloconSharedPreference("my_custom_name", referencedPref))
+    //floconRegisterPreference(FloconSharedPreference("my_custom_name", referencedPref))
 
     referencedPref.edit {
         putString("works", "yes")

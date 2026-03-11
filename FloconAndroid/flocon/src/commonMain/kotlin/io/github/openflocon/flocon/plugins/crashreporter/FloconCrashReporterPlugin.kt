@@ -4,6 +4,8 @@ import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.crashreporter.model.CrashReportDataModel
 import io.github.openflocon.flocon.plugins.crashreporter.model.crashReportsListToJson
+import io.github.openflocon.flocon.pluginsold.crashreporter.FloconCrashReporterConfig
+import io.github.openflocon.flocon.pluginsold.crashreporter.FloconCrashReporterPlugin
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,14 +15,20 @@ import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-actual object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, FloconCrashReporterPlugin> {
+object FloconCrashReporter :
+    FloconPluginFactory<FloconCrashReporterConfig, FloconCrashReporterPlugin> {
     override val name: String = "CrashReporter"
-    override val pluginId: String = Protocol.ToDevice.Analytics.Plugin // Crash reporter is usually write-only but we can set an ID
+    override val pluginId: String =
+        Protocol.ToDevice.Analytics.Plugin // Crash reporter is usually write-only but we can set an ID
+
     override fun createConfig() = FloconCrashReporterConfig()
-    override fun install(config: FloconCrashReporterConfig, app: FloconApp): FloconCrashReporterPlugin {
+    override fun install(
+        config: FloconCrashReporterConfig,
+        app: FloconApp
+    ): FloconCrashReporterPlugin {
         val client = app.client as FloconMessageSender
         return FloconCrashReporterPluginImpl(
-            context = FloconContext(appContext = null), // Handled by datasource
+            context = TODO(), //FloconContext(appContext = null), // Handled by datasource
             sender = client,
             coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
         )
@@ -32,6 +40,7 @@ internal class FloconCrashReporterPluginImpl(
     private var sender: FloconMessageSender,
     private val coroutineScope: CoroutineScope,
 ) : FloconPlugin, FloconCrashReporterPlugin {
+    override val key: String = "CRASH_REPORTER"
 
     private val dataSource = buildFloconCrashReporterDataSource(context)
 

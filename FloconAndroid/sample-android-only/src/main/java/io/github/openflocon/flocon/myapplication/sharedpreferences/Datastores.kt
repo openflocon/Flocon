@@ -5,8 +5,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import io.github.openflocon.flocon.plugins.sharedprefs.floconRegisterPreference
-import io.github.openflocon.flocon.preferences.datastores.model.FloconDatastorePreference
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -38,7 +36,7 @@ class Datastores(private val context: Context) {
     }
 
     init {
-        floconRegisterPreference(FloconDatastorePreference("datastore", context.dataStore))
+        //floconRegisterPreference(FloconDatastorePreference("datastore", context.dataStore))
         GlobalScope.launch {
             saveUsername("John Doe")
             saveUserAge(30)

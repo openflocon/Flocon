@@ -1,12 +1,12 @@
 package io.github.openflocon.flocon.okhttp
 
-import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
-import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
+import io.github.openflocon.flocon.pluginsold.network.FloconNetworkPlugin
+import io.github.openflocon.flocon.pluginsold.network.model.MockNetworkResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.Response.*
+import okhttp3.Response.Builder
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import okio.GzipSink
@@ -17,7 +17,7 @@ internal fun findMock(
     request: Request,
     floconNetworkPlugin: FloconNetworkPlugin,
 ): MockNetworkResponse? {
-    val url =  request.url.toString()
+    val url = request.url.toString()
     val method = request.method
     return floconNetworkPlugin.mocks.firstOrNull {
         it.expectation.matches(
@@ -28,7 +28,11 @@ internal fun findMock(
 }
 
 @Throws(IOException::class)
-internal fun executeMock(request: Request, requestHeaders: Map<String, String>, mock: MockNetworkResponse): Response {
+internal fun executeMock(
+    request: Request,
+    requestHeaders: Map<String, String>,
+    mock: MockNetworkResponse
+): Response {
     if (mock.response.delay > 0) {
         try {
             Thread.sleep(mock.response.delay)
@@ -37,13 +41,14 @@ internal fun executeMock(request: Request, requestHeaders: Map<String, String>, 
         }
     }
 
-    when(val response = mock.response) {
+    when (val response = mock.response) {
         is MockNetworkResponse.Response.Body -> {
             val mediaType = response.mediaType.toMediaTypeOrNull()
             var bodyBytes = response.body.toByteArray()
 
             // TODO maybe check the mocked response headers
-            val isGzipped = requestHeaders["Accept-Encoding"] == "gzip" || requestHeaders["accept-encoding"] == "gzip"
+            val isGzipped =
+                requestHeaders["Accept-Encoding"] == "gzip" || requestHeaders["accept-encoding"] == "gzip"
 
             if (isGzipped) {
                 val buffer = Buffer()
