@@ -1,59 +1,13 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.vanniktech.maven.publish)
-}
-
-kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
-    
-    jvm()
-
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(project(":flocon"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-                implementation(libs.ktor.client.core)
-            }
-        }
-        
-        val androidMain by getting {
-            dependencies {
-                implementation(libs.brotli.dec)
-            }
-        }
-        
-        val jvmMain by getting {
-            dependencies {
-                implementation(libs.brotli.dec)
-            }
-        }
-
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-        }
-    }
+    alias(libs.plugins.kotlin.android)
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 android {
-    namespace = "io.github.openflocon.flocon.ktor"
+    namespace = "io.github.openflocon.flocon.okhttp"
     compileSdk = 36
 
     defaultConfig {
@@ -79,6 +33,27 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
+    }
+}
+
+dependencies {
+
+    implementation(project(":network:core"))
+
+    implementation(platform(libs.kotlinx.coroutines.bom))
+    implementation(libs.jetbrains.kotlinx.coroutines.core)
+    implementation(libs.jetbrains.kotlinx.coroutines.android)
+
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp3.okhttp)
+    implementation(libs.brotli.dec)
+
+    testImplementation(libs.junit)
+}
+
 
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
@@ -91,13 +66,12 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-        artifactId = "flocon-ktor-interceptor",
+        artifactId = "flocon-okhttp-interceptor",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
-
     pom {
-        name = "Flocon Ktor Interceptor"
+        name = "Flocon OkHttp Interceptor"
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"
