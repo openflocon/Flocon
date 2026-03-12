@@ -40,7 +40,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":flocon"))
-                implementation(project(":ktor-interceptor"))
+                implementation(project(":network:ktor-interceptor"))
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)

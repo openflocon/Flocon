@@ -23,20 +23,17 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":flocon"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-                implementation(libs.ktor.client.core)
+                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
             }
         }
         
         val androidMain by getting {
             dependencies {
-                implementation(libs.brotli.dec)
             }
         }
         
         val jvmMain by getting {
             dependencies {
-                implementation(libs.brotli.dec)
             }
         }
 
@@ -53,7 +50,7 @@ kotlin {
 }
 
 android {
-    namespace = "io.github.openflocon.flocon.ktor"
+    namespace = "io.github.openflocon.flocon.network.core.noop"
     compileSdk = 36
 
     defaultConfig {
@@ -72,13 +69,11 @@ android {
             )
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-
 
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
@@ -91,13 +86,12 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-        artifactId = "flocon-ktor-interceptor",
+        artifactId = "flocon-network-core-no-op",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
-
     pom {
-        name = "Flocon Ktor Interceptor"
+        name = "Flocon Network Core No-Op"
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"

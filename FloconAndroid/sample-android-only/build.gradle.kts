@@ -83,11 +83,11 @@ dependencies {
         debugImplementation(project(":deeplinks"))
         releaseImplementation(project(":deeplinks-no-op"))
 
-        debugImplementation(project(":okhttp-interceptor"))
-        releaseImplementation(project(":okhttp-interceptor-no-op"))
+        debugImplementation(project(":network:okhttp-interceptor"))
+        releaseImplementation(project(":network:okhttp-interceptor-no-op"))
         implementation(project(":grpc:grpc-interceptor-lite"))
-        debugImplementation(project(":ktor-interceptor"))
-        releaseImplementation(project(":ktor-interceptor-no-op"))
+        debugImplementation(project(":network:ktor-interceptor"))
+        releaseImplementation(project(":network:ktor-interceptor-no-op"))
         debugImplementation(project(":datastores"))
         releaseImplementation(project(":datastores-no-op"))
     }
