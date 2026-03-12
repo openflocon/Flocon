@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.plugins.network
+package io.github.openflocon.flocon.network.core
 
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconContext
@@ -7,13 +7,11 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallRequestToJson
-import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkCallResponseToJson
-import io.github.openflocon.flocon.plugins.network.mapper.floconNetworkWebSocketEventToJson
-import io.github.openflocon.flocon.plugins.network.mapper.parseBadQualityConfig
-import io.github.openflocon.flocon.plugins.network.mapper.parseMockResponses
-import io.github.openflocon.flocon.plugins.network.mapper.parseWebSocketMockMessage
-import io.github.openflocon.flocon.plugins.network.mapper.webSocketIdsToJsonArray
+import io.github.openflocon.flocon.network.core.mapper.floconNetworkCallResponseToJson
+import io.github.openflocon.flocon.network.core.mapper.floconNetworkWebSocketEventToJson
+import io.github.openflocon.flocon.network.core.mapper.parseBadQualityConfig
+import io.github.openflocon.flocon.network.core.mapper.parseMockResponses
+import io.github.openflocon.flocon.network.core.mapper.parseWebSocketMockMessage
 import io.github.openflocon.flocon.pluginsold.network.FloconNetworkConfig
 import io.github.openflocon.flocon.pluginsold.network.FloconNetworkPlugin
 import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig

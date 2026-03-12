@@ -1,8 +1,8 @@
-package io.github.openflocon.flocon.plugins.network
+package io.github.openflocon.flocon.network.core
 
 import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.plugins.network.model.BadQualityConfig
-import io.github.openflocon.flocon.plugins.network.model.MockNetworkResponse
+import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
+import io.github.openflocon.flocon.pluginsold.network.model.MockNetworkResponse
 
 internal actual fun buildFloconNetworkDataSource(context: FloconContext): FloconNetworkDataSource {
     return FloconNetworkDataSourceIOs()
