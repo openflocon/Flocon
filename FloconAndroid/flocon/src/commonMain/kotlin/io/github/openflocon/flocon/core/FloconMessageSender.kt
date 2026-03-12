@@ -1,11 +1,11 @@
 package io.github.openflocon.flocon.core
 
 interface FloconMessageSender {
-    fun send(
+   suspend fun send(
         plugin: String,
         method: String,
         body: String,
     )
 
-    fun sendPendingMessages()
+    suspend fun sendPendingMessages()
 }

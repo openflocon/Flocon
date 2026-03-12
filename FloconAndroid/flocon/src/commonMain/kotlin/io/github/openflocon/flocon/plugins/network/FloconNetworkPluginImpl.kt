@@ -35,7 +35,7 @@ object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlu
     override val name: String = "Network"
     override val pluginId: String = Protocol.ToDevice.Network.Plugin
     override fun createConfig() = FloconNetworkConfig()
-    override fun install(config: Any, app: FloconApp): FloconNetworkPlugin {
+    override fun install(config: FloconNetworkConfig, app: FloconApp): FloconNetworkPlugin {
         return FloconNetworkPluginImpl(
             context = app.context,
             sender = app.client as FloconMessageSender,
@@ -80,11 +80,11 @@ internal class FloconNetworkPluginImpl(
 
     override fun logRequest(request: FloconNetworkCallRequest) {
         try {
-            sender.send(
-                plugin = Protocol.FromDevice.Network.Plugin,
-                method = Protocol.FromDevice.Network.Method.LogNetworkCallRequest,
-                body = request.floconNetworkCallRequestToJson(),
-            )
+//            sender.send(
+//                plugin = Protocol.FromDevice.Network.Plugin,
+//                method = Protocol.FromDevice.Network.Method.LogNetworkCallRequest,
+//                body = request.floconNetworkCallRequestToJson(),
+//            )
         } catch (t: Throwable) {
             FloconLogger.logError("Network json mapping error", t)
         }
@@ -121,7 +121,7 @@ internal class FloconNetworkPluginImpl(
         }
     }
 
-    override fun onMessageReceived(
+    override suspend fun onMessageReceived(
         method: String,
         body: String,
     ) {
@@ -147,7 +147,7 @@ internal class FloconNetworkPluginImpl(
         }
     }
 
-    override fun onConnectedToServer() {
+    override suspend fun onConnectedToServer() {
         updateWebSocketIds()
     }
 
@@ -162,10 +162,10 @@ internal class FloconNetworkPluginImpl(
     }
 
     private fun updateWebSocketIds() {
-        sender.send(
-            plugin = Protocol.FromDevice.Network.Plugin,
-            method = Protocol.FromDevice.Network.Method.RegisterWebSocketIds,
-            body = webSocketIdsToJsonArray(ids = websocketListeners.value.keys),
-        )
+//        sender.send(
+//            plugin = Protocol.FromDevice.Network.Plugin,
+//            method = Protocol.FromDevice.Network.Method.RegisterWebSocketIds,
+//            body = webSocketIdsToJsonArray(ids = websocketListeners.value.keys),
+//        )
     }
 }

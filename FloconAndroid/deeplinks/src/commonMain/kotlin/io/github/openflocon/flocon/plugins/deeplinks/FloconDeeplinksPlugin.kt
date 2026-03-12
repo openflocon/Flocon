@@ -1,9 +1,10 @@
 package io.github.openflocon.flocon.plugins.deeplinks
 
 import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
 
-class FloconDeeplinksConfig {
+class FloconDeeplinksConfig : FloconPluginConfig {
     val deeplinks = mutableListOf<DeeplinkModel>()
 
     fun register(
@@ -42,5 +43,5 @@ class DeeplinkBuilder(
 }
 
 interface FloconDeeplinksPlugin : FloconPlugin {
-    fun registerDeeplinks(deeplinks: List<DeeplinkModel>)
+    suspend fun registerDeeplinks(deeplinks: List<DeeplinkModel>)
 }

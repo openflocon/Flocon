@@ -22,7 +22,7 @@ object FloconCrashReporter :
         Protocol.ToDevice.Analytics.Plugin // Crash reporter is usually write-only but we can set an ID
 
     override fun createConfig() = FloconCrashReporterConfig()
-    override fun install(config: Any, app: FloconApp): FloconCrashReporterPlugin {
+    override fun install(config: FloconCrashReporterConfig, app: FloconApp): FloconCrashReporterPlugin {
         val client = app.client as FloconMessageSender
         return FloconCrashReporterPluginImpl(
             context = TODO(), //FloconContext(appContext = null), // Handled by datasource
@@ -48,7 +48,7 @@ internal class FloconCrashReporterPluginImpl(
         }
     }
 
-    override fun onConnectedToServer() {
+    override suspend fun onConnectedToServer() {
         // Send all pending crashes
         coroutineScope.launch {
             try {
@@ -64,7 +64,7 @@ internal class FloconCrashReporterPluginImpl(
         }
     }
 
-    override fun onMessageReceived(
+    override suspend fun onMessageReceived(
         method: String,
         body: String,
     ) {
@@ -73,11 +73,11 @@ internal class FloconCrashReporterPluginImpl(
 
     private fun sendCrashes(crashes: List<CrashReportDataModel>) {
         try {
-            sender.send(
-                plugin = Protocol.FromDevice.CrashReporter.Plugin,
-                method = Protocol.FromDevice.CrashReporter.Method.ReportCrash,
-                body = crashReportsListToJson(crashes),
-            )
+//            sender.send(
+//                plugin = Protocol.FromDevice.CrashReporter.Plugin,
+//                method = Protocol.FromDevice.CrashReporter.Method.ReportCrash,
+//                body = crashReportsListToJson(crashes),
+//            )
         } catch (t: Throwable) {
             FloconLogger.logError("Crash report sending error", t)
         }

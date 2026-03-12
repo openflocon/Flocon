@@ -1,9 +1,10 @@
 package io.github.openflocon.flocon.pluginsold.dashboard
 
 import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.pluginsold.dashboard.model.DashboardConfig
 
-class FloconDashboardConfig
+class FloconDashboardConfig : FloconPluginConfig
 
 /**
  * Flocon Dashboard Plugin.

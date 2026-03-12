@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.pluginsold.network
 
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
 import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallRequest
@@ -10,7 +11,7 @@ import io.github.openflocon.flocon.pluginsold.network.model.FloconWebSocketEvent
 import io.github.openflocon.flocon.pluginsold.network.model.FloconWebSocketMockListener
 import io.github.openflocon.flocon.pluginsold.network.model.MockNetworkResponse
 
-class FloconNetworkConfig {
+class FloconNetworkConfig : FloconPluginConfig {
     var badQualityConfig: BadQualityConfig? = null
     val mocks = mutableListOf<MockNetworkResponse>()
 }
@@ -21,7 +22,7 @@ class FloconNetworkConfig {
  */
 object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlugin> {
     override fun createConfig(): FloconNetworkConfig = TODO()
-    override fun install(config: Any, app: FloconApp): FloconNetworkPlugin = TODO()
+    override fun install(config: FloconNetworkConfig, app: FloconApp): FloconNetworkPlugin = TODO()
 
     override val name: String = ""
 }

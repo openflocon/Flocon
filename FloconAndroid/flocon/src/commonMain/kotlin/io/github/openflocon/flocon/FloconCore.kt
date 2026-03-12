@@ -1,6 +1,5 @@
 package io.github.openflocon.flocon
 
-import io.github.openflocon.flocon.client.FloconClientImpl
 import io.github.openflocon.flocon.core.FloconMessageSender
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +29,7 @@ abstract class FloconCore : FloconApp() {
 
     protected fun initializeFlocon(
         context: FloconContext,
-        configuration: FloconConfiguration = FloconConfiguration()
+        configuration: FloconConfiguration = FloconConfiguration(TODO())
     ) {
         //super.initializeFlocon(context)
        // val newClient = FloconClientImpl(context, configuration)

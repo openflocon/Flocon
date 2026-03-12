@@ -15,7 +15,7 @@ object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyt
     override val name: String = "Analytics"
     override val pluginId: String = Protocol.ToDevice.Analytics.Plugin
     override fun createConfig() = FloconAnalyticsConfig()
-    override fun install(config: Any, app: FloconApp): FloconAnalyticsPlugin {
+    override fun install(config: FloconAnalyticsConfig, app: FloconApp): FloconAnalyticsPlugin {
         return FloconAnalyticsPluginImpl(
             sender = app.client as FloconMessageSender
         )
@@ -28,14 +28,14 @@ internal class FloconAnalyticsPluginImpl(
     override val key: String
         get() = "ANALYTICS"
 
-    override fun onMessageReceived(
+    override suspend fun onMessageReceived(
         method: String,
         body: String,
     ) {
         // no op
     }
 
-    override fun onConnectedToServer() {
+    override suspend fun onConnectedToServer() {
         // no op
     }
 
@@ -46,11 +46,11 @@ internal class FloconAnalyticsPluginImpl(
     private fun sendAnalytics(analyticsItems: List<AnalyticsItem>) {
         analyticsItems.takeIf { it.isNotEmpty() }?.forEach { toSend ->
             try {
-                sender.send(
-                    plugin = Protocol.FromDevice.Analytics.Plugin,
-                    method = Protocol.FromDevice.Analytics.Method.AddItems,
-                    body = analyticsItemsToJson(toSend)
-                )
+//                sender.send(
+//                    plugin = Protocol.FromDevice.Analytics.Plugin,
+//                    method = Protocol.FromDevice.Analytics.Method.AddItems,
+//                    body = analyticsItemsToJson(toSend)
+//                )
             } catch (t: Throwable) {
                 FloconLogger.logError("error on sendAnalytics", t)
             }

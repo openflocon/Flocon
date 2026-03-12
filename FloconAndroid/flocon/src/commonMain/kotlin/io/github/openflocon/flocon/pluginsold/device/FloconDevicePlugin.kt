@@ -2,7 +2,7 @@ package io.github.openflocon.flocon.pluginsold.device
 
 import io.github.openflocon.flocon.*
 
-class FloconDeviceConfig
+class FloconDeviceConfig : FloconPluginConfig
 
 /**
  * Flocon Device Plugin.
@@ -12,7 +12,7 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
         TODO("Not yet implemented")
     }
 
-    override fun install(config: Any, app: FloconApp): FloconDevicePlugin {
+    override fun install(config: FloconDeviceConfig, app: FloconApp): FloconDevicePlugin {
         TODO("Not yet implemented")
     }
 

@@ -44,7 +44,7 @@ internal class Flocon(
                 onMessageReceived = ::onMessageReceived
             )
 
-            plugins.forEach(FloconPlugin::onConnectedToServer)
+            plugins.forEach { it.onConnectedToServer() }
 
             (client as? FloconMessageSender)?.let {
                 // if success, just send a bonjour

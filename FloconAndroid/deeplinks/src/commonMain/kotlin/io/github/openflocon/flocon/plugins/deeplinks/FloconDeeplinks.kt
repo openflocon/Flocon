@@ -14,28 +14,23 @@ object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeepli
     override val name: String = "Deeplinks"
     override val pluginId: String = FloconDeeplinks::class.simpleName!!
     override fun createConfig() = FloconDeeplinksConfig()
-    override fun install(config: Any, app: FloconApp): FloconDeeplinksPlugin {
-        println("Deeplinks: install ($config)")
-        val config = config as FloconDeeplinksConfig // TODO
+    override fun install(config: FloconDeeplinksConfig, app: FloconApp): FloconDeeplinksPlugin {
         val plugin = FloconDeeplinksPluginImpl(
+            deeplinks = config.deeplinks,
             sender = app.client as FloconMessageSender
         )
-        if (config.deeplinks.isNotEmpty()) {
-            plugin.registerDeeplinks(config.deeplinks)
-        }
-        println("Deeplinks: $plugin")
+
         return plugin
     }
 }
 
 internal class FloconDeeplinksPluginImpl(
+    private val deeplinks: List<DeeplinkModel>,
     private val sender: FloconMessageSender,
 ) : FloconPlugin, FloconDeeplinksPlugin {
     override val key: String = "DEEP_LINK"
 
-    private val deeplinks = MutableStateFlow<List<DeeplinkModel>?>(null)
-
-    override fun onMessageReceived(
+    override suspend fun onMessageReceived(
         method: String,
         body: String,
     ) {
@@ -43,17 +38,12 @@ internal class FloconDeeplinksPluginImpl(
         // no op
     }
 
-    override fun onConnectedToServer() {
-        println("Deeplinks: connected (${deeplinks.value})")
-        // on connected, send known deeplinks
-        deeplinks.value?.let {
-            registerDeeplinks(it)
-        }
+    override suspend fun onConnectedToServer() {
+        println("Deeplinks: connected (${deeplinks})")
+        registerDeeplinks(deeplinks)
     }
 
-    override fun registerDeeplinks(deeplinks: List<DeeplinkModel>) {
-        this.deeplinks.update { deeplinks }
-
+    override suspend fun registerDeeplinks(deeplinks: List<DeeplinkModel>) {
         try {
             println("Deeplinks: sending")
             sender.send(
