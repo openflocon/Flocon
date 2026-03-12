@@ -2,7 +2,7 @@ package io.github.openflocon.flocon.network.core.noop.mapper
 
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
+import io.github.openflocon.flocon.network.core.model.BadQualityConfig
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 

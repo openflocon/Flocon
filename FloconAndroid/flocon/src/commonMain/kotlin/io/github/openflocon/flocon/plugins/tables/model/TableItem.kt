@@ -1,10 +1,27 @@
 package io.github.openflocon.flocon.plugins.tables.model
 
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.pluginsold.tables.model.TableColumnConfig
-import io.github.openflocon.flocon.pluginsold.tables.model.TableItem
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
+
+data class TableItem(
+    val id: String,
+    val name: String,
+    val createdAt: Long,
+    val columns: List<TableColumnConfig>,
+)
+
+data class TableColumnConfig(
+    val columnName: String,
+    val value: String,
+)
+
+infix fun String.toParam(value: String) = TableColumnConfig(
+    columnName = this,
+    value = value,
+)
+
+// --- JSON Serialization ---
 
 internal fun tableItemListToJson(items: Collection<TableItem>): String {
     return FloconEncoder.json.encodeToString(items.map { it.toRemote() })

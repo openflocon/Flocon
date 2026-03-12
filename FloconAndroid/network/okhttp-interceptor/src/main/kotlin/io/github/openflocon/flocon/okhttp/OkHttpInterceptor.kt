@@ -4,10 +4,10 @@ package io.github.openflocon.flocon.okhttp
 
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.network.core.networkPlugin
-import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallRequest
-import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallResponse
-import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkRequest
-import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkResponse
+import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
+import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
+import io.github.openflocon.flocon.network.core.model.FloconNetworkRequest
+import io.github.openflocon.flocon.network.core.model.FloconNetworkResponse
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Request

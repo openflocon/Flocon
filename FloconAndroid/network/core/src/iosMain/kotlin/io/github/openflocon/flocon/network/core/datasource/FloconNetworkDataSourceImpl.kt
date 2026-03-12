@@ -1,7 +1,7 @@
 package io.github.openflocon.flocon.network.core.datasource
 
-import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
-import io.github.openflocon.flocon.pluginsold.network.model.MockNetworkResponse
+import io.github.openflocon.flocon.network.core.model.BadQualityConfig
+import io.github.openflocon.flocon.network.core.model.MockNetworkResponse
 
 internal class FloconNetworkDataSourceImpl : FloconNetworkDataSource {
 

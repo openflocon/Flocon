@@ -3,9 +3,9 @@
 package io.github.openflocon.flocon.network.core.noop.mapper
 
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallRequest
-import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallResponse
-import io.github.openflocon.flocon.pluginsold.network.model.FloconWebSocketEvent
+import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
+import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
+import io.github.openflocon.flocon.network.core.model.FloconWebSocketEvent
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlin.uuid.ExperimentalUuidApi

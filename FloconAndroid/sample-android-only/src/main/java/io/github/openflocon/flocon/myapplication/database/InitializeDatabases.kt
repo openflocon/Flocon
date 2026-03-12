@@ -6,7 +6,6 @@ import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.database.model.FoodEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanWithDogEntity
-import io.github.openflocon.flocon.pluginsold.database.floconRegisterDatabase
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -15,10 +14,10 @@ fun initializeInMemoryDatabases(context: Context): DogDatabase {
         context,
         DogDatabase::class.java,
     ).build().also {
-        floconRegisterDatabase(
-            displayName = "inmemory_dogs",
-            openHelper = it.openHelper
-        )
+//        floconRegisterDatabase(
+//            displayName = "inmemory_dogs",
+//            openHelper = it.openHelper
+//        )
     }
 }
 
