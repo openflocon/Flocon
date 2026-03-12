@@ -35,13 +35,14 @@ internal class FloconClientImpl(
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
 
-    override fun <T : FloconPlugin> getPlugin(key: String): T? {
+    fun <T : FloconPlugin> getPlugin(key: String): T? {
         return plugins.find { it.key == key } as? T
     }
 
     @Throws(Throwable::class)
     override suspend fun connect(
         onClosed: () -> Unit,
+        onMessageReceived: (message: String) -> Unit
     ) {
         webSocketClient.connect(
             address = address,
@@ -115,5 +116,102 @@ internal class FloconClientImpl(
         coroutineScope.launch(Dispatchers.IO) {
             webSocketClient.sendPendingMessages()
         }
+    }
+}
+
+internal class FloconClient(
+    private val context: FloconContext,
+    private val scope: CoroutineScope
+) : FloconApp.Client, FloconMessageSender, FloconFileSender {
+
+    private val appInstance by lazy { currentTimeMillis() }
+    private val appInfos by lazy { getAppInfos(context) }
+    private val versionName by lazy { BuildConfig.APP_VERSION }
+    private val address by lazy { getServerHost(context) }
+
+    private val webSocketClient: FloconWebSocketClient = buildFloconWebSocketClient()
+    private val httpClient: FloconHttpClient = buildFloconHttpClient()
+
+    @Throws(Throwable::class)
+    override suspend fun connect(
+        onClosed: () -> Unit,
+        onMessageReceived: (message: String) -> Unit
+    ) {
+        webSocketClient.connect(
+            address = address,
+            port = FLOCON_WEBSOCKET_PORT,
+            onMessageReceived = ::onMessageReceived,
+            onClosed = onClosed,
+        )
+    }
+
+    override suspend fun disconnect() {
+        webSocketClient.disconnect()
+    }
+
+    private fun onMessageReceived(message: String) {
+        scope.launch(Dispatchers.IO) {
+            floconMessageFromServerFromJson(message)?.let { messageFromServer ->
+                messageFromServer.plugin
+//                plugins.find { it.key == messageFromServer.plugin }
+//                    ?.onMessageReceived(
+//                        method = messageFromServer.method,
+//                        body = messageFromServer.body,
+//                    )
+            }
+        }
+    }
+
+    override fun send(
+        plugin: String,
+        method: String,
+        body: String,
+    ) {
+        scope.launch(Dispatchers.IO) {
+            webSocketClient.sendMessage(
+                message = FloconMessageToServer(
+                    deviceId = appInfos.deviceId,
+                    plugin = plugin,
+                    body = body,
+                    appName = appInfos.appName,
+                    appPackageName = appInfos.appPackageName,
+                    method = method,
+                    deviceName = appInfos.deviceName,
+                    appInstance = appInstance,
+                    platform = appInfos.platform,
+                    versionName = versionName,
+                )
+                    .toFloconMessageToServer(),
+            )
+        }
+    }
+
+    override fun send(
+        file: FloconFile,
+        infos: FloconFileInfo,
+    ) {
+        scope.launch(Dispatchers.IO) {
+            httpClient.send(
+                address = address,
+                port = FLOCON_HTTP_PORT,
+                file = file,
+                infos = infos,
+
+                deviceId = appInfos.deviceId,
+                appPackageName = appInfos.appPackageName,
+                appInstance = appInstance,
+            )
+        }
+    }
+
+    override fun sendPendingMessages() {
+        scope.launch(Dispatchers.IO) {
+            webSocketClient.sendPendingMessages()
+        }
+    }
+
+    companion object {
+        private const val FLOCON_WEBSOCKET_PORT = 9023
+        private const val FLOCON_HTTP_PORT = 9024
     }
 }

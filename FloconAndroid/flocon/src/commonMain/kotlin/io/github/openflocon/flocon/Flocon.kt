@@ -1,28 +1,22 @@
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.FloconApp.Client
-import io.github.openflocon.flocon.client.FloconClientImpl
+import io.github.openflocon.flocon.client.FloconClient
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.model.floconMessageFromServerFromJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 internal class Flocon(
     private val context: FloconContext,
+    private val scope: CoroutineScope,
+    private val client: FloconClient,
     private val plugins: List<FloconPlugin>
 ) {
-
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-    private val client = FloconClientImpl(
-        context = context,
-        configuration = FloconConfiguration(),
-        plugins = plugins
-    )
 
     init {
         scope.launch {
@@ -46,25 +40,41 @@ internal class Flocon(
                             context = context,
                         )
                     }
-                }
+                },
+                onMessageReceived = ::onMessageReceived
             )
+
+            plugins.forEach(FloconPlugin::onConnectedToServer)
+
             (client as? FloconMessageSender)?.let {
                 // if success, just send a bonjour
                 it.send("bonjour", method = "bonjour", body = "bonjour")
                 it.sendPendingMessages()
             }
         } catch (t: Throwable) {
-            if(t.message?.contains("CLEARTEXT communication to localhost not permitted by network security policy") == true) {
+            if (t.message?.contains("CLEARTEXT communication to localhost not permitted by network security policy") == true) {
                 withContext(Dispatchers.Main) {
                     displayClearTextError(context = context)
                 }
             } else {
-                //t.printStackTrace()
+                t.printStackTrace()
                 delay(3_000)
                 start(
                     client = client,
                     context = context,
                 )
+            }
+        }
+    }
+
+    private fun onMessageReceived(message: String) {
+        scope.launch(Dispatchers.IO) {
+            floconMessageFromServerFromJson(message)?.let { messageFromServer ->
+                plugins.find { it.key == messageFromServer.plugin }
+                    ?.onMessageReceived(
+                        method = messageFromServer.method,
+                        body = messageFromServer.body,
+                    )
             }
         }
     }
