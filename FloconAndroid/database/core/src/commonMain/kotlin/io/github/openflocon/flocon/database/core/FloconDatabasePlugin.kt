@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.database.core
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
@@ -8,10 +9,10 @@ import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
 import io.github.openflocon.flocon.database.core.model.fromdevice.DeviceDataBaseDataModel
 import io.github.openflocon.flocon.database.core.model.todevice.DatabaseQueryMessage
-import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,8 +36,6 @@ internal interface FloconDatabaseDataSource {
         registeredDatabases: List<FloconDatabaseModel>
     ): List<DeviceDataBaseDataModel>
 }
-
-internal expect fun buildFloconDatabaseDataSource(context: FloconContext): FloconDatabaseDataSource
 
 object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabasePlugin> {
     override val name: String = "Database"
@@ -65,7 +64,7 @@ internal class FloconDatabasePluginImpl(
 
     private val registeredDatabases = MutableStateFlow<List<FloconDatabaseModel>>(emptyList())
 
-    private val dataSource = buildFloconDatabaseDataSource(context)
+    private val dataSource: Nothing = TODO() // buildFloconDatabaseDataSource(context)
 
     override suspend fun onMessageReceived(
         method: String,
@@ -79,11 +78,17 @@ internal class FloconDatabasePluginImpl(
             Protocol.ToDevice.Database.Method.Query -> {
                 val queryMessage =
                     DatabaseQueryMessage.fromJson(message = body) ?: return
-                val result = dataSource.executeSQL(
-                    registeredDatabases = registeredDatabases.value,
-                    databaseName = queryMessage.database,
-                    query = queryMessage.query,
-                )
+                val databaseModel =
+                    registeredDatabases.value.find { it.displayName == queryMessage.database }
+                if (databaseModel is io.github.openflocon.flocon.database.core.model.FloconSqlDatabaseModel) {
+                    databaseModel.executeSQL(query = queryMessage.query)
+                } else {
+//                    dataSource.executeSQL(
+//                        registeredDatabases = registeredDatabases.value,
+//                        databaseName = queryMessage.database,
+//                        query = queryMessage.query,
+//                    )
+                }
                 try {
 //                    sender.send(
 //                        plugin = Protocol.FromDevice.Database.Plugin,
@@ -105,9 +110,9 @@ internal class FloconDatabasePluginImpl(
     }
 
     private fun sendAllDatabases(sender: FloconMessageSender) {
-        val databases = dataSource.getAllDataBases(
-            registeredDatabases = registeredDatabases.value,
-        )
+//        dataSource.getAllDataBases(
+//            registeredDatabases = registeredDatabases.value,
+//        )
         try {
 //            sender.send(
 //                plugin = Protocol.FromDevice.Database.Plugin,
