@@ -1,21 +1,23 @@
-package io.github.openflocon.flocon.database.core
+package io.github.openflocon.flocon.database.room
 
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
-import androidx.sqlite.db.SupportSQLiteOpenHelper
-import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.database.core.model.FloconAndroidSqlDatabaseModel
+import io.github.openflocon.flocon.database.core.FloconDatabaseDataSource
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
+import io.github.openflocon.flocon.database.core.model.FloconSqlDatabaseModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
 import io.github.openflocon.flocon.database.core.model.fromdevice.DeviceDataBaseDataModel
 import java.io.File
 import java.util.Locale
 
-internal actual fun buildFloconDatabaseDataSource(context: FloconContext): FloconDatabaseDataSource {
-    return FloconDatabaseDataSourceAndroid(context.context)
+interface FloconAndroidSqlDatabaseModel : FloconSqlDatabaseModel {
+    val database: SQLiteDatabase
+
+    override suspend fun executeSQL(query: String): DatabaseExecuteSqlResponse {
+        return executeSQLInternal(database, query)
+    }
 }
 
 internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
@@ -31,7 +33,7 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
         val databaseModel = registeredDatabases.find { it.displayName == databaseName }
         return when (databaseModel) {
             is FloconAndroidSqlDatabaseModel -> {
-                executeSQL(
+                executeSQLInternal(
                     database = databaseModel.database,
                     query = query,
                 )
@@ -48,31 +50,16 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
         databaseName: String,
         query: String
     ): DatabaseExecuteSqlResponse {
-        var helper: SupportSQLiteOpenHelper? = null
+        var database: SQLiteDatabase? = null
         return try {
             val path = context.getDatabasePath(databaseName)
-            val version = getDatabaseVersion(path = path.absolutePath)
-            helper = FrameworkSQLiteOpenHelperFactory().create(
-                SupportSQLiteOpenHelper.Configuration.builder(context)
-                    .name(path.absolutePath)
-                    .callback(object : SupportSQLiteOpenHelper.Callback(version) {
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            // no op
-                        }
-
-                        override fun onUpgrade(
-                            db: SupportSQLiteDatabase,
-                            oldVersion: Int,
-                            newVersion: Int
-                        ) {
-                            // no op
-                        }
-                    })
-                    .build()
+            database = SQLiteDatabase.openDatabase(
+                path.absolutePath,
+                null,
+                SQLiteDatabase.OPEN_READWRITE
             )
-            val database = helper.writableDatabase
 
-            executeSQL(
+            executeSQLInternal(
                 database = database,
                 query = query,
             )
@@ -82,27 +69,7 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
                 originalSql = query,
             )
         } finally {
-            helper?.close()
-        }
-    }
-
-    private fun executeSQL(
-        database: SupportSQLiteDatabase,
-        query: String
-    ): DatabaseExecuteSqlResponse {
-        return try {
-            val firstWordUpperCase = getFirstWord(query).uppercase(Locale.getDefault())
-            when (firstWordUpperCase) {
-                "UPDATE", "DELETE" -> executeUpdateDelete(database, query)
-                "INSERT" -> executeInsert(database, query)
-                "SELECT", "PRAGMA", "EXPLAIN" -> executeSelect(database, query)
-                else -> executeRawQuery(database, query)
-            }
-        } catch (t: Throwable) {
-            DatabaseExecuteSqlResponse.Error(
-                message = t.message ?: "error on executeSQL",
-                originalSql = query,
-            )
+            database?.close()
         }
     }
 
@@ -126,7 +93,7 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
         foundDatabases: MutableList<DeviceDataBaseDataModel>
     ) {
         if (depth >= MAX_DEPTH) {
-            return;
+            return
         }
         directory.listFiles()?.forEach { file ->
             if (file.isDirectory) {
@@ -155,11 +122,31 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
     }
 }
 
+private fun executeSQLInternal(
+    database: SQLiteDatabase,
+    query: String
+): DatabaseExecuteSqlResponse {
+    return try {
+        val firstWordUpperCase = getFirstWord(query).uppercase(Locale.getDefault())
+        when (firstWordUpperCase) {
+            "UPDATE", "DELETE" -> executeUpdateDelete(database, query)
+            "INSERT" -> executeInsert(database, query)
+            "SELECT", "PRAGMA", "EXPLAIN" -> executeSelect(database, query)
+            else -> executeRawQuery(database, query)
+        }
+    } catch (t: Throwable) {
+        DatabaseExecuteSqlResponse.Error(
+            message = t.message ?: "error on executeSQL",
+            originalSql = query,
+        )
+    }
+}
+
 private fun executeSelect(
-    database: SupportSQLiteDatabase,
+    database: SQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
-    val cursor: Cursor = database.query(query)
+    val cursor: Cursor = database.rawQuery(query, null)
     try {
         val columnNames = cursor.columnNames.toList()
         val rows = cursorToList(cursor)
@@ -173,7 +160,7 @@ private fun executeSelect(
 }
 
 private fun executeUpdateDelete(
-    database: SupportSQLiteDatabase,
+    database: SQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
     val statement = database.compileStatement(query)
@@ -182,7 +169,7 @@ private fun executeUpdateDelete(
 }
 
 private fun executeInsert(
-    database: SupportSQLiteDatabase,
+    database: SQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
     val statement = database.compileStatement(query)
@@ -191,7 +178,7 @@ private fun executeInsert(
 }
 
 private fun executeRawQuery(
-    database: SupportSQLiteDatabase,
+    database: SQLiteDatabase,
     query: String,
 ): DatabaseExecuteSqlResponse {
     database.execSQL(query)

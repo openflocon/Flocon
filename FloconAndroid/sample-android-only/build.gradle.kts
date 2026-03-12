@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.apollo)
+
     id("com.google.protobuf")
 }
 
@@ -83,11 +84,17 @@ dependencies {
         debugImplementation(project(":deeplinks"))
         releaseImplementation(project(":deeplinks-no-op"))
 
+        debugImplementation(project(":database:room"))
+        releaseImplementation(project(":database:room-no-op"))
+
         debugImplementation(project(":network:okhttp-interceptor"))
         releaseImplementation(project(":network:okhttp-interceptor-no-op"))
+
         implementation(project(":grpc:grpc-interceptor-lite"))
+
         debugImplementation(project(":network:ktor-interceptor"))
         releaseImplementation(project(":network:ktor-interceptor-no-op"))
+
         debugImplementation(project(":datastores"))
         releaseImplementation(project(":datastores-no-op"))
     }

@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.database.core.FloconDatabase
+import io.github.openflocon.flocon.database.room.floconRegisterDatabase
 import io.github.openflocon.flocon.myapplication.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.database.initializeInMemoryDatabases
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
@@ -232,10 +234,16 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            install(FloconNetwork) {
-
-            }
+            install(FloconNetwork)
+            install(FloconDatabase)
         }
+    }
+
+    private fun toMigrate() {
+        floconRegisterDatabase(
+            displayName = "inmemory_dogs",
+            openHelper = it.openHelper
+        )
     }
 
 }
