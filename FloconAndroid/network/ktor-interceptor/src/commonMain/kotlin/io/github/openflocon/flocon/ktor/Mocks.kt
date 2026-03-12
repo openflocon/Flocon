@@ -1,7 +1,7 @@
 package io.github.openflocon.flocon.ktor
 
-import io.github.openflocon.flocon.pluginsold.network.FloconNetworkPlugin
-import io.github.openflocon.flocon.pluginsold.network.model.MockNetworkResponse
+import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
+import io.github.openflocon.flocon.network.core.model.MockNetworkResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.HttpClientCall
 import io.ktor.client.request.HttpRequestBuilder

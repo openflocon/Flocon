@@ -1,11 +1,11 @@
 package io.github.openflocon.flocon.plugins.files
 
-import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconFile
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconFileSender
@@ -17,10 +17,14 @@ import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFi
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFolderContentMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFileMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceGetFilesMessage
-import io.github.openflocon.flocon.pluginsold.files.FloconFilesConfig
-import io.github.openflocon.flocon.pluginsold.files.FloconFilesPlugin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+
+class FloconFilesConfig : FloconPluginConfig {
+    val roots = mutableListOf<String>()
+}
+
+interface FloconFilesPlugin : FloconPlugin
 
 object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
     override val name: String = "Files"

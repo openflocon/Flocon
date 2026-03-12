@@ -1,10 +1,14 @@
 package io.github.openflocon.flocon.plugins.crashreporter
 
-import io.github.openflocon.flocon.*
+import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
+import io.github.openflocon.flocon.FloconPluginFactory
+import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.crashreporter.model.CrashReportDataModel
-import io.github.openflocon.flocon.pluginsold.crashreporter.FloconCrashReporterConfig
-import io.github.openflocon.flocon.pluginsold.crashreporter.FloconCrashReporterPlugin
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +17,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
+class FloconCrashReporterConfig : FloconPluginConfig {
+    var catchFatalErrors: Boolean = true
+}
+
+interface FloconCrashReporterPlugin : FloconPlugin {
+    fun setupCrashHandler()
+}
 
 object FloconCrashReporter :
     FloconPluginFactory<FloconCrashReporterConfig, FloconCrashReporterPlugin> {
@@ -27,7 +39,7 @@ object FloconCrashReporter :
     ): FloconCrashReporterPlugin {
         val client = floconConfig.client as FloconMessageSender
         return FloconCrashReporterPluginImpl(
-            context = TODO(), //FloconContext(appContext = null), // Handled by datasource
+            context = floconConfig.context,
             sender = client,
             coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
         )

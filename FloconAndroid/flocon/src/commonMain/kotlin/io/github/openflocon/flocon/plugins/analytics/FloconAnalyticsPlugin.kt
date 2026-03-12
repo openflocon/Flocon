@@ -3,12 +3,17 @@ package io.github.openflocon.flocon.plugins.analytics
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.pluginsold.analytics.FloconAnalyticsConfig
-import io.github.openflocon.flocon.pluginsold.analytics.FloconAnalyticsPlugin
-import io.github.openflocon.flocon.pluginsold.analytics.model.AnalyticsItem
+import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
+
+class FloconAnalyticsConfig : FloconPluginConfig
+
+interface FloconAnalyticsPlugin : FloconPlugin {
+    fun registerAnalytics(analyticsItems: List<AnalyticsItem>)
+}
 
 object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyticsPlugin> {
     override val name: String = "Analytics"

@@ -1,7 +1,7 @@
 package io.github.openflocon.flocon.okhttp
 
-import io.github.openflocon.flocon.pluginsold.network.FloconNetworkPlugin
-import io.github.openflocon.flocon.pluginsold.network.model.MockNetworkResponse
+import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
+import io.github.openflocon.flocon.network.core.model.MockNetworkResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Protocol
 import okhttp3.Request

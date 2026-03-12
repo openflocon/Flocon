@@ -5,7 +5,6 @@ package io.github.openflocon.flocon.myapplication.sharedpreferences
 import android.content.Context
 import android.preference.PreferenceManager
 import androidx.core.content.edit
-import io.github.openflocon.flocon.pluginsold.sharedprefs.FloconSharedPreference
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.uuid.Uuid

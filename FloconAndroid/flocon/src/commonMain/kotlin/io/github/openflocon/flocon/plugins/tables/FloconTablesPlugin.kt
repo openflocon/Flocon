@@ -1,12 +1,22 @@
 package io.github.openflocon.flocon.plugins.tables
 
-import io.github.openflocon.flocon.*
+import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
+import io.github.openflocon.flocon.FloconPluginFactory
+import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.pluginsold.tables.FloconTableConfig
-import io.github.openflocon.flocon.pluginsold.tables.FloconTablePlugin
-import io.github.openflocon.flocon.pluginsold.tables.model.TableItem
+import io.github.openflocon.flocon.plugins.tables.model.TableItem
+import io.github.openflocon.flocon.plugins.tables.model.tableItemListToJson
 
- object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
+class FloconTableConfig : FloconPluginConfig
+
+interface FloconTablePlugin : FloconPlugin {
+    fun registerItems(tableItems: List<TableItem>)
+}
+
+object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
     override val name: String = "Table"
     override val pluginId: String = Protocol.ToDevice.Table.Plugin
     override fun createConfig() = FloconTableConfig()

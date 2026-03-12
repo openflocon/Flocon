@@ -1,20 +1,25 @@
 package io.github.openflocon.flocon.plugins.database
 
-import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DeviceDataBaseDataModel
 import io.github.openflocon.flocon.plugins.database.model.todevice.DatabaseQueryMessage
-import io.github.openflocon.flocon.pluginsold.database.FloconDatabaseConfig
-import io.github.openflocon.flocon.pluginsold.database.FloconDatabasePlugin
-import io.github.openflocon.flocon.pluginsold.database.model.FloconDatabaseModel
+import io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel
 import kotlinx.coroutines.flow.MutableStateFlow
+
+class FloconDatabaseConfig : FloconPluginConfig
+
+interface FloconDatabasePlugin : FloconPlugin {
+    fun register(floconDatabaseModel: FloconDatabaseModel)
+    fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>)
+}
 
 internal interface FloconDatabaseDataSource {
     fun executeSQL(
@@ -40,7 +45,7 @@ object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabase
     ): FloconDatabasePlugin {
         return FloconDatabasePluginImpl(
             sender = floconConfig.client as FloconMessageSender,
-            context = TODO() // FloconContext(appContext = null), // Handled by actual buildFloconDatabaseDataSource
+            context = floconConfig.context
         )
     }
 }
@@ -106,11 +111,6 @@ internal class FloconDatabasePluginImpl(
             FloconLogger.logError("Database parsing error", t)
         }
     }
-
-//    override fun register(floconDatabaseModel: FloconDatabaseModel) {
-//        registeredDatabases.update { it + floconDatabaseModel }
-//        sendAllDatabases(sender)
-//    }
 
     override fun register(floconDatabaseModel: FloconDatabaseModel) {
         TODO("Not yet implemented")

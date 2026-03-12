@@ -7,8 +7,8 @@ import io.github.openflocon.flocon.network.core.mapper.toJsonString
 import io.github.openflocon.flocon.network.core.mapper.writeMockResponsesToJson
 import io.github.openflocon.flocon.network.core.plugin.FLOCON_NETWORK_BAD_CONFIG_JSON
 import io.github.openflocon.flocon.network.core.plugin.FLOCON_NETWORK_MOCKS_JSON
-import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
-import io.github.openflocon.flocon.pluginsold.network.model.MockNetworkResponse
+import io.github.openflocon.flocon.network.core.model.BadQualityConfig
+import io.github.openflocon.flocon.network.core.model.MockNetworkResponse
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

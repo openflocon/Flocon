@@ -24,7 +24,7 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
     private val MAX_DEPTH = 7
 
     override fun executeSQL(
-        registeredDatabases: List<FloconDatabaseModel>,
+        registeredDatabases: List<io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel>,
         databaseName: String,
         query: String
     ): DatabaseExecuteSqlResponse {
@@ -105,9 +105,7 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
         }
     }
 
-    override fun getAllDataBases(
-        registeredDatabases: List<FloconDatabaseModel>
-    ): List<DeviceDataBaseDataModel> {
+    override fun getAllDataBases(registeredDatabases: List<io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel>): List<DeviceDataBaseDataModel> {
         val databasesDir = context.getDatabasePath("dummy_db").parentFile ?: return emptyList()
 
         val foundDatabases = mutableListOf<DeviceDataBaseDataModel>()

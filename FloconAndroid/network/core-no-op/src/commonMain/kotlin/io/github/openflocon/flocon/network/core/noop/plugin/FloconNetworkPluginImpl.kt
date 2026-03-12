@@ -1,13 +1,13 @@
 package io.github.openflocon.flocon.network.core.noop.plugin
 
 import io.github.openflocon.flocon.FloconPlugin
-import io.github.openflocon.flocon.pluginsold.network.FloconNetworkPlugin
-import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
-import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallRequest
-import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallResponse
-import io.github.openflocon.flocon.pluginsold.network.model.FloconWebSocketEvent
-import io.github.openflocon.flocon.pluginsold.network.model.FloconWebSocketMockListener
-import io.github.openflocon.flocon.pluginsold.network.model.MockNetworkResponse
+import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
+import io.github.openflocon.flocon.network.core.model.BadQualityConfig
+import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
+import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
+import io.github.openflocon.flocon.network.core.model.FloconWebSocketEvent
+import io.github.openflocon.flocon.network.core.model.FloconWebSocketMockListener
+import io.github.openflocon.flocon.network.core.model.MockNetworkResponse
 
 internal class FloconNetworkPluginImpl : FloconPlugin, FloconNetworkPlugin {
     override val key: String = "NETWORK"

@@ -7,8 +7,8 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.network.core.noop.plugin.FloconNetworkPluginImpl
-import io.github.openflocon.flocon.pluginsold.network.FloconNetworkConfig
-import io.github.openflocon.flocon.pluginsold.network.FloconNetworkPlugin
+import io.github.openflocon.flocon.network.core.FloconNetworkConfig
+import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
 
 object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlugin> {
     override val name: String = "Network"

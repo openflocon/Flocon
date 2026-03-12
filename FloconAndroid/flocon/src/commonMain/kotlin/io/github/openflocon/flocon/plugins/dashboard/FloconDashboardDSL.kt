@@ -1,10 +1,10 @@
 package io.github.openflocon.flocon.plugins.dashboard
 
-import io.github.openflocon.flocon.pluginsold.dashboard.builder.FormBuilder
-import io.github.openflocon.flocon.pluginsold.dashboard.builder.SectionBuilder
-import io.github.openflocon.flocon.pluginsold.dashboard.model.DashboardConfig
-import io.github.openflocon.flocon.pluginsold.dashboard.model.DashboardScope
-import io.github.openflocon.flocon.pluginsold.dashboard.model.config.ContainerConfig
+import io.github.openflocon.flocon.plugins.dashboard.builder.FormBuilder
+import io.github.openflocon.flocon.plugins.dashboard.builder.SectionBuilder
+import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
+import io.github.openflocon.flocon.plugins.dashboard.model.DashboardScope
+import io.github.openflocon.flocon.plugins.dashboard.model.config.ContainerConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob

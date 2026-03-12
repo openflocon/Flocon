@@ -1,7 +1,7 @@
 package io.github.openflocon.flocon.okhttp.websocket
 
 import io.github.openflocon.flocon.FloconApp
-import io.github.openflocon.flocon.pluginsold.network.model.FloconWebSocketEvent
+import io.github.openflocon.flocon.network.core.model.FloconWebSocketEvent
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
