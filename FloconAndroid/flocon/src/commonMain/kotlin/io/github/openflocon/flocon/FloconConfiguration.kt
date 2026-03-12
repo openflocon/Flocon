@@ -1,7 +1,6 @@
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.client.FloconClient
-import io.github.openflocon.flocon.client.FloconClientImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -10,39 +9,40 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class FloconConfiguration internal constructor() {
+class FloconConfiguration internal constructor(
+    private val client: FloconClient
+) {
 
-    internal val pluginConfigs = mutableMapOf<FloconPluginFactory<Any, *>, Any>()
+    internal val plugins = mutableListOf<FloconPlugin>()
 
     /**
      * Install a plugin with the given [factory] and optional [configure] block.
      */
-    fun <Config : Any, PluginInstance : Any> install(
-        factory: FloconPluginFactory<Config, PluginInstance>,
+    fun <Config : FloconPluginConfig, Plugin : FloconPlugin> install(
+        factory: FloconPluginFactory<Config, Plugin>,
         configure: Config.() -> Unit = {}
     ) {
-        val config = factory.createConfig()
-        config.configure()
-        pluginConfigs[factory as FloconPluginFactory<Any, *>] = config // TODO
+        val plugin = factory.install(
+            config = factory.createConfig()
+                .apply { configure() },
+            app = DumpObject(client = client)
+        )
+
+        plugins.add(plugin)
     }
 
 }
 
 fun startFlocon(context: FloconContext, block: FloconConfiguration.() -> Unit) {
-    val configuration = FloconConfiguration().apply(block)
     val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    val client = FloconClient(context = context, scope = scope)
+    val client = FloconClient(context = context)
+    val configuration = FloconConfiguration(client = client).apply(block)
 
     Flocon(
         context = context,
         scope = scope,
         client = client,
-        plugins = configuration.pluginConfigs.map { (factory, config) ->
-            factory.install(
-                config = config,
-                app = DumpObject(client) // TODO Change
-            ) as FloconPlugin
-        }
+        plugins = configuration.plugins
     )
 }
 

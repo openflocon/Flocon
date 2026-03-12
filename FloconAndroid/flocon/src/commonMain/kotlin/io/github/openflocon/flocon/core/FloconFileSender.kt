@@ -4,5 +4,5 @@ import io.github.openflocon.flocon.FloconFile
 import io.github.openflocon.flocon.model.FloconFileInfo
 
 internal interface FloconFileSender {
-    fun send(file: FloconFile, infos: FloconFileInfo)
+    suspend fun send(file: FloconFile, infos: FloconFileInfo)
 }

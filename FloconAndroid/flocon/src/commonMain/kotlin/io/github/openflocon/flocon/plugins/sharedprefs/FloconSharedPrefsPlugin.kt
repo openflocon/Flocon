@@ -10,7 +10,7 @@ object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPr
     override val name: String = "Preferences"
     override val pluginId: String = Protocol.ToDevice.SharedPreferences.Plugin
     override fun createConfig() = FloconPreferencesConfig()
-    override fun install(config: Any, app: FloconApp): FloconPreferencesPlugin {
+    override fun install(config: FloconPreferencesConfig, app: FloconApp): FloconPreferencesPlugin {
         return FloconSharedPrefsPluginImpl(
             context = app.context,
             sender = app.client as FloconMessageSender
@@ -35,7 +35,7 @@ internal class FloconSharedPrefsPluginImpl(
     private val dataSource = buildFloconSharedPreferenceDataSource(context)
     private val preferenceModels = mutableListOf<FloconSharedPreferenceModel>()
 
-    override fun onMessageReceived(
+    override suspend fun onMessageReceived(
         method: String,
         body: String,
     ) {
@@ -62,7 +62,7 @@ internal class FloconSharedPrefsPluginImpl(
 //        }
     }
 
-    override fun onConnectedToServer() {
+    override suspend fun onConnectedToServer() {
         sendSharedPreferences()
     }
 

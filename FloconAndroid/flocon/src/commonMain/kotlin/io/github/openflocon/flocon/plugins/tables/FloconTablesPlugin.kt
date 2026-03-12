@@ -11,7 +11,7 @@ import io.github.openflocon.flocon.pluginsold.tables.model.TableItem
     override val name: String = "Table"
     override val pluginId: String = Protocol.ToDevice.Table.Plugin
     override fun createConfig() = FloconTableConfig()
-    override fun install(config: Any, app: FloconApp): FloconTablePlugin {
+    override fun install(config: FloconTableConfig, app: FloconApp): FloconTablePlugin {
         return FloconTablePluginImpl(
             sender = app.client as FloconMessageSender
         )
@@ -23,14 +23,14 @@ internal class FloconTablePluginImpl(
 ) : FloconPlugin, FloconTablePlugin {
     override val key: String = "TABLE"
 
-    override fun onMessageReceived(
+    override suspend fun onMessageReceived(
         method: String,
         body: String,
     ) {
         // no op
     }
 
-    override fun onConnectedToServer() {
+    override suspend fun onConnectedToServer() {
         // no op
     }
 
@@ -40,11 +40,11 @@ internal class FloconTablePluginImpl(
 
     private fun sendTable(tableItems: List<TableItem>) {
         try {
-            sender.send(
-                plugin = Protocol.FromDevice.Table.Plugin,
-                method = Protocol.FromDevice.Table.Method.AddItems,
-                body = tableItemListToJson(tableItems).toString()
-            )
+//            sender.send(
+//                plugin = Protocol.FromDevice.Table.Plugin,
+//                method = Protocol.FromDevice.Table.Method.AddItems,
+//                body = tableItemListToJson(tableItems).toString()
+//            )
         } catch (t: Throwable) {
             FloconLogger.logError("Table json mapping error", t)
         }

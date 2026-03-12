@@ -38,7 +38,7 @@ object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabase
     override val name: String = "Database"
     override val pluginId: String = Protocol.ToDevice.Database.Plugin
     override fun createConfig() = FloconDatabaseConfig()
-    override fun install(config: Any, app: FloconApp): FloconDatabasePlugin {
+    override fun install(config: FloconDatabaseConfig, app: FloconApp): FloconDatabasePlugin {
         return FloconDatabasePluginImpl(
             sender = app.client as FloconMessageSender,
             context = TODO() // FloconContext(appContext = null), // Handled by actual buildFloconDatabaseDataSource
@@ -56,7 +56,7 @@ internal class FloconDatabasePluginImpl(
 
     private val dataSource = buildFloconDatabaseDataSource(context)
 
-    override fun onMessageReceived(
+    override suspend fun onMessageReceived(
         method: String,
         body: String,
     ) {
@@ -74,14 +74,14 @@ internal class FloconDatabasePluginImpl(
                     query = queryMessage.query,
                 )
                 try {
-                    sender.send(
-                        plugin = Protocol.FromDevice.Database.Plugin,
-                        method = Protocol.FromDevice.Database.Method.Query,
-                        body = QueryResultDataModel(
-                            requestId = queryMessage.requestId,
-                            result = result.toJson(),
-                        ).toJson(),
-                    )
+//                    sender.send(
+//                        plugin = Protocol.FromDevice.Database.Plugin,
+//                        method = Protocol.FromDevice.Database.Method.Query,
+//                        body = QueryResultDataModel(
+//                            requestId = queryMessage.requestId,
+//                            result = result.toJson(),
+//                        ).toJson(),
+//                    )
                 } catch (t: Throwable) {
                     FloconLogger.logError("Database parsing error", t)
                 }
@@ -89,7 +89,7 @@ internal class FloconDatabasePluginImpl(
         }
     }
 
-    override fun onConnectedToServer() {
+    override suspend fun onConnectedToServer() {
         sendAllDatabases(sender)
     }
 
@@ -98,11 +98,11 @@ internal class FloconDatabasePluginImpl(
             registeredDatabases = registeredDatabases.value,
         )
         try {
-            sender.send(
-                plugin = Protocol.FromDevice.Database.Plugin,
-                method = Protocol.FromDevice.Database.Method.GetDatabases,
-                body = listDeviceDataBaseDataModelToJson(databases),
-            )
+//            sender.send(
+//                plugin = Protocol.FromDevice.Database.Plugin,
+//                method = Protocol.FromDevice.Database.Method.GetDatabases,
+//                body = listDeviceDataBaseDataModelToJson(databases),
+//            )
         } catch (t: Throwable) {
             FloconLogger.logError("Database parsing error", t)
         }
@@ -119,16 +119,16 @@ internal class FloconDatabasePluginImpl(
 
     override fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>) {
         try {
-            sender.send(
-                plugin = Protocol.FromDevice.Database.Plugin,
-                method = Protocol.FromDevice.Database.Method.LogQuery,
-                body = DatabaseQueryLogModel(
-                    dbName = dbName,
-                    sqlQuery = sqlQuery,
-                    bindArgs = bindArgs.map { it.toString() },
-                    timestamp = currentTimeMillis(),
-                ).toJson(),
-            )
+//            sender.send(
+//                plugin = Protocol.FromDevice.Database.Plugin,
+//                method = Protocol.FromDevice.Database.Method.LogQuery,
+//                body = DatabaseQueryLogModel(
+//                    dbName = dbName,
+//                    sqlQuery = sqlQuery,
+//                    bindArgs = bindArgs.map { it.toString() },
+//                    timestamp = currentTimeMillis(),
+//                ).toJson(),
+//            )
         } catch (t: Throwable) {
             FloconLogger.logError("Database logging error", t)
         }

@@ -7,13 +7,15 @@ package io.github.openflocon.flocon
 interface FloconPlugin {
     val key: String
 
-    fun onMessageReceived(
+    suspend fun onMessageReceived(
         method: String,
         body: String,
     )
 
-    fun onConnectedToServer()
+    suspend fun onConnectedToServer()
 }
+
+interface FloconPluginConfig
 
 /**
  * A unique key for identifying a Flocon plugin.
@@ -27,7 +29,8 @@ interface FloconPluginKey<Config : Any, PluginInstance : Any> {
  * A factory for creating and installing Flocon plugins.
  * This is the entry point for Ktor-style [install] calls.
  */
-interface FloconPluginFactory<Config : Any, PluginInstance : Any> : FloconPluginKey<Config, PluginInstance> {
+interface FloconPluginFactory<Config : FloconPluginConfig, PluginInstance : FloconPlugin> : FloconPluginKey<Config, PluginInstance> {
+
     /**
      * Create a default configuration instance for the plugin.
      */
@@ -36,5 +39,6 @@ interface FloconPluginFactory<Config : Any, PluginInstance : Any> : FloconPlugin
     /**
      * Install the plugin into the [io.github.openflocon.flocon.FloconApp] instance with the given [config].
      */
-    fun install(config: Any, app: FloconApp): PluginInstance // TODO
+    fun install(config: Config, app: FloconApp): PluginInstance // TODO
+
 }

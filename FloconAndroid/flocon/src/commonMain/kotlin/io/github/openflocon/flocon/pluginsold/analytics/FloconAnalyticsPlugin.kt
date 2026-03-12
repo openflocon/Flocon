@@ -2,17 +2,18 @@ package io.github.openflocon.flocon.pluginsold.analytics
 
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.pluginsold.analytics.model.AnalyticsItem
 
-class FloconAnalyticsConfig
+class FloconAnalyticsConfig : FloconPluginConfig
 
 /**
  * Flocon Analytics Plugin.
  */
 object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyticsPlugin> {
     override fun createConfig(): FloconAnalyticsConfig = TODO()
-    override fun install(config: Any, app: FloconApp): FloconAnalyticsPlugin = TODO()
+    override fun install(config: FloconAnalyticsConfig, app: FloconApp): FloconAnalyticsPlugin = TODO()
 
     override val name: String = ""
 }

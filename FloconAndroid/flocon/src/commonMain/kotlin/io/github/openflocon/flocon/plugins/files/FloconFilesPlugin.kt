@@ -26,7 +26,7 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
     override val name: String = "Files"
     override val pluginId: String = Protocol.ToDevice.Files.Plugin
     override fun createConfig() = FloconFilesConfig()
-    override fun install(config: Any, app: FloconApp): FloconFilesPlugin {
+    override fun install(config: FloconFilesConfig, app: FloconApp): FloconFilesPlugin {
         val client = app.client
         return FloconFilesPluginImpl(
             context = app.context,
@@ -61,7 +61,7 @@ internal class FloconFilesPluginImpl(
     private val fileDataSource = fileDataSource(context)
     private val withFoldersSize = MutableStateFlow(false)
 
-    override fun onMessageReceived(
+    override suspend fun onMessageReceived(
         method: String,
         body: String,
     ) {
@@ -83,13 +83,13 @@ internal class FloconFilesPluginImpl(
 
                 fileDataSource.getFile(path = getFileMessage.path, isConstantPath = false)
                     ?.let { file ->
-                        floconFileSender.send(
-                            file = file,
-                            infos = FloconFileInfo(
-                                requestId = getFileMessage.requestId,
-                                path = getFileMessage.path,
-                            )
-                        )
+//                        floconFileSender.send(
+//                            file = file,
+//                            infos = FloconFileInfo(
+//                                requestId = getFileMessage.requestId,
+//                                path = getFileMessage.path,
+//                            )
+//                        )
                     }
             }
 
@@ -158,20 +158,20 @@ internal class FloconFilesPluginImpl(
         )
 
         try {
-            sender.send(
-                plugin = Protocol.FromDevice.Files.Plugin,
-                method = Protocol.FromDevice.Files.Method.ListFiles,
-                body = FilesResultDataModel(
-                    requestId = requestId,
-                    files = files,
-                ).toJson(),
-            )
+//            sender.send(
+//                plugin = Protocol.FromDevice.Files.Plugin,
+//                method = Protocol.FromDevice.Files.Method.ListFiles,
+//                body = FilesResultDataModel(
+//                    requestId = requestId,
+//                    files = files,
+//                ).toJson(),
+//            )
         } catch (t: Throwable) {
             FloconLogger.logError("File parsing error", t)
         }
     }
 
-    override fun onConnectedToServer() {
+    override suspend fun onConnectedToServer() {
         // no op
     }
 }

@@ -1,9 +1,12 @@
 package io.github.openflocon.flocon.pluginsold.sharedprefs
 
-import io.github.openflocon.flocon.*
+import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
+import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.pluginsold.sharedprefs.model.FloconSharedPreferenceModel
 
-class FloconPreferencesConfig
+class FloconPreferencesConfig : FloconPluginConfig
 
 /**
  * Flocon Preferences Plugin.
@@ -14,7 +17,7 @@ object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPr
         TODO("Not yet implemented")
     }
 
-    override fun install(config: Any, app: FloconApp): FloconPreferencesPlugin {
+    override fun install(config: FloconPreferencesConfig, app: FloconApp): FloconPreferencesPlugin {
         TODO("Not yet implemented")
     }
 

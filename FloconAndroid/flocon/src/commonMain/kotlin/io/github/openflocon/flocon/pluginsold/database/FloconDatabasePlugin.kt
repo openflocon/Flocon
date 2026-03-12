@@ -2,10 +2,11 @@ package io.github.openflocon.flocon.pluginsold.database
 
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.pluginsold.database.model.FloconDatabaseModel
 
-class FloconDatabaseConfig
+class FloconDatabaseConfig : FloconPluginConfig
 
 /**
  * Flocon Database Plugin.
@@ -16,7 +17,7 @@ object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabase
         TODO("Not yet implemented")
     }
 
-    override fun install(config: Any, app: FloconApp): FloconDatabasePlugin {
+    override fun install(config: FloconDatabaseConfig, app: FloconApp): FloconDatabasePlugin {
         TODO("Not yet implemented")
     }
 

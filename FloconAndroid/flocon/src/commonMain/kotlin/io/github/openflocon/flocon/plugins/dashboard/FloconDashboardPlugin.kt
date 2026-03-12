@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
     override val name: String = "Dashboard"
     override val pluginId: String = Protocol.ToDevice.Dashboard.Plugin
     override fun createConfig() = FloconDashboardConfig()
-    override fun install(config: Any, app: FloconApp): FloconDashboardPlugin {
+    override fun install(config: FloconDashboardConfig, app: FloconApp): FloconDashboardPlugin {
         return FloconDashboardPluginImpl(
             sender = app.client as FloconMessageSender
         )
@@ -38,7 +38,7 @@ internal class FloconDashboardPluginImpl(
     private val dashboards = mutableMapOf<String, DashboardConfig>()
     private val callbackMap = mutableMapOf<String, DashboardCallback>()
 
-    override fun onMessageReceived(
+    override  suspend fun onMessageReceived(
         method: String,
         body: String,
     ) {
@@ -76,7 +76,7 @@ internal class FloconDashboardPluginImpl(
         }
     }
 
-    override fun onConnectedToServer() {
+    override suspend fun onConnectedToServer() {
         // on connected, send known dashboards
         dashboards.values.takeIf { it.isNotEmpty() }?.forEach { dashboardConfig ->
             registerDashboardInternal(dashboardConfig)
