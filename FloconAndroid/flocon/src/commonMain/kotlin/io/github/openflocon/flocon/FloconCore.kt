@@ -61,7 +61,8 @@ abstract class FloconCore : FloconApp() {
                             context = context,
                         )
                     }
-                }
+                },
+                onMessageReceived = {}
             )
             (client as? FloconMessageSender)?.let {
                 // if success, just send a bonjour
