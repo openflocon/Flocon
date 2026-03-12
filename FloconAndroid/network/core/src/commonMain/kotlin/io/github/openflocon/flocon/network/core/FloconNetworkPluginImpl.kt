@@ -7,11 +7,15 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.dsl.FloconMarker
+import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.network.core.mapper.floconNetworkCallRequestToJson
 import io.github.openflocon.flocon.network.core.mapper.floconNetworkCallResponseToJson
 import io.github.openflocon.flocon.network.core.mapper.floconNetworkWebSocketEventToJson
 import io.github.openflocon.flocon.network.core.mapper.parseBadQualityConfig
 import io.github.openflocon.flocon.network.core.mapper.parseMockResponses
 import io.github.openflocon.flocon.network.core.mapper.parseWebSocketMockMessage
+import io.github.openflocon.flocon.network.core.mapper.webSocketIdsToJsonArray
 import io.github.openflocon.flocon.pluginsold.network.FloconNetworkConfig
 import io.github.openflocon.flocon.pluginsold.network.FloconNetworkPlugin
 import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
@@ -39,6 +43,7 @@ object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlu
             sender = app.client as FloconMessageSender,
             coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
         )
+            .also { FloconNetworkPluginImpl.plugin = it }
     }
 }
 
@@ -54,10 +59,15 @@ internal interface FloconNetworkDataSource {
 
 internal expect fun buildFloconNetworkDataSource(context: FloconContext): FloconNetworkDataSource
 
+@OptIn(FloconMarker::class)
+@Suppress("UnusedReceiverParameter")
+val FloconApp.networkPlugin: FloconNetworkPlugin
+    get() = FloconNetworkPluginImpl.plugin ?: pluginNotInitialized("Network")
+
 internal class FloconNetworkPluginImpl(
-    private val context: FloconContext,
+    context: FloconContext,
     private var sender: FloconMessageSender,
-    private val coroutineScope: CoroutineScope,
+    private val coroutineScope: CoroutineScope
 ) : FloconPlugin, FloconNetworkPlugin {
     override val key: String = "NETWORK"
 
@@ -66,23 +76,24 @@ internal class FloconNetworkPluginImpl(
     private val websocketListeners =
         MutableStateFlow<Map<String, FloconWebSocketMockListener>>(emptyMap())
 
-    private val _mocks = MutableStateFlow<List<MockNetworkResponse>>(dataSource.loadMocksFromFile())
+    private val _mocks = MutableStateFlow(dataSource.loadMocksFromFile())
     override val mocks: List<MockNetworkResponse>
         get() = _mocks.value
 
-    private val _badQualityConfig =
-        MutableStateFlow<BadQualityConfig?>(dataSource.loadBadNetworkConfig())
+    private val _badQualityConfig = MutableStateFlow(dataSource.loadBadNetworkConfig())
 
     override val badQualityConfig: BadQualityConfig?
         get() = _badQualityConfig.value
 
     override fun logRequest(request: FloconNetworkCallRequest) {
         try {
-//            sender.send(
-//                plugin = Protocol.FromDevice.Network.Plugin,
-//                method = Protocol.FromDevice.Network.Method.LogNetworkCallRequest,
-//                body = request.floconNetworkCallRequestToJson(),
-//            )
+            coroutineScope.launch {
+                sender.send(
+                    plugin = Protocol.FromDevice.Network.Plugin,
+                    method = Protocol.FromDevice.Network.Method.LogNetworkCallRequest,
+                    body = request.floconNetworkCallRequestToJson(),
+                )
+            }
         } catch (t: Throwable) {
             FloconLogger.logError("Network json mapping error", t)
         }
@@ -103,7 +114,7 @@ internal class FloconNetworkPluginImpl(
         }
     }
 
-    override fun logWebSocket(
+    override suspend fun logWebSocket(
         event: FloconWebSocketEvent,
     ) {
         coroutineScope.launch {
@@ -149,7 +160,7 @@ internal class FloconNetworkPluginImpl(
         updateWebSocketIds()
     }
 
-    override fun registerWebSocketMockListener(
+    override suspend fun registerWebSocketMockListener(
         id: String,
         listener: FloconWebSocketMockListener
     ) {
@@ -159,11 +170,15 @@ internal class FloconNetworkPluginImpl(
         updateWebSocketIds()
     }
 
-    private fun updateWebSocketIds() {
-//        sender.send(
-//            plugin = Protocol.FromDevice.Network.Plugin,
-//            method = Protocol.FromDevice.Network.Method.RegisterWebSocketIds,
-//            body = webSocketIdsToJsonArray(ids = websocketListeners.value.keys),
-//        )
+    private suspend fun updateWebSocketIds() {
+        sender.send(
+            plugin = Protocol.FromDevice.Network.Plugin,
+            method = Protocol.FromDevice.Network.Method.RegisterWebSocketIds,
+            body = webSocketIdsToJsonArray(ids = websocketListeners.value.keys),
+        )
+    }
+
+    companion object {
+        var plugin: FloconNetworkPlugin? = null
     }
 }

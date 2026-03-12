@@ -10,10 +10,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class FloconConfiguration internal constructor(
+    private val context: FloconContext,
     private val client: FloconClient
 ) {
 
-    internal val plugins = mutableListOf<FloconPlugin>()
+    private val plugins: MutableMap<String, (FloconApp) -> FloconPlugin> = mutableMapOf()
 
     /**
      * Install a plugin with the given [factory] and optional [configure] block.
@@ -22,13 +23,24 @@ class FloconConfiguration internal constructor(
         factory: FloconPluginFactory<Config, Plugin>,
         configure: Config.() -> Unit = {}
     ) {
-        val plugin = factory.install(
-            config = factory.createConfig()
-                .apply { configure() },
-            app = DumpObject(client = client)
+        plugins[factory.pluginId] = { scope ->
+            val config = factory.createConfig()
+                .apply { configure() }
+
+            factory.install(
+                config = config,
+                app = scope
+            )
+        }
+    }
+
+    fun build(): List<FloconPlugin> {
+        val app = DumpObject(
+            context = context,
+            client = client
         )
 
-        plugins.add(plugin)
+        return plugins.values.map { it.invoke(app) }
     }
 
 }
@@ -36,17 +48,22 @@ class FloconConfiguration internal constructor(
 fun startFlocon(context: FloconContext, block: FloconConfiguration.() -> Unit) {
     val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     val client = FloconClient(context = context)
-    val configuration = FloconConfiguration(client = client).apply(block)
+    val configuration = FloconConfiguration(
+        context = context,
+        client = client
+    )
+        .apply(block)
 
     Flocon(
         context = context,
         scope = scope,
         client = client,
-        plugins = configuration.plugins
+        plugins = configuration.build()
     )
 }
 
 class DumpObject(
+    context: FloconContext,
     client: Client
 ) : FloconApp() {
 
@@ -54,5 +71,10 @@ class DumpObject(
 
     private val _initialized = MutableStateFlow<Boolean>(false)
     override val isInitialized: StateFlow<Boolean> = _initialized.asStateFlow()
+
+    init {
+        this.context = context
+        instance = this
+    }
 
 }

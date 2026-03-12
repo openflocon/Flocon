@@ -7,7 +7,8 @@ abstract class FloconApp {
 
     companion object {
         var instance: FloconApp? = null
-            private set
+            get() = field ?: error("FloconApp is not initialized")
+            internal set
     }
 
     interface Client {

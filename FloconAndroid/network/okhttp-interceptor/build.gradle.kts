@@ -36,7 +36,7 @@ android {
 
 dependencies {
 
-    implementation(project(":network:core"))
+    api(project(":network:core"))
 
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.jetbrains.kotlinx.coroutines.core)

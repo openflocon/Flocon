@@ -22,7 +22,7 @@ interface FloconPluginConfig
  */
 interface FloconPluginKey<Config : Any, PluginInstance : Any> {
     val name: String
-    val pluginId: String? get() = null
+    val pluginId: String
 }
 
 /**

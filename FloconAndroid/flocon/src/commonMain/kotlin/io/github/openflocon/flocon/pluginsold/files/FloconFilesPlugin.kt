@@ -24,6 +24,8 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
 
     override val name: String
         get() = TODO("Not yet implemented")
+    override val pluginId: String
+        get() = TODO("Not yet implemented")
 }
 
 interface FloconFilesPlugin : FloconPlugin

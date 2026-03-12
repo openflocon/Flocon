@@ -22,7 +22,10 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":network:core"))
+
+                api(project(":flocon"))
+                api(project(":network:core"))
+
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
                 implementation(libs.ktor.client.core)
             }

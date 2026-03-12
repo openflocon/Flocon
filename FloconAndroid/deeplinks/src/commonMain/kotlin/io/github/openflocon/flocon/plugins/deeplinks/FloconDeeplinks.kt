@@ -34,26 +34,21 @@ internal class FloconDeeplinksPluginImpl(
         method: String,
         body: String,
     ) {
-        println("Deeplinks: message received $($method) ($body)")
         // no op
     }
 
     override suspend fun onConnectedToServer() {
-        println("Deeplinks: connected (${deeplinks})")
         registerDeeplinks(deeplinks)
     }
 
     override suspend fun registerDeeplinks(deeplinks: List<DeeplinkModel>) {
         try {
-            println("Deeplinks: sending")
             sender.send(
                 plugin = Protocol.FromDevice.Deeplink.Plugin,
                 method = Protocol.FromDevice.Deeplink.Method.GetDeeplinks,
                 body = toDeeplinksJson(deeplinks)
             )
-            println("Deeplinks: sent")
         } catch (t: Throwable) {
-            println("Deeplinks: error: ${t.message}")
             t.printStackTrace()
             FloconLogger.logError("deeplink mapping error", t)
         }
