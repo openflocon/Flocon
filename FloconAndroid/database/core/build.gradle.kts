@@ -1,9 +1,8 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.vanniktech.maven.publish)
-    alias(libs.plugins.buildconfig)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -21,13 +20,11 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
-    compilerOptions {
-        freeCompilerArgs.add("-XXLanguage:+ExpectRefinement")
-    }
-
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api(project(":flocon"))
+
                 implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
                 implementation(libs.kotlinx.serialization.json)
             }
@@ -35,20 +32,13 @@ kotlin {
         
         val androidMain by getting {
             dependencies {
-                implementation(libs.kotlinx.coroutines.android)
-                implementation(libs.jakewharton.process.phoenix)
-                implementation("com.squareup.okhttp3:okhttp:4.12.0")
+                implementation(libs.androidx.sqlite)
+                implementation(libs.androidx.sqlite.framework)
             }
         }
         
         val jvmMain by getting {
             dependencies {
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.cio)
-
-                implementation(libs.ktor.client.content.negotiation)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.serialization.kotlinx.json)
             }
         }
 
@@ -61,30 +51,14 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.darwin)
-
-                implementation(libs.ktor.client.content.negotiation)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.serialization.kotlinx.json)
-
-                // to store the device id
-                implementation("com.russhwolf:multiplatform-settings:1.3.0")
+                implementation(libs.androidx.sqlite.bundled)
             }
         }
     }
 }
 
-
-buildConfig {
-    packageName("io.github.openflocon.flocondesktop")
-
-    buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String)
-}
-
-
 android {
-    namespace = "io.github.openflocon.flocon"
+    namespace = "io.github.openflocon.flocon.database.core"
     compileSdk = 36
 
     defaultConfig {
@@ -107,9 +81,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
 }
 
 mavenPublishing {
@@ -123,12 +94,12 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-        artifactId = "flocon",
+        artifactId = "flocon-database-core",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
     pom {
-        name = "Flocon"
+        name = "Flocon Database Core"
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"

@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.pluginsold.database
+package io.github.openflocon.flocon.database.core
 
 import android.content.Context
 import android.database.Cursor
@@ -7,16 +7,16 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.plugins.database.FloconDatabaseDataSource
-import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
-import io.github.openflocon.flocon.plugins.database.model.fromdevice.DeviceDataBaseDataModel
-import io.github.openflocon.flocon.pluginsold.database.model.FloconDatabaseModel
+import io.github.openflocon.flocon.database.core.model.FloconAndroidSqlDatabaseModel
+import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
+import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
+import io.github.openflocon.flocon.database.core.model.fromdevice.DeviceDataBaseDataModel
 import java.io.File
 import java.util.Locale
 
-//internal actual fun buildFloconDatabaseDataSource(context: FloconContext): FloconDatabaseDataSource {
-//    return FloconDatabaseDataSourceAndroid(context.context)
-//}
+internal actual fun buildFloconDatabaseDataSource(context: FloconContext): FloconDatabaseDataSource {
+    return FloconDatabaseDataSourceAndroid(context.context)
+}
 
 internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
     FloconDatabaseDataSource {
@@ -24,18 +24,19 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
     private val MAX_DEPTH = 7
 
     override fun executeSQL(
-        registeredDatabases: List<io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel>,
+        registeredDatabases: List<FloconDatabaseModel>,
         databaseName: String,
         query: String
     ): DatabaseExecuteSqlResponse {
         val databaseModel = registeredDatabases.find { it.displayName == databaseName }
-        return when(databaseModel) {
-            is FloconSqliteDatabaseModel -> {
+        return when (databaseModel) {
+            is FloconAndroidSqlDatabaseModel -> {
                 executeSQL(
                     database = databaseModel.database,
                     query = query,
                 )
             }
+
             else -> openDbAndExecuteQuery(
                 databaseName = databaseName,
                 query = query,
@@ -105,7 +106,7 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
         }
     }
 
-    override fun getAllDataBases(registeredDatabases: List<io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel>): List<DeviceDataBaseDataModel> {
+    override fun getAllDataBases(registeredDatabases: List<FloconDatabaseModel>): List<DeviceDataBaseDataModel> {
         val databasesDir = context.getDatabasePath("dummy_db").parentFile ?: return emptyList()
 
         val foundDatabases = mutableListOf<DeviceDataBaseDataModel>()
@@ -116,39 +117,9 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
             foundDatabases = foundDatabases
         )
 
-//        registeredDatabases.forEach {
-//            when(it) {
-//                is FloconFileDatabaseModel -> {
-//                    // check if file exists here
-//                    if (File(it.absolutePath).exists()) {
-//                        foundDatabases.add(
-//                            DeviceDataBaseDataModel(
-//                                id = it.absolutePath,
-//                                name = it.displayName,
-//                            )
-//                        )
-//                    }
-//                }
-//                else -> {
-//                    foundDatabases.add(
-//                        DeviceDataBaseDataModel(
-//                            id = it.displayName,
-//                            name = it.displayName,
-//                        )
-//                    )
-//                }
-//            }
-//        }
-
         return foundDatabases
     }
 
-    /**
-     * Recursively scans a directory for SQLite database files.
-     *
-     * @param directory The current directory to scan.
-     * @param foundDatabases The mutable list to add found databases to.
-     */
     private fun scanDirectoryForDatabases(
         directory: File,
         depth: Int,
@@ -183,7 +154,6 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
         }
     }
 }
-
 
 private fun executeSelect(
     database: SupportSQLiteDatabase,
@@ -259,7 +229,6 @@ private fun getObjectFromColumnIndex(cursor: Cursor, column: Int): String? {
     }
 }
 
-// must use the old way to get the version...
 private fun getDatabaseVersion(
     path: String,
 ): Int {
