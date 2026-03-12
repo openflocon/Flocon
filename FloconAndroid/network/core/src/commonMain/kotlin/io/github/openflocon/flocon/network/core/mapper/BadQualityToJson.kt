@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.plugins.network.mapper
+package io.github.openflocon.flocon.network.core.mapper
 
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.core.FloconEncoder

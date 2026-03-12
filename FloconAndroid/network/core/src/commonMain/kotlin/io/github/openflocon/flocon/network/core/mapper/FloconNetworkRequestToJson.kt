@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package io.github.openflocon.flocon.plugins.network.mapper
+package io.github.openflocon.flocon.network.core.mapper
 
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallRequest
