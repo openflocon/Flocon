@@ -2,7 +2,6 @@ package io.github.openflocon.flocon.plugins.device
 
 import io.github.openflocon.flocon.*
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.plugins.device.model.fromdevice.RegisterDeviceDataModel
 import io.github.openflocon.flocon.pluginsold.device.FloconDeviceConfig
 import io.github.openflocon.flocon.pluginsold.device.FloconDevicePlugin
 
@@ -10,10 +9,13 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
     override val name: String = "Device"
     override val pluginId: String = Protocol.ToDevice.Device.Plugin
     override fun createConfig() = FloconDeviceConfig()
-    override fun install(config: FloconDeviceConfig, app: FloconApp): FloconDevicePlugin {
+    override fun install(
+        pluginConfig: FloconDeviceConfig,
+        floconConfig: FloconConfig
+    ): FloconDevicePlugin {
         return FloconDevicePluginImpl(
-            sender = app.client as FloconMessageSender,
-            context = app.context
+            sender = floconConfig.client as FloconMessageSender,
+            context = floconConfig.context
         )
     }
 }

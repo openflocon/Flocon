@@ -2,7 +2,7 @@
 
 package io.github.openflocon.flocon.okhttp
 
-import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.network.core.networkPlugin
 import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkCallResponse
@@ -29,7 +29,7 @@ class FloconOkhttpInterceptor(
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        val floconNetworkPlugin = FloconApp.instance!!.networkPlugin
+        val floconNetworkPlugin = Flocon.networkPlugin
 
         if (!shouldLog(chain)) {
             // on no op, do not intercept the call, just execute it

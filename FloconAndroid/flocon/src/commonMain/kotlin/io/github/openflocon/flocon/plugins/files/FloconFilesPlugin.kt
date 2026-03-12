@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.plugins.files
 
 import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconFile
 import io.github.openflocon.flocon.FloconLogger
@@ -9,9 +10,8 @@ import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.model.FloconFileInfo
+import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
-import io.github.openflocon.flocon.plugins.files.model.fromdevice.FilesResultDataModel
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFileMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFilesMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFolderContentMessage
@@ -26,10 +26,13 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
     override val name: String = "Files"
     override val pluginId: String = Protocol.ToDevice.Files.Plugin
     override fun createConfig() = FloconFilesConfig()
-    override fun install(config: FloconFilesConfig, app: FloconApp): FloconFilesPlugin {
-        val client = app.client
+    override fun install(
+        pluginConfig: FloconFilesConfig,
+        floconConfig: FloconConfig
+    ): FloconFilesPlugin {
+        val client = floconConfig.client
         return FloconFilesPluginImpl(
-            context = app.context,
+            context = floconConfig.context,
             floconFileSender = client as FloconFileSender,
             sender = client as FloconMessageSender
         )
@@ -37,7 +40,10 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
 }
 
 internal interface FileDataSource {
+
+    @FloconMarker
     fun getFile(path: String, isConstantPath: Boolean): FloconFile?
+
     fun getFolderContent(
         path: String,
         isConstantPath: Boolean,
@@ -46,6 +52,8 @@ internal interface FileDataSource {
 
     fun deleteFile(path: String)
     fun deleteFiles(path: List<String>)
+
+    @FloconMarker
     fun deleteFolderContent(folder: FloconFile)
 }
 
@@ -61,6 +69,7 @@ internal class FloconFilesPluginImpl(
     private val fileDataSource = fileDataSource(context)
     private val withFoldersSize = MutableStateFlow(false)
 
+    @FloconMarker
     override suspend fun onMessageReceived(
         method: String,
         body: String,

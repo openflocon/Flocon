@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.pluginsold.tables
 
 import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
@@ -17,7 +18,10 @@ object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
         TODO("Not yet implemented")
     }
 
-    override fun install(config: FloconTableConfig, app: FloconApp): FloconTablePlugin {
+    override fun install(
+        pluginConfig: FloconTableConfig,
+        floconConfig: FloconConfig
+    ): FloconTablePlugin {
         TODO("Not yet implemented")
     }
 

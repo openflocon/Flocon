@@ -10,10 +10,13 @@ object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPr
     override val name: String = "Preferences"
     override val pluginId: String = Protocol.ToDevice.SharedPreferences.Plugin
     override fun createConfig() = FloconPreferencesConfig()
-    override fun install(config: FloconPreferencesConfig, app: FloconApp): FloconPreferencesPlugin {
+    override fun install(
+        pluginConfig: FloconPreferencesConfig,
+        floconConfig: FloconConfig
+    ): FloconPreferencesPlugin {
         return FloconSharedPrefsPluginImpl(
-            context = app.context,
-            sender = app.client as FloconMessageSender
+            context = floconConfig.context,
+            sender = floconConfig.client as FloconMessageSender
         )
     }
 }

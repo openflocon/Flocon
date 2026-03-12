@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.websocket
 
 import io.github.openflocon.flocon.FloconFile
+import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.model.FloconFileInfo
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -12,6 +13,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
  * The android client uses okhttp, because for android-only project there's more chance to having okhttp than ktor
  * it prevent conflicts with ktor versions also
  */
+@FloconMarker
 internal class FloconHttpClientAndroid : FloconHttpClient {
 
     private val client by lazy {
