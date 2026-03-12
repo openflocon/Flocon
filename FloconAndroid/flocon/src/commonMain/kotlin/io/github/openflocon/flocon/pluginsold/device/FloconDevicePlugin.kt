@@ -18,6 +18,8 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
 
     override val name: String
         get() = TODO("Not yet implemented")
+    override val pluginId: String
+        get() = TODO("Not yet implemented")
 }
 
 interface FloconDevicePlugin : FloconPlugin {

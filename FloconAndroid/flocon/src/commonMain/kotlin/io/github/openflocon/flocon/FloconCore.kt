@@ -29,7 +29,7 @@ abstract class FloconCore : FloconApp() {
 
     protected fun initializeFlocon(
         context: FloconContext,
-        configuration: FloconConfiguration = FloconConfiguration(TODO())
+        configuration: FloconConfiguration = FloconConfiguration(TODO(), TODO())
     ) {
         //super.initializeFlocon(context)
        // val newClient = FloconClientImpl(context, configuration)

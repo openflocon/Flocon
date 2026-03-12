@@ -27,10 +27,13 @@ import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.grpc.GrpcController
 import io.github.openflocon.flocon.myapplication.ui.ImagesListView
 import io.github.openflocon.flocon.myapplication.ui.theme.MyApplicationTheme
+import io.github.openflocon.flocon.network.core.FloconNetwork
+import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinks
 import io.github.openflocon.flocon.startFlocon
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -46,21 +49,21 @@ class MainActivity : ComponentActivity() {
             Toast.makeText(this, "opend with : $it", Toast.LENGTH_LONG).show()
         }
 
-//        val okHttpClient = OkHttpClient()
-//            .newBuilder()
-//            .addInterceptor(
-//                FloconOkhttpInterceptor(
-//                    isImage = {
-//                        it.request.url.toString().contains("picsum")
-//                    },
-//                    /*shouldLog = {
-//                        val url = it.request().url.toString()
-//                        println("url: $url")
-//                        url.contains("1").not()
-//                    }*/
-//                )
-//            )
-//            .build()
+        val okHttpClient = OkHttpClient()
+            .newBuilder()
+            .addInterceptor(
+                FloconOkhttpInterceptor(
+                    isImage = {
+                        it.request.url.toString().contains("picsum")
+                    },
+                    /*shouldLog = {
+                        val url = it.request().url.toString()
+                        println("url: $url")
+                        url.contains("1").not()
+                    }*/
+                )
+            )
+            .build()
 
 //        initializeSharedPreferences(applicationContext)
 //        initializeDatabases(context = applicationContext)
@@ -72,7 +75,7 @@ class MainActivity : ComponentActivity() {
 //        initializeSharedPreferencesAfterInit(applicationContext)
 //        initializeDatastores(applicationContext)
 
-//        val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)
+        val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)
 //        val dummyWebsocketCaller = DummyWebsocketCaller(client = okHttpClient)
 //        GlobalScope.launch { dummyWebsocketCaller.connectToWebsocket() }
 //        val graphQlTester = GraphQlTester(client = okHttpClient)
@@ -102,7 +105,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             Button(
                                 onClick = {
-                                    //dummyHttpCaller.call()
+                                    dummyHttpCaller.call()
                                 }
                             ) {
                                 Text("okhttp test")
@@ -227,6 +230,10 @@ class MainActivity : ComponentActivity() {
                     label = "Post",
                     description = "Open a post and send a comment"
                 )
+            }
+
+            install(FloconNetwork) {
+
             }
         }
     }

@@ -16,6 +16,7 @@ object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyt
     override fun install(config: FloconAnalyticsConfig, app: FloconApp): FloconAnalyticsPlugin = TODO()
 
     override val name: String = ""
+    override val pluginId: String = "ANALYTICS"
 }
 //
 //fun floconAnalytics(analyticsName: String) : AnalyticsBuilder {
