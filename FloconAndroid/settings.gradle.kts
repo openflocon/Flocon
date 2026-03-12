@@ -1,3 +1,5 @@
+rootProject.name = "Flocon Sample App"
+
 pluginManagement {
     repositories {
         google()
@@ -13,8 +15,6 @@ dependencyResolutionManagement {
         mavenLocal()
     }
 }
-
-rootProject.name = "Flocon Sample App"
 
 include(":sample-android-only")
 include(":sample-multiplatform")
