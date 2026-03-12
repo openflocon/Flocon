@@ -1,38 +1,28 @@
-package io.github.openflocon.flocon.network.core
+package io.github.openflocon.flocon.network.core.datasource
 
-import io.github.openflocon.flocon.FloconContext
+import android.content.Context
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.network.core.mapper.parseBadQualityConfig
 import io.github.openflocon.flocon.network.core.mapper.parseMockResponses
 import io.github.openflocon.flocon.network.core.mapper.toJsonString
 import io.github.openflocon.flocon.network.core.mapper.writeMockResponsesToJson
+import io.github.openflocon.flocon.network.core.plugin.FLOCON_NETWORK_BAD_CONFIG_JSON
+import io.github.openflocon.flocon.network.core.plugin.FLOCON_NETWORK_MOCKS_JSON
 import io.github.openflocon.flocon.pluginsold.network.model.BadQualityConfig
 import io.github.openflocon.flocon.pluginsold.network.model.MockNetworkResponse
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-internal actual fun buildFloconNetworkDataSource(context: FloconContext): FloconNetworkDataSource {
-    return FloconNetworkDataSourceJvm()
-}
-
-internal class FloconNetworkDataSourceJvm(
+internal class FloconNetworkDataSourceAndroid(
+    private val context: Context
 ) : FloconNetworkDataSource {
-
-    private val baseDir: File = File(System.getProperty("user.home"), ".flocon")
-
-    init {
-        if (!baseDir.exists()) {
-            baseDir.mkdirs()
-        }
-    }
-
     override fun saveMocksToFile(mocks: List<MockNetworkResponse>) {
         try {
-            val file = File(baseDir, FLOCON_NETWORK_MOCKS_JSON)
-            val jsonString = writeMockResponsesToJson(mocks)
+            val file = File(context.filesDir, FLOCON_NETWORK_MOCKS_JSON)
+            val jsonString = writeMockResponsesToJson(mocks = mocks)
             FileOutputStream(file).use {
-                it.write(jsonString.toByteArray(Charsets.UTF_8))
+                it.write(jsonString.toByteArray())
             }
         } catch (t: Throwable) {
             FloconLogger.logError("issue in saveMocksToFile", t)
@@ -41,7 +31,7 @@ internal class FloconNetworkDataSourceJvm(
 
     override fun loadMocksFromFile(): List<MockNetworkResponse> {
         return try {
-            val file = File(baseDir, FLOCON_NETWORK_MOCKS_JSON)
+            val file = File(context.filesDir, FLOCON_NETWORK_MOCKS_JSON)
             if (!file.exists()) {
                 return emptyList()
             }
@@ -49,7 +39,7 @@ internal class FloconNetworkDataSourceJvm(
             val jsonString = FileInputStream(file).use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            parseMockResponses(jsonString)
+            parseMockResponses(jsonString = jsonString)
         } catch (t: Throwable) {
             FloconLogger.logError("issue in loadMocksFromFile", t)
             emptyList()
@@ -58,7 +48,7 @@ internal class FloconNetworkDataSourceJvm(
 
     override fun loadBadNetworkConfig(): BadQualityConfig? {
         return try {
-            val file = File(baseDir, FLOCON_NETWORK_BAD_CONFIG_JSON)
+            val file = File(context.filesDir, FLOCON_NETWORK_BAD_CONFIG_JSON)
             if (!file.exists()) {
                 return null
             }
@@ -66,7 +56,7 @@ internal class FloconNetworkDataSourceJvm(
             val jsonString = FileInputStream(file).use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            parseBadQualityConfig(jsonString)
+            parseBadQualityConfig(jsonString = jsonString)
         } catch (t: Throwable) {
             FloconLogger.logError("issue in loadBadNetworkConfig", t)
             null
@@ -75,13 +65,13 @@ internal class FloconNetworkDataSourceJvm(
 
     override fun saveBadNetworkConfig(config: BadQualityConfig?) {
         try {
-            val file = File(baseDir, FLOCON_NETWORK_BAD_CONFIG_JSON)
+            val file = File(context.filesDir, FLOCON_NETWORK_BAD_CONFIG_JSON)
             if (config == null) {
                 file.delete()
             } else {
                 val jsonString = config.toJsonString()
                 FileOutputStream(file).use {
-                    it.write(jsonString.toByteArray(Charsets.UTF_8))
+                    it.write(jsonString.toByteArray())
                 }
             }
         } catch (t: Throwable) {

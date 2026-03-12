@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.plugins.database
 
 import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
@@ -8,16 +9,11 @@ import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
-import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseQueryLogModel
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DeviceDataBaseDataModel
-import io.github.openflocon.flocon.plugins.database.model.fromdevice.QueryResultDataModel
-import io.github.openflocon.flocon.plugins.database.model.fromdevice.listDeviceDataBaseDataModelToJson
-import io.github.openflocon.flocon.plugins.database.model.fromdevice.toJson
 import io.github.openflocon.flocon.plugins.database.model.todevice.DatabaseQueryMessage
 import io.github.openflocon.flocon.pluginsold.database.FloconDatabaseConfig
 import io.github.openflocon.flocon.pluginsold.database.FloconDatabasePlugin
 import io.github.openflocon.flocon.pluginsold.database.model.FloconDatabaseModel
-import io.github.openflocon.flocon.utils.currentTimeMillis
 import kotlinx.coroutines.flow.MutableStateFlow
 
 internal interface FloconDatabaseDataSource {
@@ -38,9 +34,12 @@ object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabase
     override val name: String = "Database"
     override val pluginId: String = Protocol.ToDevice.Database.Plugin
     override fun createConfig() = FloconDatabaseConfig()
-    override fun install(config: FloconDatabaseConfig, app: FloconApp): FloconDatabasePlugin {
+    override fun install(
+        pluginConfig: FloconDatabaseConfig,
+        floconConfig: FloconConfig
+    ): FloconDatabasePlugin {
         return FloconDatabasePluginImpl(
-            sender = app.client as FloconMessageSender,
+            sender = floconConfig.client as FloconMessageSender,
             context = TODO() // FloconContext(appContext = null), // Handled by actual buildFloconDatabaseDataSource
         )
     }

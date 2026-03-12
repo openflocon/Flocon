@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.pluginsold.files
 
 import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
@@ -18,7 +19,10 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
         TODO("Not yet implemented")
     }
 
-    override fun install(config: FloconFilesConfig, app: FloconApp): FloconFilesPlugin {
+    override fun install(
+        pluginConfig: FloconFilesConfig,
+        floconConfig: FloconConfig
+    ): FloconFilesPlugin {
         TODO("Not yet implemented")
     }
 

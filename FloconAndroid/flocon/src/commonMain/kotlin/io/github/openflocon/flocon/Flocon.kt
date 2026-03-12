@@ -1,28 +1,27 @@
+@file:OptIn(FloconMarker::class)
+
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.FloconApp.Client
-import io.github.openflocon.flocon.client.FloconClient
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.model.floconMessageFromServerFromJson
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-internal class Flocon(
-    private val context: FloconContext,
-    private val scope: CoroutineScope,
-    private val client: FloconClient,
+class Flocon internal constructor(
+    private val config: FloconConfig,
     private val plugins: List<FloconPlugin>
 ) {
 
     init {
-        scope.launch {
+        config.scope.launch {
             start(
-                client = client,
-                context = context,
+                client = config.client,
+                context = config.context,
             )
         }
     }
@@ -34,7 +33,7 @@ internal class Flocon(
                 onClosed = {
                     println("Client - Closed")
                     // try again to connect
-                    scope.launch {
+                    config.scope.launch {
                         start(
                             client = client,
                             context = context,
@@ -68,7 +67,7 @@ internal class Flocon(
     }
 
     private fun onMessageReceived(message: String) {
-        scope.launch(Dispatchers.IO) {
+        config.scope.launch(Dispatchers.IO) {
             floconMessageFromServerFromJson(message)?.let { messageFromServer ->
                 plugins.find { it.key == messageFromServer.plugin }
                     ?.onMessageReceived(
@@ -77,6 +76,12 @@ internal class Flocon(
                     )
             }
         }
+    }
+
+    companion object {
+        var instance: Flocon? = null
+            get() = field ?: error("Flocon is not initialized")
+            internal set
     }
 
 }

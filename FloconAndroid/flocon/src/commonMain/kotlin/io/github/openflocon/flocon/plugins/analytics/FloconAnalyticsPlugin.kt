@@ -1,12 +1,11 @@
 package io.github.openflocon.flocon.plugins.analytics
 
-import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.plugins.analytics.mapper.analyticsItemsToJson
 import io.github.openflocon.flocon.pluginsold.analytics.FloconAnalyticsConfig
 import io.github.openflocon.flocon.pluginsold.analytics.FloconAnalyticsPlugin
 import io.github.openflocon.flocon.pluginsold.analytics.model.AnalyticsItem
@@ -15,9 +14,12 @@ object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyt
     override val name: String = "Analytics"
     override val pluginId: String = Protocol.ToDevice.Analytics.Plugin
     override fun createConfig() = FloconAnalyticsConfig()
-    override fun install(config: FloconAnalyticsConfig, app: FloconApp): FloconAnalyticsPlugin {
+    override fun install(
+        pluginConfig: FloconAnalyticsConfig,
+        floconConfig: FloconConfig
+    ): FloconAnalyticsPlugin {
         return FloconAnalyticsPluginImpl(
-            sender = app.client as FloconMessageSender
+            sender = floconConfig.client as FloconMessageSender
         )
     }
 }

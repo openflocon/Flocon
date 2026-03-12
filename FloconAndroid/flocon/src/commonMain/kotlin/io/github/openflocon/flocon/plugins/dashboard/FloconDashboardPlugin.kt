@@ -19,9 +19,12 @@ import kotlinx.coroutines.launch
     override val name: String = "Dashboard"
     override val pluginId: String = Protocol.ToDevice.Dashboard.Plugin
     override fun createConfig() = FloconDashboardConfig()
-    override fun install(config: FloconDashboardConfig, app: FloconApp): FloconDashboardPlugin {
+    override fun install(
+        pluginConfig: FloconDashboardConfig,
+        floconConfig: FloconConfig
+    ): FloconDashboardPlugin {
         return FloconDashboardPluginImpl(
-            sender = app.client as FloconMessageSender
+            sender = floconConfig.client as FloconMessageSender
         )
     }
 }

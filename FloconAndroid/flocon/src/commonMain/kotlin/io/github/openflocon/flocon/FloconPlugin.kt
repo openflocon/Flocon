@@ -1,5 +1,7 @@
 package io.github.openflocon.flocon
 
+import io.github.openflocon.flocon.dsl.FloconMarker
+
 /**
  * Base interface for all Flocon plugins.
  * Plugins can receive messages from the server and react to connection events.
@@ -29,7 +31,8 @@ interface FloconPluginKey<Config : Any, PluginInstance : Any> {
  * A factory for creating and installing Flocon plugins.
  * This is the entry point for Ktor-style [install] calls.
  */
-interface FloconPluginFactory<Config : FloconPluginConfig, PluginInstance : FloconPlugin> : FloconPluginKey<Config, PluginInstance> {
+interface FloconPluginFactory<Config : FloconPluginConfig, PluginInstance : FloconPlugin> :
+    FloconPluginKey<Config, PluginInstance> {
 
     /**
      * Create a default configuration instance for the plugin.
@@ -37,8 +40,9 @@ interface FloconPluginFactory<Config : FloconPluginConfig, PluginInstance : Floc
     fun createConfig(): Config
 
     /**
-     * Install the plugin into the [io.github.openflocon.flocon.FloconApp] instance with the given [config].
+     * Install the plugin into the [io.github.openflocon.flocon.FloconApp] instance with the given [pluginConfig].
      */
-    fun install(config: Config, app: FloconApp): PluginInstance // TODO
+    @OptIn(FloconMarker::class)
+    fun install(pluginConfig: Config, floconConfig: FloconConfig): PluginInstance
 
 }
