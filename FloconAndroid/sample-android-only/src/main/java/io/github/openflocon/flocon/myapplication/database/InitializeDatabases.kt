@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.myapplication.database
 
 import android.content.Context
 import androidx.room.Room
+import io.github.openflocon.flocon.database.room.floconRegisterDatabase
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.database.model.FoodEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanEntity
@@ -14,16 +15,21 @@ fun initializeInMemoryDatabases(context: Context): DogDatabase {
         context,
         DogDatabase::class.java,
     ).build().also {
-//        floconRegisterDatabase(
-//            displayName = "inmemory_dogs",
-//            openHelper = it.openHelper
-//        )
+        floconRegisterDatabase(
+            displayName = "inmemory_dogs",
+            database = it
+        )
     }
 }
 
 fun initializeDatabases(context: Context) {
     val dogDatabase = DogDatabase.getDatabase(context)
     val foodDatabase = FoodDatabase.getDatabase(context)
+
+    floconRegisterDatabase(
+        displayName = "dogs",
+        database = dogDatabase
+    )
 
     GlobalScope.launch {
         dogDatabase.dogDao().insertDog(
@@ -125,7 +131,7 @@ fun initializeDatabases(context: Context) {
                     id = 10L + i,
                     name = "dog$i",
                     breed = randomBreed,
-                    pictureUrl = "https://picsum.photos/500/50${i%10}.jpg",
+                    pictureUrl = "https://picsum.photos/500/50${i % 10}.jpg",
                     age = (1..15).random()
                 )
             )

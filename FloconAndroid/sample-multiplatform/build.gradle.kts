@@ -75,7 +75,7 @@ kotlin {
                 implementation(libs.ktor.client.cio)
 
                 implementation(libs.sqlite.jdbc)
-                implementation(libs.sqlite.bundled)
+                implementation(libs.androidx.sqlite.bundled)
 
                 // Compose Desktop
                 implementation(compose.desktop.currentOs)

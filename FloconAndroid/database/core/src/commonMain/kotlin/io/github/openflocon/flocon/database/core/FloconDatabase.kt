@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.database.core
 
 import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconEncoding
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
@@ -14,7 +15,8 @@ object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabase
     @FloconMarker
     override fun createEncoding(): FloconEncoding = FloconDatabaseEncoding()
 
-    override fun createConfig() = FloconDatabaseConfig()
+    override fun createConfig(context: FloconContext): FloconDatabaseConfig =
+        FloconDatabaseConfig(context)
 
     @OptIn(FloconMarker::class)
     override fun install(
@@ -23,9 +25,10 @@ object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabase
     ): FloconDatabasePlugin {
         return FloconDatabasePluginImpl(
             sender = floconConfig.client as FloconMessageSender,
-            context = floconConfig.context,
+            scope = floconConfig.scope,
             providers = pluginConfig.providers
-        ).also { FloconDatabasePluginImpl.plugin = it }
+        )
+            .also { FloconDatabasePluginImpl.plugin = it }
     }
 
 }

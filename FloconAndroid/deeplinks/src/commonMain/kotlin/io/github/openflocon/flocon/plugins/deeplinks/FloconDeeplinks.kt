@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.plugins.deeplinks
 
 import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginFactory
@@ -12,7 +13,7 @@ import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
 object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
     override val name: String = "Deeplinks"
     override val pluginId: String = FloconDeeplinks::class.simpleName!!
-    override fun createConfig() = FloconDeeplinksConfig()
+    override fun createConfig(context: FloconContext) = FloconDeeplinksConfig()
 
     @OptIn(FloconMarker::class)
     override fun install(

@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.plugins.dashboard
 
 import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
@@ -27,7 +28,7 @@ interface FloconDashboardPlugin : FloconPlugin {
 object FloconDashboard : FloconPluginFactory<FloconDashboardConfig, FloconDashboardPlugin> {
     override val name: String = "Dashboard"
     override val pluginId: String = Protocol.ToDevice.Dashboard.Plugin
-    override fun createConfig() = FloconDashboardConfig()
+    override fun createConfig(context: FloconContext) = FloconDashboardConfig()
     override fun install(
         pluginConfig: FloconDashboardConfig,
         floconConfig: FloconConfig

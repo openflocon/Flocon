@@ -25,7 +25,8 @@ kotlin {
                 implementation(project(":flocon"))
                 api(project(":database:core"))
                 implementation(libs.androidx.room.runtime)
-                implementation(libs.androidx.sqlite)
+                implementation(libs.androidx.room.sqlite.wrapper)
+                implementation(libs.androidx.sqlite.bundled)
             }
         }
         

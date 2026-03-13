@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.pluginsold.tables
 
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
@@ -14,7 +15,7 @@ class FloconTableConfig : FloconPluginConfig
  * Used to display custom data tables.
  */
 object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
-    override fun createConfig(): FloconTableConfig {
+    override fun createConfig(context: FloconContext): FloconTableConfig {
         TODO("Not yet implemented")
     }
 
