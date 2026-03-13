@@ -40,7 +40,7 @@ interface FloconPluginFactory<Config : FloconPluginConfig, PluginInstance : Floc
     /**
      * Create a default configuration instance for the plugin.
      */
-    fun createConfig(): Config
+    fun createConfig(context: FloconContext): Config
 
     /**
      * Install the plugin into the [io.github.openflocon.flocon.FloconApp] instance with the given [pluginConfig].

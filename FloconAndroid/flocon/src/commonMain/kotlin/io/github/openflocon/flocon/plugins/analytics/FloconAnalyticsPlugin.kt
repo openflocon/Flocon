@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.plugins.analytics
 
 import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
@@ -18,7 +19,7 @@ interface FloconAnalyticsPlugin : FloconPlugin {
 object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyticsPlugin> {
     override val name: String = "Analytics"
     override val pluginId: String = Protocol.ToDevice.Analytics.Plugin
-    override fun createConfig() = FloconAnalyticsConfig()
+    override fun createConfig(context: FloconContext) = FloconAnalyticsConfig()
     override fun install(
         pluginConfig: FloconAnalyticsConfig,
         floconConfig: FloconConfig
@@ -33,7 +34,7 @@ internal class FloconAnalyticsPluginImpl(
     private val sender: FloconMessageSender,
 ) : FloconPlugin, FloconAnalyticsPlugin {
     override val key: String
-        get() = "ANALYTICS"
+        get() = Protocol.ToDevice.Analytics.Plugin
 
     override suspend fun onMessageReceived(
         method: String,

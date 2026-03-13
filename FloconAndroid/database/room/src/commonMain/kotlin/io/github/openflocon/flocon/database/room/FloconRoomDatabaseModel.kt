@@ -10,7 +10,26 @@ import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteResponse
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
 
-data class FloconRoomDatabaseModel(
+fun floconRegisterDatabase(displayName: String, database: RoomDatabase) {
+    Flocon.databasePlugin.register(
+        FloconRoomDatabaseModel(
+            id = displayName,
+            displayName = displayName,
+            database = database
+        )
+    )
+}
+
+fun floconLogDatabaseQuery(databaseName: String, sqlQuery: String, bindArgs: List<Any?>) {
+    Flocon.databasePlugin.logQuery(
+        dbName = databaseName,
+        sqlQuery = sqlQuery,
+        bindArgs = bindArgs,
+    )
+}
+
+internal data class FloconRoomDatabaseModel(
+    override val id: String,
     override val displayName: String,
     val database: RoomDatabase
 ) : FloconDatabaseModel {
@@ -114,13 +133,4 @@ private fun getFirstWord(s: String): String {
     val trimmed = s.trim()
     val firstSpace = trimmed.indexOf(' ')
     return if (firstSpace >= 0) trimmed.substring(0, firstSpace) else trimmed
-}
-
-fun floconRegisterDatabase(displayName: String, database: RoomDatabase) {
-    Flocon.databasePlugin.register(
-        FloconRoomDatabaseModel(
-            displayName = displayName,
-            database = database,
-        )
-    )
 }

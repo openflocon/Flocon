@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.pluginsold.sharedprefs
 
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
@@ -14,7 +15,7 @@ class FloconPreferencesConfig : FloconPluginConfig
  * Used to inspect SharedPreferences or other key-value stores.
  */
 object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPreferencesPlugin> {
-    override fun createConfig(): FloconPreferencesConfig {
+    override fun createConfig(context: FloconContext): FloconPreferencesConfig {
         TODO("Not yet implemented")
     }
 

@@ -67,6 +67,7 @@ class Flocon internal constructor(
     }
 
     private fun onMessageReceived(message: String) {
+        println("Message received : $message")
         config.scope.launch(Dispatchers.IO) {
             floconMessageFromServerFromJson(message)?.let { messageFromServer ->
                 plugins.find { it.key == messageFromServer.plugin }

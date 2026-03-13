@@ -7,7 +7,7 @@ import kotlinx.serialization.encodeToString
 @Serializable
 data class DeviceDataBaseDataModel(
     val id: String,
-    val name: String,
+    val name: String
 )
 
 fun listDeviceDataBaseDataModelToJson(items: List<DeviceDataBaseDataModel>) : String {

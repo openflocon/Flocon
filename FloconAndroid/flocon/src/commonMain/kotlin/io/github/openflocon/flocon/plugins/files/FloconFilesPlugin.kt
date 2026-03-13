@@ -29,7 +29,7 @@ interface FloconFilesPlugin : FloconPlugin
 object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
     override val name: String = "Files"
     override val pluginId: String = Protocol.ToDevice.Files.Plugin
-    override fun createConfig() = FloconFilesConfig()
+    override fun createConfig(context: FloconContext) = FloconFilesConfig()
     override fun install(
         pluginConfig: FloconFilesConfig,
         floconConfig: FloconConfig

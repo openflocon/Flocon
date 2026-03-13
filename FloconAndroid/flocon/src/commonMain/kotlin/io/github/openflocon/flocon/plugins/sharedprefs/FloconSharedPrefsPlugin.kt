@@ -19,7 +19,7 @@ interface FloconPreferencesPlugin : FloconPlugin {
 object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPreferencesPlugin> {
     override val name: String = "Preferences"
     override val pluginId: String = Protocol.ToDevice.SharedPreferences.Plugin
-    override fun createConfig() = FloconPreferencesConfig()
+    override fun createConfig(context: FloconContext) = FloconPreferencesConfig()
     override fun install(
         pluginConfig: FloconPreferencesConfig,
         floconConfig: FloconConfig

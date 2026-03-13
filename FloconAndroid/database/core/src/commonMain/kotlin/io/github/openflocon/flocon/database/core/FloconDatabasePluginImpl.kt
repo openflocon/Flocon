@@ -1,47 +1,51 @@
 package io.github.openflocon.flocon.database.core
 
-import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.database.core.datasource.FloconDatabaseDataSource
 import io.github.openflocon.flocon.database.core.datasource.FloconDatabaseProvider
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
+import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DatabaseQueryLogModel
+import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DeviceDataBaseDataModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.sql.QueryResultDataModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.sql.listDeviceDataBaseDataModelToJson
 import io.github.openflocon.flocon.database.core.model.todevice.DatabaseQueryMessage
 import io.github.openflocon.flocon.dsl.FloconMarker
+import io.github.openflocon.flocon.utils.currentTimeMillis
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-
-internal expect fun buildFloconDatabaseDataSource(context: FloconContext): FloconDatabaseDataSource
+import kotlinx.coroutines.flow.updateAndGet
+import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
 
 internal class FloconDatabasePluginImpl(
     private var sender: FloconMessageSender,
-    private val context: FloconContext,
+    private val scope: CoroutineScope,
     @FloconMarker
     override val providers: List<FloconDatabaseProvider>
 ) : FloconPlugin, FloconDatabasePlugin {
 
-    override val key: String = "DATABASE"
+    override val key: String = Protocol.FromDevice.Database.Plugin
 
     private val registeredDatabases = MutableStateFlow<List<FloconDatabaseModel>>(emptyList())
-
-    private val dataSource = buildFloconDatabaseDataSource(context)
 
     override suspend fun onMessageReceived(
         method: String,
         body: String
     ) {
+        println("Database: $method & $body")
         when (method) {
             Protocol.ToDevice.Database.Method.GetDatabases -> sendAllDatabases(sender)
 
             Protocol.ToDevice.Database.Method.Query -> {
                 val queryMessage = DatabaseQueryMessage.fromJson(message = body) ?: return
                 val databaseModel = registeredDatabases.value
-                    .find { it.displayName == queryMessage.database }
+                    .find { it.id == queryMessage.database }
+
                 val result = databaseModel?.executeQuery(query = queryMessage.query)
                     ?: DatabaseExecuteSqlResponse.Error(
                         message = "Database not found",
@@ -54,7 +58,7 @@ internal class FloconDatabasePluginImpl(
                         method = Protocol.FromDevice.Database.Method.Query,
                         body = QueryResultDataModel(
                             requestId = queryMessage.requestId,
-                            result = result
+                            result = FloconEncoder.json.encodeToString(result)
                         )
                             .toJson()
                     )
@@ -69,15 +73,17 @@ internal class FloconDatabasePluginImpl(
         sendAllDatabases(sender)
     }
 
+    @OptIn(FloconMarker::class)
     private suspend fun sendAllDatabases(sender: FloconMessageSender) {
-        val databases = dataSource.getAllDataBases(
-            registeredDatabases = registeredDatabases.value,
-        )
+        val databases = providers.flatMap { it.getAllDataBases(emptyList()) }
+        val all = registeredDatabases.updateAndGet { it + databases }
+            .map { DeviceDataBaseDataModel(id = it.id, name = it.displayName) }
+
         try {
             sender.send(
                 plugin = Protocol.FromDevice.Database.Plugin,
                 method = Protocol.FromDevice.Database.Method.GetDatabases,
-                body = listDeviceDataBaseDataModelToJson(databases),
+                body = listDeviceDataBaseDataModelToJson(all),
             )
         } catch (t: Throwable) {
             FloconLogger.logError("Database parsing error", t)
@@ -89,19 +95,22 @@ internal class FloconDatabasePluginImpl(
     }
 
     override fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>) {
-        try {
-//            sender.send(
-//                plugin = Protocol.FromDevice.Database.Plugin,
-//                method = Protocol.FromDevice.Database.Method.LogQuery,
-//                body = DatabaseQueryLogModel(
-//                    dbName = dbName,
-//                    sqlQuery = sqlQuery,
-//                    bindArgs = bindArgs.map { it.toString() },
-//                    timestamp = currentTimeMillis(),
-//                ).toJson(),
-//            )
-        } catch (t: Throwable) {
-            FloconLogger.logError("Database logging error", t)
+        scope.launch {
+            try {
+                sender.send(
+                    plugin = Protocol.FromDevice.Database.Plugin,
+                    method = Protocol.FromDevice.Database.Method.LogQuery,
+                    body = DatabaseQueryLogModel(
+                        dbName = dbName,
+                        sqlQuery = sqlQuery,
+                        bindArgs = bindArgs.map { it.toString() },
+                        timestamp = currentTimeMillis()
+                    )
+                        .toJson()
+                )
+            } catch (t: Throwable) {
+                FloconLogger.logError("Database logging error", t)
+            }
         }
     }
 

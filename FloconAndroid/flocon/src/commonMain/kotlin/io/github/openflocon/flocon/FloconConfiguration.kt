@@ -5,9 +5,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 class FloconConfiguration internal constructor(
     private val config: FloconConfig
@@ -23,7 +20,7 @@ class FloconConfiguration internal constructor(
         configure: Config.() -> Unit = {}
     ) {
         plugins[factory.pluginId] = { scope ->
-            val config = factory.createConfig()
+            val config = factory.createConfig(config.context)
                 .apply { configure() }
 
             factory.install(

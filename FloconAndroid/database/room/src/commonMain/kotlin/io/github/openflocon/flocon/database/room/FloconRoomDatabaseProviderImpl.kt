@@ -1,10 +1,10 @@
 package io.github.openflocon.flocon.database.room
 
 import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.core.datasource.FloconDatabaseProvider
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
-import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DeviceDataBaseDataModel
 import io.github.openflocon.flocon.dsl.FloconMarker
 
 interface FloconRoomDatabaseProvider : FloconDatabaseProvider {
@@ -15,20 +15,12 @@ interface FloconRoomDatabaseProvider : FloconDatabaseProvider {
 }
 
 @OptIn(FloconMarker::class)
-internal class FloconRoomDatabaseProviderImpl(
+internal expect class FloconRoomDatabaseProviderImpl(
+    context: FloconContext,
     paths: List<String>
 ) : FloconRoomDatabaseProvider {
-
-    override fun getAllDataBases(
-        registeredDatabases: List<FloconDatabaseModel>
-    ): List<DeviceDataBaseDataModel> {
-        TODO("Not yet implemented")
-    }
-
-    override fun register() {
-        TODO("Not yet implemented")
-    }
-
+    override fun register()
+    override fun getAllDataBases(registeredDatabases: List<FloconDatabaseModel>): List<FloconDatabaseModel>
 }
 
 @OptIn(FloconMarker::class)

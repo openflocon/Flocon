@@ -19,7 +19,7 @@ composeBom = "2025.06.01"
 appcompat = "1.7.1"
 material = "1.12.0"
 okhttpBom = "4.12.0"
-room = "2.7.2"
+room = "2.8.4"
 # for grpc
 gson = "2.11.0"
 grpc = "1.70.0"
@@ -28,7 +28,7 @@ grpcKotlin = "1.4.3"
 protobuf = "4.26.1"
 ksp = "2.1.0-1.0.29"
 processPhoenix = "3.0.0"
-sqlite = "2.5.2"
+sqlite = "2.6.2"
 sqliteJdbc = "3.50.3.0"
 buildconfig = "5.6.8"
 brotli = "0.1.2"
@@ -36,9 +36,6 @@ brotli = "0.1.2"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 brotli-dec = { module = "org.brotli:dec", version.ref = "brotli" }
 apollo-http-okhttprealization = { module = "com.apollographql.apollo:apollo-http-okhttprealization", version.ref = "apollo" }
 apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
@@ -90,9 +87,11 @@ protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-
 protobuf-util = { group = "com.google.protobuf", name = "protobuf-java-util", version.ref = "protobuf" }
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqliteJdbc" }
 squareup-okhttp = { module = "com.squareup.okhttp3:okhttp" }
-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
-androidx-sqlite = { group = "androidx.sqlite", name = "sqlite", version.ref = "sqlite" }
-androidx-sqlite-framework = { group = "androidx.sqlite", name = "sqlite-framework", version.ref = "sqlite" }
+
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-sqlite-wrapper = { module = "androidx.room:room-sqlite-wrapper", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

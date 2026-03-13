@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.pluginsold.analytics
 
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
@@ -13,7 +14,7 @@ class FloconAnalyticsConfig : FloconPluginConfig
  * Flocon Analytics Plugin.
  */
 object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyticsPlugin> {
-    override fun createConfig(): FloconAnalyticsConfig = TODO()
+    override fun createConfig(context: FloconContext) = TODO()
     override fun install(
         pluginConfig: FloconAnalyticsConfig,
         floconConfig: FloconConfig

@@ -8,7 +8,7 @@ import kotlinx.serialization.encodeToString
 @Serializable
 internal data class QueryResultDataModel(
     val requestId: String,
-    val result: DatabaseExecuteResponse,
+    val result: String
 ) {
     fun toJson(): String {
         return FloconEncoder.json.encodeToString<QueryResultDataModel>(this)

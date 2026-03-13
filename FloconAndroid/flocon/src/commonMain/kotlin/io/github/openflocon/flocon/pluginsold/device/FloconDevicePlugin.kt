@@ -8,7 +8,7 @@ class FloconDeviceConfig : FloconPluginConfig
  * Flocon Device Plugin.
  */
 object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin> {
-    override fun createConfig(): FloconDeviceConfig {
+    override fun createConfig(context: FloconContext): FloconDeviceConfig {
         TODO("Not yet implemented")
     }
 

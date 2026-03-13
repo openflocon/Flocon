@@ -53,6 +53,8 @@ class MainActivity : ComponentActivity() {
             Toast.makeText(this, "opend with : $it", Toast.LENGTH_LONG).show()
         }
 
+        initFlocon()
+
         val okHttpClient = OkHttpClient()
             .newBuilder()
             .addInterceptor(
@@ -86,8 +88,6 @@ class MainActivity : ComponentActivity() {
 //        initializeImages(context = this, okHttpClient = okHttpClient)
 //        initializeDashboard(this)
 //        initializeTable(this)
-
-        initFlocon()
 
         setContent {
             MyApplicationTheme {
@@ -241,13 +241,6 @@ class MainActivity : ComponentActivity() {
                 room()
             }
         }
-    }
-
-    private fun toMigrate() {
-//        floconRegisterDatabase(
-//            displayName = "inmemory_dogs",
-//            openHelper = it.openHelper
-//        )
     }
 
 }

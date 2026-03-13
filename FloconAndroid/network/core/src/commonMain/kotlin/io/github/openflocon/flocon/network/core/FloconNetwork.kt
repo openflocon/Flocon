@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.network.core
 
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
@@ -44,7 +45,7 @@ object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlu
     override val name: String = "Network"
     override val pluginId: String = Protocol.ToDevice.Network.Plugin
 
-    override fun createConfig() = FloconNetworkConfig()
+    override fun createConfig(context: FloconContext) = FloconNetworkConfig()
 
     @OptIn(FloconMarker::class)
     override fun install(

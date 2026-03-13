@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.plugins.tables
 
 import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
@@ -19,7 +20,7 @@ interface FloconTablePlugin : FloconPlugin {
 object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
     override val name: String = "Table"
     override val pluginId: String = Protocol.ToDevice.Table.Plugin
-    override fun createConfig() = FloconTableConfig()
+    override fun createConfig(context: FloconContext) = FloconTableConfig()
     override fun install(
         pluginConfig: FloconTableConfig,
         floconConfig: FloconConfig

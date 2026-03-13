@@ -18,7 +18,7 @@ interface FloconDevicePlugin : FloconPlugin {
 object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin> {
     override val name: String = "Device"
     override val pluginId: String = Protocol.ToDevice.Device.Plugin
-    override fun createConfig() = FloconDeviceConfig()
+    override fun createConfig(context: FloconContext) = FloconDeviceConfig()
     override fun install(
         pluginConfig: FloconDeviceConfig,
         floconConfig: FloconConfig

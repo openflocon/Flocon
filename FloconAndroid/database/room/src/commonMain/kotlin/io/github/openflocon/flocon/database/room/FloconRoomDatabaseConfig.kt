@@ -18,6 +18,7 @@ fun FloconDatabaseConfig.room(block: FloconRoomDatabaseConfig.() -> Unit = {}) {
 
     providers.add(
         FloconRoomDatabaseProviderImpl(
+            context = context,
             paths = config.paths
         )
     )

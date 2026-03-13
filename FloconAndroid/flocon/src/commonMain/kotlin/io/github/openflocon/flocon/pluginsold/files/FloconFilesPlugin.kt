@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.pluginsold.files
 
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
@@ -15,7 +16,7 @@ class FloconFilesConfig : FloconPluginConfig {
  * Used to inspect and download files from the device.
  */
 object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
-    override fun createConfig(): FloconFilesConfig {
+    override fun createConfig(context: FloconContext): FloconFilesConfig {
         TODO("Not yet implemented")
     }
 
