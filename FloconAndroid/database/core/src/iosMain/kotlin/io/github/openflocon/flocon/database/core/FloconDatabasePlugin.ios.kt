@@ -6,7 +6,7 @@ import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
 import io.github.openflocon.flocon.database.core.model.FloconFileDatabaseModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
-import io.github.openflocon.flocon.database.core.model.fromdevice.DeviceDataBaseDataModel
+import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DeviceDataBaseDataModel
 import platform.Foundation.NSFileManager
 
 internal actual fun buildFloconDatabaseDataSource(context: FloconContext): FloconDatabaseDataSource {

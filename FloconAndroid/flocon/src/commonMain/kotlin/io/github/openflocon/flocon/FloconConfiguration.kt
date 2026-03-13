@@ -1,7 +1,6 @@
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.client.FloconClient
-import io.github.openflocon.flocon.dsl.FloconMarker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -60,21 +59,4 @@ fun startFlocon(context: FloconContext, block: FloconConfiguration.() -> Unit) {
         config = config,
         plugins = configuration.build()
     )
-}
-
-class DumpObject(
-    context: FloconContext,
-    client: Client
-) : FloconApp() {
-
-    override val client: Client = client
-
-    private val _initialized = MutableStateFlow<Boolean>(false)
-    override val isInitialized: StateFlow<Boolean> = _initialized.asStateFlow()
-
-    init {
-        this.context = context
-        instance = this
-    }
-
 }

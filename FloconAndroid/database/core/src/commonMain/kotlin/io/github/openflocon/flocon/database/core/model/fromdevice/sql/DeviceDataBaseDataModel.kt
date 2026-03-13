@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.database.core.model.fromdevice
+package io.github.openflocon.flocon.database.core.model.fromdevice.sql
 
 import io.github.openflocon.flocon.core.FloconEncoder
 import kotlinx.serialization.Serializable
