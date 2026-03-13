@@ -34,6 +34,9 @@ interface FloconPluginKey<Config : Any, PluginInstance : Any> {
 interface FloconPluginFactory<Config : FloconPluginConfig, PluginInstance : FloconPlugin> :
     FloconPluginKey<Config, PluginInstance> {
 
+    @FloconMarker
+    fun createEncoding(): FloconEncoding = DefaultEncoding()
+
     /**
      * Create a default configuration instance for the plugin.
      */

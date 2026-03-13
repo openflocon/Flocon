@@ -23,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.database.core.FloconDatabase
 import io.github.openflocon.flocon.database.room.floconRegisterDatabase
+import io.github.openflocon.flocon.database.room.room
 import io.github.openflocon.flocon.myapplication.database.DogDatabase
+import io.github.openflocon.flocon.myapplication.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.database.initializeInMemoryDatabases
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.grpc.GrpcController
@@ -68,7 +70,7 @@ class MainActivity : ComponentActivity() {
             .build()
 
 //        initializeSharedPreferences(applicationContext)
-//        initializeDatabases(context = applicationContext)
+        initializeDatabases(context = applicationContext)
 
 //        FloconLogger.enabled = true
 //        Flocon.initialize(this)
@@ -235,15 +237,17 @@ class MainActivity : ComponentActivity() {
             }
 
             install(FloconNetwork)
-            install(FloconDatabase)
+            install(FloconDatabase) {
+                room()
+            }
         }
     }
 
     private fun toMigrate() {
-        floconRegisterDatabase(
-            displayName = "inmemory_dogs",
-            openHelper = it.openHelper
-        )
+//        floconRegisterDatabase(
+//            displayName = "inmemory_dogs",
+//            openHelper = it.openHelper
+//        )
     }
 
 }

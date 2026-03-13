@@ -3,19 +3,19 @@ package io.github.openflocon.flocon.database.room
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.database.core.FloconDatabaseDataSource
+import io.github.openflocon.flocon.database.core.datasource.FloconDatabaseDataSource
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
-import io.github.openflocon.flocon.database.core.model.FloconSqlDatabaseModel
+import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteResponse
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
-import io.github.openflocon.flocon.database.core.model.fromdevice.DeviceDataBaseDataModel
+import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DeviceDataBaseDataModel
 import java.io.File
 import java.util.Locale
 
-interface FloconAndroidSqlDatabaseModel : FloconSqlDatabaseModel {
+interface FloconAndroidSqlDatabaseModel : FloconDatabaseModel {
     val database: SQLiteDatabase
 
-    override suspend fun executeSQL(query: String): DatabaseExecuteSqlResponse {
+
+    override suspend fun executeQuery(query: String): DatabaseExecuteResponse {
         return executeSQLInternal(database, query)
     }
 }
@@ -25,11 +25,11 @@ internal class FloconDatabaseDataSourceAndroid(private val context: Context) :
 
     private val MAX_DEPTH = 7
 
-    override fun executeSQL(
+    override suspend fun executeQuery(
         registeredDatabases: List<FloconDatabaseModel>,
         databaseName: String,
         query: String
-    ): DatabaseExecuteSqlResponse {
+    ): DatabaseExecuteResponse? {
         val databaseModel = registeredDatabases.find { it.displayName == databaseName }
         return when (databaseModel) {
             is FloconAndroidSqlDatabaseModel -> {
