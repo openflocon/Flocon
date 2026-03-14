@@ -8,10 +8,10 @@ kotlin {
         val commonMain by getting {
             dependencies {
 
-                api(project(":flocon"))
-                api(project(":network:core"))
+                api(projects.flocon)
+                api(projects.network.core)
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+                implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.ktor.client.core)
             }
         }

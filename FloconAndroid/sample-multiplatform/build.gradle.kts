@@ -39,8 +39,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":flocon"))
-                implementation(project(":network:ktor-interceptor"))
+                implementation(projects.flocon)
+                implementation(projects.network.ktorInterceptor)
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)

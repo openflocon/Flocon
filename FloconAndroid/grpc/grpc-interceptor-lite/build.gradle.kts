@@ -10,7 +10,7 @@ android {
 
 
 dependencies {
-    api(project(":grpc:grpc-interceptor-base"))
+    api(projects.grpc.grpcInterceptorBase)
 
     implementation(libs.grpc.android)
     implementation(libs.gson)

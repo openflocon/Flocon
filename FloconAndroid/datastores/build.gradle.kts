@@ -5,11 +5,11 @@ plugins {
 
 dependencies {
 
-    implementation(project(":flocon"))
+    implementation(projects.flocon)
 
     implementation(platform(libs.kotlinx.coroutines.bom))
-    implementation(libs.jetbrains.kotlinx.coroutines.core)
-    implementation(libs.jetbrains.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.datastore.preferences)
 }

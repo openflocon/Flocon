@@ -7,8 +7,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":flocon"))
-                api(project(":database:core"))
+                implementation(projects.flocon)
+                api(projects.database.core)
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.androidx.room.sqlite.wrapper)
                 implementation(libs.androidx.sqlite.bundled)
@@ -17,7 +17,7 @@ kotlin {
         
         val androidMain by getting {
             dependencies {
-                implementation(libs.jetbrains.kotlinx.coroutines.android)
+                implementation(libs.kotlinx.coroutines.android)
             }
         }
         

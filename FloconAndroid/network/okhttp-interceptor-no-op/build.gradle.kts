@@ -10,9 +10,9 @@ android {
 
 
 dependencies {
-    implementation(project(":network:core-no-op"))
+    implementation(projects.network.coreNoOp)
     implementation(platform(libs.okhttp.bom))
-    implementation(libs.okhttp3.okhttp)
+    implementation(libs.okhttp)
 }
 
 

@@ -7,7 +7,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":network:core-no-op"))
+                implementation(projects.network.coreNoOp)
                 implementation(libs.ktor.client.core)
             }
         }

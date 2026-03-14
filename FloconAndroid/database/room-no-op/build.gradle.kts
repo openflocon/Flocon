@@ -7,7 +7,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":database:core-no-op"))
+                implementation(projects.database.coreNoOp)
             }
         }
         

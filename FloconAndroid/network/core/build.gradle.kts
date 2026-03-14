@@ -8,9 +8,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(project(":flocon"))
-
-                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
+                api(projects.flocon)
+                implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)
             }
         }
