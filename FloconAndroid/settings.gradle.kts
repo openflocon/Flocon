@@ -39,3 +39,6 @@ include(":database:room")
 include(":database:room-no-op")
 include(":database:room3")
 include(":database:room3-no-op")
+
+includeBuild("build-logic")
+
