@@ -3,6 +3,10 @@ plugins {
     id("flocon.publish")
 }
 
+android {
+    namespace = "io.github.openflocon.flocon.datastores"
+}
+
 dependencies {
 
     implementation(projects.flocon)
