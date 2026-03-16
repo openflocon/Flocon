@@ -99,6 +99,9 @@ dependencies {
 
         debugImplementation(project(":datastores"))
         releaseImplementation(project(":datastores-no-op"))
+
+        debugImplementation(project(":tables"))
+        releaseImplementation(project(":tables-no-op"))
     }
 
 

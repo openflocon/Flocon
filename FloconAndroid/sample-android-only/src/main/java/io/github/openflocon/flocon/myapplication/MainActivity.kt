@@ -29,11 +29,13 @@ import io.github.openflocon.flocon.myapplication.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.database.initializeInMemoryDatabases
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.grpc.GrpcController
+import io.github.openflocon.flocon.myapplication.table.initializeTable
 import io.github.openflocon.flocon.myapplication.ui.ImagesListView
 import io.github.openflocon.flocon.myapplication.ui.theme.MyApplicationTheme
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinks
+import io.github.openflocon.flocon.plugins.tables.FloconTable
 import io.github.openflocon.flocon.startFlocon
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -87,7 +89,7 @@ class MainActivity : ComponentActivity() {
 //        val graphQlTester = GraphQlTester(client = okHttpClient)
 //        initializeImages(context = this, okHttpClient = okHttpClient)
 //        initializeDashboard(this)
-//        initializeTable(this)
+        initializeTable()
 
         setContent {
             MyApplicationTheme {
@@ -240,6 +242,8 @@ class MainActivity : ComponentActivity() {
             install(FloconDatabase) {
                 room()
             }
+
+            install(FloconTable)
         }
     }
 
