@@ -1,12 +1,22 @@
 package io.github.openflocon.flocon.plugins.tables
 
-import io.github.openflocon.flocon.*
+import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
+import io.github.openflocon.flocon.FloconPluginFactory
+import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.plugins.tables.model.TableItem
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-actual object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
+interface FloconTablePlugin : FloconPlugin {
+    fun registerItems(tableItems: List<TableItem>)
+}
+
+class FloconTableConfig internal constructor() : FloconPluginConfig
+
+object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
     override val name: String = "Table"
-    override val pluginId: String? = null
+    override val pluginId: String = Protocol.ToDevice.Table.Plugin
     override fun createConfig(context: FloconContext) = FloconTableConfig()
     override fun install(
         pluginConfig: FloconTableConfig,
