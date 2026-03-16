@@ -37,5 +37,8 @@ include(":database:core")
 include(":database:core-no-op")
 include(":database:room")
 include(":database:room-no-op")
+include(":analytics")
+include(":analytics-no-op")
 include(":database:room3")
 include(":database:room3-no-op")
+
