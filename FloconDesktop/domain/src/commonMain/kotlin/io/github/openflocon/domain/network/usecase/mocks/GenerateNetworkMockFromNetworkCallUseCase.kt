@@ -16,7 +16,7 @@ class GenerateNetworkMockFromNetworkCallUseCase(
     @OptIn(ExperimentalUuidApi::class)
     suspend operator fun invoke(
         requestId: String,
-    ): MockNetworkDomainModel? = getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
+    ): MockNetworkDomainModel? = getCurrentDeviceIdAndPackageNameUseCase()?.let { _ ->
         observeNetworkRequestsByIdUseCase(requestId = requestId).firstOrNull()
     }?.let { request ->
         MockNetworkDomainModel(

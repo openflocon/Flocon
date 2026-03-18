@@ -12,7 +12,7 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.model.Mo
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.SelectedMockUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.list.mapper.toMockMethodUi
-import java.util.UUID
+import java.util.*
 
 fun MockNetworkUiModel.toDomain(): MockNetworkDomainModel = MockNetworkDomainModel(
     id = id ?: UUID.randomUUID().toString(),
@@ -83,9 +83,9 @@ fun createEditable(initialMock: MockNetworkUiModel?): EditableMockNetworkUiModel
     isShared = initialMock?.isShared ?: false,
     responseType = when (initialMock?.response) {
         null,
-        is MockNetworkUiModel.Response.Body -> EditableMockNetworkUiModel.ResponseType.BODY
+        is MockNetworkUiModel.Response.Body -> ResponseType.BODY
 
-        is MockNetworkUiModel.Response.Exception -> EditableMockNetworkUiModel.ResponseType.EXCEPTION
+        is MockNetworkUiModel.Response.Exception -> ResponseType.EXCEPTION
     },
     displayName = initialMock?.displayName.orEmpty(),
 )
