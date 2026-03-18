@@ -38,7 +38,9 @@ fun MockLineView(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.padding(vertical = 2.dp),
+        modifier = modifier
+            .clickable { onClicked(item.id) }
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -55,10 +57,7 @@ fun MockLineView(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .clickable {
-                    onClicked(item.id)
-                },
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(modifier = Modifier.width(90.dp), contentAlignment = Alignment.Center) {
