@@ -10,6 +10,7 @@ data class MockNetworkExportedModel(
     val expectation: Expectation,
     val response: Response,
     val isShared: Boolean,
+    val displayName: String,
 ) {
     @Serializable
     data class Expectation(
@@ -43,7 +44,8 @@ fun MockNetworkDomainModel.toExportedModel(): MockNetworkExportedModel = MockNet
     isEnabled = this.isEnabled,
     isShared = this.isShared,
     expectation = this.expectation.toExportedModel(),
-    response = this.response.toExportedModel()
+    response = this.response.toExportedModel(),
+    displayName = this.displayName,
 )
 
 fun MockNetworkDomainModel.Expectation.toExportedModel(): MockNetworkExportedModel.Expectation = MockNetworkExportedModel.Expectation(
@@ -70,7 +72,8 @@ fun MockNetworkExportedModel.toDomainModel(): MockNetworkDomainModel = MockNetwo
     isEnabled = this.isEnabled,
     isShared = this.isShared,
     expectation = this.expectation.toDomainModel(),
-    response = this.response.toDomainModel()
+    response = this.response.toDomainModel(),
+    displayName = this.displayName,
 )
 
 fun MockNetworkExportedModel.Expectation.toDomainModel(): MockNetworkDomainModel.Expectation = MockNetworkDomainModel.Expectation(

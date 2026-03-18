@@ -34,7 +34,8 @@ fun MockNetworkUiModel.toDomain(): MockNetworkDomainModel = MockNetworkDomainMod
             delay = response.delay,
             classPath = response.classPath,
         )
-    }
+    },
+    displayName = displayName,
 )
 
 fun MockNetworkDomainModel.toUi(): MockNetworkUiModel = MockNetworkUiModel(
@@ -57,7 +58,8 @@ fun MockNetworkDomainModel.toUi(): MockNetworkUiModel = MockNetworkUiModel(
             delay = r.delay,
             classPath = r.classPath,
         )
-    }
+    },
+    displayName = displayName,
 )
 
 fun createEditable(initialMock: SelectedMockUiModel): EditableMockNetworkUiModel = when (initialMock) {
@@ -85,6 +87,7 @@ fun createEditable(initialMock: MockNetworkUiModel?): EditableMockNetworkUiModel
 
         is MockNetworkUiModel.Response.Exception -> EditableMockNetworkUiModel.ResponseType.EXCEPTION
     },
+    displayName = initialMock?.displayName.orEmpty(),
 )
 
 private fun editableBodyResponse(initialMock: MockNetworkUiModel?): EditableMockNetworkUiModel.Response.Body {
@@ -126,7 +129,8 @@ fun editableToUi(editable: EditableMockNetworkUiModel): Either<Throwable, MockNe
                 delay = editable.delay,
                 classPath = editable.exceptionResponse.classPath,
             )
-        }
+        },
+        displayName = editable.displayName,
     ).success()
 } catch (t: Throwable) {
     t.failure()

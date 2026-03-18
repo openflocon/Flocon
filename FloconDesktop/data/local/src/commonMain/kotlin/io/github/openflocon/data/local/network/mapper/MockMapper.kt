@@ -27,6 +27,7 @@ fun MockNetworkDomainModel.toEntity(
             method = expectation.method,
         ),
         response = response,
+        displayName = displayName,
     )
 }
 
@@ -63,6 +64,7 @@ fun MockNetworkEntity.toDomain(
         ),
         response = response,
         isShared = deviceId == null || packageName == null,
+        displayName = displayName,
     )
 }
 

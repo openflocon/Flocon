@@ -10,6 +10,7 @@ fun MockNetworkDomainModel.toLineUi(): MockNetworkLineUiModel = MockNetworkLineU
     urlPattern = expectation.urlPattern,
     method = toMockMethodUi(expectation.method),
     isShared = isShared,
+    displayName = displayName,
 )
 
 fun toMockMethodUi(text: String): MockNetworkMethodUi = when (text.lowercase()) {

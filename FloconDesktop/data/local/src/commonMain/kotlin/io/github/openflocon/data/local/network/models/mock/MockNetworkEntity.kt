@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.network.models.mock
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -29,6 +30,8 @@ data class MockNetworkEntity(
     @Embedded(prefix = "expectation_")
     val expectation: MockNetworkExpectationEmbedded,
     val response: String, // saved as json
+    @ColumnInfo(name = "displayName")
+    val displayName: String,
 )
 
 data class MockNetworkExpectationEmbedded(
