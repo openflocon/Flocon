@@ -12,7 +12,7 @@ import io.github.openflocon.flocondesktop.features.network.mock.edition.model.Mo
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.SelectedMockUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.list.mapper.toMockMethodUi
-import java.util.*
+import java.util.UUID
 
 fun MockNetworkUiModel.toDomain(): MockNetworkDomainModel = MockNetworkDomainModel(
     id = id ?: UUID.randomUUID().toString(),
