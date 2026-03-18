@@ -29,7 +29,14 @@ fun MocksHeaderView(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(horizontal = 8.dp).width(50.dp),
         )
         Text(
-            "Pattern",
+            "Method",
+            textAlign = TextAlign.Center,
+            style = typo,
+            color = textColor,
+            modifier = Modifier.width(90.dp),
+        )
+        Text(
+            "Name / Pattern",
             textAlign = TextAlign.Center,
             style = typo,
             color = textColor,

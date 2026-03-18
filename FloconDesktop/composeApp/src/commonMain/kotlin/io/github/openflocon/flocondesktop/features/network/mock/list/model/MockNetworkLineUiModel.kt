@@ -10,6 +10,7 @@ data class MockNetworkLineUiModel(
     val urlPattern: String,
     val isShared: Boolean,
     val method: MockNetworkMethodUi,
+    val displayName: String,
 )
 
 fun previewMockNetworkLineUiModel(method: MockNetworkMethodUi = MockNetworkMethodUi.GET) = MockNetworkLineUiModel(
@@ -18,4 +19,5 @@ fun previewMockNetworkLineUiModel(method: MockNetworkMethodUi = MockNetworkMetho
     urlPattern = "http://.*youtube.*v=.*",
     method = method,
     isShared = false,
+    displayName = "Mock for YouTube video",
 )

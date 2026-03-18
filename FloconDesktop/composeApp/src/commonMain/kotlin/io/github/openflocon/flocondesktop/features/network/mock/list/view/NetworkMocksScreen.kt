@@ -1,14 +1,18 @@
 package io.github.openflocon.flocondesktop.features.network.mock.list.view
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -101,6 +105,7 @@ private fun NetworkMocksContent(
         MocksHeaderView(Modifier.fillMaxWidth())
         LazyColumn(
             modifier = Modifier.fillMaxWidth().height(400.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(mocks) {
                 MockLineView(
@@ -123,8 +128,9 @@ private fun NetworkMocksContent(
                             )
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                 )
+                HorizontalDivider(Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.outline)
             }
         }
     }

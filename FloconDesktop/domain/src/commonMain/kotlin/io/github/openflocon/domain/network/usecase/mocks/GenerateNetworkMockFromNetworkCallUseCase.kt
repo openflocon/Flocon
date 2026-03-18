@@ -27,6 +27,7 @@ class GenerateNetworkMockFromNetworkCallUseCase(
             ),
             isEnabled = true, // enabled by default
             isShared = false,
+            displayName = "",
             response = request.response?.let {
                 when (it) {
                     is FloconNetworkCallDomainModel.Response.Failure -> null // maybe generate error response in this case

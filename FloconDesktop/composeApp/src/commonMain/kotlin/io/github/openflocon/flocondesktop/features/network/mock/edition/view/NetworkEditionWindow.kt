@@ -153,6 +153,16 @@ fun MockEditorScreen(
                     fontWeight = FontWeight.Bold,
                 )
                 FloconTextField(
+                    value = mock.displayName,
+                    onValueChange = { newValue ->
+                        mock = mock.copy(displayName = newValue)
+                    },
+                    label = defaultLabel("Display name"),
+                    placeholder = defaultPlaceHolder("Enter a display name"),
+                    modifier = Modifier.fillMaxWidth(),
+                    containerColor = FloconTheme.colorPalette.primary,
+                )
+                FloconTextField(
                     value = mock.expectation.urlPattern ?: "",
                     onValueChange = { newValue ->
                         mock = mock.copy(expectation = mock.expectation.copy(urlPattern = newValue))

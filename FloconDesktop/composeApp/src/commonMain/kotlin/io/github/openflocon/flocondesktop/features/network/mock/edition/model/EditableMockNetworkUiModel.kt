@@ -8,6 +8,7 @@ data class MockNetworkUiModel(
     val isShared: Boolean, // not displayed
     val expectation: Expectation,
     val response: Response,
+    val displayName: String,
 ) {
     data class Expectation(
         val urlPattern: String, // a regex
@@ -39,6 +40,7 @@ data class EditableMockNetworkUiModel(
     val responseType: ResponseType,
     val exceptionResponse: Response.Exception,
     val bodyResponse: Response.Body,
+    val displayName: String,
 ) {
     data class Expectation(
         val urlPattern: String?, // a regex
