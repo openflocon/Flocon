@@ -68,7 +68,7 @@ fun MockLineView(
             if (item.displayName.isEmpty()) {
                 Text(
                     text = item.urlPattern,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.weight(1f),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = FloconTheme.typography.titleSmall,
