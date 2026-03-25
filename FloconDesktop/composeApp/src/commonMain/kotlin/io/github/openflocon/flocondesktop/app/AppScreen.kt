@@ -56,11 +56,13 @@ private fun Content(
 ) {
     FloconNavigation(
         navigationState = navigationState,
-        sceneStrategy = PanelSceneStrategy()
-            .then(WindowSceneStrategy())
-            .then(DialogSceneStrategy())
-            .then(BigDialogSceneStrategy())
-            .then(SinglePaneSceneStrategy()),
+        sceneStrategies = listOf(
+            PanelSceneStrategy(),
+            WindowSceneStrategy(),
+            DialogSceneStrategy(),
+            BigDialogSceneStrategy(),
+            SinglePaneSceneStrategy()
+        ),
         sceneDecoratorStrategies = listOf(
             MenuSceneStrategy(
                 menuContent = {
