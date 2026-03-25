@@ -4,6 +4,11 @@ plugins {
 }
 
 kotlin {
+    wasmJs {
+        moduleName = "flocon_ktor_interceptor"
+        browser()
+    }
+        binaries.executable()
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -31,6 +36,7 @@ kotlin {
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
+        val wasmJsMain by getting
         val iosMain by creating {
             dependsOn(commonMain)
             iosX64Main.dependsOn(this)
