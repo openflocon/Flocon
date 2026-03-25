@@ -93,6 +93,9 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-sqlite-wrapper = { module = "androidx.room:room-sqlite-wrapper", version.ref = "room" }
 
+androidx-room3-runtime = { module = "androidx.room3:room3-runtime", version = "3.0.0-alpha01" }
+androidx-room3-compiler = { module = "androidx.room3:room3-compiler", version = "3.0.0-alpha01" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }

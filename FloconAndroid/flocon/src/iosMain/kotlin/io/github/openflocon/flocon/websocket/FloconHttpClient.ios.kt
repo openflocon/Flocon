@@ -13,10 +13,13 @@ import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
+import io.github.openflocon.flocon.dsl.FloconMarker
+
 internal actual fun buildFloconHttpClient(): FloconHttpClient {
     return FloconHttpClientIOs()
 }
 
+@io.github.openflocon.flocon.dsl.FloconMarker
 internal class FloconHttpClientIOs() : FloconHttpClient {
 
     // client configurable selon la plateforme (Android, iOS, JVM, etc.)

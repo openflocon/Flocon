@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.plugins.files
 
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconFile
+import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
 
 internal actual fun fileDataSource(context: FloconContext): FileDataSource {
@@ -9,6 +10,7 @@ internal actual fun fileDataSource(context: FloconContext): FileDataSource {
 }
 
 // TODO
+@io.github.openflocon.flocon.dsl.FloconMarker
 internal class FileDataSourceIOs : FileDataSource {
     override fun getFile(
         path: String,

@@ -90,6 +90,8 @@ dependencies {
 
         debugImplementation(project(":database:room"))
         releaseImplementation(project(":database:room-no-op"))
+        debugImplementation(project(":database:room3"))
+        releaseImplementation(project(":database:room3-no-op"))
 
         debugImplementation(project(":network:okhttp-interceptor"))
         releaseImplementation(project(":network:okhttp-interceptor-no-op"))
