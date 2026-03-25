@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.vanniktech.maven.publish)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -19,11 +20,19 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    wasmJs {
+        moduleName = "flocon_network_core_no_op"
+        browser()
+        binaries.executable()
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(project(":flocon"))
                 implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
+                implementation(libs.jetbrains.kotlinx.serialization.json)
+                api(project(":network:core"))
             }
         }
         
@@ -40,6 +49,7 @@ kotlin {
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
+        val wasmJsMain by getting
         val iosMain by creating {
             dependsOn(commonMain)
             iosX64Main.dependsOn(this)

@@ -21,6 +21,12 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    wasmJs {
+        moduleName = "flocon"
+        browser()
+        binaries.executable()
+    }
+
     compilerOptions {
         freeCompilerArgs.add("-XXLanguage:+ExpectRefinement")
     }
@@ -55,6 +61,7 @@ kotlin {
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
+        val wasmJsMain by getting
         val iosMain by creating {
             dependsOn(commonMain)
             iosX64Main.dependsOn(this)

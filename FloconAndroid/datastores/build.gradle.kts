@@ -1,7 +1,64 @@
 plugins {
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    id("com.vanniktech.maven.publish") version "0.34.0"
+    alias(libs.plugins.vanniktech.maven.publish)
+}
+
+kotlin {
+    androidTarget {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "11"
+            }
+        }
+    }
+    
+    jvm()
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    wasmJs {
+        moduleName = "flocon_datastores"
+        browser()
+        binaries.executable()
+    }
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(project(":flocon"))
+                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
+            }
+        }
+        
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.androidx.datastore.preferences)
+            }
+        }
+        
+        val jvmMain by getting {
+            dependencies {
+                implementation(libs.androidx.datastore.preferences)
+            }
+        }
+
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val wasmJsMain by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            dependencies {
+                implementation(libs.androidx.datastore.preferences)
+            }
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+        }
+    }
 }
 
 android {
@@ -29,20 +86,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
-
-dependencies {
-
-    implementation(project(":flocon"))
-
-    implementation(platform(libs.kotlinx.coroutines.bom))
-    implementation(libs.jetbrains.kotlinx.coroutines.core)
-    implementation(libs.jetbrains.kotlinx.coroutines.android)
-
-    implementation(libs.androidx.datastore.preferences)
 }
 
 
