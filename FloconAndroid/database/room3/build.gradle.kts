@@ -1,9 +1,9 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.vanniktech.maven.publish)
-    alias(libs.plugins.buildconfig)
+    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -17,101 +17,66 @@ kotlin {
     
     jvm()
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
-
-    compilerOptions {
-        freeCompilerArgs.add("-XXLanguage:+ExpectRefinement")
-    }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
-                implementation(libs.kotlinx.serialization.json)
+                implementation(project(":flocon"))
+                implementation(project(":database:core"))
+                implementation(libs.androidx.room3.runtime)
+                implementation(libs.androidx.sqlite.bundled)
             }
         }
         
         val androidMain by getting {
             dependencies {
-                implementation(libs.kotlinx.coroutines.android)
-                implementation(libs.jakewharton.process.phoenix)
-                implementation("com.squareup.okhttp3:okhttp:4.12.0")
             }
         }
         
         val jvmMain by getting {
             dependencies {
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.cio)
-
-                implementation(libs.ktor.client.content.negotiation)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.serialization.kotlinx.json)
             }
         }
 
-        val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
         val iosMain by creating {
             dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
-            dependencies {
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.darwin)
-
-                implementation(libs.ktor.client.content.negotiation)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.serialization.kotlinx.json)
-
-                // to store the device id
-                implementation("com.russhwolf:multiplatform-settings:1.3.0")
-                implementation(libs.androidx.sqlite.bundled)
-            }
         }
     }
 }
 
-
-buildConfig {
-    packageName("io.github.openflocon.flocondesktop")
-
-    buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String)
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
+dependencies {
+    // KSP for Room
+    add("kspCommonMainMetadata", libs.androidx.room3.compiler)
+    add("kspAndroid", libs.androidx.room3.compiler)
+    add("kspJvm", libs.androidx.room3.compiler)
+    add("kspIosArm64", libs.androidx.room3.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room3.compiler)
+}
 
 android {
-    namespace = "io.github.openflocon.flocon"
+    namespace = "io.github.openflocon.flocon.database.room3"
     compileSdk = 36
 
     defaultConfig {
         minSdk = 23
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
 }
+
 
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
@@ -124,12 +89,12 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-        artifactId = "flocon",
+        artifactId = "flocon-database-room3",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
     pom {
-        name = "Flocon"
+        name = "Flocon Room 3 Implementation"
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"
