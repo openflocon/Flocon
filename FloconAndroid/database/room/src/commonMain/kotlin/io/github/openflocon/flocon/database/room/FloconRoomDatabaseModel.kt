@@ -105,9 +105,6 @@ private suspend fun executeInsert(
     query: String,
 ): DatabaseExecuteSqlResponse {
     connection.execSQL(query)
-    // SQLite doesn't easily return the last inserted ID via the statement itself without extra queries like last_insert_rowid()
-    // But for inspection purposes, we might just return 0 or query it.
-    // For now, let's just return a successful RawSuccess or implement last_insert_rowid
     val id = connection.usePrepared("SELECT last_insert_rowid()") { it.step(); it.getLong(0) }
     return DatabaseExecuteSqlResponse.Insert(id)
 }

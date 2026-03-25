@@ -37,6 +37,7 @@ kotlin {
         
         val jvmMain by getting {
             dependencies {
+                implementation(libs.sqlite.jdbc)
             }
         }
 
@@ -49,6 +50,7 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
+                implementation(libs.androidx.sqlite.bundled)
             }
         }
     }

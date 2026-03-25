@@ -1,9 +1,10 @@
 package io.github.openflocon.flocon.database.room
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
 import io.github.openflocon.flocon.database.core.model.FloconFileDatabaseModel
-import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DeviceDataBaseDataModel
 import io.github.openflocon.flocon.dsl.FloconMarker
 import java.io.File
 
@@ -14,7 +15,8 @@ internal actual class FloconRoomDatabaseProviderImpl actual constructor(
 ) : FloconRoomDatabaseProvider {
 
     actual override fun register() {
-        TODO("Not yet implemented")
+        val databases = getAllDataBases(emptyList())
+        databases.forEach { Flocon.databasePlugin.register(it) }
     }
 
     @FloconMarker
