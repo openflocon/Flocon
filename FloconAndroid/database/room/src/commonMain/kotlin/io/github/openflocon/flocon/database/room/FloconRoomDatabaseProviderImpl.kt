@@ -9,7 +9,6 @@ import io.github.openflocon.flocon.dsl.FloconMarker
 
 interface FloconRoomDatabaseProvider : FloconDatabaseProvider {
 
-    // TODO
     fun register()
 
 }
