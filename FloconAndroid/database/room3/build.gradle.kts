@@ -23,19 +23,10 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-<<<<<<<< HEAD:FloconAndroid/database/room3/build.gradle.kts
                 implementation(project(":flocon"))
                 implementation(project(":database:core"))
                 implementation(libs.androidx.room3.runtime)
                 implementation(libs.androidx.sqlite.bundled)
-========
-
-                api(project(":flocon"))
-                api(project(":network:core"))
-
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-                implementation(libs.ktor.client.core)
->>>>>>>> 2.0.0:FloconAndroid/network/ktor-interceptor/build.gradle.kts
             }
         }
         
@@ -100,20 +91,12 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-<<<<<<<< HEAD:FloconAndroid/database/room3/build.gradle.kts
         artifactId = "flocon-database-room3",
-========
-        artifactId = "flocon-ktor-interceptor",
->>>>>>>> 2.0.0:FloconAndroid/network/ktor-interceptor/build.gradle.kts
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
     pom {
-<<<<<<<< HEAD:FloconAndroid/database/room3/build.gradle.kts
         name = "Flocon Room 3 Implementation"
-========
-        name = "Flocon Ktor Interceptor"
->>>>>>>> 2.0.0:FloconAndroid/network/ktor-interceptor/build.gradle.kts
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"
