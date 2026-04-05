@@ -1,7 +1,6 @@
 package io.github.openflocon.flocon.plugins.deeplinks
 
 import io.github.openflocon.flocon.FloconPlugin
-import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
 
 class DeeplinkLinkBuilder internal constructor(
@@ -14,14 +13,14 @@ class DeeplinkLinkBuilder internal constructor(
 
     infix fun String.withAutoComplete(suggestions: List<String>) {
         parameters[this] = DeeplinkModel.Parameter.AutoComplete(
-            paramName = this,
-            suggestions.distinct()
+            name = this,
+            autoComplete = suggestions.distinct()
         )
     }
 
     infix fun String.withVariable(variableName: String) {
         parameters[this] = DeeplinkModel.Parameter.Variable(
-            paramName = this,
+            name = this,
             variableName = variableName
         )
     }
@@ -70,44 +69,4 @@ data class DeeplinkVariable(
 
 }
 
-class DeeplinkBuilder {
-    private val variables = mutableListOf<DeeplinkVariable>()
-    private val deeplinks = mutableListOf<DeeplinkModel>()
-
-    fun variable(name: String, block: DeeplinkVariableBuilder.() -> Unit = {}) {
-        val variable = DeeplinkVariableBuilder(name).apply(block)
-            .build()
-
-        variables.add(variable)
-    }
-
-    fun deeplink(link: String, block: DeeplinkLinkBuilder.() -> Unit = {}) {
-        val deeplink = DeeplinkLinkBuilder(link).apply(block)
-            .build()
-
-        deeplinks.add(deeplink)
-    }
-
-    internal fun deeplinks(): List<DeeplinkModel> = deeplinks.toList()
-    internal fun variables(): List<DeeplinkVariable> = variables.toList()
-}
-
-fun FloconApp.deeplinks(deeplinksBlock: DeeplinkBuilder.() -> Unit) {
-    this.client?.deeplinksPlugin?.let {
-        val builder = DeeplinkBuilder().apply(deeplinksBlock)
-
-        it.registerDeeplinks(
-            deeplinks = builder.deeplinks(),
-            variables = builder.variables()
-        )
-    }
-}
-
-interface FloconDeeplinksPlugin {
-
-    fun registerDeeplinks(
-        deeplinks: List<DeeplinkModel>,
-        variables: List<DeeplinkVariable>
-    )
-
-}
+interface FloconDeeplinksPlugin : FloconPlugin
