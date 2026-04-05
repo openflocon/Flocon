@@ -6,6 +6,7 @@ import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkParameterRemo
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkRemote
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkVariableRemote
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinksRemote
+import kotlinx.serialization.encodeToString
 
 internal fun createJson(
     deeplinks: List<DeeplinkModel>,
