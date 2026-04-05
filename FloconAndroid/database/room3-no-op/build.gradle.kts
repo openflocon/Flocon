@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
@@ -6,10 +8,8 @@ plugins {
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
         }
     }
     
@@ -22,7 +22,12 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+<<<<<<<< HEAD:FloconAndroid/database/room3-no-op/build.gradle.kts
                 implementation(project(":database:core-no-op"))
+========
+                implementation(project(":network:core-no-op"))
+                implementation(libs.ktor.client.core)
+>>>>>>>> 2.0.0:FloconAndroid/network/ktor-interceptor-no-op/build.gradle.kts
             }
         }
         
@@ -49,13 +54,30 @@ kotlin {
 }
 
 android {
+<<<<<<<< HEAD:FloconAndroid/database/room3-no-op/build.gradle.kts
     namespace = "io.github.openflocon.flocon.database.room3.noop"
+========
+    namespace = "io.github.openflocon.flocon.ktor"
+>>>>>>>> 2.0.0:FloconAndroid/network/ktor-interceptor-no-op/build.gradle.kts
     compileSdk = 36
 
     defaultConfig {
         minSdk = 23
     }
 
+<<<<<<<< HEAD:FloconAndroid/database/room3-no-op/build.gradle.kts
+========
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+
+>>>>>>>> 2.0.0:FloconAndroid/network/ktor-interceptor-no-op/build.gradle.kts
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -74,12 +96,21 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
+<<<<<<<< HEAD:FloconAndroid/database/room3-no-op/build.gradle.kts
         artifactId = "flocon-database-room3-no-op",
+========
+        artifactId = "flocon-ktor-interceptor-no-op",
+>>>>>>>> 2.0.0:FloconAndroid/network/ktor-interceptor-no-op/build.gradle.kts
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
+
     pom {
+<<<<<<<< HEAD:FloconAndroid/database/room3-no-op/build.gradle.kts
         name = "Flocon Room 3 Implementation No-Op"
+========
+        name = "Flocon Ktor Interceptor No Op"
+>>>>>>>> 2.0.0:FloconAndroid/network/ktor-interceptor-no-op/build.gradle.kts
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"

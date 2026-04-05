@@ -221,19 +221,18 @@ class MainActivity : ComponentActivity() {
     private fun initFlocon() {
         startFlocon(FloconContext(this)) {
             install(FloconDeeplinks) {
-                register("flocon://home")
-                register("flocon://test")
-                register(
-                    "flocon://user/[userId]",
-                    label = "User"
+                deeplink("flocon://home")
+                deeplink("flocon://test")
+                deeplink(
+                    "flocon://user/[userId]"
                 ) {
-                    param("userId", listOf("Florent", "David", "Guillaume"))
+                    label = "User"
+                    "userId" withAutoComplete listOf("Florent", "David", "Guillaume")
                 }
-                register(
-                    "flocon://post/[postId]?comment=[commentText]",
-                    label = "Post",
+                deeplink("flocon://post/[postId]?comment=[commentText]") {
+                    label = "Post"
                     description = "Open a post and send a comment"
-                )
+                }
             }
 
             install(FloconNetwork)

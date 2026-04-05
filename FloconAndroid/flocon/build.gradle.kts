@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("flocon.kotlin.multiplatform")
     alias(libs.plugins.kotlin.serialization)
@@ -58,13 +60,11 @@ kotlin {
     }
 }
 
-
 buildConfig {
     packageName("io.github.openflocon.flocondesktop")
 
     buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String)
 }
-
 
 android {
     namespace = "io.github.openflocon.flocon"

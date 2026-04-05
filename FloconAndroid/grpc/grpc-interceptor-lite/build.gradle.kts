@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("flocon.android.library")
     id("flocon.publish")
@@ -15,7 +17,6 @@ dependencies {
     implementation(libs.grpc.android)
     implementation(libs.gson)
 }
-
 
 mavenPublishing {
     coordinates(
