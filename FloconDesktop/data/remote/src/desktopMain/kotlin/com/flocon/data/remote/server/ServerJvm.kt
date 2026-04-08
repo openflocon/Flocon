@@ -189,9 +189,9 @@ class ServerJvm(
         if (httpServer != null)
             return
 
-        val desktopPath = Paths.get(System.getProperty("user.home"), ".flocon", "Files")
+        val rootFloconFolder = Paths.get(System.getProperty("user.home"), ".flocon", "Files")
             .absolutePathString()
-        File(desktopPath).also {
+        File(rootFloconFolder).also {
             if (!it.exists()) {
                 it.mkdirs()
             }
@@ -215,7 +215,7 @@ class ServerJvm(
 
                             is PartData.FileItem -> {
                                 val fileName = part.originalFileName ?: "flocon_file${System.currentTimeMillis()}.bin"
-                                val targetFile = File(desktopPath, fileName)
+                                val targetFile = File(rootFloconFolder, fileName)
                                 part.streamProvider().use { input ->
                                     targetFile.outputStream().use { output ->
                                         input.copyTo(output)
