@@ -189,7 +189,8 @@ class ServerJvm(
         if (httpServer != null)
             return
 
-        val desktopPath = Paths.get(System.getProperty("user.home"), "Desktop", "Flocon", "Files").absolutePathString()
+        val desktopPath = Paths.get(System.getProperty("user.home"), ".flocon", "Files")
+            .absolutePathString()
         File(desktopPath).also {
             if (!it.exists()) {
                 it.mkdirs()
