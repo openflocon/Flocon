@@ -41,6 +41,7 @@ kotlin {
             dependencies {
                 implementation(project(":flocon"))
                 implementation(project(":network:ktor-interceptor"))
+                implementation(project(":database:room3"))
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)

@@ -29,6 +29,7 @@ protobuf = "4.26.1"
 ksp = "2.1.0-1.0.29"
 processPhoenix = "3.0.0"
 sqlite = "2.6.2"
+sqlite-alpha = "2.7.0-alpha02"
 sqliteJdbc = "3.50.3.0"
 buildconfig = "5.6.8"
 brotli = "0.1.2"
@@ -88,6 +89,7 @@ protobuf-util = { group = "com.google.protobuf", name = "protobuf-java-util", ve
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqliteJdbc" }
 squareup-okhttp = { module = "com.squareup.okhttp3:okhttp" }
 
+androidx-sqlite = { module = "androidx.sqlite:sqlite", version.ref = "sqlite-alpha" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }

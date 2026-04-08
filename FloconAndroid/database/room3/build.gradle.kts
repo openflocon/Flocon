@@ -17,7 +17,6 @@ kotlin {
     
     jvm()
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -31,33 +30,12 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":flocon"))
-                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.androidx.room3.runtime)
+                implementation(libs.androidx.sqlite)
                 implementation(project(":database:core"))
             }
         }
-
-        val roomMain by creating {
-            dependsOn(commonMain)
-            dependencies {
-                implementation(libs.androidx.room3.runtime)
-                implementation(libs.androidx.sqlite.bundled)
-            }
-        }
-
-        val androidMain by getting {
-            dependsOn(roomMain)
-        }
-
-        val jvmMain by getting {
-            dependsOn(roomMain)
-        }
-
-        val iosMain by creating {
-            dependsOn(roomMain)
-        }
-        val iosX64Main by getting { dependsOn(iosMain) }
-        val iosArm64Main by getting { dependsOn(iosMain) }
-        val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
 
         val wasmJsMain by getting {
             dependsOn(commonMain)
@@ -74,7 +52,6 @@ dependencies {
     add("kspCommonMainMetadata", libs.androidx.room3.compiler)
     add("kspAndroid", libs.androidx.room3.compiler)
     add("kspJvm", libs.androidx.room3.compiler)
-    add("kspIosX64", libs.androidx.room3.compiler)
     add("kspIosArm64", libs.androidx.room3.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room3.compiler)
 }
