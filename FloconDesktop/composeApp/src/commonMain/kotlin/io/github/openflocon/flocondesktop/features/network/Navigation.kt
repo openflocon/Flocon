@@ -17,6 +17,8 @@ import io.github.openflocon.flocondesktop.features.network.search.view.NetworkSe
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.PanelRoute
 import io.github.openflocon.navigation.WindowRoute
+import io.github.openflocon.navigation.scene.BigDialogProperties
+import io.github.openflocon.navigation.scene.BigDialogSceneStrategy
 import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import kotlinx.serialization.Serializable
@@ -76,7 +78,9 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
         NetworkDetailScreen(requestId = it.requestId)
     }
     entry<NetworkRoutes.Mocks>(
-        metadata = DialogSceneStrategy.dialog()
+        metadata = BigDialogSceneStrategy.bigDialog(
+            BigDialogProperties(title = "Mocks")
+        )
     ) {
         NetworkMocksWindow(
             fromNetworkCallId = it.id
