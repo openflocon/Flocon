@@ -24,13 +24,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":flocon"))
-<<<<<<<< HEAD:FloconAndroid/database/core-no-op/build.gradle.kts
-                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
-========
                 implementation(project(":database:core"))
                 implementation(libs.androidx.room3.runtime)
                 implementation(libs.androidx.sqlite.bundled)
->>>>>>>> 2.0.0:FloconAndroid/database/room3/build.gradle.kts
             }
         }
         
@@ -68,11 +64,7 @@ dependencies {
 }
 
 android {
-<<<<<<<< HEAD:FloconAndroid/database/core-no-op/build.gradle.kts
-    namespace = "io.github.openflocon.flocon.database.core.noop"
-========
     namespace = "io.github.openflocon.flocon.database.room3"
->>>>>>>> 2.0.0:FloconAndroid/database/room3/build.gradle.kts
     compileSdk = 36
 
     defaultConfig {
@@ -95,20 +87,12 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-<<<<<<<< HEAD:FloconAndroid/database/core-no-op/build.gradle.kts
-        artifactId = "flocon-database-core-no-op",
-========
         artifactId = "flocon-database-room3",
->>>>>>>> 2.0.0:FloconAndroid/database/room3/build.gradle.kts
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
     pom {
-<<<<<<<< HEAD:FloconAndroid/database/core-no-op/build.gradle.kts
-        name = "Flocon Database Core No-Op"
-========
         name = "Flocon Room 3 Implementation"
->>>>>>>> 2.0.0:FloconAndroid/database/room3/build.gradle.kts
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"
