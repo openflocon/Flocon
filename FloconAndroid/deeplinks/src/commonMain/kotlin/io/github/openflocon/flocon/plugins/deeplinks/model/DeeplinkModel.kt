@@ -1,13 +1,25 @@
 package io.github.openflocon.flocon.plugins.deeplinks.model
 
-data class DeeplinkModel(
+@ConsistentCopyVisibility
+data class DeeplinkModel internal constructor(
     val link: String,
     val label: String? = null,
     val description: String? = null,
-    val parameters: List<Parameter>,
+    val parameters: List<Parameter>
 ) {
-    data class Parameter(
-        val paramName: String,
-        val autoComplete: List<String>,
-    )
+    sealed interface Parameter {
+        val name: String
+
+        @ConsistentCopyVisibility
+        data class AutoComplete internal constructor(
+            override val name: String,
+            val autoComplete: List<String>
+        ) : Parameter
+
+        @ConsistentCopyVisibility
+        data class Variable internal constructor(
+            override val name: String,
+            val variableName: String
+        ) : Parameter
+    }
 }

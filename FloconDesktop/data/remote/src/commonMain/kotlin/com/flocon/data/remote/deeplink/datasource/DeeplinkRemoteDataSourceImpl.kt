@@ -5,6 +5,7 @@ import com.flocon.data.remote.deeplink.models.DeeplinksReceivedDataModel
 import com.flocon.data.remote.deeplink.models.toDomain
 import io.github.openflocon.data.core.deeplink.datasource.DeeplinkRemoteDataSource
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
+import io.github.openflocon.domain.deeplink.models.Deeplinks
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import kotlinx.serialization.json.Json
 
@@ -12,7 +13,6 @@ internal class DeeplinkRemoteDataSourceImpl(
     private val json: Json,
 ) : DeeplinkRemoteDataSource {
 
-    override fun getItems(message: FloconIncomingMessageDomainModel): List<DeeplinkDomainModel> = json.safeDecodeFromString<DeeplinksReceivedDataModel>(message.body)
+    override fun getItems(message: FloconIncomingMessageDomainModel): Deeplinks? = json.safeDecodeFromString<DeeplinksReceivedDataModel>(message.body)
         ?.toDomain()
-        .orEmpty()
 }

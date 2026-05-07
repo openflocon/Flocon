@@ -32,6 +32,9 @@ val roomModule =
             get<AppDatabase>().deeplinkDao
         }
         single {
+            get<AppDatabase>().deeplinkVariableDao
+        }
+        single {
             get<AppDatabase>().analyticsDao
         }
         single {
@@ -57,5 +60,8 @@ val roomModule =
         }
         single {
             get<AppDatabase>().databaseQueryLogDao
+        }
+        single {
+            get<AppDatabase>().adbCommanderDao
         }
     }
