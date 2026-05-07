@@ -34,6 +34,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(projects.flocon)
+                implementation(projects.deeplinks)
                 implementation(projects.network.ktorInterceptor)
 
                 implementation(libs.kotlinx.coroutines.core)
