@@ -8,7 +8,6 @@ android {
 }
 
 dependencies {
-
     api(projects.network.core)
 
     implementation(platform(libs.kotlinx.coroutines.bom))
@@ -22,11 +21,10 @@ dependencies {
     testImplementation(libs.junit)
 }
 
-
 mavenPublishing {
     coordinates(
         groupId = project.property("floconGroupId") as String,
         artifactId = "flocon-okhttp-interceptor",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
-}
+}

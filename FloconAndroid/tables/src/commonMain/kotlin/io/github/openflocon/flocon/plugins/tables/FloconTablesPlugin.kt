@@ -34,19 +34,6 @@ object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
     }
 }
 
-fun FloconTablePlugin.table(tableName: String) {
-    registerItems(
-        tableItems = listOf(
-            TableItem(
-                id = "",
-                name = tableName,
-                createdAt = 0L,
-                columns = emptyList()
-            )
-        )
-    )
-}
-
 @OptIn(FloconMarker::class)
 val Flocon.Companion.tablePlugin: FloconTablePlugin
     get() = FloconTablePluginImpl.plugin ?: pluginNotInitialized("table")
