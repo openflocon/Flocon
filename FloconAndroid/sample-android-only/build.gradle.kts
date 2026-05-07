@@ -88,6 +88,9 @@ dependencies {
         debugImplementation(projects.deeplinks)
         releaseImplementation(projects.deeplinksNoOp)
 
+        debugImplementation(projects.tables)
+        releaseImplementation(projects.tablesNoOp)
+
         debugImplementation(project(":database:room"))
         releaseImplementation(project(":database:room-no-op"))
         debugImplementation(project(":database:room3"))

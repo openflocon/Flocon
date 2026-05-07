@@ -11,7 +11,6 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
-import io.github.openflocon.flocon.plugins.tables.model.TableBuilder
 import io.github.openflocon.flocon.plugins.tables.model.TableItem
 
 class FloconTableConfig : FloconPluginConfig
@@ -35,10 +34,16 @@ object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
     }
 }
 
-fun FloconTablePlugin.table(tableName: String): TableBuilder {
-    return TableBuilder(
-        tableName = tableName,
-        tablePlugin = this
+fun FloconTablePlugin.table(tableName: String) {
+    registerItems(
+        tableItems = listOf(
+            TableItem(
+                id = "",
+                name = tableName,
+                createdAt = 0L,
+                columns = emptyList()
+            )
+        )
     )
 }
 
