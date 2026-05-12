@@ -74,7 +74,7 @@ internal class FloconDatabasePluginImpl(
     }
 
     @OptIn(FloconMarker::class)
-    private suspend fun sendAllDatabases(sender: FloconMessageSender) {
+    private fun sendAllDatabases(sender: FloconMessageSender) {
         val databases = providers.flatMap { it.getAllDataBases(emptyList()) }
         val all = registeredDatabases.updateAndGet { it + databases }
             .map { DeviceDataBaseDataModel(id = it.id, name = it.displayName) }

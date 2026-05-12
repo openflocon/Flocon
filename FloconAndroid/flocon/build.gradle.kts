@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.buildconfig)
 }
 
-
 kotlin {
     sourceSets {
         val commonMain by getting {

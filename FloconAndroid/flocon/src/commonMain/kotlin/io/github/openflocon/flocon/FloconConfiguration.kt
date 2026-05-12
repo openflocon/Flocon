@@ -1,16 +1,21 @@
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.client.FloconClient
+import io.github.openflocon.flocon.core.FloconEncoder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.plus
 
 class FloconConfiguration internal constructor(
     private val config: FloconConfig
 ) {
 
-    private val plugins: MutableMap<String, (FloconConfig) -> FloconPlugin> = mutableMapOf()
+    private val plugins: MutableMap<String, (FloconConfig, FloconEncoder) -> FloconPlugin> = mutableMapOf()
+
+    private var serializerModule = SerializersModule {}
 
     /**
      * Install a plugin with the given [factory] and optional [configure] block.
@@ -19,20 +24,25 @@ class FloconConfiguration internal constructor(
         factory: FloconPluginFactory<Config, Plugin>,
         configure: Config.() -> Unit = {}
     ) {
-        plugins[factory.pluginId] = { scope ->
+        plugins[factory.pluginId] = { scope, encoder ->
             val config = factory.createConfig(config.context)
                 .apply { configure() }
 
             factory.install(
                 pluginConfig = config,
-                floconConfig = scope
+                floconConfig = scope,
+                encoder = encoder
             )
         }
+
+        serializerModule += factory.createEncoding().serializersModule
     }
 
-    fun build(): List<FloconPlugin> {
-        return plugins.values.map { it.invoke(config) }
+    fun build(encoder: FloconEncoder): List<FloconPlugin> {
+        return plugins.values.map { it.invoke(config, encoder) }
     }
+
+    fun encoding() = serializerModule
 
 }
 
@@ -43,17 +53,28 @@ data class FloconConfig internal constructor(
     val client: FloconClient
 )
 
-fun startFlocon(context: FloconContext, block: FloconConfiguration.() -> Unit) {
+fun startFlocon(
+    context: FloconContext,
+    block: FloconConfiguration.() -> Unit
+) {
+    val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     val config = FloconConfig(
         context = context,
-        scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-        client = FloconClient(context = context)
+        scope = scope,
+        client = FloconClient(
+            context = context,
+            scope = scope
+        )
     )
-    val configuration = FloconConfiguration(config = config)
+    val configuration = FloconConfiguration(
+        config = config,
+    )
         .apply(block)
+    val encoder = FloconEncoder(module = configuration.encoding())
 
     Flocon(
         config = config,
-        plugins = configuration.build()
+        plugins = configuration.build(encoder),
+        encoder = encoder
     )
 }

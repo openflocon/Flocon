@@ -17,9 +17,12 @@ import io.github.openflocon.flocon.websocket.FloconWebSocketClient
 import io.github.openflocon.flocon.websocket.buildFloconHttpClient
 import io.github.openflocon.flocon.websocket.buildFloconWebSocketClient
 import io.github.openflocon.flocondesktop.BuildConfig
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 class FloconClient internal constructor(
-    private val context: FloconContext
+    private val context: FloconContext,
+    private val scope: CoroutineScope
 ) : FloconApp.Client, FloconMessageSender, FloconFileSender {
 
     private val appInstance by lazy { currentTimeMillis() }
@@ -47,47 +50,53 @@ class FloconClient internal constructor(
         webSocketClient.disconnect()
     }
 
-    override suspend fun send(
+    override fun send(
         plugin: String,
         method: String,
         body: String,
     ) {
-        webSocketClient.sendMessage(
-            message = FloconMessageToServer(
-                deviceId = appInfos.deviceId,
-                plugin = plugin,
-                body = body,
-                appName = appInfos.appName,
-                appPackageName = appInfos.appPackageName,
-                method = method,
-                deviceName = appInfos.deviceName,
-                appInstance = appInstance,
-                platform = appInfos.platform,
-                versionName = versionName,
+        scope.launch {
+            webSocketClient.sendMessage(
+                message = FloconMessageToServer(
+                    deviceId = appInfos.deviceId,
+                    plugin = plugin,
+                    body = body,
+                    appName = appInfos.appName,
+                    appPackageName = appInfos.appPackageName,
+                    method = method,
+                    deviceName = appInfos.deviceName,
+                    appInstance = appInstance,
+                    platform = appInfos.platform,
+                    versionName = versionName,
+                )
+                    .toFloconMessageToServer()
             )
-                .toFloconMessageToServer(),
-        )
+        }
     }
 
     @FloconMarker
-    override suspend fun send(
+    override fun send(
         file: FloconFile,
         infos: FloconFileInfo,
     ) {
-        httpClient.send(
-            address = address,
-            port = FLOCON_HTTP_PORT,
-            file = file,
-            infos = infos,
+        scope.launch {
+            httpClient.send(
+                address = address,
+                port = FLOCON_HTTP_PORT,
+                file = file,
+                infos = infos,
 
-            deviceId = appInfos.deviceId,
-            appPackageName = appInfos.appPackageName,
-            appInstance = appInstance,
-        )
+                deviceId = appInfos.deviceId,
+                appPackageName = appInfos.appPackageName,
+                appInstance = appInstance,
+            )
+        }
     }
 
-    override suspend fun sendPendingMessages() {
-        webSocketClient.sendPendingMessages()
+    override fun sendPendingMessages() {
+        scope.launch {
+            webSocketClient.sendPendingMessages()
+        }
     }
 
     companion object {

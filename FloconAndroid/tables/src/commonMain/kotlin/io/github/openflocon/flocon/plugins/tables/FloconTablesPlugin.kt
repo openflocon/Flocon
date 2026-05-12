@@ -8,10 +8,14 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.plugins.tables.model.TableItem
+import io.github.openflocon.flocon.plugins.tables.model.TableItemRemote
+import io.github.openflocon.flocon.plugins.tables.model.toRemote
 
 class FloconTableConfig : FloconPluginConfig
 
@@ -23,12 +27,10 @@ object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
     override val name: String = "Table"
     override val pluginId: String = Protocol.ToDevice.Table.Plugin
     override fun createConfig(context: FloconContext) = FloconTableConfig()
-    override fun install(
-        pluginConfig: FloconTableConfig,
-        floconConfig: FloconConfig
-    ): FloconTablePlugin {
+    override fun install(pluginConfig: FloconTableConfig, floconConfig: FloconConfig): PluginInstance {
         return FloconTablePluginImpl(
-            sender = floconConfig.client as FloconMessageSender
+            sender = floconConfig.client as FloconMessageSender,
+            encoder = encoder
         )
             .also { FloconTablePluginImpl.plugin = it }
     }
@@ -39,7 +41,7 @@ val Flocon.Companion.tablePlugin: FloconTablePlugin
     get() = FloconTablePluginImpl.plugin ?: pluginNotInitialized("table")
 
 internal class FloconTablePluginImpl(
-    private val sender: FloconMessageSender,
+    private val sender: FloconMessageSender
 ) : FloconPlugin, FloconTablePlugin {
     override val key: String = "TABLE"
 
@@ -60,11 +62,11 @@ internal class FloconTablePluginImpl(
 
     private fun sendTable(tableItems: List<TableItem>) {
         try {
-//            sender.send(
-//                plugin = Protocol.FromDevice.Table.Plugin,
-//                method = Protocol.FromDevice.Table.Method.AddItems,
-//                body = tableItemListToJson(tableItems).toString()
-//            )
+            sender.send(
+                plugin = Protocol.FromDevice.Table.Plugin,
+                method = Protocol.FromDevice.Table.Method.AddItems,
+                body = encoder.encode(tableItems.map(TableItem::toRemote))
+            )
         } catch (t: Throwable) {
             FloconLogger.logError("Table json mapping error", t)
         }

@@ -33,6 +33,7 @@ import io.github.openflocon.flocon.myapplication.ui.ImagesListView
 import io.github.openflocon.flocon.myapplication.ui.theme.MyApplicationTheme
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
+import io.github.openflocon.flocon.plugins.analytics.FloconAnalytics
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinks
 import io.github.openflocon.flocon.plugins.tables.FloconTable
 import io.github.openflocon.flocon.startFlocon
@@ -235,11 +236,11 @@ class MainActivity : ComponentActivity() {
             }
 
             install(FloconNetwork)
+            install(FloconTable)
+            install(FloconAnalytics)
             install(FloconDatabase) {
                 room()
             }
-
-            install(FloconTable)
         }
     }
 
