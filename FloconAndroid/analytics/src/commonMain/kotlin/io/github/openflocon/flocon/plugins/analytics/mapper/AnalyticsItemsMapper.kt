@@ -1,17 +1,7 @@
 package io.github.openflocon.flocon.plugins.analytics.mapper
 
-import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-
-internal fun analyticsItemsToJson(item: AnalyticsItem): String {
-    return FloconEncoder.json.encodeToString(
-        listOf(
-            item.toSerializable()
-        )
-    )
-}
 
 @Serializable
 internal class AnalyticsItemSerializable(
@@ -28,7 +18,7 @@ internal class AnalyticsPropertySerializable(
     val value: String,
 )
 
-internal fun AnalyticsItem.toSerializable(): AnalyticsItemSerializable {
+internal fun AnalyticsItem.toRemote(): AnalyticsItemSerializable {
     return AnalyticsItemSerializable(
         id = id,
         analyticsTableId = analyticsTableId,

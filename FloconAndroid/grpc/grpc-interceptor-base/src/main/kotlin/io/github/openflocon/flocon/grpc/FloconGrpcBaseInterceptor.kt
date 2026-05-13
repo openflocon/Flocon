@@ -5,9 +5,9 @@ package io.github.openflocon.flocon.grpc
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.grpc.model.RequestHolder
 import io.github.openflocon.flocon.grpc.model.toHeaders
-import io.github.openflocon.flocon.pluginsold.network.FloconNetworkPlugin
-import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkRequest
-import io.github.openflocon.flocon.pluginsold.network.model.FloconNetworkResponse
+import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
+import io.github.openflocon.flocon.network.core.model.FloconNetworkRequest
+import io.github.openflocon.flocon.network.core.model.FloconNetworkResponse
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.ClientCall

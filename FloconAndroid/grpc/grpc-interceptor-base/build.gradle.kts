@@ -12,7 +12,7 @@ android {
 
 
 dependencies {
-    implementation(projects.flocon)
+    implementation(projects.network.core)
 
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutines.core)
