@@ -1,16 +1,17 @@
 package io.github.openflocon.flocon.pluginsold.crashreporter
 
 import android.content.Context
-import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.plugins.crashreporter.FloconCrashReporterDataSource
 import io.github.openflocon.flocon.plugins.crashreporter.model.CrashReportDataModel
-import io.github.openflocon.flocon.plugins.crashreporter.model.crashReportFromJson
-import io.github.openflocon.flocon.plugins.crashreporter.model.toJson
 import java.io.File
 
 internal class FloconCrashReporterDataSourceAndroid(
-    private val context: Context
+    private val context: Context,
+    private val encoder: FloconEncoder
 ) : FloconCrashReporterDataSource {
 
     private val crashesDir = File(context.filesDir, "flocon_crashes")
@@ -22,7 +23,7 @@ internal class FloconCrashReporterDataSourceAndroid(
     override fun saveCrash(crash: CrashReportDataModel) {
         try {
             val file = File(crashesDir, "${crash.crashId}.json")
-            val jsonString = crash.toJson()
+            val jsonString = encoder.encode(crash)
             file.writeText(jsonString)
         } catch (t: Throwable) {
             FloconLogger.logError("Error saving crash", t)
@@ -34,7 +35,7 @@ internal class FloconCrashReporterDataSourceAndroid(
             crashesDir.listFiles()
                 ?.mapNotNull { file ->
                     try {
-                        crashReportFromJson(file.readText())
+                        encoder.decode(file.readText())
                     } catch (t: Throwable) {
                         t.printStackTrace()
                         null

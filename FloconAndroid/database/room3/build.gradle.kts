@@ -32,13 +32,11 @@ kotlin {
         
         val androidMain by getting {
             dependencies {
-                implementation(libs.brotli.dec)
             }
         }
         
         val jvmMain by getting {
             dependencies {
-                implementation(libs.brotli.dec)
             }
         }
 
@@ -72,13 +70,11 @@ android {
     defaultConfig {
         minSdk = 23
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-
 
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)

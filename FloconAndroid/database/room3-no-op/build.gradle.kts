@@ -22,6 +22,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(project(":network:core-no-op"))
+                implementation(libs.ktor.client.core)
                 implementation(project(":database:core-no-op"))
             }
         }

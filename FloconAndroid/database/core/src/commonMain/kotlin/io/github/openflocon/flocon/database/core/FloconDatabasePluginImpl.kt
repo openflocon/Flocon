@@ -5,13 +5,14 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.database.core.datasource.FloconDatabaseProvider
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
 import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DatabaseQueryLogModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DeviceDataBaseDataModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.sql.QueryResultDataModel
-import io.github.openflocon.flocon.database.core.model.fromdevice.sql.listDeviceDataBaseDataModelToJson
 import io.github.openflocon.flocon.database.core.model.todevice.DatabaseQueryMessage
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.utils.currentTimeMillis
@@ -20,13 +21,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
 
 internal class FloconDatabasePluginImpl(
     private var sender: FloconMessageSender,
     private val scope: CoroutineScope,
     @FloconMarker
-    override val providers: List<FloconDatabaseProvider>
+    override val providers: List<FloconDatabaseProvider>,
+    private val encoder: FloconEncoder
 ) : FloconPlugin, FloconDatabasePlugin {
 
     override val key: String = Protocol.FromDevice.Database.Plugin
@@ -42,7 +43,7 @@ internal class FloconDatabasePluginImpl(
             Protocol.ToDevice.Database.Method.GetDatabases -> sendAllDatabases(sender)
 
             Protocol.ToDevice.Database.Method.Query -> {
-                val queryMessage = DatabaseQueryMessage.fromJson(message = body) ?: return
+                val queryMessage = encoder.decode<DatabaseQueryMessage>(body) ?: return
                 val databaseModel = registeredDatabases.value
                     .find { it.id == queryMessage.database }
 
@@ -56,11 +57,12 @@ internal class FloconDatabasePluginImpl(
                     sender.send(
                         plugin = Protocol.FromDevice.Database.Plugin,
                         method = Protocol.FromDevice.Database.Method.Query,
-                        body = QueryResultDataModel(
-                            requestId = queryMessage.requestId,
-                            result = FloconEncoder.json.encodeToString(result)
+                        body = encoder.encode(
+                            QueryResultDataModel(
+                                requestId = queryMessage.requestId,
+                                result = encoder.encode(result)
+                            )
                         )
-                            .toJson()
                     )
                 } catch (t: Throwable) {
                     FloconLogger.logError("Database parsing error", t)
@@ -74,7 +76,7 @@ internal class FloconDatabasePluginImpl(
     }
 
     @OptIn(FloconMarker::class)
-    private suspend fun sendAllDatabases(sender: FloconMessageSender) {
+    private fun sendAllDatabases(sender: FloconMessageSender) {
         val databases = providers.flatMap { it.getAllDataBases(emptyList()) }
         val all = registeredDatabases.updateAndGet { it + databases }
             .map { DeviceDataBaseDataModel(id = it.id, name = it.displayName) }
@@ -83,7 +85,7 @@ internal class FloconDatabasePluginImpl(
             sender.send(
                 plugin = Protocol.FromDevice.Database.Plugin,
                 method = Protocol.FromDevice.Database.Method.GetDatabases,
-                body = listDeviceDataBaseDataModelToJson(all),
+                body = encoder.encode(all),
             )
         } catch (t: Throwable) {
             FloconLogger.logError("Database parsing error", t)
@@ -100,13 +102,14 @@ internal class FloconDatabasePluginImpl(
                 sender.send(
                     plugin = Protocol.FromDevice.Database.Plugin,
                     method = Protocol.FromDevice.Database.Method.LogQuery,
-                    body = DatabaseQueryLogModel(
-                        dbName = dbName,
-                        sqlQuery = sqlQuery,
-                        bindArgs = bindArgs.map { it.toString() },
-                        timestamp = currentTimeMillis()
+                    body = encoder.encode(
+                        DatabaseQueryLogModel(
+                            dbName = dbName,
+                            sqlQuery = sqlQuery,
+                            bindArgs = bindArgs.map { it.toString() },
+                            timestamp = currentTimeMillis()
+                        )
                     )
-                        .toJson()
                 )
             } catch (t: Throwable) {
                 FloconLogger.logError("Database logging error", t)

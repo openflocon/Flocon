@@ -7,6 +7,6 @@ import io.github.openflocon.flocon.model.FloconFileInfo
 internal interface FloconFileSender {
 
     @FloconMarker
-    suspend fun send(file: FloconFile, infos: FloconFileInfo)
+    fun send(file: FloconFile, infos: FloconFileInfo)
 
 }

@@ -20,11 +20,6 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.android)
             }
         }
-        
-        val jvmMain by getting {
-            dependencies {
-            }
-        }
 
         val iosX64Main by getting
         val iosArm64Main by getting
@@ -41,8 +36,6 @@ kotlin {
 android {
     namespace = "io.github.openflocon.flocon.database.room"
 }
-
-
 
 mavenPublishing {
     coordinates(

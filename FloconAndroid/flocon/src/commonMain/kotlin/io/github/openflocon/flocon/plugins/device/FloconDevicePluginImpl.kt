@@ -7,6 +7,7 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 
 class FloconDeviceConfig : FloconPluginConfig
@@ -21,7 +22,8 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
     override fun createConfig(context: FloconContext) = FloconDeviceConfig()
     override fun install(
         pluginConfig: FloconDeviceConfig,
-        floconConfig: FloconConfig
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
     ): FloconDevicePlugin {
         return FloconDevicePluginImpl(
             sender = floconConfig.client as FloconMessageSender,

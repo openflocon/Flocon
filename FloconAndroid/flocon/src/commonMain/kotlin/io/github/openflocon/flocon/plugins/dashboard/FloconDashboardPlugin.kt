@@ -7,7 +7,9 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.plugins.dashboard.mapper.toJson
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
@@ -29,18 +31,17 @@ object FloconDashboard : FloconPluginFactory<FloconDashboardConfig, FloconDashbo
     override val name: String = "Dashboard"
     override val pluginId: String = Protocol.ToDevice.Dashboard.Plugin
     override fun createConfig(context: FloconContext) = FloconDashboardConfig()
-    override fun install(
-        pluginConfig: FloconDashboardConfig,
-        floconConfig: FloconConfig
-    ): FloconDashboardPlugin {
+    override fun install(pluginConfig: FloconDashboardConfig, floconConfig: FloconConfig, encoder: FloconEncoder): FloconDashboardPlugin {
         return FloconDashboardPluginImpl(
-            sender = floconConfig.client as FloconMessageSender
+            sender = floconConfig.client as FloconMessageSender,
+            encoder = encoder
         )
     }
 }
 
 internal class FloconDashboardPluginImpl(
     private val sender: FloconMessageSender,
+    private val encoder: FloconEncoder
 ) : FloconPlugin, FloconDashboardPlugin {
     override val key: String = "DASHBOARD"
 
@@ -63,7 +64,7 @@ internal class FloconDashboardPluginImpl(
                 }
 
                 Protocol.ToDevice.Dashboard.Method.OnFormSubmitted -> {
-                    ToDeviceSubmittedFormMessage.fromJson(body)?.let {
+                    encoder.decode<ToDeviceSubmittedFormMessage>(body)?.let {
                         callbackMap[it.id]?.let { it as? DashboardCallback.FormCallback }?.actions?.invoke(
                             it.values
                         )
@@ -71,7 +72,7 @@ internal class FloconDashboardPluginImpl(
                 }
 
                 Protocol.ToDevice.Dashboard.Method.OnTextFieldSubmitted -> {
-                    ToDeviceSubmittedTextFieldMessage.fromJson(body)?.let {
+                    encoder.decode<ToDeviceSubmittedTextFieldMessage>(body)?.let {
                         callbackMap[it.id]?.let { it as? DashboardCallback.TextFieldCallback }?.action?.invoke(
                             it.value
                         )
@@ -79,7 +80,7 @@ internal class FloconDashboardPluginImpl(
                 }
 
                 Protocol.ToDevice.Dashboard.Method.OnCheckBoxValueChanged -> {
-                    ToDeviceCheckBoxValueChangedMessage.fromJson(body)?.let {
+                    encoder.decode<ToDeviceCheckBoxValueChangedMessage>(body)?.let {
                         callbackMap[it.id]?.let { it as? DashboardCallback.CheckBoxCallback }?.action?.invoke(
                             it.value
                         )
@@ -108,7 +109,7 @@ internal class FloconDashboardPluginImpl(
                 },
             )
 
-            dashboards.put(dashboardConfig.id, dashboardConfig)
+            dashboards[dashboardConfig.id] = dashboardConfig
 
             try {
                 sender.send(

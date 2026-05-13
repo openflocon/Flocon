@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.buildconfig)
 }
 
-
 kotlin {
     sourceSets {
         val commonMain by getting {
@@ -16,7 +15,7 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
             }
         }
-        
+
         val androidMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.android)
@@ -24,7 +23,7 @@ kotlin {
                 implementation("com.squareup.okhttp3:okhttp:4.12.0")
             }
         }
-        
+
         val jvmMain by getting {
             dependencies {
                 implementation(libs.ktor.client.core)
@@ -68,7 +67,7 @@ buildConfig {
 
 android {
     namespace = "io.github.openflocon.flocon"
-    
+
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
 }
@@ -79,4 +78,4 @@ mavenPublishing {
         artifactId = "flocon",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
-}
+}

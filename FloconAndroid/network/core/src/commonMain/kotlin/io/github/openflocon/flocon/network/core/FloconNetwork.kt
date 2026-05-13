@@ -7,6 +7,7 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
@@ -50,12 +51,14 @@ object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlu
     @OptIn(FloconMarker::class)
     override fun install(
         pluginConfig: FloconNetworkConfig,
-        floconConfig: FloconConfig
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
     ): FloconNetworkPlugin {
         return FloconNetworkPluginImpl(
             context = floconConfig.context,
             sender = floconConfig.client as FloconMessageSender,
             coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+            encoder = encoder
         )
             .also { FloconNetworkPluginImpl.plugin = it }
     }

@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon
 
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.dsl.FloconMarker
 
 /**
@@ -34,7 +35,6 @@ interface FloconPluginKey<Config : Any, PluginInstance : Any> {
 interface FloconPluginFactory<Config : FloconPluginConfig, PluginInstance : FloconPlugin> :
     FloconPluginKey<Config, PluginInstance> {
 
-    @FloconMarker
     fun createEncoding(): FloconEncoding = DefaultEncoding()
 
     /**
@@ -46,6 +46,10 @@ interface FloconPluginFactory<Config : FloconPluginConfig, PluginInstance : Floc
      * Install the plugin into the [io.github.openflocon.flocon.FloconApp] instance with the given [pluginConfig].
      */
     @OptIn(FloconMarker::class)
-    fun install(pluginConfig: Config, floconConfig: FloconConfig): PluginInstance
+    fun install(
+        pluginConfig: Config,
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
+    ): PluginInstance
 
 }

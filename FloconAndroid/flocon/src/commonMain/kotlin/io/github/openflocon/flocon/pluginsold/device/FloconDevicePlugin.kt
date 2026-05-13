@@ -1,6 +1,11 @@
 package io.github.openflocon.flocon.pluginsold.device
 
-import io.github.openflocon.flocon.*
+import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
+import io.github.openflocon.flocon.FloconPluginFactory
+import io.github.openflocon.flocon.core.FloconEncoder
 
 class FloconDeviceConfig : FloconPluginConfig
 
@@ -14,7 +19,8 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
 
     override fun install(
         pluginConfig: FloconDeviceConfig,
-        floconConfig: FloconConfig
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
     ): FloconDevicePlugin {
         TODO("Not yet implemented")
     }

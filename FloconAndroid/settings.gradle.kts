@@ -9,6 +9,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
+}
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -34,6 +37,8 @@ include(":datastores")
 include(":datastores-no-op")
 include(":deeplinks")
 include(":deeplinks-no-op")
+include(":tables")
+include(":tables-no-op")
 include(":network:core")
 include(":network:core-no-op")
 include(":database:core")
