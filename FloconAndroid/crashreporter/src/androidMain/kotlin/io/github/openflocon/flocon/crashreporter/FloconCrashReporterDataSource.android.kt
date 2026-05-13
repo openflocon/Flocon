@@ -1,0 +1,60 @@
+package io.github.openflocon.flocon.crashreporter
+
+import android.content.Context
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.core.encode
+import io.github.openflocon.flocon.crashreporter.model.CrashReportDataModel
+import java.io.File
+
+internal class FloconCrashReporterDataSourceAndroid(
+    private val context: Context,
+    private val encoder: FloconEncoder
+) : FloconCrashReporterDataSource {
+
+    private val crashesDir = File(context.filesDir, "flocon_crashes")
+
+    init {
+        crashesDir.mkdirs()
+    }
+
+    override fun saveCrash(crash: CrashReportDataModel) {
+        try {
+            val file = File(crashesDir, "${crash.crashId}.json")
+            val jsonString = encoder.encode(crash)
+            file.writeText(jsonString)
+        } catch (t: Throwable) {
+            FloconLogger.logError("Error saving crash", t)
+        }
+    }
+
+    override fun loadPendingCrashes(): List<CrashReportDataModel> {
+        return try {
+            crashesDir.listFiles()
+                ?.mapNotNull { file ->
+                    try {
+                        encoder.decode(file.readText())
+                    } catch (t: Throwable) {
+                        t.printStackTrace()
+                        null
+                    }
+                } ?: emptyList()
+        } catch (t: Throwable) {
+            FloconLogger.logError("Error loading pending crashes", t)
+            emptyList()
+        }
+    }
+
+    override fun deleteCrash(crashId: String) {
+        try {
+            File(crashesDir, "$crashId.json").delete()
+        } catch (t: Throwable) {
+            FloconLogger.logError("Failed to delete crash report: $crashId.json", t)
+        }
+    }
+}
+
+//internal actual fun buildFloconCrashReporterDataSource(context: FloconContext): FloconCrashReporterDataSource {
+//    return FloconCrashReporterDataSourceAndroid(context.context)
+//}
