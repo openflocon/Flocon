@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-// Migrated to :analytics module
-=======
 @file:OptIn(ExperimentalUuidApi::class)
 
 package io.github.openflocon.flocon.plugins.analytics.builder
@@ -33,4 +30,3 @@ class AnalyticsBuilder(
         analyticsPlugin?.registerAnalytics(analyticsItems)
     }
 }
->>>>>>> 2.0.0

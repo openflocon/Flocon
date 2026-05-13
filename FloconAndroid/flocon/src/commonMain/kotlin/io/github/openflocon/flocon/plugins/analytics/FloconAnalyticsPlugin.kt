@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-// This file has been migrated to the :analytics module.
-// It will be deleted shortly.
-=======
 package io.github.openflocon.flocon.plugins.analytics
 
 import io.github.openflocon.flocon.FloconConfig
@@ -75,4 +71,3 @@ internal class FloconAnalyticsPluginImpl(
         }
     }
 }
->>>>>>> 2.0.0

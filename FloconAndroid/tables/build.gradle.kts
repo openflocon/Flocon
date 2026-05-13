@@ -23,17 +23,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-<<<<<<<< HEAD:FloconAndroid/network/ktor-interceptor/build.gradle.kts
-
-                api(project(":flocon"))
-                api(project(":network:core"))
-
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-                implementation(libs.ktor.client.core)
-========
                 implementation(project(":flocon"))
                 implementation(libs.kotlinx.serialization.json)
->>>>>>>> 2.0.0:FloconAndroid/tables/build.gradle.kts
             }
         }
         
@@ -98,20 +89,12 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-<<<<<<<< HEAD:FloconAndroid/network/ktor-interceptor/build.gradle.kts
-        artifactId = "flocon-ktor-interceptor",
-========
         artifactId = "flocon-tables",
->>>>>>>> 2.0.0:FloconAndroid/tables/build.gradle.kts
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
     pom {
-<<<<<<<< HEAD:FloconAndroid/network/ktor-interceptor/build.gradle.kts
-        name = "Flocon Ktor Interceptor"
-========
         name = "Flocon Tables"
->>>>>>>> 2.0.0:FloconAndroid/tables/build.gradle.kts
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"

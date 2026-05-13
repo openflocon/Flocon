@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-// Migrated to :analytics module
-=======
 package io.github.openflocon.flocon.plugins.analytics.model
 
 data class AnalyticsEvent(
@@ -12,4 +9,3 @@ data class AnalyticsEvent(
         vararg properties: AnalyticsPropertiesConfig,
     ) : this(eventName, properties.toList())
 }
->>>>>>> 2.0.0

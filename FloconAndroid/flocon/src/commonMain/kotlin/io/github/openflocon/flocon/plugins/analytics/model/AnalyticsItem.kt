@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-// Migrated to :analytics module
-=======
 package io.github.openflocon.flocon.plugins.analytics.model
 
 data class AnalyticsItem(
@@ -10,4 +7,3 @@ data class AnalyticsItem(
     val createdAt: Long,
     val properties: List<AnalyticsPropertiesConfig>,
 )
->>>>>>> 2.0.0

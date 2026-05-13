@@ -15,6 +15,7 @@ import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.plugins.tables.model.TableItem
 import io.github.openflocon.flocon.plugins.tables.model.toRemote
+import kotlin.collections.map
 
 class FloconTableConfig : FloconPluginConfig
 

@@ -3,8 +3,8 @@
 package io.github.openflocon.flocon.plugins.tables.dsl
 
 import io.github.openflocon.flocon.plugins.tables.FloconTablePlugin
-import io.github.openflocon.flocon.plugins.tables.model.TableColumnConfig
 import io.github.openflocon.flocon.plugins.tables.model.TableItem
+import io.github.openflocon.flocon.pluginsold.tables.model.TableColumnConfig
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -28,7 +28,7 @@ class TableItemDefinition internal constructor(private val name: String) {
     internal fun build() = TableItem(
         id = Uuid.random().toHexString(),
         name = name,
-        createdAt =  Clock.System.now().toEpochMilliseconds(),
+        createdAt = Clock.System.now().toEpochMilliseconds(),
         columns = emptyList()
     )
 

@@ -81,8 +81,7 @@ class FloconClient internal constructor(
                     )
                 )
             )
-                .toFloconMessageToServer(),
-        )
+        }
     }
 
     @FloconMarker
