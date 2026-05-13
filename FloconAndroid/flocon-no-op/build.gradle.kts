@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     id("flocon.kotlin.multiplatform")
     id("flocon.publish")
