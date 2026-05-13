@@ -58,19 +58,22 @@ fun startFlocon(
     block: FloconConfiguration.() -> Unit
 ) {
     val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    val client = FloconClient(
+        context = context,
+        scope = scope
+    )
     val config = FloconConfig(
         context = context,
         scope = scope,
-        client = FloconClient(
-            context = context,
-            scope = scope
-        )
+        client = client
     )
     val configuration = FloconConfiguration(
         config = config,
     )
         .apply(block)
     val encoder = FloconEncoder(module = configuration.encoding())
+
+    client.setupEncoder(encoder)
 
     Flocon(
         config = config,

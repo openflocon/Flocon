@@ -3,14 +3,15 @@ package io.github.openflocon.flocon.client
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconFile
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.core.getAppInfos
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.getServerHost
 import io.github.openflocon.flocon.model.FloconFileInfo
 import io.github.openflocon.flocon.model.FloconMessageToServer
-import io.github.openflocon.flocon.model.toFloconMessageToServer
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import io.github.openflocon.flocon.websocket.FloconHttpClient
 import io.github.openflocon.flocon.websocket.FloconWebSocketClient
@@ -19,10 +20,11 @@ import io.github.openflocon.flocon.websocket.buildFloconWebSocketClient
 import io.github.openflocon.flocondesktop.BuildConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.modules.EmptySerializersModule
 
 class FloconClient internal constructor(
     private val context: FloconContext,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) : FloconApp.Client, FloconMessageSender, FloconFileSender {
 
     private val appInstance by lazy { currentTimeMillis() }
@@ -32,6 +34,13 @@ class FloconClient internal constructor(
 
     private val webSocketClient: FloconWebSocketClient = buildFloconWebSocketClient()
     private val httpClient: FloconHttpClient = buildFloconHttpClient()
+
+    private var encoder = FloconEncoder(EmptySerializersModule())
+
+    // Better way ?
+    fun setupEncoder(encoder: FloconEncoder) {
+        this.encoder = encoder
+    }
 
     @Throws(Throwable::class)
     override suspend fun connect(
@@ -57,19 +66,20 @@ class FloconClient internal constructor(
     ) {
         scope.launch {
             webSocketClient.sendMessage(
-                message = FloconMessageToServer(
-                    deviceId = appInfos.deviceId,
-                    plugin = plugin,
-                    body = body,
-                    appName = appInfos.appName,
-                    appPackageName = appInfos.appPackageName,
-                    method = method,
-                    deviceName = appInfos.deviceName,
-                    appInstance = appInstance,
-                    platform = appInfos.platform,
-                    versionName = versionName,
+                encoder.encode(
+                    FloconMessageToServer(
+                        deviceId = appInfos.deviceId,
+                        plugin = plugin,
+                        body = body,
+                        appName = appInfos.appName,
+                        appPackageName = appInfos.appPackageName,
+                        method = method,
+                        deviceName = appInfos.deviceName,
+                        appInstance = appInstance,
+                        platform = appInfos.platform,
+                        versionName = versionName,
+                    )
                 )
-                    .toFloconMessageToServer()
             )
         }
     }
@@ -85,7 +95,6 @@ class FloconClient internal constructor(
                 port = FLOCON_HTTP_PORT,
                 file = file,
                 infos = infos,
-
                 deviceId = appInfos.deviceId,
                 appPackageName = appInfos.appPackageName,
                 appInstance = appInstance,

@@ -1,24 +1,18 @@
 package io.github.openflocon.flocon.plugins.deeplinks
 
-import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkParameterRemote
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkRemote
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkVariableRemote
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinksRemote
-import kotlinx.serialization.encodeToString
 
-internal fun createJson(
+internal fun createRemote(
     deeplinks: List<DeeplinkModel>,
     variables: List<DeeplinkVariable>
-): String {
-    val dto = DeeplinksRemote(
-        deeplinks = deeplinks.map(DeeplinkModel::toRemote),
-        variables = variables.map(DeeplinkVariable::toRemote)
-    )
-
-    return FloconEncoder.json.encodeToString(dto)
-}
+) = DeeplinksRemote(
+    deeplinks = deeplinks.map(DeeplinkModel::toRemote),
+    variables = variables.map(DeeplinkVariable::toRemote)
+)
 
 internal fun DeeplinkModel.toRemote(): DeeplinkRemote = DeeplinkRemote(
     label = label,

@@ -8,8 +8,10 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFileMessage
@@ -32,13 +34,15 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
     override fun createConfig(context: FloconContext) = FloconFilesConfig()
     override fun install(
         pluginConfig: FloconFilesConfig,
-        floconConfig: FloconConfig
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
     ): FloconFilesPlugin {
         val client = floconConfig.client
         return FloconFilesPluginImpl(
             context = floconConfig.context,
             floconFileSender = client as FloconFileSender,
-            sender = client as FloconMessageSender
+            sender = client as FloconMessageSender,
+            encoder = encoder
         )
     }
 }
@@ -67,6 +71,7 @@ internal class FloconFilesPluginImpl(
     private val context: FloconContext,
     private val floconFileSender: FloconFileSender,
     private val sender: FloconMessageSender,
+    private val encoder: FloconEncoder
 ) : FloconPlugin, FloconFilesPlugin {
 
     override val key: String = "FILES"
@@ -80,7 +85,7 @@ internal class FloconFilesPluginImpl(
     ) {
         when (method) {
             Protocol.ToDevice.Files.Method.ListFiles -> {
-                val listFilesMessage = ToDeviceGetFilesMessage.fromJson(message = body) ?: return
+                val listFilesMessage = encoder.decode<ToDeviceGetFilesMessage>(body) ?: return
 
                 withFoldersSize.update { listFilesMessage.withFoldersSize }
 
@@ -92,7 +97,7 @@ internal class FloconFilesPluginImpl(
             }
 
             Protocol.ToDevice.Files.Method.GetFile -> {
-                val getFileMessage = ToDeviceGetFileMessage.fromJson(message = body) ?: return
+                val getFileMessage = encoder.decode<ToDeviceGetFileMessage>(body) ?: return
 
                 fileDataSource.getFile(path = getFileMessage.path, isConstantPath = false)
                     ?.let { file ->
@@ -107,8 +112,7 @@ internal class FloconFilesPluginImpl(
             }
 
             Protocol.ToDevice.Files.Method.DeleteFile -> {
-                val deleteFilesMessage =
-                    ToDeviceDeleteFileMessage.fromJson(message = body) ?: return
+                val deleteFilesMessage = encoder.decode<ToDeviceDeleteFileMessage>(body) ?: return
 
                 fileDataSource.deleteFile(
                     path = deleteFilesMessage.filePath,
@@ -122,8 +126,7 @@ internal class FloconFilesPluginImpl(
             }
 
             Protocol.ToDevice.Files.Method.DeleteFiles -> {
-                val deleteFilesMessage =
-                    ToDeviceDeleteFilesMessage.fromJson(message = body) ?: return
+                val deleteFilesMessage = encoder.decode<ToDeviceDeleteFilesMessage>(body) ?: return
 
                 fileDataSource.deleteFiles(
                     path = deleteFilesMessage.filePaths,
@@ -137,9 +140,7 @@ internal class FloconFilesPluginImpl(
             }
 
             Protocol.ToDevice.Files.Method.DeleteFolderContent -> {
-                val deleteFolderContentMessage =
-                    ToDeviceDeleteFolderContentMessage.fromJson(message = body)
-                        ?: return
+                val deleteFolderContentMessage = encoder.decode<ToDeviceDeleteFolderContentMessage>(body) ?: return
 
                 fileDataSource.getFile(
                     path = deleteFolderContentMessage.path,
@@ -164,7 +165,7 @@ internal class FloconFilesPluginImpl(
         isConstantPath: Boolean,
         requestId: String,
     ) {
-        val files = fileDataSource.getFolderContent(
+        fileDataSource.getFolderContent(
             path = path,
             isConstantPath = isConstantPath,
             withFoldersSize = withFoldersSize.value,

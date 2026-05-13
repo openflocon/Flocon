@@ -1,9 +1,6 @@
 package io.github.openflocon.flocon.database.core.model.fromdevice.sql
 
-import io.github.openflocon.flocon.core.FloconEncoder
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 
 @Serializable
 data class DatabaseQueryLogModel(
@@ -11,14 +8,4 @@ data class DatabaseQueryLogModel(
     val sqlQuery: String,
     val bindArgs: List<String>?,
     val timestamp: Long,
-) {
-    fun toJson(): String {
-        return FloconEncoder.json.encodeToString<DatabaseQueryLogModel>(this)
-    }
-
-    companion object {
-        fun fromJson(json: String): DatabaseQueryLogModel {
-            return FloconEncoder.json.decodeFromString<DatabaseQueryLogModel>(json)
-        }
-    }
-}
+)

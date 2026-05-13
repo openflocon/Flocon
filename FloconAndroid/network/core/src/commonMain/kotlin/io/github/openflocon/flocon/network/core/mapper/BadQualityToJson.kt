@@ -1,28 +1,7 @@
 package io.github.openflocon.flocon.network.core.mapper
 
-import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.network.core.model.BadQualityConfig
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-
-internal fun BadQualityConfig.toJsonString(): String {
-    return FloconEncoder.json.encodeToString<BadQualityConfigSerializable>(
-        toSerializable()
-    )
-}
-
-internal fun parseBadQualityConfig(jsonString: String): BadQualityConfig? {
-    return try {
-        val parsed = FloconEncoder.json.decodeFromString<BadQualityConfigSerializable>(
-            jsonString
-        )
-        parsed.toDomain()
-    } catch (t: Throwable) {
-        FloconLogger.logError(t.message ?: "bad connection network parsing issue", t)
-        null
-    }
-}
 
 @Serializable
 internal class BadQualityConfigSerializable(

@@ -1,11 +1,11 @@
 package io.github.openflocon.flocon.pluginsold.sharedprefs
 
-import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.pluginsold.sharedprefs.model.FloconSharedPreferenceModel
 
 class FloconPreferencesConfig : FloconPluginConfig
@@ -21,7 +21,8 @@ object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPr
 
     override fun install(
         pluginConfig: FloconPreferencesConfig,
-        floconConfig: FloconConfig
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
     ): FloconPreferencesPlugin {
         TODO("Not yet implemented")
     }

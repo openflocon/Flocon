@@ -73,6 +73,7 @@ class Flocon internal constructor(
         config.scope.launch {
             try {
                 val serialized = encoder.decode<FloconMessageFromServer>(message)
+                    ?: return@launch
 
                 plugins.find { it.key == serialized.plugin }
                     ?.onMessageReceived(

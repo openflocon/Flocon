@@ -4,16 +4,16 @@ import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.core.encode
+import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
 import io.github.openflocon.flocon.network.core.datasource.buildFloconNetworkDataSource
+import io.github.openflocon.flocon.network.core.mapper.WebSocketMockMessage
 import io.github.openflocon.flocon.network.core.mapper.floconNetworkCallRequestToJson
 import io.github.openflocon.flocon.network.core.mapper.floconNetworkCallResponseToJson
 import io.github.openflocon.flocon.network.core.mapper.floconNetworkWebSocketEventToJson
-import io.github.openflocon.flocon.network.core.mapper.parseBadQualityConfig
-import io.github.openflocon.flocon.network.core.mapper.parseMockResponses
-import io.github.openflocon.flocon.network.core.mapper.parseWebSocketMockMessage
-import io.github.openflocon.flocon.network.core.mapper.webSocketIdsToJsonArray
-import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
 import io.github.openflocon.flocon.network.core.model.BadQualityConfig
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
@@ -32,11 +32,12 @@ internal const val FLOCON_NETWORK_BAD_CONFIG_JSON = "flocon_network_bad_config.j
 internal class FloconNetworkPluginImpl(
     context: FloconContext,
     private var sender: FloconMessageSender,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
+    private val encoder: FloconEncoder
 ) : FloconPlugin, FloconNetworkPlugin {
     override val key: String = "NETWORK"
 
-    private val dataSource = buildFloconNetworkDataSource(context)
+    private val dataSource = buildFloconNetworkDataSource(context = context, encoder = encoder)
 
     private val websocketListeners =
         MutableStateFlow<Map<String, FloconWebSocketMockListener>>(emptyMap())
@@ -56,7 +57,7 @@ internal class FloconNetworkPluginImpl(
                 sender.send(
                     plugin = Protocol.FromDevice.Network.Plugin,
                     method = Protocol.FromDevice.Network.Method.LogNetworkCallRequest,
-                    body = request.floconNetworkCallRequestToJson(),
+                    body = encoder.encode(request.floconNetworkCallRequestToJson())
                 )
             }
         } catch (t: Throwable) {
@@ -71,7 +72,7 @@ internal class FloconNetworkPluginImpl(
                 sender.send(
                     plugin = Protocol.FromDevice.Network.Plugin,
                     method = Protocol.FromDevice.Network.Method.LogNetworkCallResponse,
-                    body = response.floconNetworkCallResponseToJson(),
+                    body = encoder.encode(response.floconNetworkCallResponseToJson())
                 )
             } catch (t: Throwable) {
                 FloconLogger.logError("Network json mapping error", t)
@@ -87,7 +88,7 @@ internal class FloconNetworkPluginImpl(
                 sender.send(
                     plugin = Protocol.FromDevice.Network.Plugin,
                     method = Protocol.FromDevice.Network.Method.LogWebSocketEvent,
-                    body = event.floconNetworkWebSocketEventToJson(),
+                    body = encoder.encode(event.floconNetworkWebSocketEventToJson())
                 )
             } catch (t: Throwable) {
                 FloconLogger.logError("Network json mapping error", t)
@@ -101,19 +102,20 @@ internal class FloconNetworkPluginImpl(
     ) {
         when (method) {
             Protocol.ToDevice.Network.Method.SetupMocks -> {
-                val setup = parseMockResponses(jsonString = body)
+                val setup = encoder.decode<List<MockNetworkResponse>>(body)
+                    .orEmpty()
                 _mocks.update { setup }
                 dataSource.saveMocksToFile(mocks)
             }
 
             Protocol.ToDevice.Network.Method.SetupBadNetworkConfig -> {
-                val config = parseBadQualityConfig(jsonString = body)
+                val config = encoder.decode<BadQualityConfig>(body)
                 _badQualityConfig.update { config }
                 dataSource.saveBadNetworkConfig(config)
             }
 
             Protocol.ToDevice.Network.Method.WebsocketMockMessage -> {
-                val message = parseWebSocketMockMessage(jsonString = body)
+                val message = encoder.decode<WebSocketMockMessage>(body)
                 if (message != null) {
                     websocketListeners.value[message.id]?.onMessage(message.message)
                 }
@@ -135,11 +137,11 @@ internal class FloconNetworkPluginImpl(
         updateWebSocketIds()
     }
 
-    private suspend fun updateWebSocketIds() {
+    private fun updateWebSocketIds() {
         sender.send(
             plugin = Protocol.FromDevice.Network.Plugin,
             method = Protocol.FromDevice.Network.Method.RegisterWebSocketIds,
-            body = webSocketIdsToJsonArray(ids = websocketListeners.value.keys),
+            body = encoder.encode(websocketListeners.value.keys)
         )
     }
 

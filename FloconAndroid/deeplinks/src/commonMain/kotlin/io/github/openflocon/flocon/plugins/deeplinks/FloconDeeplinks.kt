@@ -7,7 +7,9 @@ import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
 
@@ -23,12 +25,14 @@ object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeepli
     @OptIn(FloconMarker::class)
     override fun install(
         pluginConfig: FloconDeeplinksConfig,
-        floconConfig: FloconConfig
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
     ): FloconDeeplinksPlugin {
         val plugin = FloconDeeplinksPluginImpl(
             deeplinks = pluginConfig.deeplinks(),
             variables = pluginConfig.variables(),
-            sender = floconConfig.client as FloconMessageSender
+            sender = floconConfig.client as FloconMessageSender,
+            encoder = encoder
         )
 
         return plugin
@@ -39,6 +43,7 @@ internal class FloconDeeplinksPluginImpl(
     private val deeplinks: List<DeeplinkModel>,
     private val variables: List<DeeplinkVariable>,
     private val sender: FloconMessageSender,
+    private val encoder: FloconEncoder
 ) : FloconPlugin, FloconDeeplinksPlugin {
     override val key: String = "DEEP_LINK"
 
@@ -56,7 +61,7 @@ internal class FloconDeeplinksPluginImpl(
         )
     }
 
-    suspend fun registerDeeplinks(
+    fun registerDeeplinks(
         deeplinks: List<DeeplinkModel>,
         variables: List<DeeplinkVariable>
     ) {
@@ -64,7 +69,7 @@ internal class FloconDeeplinksPluginImpl(
             sender.send(
                 plugin = Protocol.FromDevice.Deeplink.Plugin,
                 method = Protocol.FromDevice.Deeplink.Method.GetDeeplinks,
-                body = createJson(deeplinks = deeplinks, variables = variables)
+                body = encoder.encode(createRemote(deeplinks = deeplinks, variables = variables))
             )
         } catch (t: Throwable) {
             t.printStackTrace()

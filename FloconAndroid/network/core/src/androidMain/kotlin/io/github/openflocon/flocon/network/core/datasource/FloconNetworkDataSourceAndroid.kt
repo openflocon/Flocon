@@ -2,25 +2,25 @@ package io.github.openflocon.flocon.network.core.datasource
 
 import android.content.Context
 import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.network.core.mapper.parseBadQualityConfig
-import io.github.openflocon.flocon.network.core.mapper.parseMockResponses
-import io.github.openflocon.flocon.network.core.mapper.toJsonString
-import io.github.openflocon.flocon.network.core.mapper.writeMockResponsesToJson
-import io.github.openflocon.flocon.network.core.plugin.FLOCON_NETWORK_BAD_CONFIG_JSON
-import io.github.openflocon.flocon.network.core.plugin.FLOCON_NETWORK_MOCKS_JSON
+import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.network.core.model.BadQualityConfig
 import io.github.openflocon.flocon.network.core.model.MockNetworkResponse
+import io.github.openflocon.flocon.network.core.plugin.FLOCON_NETWORK_BAD_CONFIG_JSON
+import io.github.openflocon.flocon.network.core.plugin.FLOCON_NETWORK_MOCKS_JSON
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
 internal class FloconNetworkDataSourceAndroid(
-    private val context: Context
+    private val context: Context,
+    private val encoder: FloconEncoder
 ) : FloconNetworkDataSource {
     override fun saveMocksToFile(mocks: List<MockNetworkResponse>) {
         try {
             val file = File(context.filesDir, FLOCON_NETWORK_MOCKS_JSON)
-            val jsonString = writeMockResponsesToJson(mocks = mocks)
+            val jsonString = encoder.encode(mocks)
             FileOutputStream(file).use {
                 it.write(jsonString.toByteArray())
             }
@@ -39,7 +39,9 @@ internal class FloconNetworkDataSourceAndroid(
             val jsonString = FileInputStream(file).use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            parseMockResponses(jsonString = jsonString)
+
+            encoder.decode<List<MockNetworkResponse>>(jsonString)
+                .orEmpty()
         } catch (t: Throwable) {
             FloconLogger.logError("issue in loadMocksFromFile", t)
             emptyList()
@@ -56,7 +58,8 @@ internal class FloconNetworkDataSourceAndroid(
             val jsonString = FileInputStream(file).use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            parseBadQualityConfig(jsonString = jsonString)
+
+            encoder.decode(jsonString)
         } catch (t: Throwable) {
             FloconLogger.logError("issue in loadBadNetworkConfig", t)
             null
@@ -69,7 +72,7 @@ internal class FloconNetworkDataSourceAndroid(
             if (config == null) {
                 file.delete()
             } else {
-                val jsonString = config.toJsonString()
+                val jsonString = encoder.encode(config)
                 FileOutputStream(file).use {
                     it.write(jsonString.toByteArray())
                 }

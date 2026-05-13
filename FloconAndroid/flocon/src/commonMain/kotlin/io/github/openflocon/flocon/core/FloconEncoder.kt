@@ -32,7 +32,11 @@ inline fun <reified T> FloconEncoder.encode(body: T) = encode(
     body = body
 )
 
-inline fun <reified T> FloconEncoder.decode(body: String) = decode(
-    serializer = module.serializer<T>(),
-    body = body
-)
+inline fun <reified T> FloconEncoder.decode(body: String): T? = try {
+    decode(
+        serializer = module.serializer<T>(),
+        body = body
+    )
+} catch (_: Throwable) {
+    null
+}

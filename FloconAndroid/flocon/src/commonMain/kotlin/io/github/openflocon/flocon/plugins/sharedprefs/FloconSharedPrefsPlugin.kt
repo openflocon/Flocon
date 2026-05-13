@@ -7,6 +7,7 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconSharedPreferenceModel
 
@@ -22,7 +23,8 @@ object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPr
     override fun createConfig(context: FloconContext) = FloconPreferencesConfig()
     override fun install(
         pluginConfig: FloconPreferencesConfig,
-        floconConfig: FloconConfig
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
     ): FloconPreferencesPlugin {
         return FloconSharedPrefsPluginImpl(
             context = floconConfig.context,
@@ -85,7 +87,7 @@ internal class FloconSharedPrefsPluginImpl(
     }
 
     private fun sendSharedPreferences() {
-        val allPrefs = dataSource.getSharedPreferences() + preferenceModels
+        dataSource.getSharedPreferences() + preferenceModels
         try {
 //            sender.send(
 //                plugin = Protocol.FromDevice.SharedPreferences.Plugin,

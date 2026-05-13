@@ -1,11 +1,7 @@
 package io.github.openflocon.flocon.database.core.model.fromdevice
 
-import io.github.openflocon.flocon.core.FloconEncoder
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.put
 
 @Serializable
 sealed interface DatabaseExecuteSqlResponse : DatabaseExecuteResponse {
@@ -44,25 +40,4 @@ sealed interface DatabaseExecuteSqlResponse : DatabaseExecuteResponse {
         val message: String = "",       // Detailed error message
         val originalSql: String = "",   // SQL query that caused the error (optional)
     ) : DatabaseExecuteSqlResponse
-}
-
-fun DatabaseExecuteSqlResponse.toJson(): String {
-    val jsonEncoder = FloconEncoder.json
-    val thisAsJson = jsonEncoder.encodeToJsonElement(this)
-
-    val type = when (this) {
-        is DatabaseExecuteSqlResponse.Error -> "Error"
-        is DatabaseExecuteSqlResponse.Insert -> "Insert"
-        DatabaseExecuteSqlResponse.RawSuccess -> "RawSuccess"
-        is DatabaseExecuteSqlResponse.Select -> "Select"
-        is DatabaseExecuteSqlResponse.UpdateDelete -> "UpdateDelete"
-    }
-
-    return buildJsonObject {
-        put("type", type)
-        put(
-            "body",
-            thisAsJson.toString()
-        ) // warning : the desktop is waiting for a string representation of the json here
-    }.toString()
 }

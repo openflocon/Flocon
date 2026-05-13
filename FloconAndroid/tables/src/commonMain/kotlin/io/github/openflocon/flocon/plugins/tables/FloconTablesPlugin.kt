@@ -14,7 +14,6 @@ import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.plugins.tables.model.TableItem
-import io.github.openflocon.flocon.plugins.tables.model.TableItemRemote
 import io.github.openflocon.flocon.plugins.tables.model.toRemote
 
 class FloconTableConfig : FloconPluginConfig
@@ -27,7 +26,11 @@ object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
     override val name: String = "Table"
     override val pluginId: String = Protocol.ToDevice.Table.Plugin
     override fun createConfig(context: FloconContext) = FloconTableConfig()
-    override fun install(pluginConfig: FloconTableConfig, floconConfig: FloconConfig): PluginInstance {
+    override fun install(
+        pluginConfig: FloconTableConfig,
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
+    ): FloconTablePlugin {
         return FloconTablePluginImpl(
             sender = floconConfig.client as FloconMessageSender,
             encoder = encoder
@@ -41,7 +44,8 @@ val Flocon.Companion.tablePlugin: FloconTablePlugin
     get() = FloconTablePluginImpl.plugin ?: pluginNotInitialized("table")
 
 internal class FloconTablePluginImpl(
-    private val sender: FloconMessageSender
+    private val sender: FloconMessageSender,
+    private val encoder: FloconEncoder
 ) : FloconPlugin, FloconTablePlugin {
     override val key: String = "TABLE"
 
