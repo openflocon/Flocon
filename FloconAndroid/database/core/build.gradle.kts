@@ -10,6 +10,7 @@ kotlin {
         browser()
         binaries.executable()
     }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -19,22 +20,10 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
             }
         }
-        
-        val androidMain by getting {
-            dependencies {
-            }
-        }
-        
-        val jvmMain by getting {
-            dependencies {
-                implementation(libs.sqlite.jdbc)
-            }
-        }
 
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
-        val wasmJsMain by getting
         val iosMain by creating {
             dependsOn(commonMain)
             iosX64Main.dependsOn(this)

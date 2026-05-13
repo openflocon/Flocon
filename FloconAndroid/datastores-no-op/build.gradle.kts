@@ -1,30 +1,14 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     id("flocon.kotlin.multiplatform")
     id("flocon.publish")
 }
 
 kotlin {
-//    androidTarget {
-//        compilations.all {
-//            kotlinOptions {
-//                jvmTarget = "11"
-//            }
-//        }
-//    }
-//
-//    jvm()
-//
-//    iosX64()
-//    iosArm64()
-//    iosSimulatorArm64()
-//
-//    wasmJs {
-//        moduleName = "flocon_datastores_no_op"
-//        browser()
-//        binaries.executable()
-//    }
+    wasmJs {
+        moduleName = "flocon_datastores_no_op"
+        browser()
+        binaries.executable()
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -33,21 +17,10 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
             }
         }
-        
-        val androidMain by getting {
-            dependencies {
-            }
-        }
-        
-        val jvmMain by getting {
-            dependencies {
-            }
-        }
 
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
-//        val wasmJsMain by getting
         val iosMain by creating {
             dependsOn(commonMain)
             iosX64Main.dependsOn(this)

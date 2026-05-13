@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     id("flocon.kotlin.multiplatform")
     alias(libs.plugins.kotlin.serialization)
@@ -8,6 +6,12 @@ plugins {
 }
 
 kotlin {
+    wasmJs {
+        moduleName = "flocon"
+        binaries.executable()
+        browser()
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -38,7 +42,6 @@ kotlin {
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
-//        val wasmJsMain by getting
         val iosMain by creating {
             dependsOn(commonMain)
             iosX64Main.dependsOn(this)
