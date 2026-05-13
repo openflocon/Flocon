@@ -28,20 +28,6 @@ internal class MockNetworkResponseDataModel(
     )
 }
 
-
-internal fun parseMockResponses(jsonString: String): List<MockNetworkResponse> {
-    try {
-        val remote =
-            FloconEncoder.json.decodeFromString<List<MockNetworkResponseDataModel>>(jsonString)
-        return remote.mapNotNull {
-            it.toDomain()
-        }
-    } catch (t: Throwable) {
-        FloconLogger.logError(t.message ?: "mock network parsing issue", t)
-        return emptyList()
-    }
-}
-
 internal fun MockNetworkResponseDataModel.toDomain(): MockNetworkResponse? {
     return MockNetworkResponse(
         expectation = MockNetworkResponse.Expectation(
@@ -73,16 +59,6 @@ private fun MockNetworkResponseDataModel.mapResponseToDomain(): MockNetworkRespo
                 return@run null
             }
         }
-    }
-}
-
-
-internal fun writeMockResponsesToJson(mocks: List<MockNetworkResponse>): String {
-    return try {
-        FloconEncoder.json.encodeToString(mocks.map { it.toRemote() })
-    } catch (t: Throwable) {
-        FloconLogger.logError(t.message ?: "mock network writing issue", t)
-        return "[]"
     }
 }
 

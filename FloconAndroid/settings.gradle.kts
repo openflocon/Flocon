@@ -1,4 +1,6 @@
-rootProject.name = "Flocon Sample App"
+rootProject.name = "Flocon-Sample-App"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
@@ -7,6 +9,10 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -31,14 +37,16 @@ include(":datastores")
 include(":datastores-no-op")
 include(":deeplinks")
 include(":deeplinks-no-op")
+include(":tables")
+include(":tables-no-op")
 include(":network:core")
 include(":network:core-no-op")
 include(":database:core")
 include(":database:core-no-op")
 include(":database:room")
 include(":database:room-no-op")
-include(":analytics")
-include(":analytics-no-op")
 include(":database:room3")
 include(":database:room3-no-op")
+
+includeBuild("build-logic")
 

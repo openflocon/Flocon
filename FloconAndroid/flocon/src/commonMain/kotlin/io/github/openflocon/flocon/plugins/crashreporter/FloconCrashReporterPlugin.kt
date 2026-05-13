@@ -7,6 +7,7 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.crashreporter.model.CrashReportDataModel
 import io.github.openflocon.flocon.utils.currentTimeMillis
@@ -26,8 +27,7 @@ interface FloconCrashReporterPlugin : FloconPlugin {
     fun setupCrashHandler()
 }
 
-object FloconCrashReporter :
-    FloconPluginFactory<FloconCrashReporterConfig, FloconCrashReporterPlugin> {
+object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, FloconCrashReporterPlugin> {
     override val name: String = "CrashReporter"
     override val pluginId: String =
         Protocol.ToDevice.Analytics.Plugin // Crash reporter is usually write-only but we can set an ID
@@ -36,7 +36,8 @@ object FloconCrashReporter :
 
     override fun install(
         pluginConfig: FloconCrashReporterConfig,
-        floconConfig: FloconConfig
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
     ): FloconCrashReporterPlugin {
         val client = floconConfig.client as FloconMessageSender
         return FloconCrashReporterPluginImpl(

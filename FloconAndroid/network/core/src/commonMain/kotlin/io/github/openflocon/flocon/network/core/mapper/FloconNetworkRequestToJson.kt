@@ -2,12 +2,10 @@
 
 package io.github.openflocon.flocon.network.core.mapper
 
-import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.network.core.model.FloconWebSocketEvent
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -25,20 +23,17 @@ internal class FloconNetworkCallRequestRemote(
     val requestSize: Long?,
 )
 
-internal fun FloconNetworkCallRequest.floconNetworkCallRequestToJson(): String {
-    val remoteModel = FloconNetworkCallRequestRemote(
-        floconCallId = floconCallId,
-        floconNetworkType = floconNetworkType,
-        isMocked = isMocked,
-        url = request.url,
-        method = request.method,
-        startTime = request.startTime,
-        requestBody = request.body,
-        requestHeaders = request.headers,
-        requestSize = request.size
-    )
-    return FloconEncoder.json.encodeToString(remoteModel)
-}
+internal fun FloconNetworkCallRequest.floconNetworkCallRequestToJson() = FloconNetworkCallRequestRemote(
+    floconCallId = floconCallId,
+    floconNetworkType = floconNetworkType,
+    isMocked = isMocked,
+    url = request.url,
+    method = request.method,
+    startTime = request.startTime,
+    requestBody = request.body,
+    requestHeaders = request.headers,
+    requestSize = request.size
+)
 
 @Serializable
 internal class FloconNetworkCallResponseRemote(
@@ -57,27 +52,23 @@ internal class FloconNetworkCallResponseRemote(
     val isImage: Boolean,
 )
 
-internal fun FloconNetworkCallResponse.floconNetworkCallResponseToJson(): String {
-    val remoteModel = FloconNetworkCallResponseRemote(
-        floconCallId = floconCallId,
-        floconNetworkType = floconNetworkType,
-        isMocked = isMocked,
-        durationMs = durationMs,
-        responseHttpCode = response.httpCode,
-        responseGrpcStatus = response.grpcStatus,
-        responseContentType = response.contentType,
-        responseBody = response.body,
-        responseHeaders = response.headers,
-        requestHeaders = response.requestHeaders?.takeIf {
-            it.isNotEmpty()
-        },
-        responseSize = response.size,
-        isImage = response.isImage,
-        responseError = response.error,
-    )
-
-    return FloconEncoder.json.encodeToString(remoteModel)
-}
+internal fun FloconNetworkCallResponse.floconNetworkCallResponseToJson() = FloconNetworkCallResponseRemote(
+    floconCallId = floconCallId,
+    floconNetworkType = floconNetworkType,
+    isMocked = isMocked,
+    durationMs = durationMs,
+    responseHttpCode = response.httpCode,
+    responseGrpcStatus = response.grpcStatus,
+    responseContentType = response.contentType,
+    responseBody = response.body,
+    responseHeaders = response.headers,
+    requestHeaders = response.requestHeaders?.takeIf {
+        it.isNotEmpty()
+    },
+    responseSize = response.size,
+    isImage = response.isImage,
+    responseError = response.error,
+)
 
 @Serializable
 internal class FloconWebSocketEventRemote(
@@ -90,22 +81,19 @@ internal class FloconWebSocketEventRemote(
     val error: String?,
 )
 
-internal fun FloconWebSocketEvent.floconNetworkWebSocketEventToJson(): String {
-    val remoteModel = FloconWebSocketEventRemote(
-        id = Uuid.random().toString(),
-        event = when (event) {
-            FloconWebSocketEvent.Event.Closed -> "closed"
-            FloconWebSocketEvent.Event.Closing -> "closing"
-            FloconWebSocketEvent.Event.Error -> "error"
-            FloconWebSocketEvent.Event.ReceiveMessage -> "received"
-            FloconWebSocketEvent.Event.SendMessage -> "sent"
-            FloconWebSocketEvent.Event.Open -> "open"
-        },
-        url = websocketUrl,
-        size = size,
-        timestamp = timeStamp,
-        message = message,
-        error = error?.message
-    )
-    return FloconEncoder.json.encodeToString(remoteModel)
-}
+internal fun FloconWebSocketEvent.floconNetworkWebSocketEventToJson() = FloconWebSocketEventRemote(
+    id = Uuid.random().toString(),
+    event = when (event) {
+        FloconWebSocketEvent.Event.Closed -> "closed"
+        FloconWebSocketEvent.Event.Closing -> "closing"
+        FloconWebSocketEvent.Event.Error -> "error"
+        FloconWebSocketEvent.Event.ReceiveMessage -> "received"
+        FloconWebSocketEvent.Event.SendMessage -> "sent"
+        FloconWebSocketEvent.Event.Open -> "open"
+    },
+    url = websocketUrl,
+    size = size,
+    timestamp = timeStamp,
+    message = message,
+    error = error?.message
+)

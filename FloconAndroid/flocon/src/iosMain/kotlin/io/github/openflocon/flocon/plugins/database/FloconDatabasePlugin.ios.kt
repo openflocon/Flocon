@@ -5,7 +5,6 @@ import androidx.sqlite.driver.NativeSQLiteDriver
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.plugins.database.model.FloconDatabaseModel
 import io.github.openflocon.flocon.plugins.database.model.FloconFileDatabaseModel
-import io.github.openflocon.flocon.plugins.database.model.fromdevice.DatabaseExecuteSqlResponse
 import io.github.openflocon.flocon.plugins.database.model.fromdevice.DeviceDataBaseDataModel
 import platform.Foundation.NSFileManager
 import platform.posix.close

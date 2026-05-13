@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:FloconAndroid/network/core/src/commonMain/kotlin/io/github/openflocon/flocon/network/core/mapper/MockResponseToJson.kt
+package io.github.openflocon.flocon.network.core.mapper
+========
 package io.github.openflocon.flocon.network.core.noop.mapper
+>>>>>>>> 2.0.0:FloconAndroid/network/core-no-op/src/commonMain/kotlin/io/github/openflocon/flocon/network/core/noop/mapper/MockResponseToJson.kt
 
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.core.FloconEncoder

@@ -1,0 +1,82 @@
+package io.github.openflocon.flocon.plugins.tables
+
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
+import io.github.openflocon.flocon.FloconPluginFactory
+import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.encode
+import io.github.openflocon.flocon.dsl.FloconMarker
+import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.plugins.tables.model.TableItem
+import io.github.openflocon.flocon.plugins.tables.model.toRemote
+
+class FloconTableConfig : FloconPluginConfig
+
+interface FloconTablePlugin : FloconPlugin {
+    fun registerItems(tableItems: List<TableItem>)
+}
+
+object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
+    override val name: String = "Table"
+    override val pluginId: String = Protocol.ToDevice.Table.Plugin
+    override fun createConfig(context: FloconContext) = FloconTableConfig()
+    override fun install(
+        pluginConfig: FloconTableConfig,
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
+    ): FloconTablePlugin {
+        return FloconTablePluginImpl(
+            sender = floconConfig.client as FloconMessageSender,
+            encoder = encoder
+        )
+            .also { FloconTablePluginImpl.plugin = it }
+    }
+}
+
+@OptIn(FloconMarker::class)
+val Flocon.Companion.tablePlugin: FloconTablePlugin
+    get() = FloconTablePluginImpl.plugin ?: pluginNotInitialized("table")
+
+internal class FloconTablePluginImpl(
+    private val sender: FloconMessageSender,
+    private val encoder: FloconEncoder
+) : FloconPlugin, FloconTablePlugin {
+    override val key: String = "TABLE"
+
+    override suspend fun onMessageReceived(
+        method: String,
+        body: String,
+    ) {
+        // no op
+    }
+
+    override suspend fun onConnectedToServer() {
+        // no op
+    }
+
+    override fun registerItems(tableItems: List<TableItem>) {
+        sendTable(tableItems)
+    }
+
+    private fun sendTable(tableItems: List<TableItem>) {
+        try {
+            sender.send(
+                plugin = Protocol.FromDevice.Table.Plugin,
+                method = Protocol.FromDevice.Table.Method.AddItems,
+                body = encoder.encode(tableItems.map(TableItem::toRemote))
+            )
+        } catch (t: Throwable) {
+            FloconLogger.logError("Table json mapping error", t)
+        }
+    }
+
+    companion object {
+        var plugin: FloconTablePlugin? = null
+    }
+}

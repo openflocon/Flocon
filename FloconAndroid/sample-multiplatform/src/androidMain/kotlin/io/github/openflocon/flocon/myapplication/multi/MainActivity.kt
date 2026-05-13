@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.github.openflocon.flocon.myapplication.multi.Databases.getDogDatabase
@@ -14,6 +14,7 @@ import io.github.openflocon.flocon.myapplication.multi.database.initializeDataba
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinks
+import io.github.openflocon.flocon.startFlocon
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 
@@ -52,10 +53,9 @@ class MainActivity : ComponentActivity() {
         )
 
         FloconLogger.enabled = true
-        Flocon.initialize(this) {
-            install(FloconDeeplinks) {
 
-            }
+        startFlocon(FloconContext(this)) {
+            install(FloconDeeplinks)
         }
 
         setContent {

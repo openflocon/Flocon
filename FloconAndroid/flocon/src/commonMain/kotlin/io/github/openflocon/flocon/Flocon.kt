@@ -3,18 +3,20 @@
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.FloconApp.Client
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.dsl.FloconMarker
-import io.github.openflocon.flocon.model.floconMessageFromServerFromJson
+import io.github.openflocon.flocon.model.FloconMessageFromServer
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class Flocon internal constructor(
     private val config: FloconConfig,
-    private val plugins: List<FloconPlugin>
+    private val plugins: List<FloconPlugin>,
+    private val encoder: FloconEncoder
 ) {
 
     init {
@@ -68,13 +70,18 @@ class Flocon internal constructor(
 
     private fun onMessageReceived(message: String) {
         println("Message received : $message")
-        config.scope.launch(Dispatchers.IO) {
-            floconMessageFromServerFromJson(message)?.let { messageFromServer ->
-                plugins.find { it.key == messageFromServer.plugin }
+        config.scope.launch {
+            try {
+                val serialized = encoder.decode<FloconMessageFromServer>(message)
+                    ?: return@launch
+
+                plugins.find { it.key == serialized.plugin }
                     ?.onMessageReceived(
-                        method = messageFromServer.method,
-                        body = messageFromServer.body,
+                        method = serialized.method,
+                        body = serialized.body
                     )
+            } catch (throwable: Throwable) {
+                throwable.printStackTrace()
             }
         }
     }
