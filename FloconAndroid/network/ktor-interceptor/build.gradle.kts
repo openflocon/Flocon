@@ -7,8 +7,9 @@ kotlin {
     wasmJs {
         moduleName = "flocon_ktor_interceptor"
         browser()
-    }
         binaries.executable()
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -49,8 +50,6 @@ kotlin {
 android {
     namespace = "io.github.openflocon.flocon.ktor"
 }
-
-
 
 mavenPublishing {
     coordinates(
