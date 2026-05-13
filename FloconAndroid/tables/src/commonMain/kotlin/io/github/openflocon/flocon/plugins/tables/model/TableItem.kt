@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.tables.model
 
+import io.github.openflocon.flocon.pluginsold.tables.model.TableColumnConfig
 import kotlinx.serialization.Serializable
 
 data class TableItem(
@@ -29,7 +30,7 @@ internal fun TableItem.toRemote(): TableItemRemote = TableItemRemote(
     id = id,
     name = name,
     createdAt = createdAt,
-    columns = columns.map { it.toRemote() }
+    columns = columns.map(TableColumnConfig::toRemote)
 )
 
 internal fun TableColumnConfig.toRemote(): TableColumnRemote = TableColumnRemote(

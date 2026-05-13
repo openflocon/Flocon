@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.plugins.tables.model
+package io.github.openflocon.flocon.pluginsold.tables.model
 
 data class TableColumnConfig(
     val columnName: String,

@@ -67,13 +67,11 @@ android {
             )
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-
 
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
@@ -89,7 +87,6 @@ mavenPublishing {
         artifactId = "flocon-database-room3-no-op",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
-
 
     pom {
         name = "Flocon Room 3 Implementation No-Op"

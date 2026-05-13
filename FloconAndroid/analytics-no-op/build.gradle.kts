@@ -23,33 +23,14 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":flocon"))
+                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
             }
-        }
-        
-        val androidMain by getting {
-            dependencies {
-            }
-        }
-        
-        val jvmMain by getting {
-            dependencies {
-            }
-        }
-
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
         }
     }
 }
 
 android {
-    namespace = "io.github.openflocon.flocon.tables.noop"
+    namespace = "io.github.openflocon.flocon.analytics.noop"
     compileSdk = 36
 
     defaultConfig {
@@ -68,13 +49,11 @@ android {
             )
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-
 
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
@@ -87,13 +66,12 @@ mavenPublishing {
 
     coordinates(
         groupId = project.property("floconGroupId") as String,
-        artifactId = "flocon-tables-no-op",
+        artifactId = "flocon-analytics-no-op",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
-
     pom {
-        name = "Flocon Tables No-Op"
+        name = "Flocon Analytics No-Op"
         description = project.property("floconDescription") as String
         inceptionYear = "2025"
         url = "https://github.com/openflocon/Flocon"

@@ -30,11 +30,13 @@ kotlin {
         
         val androidMain by getting {
             dependencies {
+                implementation(libs.brotli.dec)
             }
         }
         
         val jvmMain by getting {
             dependencies {
+                implementation(libs.brotli.dec)
             }
         }
 
