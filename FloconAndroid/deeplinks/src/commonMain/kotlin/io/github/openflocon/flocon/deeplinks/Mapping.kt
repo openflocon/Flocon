@@ -1,10 +1,10 @@
-package io.github.openflocon.flocon.plugins.deeplinks
+package io.github.openflocon.flocon.deeplinks
 
-import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
-import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkParameterRemote
-import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkRemote
-import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkVariableRemote
-import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinksRemote
+import io.github.openflocon.flocon.deeplinks.model.DeeplinkModel
+import io.github.openflocon.flocon.deeplinks.model.DeeplinkParameterRemote
+import io.github.openflocon.flocon.deeplinks.model.DeeplinkRemote
+import io.github.openflocon.flocon.deeplinks.model.DeeplinkVariableRemote
+import io.github.openflocon.flocon.deeplinks.model.DeeplinksRemote
 
 internal fun createRemote(
     deeplinks: List<DeeplinkModel>,

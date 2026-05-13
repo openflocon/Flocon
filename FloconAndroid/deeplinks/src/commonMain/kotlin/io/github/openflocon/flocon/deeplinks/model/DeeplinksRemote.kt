@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.plugins.deeplinks.model
+package io.github.openflocon.flocon.deeplinks.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

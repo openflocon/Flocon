@@ -1,7 +1,7 @@
-package io.github.openflocon.flocon.plugins.deeplinks
+package io.github.openflocon.flocon.deeplinks
 
 import io.github.openflocon.flocon.FloconPlugin
-import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
+import io.github.openflocon.flocon.deeplinks.model.DeeplinkModel
 
 class DeeplinkLinkBuilder internal constructor(
     private val link: String

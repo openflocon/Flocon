@@ -1,9 +1,9 @@
 @file:OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 
-package io.github.openflocon.flocon.plugins.tables.dsl
+package io.github.openflocon.flocon.tables.dsl
 
-import io.github.openflocon.flocon.plugins.tables.FloconTablePlugin
-import io.github.openflocon.flocon.plugins.tables.model.TableItem
+import io.github.openflocon.flocon.tables.FloconTablePlugin
+import io.github.openflocon.flocon.tables.model.TableItem
 import io.github.openflocon.flocon.pluginsold.tables.model.TableColumnConfig
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime

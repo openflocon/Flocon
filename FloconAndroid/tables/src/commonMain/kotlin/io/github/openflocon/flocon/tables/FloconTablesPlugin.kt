@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.plugins.tables
+package io.github.openflocon.flocon.tables
 
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
@@ -13,8 +13,8 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
-import io.github.openflocon.flocon.plugins.tables.model.TableItem
-import io.github.openflocon.flocon.plugins.tables.model.toRemote
+import io.github.openflocon.flocon.tables.model.TableItem
+import io.github.openflocon.flocon.tables.model.toRemote
 import kotlin.collections.map
 
 class FloconTableConfig : FloconPluginConfig

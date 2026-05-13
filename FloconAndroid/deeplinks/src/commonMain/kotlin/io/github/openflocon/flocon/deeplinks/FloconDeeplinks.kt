@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.plugins.deeplinks
+package io.github.openflocon.flocon.deeplinks
 
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
@@ -11,7 +11,7 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.dsl.FloconMarker
-import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
+import io.github.openflocon.flocon.deeplinks.model.DeeplinkModel
 
 object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
     override val name: String = "Deeplinks"

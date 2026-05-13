@@ -1,7 +1,7 @@
-package io.github.openflocon.flocon.plugins.deeplinks
+package io.github.openflocon.flocon.deeplinks
 
 import io.github.openflocon.flocon.FloconPluginConfig
-import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkModel
+import io.github.openflocon.flocon.deeplinks.model.DeeplinkModel
 
 abstract class FloconDeeplinksConfig : FloconPluginConfig {
     abstract fun variable(name: String, block: DeeplinkVariableBuilder.() -> Unit = {})

@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.plugins.analytics
+package io.github.openflocon.flocon.analytics
 
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
@@ -10,7 +10,7 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
+import io.github.openflocon.flocon.analytics.model.AnalyticsItem
 
 class FloconAnalyticsConfig : FloconPluginConfig
 

@@ -1,6 +1,6 @@
-package io.github.openflocon.flocon.plugins.analytics.mapper
+package io.github.openflocon.flocon.analytics.mapper
 
-import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
+import io.github.openflocon.flocon.analytics.model.AnalyticsItem
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -1,10 +1,10 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package io.github.openflocon.flocon.plugins.analytics.builder
+package io.github.openflocon.flocon.analytics.builder
 
-import io.github.openflocon.flocon.plugins.analytics.FloconAnalyticsPlugin
-import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsEvent
-import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
+import io.github.openflocon.flocon.analytics.FloconAnalyticsPlugin
+import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
+import io.github.openflocon.flocon.analytics.model.AnalyticsItem
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

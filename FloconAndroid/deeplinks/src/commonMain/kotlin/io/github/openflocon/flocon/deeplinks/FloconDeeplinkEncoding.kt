@@ -1,8 +1,8 @@
-package io.github.openflocon.flocon.plugins.deeplinks
+package io.github.openflocon.flocon.deeplinks
 
 import io.github.openflocon.flocon.FloconEncoding
 import io.github.openflocon.flocon.dsl.FloconMarker
-import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkParameterRemote
+import io.github.openflocon.flocon.deeplinks.model.DeeplinkParameterRemote
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass

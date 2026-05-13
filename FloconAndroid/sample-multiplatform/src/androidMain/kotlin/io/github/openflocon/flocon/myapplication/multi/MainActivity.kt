@@ -13,7 +13,7 @@ import io.github.openflocon.flocon.myapplication.multi.Databases.getFoodDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.multi.ui.App
-import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinks
+import io.github.openflocon.flocon.deeplinks.FloconDeeplinks
 import io.github.openflocon.flocon.startFlocon
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp

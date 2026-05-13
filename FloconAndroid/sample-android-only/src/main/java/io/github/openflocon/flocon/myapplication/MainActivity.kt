@@ -33,9 +33,9 @@ import io.github.openflocon.flocon.myapplication.ui.ImagesListView
 import io.github.openflocon.flocon.myapplication.ui.theme.MyApplicationTheme
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
-import io.github.openflocon.flocon.plugins.analytics.FloconAnalytics
-import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinks
-import io.github.openflocon.flocon.plugins.tables.FloconTable
+import io.github.openflocon.flocon.analytics.FloconAnalytics
+import io.github.openflocon.flocon.deeplinks.FloconDeeplinks
+import io.github.openflocon.flocon.tables.FloconTable
 import io.github.openflocon.flocon.startFlocon
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

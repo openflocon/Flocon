@@ -1,8 +1,8 @@
 package io.github.openflocon.flocon.myapplication.table
 
 import io.github.openflocon.flocon.Flocon
-import io.github.openflocon.flocon.plugins.tables.dsl.table
-import io.github.openflocon.flocon.plugins.tables.tablePlugin
+import io.github.openflocon.flocon.tables.dsl.table
+import io.github.openflocon.flocon.tables.tablePlugin
 
 fun initializeTable() {
     Flocon.tablePlugin.table("analytics") {

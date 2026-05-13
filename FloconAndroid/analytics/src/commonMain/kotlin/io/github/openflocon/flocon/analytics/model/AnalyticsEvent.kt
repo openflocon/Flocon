@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.plugins.analytics.model
+package io.github.openflocon.flocon.analytics.model
 
 data class AnalyticsEvent(
     val eventName: String,
