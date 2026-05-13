@@ -20,32 +20,25 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    wasmJs {
+        moduleName = "flocon_database_room3"
+        browser()
+        binaries.executable()
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(project(":flocon"))
-                implementation(project(":database:core"))
+                implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.androidx.room3.runtime)
-                implementation(libs.androidx.sqlite.bundled)
-            }
-        }
-        
-        val androidMain by getting {
-            dependencies {
-            }
-        }
-        
-        val jvmMain by getting {
-            dependencies {
+                implementation(libs.androidx.sqlite)
+                implementation(project(":database:core"))
             }
         }
 
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
+        val wasmJsMain by getting {
             dependsOn(commonMain)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
         }
     }
 }
