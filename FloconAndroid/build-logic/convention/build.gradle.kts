@@ -2,6 +2,12 @@ plugins {
     `kotlin-dsl`
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
 group = "io.github.openflocon.buildlogic"
 
 dependencies {

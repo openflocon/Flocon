@@ -10,16 +10,20 @@ import io.github.openflocon.flocon.network.core.noop.plugin.FloconNetworkPluginI
 import io.github.openflocon.flocon.network.core.FloconNetworkConfig
 import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
 
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.core.FloconEncoder
+
 object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlugin> {
     override val name: String = "Network"
     override val pluginId: String = Protocol.ToDevice.Network.Plugin
 
-    override fun createConfig() = FloconNetworkConfig()
+    override fun createConfig(context: FloconContext) = FloconNetworkConfig()
 
     @OptIn(FloconMarker::class)
     override fun install(
         pluginConfig: FloconNetworkConfig,
-        floconConfig: FloconConfig
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
     ): FloconNetworkPlugin {
         return FloconNetworkPluginImpl()
             .also { FloconNetworkPluginImpl.plugin = it }

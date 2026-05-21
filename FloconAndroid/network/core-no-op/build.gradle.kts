@@ -1,6 +1,7 @@
 plugins {
     id("flocon.kotlin.multiplatform")
     id("flocon.publish")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -13,7 +14,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(projects.flocon)
+                implementation(projects.network.core)
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.serialization.json)
             }
         }
         

@@ -94,6 +94,9 @@ dependencies {
         debugImplementation(projects.analytics)
         releaseImplementation(projects.analyticsNoOp)
 
+        debugImplementation(projects.crashreporter)
+        releaseImplementation(projects.crashreporterNoOp)
+
         debugImplementation(project(":database:room"))
         releaseImplementation(project(":database:room-no-op"))
         debugImplementation(project(":database:room3"))

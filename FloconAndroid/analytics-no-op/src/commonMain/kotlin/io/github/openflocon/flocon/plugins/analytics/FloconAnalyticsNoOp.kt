@@ -6,6 +6,7 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsItem
 
 class FloconAnalyticsConfig : FloconPluginConfig
@@ -20,7 +21,8 @@ object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyt
     override fun createConfig(context: FloconContext) = FloconAnalyticsConfig()
     override fun install(
         pluginConfig: FloconAnalyticsConfig,
-        floconConfig: FloconConfig
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
     ): FloconAnalyticsPlugin {
         return FloconAnalyticsNoOpImpl()
     }

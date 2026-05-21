@@ -14,6 +14,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(projects.flocon)
+                implementation(projects.sharedprefs)
                 implementation(libs.kotlinx.coroutines.core)
             }
         }

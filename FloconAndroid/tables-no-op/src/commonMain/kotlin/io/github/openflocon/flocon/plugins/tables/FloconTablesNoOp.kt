@@ -6,6 +6,7 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.plugins.tables.model.TableItem
 
 interface FloconTablePlugin : FloconPlugin {
@@ -20,7 +21,8 @@ object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
     override fun createConfig(context: FloconContext) = FloconTableConfig()
     override fun install(
         pluginConfig: FloconTableConfig,
-        floconConfig: FloconConfig
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
     ): FloconTablePlugin {
         return FloconTablePluginNoOp
     }
