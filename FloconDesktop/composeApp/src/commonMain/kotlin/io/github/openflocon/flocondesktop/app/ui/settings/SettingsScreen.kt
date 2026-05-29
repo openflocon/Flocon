@@ -87,12 +87,12 @@ private fun SettingsScreen(
             initialValue = true
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(FloconTheme.spacing.small)
                     .clip(FloconTheme.shapes.medium)
                     .background(FloconTheme.colorPalette.primary)
-                    .padding(all = 8.dp)
+                    .padding(all = FloconTheme.spacing.small)
             ) {
                 if (needsAdbSetup) {
                     Text(
@@ -103,7 +103,7 @@ private fun SettingsScreen(
                 } else {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
                     ) {
                         FloconIcon(
                             imageVector = Icons.Outlined.Check,
@@ -125,7 +125,7 @@ private fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
                 ) {
                     SettingsButton(
                         text = stringResource(Res.string.general_save),
@@ -144,10 +144,10 @@ private fun SettingsScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(FloconTheme.spacing.small)
                     .clip(FloconTheme.shapes.medium)
                     .background(FloconTheme.colorPalette.primary)
-                    .padding(all = 8.dp)
+                    .padding(all = FloconTheme.spacing.small)
             ) {
                 FloconSlider(
                     value = uiState.fontSizeMultiplier,
@@ -164,7 +164,7 @@ private fun SettingsScreen(
             SettingsButton(
                 onClick = { showLicenses = true },
                 text = stringResource(Res.string.settings_licenses),
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(FloconTheme.spacing.small)
             )
         }
     }

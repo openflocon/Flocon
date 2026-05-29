@@ -45,7 +45,7 @@ fun MainScreenTopBar(
     Row(
         modifier = modifier
             .background(FloconTheme.colorPalette.surface)
-            .padding(vertical = 8.dp, horizontal = 12.dp),
+            .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Title()
@@ -75,7 +75,7 @@ private fun Title(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(

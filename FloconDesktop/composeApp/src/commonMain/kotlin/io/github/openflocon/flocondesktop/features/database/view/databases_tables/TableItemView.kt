@@ -99,10 +99,10 @@ private fun TableView(
                     onTableDoubleClicked(item)
                 }
             )
-            .padding(horizontal = 12.dp)
-            .padding(vertical = 4.dp),
+            .padding(horizontal = FloconTheme.spacing.medium)
+            .padding(vertical = FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         val color = FloconTheme.colorPalette.onSurface
         Image(

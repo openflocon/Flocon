@@ -45,7 +45,7 @@ fun LeftPanelView(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colorPalette.primary)
-            .padding(8.dp)
+            .padding(FloconTheme.spacing.small)
     ) {
         MenuSection(
             current = current,
@@ -53,7 +53,7 @@ fun LeftPanelView(
             expanded = expanded,
             onClickItem = onClickItem,
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
         Spacer(Modifier.weight(1f))
         MenuItems(
             current = current,
@@ -105,7 +105,7 @@ private fun ColumnScope.MenuItems(
             onClick = { onClickItem(item) },
         )
         if (index != items.lastIndex)
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(FloconTheme.spacing.extraSmall))
     }
 }
 

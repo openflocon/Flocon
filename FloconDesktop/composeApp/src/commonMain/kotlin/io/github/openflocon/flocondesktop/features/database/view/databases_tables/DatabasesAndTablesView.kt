@@ -51,8 +51,8 @@ fun DatabasesAndTablesView(
                 Modifier.fillMaxWidth()
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(all = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(all = FloconTheme.spacing.extraSmall),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
             ) {
                 Text(
                     "Databases",
@@ -62,7 +62,7 @@ fun DatabasesAndTablesView(
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
                 )
                 when (state) {
                     DatabasesStateUiModel.Empty -> Unit
@@ -104,8 +104,8 @@ fun DatabasesAndTablesView(
                     Modifier.fillMaxWidth()
                         .weight(0.4f)
                         .verticalScroll(rememberScrollState())
-                        .padding(all = 4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                        .padding(all = FloconTheme.spacing.extraSmall),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
                 ) {
                     Text(
                         stringResource(Res.string.databases_favorites),
@@ -115,7 +115,7 @@ fun DatabasesAndTablesView(
                         ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                        modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
                     )
 
                     favorites.forEach {

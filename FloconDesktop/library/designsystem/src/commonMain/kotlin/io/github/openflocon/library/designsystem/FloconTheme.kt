@@ -23,8 +23,10 @@ import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.components.FloconMenuRepresentation
 import io.github.openflocon.library.designsystem.theme.FloconColorPaletteNew
 import io.github.openflocon.library.designsystem.theme.FloconShape
+import io.github.openflocon.library.designsystem.theme.FloconSpacing
 import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
 import io.github.openflocon.library.designsystem.theme.LocalFloconShape
+import io.github.openflocon.library.designsystem.theme.LocalFloconSpacing
 import io.github.openflocon.library.designsystem.theme.darkPalette
 import io.github.openflocon.library.designsystem.theme.lightPalette
 import io.github.openflocon.library.designsystem.theme.materialDarkScheme
@@ -44,6 +46,10 @@ object FloconTheme {
     val shapes: FloconShape
         @Composable @ReadOnlyComposable
         get() = LocalFloconShape.current
+
+    val spacing: FloconSpacing
+        @Composable @ReadOnlyComposable
+        get() = LocalFloconSpacing.current
 }
 
 @Composable
@@ -92,6 +98,7 @@ fun FloconTheme(
         CompositionLocalProvider(
             LocalIndication provides ripple,
             LocalFloconColorPalette provides colorPalette,
+            LocalFloconSpacing provides FloconSpacing(),
             LocalTextSelectionColors provides selectionTextColor,
             LocalScrollbarStyle provides scrollbarStyle,
             LocalMinimumInteractiveComponentSize provides Dp.Unspecified,

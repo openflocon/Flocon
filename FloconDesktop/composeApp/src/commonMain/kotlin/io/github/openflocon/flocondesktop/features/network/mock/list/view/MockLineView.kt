@@ -40,12 +40,12 @@ fun MockLineView(
     Row(
         modifier = modifier
             .clickable { onClicked(item.id) }
-            .padding(vertical = 8.dp),
+            .padding(vertical = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = FloconTheme.spacing.small)
                 .width(50.dp)
                 .height(12.dp),
             contentAlignment = Alignment.Center,
@@ -83,7 +83,7 @@ fun MockLineView(
                         style = FloconTheme.typography.titleSmall,
                         color = FloconTheme.colorPalette.onSurface,
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(FloconTheme.spacing.small))
                     Text(
                         text = item.urlPattern,
                         maxLines = 1,
@@ -96,7 +96,7 @@ fun MockLineView(
 
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = FloconTheme.spacing.small)
                     .height(12.dp)
             ) {
                 FloconCheckbox(

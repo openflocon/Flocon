@@ -117,7 +117,7 @@ fun MockEditorScreen(
 
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         FloconDialogHeader(
             modifier = Modifier
@@ -127,7 +127,7 @@ fun MockEditorScreen(
 
         error?.let {
             Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = FloconTheme.spacing.large),
                 text = it, color = MaterialTheme.colorScheme.error,
             )
         }
@@ -140,8 +140,8 @@ fun MockEditorScreen(
             Column(
                 modifier = Modifier
                     .weight(2f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                    .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.small),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             ) {
                 // Section Expectation
                 Text(
@@ -182,8 +182,8 @@ fun MockEditorScreen(
             Column(
                 modifier = Modifier
                     .weight(3f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                    .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.small),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             ) {
                 // Section Response
                 Text(
@@ -287,7 +287,7 @@ fun MockEditorScreen(
 
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                         ) {
                             NetworkMockMediaType(
                                 text = "application/json",
@@ -424,7 +424,7 @@ fun MockEditorScreen(
                                         color = FloconTheme.colorPalette.primary,
                                         shape = FloconTheme.shapes.medium,
                                     )
-                                    .padding(vertical = 4.dp, horizontal = 8.dp),
+                                    .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
                             ) {
                                 val throwable = jsonError
                                 if(throwable == null) {
@@ -447,8 +447,8 @@ fun MockEditorScreen(
             }
         }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(all = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth().padding(all = FloconTheme.spacing.small),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically
         ) {
             FloconCheckbox(
@@ -489,7 +489,7 @@ fun NetworkMockMediaType(text: String, onClicked: (text: String) -> Unit) {
             .clickable {
                 onClicked(text)
             }
-            .padding(horizontal = 12.dp, vertical = 2.dp),
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = 2.dp),
     )
 }
 
@@ -504,7 +504,7 @@ private fun HeaderInputField(
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         FloconTextField(
             value = key,
@@ -527,7 +527,7 @@ private fun HeaderInputField(
                 .clip(RoundedCornerShape(2.dp))
                 .clickable {
                     onRemove()
-                }.padding(all = 4.dp),
+                }.padding(all = FloconTheme.spacing.extraSmall),
             contentAlignment = Alignment.Center,
         ) {
             Image(
