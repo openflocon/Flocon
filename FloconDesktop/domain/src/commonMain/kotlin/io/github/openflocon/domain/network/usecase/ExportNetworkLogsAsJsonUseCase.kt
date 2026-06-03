@@ -13,17 +13,16 @@ class ExportNetworkLogsAsJsonUseCase(
 ) {
     suspend operator fun invoke(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        deviceId: String? = null,
+        filterText: String? = null,
         startTimestamp: Long? = null,
         endTimestamp: Long? = null,
     ): Either<Throwable, List<FloconNetworkCallDomainModel>> {
         return try {
             val filter = NetworkFilterDomainModel(
-                statusCode = null,
-                contentType = null,
-                hasResponse = null,
-                searchText = null,
-                requestDate = null,
+                filterOnAllColumns = filterText,
+                textsFilters = null,
+                methodFilter = null,
+                displayOldSessions = true,
             )
             val calls = networkRepository.getRequests(
                 deviceIdAndPackageName = deviceIdAndPackageName,
@@ -32,11 +31,10 @@ class ExportNetworkLogsAsJsonUseCase(
             )
             
             val filtered = calls.filter { call ->
-                val matchesDevice = deviceId == null || call.appInstance.deviceId == deviceId
                 val matchesStartTime = startTimestamp == null || call.request.startTime >= startTimestamp
                 val matchesEndTime = endTimestamp == null || call.request.startTime <= endTimestamp
                 
-                matchesDevice && matchesStartTime && matchesEndTime
+                matchesStartTime && matchesEndTime
             }
             
             if (filtered.isEmpty()) {
