@@ -55,7 +55,11 @@ interface NetworkLocalDataSource {
     suspend fun deleteRequestOnDifferentSession(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     // Returns (deviceId, call) pairs so callers can know which device each call belongs to
-    suspend fun getAllRequests(deviceId: String? = null): List<Pair<String, FloconNetworkCallDomainModel>>
+    suspend fun getAllRequests(
+        deviceId: String? = null,
+        startTimestamp: Long? = null,
+        endTimestamp: Long? = null,
+    ): List<Pair<String, FloconNetworkCallDomainModel>>
 
     suspend fun clear()
 }

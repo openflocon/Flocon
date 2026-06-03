@@ -260,11 +260,15 @@ class NetworkLocalDataSourceRoom(
         )
     }
 
-    override suspend fun getAllRequests(deviceId: String?): List<Pair<String, FloconNetworkCallDomainModel>> {
+    override suspend fun getAllRequests(
+        deviceId: String?,
+        startTimestamp: Long?,
+        endTimestamp: Long?,
+    ): List<Pair<String, FloconNetworkCallDomainModel>> {
         val entities = if (deviceId != null) {
-            floconNetworkDao.getAllRequestsByDevice(deviceId)
+            floconNetworkDao.getAllRequestsByDevice(deviceId, startTimestamp, endTimestamp)
         } else {
-            floconNetworkDao.getAllRequests()
+            floconNetworkDao.getAllRequests(startTimestamp, endTimestamp)
         }
         return entities.mapNotNull { entity ->
             entity.toDomainModel()?.let { domain -> entity.deviceId to domain }

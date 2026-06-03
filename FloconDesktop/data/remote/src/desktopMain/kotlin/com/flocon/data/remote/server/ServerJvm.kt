@@ -257,8 +257,8 @@ class ServerJvm(
                 // Add network export routes
                 networkExportRoutes(
                     json = json,
-                    getNetworkCalls = { deviceId ->
-                        networkRepository.value.getAllNetworkCalls(deviceId)
+                    getNetworkCalls = { deviceId, startTimestamp, endTimestamp ->
+                        networkRepository.value.getAllNetworkCalls(deviceId, startTimestamp, endTimestamp)
                     }
                 )
             }

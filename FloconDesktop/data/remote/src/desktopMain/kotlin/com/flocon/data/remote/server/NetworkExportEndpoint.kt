@@ -8,40 +8,44 @@ import com.flocon.data.remote.models.NetworkLogsExportResponse
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
-import io.ktor.server.response.respondText
+import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 
 fun Route.networkExportRoutes(
     json: Json,
-    getNetworkCalls: suspend (deviceId: String?) -> List<Pair<String, FloconNetworkCallDomainModel>>,
+    // Filtering is done at DB level — timestamps passed through to the query
+    getNetworkCalls: suspend (deviceId: String?, startTimestamp: Long?, endTimestamp: Long?) -> List<Pair<String, FloconNetworkCallDomainModel>>,
 ) {
     // 1. GET /api/network-logs — all calls from all devices
     get("/api/network-logs") {
-        val calls = getNetworkCalls(null)
+        val calls = getNetworkCalls(null, null, null)
         call.respondJson(json, calls, deviceId = null, startTimestamp = null, endTimestamp = null)
     }
 
     // 2. GET /api/network-logs/{deviceId} — all calls for a specific device
     get("/api/network-logs/{deviceId}") {
         val deviceId = call.parameters["deviceId"]
-        val calls = getNetworkCalls(deviceId)
+        val calls = getNetworkCalls(deviceId, null, null)
         call.respondJson(json, calls, deviceId = deviceId, startTimestamp = null, endTimestamp = null)
     }
 
-    // 3. GET /api/network-logs/{deviceId}?startTimestamp=&endTimestamp= — filtered by device + time range
+    // 3. GET /api/network-logs/{deviceId}/filter?startTimestamp=&endTimestamp= — device + time range
     get("/api/network-logs/{deviceId}/filter") {
         val deviceId = call.parameters["deviceId"]
         val startTimestamp = call.request.queryParameters["startTimestamp"]?.toLongOrNull()
         val endTimestamp = call.request.queryParameters["endTimestamp"]?.toLongOrNull()
 
-        val calls = getNetworkCalls(deviceId)
+        val calls = getNetworkCalls(deviceId, startTimestamp, endTimestamp)
         call.respondJson(json, calls, deviceId = deviceId, startTimestamp = startTimestamp, endTimestamp = endTimestamp)
     }
 }
 
-private suspend fun io.ktor.server.application.ApplicationCall.respondJson(
+private suspend fun ApplicationCall.respondJson(
     json: Json,
     calls: List<Pair<String, FloconNetworkCallDomainModel>>,
     deviceId: String?,
@@ -49,13 +53,7 @@ private suspend fun io.ktor.server.application.ApplicationCall.respondJson(
     endTimestamp: Long?,
 ) {
     try {
-        val filtered = calls.filter { (_, networkCall) ->
-            val matchesStart = startTimestamp == null || networkCall.request.startTime >= startTimestamp
-            val matchesEnd = endTimestamp == null || networkCall.request.startTime <= endTimestamp
-            matchesStart && matchesEnd
-        }
-
-        val exportedCalls = filtered.map { (storedDeviceId, networkCall) ->
+        val exportedCalls = calls.map { (storedDeviceId, networkCall) ->
             NetworkCallExport(
                 callId = networkCall.callId,
                 method = networkCall.request.method,
@@ -113,7 +111,10 @@ private suspend fun io.ktor.server.application.ApplicationCall.respondJson(
     } catch (e: Exception) {
         Logger.e("Error exporting network logs", e)
         respondText(
-            """{"error":"${e.message?.replace("\"", "\\\"")}"}""",
+            json.encodeToString(
+                MapSerializer(serializer<String>(), serializer<String>()),
+                mapOf("error" to (e.message ?: "Unknown error")),
+            ),
             ContentType.Application.Json,
             HttpStatusCode.InternalServerError,
         )

@@ -98,9 +98,13 @@ class NetworkRepositoryImpl(
             )
     }
 
-    override suspend fun getAllNetworkCalls(deviceId: String?): List<Pair<String, FloconNetworkCallDomainModel>> =
+    override suspend fun getAllNetworkCalls(
+        deviceId: String?,
+        startTimestamp: Long?,
+        endTimestamp: Long?,
+    ): List<Pair<String, FloconNetworkCallDomainModel>> =
         withContext(dispatcherProvider.data) {
-            networkLocalDataSource.getAllRequests(deviceId)
+            networkLocalDataSource.getAllRequests(deviceId, startTimestamp, endTimestamp)
         }
 
     override suspend fun getRequests(
