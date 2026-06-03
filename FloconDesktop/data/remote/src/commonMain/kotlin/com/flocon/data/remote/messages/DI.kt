@@ -11,7 +11,8 @@ import org.koin.dsl.module
 internal val messagesModule = module {
     single<Server> {
         getServer(
-            json = get()
+            json = get(),
+            networkRepository = get()
         )
     }
     singleOf(::MessageRemoteDataSourceImpl) bind MessageRemoteDataSource::class
