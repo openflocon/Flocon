@@ -29,8 +29,8 @@ fun formatDate(timestamp: Long): String {
     val instant = Instant.fromEpochMilliseconds(timestamp)
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
 
-    val day = localDateTime.dayOfMonth
-    val month = localDateTime.monthNumber
+    val day = localDateTime.day
+    val month = localDateTime.month.number
     val year = localDateTime.year
 
     val hours = localDateTime.hour

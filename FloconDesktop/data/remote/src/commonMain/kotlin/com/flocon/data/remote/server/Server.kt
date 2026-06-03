@@ -34,5 +34,5 @@ fun newRequestId(): String = Uuid.random().toString()
 
 expect fun getServer(
     json: Json,
-    networkRepository: NetworkRepository,
+    networkRepository: Lazy<NetworkRepository>,
 ): Server

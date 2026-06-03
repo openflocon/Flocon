@@ -53,6 +53,9 @@ interface NetworkRepository {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     )
 
+    // Returns (deviceId, call) pairs — deviceId comes from the stored record
+    suspend fun getAllNetworkCalls(deviceId: String? = null): List<Pair<String, FloconNetworkCallDomainModel>>
+
     suspend fun replayRequest(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         request: FloconNetworkCallDomainModel

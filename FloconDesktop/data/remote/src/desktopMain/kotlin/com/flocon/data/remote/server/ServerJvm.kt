@@ -42,7 +42,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class ServerJvm(
     private val json: Json,
-    private val networkRepository: NetworkRepository,
+    private val networkRepository: Lazy<NetworkRepository>,
 ) : Server {
     private val _receivedMessages = Channel<FloconIncomingMessageDataModel>()
     override val receivedMessages = _receivedMessages.receiveAsFlow()
@@ -256,7 +256,10 @@ class ServerJvm(
                 
                 // Add network export routes
                 networkExportRoutes(
-                    getNetworkCalls = { networkRepository.getNetworkCalls() }
+                    json = json,
+                    getNetworkCalls = { deviceId ->
+                        networkRepository.value.getAllNetworkCalls(deviceId)
+                    }
                 )
             }
         }.start(wait = false)

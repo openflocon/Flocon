@@ -12,7 +12,7 @@ internal val messagesModule = module {
     single<Server> {
         getServer(
             json = get(),
-            networkRepository = get()
+            networkRepository = lazy { get() },
         )
     }
     singleOf(::MessageRemoteDataSourceImpl) bind MessageRemoteDataSource::class

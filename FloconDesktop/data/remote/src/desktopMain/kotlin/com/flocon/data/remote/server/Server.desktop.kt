@@ -5,5 +5,5 @@ import kotlinx.serialization.json.Json
 
 actual fun getServer(
     json: Json,
-    networkRepository: NetworkRepository,
+    networkRepository: Lazy<NetworkRepository>,
 ): Server = ServerJvm(json, networkRepository)
