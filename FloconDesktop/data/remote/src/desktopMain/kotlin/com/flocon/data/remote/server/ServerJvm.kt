@@ -5,6 +5,7 @@ import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
+import io.github.openflocon.domain.network.repository.NetworkRepository
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
@@ -41,6 +42,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class ServerJvm(
     private val json: Json,
+    private val networkRepository: NetworkRepository,
 ) : Server {
     private val _receivedMessages = Channel<FloconIncomingMessageDataModel>()
     override val receivedMessages = _receivedMessages.receiveAsFlow()
@@ -251,6 +253,11 @@ class ServerJvm(
 
                     call.respondText("file received : ${savedFile?.absolutePath ?: "inconnu"}")
                 }
+                
+                // Add network export routes
+                networkExportRoutes(
+                    getNetworkCalls = { networkRepository.getNetworkCalls() }
+                )
             }
         }.start(wait = false)
 
