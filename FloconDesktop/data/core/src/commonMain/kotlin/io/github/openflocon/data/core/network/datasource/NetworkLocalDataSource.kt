@@ -3,6 +3,7 @@ package io.github.openflocon.data.core.network.datasource
 import androidx.paging.PagingData
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -54,12 +55,11 @@ interface NetworkLocalDataSource {
 
     suspend fun deleteRequestOnDifferentSession(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
-    // Returns (deviceId, call) pairs so callers can know which device each call belongs to
     suspend fun getAllRequests(
         deviceId: String? = null,
         startTimestamp: Long? = null,
         endTimestamp: Long? = null,
-    ): List<Pair<String, FloconNetworkCallDomainModel>>
+    ): List<NetworkCallWithDeviceId>
 
     suspend fun clear()
 }

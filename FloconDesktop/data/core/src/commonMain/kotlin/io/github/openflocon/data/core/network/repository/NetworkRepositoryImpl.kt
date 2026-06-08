@@ -15,6 +15,7 @@ import io.github.openflocon.domain.messages.repository.MessagesReceiverRepositor
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.BadQualityConfigId
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
@@ -102,7 +103,7 @@ class NetworkRepositoryImpl(
         deviceId: String?,
         startTimestamp: Long?,
         endTimestamp: Long?,
-    ): List<Pair<String, FloconNetworkCallDomainModel>> =
+    ): List<NetworkCallWithDeviceId> =
         withContext(dispatcherProvider.data) {
             networkLocalDataSource.getAllRequests(deviceId, startTimestamp, endTimestamp)
         }

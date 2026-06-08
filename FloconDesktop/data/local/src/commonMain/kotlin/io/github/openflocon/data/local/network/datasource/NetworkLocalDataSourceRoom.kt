@@ -12,6 +12,7 @@ import io.github.openflocon.data.local.network.mapper.toEntity
 import io.github.openflocon.data.local.network.models.FloconNetworkCallEntity
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
@@ -264,14 +265,16 @@ class NetworkLocalDataSourceRoom(
         deviceId: String?,
         startTimestamp: Long?,
         endTimestamp: Long?,
-    ): List<Pair<String, FloconNetworkCallDomainModel>> {
+    ): List<NetworkCallWithDeviceId> {
         val entities = if (deviceId != null) {
             floconNetworkDao.getAllRequestsByDevice(deviceId, startTimestamp, endTimestamp)
         } else {
             floconNetworkDao.getAllRequests(startTimestamp, endTimestamp)
         }
         return entities.mapNotNull { entity ->
-            entity.toDomainModel()?.let { domain -> entity.deviceId to domain }
+            entity.toDomainModel()?.let { domain ->
+                NetworkCallWithDeviceId(deviceId = entity.deviceId, call = domain)
+            }
         }
     }
 

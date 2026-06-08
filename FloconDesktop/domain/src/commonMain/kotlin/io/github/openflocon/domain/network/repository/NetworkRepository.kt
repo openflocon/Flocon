@@ -3,6 +3,7 @@ package io.github.openflocon.domain.network.repository
 import androidx.paging.PagingData
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -53,12 +54,11 @@ interface NetworkRepository {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     )
 
-    // Returns (deviceId, call) pairs — deviceId comes from the stored record
     suspend fun getAllNetworkCalls(
         deviceId: String? = null,
         startTimestamp: Long? = null,
         endTimestamp: Long? = null,
-    ): List<Pair<String, FloconNetworkCallDomainModel>>
+    ): List<NetworkCallWithDeviceId>
 
     suspend fun replayRequest(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

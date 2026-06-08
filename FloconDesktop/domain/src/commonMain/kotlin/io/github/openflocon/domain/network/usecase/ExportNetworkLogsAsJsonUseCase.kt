@@ -8,7 +8,7 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.repository.NetworkRepository
 
-class ExportNetworkLogsAsJsonUseCase(
+class ExportNetworkLogsAsJsonUseCase internal constructor(
     private val networkRepository: NetworkRepository,
 ) {
     suspend operator fun invoke(

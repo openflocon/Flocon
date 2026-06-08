@@ -3,27 +3,27 @@ package com.flocon.data.remote.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkLogsExportResponse(
+internal data class NetworkLogsExportResponse(
     val data: List<NetworkCallExport>,
     val metadata: ExportMetadata,
 )
 
 @Serializable
-data class ExportMetadata(
+internal data class ExportMetadata(
     val exportedAt: Long,
     val totalItems: Int,
     val filteredBy: FilterCriteria?,
 )
 
 @Serializable
-data class FilterCriteria(
+internal data class FilterCriteria(
     val deviceId: String? = null,
     val startTimestamp: Long? = null,
     val endTimestamp: Long? = null,
 )
 
 @Serializable
-data class NetworkCallExport(
+internal data class NetworkCallExport(
     val callId: String,
     val method: String,
     val url: String,

@@ -6,6 +6,7 @@ import com.flocon.data.remote.models.FilterCriteria
 import com.flocon.data.remote.models.NetworkCallExport
 import com.flocon.data.remote.models.NetworkLogsExportResponse
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
@@ -19,7 +20,7 @@ import kotlinx.serialization.serializer
 fun Route.networkExportRoutes(
     json: Json,
     // Filtering is done at DB level — timestamps passed through to the query
-    getNetworkCalls: suspend (deviceId: String?, startTimestamp: Long?, endTimestamp: Long?) -> List<Pair<String, FloconNetworkCallDomainModel>>,
+    getNetworkCalls: suspend (deviceId: String?, startTimestamp: Long?, endTimestamp: Long?) -> List<NetworkCallWithDeviceId>,
 ) {
     // 1. GET /api/network-logs — all calls from all devices
     get("/api/network-logs") {
@@ -47,13 +48,15 @@ fun Route.networkExportRoutes(
 
 private suspend fun ApplicationCall.respondJson(
     json: Json,
-    calls: List<Pair<String, FloconNetworkCallDomainModel>>,
+    calls: List<NetworkCallWithDeviceId>,
     deviceId: String?,
     startTimestamp: Long?,
     endTimestamp: Long?,
 ) {
     try {
-        val exportedCalls = calls.map { (storedDeviceId, networkCall) ->
+        val exportedCalls = calls.map { networkCallWithDeviceId ->
+            val networkCall = networkCallWithDeviceId.call
+            val storedDeviceId = networkCallWithDeviceId.deviceId
             NetworkCallExport(
                 callId = networkCall.callId,
                 method = networkCall.request.method,
