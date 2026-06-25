@@ -19,8 +19,10 @@ kotlin {
 
     jvm("desktop")
 
+    // Compose Multiplatform 1.11 dropped the iosX64 (Intel Mac simulator) variant, so the
+    // sample's iosX64CompilationDependenciesMetadata can no longer resolve compose.runtime
+    // for that target. Apple-silicon devs use iosSimulatorArm64; real devices use iosArm64.
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -85,12 +87,10 @@ kotlin {
             }
         }
 
-        val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
         val iosMain by creating {
             dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
@@ -159,7 +159,6 @@ dependencies {
         "kspAndroid",
         "kspDesktop",
         "kspIosSimulatorArm64",
-        "kspIosX64",
         "kspIosArm64"
     ).forEach {
         add(it, libs.androidx.room.compiler)
