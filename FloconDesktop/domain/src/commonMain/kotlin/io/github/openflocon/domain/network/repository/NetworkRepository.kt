@@ -3,6 +3,7 @@ package io.github.openflocon.domain.network.repository
 import androidx.paging.PagingData
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
+import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -52,6 +53,12 @@ interface NetworkRepository {
     suspend fun deleteOldRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     )
+
+    suspend fun getAllNetworkCalls(
+        deviceId: String? = null,
+        startTimestamp: Long? = null,
+        endTimestamp: Long? = null,
+    ): List<NetworkCallWithDeviceId>
 
     suspend fun replayRequest(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
