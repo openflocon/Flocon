@@ -1,0 +1,52 @@
+package io.github.openflocon.flocon.myapplication.multi.graphql
+
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.http.HttpRequest
+import com.apollographql.apollo.api.http.HttpResponse
+import com.apollographql.apollo.network.http.HttpInterceptor
+import com.apollographql.apollo.network.http.HttpInterceptorChain
+import com.apollographql.apollo.network.okHttpClient
+import com.github.GetUserInfoQuery
+import io.github.openflocon.flocon.myapplication.multi.BuildConfig
+import okhttp3.OkHttpClient
+
+class GraphQlTester(val client: OkHttpClient) {
+
+    private val GITHUB_TOKEN = BuildConfig.GITHUB_TOKEN
+
+    val githubApolloClient by lazy {
+        ApolloClient.Builder()
+            .serverUrl("https://api.github.com/graphql")
+            .okHttpClient(client)
+            .addHttpInterceptor(object : HttpInterceptor {
+                override suspend fun intercept(
+                    request: HttpRequest,
+                    chain: HttpInterceptorChain
+                ): HttpResponse {
+                    return chain.proceed(
+                        request.newBuilder()
+                            .addHeader("Authorization", "Bearer $GITHUB_TOKEN")
+                            .build()
+                    )
+                }
+            })
+            .build()
+    }
+
+    suspend fun fetchViewerInfo() {
+        val response = githubApolloClient
+            .query(GetUserInfoQuery("florent37"))
+            .execute()
+
+        if (response.data != null) {
+            val viewerName = response.data?.user?.name
+            val avatarUrl = response.data?.user?.avatarUrl
+            val bio = response.data?.user?.bio
+
+            println("Nom : $viewerName, avatarUrl : $avatarUrl, bio : $bio")
+
+        } else if (response.hasErrors()) {
+            println("Erreurs: ${response.errors?.joinToString { it.message }}")
+        }
+    }
+}

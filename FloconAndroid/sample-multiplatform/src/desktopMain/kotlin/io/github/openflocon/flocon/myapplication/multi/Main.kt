@@ -8,33 +8,39 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
-import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.startFlocon
 import io.github.openflocon.flocon.ktor.FloconKtorPlugin
+import io.github.openflocon.flocon.database.core.FloconDatabase
+import io.github.openflocon.flocon.database.room.room
+import io.github.openflocon.flocon.database.room.floconRegisterDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.multi.ui.App
-import io.github.openflocon.flocon.plugins.database.floconRegisterDatabase
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import kotlinx.coroutines.Dispatchers
 import java.io.File
 
 fun main() {
-    Flocon.initialize()
+    startFlocon(
+        context = FloconContext(
+            appName = "Flocon Multi App",
+            packageName = "io.github.openflocon.flocon.myapplication.multi"
+        )
+    ) {
+        install(FloconDatabase) {
+            room()
+        }
+    }
+
     // Initialize Ktor client with Flocon plugin for Desktop
     val ktorClient = HttpClient(CIO) {
         install(FloconKtorPlugin) {
             isImage = {
                 it.request.url.toString().contains("picsum.photos")
             }
-            /*
-            shouldLog = {
-                val url = it.url.toString()
-                println("url: $url")
-                url.contains("1").not()
-            }
-             */
         }
     }
 
@@ -53,6 +59,17 @@ fun main() {
 
     val dogDatabase = getDogsDatabase()
     val foodDatabase = getFoodDatabase()
+
+    floconRegisterDatabase(
+        displayName = "dogs",
+        database = dogDatabase,
+    )
+
+    floconRegisterDatabase(
+        displayName = "food",
+        database = foodDatabase,
+    )
+
     initializeDatabases(
         dogDatabase = dogDatabase,
         foodDatabase = foodDatabase,
@@ -75,11 +92,6 @@ fun getDogsDatabase(): DogDatabase {
         name = dbFile.absolutePath,
     )
 
-    floconRegisterDatabase(
-        displayName = "dogs",
-        absolutePath = dbFile.absolutePath,
-    )
-
     return builder
         .fallbackToDestructiveMigration(dropAllTables = true)
         .setDriver(BundledSQLiteDriver())
@@ -91,11 +103,6 @@ fun getFoodDatabase(): FoodDatabase {
     val dbFile = File(System.getProperty("java.io.tmpdir"), "flocon_food_database.db")
     val builder = Room.databaseBuilder<FoodDatabase>(
         name = dbFile.absolutePath,
-    )
-
-    floconRegisterDatabase(
-        displayName = "food",
-        absolutePath = dbFile.absolutePath,
     )
 
     return builder

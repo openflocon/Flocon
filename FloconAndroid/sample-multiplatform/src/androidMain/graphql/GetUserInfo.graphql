@@ -1,0 +1,11 @@
+query GetUserInfo($user: String!) {
+    user(login: $user) {
+        id
+        name
+        avatarUrl
+        email
+        company
+        location
+        bio
+    }
+}

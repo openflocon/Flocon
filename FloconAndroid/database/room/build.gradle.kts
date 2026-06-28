@@ -10,7 +10,6 @@ kotlin {
                 implementation(projects.flocon)
                 api(projects.database.core)
                 implementation(libs.androidx.room.runtime)
-                implementation(libs.androidx.room.sqlite.wrapper)
                 implementation(libs.androidx.sqlite.bundled)
             }
         }
@@ -18,6 +17,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.android)
+                implementation(libs.androidx.room.sqlite.wrapper)
             }
         }
 

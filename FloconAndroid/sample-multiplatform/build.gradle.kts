@@ -1,3 +1,4 @@
+import com.google.protobuf.gradle.id
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -8,6 +9,14 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.apollo)
+    alias(libs.plugins.protobuf)
+}
+
+fun com.android.build.api.dsl.AndroidSourceSet.proto(action: org.gradle.api.file.SourceDirectorySet.() -> Unit) {
+    (this as? org.gradle.api.plugins.ExtensionAware)?.extensions?.getByName("proto")?.let {
+        it as? org.gradle.api.file.SourceDirectorySet
+    }?.apply(action)
 }
 
 kotlin {
@@ -55,6 +64,9 @@ kotlin {
 
                 implementation(libs.coil.compose)
                 implementation(libs.coil.network.ktor)
+
+                // Apollo (GraphQL)
+                implementation(libs.apollo.runtime)
             }
         }
 
@@ -67,6 +79,22 @@ kotlin {
 
                 // Ktor client for Android
                 implementation(libs.ktor.client.okhttp)
+
+                // OkHttp
+                implementation(libs.okhttp)
+
+                // gRPC
+                implementation(libs.grpc.android)
+                implementation(libs.grpc.kotlin.stub)
+                implementation(libs.grpc.protobuf.lite)
+                implementation(libs.grpc.okhttp)
+                implementation(libs.protobuf.kotlin.lite)
+
+                // Coil with OkHttp network fetcher
+                implementation(libs.coil.network.okhttp)
+
+                // Datastore
+                implementation(libs.androidx.datastore.preferences)
             }
         }
 
@@ -82,6 +110,8 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.coroutines.swing)
                 implementation(libs.ktor.clientJava)
+
+                implementation(project(":database:room"))
             }
         }
 
@@ -115,28 +145,32 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    val githubToken = System.getenv("GITHUB_TOKEN_GRPC") ?: ""
+
     signingConfigs {
         named("debug") {
             // just a dummy keystore to be able to test the release build
             keyAlias = "release"
             keyPassword = "release"
-            storeFile = file("../sample-android-only/release.jks")
+            storeFile = file("release.jks")
             storePassword = "release"
         }
         register("release") {
             keyAlias = "release"
             keyPassword = "release"
-            storeFile = file("../sample-android-only/release.jks")
+            storeFile = file("release.jks")
             storePassword = "release"
         }
     }
 
     buildTypes {
         debug {
+            buildConfigField("String", "GITHUB_TOKEN", "\"$githubToken\"")
             signingConfig = signingConfigs.getByName("debug")
         }
         release {
             isMinifyEnabled = true
+            buildConfigField("String", "GITHUB_TOKEN", "\"$githubToken\"")
             signingConfig = signingConfigs.getByName("release")
         }
     }
@@ -148,10 +182,14 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
+    sourceSets["main"].proto {
+        srcDir("src/androidMain/proto")
+    }
 }
 
 dependencies {
@@ -164,7 +202,32 @@ dependencies {
     ).forEach {
         add(it, libs.androidx.room.compiler)
     }
-    //ksp(libs.androidx.room.compiler)
+
+    // Flocon Android specific plugins (variant-aware dependencies)
+    add("debugImplementation", projects.network.okhttpInterceptor)
+    add("releaseImplementation", projects.network.okhttpInterceptorNoOp)
+
+    add("debugImplementation", projects.sharedprefs)
+    add("releaseImplementation", projects.sharedprefsNoOp)
+
+    add("debugImplementation", projects.datastores)
+    add("releaseImplementation", projects.datastoresNoOp)
+
+    add("debugImplementation", projects.grpc.grpcInterceptorLite)
+
+    add("debugImplementation", projects.analytics)
+    add("releaseImplementation", projects.analyticsNoOp)
+
+    add("debugImplementation", projects.crashreporter)
+    add("releaseImplementation", projects.crashreporterNoOp)
+
+    add("debugImplementation", projects.tables)
+    add("releaseImplementation", projects.tablesNoOp)
+
+    add("debugImplementation", project(":database:room"))
+    add("releaseImplementation", project(":database:room-no-op"))
+    add("debugImplementation", project(":database:room3"))
+    add("releaseImplementation", project(":database:room3-no-op"))
 }
 
 room {
@@ -183,6 +246,55 @@ compose.desktop {
             )
             packageName = "FloconMultiApp"
             packageVersion = "1.0.0"
+        }
+    }
+}
+
+apollo {
+    service("github") {
+        packageName.set("com.github")
+        srcDir("src/androidMain/graphql")
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = libs.protobuf.protoc.get().toString()
+    }
+
+    generateProtoTasks {
+        val protocGenJava = libs.grpc.gen.java.get().toString()
+        val protocGenKotlin = libs.grpc.gen.kotlin.get().toString() + ":jdk8@jar"
+
+        plugins {
+            id("java") {
+                artifact = protocGenJava
+            }
+            id("grpc") {
+                artifact = protocGenJava
+            }
+            id("grpckt") {
+                artifact = protocGenKotlin
+            }
+        }
+
+        all().forEach {
+            it.plugins {
+                id("java") {
+                    option("lite")
+                }
+                id("grpc") {
+                    option("lite")
+                }
+                id("grpckt") {
+                    option("lite")
+                }
+            }
+            it.builtins {
+                id("kotlin") {
+                    option("lite")
+                }
+            }
         }
     }
 }
