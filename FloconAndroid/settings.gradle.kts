@@ -22,7 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-include(":sample-android-only")
 include(":sample-multiplatform")
 include(":flocon")
 include(":flocon-no-op")

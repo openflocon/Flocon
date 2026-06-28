@@ -7,7 +7,7 @@ plugins {
 
 kotlin {
     wasmJs {
-        moduleName = "flocon"
+        outputModuleName = "flocon"
         binaries.executable()
         browser()
     }
@@ -72,8 +72,12 @@ buildConfig {
 android {
     namespace = "io.github.openflocon.flocon"
 
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
+    sourceSets {
+        getByName("main") {
+            manifest.srcFile("src/androidMain/AndroidManifest.xml")
+            res.srcDirs("src/androidMain/res")
+        }
+    }
 }
 
 mavenPublishing {

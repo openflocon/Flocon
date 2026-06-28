@@ -86,10 +86,16 @@ fun App() {
                         Text("send analytics event")
                     }
 
+                    PlatformSpecificTests(modifier = Modifier.fillMaxWidth())
+
                     ImagesListView(modifier = Modifier.fillMaxSize())
                 }
             }
         }
     }
 }
+
+@Composable
+expect fun PlatformSpecificTests(modifier: Modifier = Modifier)
+
 

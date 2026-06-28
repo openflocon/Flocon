@@ -5,7 +5,7 @@ plugins {
 
 kotlin {
     wasmJs {
-        moduleName = "flocon_datastores_no_op"
+        outputModuleName = "flocon_datastores_no_op"
         browser()
         binaries.executable()
     }

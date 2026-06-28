@@ -5,7 +5,7 @@ plugins {
 
 kotlin {
     wasmJs {
-        moduleName = "flocon_ktor_interceptor"
+        outputModuleName = "flocon_ktor_interceptor"
         browser()
         binaries.executable()
     }

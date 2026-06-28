@@ -8,4 +8,5 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.vanniktech.maven.publish) apply false
     alias(libs.plugins.protobuf) apply false
+    alias(libs.plugins.buildconfig) apply false
 }

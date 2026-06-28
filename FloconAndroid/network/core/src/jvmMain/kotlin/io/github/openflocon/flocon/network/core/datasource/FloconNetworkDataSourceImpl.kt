@@ -1,10 +1,9 @@
 package io.github.openflocon.flocon.network.core.datasource
 
 import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.network.core.mapper.parseBadQualityConfig
-import io.github.openflocon.flocon.network.core.mapper.parseMockResponses
-import io.github.openflocon.flocon.network.core.mapper.toJsonString
-import io.github.openflocon.flocon.network.core.mapper.writeMockResponsesToJson
+import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.network.core.plugin.FLOCON_NETWORK_BAD_CONFIG_JSON
 import io.github.openflocon.flocon.network.core.plugin.FLOCON_NETWORK_MOCKS_JSON
 import io.github.openflocon.flocon.network.core.model.BadQualityConfig
@@ -14,6 +13,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 
 internal class FloconNetworkDataSourceImpl(
+    private val encoder: FloconEncoder
 ) : FloconNetworkDataSource {
 
     private val baseDir: File = File(System.getProperty("user.home"), ".flocon")
@@ -27,7 +27,7 @@ internal class FloconNetworkDataSourceImpl(
     override fun saveMocksToFile(mocks: List<MockNetworkResponse>) {
         try {
             val file = File(baseDir, FLOCON_NETWORK_MOCKS_JSON)
-            val jsonString = writeMockResponsesToJson(mocks)
+            val jsonString = encoder.encode(mocks)
             FileOutputStream(file).use {
                 it.write(jsonString.toByteArray(Charsets.UTF_8))
             }
@@ -46,7 +46,7 @@ internal class FloconNetworkDataSourceImpl(
             val jsonString = FileInputStream(file).use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            parseMockResponses(jsonString)
+            encoder.decode<List<MockNetworkResponse>>(jsonString).orEmpty()
         } catch (t: Throwable) {
             FloconLogger.logError("issue in loadMocksFromFile", t)
             emptyList()
@@ -63,7 +63,7 @@ internal class FloconNetworkDataSourceImpl(
             val jsonString = FileInputStream(file).use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            parseBadQualityConfig(jsonString)
+            encoder.decode<BadQualityConfig>(jsonString)
         } catch (t: Throwable) {
             FloconLogger.logError("issue in loadBadNetworkConfig", t)
             null
@@ -76,7 +76,7 @@ internal class FloconNetworkDataSourceImpl(
             if (config == null) {
                 file.delete()
             } else {
-                val jsonString = config.toJsonString()
+                val jsonString = encoder.encode(config)
                 FileOutputStream(file).use {
                     it.write(jsonString.toByteArray(Charsets.UTF_8))
                 }

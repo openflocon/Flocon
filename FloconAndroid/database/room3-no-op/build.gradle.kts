@@ -20,7 +20,7 @@ kotlin {
     iosSimulatorArm64()
 
     wasmJs {
-        moduleName = "flocon_database_room3_no_op"
+        outputModuleName = "flocon_database_room3_no_op"
         browser()
         binaries.executable()
     }

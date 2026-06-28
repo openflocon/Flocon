@@ -1,3 +1,6 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+@file:Suppress("DEPRECATION")
+
 plugins {
     id("flocon.kotlin.multiplatform")
     id("flocon.publish")
@@ -6,7 +9,7 @@ plugins {
 
 kotlin {
     wasmJs {
-        moduleName = "flocon_network_core"
+        outputModuleName.set("flocon_network_core")
         browser()
         binaries.executable()
     }
