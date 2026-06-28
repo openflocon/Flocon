@@ -1,0 +1,196 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
+package io.github.openflocon.flocon.okhttp
+
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.network.core.networkPlugin
+import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
+import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
+import io.github.openflocon.flocon.network.core.model.FloconNetworkRequest
+import io.github.openflocon.flocon.network.core.model.FloconNetworkResponse
+import okhttp3.Interceptor
+import okhttp3.MediaType
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+data class FloconNetworkIsImageParams(
+    val request: Request,
+    val response: Response,
+    val responseContentType: String?,
+)
+
+class FloconOkhttpInterceptor(
+    private val isImage: ((FloconNetworkIsImageParams) -> Boolean)? = null,
+    private val shouldLog: (chain: Interceptor.Chain) -> Boolean = { true },
+) : Interceptor {
+
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val floconNetworkPlugin = Flocon.networkPlugin
+
+        if (!shouldLog(chain)) {
+            // on no op, do not intercept the call, just execute it
+            return chain.proceed(chain.request())
+        }
+
+        val floconCallId = Uuid.random().toString()
+        val floconNetworkType = "http"
+
+        val request = chain.request()
+
+        val requestedAt = System.currentTimeMillis()
+
+        val requestBody = request.body
+        var requestBodyString: String? = null
+        var requestSize: Long? = null
+
+        val requestHeadersMap =
+            request.headers.toMultimap().mapValues { it.value.joinToString(",") }
+
+        if (requestBody != null) {
+            val (bodyString, bodySize) = extractRequestBodyInfo(
+                request = request,
+                requestHeaders = requestHeadersMap,
+            )
+            requestBodyString = bodyString
+            requestSize = bodySize
+        }
+
+        val startTime = System.nanoTime()
+
+        val mockConfig = findMock(
+            request = request,
+            floconNetworkPlugin = floconNetworkPlugin,
+        )
+        val isMocked = mockConfig != null
+
+        val floconNetworkRequest = FloconNetworkRequest(
+            url = request.url.toString(),
+            method = request.method,
+            startTime = requestedAt,
+            headers = requestHeadersMap,
+            body = requestBodyString,
+            size = requestSize,
+            isMocked = isMocked,
+        )
+
+        floconNetworkPlugin.logRequest(
+            FloconNetworkCallRequest(
+                floconCallId = floconCallId,
+                floconNetworkType = floconNetworkType,
+                isMocked = isMocked,
+                request = floconNetworkRequest,
+            )
+        )
+
+        try {
+            val response = if (isMocked) {
+                executeMock(
+                    request = request,
+                    mock = mockConfig,
+                    requestHeaders = requestHeadersMap
+                )
+            } else {
+                floconNetworkPlugin.badQualityConfig?.let { badQualityConfig ->
+                    executeBadQuality(
+                        badQualityConfig = badQualityConfig,
+                        request = request,
+                    )
+                } ?: run {
+                    chain.proceed(request)
+                }
+            }
+
+            val endTime = System.nanoTime()
+            val durationMs: Double = (endTime - startTime) / 1e6
+
+            // To get the response body, be careful
+            // because the body can only be read once.
+            // It must be duplicated so that the chain can continue normally.
+            val responseBody = response.body
+            var responseBodyString: String? = null
+            var responseSize: Long? = null
+            val responseContentType: MediaType? = responseBody?.contentType()
+
+            val responseHeadersMap =
+                response.headers.toMultimap().mapValues { it.value.joinToString(",") }
+
+            if (responseBody != null) {
+                val (bodyString, bodySize) = extractResponseBodyInfo(
+                    response = response,
+                    responseHeaders = responseHeadersMap,
+                )
+                responseBodyString = bodyString
+                responseSize = bodySize
+            }
+
+            val isImage =
+                responseContentType?.toString()?.startsWith("image/") == true || (isImage?.invoke(
+                    FloconNetworkIsImageParams(
+                        request = request,
+                        response = response,
+                        responseContentType = responseContentType?.toString(),
+                    )
+                ) == true)
+
+            val requestHeadersMapUpToDate =
+                response.request.headers.toMultimap().mapValues { it.value.joinToString(",") }
+
+            val floconCallResponse = FloconNetworkResponse(
+                httpCode = response.code,
+                contentType = responseContentType?.toString(),
+                body = responseBodyString.takeUnless { isImage }, // dont send images responses bytes
+                headers = responseHeadersMap,
+                size = responseSize,
+                grpcStatus = null,
+                error = null,
+                requestHeaders = requestHeadersMapUpToDate,
+                isImage = isImage,
+            )
+
+            floconNetworkPlugin.logResponse(
+                FloconNetworkCallResponse(
+                    floconCallId = floconCallId,
+                    durationMs = durationMs,
+                    floconNetworkType = floconNetworkType,
+                    isMocked = isMocked,
+                    response = floconCallResponse,
+                )
+            )
+
+            // Rebuild the response with a new body so that the chain can continue
+            // The original response body is already consumed by peekBody, so no need to rebuild with it.
+            // Just return the original response if you don't modify the body itself.
+            return response
+        } catch (e: IOException) {
+            val endTime = System.nanoTime()
+            val durationMs: Double = (endTime - startTime) / 1e6
+            val floconCallResponse = FloconNetworkResponse(
+                httpCode = null,
+                contentType = null,
+                body = null,
+                headers = emptyMap(),
+                size = null,
+                grpcStatus = null,
+                error = e.message ?: e.javaClass.simpleName,
+                requestHeaders = null,
+                isImage = false,
+            )
+
+            floconNetworkPlugin.logResponse(
+                FloconNetworkCallResponse(
+                    floconCallId = floconCallId,
+                    durationMs = durationMs,
+                    floconNetworkType = floconNetworkType,
+                    isMocked = isMocked,
+                    response = floconCallResponse,
+                )
+            )
+            throw e
+        }
+    }
+
+}

@@ -59,7 +59,7 @@ class DatabaseTabViewModel(
     var query = mutableStateOf("")
 
     val lastQueries = observeLastSuccessQueriesUseCase(params.databaseId)
-        .map { it.filterNot { it.isBlank() } }
+        .map { it.filterNot(String::isBlank) }
         .flowOn(dispatcherProvider.data)
         .stateIn(
             viewModelScope,

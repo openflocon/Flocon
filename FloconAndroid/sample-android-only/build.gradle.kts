@@ -7,7 +7,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.apollo)
-    id("com.google.protobuf")
+
+    alias(libs.plugins.protobuf)
 }
 
 android {
@@ -81,15 +82,36 @@ dependencies {
         //implementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:$floconVersion")
         implementation("io.github.openflocon:flocon-ktor-interceptor:$floconVersion")
     } else {
-        debugImplementation(project(":flocon"))
-        releaseImplementation(project(":flocon-no-op"))
-        debugImplementation(project(":okhttp-interceptor"))
-        releaseImplementation(project(":okhttp-interceptor-no-op"))
-        implementation(project(":grpc:grpc-interceptor-lite"))
-        debugImplementation(project(":ktor-interceptor"))
-        releaseImplementation(project(":ktor-interceptor-no-op"))
-        debugImplementation(project(":datastores"))
-        releaseImplementation(project(":datastores-no-op"))
+        debugImplementation(projects.flocon)
+        releaseImplementation(projects.floconNoOp)
+
+        debugImplementation(projects.deeplinks)
+        releaseImplementation(projects.deeplinksNoOp)
+
+        debugImplementation(projects.tables)
+        releaseImplementation(projects.tablesNoOp)
+
+        debugImplementation(projects.analytics)
+        releaseImplementation(projects.analyticsNoOp)
+
+        debugImplementation(projects.crashreporter)
+        releaseImplementation(projects.crashreporterNoOp)
+
+        debugImplementation(project(":database:room"))
+        releaseImplementation(project(":database:room-no-op"))
+        debugImplementation(project(":database:room3"))
+        releaseImplementation(project(":database:room3-no-op"))
+
+        debugImplementation(projects.network.okhttpInterceptor)
+        releaseImplementation(projects.network.okhttpInterceptorNoOp)
+
+        implementation(projects.grpc.grpcInterceptorLite)
+
+        debugImplementation(projects.network.ktorInterceptor)
+        releaseImplementation(projects.network.ktorInterceptorNoOp)
+
+        debugImplementation(projects.datastores)
+        releaseImplementation(projects.datastoresNoOp)
     }
 
 
@@ -155,12 +177,12 @@ apollo {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.25.1"
+        artifact = libs.protobuf.protoc.get().toString()
     }
 
     generateProtoTasks {
-        val protocGenJava = "io.grpc:protoc-gen-grpc-java:1.73.0"
-        val protocGenKotlin = "io.grpc:protoc-gen-grpc-kotlin:1.4.3" + ":jdk8@jar"
+        val protocGenJava = libs.grpc.gen.java.get().toString()
+        val protocGenKotlin = libs.grpc.gen.kotlin.get().toString() + ":jdk8@jar"
 
         plugins {
             id("java") {

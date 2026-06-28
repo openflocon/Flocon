@@ -33,9 +33,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":flocon"))
-                implementation(project(":flocon-base"))
-                implementation(project(":ktor-interceptor"))
+                implementation(projects.flocon)
+                implementation(projects.deeplinks)
+                implementation(projects.network.ktorInterceptor)
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)
@@ -76,7 +76,7 @@ kotlin {
                 implementation(libs.ktor.client.cio)
 
                 implementation(libs.sqlite.jdbc)
-                implementation(libs.sqlite.bundled)
+                implementation(libs.androidx.sqlite.bundled)
 
                 // Compose Desktop
                 implementation(compose.desktop.currentOs)

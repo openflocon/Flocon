@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.websocket
 
-internal actual fun buildFloconHttpClient(): FloconHttpClient {
-    return FloconHttpClientAndroid()
-}
+import io.github.openflocon.flocon.dsl.FloconMarker
+
+@FloconMarker
+internal actual fun buildFloconHttpClient(): FloconHttpClient = FloconHttpClientAndroid()

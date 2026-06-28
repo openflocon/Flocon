@@ -20,39 +20,32 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocon.Flocon
-import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.myapplication.dashboard.initializeDashboard
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.database.core.FloconDatabase
+import io.github.openflocon.flocon.database.room.room
 import io.github.openflocon.flocon.myapplication.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.database.initializeInMemoryDatabases
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
-import io.github.openflocon.flocon.myapplication.deeplinks.initializeDeeplinks
-import io.github.openflocon.flocon.myapplication.graphql.GraphQlTester
 import io.github.openflocon.flocon.myapplication.grpc.GrpcController
-import io.github.openflocon.flocon.myapplication.images.initializeImages
-import io.github.openflocon.flocon.myapplication.sharedpreferences.initializeDatastores
-import io.github.openflocon.flocon.myapplication.sharedpreferences.initializeSharedPreferences
-import io.github.openflocon.flocon.myapplication.sharedpreferences.initializeSharedPreferencesAfterInit
 import io.github.openflocon.flocon.myapplication.table.initializeTable
 import io.github.openflocon.flocon.myapplication.ui.ImagesListView
 import io.github.openflocon.flocon.myapplication.ui.theme.MyApplicationTheme
+import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
-import io.github.openflocon.flocon.plugins.analytics.analytics
-import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsEvent
-import io.github.openflocon.flocon.plugins.analytics.model.analyticsProperty
-import io.github.openflocon.flocon.plugins.tables.model.toParam
-import io.github.openflocon.flocon.plugins.tables.table
+import io.github.openflocon.flocon.analytics.FloconAnalytics
+import io.github.openflocon.flocon.deeplinks.FloconDeeplinks
+import io.github.openflocon.flocon.tables.FloconTable
+import io.github.openflocon.flocon.startFlocon
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import kotlin.uuid.Uuid
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 
 class MainActivity : ComponentActivity() {
 
-    lateinit var inMemoryDb : DogDatabase
+    lateinit var inMemoryDb: DogDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,38 +55,41 @@ class MainActivity : ComponentActivity() {
             Toast.makeText(this, "opend with : $it", Toast.LENGTH_LONG).show()
         }
 
+        initFlocon()
+
         val okHttpClient = OkHttpClient()
             .newBuilder()
-            .addInterceptor(FloconOkhttpInterceptor(
-                isImage = {
-                    it.request.url.toString().contains("picsum")
-                },
-                /*shouldLog = {
-                    val url = it.request().url.toString()
-                    println("url: $url")
-                    url.contains("1").not()
-                }*/
-            ))
+            .addInterceptor(
+                FloconOkhttpInterceptor(
+                    isImage = {
+                        it.request.url.toString().contains("picsum")
+                    },
+                    /*shouldLog = {
+                        val url = it.request().url.toString()
+                        println("url: $url")
+                        url.contains("1").not()
+                    }*/
+                )
+            )
             .build()
 
-        initializeSharedPreferences(applicationContext)
+//        initializeSharedPreferences(applicationContext)
         initializeDatabases(context = applicationContext)
 
-        FloconLogger.enabled = true
-        Flocon.initialize(this)
-        initializeDeeplinks()
+//        FloconLogger.enabled = true
+//        Flocon.initialize(this)
         inMemoryDb = initializeInMemoryDatabases(applicationContext)
 
-        initializeSharedPreferencesAfterInit(applicationContext)
-        initializeDatastores(applicationContext)
+//        initializeSharedPreferencesAfterInit(applicationContext)
+//        initializeDatastores(applicationContext)
 
         val dummyHttpCaller = DummyHttpCaller(client = okHttpClient)
-        val dummyWebsocketCaller = DummyWebsocketCaller(client = okHttpClient)
-        GlobalScope.launch { dummyWebsocketCaller.connectToWebsocket() }
-        val graphQlTester = GraphQlTester(client = okHttpClient)
-        initializeImages(context = this, okHttpClient = okHttpClient)
-        initializeDashboard(this)
-        initializeTable(this)
+//        val dummyWebsocketCaller = DummyWebsocketCaller(client = okHttpClient)
+//        GlobalScope.launch { dummyWebsocketCaller.connectToWebsocket() }
+//        val graphQlTester = GraphQlTester(client = okHttpClient)
+//        initializeImages(context = this, okHttpClient = okHttpClient)
+//        initializeDashboard(this)
+        initializeTable()
 
         setContent {
             MyApplicationTheme {
@@ -101,7 +97,11 @@ class MainActivity : ComponentActivity() {
                     val scope = rememberCoroutineScope()
                     val context = LocalContext.current
 
-                    Column(Modifier.fillMaxSize().padding(innerPadding)) {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                    ) {
                         FlowRow(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -118,7 +118,7 @@ class MainActivity : ComponentActivity() {
                             }
                             Button(
                                 onClick = {
-                                    dummyHttpCaller.callGzip()
+                                    //dummyHttpCaller.callGzip()
                                 }
                             ) {
                                 Text("okhttp gzip test")
@@ -126,7 +126,7 @@ class MainActivity : ComponentActivity() {
                             Button(
                                 onClick = {
                                     GlobalScope.launch {
-                                        graphQlTester.fetchViewerInfo()
+                                        //graphQlTester.fetchViewerInfo()
                                     }
                                 }
                             ) {
@@ -150,7 +150,7 @@ class MainActivity : ComponentActivity() {
                             }
                             Button(
                                 onClick = {
-                                    dummyWebsocketCaller.send(Uuid.random().toString())
+                                    //dummyWebsocketCaller.send(Uuid.random().toString())
                                 }
                             ) {
                                 Text("websocket test")
@@ -164,32 +164,32 @@ class MainActivity : ComponentActivity() {
                             }
                             Button(
                                 onClick = {
-                                    val value = Random.nextInt(from = 0, until = 1000).toString()
-                                    Flocon.table("analytics").log(
-                                        "name" toParam "new name $value",
-                                        "value1" toParam "value1 $value",
-                                        "value2" toParam "value2 $value",
-                                    )
+                                    Random.nextInt(from = 0, until = 1000).toString()
+//                                    Flocon.table("analytics").log(
+//                                        "name" toParam "new name $value",
+//                                        "value1" toParam "value1 $value",
+//                                        "value2" toParam "value2 $value",
+//                                    )
                                 }
                             ) {
                                 Text("send table event")
                             }
                             Button(
                                 onClick = {
-                                    Flocon.analytics("firebase").logEvents(
-                                        AnalyticsEvent(
-                                            eventName = "clicked user",
-                                            "userId" analyticsProperty "1024",
-                                            "username" analyticsProperty "florent",
-                                            "index" analyticsProperty "3",
-                                        ),
-                                        AnalyticsEvent(
-                                            eventName = "opened profile",
-                                            "userId" analyticsProperty "2048",
-                                            "username" analyticsProperty "kevin",
-                                            "age" analyticsProperty "34",
-                                        ),
-                                    )
+//                                    Flocon.analytics("firebase").logEvents(
+//                                        AnalyticsEvent(
+//                                            eventName = "clicked user",
+//                                            "userId" analyticsProperty "1024",
+//                                            "username" analyticsProperty "florent",
+//                                            "index" analyticsProperty "3",
+//                                        ),
+//                                        AnalyticsEvent(
+//                                            eventName = "opened profile",
+//                                            "userId" analyticsProperty "2048",
+//                                            "username" analyticsProperty "kevin",
+//                                            "age" analyticsProperty "34",
+//                                        ),
+//                                    )
                                 }
                             ) {
                                 Text("send analytics event")
@@ -219,4 +219,29 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    private fun initFlocon() {
+        startFlocon(FloconContext(this)) {
+            install(FloconDeeplinks) {
+                deeplink("flocon://home")
+                deeplink("flocon://test")
+                deeplink("flocon://user/[userId]") {
+                    label = "User"
+                    "userId" withAutoComplete listOf("Florent", "David", "Guillaume")
+                }
+                deeplink("flocon://post/[postId]?comment=[commentText]") {
+                    label = "Post"
+                    description = "Open a post and send a comment"
+                }
+            }
+
+            install(FloconNetwork)
+            install(FloconTable)
+            install(FloconAnalytics)
+            install(FloconDatabase) {
+                room()
+            }
+        }
+    }
+
 }

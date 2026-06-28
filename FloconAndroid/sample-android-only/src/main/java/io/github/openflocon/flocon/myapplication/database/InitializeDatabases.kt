@@ -2,11 +2,11 @@ package io.github.openflocon.flocon.myapplication.database
 
 import android.content.Context
 import androidx.room.Room
+import io.github.openflocon.flocon.database.room.floconRegisterDatabase
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.database.model.FoodEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanWithDogEntity
-import io.github.openflocon.flocon.plugins.database.floconRegisterDatabase
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -17,7 +17,7 @@ fun initializeInMemoryDatabases(context: Context): DogDatabase {
     ).build().also {
         floconRegisterDatabase(
             displayName = "inmemory_dogs",
-            openHelper = it.openHelper
+            database = it
         )
     }
 }
@@ -25,6 +25,11 @@ fun initializeInMemoryDatabases(context: Context): DogDatabase {
 fun initializeDatabases(context: Context) {
     val dogDatabase = DogDatabase.getDatabase(context)
     val foodDatabase = FoodDatabase.getDatabase(context)
+
+    floconRegisterDatabase(
+        displayName = "dogs",
+        database = dogDatabase
+    )
 
     GlobalScope.launch {
         dogDatabase.dogDao().insertDog(
@@ -126,7 +131,7 @@ fun initializeDatabases(context: Context) {
                     id = 10L + i,
                     name = "dog$i",
                     breed = randomBreed,
-                    pictureUrl = "https://picsum.photos/500/50${i%10}.jpg",
+                    pictureUrl = "https://picsum.photos/500/50${i % 10}.jpg",
                     age = (1..15).random()
                 )
             )

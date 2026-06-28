@@ -113,7 +113,7 @@ private fun DatabaseView(
                     }, onDoubleClick = {
                         onDatabaseDoubleClicked(state)
                     }
-                ).padding(horizontal = 12.dp, vertical = 8.dp),
+                ).padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
@@ -122,7 +122,7 @@ private fun DatabaseView(
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(textColor),
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
             Text(
                 state.name,
                 color = textColor,

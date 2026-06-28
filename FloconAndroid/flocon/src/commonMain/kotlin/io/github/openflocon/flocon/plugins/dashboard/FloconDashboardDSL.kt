@@ -1,6 +1,5 @@
 package io.github.openflocon.flocon.plugins.dashboard
 
-import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.plugins.dashboard.builder.FormBuilder
 import io.github.openflocon.flocon.plugins.dashboard.builder.SectionBuilder
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
@@ -41,7 +40,7 @@ fun CoroutineScope.floconDashboard(id: String, block: DashboardScope.() -> Unit)
 
         sectionsFlow.collect { containers ->
             val config = DashboardConfig(id = id, containers = containers)
-            FloconApp.instance?.client?.dashboardPlugin?.registerDashboard(config)
+            //FloconApp.instance?.client?.dashboardPlugin?.registerDashboard(config)
         }
     }
 

@@ -4,12 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import io.github.openflocon.flocon.database.room.extensions.floconLogs
 import io.github.openflocon.flocon.myapplication.database.dao.DogDao
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanEntity
 import io.github.openflocon.flocon.myapplication.database.model.HumanWithDogEntity
-import io.github.openflocon.flocon.plugins.database.floconLogDatabaseQuery
-import java.util.concurrent.Executors
 
 @Database(
     entities = [
@@ -34,10 +33,9 @@ abstract class DogDatabase : RoomDatabase() {
                     context.applicationContext,
                     DogDatabase::class.java,
                     dbName
-                ).setQueryCallback({ sqlQuery, bindArgs -> floconLogDatabaseQuery(
-                    dbName = dbName, sqlQuery = sqlQuery, bindArgs = bindArgs
-                ) }, Executors.newSingleThreadExecutor())
-                    .fallbackToDestructiveMigration()
+                )
+                    .floconLogs()
+                    .fallbackToDestructiveMigration(dropAllTables = true)
                     .build()
                 INSTANCE = instance
                 instance
