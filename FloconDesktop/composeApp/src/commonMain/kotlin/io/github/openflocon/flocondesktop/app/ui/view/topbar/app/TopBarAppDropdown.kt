@@ -90,13 +90,13 @@ internal fun TopBarAppDropdown(
                                             onAppSelected(app)
                                             expanded = false
                                         }
-                                        .run {
+                                        .then (
                                             if(isSelected) {
-                                                background(color = FloconTheme.colorPalette.onTertiary)
+                                                Modifier.background(color = FloconTheme.colorPalette.onTertiary)
                                             } else {
-                                                this
+                                                Modifier
                                             }
-                                        },
+                                        ),
                                 )
                             }
                     }

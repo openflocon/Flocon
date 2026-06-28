@@ -74,13 +74,13 @@ internal fun TopBarDeviceDropdown(
                                 onDeviceSelected(device)
                                 expanded = false
                             }
-                            .run {
+                            .then(
                                 if(isSelected) {
-                                    background(color = FloconTheme.colorPalette.onTertiary)
+                                    Modifier.background(color = FloconTheme.colorPalette.onTertiary)
                                 } else {
-                                    this
+                                    Modifier
                                 }
-                            },
+                            ),
                         device = device,
                         selected = isSelected,
                         deleteClick = {
