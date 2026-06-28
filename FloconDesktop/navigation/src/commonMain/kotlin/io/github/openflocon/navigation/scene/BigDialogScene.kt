@@ -4,16 +4,22 @@ package io.github.openflocon.navigation.scene
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
@@ -29,7 +35,6 @@ import androidx.navigation3.scene.SceneStrategyScope
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
-import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.navigation.FloconRoute
 
 @Immutable
@@ -40,34 +45,15 @@ private data class BigDialogScene(
     override val overlaidEntries: List<NavEntry<FloconRoute>>,
     private val onBack: () -> Unit,
 ) : OverlayScene<FloconRoute> {
+
     override val key: Any = BigDialogSceneStrategy.BIG_DIALOG
     override val entries: List<NavEntry<FloconRoute>> = listOf(entry)
     override val content: @Composable (() -> Unit) = {
-        FloconScaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(properties.title)
-                    },
-                    actions = {
-                        FloconIconButton(
-                            onClick = onBack
-                        ) {
-                            FloconIcon(
-                                imageVector = Icons.Default.Close
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = FloconTheme.colorPalette.primary,
-                        titleContentColor = FloconTheme.colorPalette.onPrimary,
-                        actionIconContentColor = FloconTheme.colorPalette.onPrimary
-                    )
-                )
-            },
-            containerColor = FloconTheme.colorPalette.primary.copy(alpha = 0.5f),
+
+        Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(FloconTheme.colorPalette.primary.copy(alpha = 0.7f))
                 .clickable(
                     onClick = onBack,
                     indication = null,
@@ -78,17 +64,38 @@ private data class BigDialogScene(
                     shape = RoundedCornerShape(12.dp),
                     shadow = Shadow(
                         radius = 4.dp,
-                        color = FloconTheme.colorPalette.onAccent
+                        color = FloconTheme.colorPalette.onAccent.copy(alpha = 0.5f)
                     )
                 )
                 .clip(RoundedCornerShape(12.dp))
                 .background(FloconTheme.colorPalette.primary)
                 .padding(16.dp)
         ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = properties.title,
+                    color = FloconTheme.colorPalette.onPrimary,
+                    style = FloconTheme.typography.headlineSmall
+                )
+                FloconIconButton(
+                    onClick = onBack
+                ) {
+                    FloconIcon(
+                        imageVector = Icons.Default.Close,
+                        tint = FloconTheme.colorPalette.onPrimary
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(8.dp))
             Box(
-                modifier = Modifier
+                Modifier
                     .fillMaxSize()
-                    .padding(it)
+                    .clickable(onClick = {}, indication = null, interactionSource = null)
             ) {
                 entry.Content()
             }
@@ -121,7 +128,8 @@ class BigDialogSceneStrategy : SceneStrategy<FloconRoute> {
     companion object {
         const val BIG_DIALOG = "BIG_DIALOG"
 
-        fun bigDialog(properties: BigDialogProperties): Map<String, Any> = mapOf(BIG_DIALOG to properties)
+        fun bigDialog(properties: BigDialogProperties): Map<String, Any> =
+            mapOf(BIG_DIALOG to properties)
     }
 
 }

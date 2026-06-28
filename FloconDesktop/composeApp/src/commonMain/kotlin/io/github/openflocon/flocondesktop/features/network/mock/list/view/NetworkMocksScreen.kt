@@ -77,7 +77,7 @@ private fun NetworkMocksContent(
 ) {
     Column(modifier = modifier) {
         FloconDialogHeader(
-            title = "Mocks",
+            title = null,
             modifier = Modifier.fillMaxWidth(),
             trailingContent = {
                 FloconButton(
@@ -127,7 +127,10 @@ private fun NetworkMocksContent(
                     },
                     modifier = Modifier.fillMaxWidth(),
                 )
-                HorizontalDivider(Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.outline)
+                HorizontalDivider(
+                    Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.outline
+                )
             }
         }
     }
