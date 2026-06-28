@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
     wasmJs {
-        moduleName = "flocon_database_core"
+        outputModuleName = "flocon_database_core"
         browser()
         binaries.executable()
     }

@@ -185,9 +185,9 @@ android {
         buildConfig = true
     }
 
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].proto {
+//    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+//    sourceSets["main"].res.srcDirs("src/androidMain/res")
+    sourceSets.getByName("main").proto {
         srcDir("src/androidMain/proto")
     }
 }

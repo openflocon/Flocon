@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
     wasmJs {
-        moduleName = "flocon_deeplinks"
+        outputModuleName = "flocon_deeplinks"
         binaries.executable()
         browser()
     }
