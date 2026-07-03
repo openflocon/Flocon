@@ -54,6 +54,7 @@ class ImagesViewModel(
 
     fun onFilterChanged(text: String) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
+            filter.emit(text)
         }
     }
 

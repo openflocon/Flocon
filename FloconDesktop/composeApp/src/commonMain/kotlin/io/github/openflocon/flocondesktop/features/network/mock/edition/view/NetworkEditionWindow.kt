@@ -406,11 +406,13 @@ fun MockEditorScreen(
                         if(isEditSelected) {
                             FloconTextField(
                                 value = bodyResponse.body,
-                                minLines = 10,
                                 onValueChange = { newValue ->
                                     mock = mock.copy(bodyResponse = bodyResponse.copy(body = newValue))
                                 },
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(400.dp),
+                                singleLine = false,
                                 containerColor = FloconTheme.colorPalette.primary
                             )
                         } else {
