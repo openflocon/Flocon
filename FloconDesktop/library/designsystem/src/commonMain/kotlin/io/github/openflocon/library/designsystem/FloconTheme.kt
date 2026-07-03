@@ -5,7 +5,6 @@ package io.github.openflocon.library.designsystem
 import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.LocalScrollbarStyle
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -17,7 +16,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.components.FloconMenuRepresentation
@@ -49,7 +47,7 @@ object FloconTheme {
 @Composable
 fun FloconTheme(
     fontSizeMultiplier: Float = 1f,
-    isDarkTheme: Boolean = isSystemInDarkTheme(), // TODO Add setting and override
+    isDarkTheme: Boolean = false, // TODO Add setting and override
     content: @Composable () -> Unit
 ) {
     val colorPalette = when {
@@ -58,8 +56,8 @@ fun FloconTheme(
     }
     val ripple = ripple(color = colorPalette.accent)
     val selectionTextColor = TextSelectionColors(
-        handleColor = Color.White,
-        backgroundColor = Color.White.copy(alpha = 0.5f)
+        handleColor = colorPalette.accent,
+        backgroundColor = colorPalette.accent.copy(alpha = 0.5f)
     )
 
     val materialTypo = MaterialTheme.typography

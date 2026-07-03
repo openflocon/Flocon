@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
@@ -124,7 +123,7 @@ internal fun TopBarDeviceView(
             Box(
                 Modifier
                     .clip(RoundedCornerShape(4.dp))
-                    .background(Color.White.copy(alpha = 0.8f))
+                    .background(FloconTheme.colorPalette.onPrimary.copy(alpha = 0.8f))
                     .padding(2.dp)
                     .clickable(onClick = deleteClick),
                 contentAlignment = Alignment.Center,

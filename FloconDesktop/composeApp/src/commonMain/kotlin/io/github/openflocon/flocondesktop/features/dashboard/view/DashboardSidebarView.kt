@@ -164,11 +164,11 @@ private fun DashboardItemView(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        
+
         Box(
             Modifier.clip(RoundedCornerShape(4.dp))
                 .background(
-                    Color.White.copy(alpha = 0.1f)
+                    FloconTheme.colorPalette.onSurface.copy(alpha = 0.1f)
                 ).clickable {
                     onDelete()
                 }.padding(2.dp),
