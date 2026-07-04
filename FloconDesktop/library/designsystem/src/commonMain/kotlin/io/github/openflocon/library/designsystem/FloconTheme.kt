@@ -5,6 +5,7 @@ package io.github.openflocon.library.designsystem
 import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.LocalScrollbarStyle
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -42,12 +43,16 @@ object FloconTheme {
     val shapes: FloconShape
         @Composable @ReadOnlyComposable
         get() = LocalFloconShape.current
+
+    val isDarkTheme: Boolean
+        @Composable @ReadOnlyComposable
+        get() = isSystemInDarkTheme()
 }
 
 @Composable
 fun FloconTheme(
     fontSizeMultiplier: Float = 1f,
-    isDarkTheme: Boolean = false, // TODO Add setting and override
+    isDarkTheme: Boolean = isSystemInDarkTheme(), // TODO Add setting and override
     content: @Composable () -> Unit
 ) {
     val colorPalette = when {
