@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
@@ -46,13 +47,15 @@ object FloconTheme {
 
     val isDarkTheme: Boolean
         @Composable @ReadOnlyComposable
-        get() = isSystemInDarkTheme()
+        get() = LocalIsDarkTheme.current
 }
+
+private val LocalIsDarkTheme = staticCompositionLocalOf { true }
 
 @Composable
 fun FloconTheme(
     fontSizeMultiplier: Float = 1f,
-    isDarkTheme: Boolean = isSystemInDarkTheme(), // TODO Add setting and override
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     val colorPalette = when {
@@ -94,6 +97,7 @@ fun FloconTheme(
     ) {
         CompositionLocalProvider(
             LocalIndication provides ripple,
+            LocalIsDarkTheme provides isDarkTheme,
             LocalFloconColorPalette provides colorPalette,
             LocalTextSelectionColors provides selectionTextColor,
             LocalScrollbarStyle provides scrollbarStyle,

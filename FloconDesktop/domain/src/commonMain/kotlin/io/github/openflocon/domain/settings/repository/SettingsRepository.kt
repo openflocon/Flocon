@@ -1,6 +1,7 @@
 package io.github.openflocon.domain.settings.repository
 
 import io.github.openflocon.domain.models.settings.NetworkSettings
+import io.github.openflocon.domain.models.settings.ThemeSetting
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -14,6 +15,9 @@ interface SettingsRepository {
 
     suspend fun setFontSizeMultiplier(value: Float)
 
+    suspend fun setTheme(value: ThemeSetting)
+
     val adbPath: Flow<String?>
     val fontSizeMultiplier: StateFlow<Float>
+    val theme: StateFlow<ThemeSetting>
 }
