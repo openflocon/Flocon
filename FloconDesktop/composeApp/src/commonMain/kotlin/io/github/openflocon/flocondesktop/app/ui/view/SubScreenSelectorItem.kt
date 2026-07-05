@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.app.ui.view
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.filled.NetworkWifi
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Dashboard
@@ -19,6 +20,7 @@ import flocondesktop.composeapp.generated.resources.menu_item_analytics
 import flocondesktop.composeapp.generated.resources.menu_item_crashReporter
 import flocondesktop.composeapp.generated.resources.menu_item_dashboard
 import flocondesktop.composeapp.generated.resources.menu_item_database
+import flocondesktop.composeapp.generated.resources.menu_item_adbCommander
 import flocondesktop.composeapp.generated.resources.menu_item_deeplinks
 import flocondesktop.composeapp.generated.resources.menu_item_files
 import flocondesktop.composeapp.generated.resources.menu_item_images
@@ -43,6 +45,7 @@ fun SubScreen.displayName(): StringResource = when (this) {
     SubScreen.Dashboard -> Res.string.menu_item_dashboard
     SubScreen.Settings -> Res.string.menu_item_settings
     SubScreen.Deeplinks -> Res.string.menu_item_deeplinks
+    SubScreen.AdbCommander -> Res.string.menu_item_adbCommander
     SubScreen.CrashReporter -> Res.string.menu_item_crashReporter
 }
 
@@ -58,5 +61,6 @@ fun SubScreen.icon(): ImageVector = when (this) {
     SubScreen.Settings -> Icons.Outlined.Settings
     SubScreen.Dashboard -> Icons.Outlined.Dashboard
     SubScreen.Deeplinks -> Icons.Filled.Link
+    SubScreen.AdbCommander -> Icons.Outlined.Terminal
     SubScreen.CrashReporter -> Icons.Outlined.BugReport
 }

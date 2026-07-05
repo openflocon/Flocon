@@ -19,7 +19,7 @@ class TakeScreenshotUseCase(
         val fileName = "screenshot_${current.packageName}_${System.currentTimeMillis()}.png"
         val onDeviceFilePath = "/sdcard/$fileName"
 
-        val parentFile = Paths.get(System.getProperty("user.home"), "Desktop", "Flocon", "Screenshot").toFile()
+        val parentFile = Paths.get(System.getProperty("user.home"), ".flocon", "Screenshot").toFile()
         if (!parentFile.exists()) {
             parentFile.mkdirs()
         }

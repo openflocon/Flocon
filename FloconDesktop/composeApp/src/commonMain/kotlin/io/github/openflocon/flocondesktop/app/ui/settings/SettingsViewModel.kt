@@ -3,8 +3,8 @@ package io.github.openflocon.flocondesktop.app.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.general_failed
 import flocondesktop.composeapp.generated.resources.general_success
+import flocondesktop.composeapp.generated.resources.settings_test_failure
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.settings.repository.SettingsRepository
@@ -83,11 +83,14 @@ class SettingsViewModel(
             saveAdb()
             testAdbUseCase().fold(
                 doOnFailure = {
-                    feedbackDisplayer.displayMessage(getString(Res.string.general_success))
+                    feedbackDisplayer.displayMessage(
+                        message = getString(Res.string.settings_test_failure, it.localizedMessage),
+                        type = FeedbackDisplayer.MessageType.Error
+                    )
                     initialSetupStateHolder.setRequiresInitialSetup()
                 },
                 doOnSuccess = {
-                    feedbackDisplayer.displayMessage(getString(Res.string.general_failed))
+                    feedbackDisplayer.displayMessage(getString(Res.string.general_success))
                     initialSetupStateHolder.setAdbIsWorking()
                 },
             )

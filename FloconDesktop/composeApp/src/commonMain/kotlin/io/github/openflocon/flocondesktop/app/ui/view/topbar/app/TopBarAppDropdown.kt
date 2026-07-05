@@ -2,6 +2,7 @@
 
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.app
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,6 +19,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.TopBarSelector
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
 
@@ -72,10 +74,12 @@ internal fun TopBarAppDropdown(
                     ) {
                         appsState.apps
                             .fastForEach { app ->
+                                val isSelected = appsState.appSelected?.packageName == app.packageName
+
                                 TopBarAppView(
                                     deviceApp = app,
                                     platform = devicesState.deviceSelected.platform,
-                                    selected = appsState.appSelected?.packageName == app.packageName,
+                                    selected = isSelected,
                                     deleteClick = {
                                         deleteApp(app)
                                         expanded = false
@@ -86,6 +90,13 @@ internal fun TopBarAppDropdown(
                                             onAppSelected(app)
                                             expanded = false
                                         }
+                                        .then (
+                                            if(isSelected) {
+                                                Modifier.background(color = FloconTheme.colorPalette.onTertiary)
+                                            } else {
+                                                Modifier
+                                            }
+                                        ),
                                 )
                             }
                     }

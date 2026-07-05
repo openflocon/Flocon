@@ -68,6 +68,34 @@ interface FloconNetworkDao {
         callId: String,
     ): FloconNetworkCallEntity?
 
+    @Query(
+        """
+        SELECT * FROM FloconNetworkCallEntity
+        WHERE (:startTimestamp IS NULL OR request_startTime >= :startTimestamp)
+        AND (:endTimestamp IS NULL OR request_startTime <= :endTimestamp)
+        ORDER BY request_startTime ASC
+    """,
+    )
+    suspend fun getAllRequests(
+        startTimestamp: Long? = null,
+        endTimestamp: Long? = null,
+    ): List<FloconNetworkCallEntity>
+
+    @Query(
+        """
+        SELECT * FROM FloconNetworkCallEntity
+        WHERE deviceId = :deviceId
+        AND (:startTimestamp IS NULL OR request_startTime >= :startTimestamp)
+        AND (:endTimestamp IS NULL OR request_startTime <= :endTimestamp)
+        ORDER BY request_startTime ASC
+    """,
+    )
+    suspend fun getAllRequestsByDevice(
+        deviceId: String,
+        startTimestamp: Long? = null,
+        endTimestamp: Long? = null,
+    ): List<FloconNetworkCallEntity>
+
     @Query("DELETE FROM FloconNetworkCallEntity")
     suspend fun clearAll()
 

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 79,
-    "identityHash": "46616952f88c8e77a821de74e2d2b0ab",
+    "identityHash": "bc04a3804fc90f192d5fd8ac2be01644",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -1255,7 +1255,7 @@
       },
       {
         "tableName": "MockNetworkEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mockId` TEXT NOT NULL, `deviceId` TEXT, `packageName` TEXT, `isEnabled` INTEGER NOT NULL, `response` TEXT NOT NULL, `displayName` TEXT NOT NULL, `expectation_urlPattern` TEXT NOT NULL, `expectation_method` TEXT NOT NULL, PRIMARY KEY(`mockId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mockId` TEXT NOT NULL, `deviceId` TEXT, `packageName` TEXT, `isEnabled` INTEGER NOT NULL, `response` TEXT NOT NULL, `expectation_urlPattern` TEXT NOT NULL, `expectation_method` TEXT NOT NULL, PRIMARY KEY(`mockId`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "mockId",
@@ -1282,12 +1282,6 @@
           {
             "fieldPath": "response",
             "columnName": "response",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "displayName",
-            "columnName": "displayName",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -1787,11 +1781,290 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "AdbSavedCommandEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `command` TEXT NOT NULL, `description` TEXT, `createdAt` INTEGER NOT NULL, FOREIGN KEY(`deviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "command",
+            "columnName": "command",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_AdbSavedCommandEntity_deviceId",
+            "unique": false,
+            "columnNames": [
+              "deviceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_AdbSavedCommandEntity_deviceId` ON `${TABLE_NAME}` (`deviceId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId"
+            ],
+            "referencedColumns": [
+              "deviceId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "AdbCommandHistoryEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `command` TEXT NOT NULL, `output` TEXT NOT NULL, `isSuccess` INTEGER NOT NULL, `executedAt` INTEGER NOT NULL, FOREIGN KEY(`deviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "command",
+            "columnName": "command",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "output",
+            "columnName": "output",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSuccess",
+            "columnName": "isSuccess",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "executedAt",
+            "columnName": "executedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_AdbCommandHistoryEntity_deviceId",
+            "unique": false,
+            "columnNames": [
+              "deviceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_AdbCommandHistoryEntity_deviceId` ON `${TABLE_NAME}` (`deviceId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId"
+            ],
+            "referencedColumns": [
+              "deviceId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "AdbFlowEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `createdAt` INTEGER NOT NULL, FOREIGN KEY(`deviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_AdbFlowEntity_deviceId",
+            "unique": false,
+            "columnNames": [
+              "deviceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_AdbFlowEntity_deviceId` ON `${TABLE_NAME}` (`deviceId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DeviceEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId"
+            ],
+            "referencedColumns": [
+              "deviceId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "AdbFlowStepEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `flowId` INTEGER NOT NULL, `orderIndex` INTEGER NOT NULL, `command` TEXT NOT NULL, `delayAfterMs` INTEGER NOT NULL, `label` TEXT, FOREIGN KEY(`flowId`) REFERENCES `AdbFlowEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flowId",
+            "columnName": "flowId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderIndex",
+            "columnName": "orderIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "command",
+            "columnName": "command",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "delayAfterMs",
+            "columnName": "delayAfterMs",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_AdbFlowStepEntity_flowId",
+            "unique": false,
+            "columnNames": [
+              "flowId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_AdbFlowStepEntity_flowId` ON `${TABLE_NAME}` (`flowId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "AdbFlowEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "flowId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '46616952f88c8e77a821de74e2d2b0ab')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bc04a3804fc90f192d5fd8ac2be01644')"
     ]
   }
 }

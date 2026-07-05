@@ -101,7 +101,6 @@ fun FloconPanel(
     EscapeHandler {
         coroutineScope.launch {
             state.hide()
-            onDismissRequest()
         }
         true
     }

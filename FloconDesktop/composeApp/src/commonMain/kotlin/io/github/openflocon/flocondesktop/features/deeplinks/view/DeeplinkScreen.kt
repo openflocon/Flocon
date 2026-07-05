@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -141,13 +142,15 @@ private fun DeeplinkScreen(
                     .background(FloconTheme.colorPalette.primary)
             ) {
                 items(history) { item ->
-                    DeeplinkItemView(
-                        submit = submit,
-                        removeFromHistory = removeFromHistory,
-                        item = item,
-                        variableValues = variableValues,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                    SelectionContainer {
+                        DeeplinkItemView(
+                            submit = submit,
+                            removeFromHistory = removeFromHistory,
+                            item = item,
+                            variableValues = variableValues,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
                 }
             }
         }

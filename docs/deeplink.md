@@ -16,20 +16,30 @@ No more typing long `adb shell am start` commands — Flocon makes deeplink test
 **You can configure deeplinks directly from your Android code!**
 
 ```kotlin
-floconDeeplink {
-    deeplink("flocon://home")
-    deeplink("flocon://test")
-    deeplink(
-        "flocon://user/[userId]",
-        label = "User",
-        parameters = {
-            "userId" withAutoComplete listOf("Florent", "David", "Guillaume")
-        }
-    )
-    deeplink(
-        "flocon://post/[postId]?comment=[commentText]",
-        label = "Post",
+Flocon.deeplinks {
+    variable("test_variable")
+    variable("host") {
+        description = "Host variable"
+        autoComplete(listOf("flocon", "flocon2", "flocon3"))
+    }
+
+    deeplink("[host]://home") {
+        "host" withVariable "host"
+    }
+    deeplink("[host]://test") {
+        "host" withVariable "host"
+    }
+    deeplink("[host]://user/[userId]") {
+        label = "User"
+        "userId" withAutoComplete listOf("Florent", "David", "Guillaume")
+        "host" withVariable "host"
+    }
+    deeplink("[host]://post/[postId]?comment=[commentText]") {
+        label = "Post"
         description = "Open a post and send a comment"
-    )
+        "postId" withAutoComplete listOf("1", "2", "3")
+        "commentText" withVariable "test_variable"
+        "host" withVariable "host"
+    }
 }
 ```

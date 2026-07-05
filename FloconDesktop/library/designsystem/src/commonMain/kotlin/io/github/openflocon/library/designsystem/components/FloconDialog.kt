@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -49,7 +50,7 @@ fun FloconDialog(
 
 @Composable
 fun FloconDialogHeader(
-    title: String,
+    title: String?,
     modifier: Modifier = Modifier,
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) {
@@ -59,15 +60,19 @@ fun FloconDialogHeader(
             .padding(horizontal = 12.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = title,
-            modifier = Modifier
-                .padding(vertical = 12.dp)
-                .padding(start = 4.dp)
-                .weight(1f),
-            style = FloconTheme.typography.titleMedium,
-            color = FloconTheme.colorPalette.onPrimary,
-        )
+        if (title != null) {
+            Text(
+                text = title,
+                modifier = Modifier
+                    .padding(vertical = 12.dp)
+                    .padding(start = 4.dp)
+                    .weight(1f),
+                style = FloconTheme.typography.titleMedium,
+                color = FloconTheme.colorPalette.onPrimary,
+            )
+        } else {
+            Spacer(Modifier.weight(1f))
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {

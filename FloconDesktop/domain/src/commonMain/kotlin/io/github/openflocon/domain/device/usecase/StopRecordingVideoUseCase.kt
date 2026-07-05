@@ -27,7 +27,7 @@ class StopRecordingVideoUseCase(
         // wait until the record is done
         recording.completableDeferred.await()
 
-        val parentFile = Paths.get(System.getProperty("user.home"), "Desktop", "Flocon", "ScreenRecord").toFile()
+        val parentFile = Paths.get(System.getProperty("user.home"), ".flocon", "ScreenRecord").toFile()
         if (!parentFile.exists()) {
             parentFile.mkdirs()
         }

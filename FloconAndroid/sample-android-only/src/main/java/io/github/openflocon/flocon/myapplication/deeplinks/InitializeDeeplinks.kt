@@ -24,6 +24,7 @@ fun initializeDeeplinks() {
         deeplink("[host]://post/[postId]?comment=[commentText]") {
             label = "Post"
             description = "Open a post and send a comment"
+            "postId" withAutoComplete listOf("1", "2", "3")
             "commentText" withVariable "test_variable"
             "host" withVariable "host"
         }

@@ -54,7 +54,6 @@ data class PanelScene(
                         onClick = {
                             scope.launch {
                                 state.hide()
-                                onBack()
                             }
                         },
                         modifier = Modifier
@@ -70,7 +69,6 @@ data class PanelScene(
                                 scope.launch {
                                     onPin.onPin()
                                     state.hide()
-                                    onBack()
                                 }
                             },
                             modifier = Modifier
