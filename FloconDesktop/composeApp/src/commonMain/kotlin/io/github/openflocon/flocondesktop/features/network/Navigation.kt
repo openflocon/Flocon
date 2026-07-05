@@ -5,7 +5,6 @@ package io.github.openflocon.flocondesktop.features.network
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
-import androidx.navigation3.scene.DialogSceneStrategy
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
 import io.github.openflocon.flocondesktop.features.network.body.NetworkBodyWindow
@@ -107,7 +106,7 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
         )
     }
     entry<NetworkRoutes.Diff>(
-        metadata = WindowSceneStrategy.window()
+        metadata = WindowSceneStrategy.window(title = "Diff")
     ) {
         NetworkDiffWindow(
             diff = NetworkDiffUi(
