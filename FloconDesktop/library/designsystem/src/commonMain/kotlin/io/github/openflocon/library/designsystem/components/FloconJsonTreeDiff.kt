@@ -5,10 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import com.sebastianneubauer.jsontree.diff.Error
 import com.sebastianneubauer.jsontree.diff.JsonTreeDiff
 import com.sebastianneubauer.jsontree.diff.JsonTreeDiffColors
-import com.sebastianneubauer.jsontree.diff.Success
+import com.sebastianneubauer.jsontree.diff.JsonTreeDiffError
+import com.sebastianneubauer.jsontree.diff.JsonTreeDiffSuccess
 import com.sebastianneubauer.jsontree.diff.defaultDarkDiffColors
 import io.github.openflocon.library.designsystem.FloconTheme
 
@@ -16,9 +16,9 @@ import io.github.openflocon.library.designsystem.FloconTheme
 fun FloconJsonTreeDiff(
     originalJson: String,
     revisedJson: String,
-    onSuccess: (Success) -> Unit,
+    onSuccess: (JsonTreeDiffSuccess) -> Unit,
     onLoading: @Composable () -> Unit,
-    onError: @Composable (Error) -> Unit,
+    onError: @Composable (JsonTreeDiffError) -> Unit,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues = PaddingValues(8.dp),
     colors: JsonTreeDiffColors = defaultDarkDiffColors,

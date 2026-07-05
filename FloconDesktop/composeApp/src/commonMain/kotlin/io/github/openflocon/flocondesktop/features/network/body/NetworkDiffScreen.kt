@@ -16,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sebastianneubauer.jsontree.diff.JsonTreeDiffError
 import com.sebastianneubauer.jsontree.diff.JsonTreeDiffInfo
 import com.sebastianneubauer.jsontree.diff.defaultDarkDiffColors
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
@@ -98,13 +97,13 @@ private fun NetworkDiffContent(
                 },
                 onError = {
                     when(it.error) {
-                        is JsonTreeDiffError.OriginalJsonError -> {
+                        is OriginalJsonError -> {
                             Text(
                                 text = "Error in original Json:\n${it.error.throwable.localizedMessage}",
                                 style = FloconTheme.typography.bodyMedium
                             )
                         }
-                        is JsonTreeDiffError.RevisedJsonError -> {
+                        is RevisedJsonError -> {
                             Text(
                                 text = "Error in clipboard Json:\n${it.error.throwable.localizedMessage}",
                                 style = FloconTheme.typography.bodyMedium
