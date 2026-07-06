@@ -18,6 +18,7 @@ import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBod
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import io.github.openflocon.library.designsystem.common.readFromClipboard
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -88,6 +89,7 @@ class NetworkDetailDelegate(
             is NetworkDetailAction.CopyText -> onCopyText(action)
             is NetworkDetailAction.DisplayBearerJwt -> displayBearerJwt(action.token)
             is NetworkDetailAction.JsonDetail -> onJsonDetail(action)
+            is NetworkDetailAction.DiffWithClipboard -> onDiffWithClipboard(action)
             is NetworkDetailAction.OpenBodyExternally.Request -> openBodyDelegate.openBodyExternally(action.item)
             is NetworkDetailAction.OpenBodyExternally.Response -> openBodyDelegate.openBodyExternally(action.item)
             is NetworkDetailAction.ShareAsMarkdown -> copyAsMarkdown(requestId.value)
@@ -103,6 +105,16 @@ class NetworkDetailDelegate(
 
     private fun onJsonDetail(action: NetworkDetailAction.JsonDetail) {
         navigationState.navigate(NetworkRoutes.JsonDetail(action.json))
+    }
+
+    private fun onDiffWithClipboard(action: NetworkDetailAction.DiffWithClipboard) {
+        val clipboardJson = readFromClipboard()
+        navigationState.navigate(
+            NetworkRoutes.Diff(
+                json = action.text,
+                clipboardJson = clipboardJson.orEmpty()
+            )
+        )
     }
 
     private fun displayBearerJwt(token: String) {

@@ -5,11 +5,12 @@ package io.github.openflocon.flocondesktop.features.network
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
-import androidx.navigation3.scene.DialogSceneStrategy
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
 import io.github.openflocon.flocondesktop.features.network.body.NetworkBodyWindow
+import io.github.openflocon.flocondesktop.features.network.body.NetworkDiffWindow
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkBodyDetailUi
+import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailScreen
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
@@ -20,6 +21,7 @@ import io.github.openflocon.navigation.WindowRoute
 import io.github.openflocon.navigation.scene.BigDialogProperties
 import io.github.openflocon.navigation.scene.BigDialogSceneStrategy
 import io.github.openflocon.navigation.scene.PanelSceneStrategy
+import io.github.openflocon.navigation.scene.WindowProperties
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
@@ -54,6 +56,12 @@ internal sealed interface NetworkRoutes : FloconRoute {
     data class JsonDetail(
         val json: String,
         val id: String = Uuid.random().toString()
+    ) : NetworkRoutes
+
+    @Serializable
+    data class Diff(
+        val json: String,
+        val clipboardJson: String,
     ) : NetworkRoutes
 }
 
@@ -98,11 +106,23 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
             body = NetworkBodyDetailUi(text = it.json)
         )
     }
+    entry<NetworkRoutes.Diff>(
+        metadata = WindowSceneStrategy.window(WindowProperties(title = "Diff"))
+    ) {
+        NetworkDiffWindow(
+            diff = NetworkDiffUi(
+                json = it.json,
+                clipboardJson = it.clipboardJson
+            )
+        )
+    }
     entry<NetworkRoutes.DeepSearch>(
         metadata = WindowSceneStrategy.window(
-            size = DpSize(
-                width = 1200.0.dp,
-                height = 800.0.dp
+            WindowProperties(
+                size = DpSize(
+                    width = 1200.0.dp,
+                    height = 800.0.dp
+                )
             )
         )
     ) {

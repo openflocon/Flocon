@@ -9,6 +9,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.rememberWindowState
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavMetadataKey
+import androidx.navigation3.runtime.get
+import androidx.navigation3.runtime.metadata
 import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
@@ -29,18 +32,15 @@ data class WindowScene(
     override val entries: List<NavEntry<FloconRoute>> = listOf(entry)
 
     override val content: @Composable (() -> Unit) = {
-        val width = entry.metadata[WindowSceneStrategy.SIZE_WIDTH] as? Number
-        val height = entry.metadata[WindowSceneStrategy.SIZE_HEIGHT] as? Number
-        val size = if (width != null && height != null) {
-            DpSize(width.toInt().dp, height.toInt().dp)
-        } else null
+        val windowProperties = entry.metadata[WindowPropertiesKey]
 
         val state = rememberWindowState(
-            size = size ?: DpSize(800.dp, 600.dp),
+            size = windowProperties?.size ?: DpSize(800.dp, 600.dp),
         )
         Window(
             onCloseRequest = onBack,
             state = state,
+            title = windowProperties?.title ?: "",
         ) {
             entry.Content()
         }
@@ -52,7 +52,7 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
     override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? {
         val entry = entries.last()
 
-        if (entry.metadata[IS_WINDOW] == true) {
+        if (entry.metadata[WindowPropertiesKey]?.isWindow == true) {
             return WindowScene(
                 entry = entry,
                 previousEntries = entries.dropLast(1),
@@ -64,16 +64,17 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
     }
 
     companion object {
-        private const val IS_WINDOW = "is_window"
-        internal const val SIZE_WIDTH = "SIZE_WIDTH"
-        internal const val SIZE_HEIGHT = "SIZE_HEIGHT"
-
-        fun window(size: DpSize? = null) = buildMap {
-            put(IS_WINDOW, true)
-            size?.let {
-                put(SIZE_WIDTH, it.width.value)
-                put(SIZE_HEIGHT, it.height.value)
-            }
+        fun window(windowProperties: WindowProperties = WindowProperties()) = metadata {
+            put(WindowPropertiesKey, windowProperties)
         }
     }
 }
+
+data class WindowProperties(
+    val size: DpSize? = null,
+    val title: String? = null
+) {
+    val isWindow: Boolean = true
+}
+
+private object WindowPropertiesKey: NavMetadataKey<WindowProperties>
