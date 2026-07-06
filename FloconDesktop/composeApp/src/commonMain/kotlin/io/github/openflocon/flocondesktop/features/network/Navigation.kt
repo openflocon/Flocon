@@ -21,6 +21,7 @@ import io.github.openflocon.navigation.WindowRoute
 import io.github.openflocon.navigation.scene.BigDialogProperties
 import io.github.openflocon.navigation.scene.BigDialogSceneStrategy
 import io.github.openflocon.navigation.scene.PanelSceneStrategy
+import io.github.openflocon.navigation.scene.WindowProperties
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
@@ -106,7 +107,7 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
         )
     }
     entry<NetworkRoutes.Diff>(
-        metadata = WindowSceneStrategy.window(title = "Diff")
+        metadata = WindowSceneStrategy.window(WindowProperties(title = "Diff"))
     ) {
         NetworkDiffWindow(
             diff = NetworkDiffUi(
@@ -117,9 +118,11 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
     }
     entry<NetworkRoutes.DeepSearch>(
         metadata = WindowSceneStrategy.window(
-            size = DpSize(
-                width = 1200.0.dp,
-                height = 800.0.dp
+            WindowProperties(
+                size = DpSize(
+                    width = 1200.0.dp,
+                    height = 800.0.dp
+                )
             )
         )
     ) {

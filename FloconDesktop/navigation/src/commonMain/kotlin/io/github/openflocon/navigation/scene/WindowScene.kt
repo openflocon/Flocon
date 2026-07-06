@@ -71,15 +71,20 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
         internal const val SIZE_HEIGHT = "SIZE_HEIGHT"
         internal const val TITLE = "TITLE"
 
-        fun window(size: DpSize? = null, title: String? = null) = buildMap {
+        fun window(windowProperties: WindowProperties? = null) = buildMap {
             put(IS_WINDOW, true)
-            size?.let {
+            windowProperties?.size?.let {
                 put(SIZE_WIDTH, it.width.value)
                 put(SIZE_HEIGHT, it.height.value)
             }
-            title?.let {
+            windowProperties?.title?.let {
                 put(TITLE, it)
             }
         }
     }
 }
+
+data class WindowProperties(
+    val size: DpSize? = null,
+    val title: String? = null
+)
