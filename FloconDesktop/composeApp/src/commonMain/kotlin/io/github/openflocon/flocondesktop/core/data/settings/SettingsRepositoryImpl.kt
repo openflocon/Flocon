@@ -50,6 +50,12 @@ internal class SettingsRepositoryImpl(
         localSettingsDataSource.setTheme(value)
     }
 
+    override fun isOnboardingCompleted(): Boolean = localSettingsDataSource.isOnboardingCompleted()
+
+    override suspend fun setOnboardingCompleted(completed: Boolean) {
+        localSettingsDataSource.setOnboardingCompleted(completed)
+    }
+
     override fun getDismissedDesktopVersion(): String? = localSettingsDataSource.getDismissedDesktopVersion()
 
     override suspend fun setDismissedDesktopVersion(version: String) {

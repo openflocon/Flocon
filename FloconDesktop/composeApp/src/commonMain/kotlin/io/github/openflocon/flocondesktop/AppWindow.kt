@@ -21,10 +21,15 @@ import io.github.openflocon.flocondesktop.app.AppScreen
 import io.github.openflocon.flocondesktop.app.di.appModule
 import io.github.openflocon.flocondesktop.common.di.commonModule
 import io.github.openflocon.flocondesktop.core.di.coreModule
+import io.github.openflocon.domain.settings.repository.SettingsRepository
+import io.github.openflocon.domain.device.repository.DevicesRepository
+import io.github.openflocon.flocondesktop.features.onboarding.OnboardingRoutes
 import io.github.openflocon.flocondesktop.features.featuresModule
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.MainFloconNavigationState
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import org.koin.core.module.dsl.singleOf
@@ -51,7 +56,28 @@ fun App() {
 //                    scope<MainRoutes.Sub> {
 //                        scoped { MainFloconNavigationState(MainRoutes.Main) }
 //                    }
-                    single { MainFloconNavigationState(NetworkRoutes.Main) }
+                    single {
+                        val repository = get<SettingsRepository>()
+                        val devicesRepository = get<DevicesRepository>()
+                        val hasDevices = try {
+                            runBlocking {
+                                devicesRepository.devices.first().isNotEmpty()
+                            }
+                        } catch (e: Exception) {
+                            false
+                        }
+                        if (hasDevices && !repository.isOnboardingCompleted()) {
+                            runBlocking {
+                                repository.setOnboardingCompleted(true)
+                            }
+                        }
+                        val startRoute = if (repository.isOnboardingCompleted() || hasDevices) {
+                            NetworkRoutes.Main
+                        } else {
+                            OnboardingRoutes.Main
+                        }
+                        MainFloconNavigationState(startRoute)
+                    }
                     singleOf(::AdbRepositoryImpl) bind AdbRepository::class
                 },
             )
