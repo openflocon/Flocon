@@ -436,6 +436,11 @@ private fun AdbPane(
                     style = FloconTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f)
                 )
+                Text(
+                    text = stringResource(Res.string.settings_adb_valid),
+                    color = FloconTheme.colorPalette.onAccent,
+                    style = FloconTheme.typography.bodySmall,
+                )
             }
         }
     }
@@ -684,6 +689,71 @@ private fun AboutPane(
                 .background(FloconTheme.colorPalette.primary),
         )
     }
+}
+
+// ---------------------------------------------------------------------------
+// Shared helpers
+// ---------------------------------------------------------------------------
+
+@Composable
+private fun LogsPane(
+    logs: List<LogEntryUiModel>,
+    onClearLogs: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.fillMaxSize()
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Console (${logs.size})",
+                style = FloconTheme.typography.titleMedium,
+                color = FloconTheme.colorPalette.onPrimary,
+            )
+            if (logs.isNotEmpty()) {
+                SettingsButton(
+                    text = "Clear",
+                    onClick = onClearLogs,
+                )
+            }
+        }
+
+        if (logs.isEmpty()) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                Text(
+                    text = "No logs yet",
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.4f),
+                )
+            }
+        } else {
+            ConsoleLogPanel(
+                logs = logs,
+                modifier = Modifier.fillMaxWidth().weight(1f),
+            )
+        }
+    }
+}
+
+@Composable
+private fun AboutPane(
+    modifier: Modifier = Modifier,
+) {
+    AboutScreen(
+        modifier = modifier
+            .fillMaxSize()
+            .background(FloconTheme.colorPalette.primary),
+    )
 }
 
 // ---------------------------------------------------------------------------

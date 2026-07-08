@@ -6,7 +6,6 @@ import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
 
-@Immutable
 data class SettingsUiState(
     val fontSizeMultiplier: Float,
     val logs: List<LogEntryUiModel>,

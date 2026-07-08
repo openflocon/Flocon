@@ -56,6 +56,11 @@ class SettingsViewModel(
             logs = logs.map { it.toUiModel() },
             adbForwardStatus = forwardStatus,
         )
+    val uiState = combine(fontSizeMultiplierUseCase(), logManager.logs) { multiplier, logs ->
+        SettingsUiState(
+            fontSizeMultiplier = multiplier,
+            logs = logs.map { it.toUiModel() },
+        )
     }
         .stateIn(
             scope = viewModelScope,
