@@ -2,6 +2,9 @@
 
 package io.github.openflocon.navigation.scene
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseInOutCubic
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,12 +22,13 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
@@ -36,6 +40,9 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.navigation.FloconRoute
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 @Immutable
 private data class BigDialogScene(
@@ -46,13 +53,26 @@ private data class BigDialogScene(
     private val onBack: () -> Unit,
 ) : OverlayScene<FloconRoute> {
 
+    private val spec = tween<Float>(durationMillis = 300, easing = EaseInOutCubic)
+    private val alpha = Animatable(initialValue = 0f)
+    private val scale = Animatable(initialValue = 0.9f)
+
     override val key: Any = BigDialogSceneStrategy.BIG_DIALOG
     override val entries: List<NavEntry<FloconRoute>> = listOf(entry)
     override val content: @Composable (() -> Unit) = {
+        LaunchedEffect(Unit) {
+            val alphaTask = async { alpha.animateTo(1f, spec) }
+            val scaleTask = async { scale.animateTo(1f, spec) }
+
+            awaitAll(alphaTask, scaleTask)
+        }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .graphicsLayer {
+                    this.alpha = this@BigDialogScene.alpha.value
+                }
                 .background(FloconTheme.colorPalette.primary.copy(alpha = 0.7f))
                 .clickable(
                     onClick = onBack,
@@ -60,6 +80,10 @@ private data class BigDialogScene(
                     interactionSource = null
                 )
                 .padding(64.dp)
+                .graphicsLayer {
+                    this.scaleX = scale.value
+                    this.scaleY = scale.value
+                }
                 .dropShadow(
                     shape = RoundedCornerShape(12.dp),
                     shadow = Shadow(
@@ -99,6 +123,15 @@ private data class BigDialogScene(
             ) {
                 entry.Content()
             }
+        }
+    }
+
+    override suspend fun onRemove() {
+        coroutineScope {
+            val alphaTask = async { alpha.animateTo(0f, spec) }
+            val scaleTask = async { scale.animateTo(0.9f, spec) }
+
+            awaitAll(alphaTask, scaleTask)
         }
     }
 }

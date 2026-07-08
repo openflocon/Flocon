@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.app.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_success
 import flocondesktop.composeapp.generated.resources.settings_test_failure
@@ -15,6 +16,8 @@ import io.github.openflocon.domain.settings.usecase.SetFontSizeMultiplierUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
+import io.github.openflocon.flocondesktop.common.log.LogManager
+import io.github.openflocon.flocondesktop.common.log.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,6 +36,7 @@ class SettingsViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val dispatcherProvider: DispatcherProvider,
+    private val logManager: LogManager,
 ) : ViewModel() {
 
     private val _adbPathInput = MutableStateFlow("")
@@ -46,6 +50,11 @@ class SettingsViewModel(
         SettingsUiState(
             fontSizeMultiplier = fontSizeMultiplier,
             theme = theme,
+        )
+    val uiState = combine(fontSizeMultiplierUseCase(), logManager.logs) { multiplier, logs ->
+        SettingsUiState(
+            fontSizeMultiplier = multiplier,
+            logs = logs.map { it.toUiModel() },
         )
     }
         .stateIn(
@@ -96,14 +105,23 @@ class SettingsViewModel(
     }
 
     private suspend fun saveAdb() {
-        settingsRepository.setAdbPath(adbPathInput.value)
+        val path = adbPathInput.value
+        Logger.d(TAG) { "Saving ADB path: $path" }
+        settingsRepository.setAdbPath(path)
+        logManager.d(TAG, "Saving ADB path: $path")
     }
 
     fun testAdbPath() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             saveAdb()
+            val path = adbPathInput.value
+            Logger.d(TAG) { "Testing ADB path: $path" }
+            logManager.d(TAG, "Testing ADB path: $path")
             testAdbUseCase().fold(
                 doOnFailure = {
+                    val msg = "ADB test failed: ${it.message}"
+                    Logger.e(TAG, it) { msg }
+                    logManager.e(TAG, "ADB test failed", it)
                     feedbackDisplayer.displayMessage(
                         message = getString(Res.string.settings_test_failure, it.localizedMessage),
                         type = FeedbackDisplayer.MessageType.Error
@@ -111,10 +129,20 @@ class SettingsViewModel(
                     initialSetupStateHolder.setRequiresInitialSetup()
                 },
                 doOnSuccess = {
+                    Logger.d(TAG) { "ADB test succeeded" }
+                    logManager.d(TAG, "ADB test succeeded")
                     feedbackDisplayer.displayMessage(getString(Res.string.general_success))
                     initialSetupStateHolder.setAdbIsWorking()
                 },
             )
         }
+    }
+
+    fun clearLogs() {
+        logManager.clear()
+    }
+
+    companion object {
+        private const val TAG = "SettingsViewModel"
     }
 }
