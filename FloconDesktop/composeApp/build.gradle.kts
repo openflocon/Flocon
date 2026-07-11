@@ -117,7 +117,7 @@ compose.desktop {
         }
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "Flocon"
             packageVersion = System.getenv("PROJECT_VERSION_NAME") ?: "1.0.0"
             macOS {
