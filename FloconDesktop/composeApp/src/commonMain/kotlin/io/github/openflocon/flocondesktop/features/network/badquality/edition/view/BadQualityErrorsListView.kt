@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.possibleExceptions
-import io.github.openflocon.flocondesktop.features.network.list.view.components.errorTagText
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
@@ -194,7 +193,7 @@ private fun BadQualityErrorItemView(
                     style = FloconTheme.typography.bodySmall.copy(
                         fontWeight = FontWeight.Bold,
                     ),
-                    color = errorTagText,
+                    color = FloconTheme.colorPalette.error,
                 )
                 Text(
                     t.body.take(20),

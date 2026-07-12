@@ -52,7 +52,7 @@ internal val lightPalette = FloconColorPaletteNew(
     onTertiary = Color(0xFFe2e2e9),
     accent = Color(0xFFEDC25E),
     onAccent = Color(0xFF4a330c),
-    error = Color(0xFFB3261E),
+    error = Color(0xFFC62828),
     onError = Color(0xFFFFFFFF),
     exceptions = Color(0xFF9C27B0)
 )
@@ -68,7 +68,7 @@ internal val darkPalette = FloconColorPaletteNew(
     onTertiary = Color(0xFF2e3036),
     accent = Color(0xFF4a330c),
     onAccent = Color(0xFFfcaf28),
-    error = Color(0xFFCF6679),
+    error = Color(0xFFFF6B6B),
     onError = Color(0xFF000000),
     exceptions = Color(0xFF7B1FA2)
 )
