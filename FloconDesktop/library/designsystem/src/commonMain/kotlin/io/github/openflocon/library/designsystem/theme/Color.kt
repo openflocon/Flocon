@@ -70,7 +70,7 @@ internal val darkPalette = FloconColorPaletteNew(
     onAccent = Color(0xFFfcaf28),
     error = Color(0xFFFF6B6B),
     onError = Color(0xFF000000),
-    exceptions = Color(0xFF7B1FA2)
+    exceptions = Color(0xFFAB47BC)
 )
 
 /**

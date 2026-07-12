@@ -92,7 +92,7 @@ fun FloconTextField(
         textStyle = textStyle.copy(color = contentColor), // Fix style
         maxLines = maxLines,
         minLines = minLines,
-        cursorBrush = SolidColor(Color.White), // TODO Light mod
+        cursorBrush = SolidColor(FloconTheme.colorPalette.onPrimary),
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
         decorationBox = {
