@@ -31,6 +31,11 @@ import flocondesktop.composeapp.generated.resources.settings_adb_valid
 import flocondesktop.composeapp.generated.resources.settings_font_size_multiplier
 import flocondesktop.composeapp.generated.resources.settings_licenses
 import flocondesktop.composeapp.generated.resources.settings_test
+import flocondesktop.composeapp.generated.resources.settings_theme
+import flocondesktop.composeapp.generated.resources.settings_theme_dark
+import flocondesktop.composeapp.generated.resources.settings_theme_light
+import flocondesktop.composeapp.generated.resources.settings_theme_system
+import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -158,6 +163,27 @@ private fun SettingsScreen(
             }
         }
         FloconSection(
+            title = stringResource(Res.string.settings_theme),
+            initialValue = true
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.primary)
+                    .padding(all = 8.dp)
+            ) {
+                ThemeSetting.entries.forEach { theme ->
+                    ThemeButton(
+                        theme = theme,
+                        selected = uiState.theme == theme,
+                        onClick = { onAction(SettingsAction.ThemeChange(theme)) },
+                    )
+                }
+            }
+        }
+        FloconSection(
             title = stringResource(Res.string.settings_about_title),
             initialValue = true
         ) {
@@ -195,6 +221,35 @@ private fun SettingsButton(
 }
 
 @Composable
+private fun ThemeButton(
+    theme: ThemeSetting,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FloconButton(
+        onClick = onClick,
+        containerColor = if (selected) {
+            FloconTheme.colorPalette.accent
+        } else {
+            FloconTheme.colorPalette.secondary
+        },
+        modifier = modifier
+    ) {
+        Text(
+            text = stringResource(
+                when (theme) {
+                    ThemeSetting.Dark -> Res.string.settings_theme_dark
+                    ThemeSetting.Light -> Res.string.settings_theme_light
+                    ThemeSetting.System -> Res.string.settings_theme_system
+                }
+            ),
+            style = FloconTheme.typography.bodySmall
+        )
+    }
+}
+
+@Composable
 private fun LicensesWindow(
     onCloseRequest: () -> Unit
 ) {
@@ -210,7 +265,6 @@ private fun LicensesWindow(
                 .background(FloconTheme.colorPalette.primary),
         )
     }
-
 }
 
 @Preview

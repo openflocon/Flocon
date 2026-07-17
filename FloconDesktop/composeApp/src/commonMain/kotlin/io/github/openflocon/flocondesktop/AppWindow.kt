@@ -4,6 +4,7 @@ package io.github.openflocon.flocondesktop
 
 import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -12,7 +13,9 @@ import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.domainModule
+import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
 import io.github.openflocon.flocondesktop.app.AppScreen
 import io.github.openflocon.flocondesktop.app.di.appModule
@@ -56,12 +59,20 @@ fun App() {
     ) {
         val fontSizeMultiplier by koinInject<ObserveFontSizeMultiplierUseCase>()()
             .collectAsStateWithLifecycle()
+        val theme by koinInject<ObserveThemeUseCase>()()
+            .collectAsStateWithLifecycle()
+        val isDarkTheme = when (theme) {
+            ThemeSetting.Dark -> true
+            ThemeSetting.Light -> false
+            ThemeSetting.System -> isSystemInDarkTheme()
+        }
 
 //        KoinScope(
 //            scopeDefinition = { createScope(MainRoutes.Sub.Main) }
 //        ) {
         FloconTheme(
-            fontSizeMultiplier = fontSizeMultiplier
+            fontSizeMultiplier = fontSizeMultiplier,
+            isDarkTheme = isDarkTheme,
         ) {
             AppScreen()
         }

@@ -5,6 +5,7 @@ package io.github.openflocon.flocondesktop.core.data.settings.datasource.local
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
+import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -46,6 +47,11 @@ internal class SettingsDataSourcePrefs(
         .filterNotNull()
         .stateIn(1f)
 
+    override val theme: StateFlow<ThemeSetting> = flowSettings
+        .getStringOrNullFlow(THEME)
+        .mapLatest { it.toThemeSetting() }
+        .stateIn(ThemeSetting.DEFAULT)
+
     override fun getAdbPath(): String? = settings.getStringOrNull(ADB_PATH)
 
     override suspend fun setAdbPath(path: String) {
@@ -55,6 +61,14 @@ internal class SettingsDataSourcePrefs(
     override suspend fun setFontSizeMultiplier(value: Float) {
         settings.putFloat(FONT_SIZE_MULTIPLIER, value)
     }
+
+    override suspend fun setTheme(value: ThemeSetting) {
+        settings.putString(THEME, value.name)
+    }
+
+    private fun String?.toThemeSetting(): ThemeSetting = this
+        ?.let { name -> ThemeSetting.entries.firstOrNull { it.name == name } }
+        ?: ThemeSetting.DEFAULT
 
     private fun <T> Flow<T>.stateIn(default: T) = stateIn(
         scope = applicationScope,
@@ -87,6 +101,7 @@ internal class SettingsDataSourcePrefs(
     companion object {
         private const val ADB_PATH = "adb_path"
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier"
+        private const val THEME = "theme"
 
         private const val NETWORK_SETTINGS = "network_settings"
     }
