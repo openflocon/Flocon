@@ -14,6 +14,7 @@ internal class SettingsRepositoryImpl(
     private val localSettingsDataSource: SettingsDataSource,
 ) : SettingsRepository {
 
+    // TODO: Consider moving all settings into one StateFlow
     override val adbPath: Flow<String?> = localSettingsDataSource.adbPath
     override val fontSizeMultiplier: StateFlow<Float> = localSettingsDataSource.fontSizeMultiplier
     override val theme: StateFlow<ThemeSetting> = localSettingsDataSource.theme

@@ -4,7 +4,7 @@ import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import kotlinx.coroutines.flow.StateFlow
 
-class ObserveThemeUseCase(
+class ObserveThemeUseCase internal constructor(
     private val settingsRepository: SettingsRepository
 ) {
 
