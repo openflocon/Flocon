@@ -31,6 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -131,6 +133,12 @@ private fun SearchBar(
     selectedResultIndex: Int?,
     totalResults: Int,
 ) {
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -144,7 +152,8 @@ private fun SearchBar(
             modifier = Modifier
                 .weight(1f)
                 .padding(vertical = 8.dp, horizontal = 12.dp)
-                .heightIn(min = 24.dp),
+                .heightIn(min = 24.dp)
+                .focusRequester(focusRequester),
         )
 
         AnimatedVisibility(visible = totalResults > 0) {
