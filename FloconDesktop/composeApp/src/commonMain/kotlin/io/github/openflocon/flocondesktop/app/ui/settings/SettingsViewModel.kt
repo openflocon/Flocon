@@ -45,20 +45,17 @@ class SettingsViewModel(
 
     val uiState = combine(
         fontSizeMultiplierUseCase(),
-        observeThemeUseCase(),
-    ) { fontSizeMultiplier, theme ->
-        SettingsUiState(
-            fontSizeMultiplier = fontSizeMultiplier,
-            theme = theme,
-        )
-    val uiState = combine(fontSizeMultiplierUseCase(), logManager.logs) { multiplier, logs ->
+        logManager.logs,
+        settingsRepository.adbForwardStatus,
+    ) { multiplier, logs, forwardStatus ->
         SettingsUiState(
             fontSizeMultiplier = multiplier,
             logs = logs.map { it.toUiModel() },
+            adbForwardStatus = forwardStatus,
         )
     }
         .stateIn(
-            viewModelScope,
+            scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = SettingsUiState(
                 fontSizeMultiplier = 1f,

@@ -1,20 +1,25 @@
 package io.github.openflocon.flocondesktop.app.ui.settings
 
+import androidx.compose.runtime.Immutable
+import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
 
+@Immutable
 data class SettingsUiState(
     val fontSizeMultiplier: Float,
     val logs: List<LogEntryUiModel> = emptyList(),
+    val adbForwardStatus: AdbForwardStatus = AdbForwardStatus.UNKNOWN,
     val theme: ThemeSetting
 )
 
 fun previewSettingsUiState() = SettingsUiState(
     fontSizeMultiplier = 1f,
+    adbForwardStatus = AdbForwardStatus.OK,
     logs = listOf(
-        LogEntryUiModel(LogLevel.DEBUG, "ADB path saved: /usr/local/bin/adb"),
-        LogEntryUiModel(LogLevel.ERROR, "ADB test failed: No such file or directory"),
-        LogEntryUiModel(LogLevel.DEBUG, "ADB test succeeded"),
+        LogEntryUiModel(LogLevel.DEBUG, "ADB path saved: /usr/local/bin/adb", "12:00:00"),
+        LogEntryUiModel(LogLevel.ERROR, "ADB test failed: No such file or directory", "12:00:01"),
+        LogEntryUiModel(LogLevel.DEBUG, "ADB test succeeded", "12:00:02"),
     ),
     theme = ThemeSetting.DEFAULT
 )

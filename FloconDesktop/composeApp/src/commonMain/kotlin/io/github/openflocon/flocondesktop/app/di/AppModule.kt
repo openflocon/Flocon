@@ -9,15 +9,14 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val appModule =
-    module {
-        includes(appUiModule)
+val appModule = module {
+    includes(appUiModule)
 
-        singleOf(::FeedbackDisplayerImpl) {
-            bind<FeedbackDisplayer>()
-            bind<FeedbackDisplayerHandler>()
-        }
-
-        singleOf(::InitialSetupStateHolder)
-        singleOf(::LogManager)
+    singleOf(::FeedbackDisplayerImpl) {
+        bind<FeedbackDisplayer>()
+        bind<FeedbackDisplayerHandler>()
     }
+
+    singleOf(::InitialSetupStateHolder)
+    singleOf(::LogManager)
+}

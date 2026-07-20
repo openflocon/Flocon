@@ -10,6 +10,8 @@ import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
 import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
+import io.github.openflocon.domain.settings.repository.AdbForwardStatus
+import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.app.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
@@ -51,6 +53,7 @@ internal class AppViewModel(
     private val recordVideoDelegate: RecordVideoDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val logManager: LogManager,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel(messagesServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -104,8 +107,13 @@ internal class AppViewModel(
                 while (isActive) {
                     // ensure we have the forward enabled
                     startAdbForwardUseCase()
-                        .alsoFailure { logManager.e(TAG, "ADB forward failed", it) }
-                        .alsoSuccess { logManager.d(TAG, "ADB forward OK") }
+                        .alsoFailure {
+                            settingsRepository.setAdbForwardStatus(AdbForwardStatus.NOK)
+                            logManager.e(TAG, "ADB forward failed", it)
+                        }
+                        .alsoSuccess {
+                            settingsRepository.setAdbForwardStatus(AdbForwardStatus.OK)
+                        }
                     delay(1_500)
                 }
             }
