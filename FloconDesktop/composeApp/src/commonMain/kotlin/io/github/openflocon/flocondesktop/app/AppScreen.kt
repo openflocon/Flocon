@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
+import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
@@ -23,6 +24,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
 import io.github.openflocon.flocondesktop.features.files.filesRoutes
 import io.github.openflocon.flocondesktop.features.images.imageRoutes
 import io.github.openflocon.flocondesktop.features.network.networkRoutes
+import io.github.openflocon.flocondesktop.features.onboarding.onboardingRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -38,10 +40,14 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AppScreen() {
     val viewModel = koinViewModel<AppViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val adbError by viewModel.adbErrorState.collectAsStateWithLifecycle()
+    val serverError by viewModel.serverError.collectAsStateWithLifecycle()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Content(
             uiState = uiState,
+            adbError = adbError,
+            serverError = serverError,
             navigationState = viewModel.navigationState,
             onAction = viewModel::onAction
         )
@@ -53,6 +59,8 @@ fun AppScreen() {
 @Composable
 private fun Content(
     uiState: AppUiState,
+    adbError: AdbErrorType,
+    serverError: String?,
     navigationState: MainFloconNavigationState,
     onAction: (AppAction) -> Unit
 ) {
@@ -90,7 +98,10 @@ private fun Content(
                         onAppSelected = { onAction(AppAction.SelectApp(it)) },
                         onRecordClicked = { onAction(AppAction.Record) },
                         onRestartClicked = { onAction(AppAction.Restart) },
-                        onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) }
+                        onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
+                        adbError = adbError,
+                        serverError = serverError,
+                        onFixAdbClicked = { navigationState.navigate(SettingsRoutes.Main) }
                     )
                 }
             )
@@ -111,5 +122,6 @@ private fun Content(
         tableRoutes()
         settingsRoutes()
         crashReporterRoutes()
+        onboardingRoutes()
     }
 }
