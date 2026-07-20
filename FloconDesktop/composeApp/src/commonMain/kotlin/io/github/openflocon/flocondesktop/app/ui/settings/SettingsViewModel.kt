@@ -60,6 +60,7 @@ class SettingsViewModel(
         SettingsUiState(
             fontSizeMultiplier = multiplier,
             logs = logs.map { it.toUiModel() },
+            adbForwardStatus = forwardStatus,
         )
     }
         .stateIn(

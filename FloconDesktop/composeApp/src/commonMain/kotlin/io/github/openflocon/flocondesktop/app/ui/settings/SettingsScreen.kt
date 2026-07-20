@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cable
 import androidx.compose.material.icons.outlined.Check
@@ -437,9 +439,14 @@ private fun AdbPane(
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = stringResource(Res.string.settings_adb_valid),
-                    color = FloconTheme.colorPalette.onAccent,
+                    text = when (adbForwardStatus) {
+                        AdbForwardStatus.OK -> "Reverse port forwarding is active and healthy."
+                        AdbForwardStatus.NOK -> "Connection failed. Please ensure ADB is configured correctly and your device is connected."
+                        AdbForwardStatus.UNKNOWN -> "Status unknown. Waiting for device or forwarding loop to initialize."
+                    },
+                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.8f),
                     style = FloconTheme.typography.bodySmall,
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -662,6 +669,13 @@ private fun LogsPane(
     }
 }
 
+private data class BadgeTheme(
+    val label: String,
+    val bgColor: Color,
+    val textColor: Color,
+    val icon: ImageVector
+)
+
 @Composable
 private fun AboutPane(
     modifier: Modifier = Modifier,
@@ -701,25 +715,60 @@ private fun LogsPane(
     onClearLogs: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val clipboardManager = LocalClipboardManager.current
+
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier.fillMaxSize()
     ) {
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Console (${logs.size})",
+                text = "Flocon System Logs",
                 style = FloconTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
                 color = FloconTheme.colorPalette.onPrimary,
+                modifier = Modifier.weight(1f)
             )
+
             if (logs.isNotEmpty()) {
-                SettingsButton(
-                    text = "Clear",
+                FloconButton(
+                    onClick = {
+                        val text = logs.joinToString("\n") { "[${it.timestamp} ${it.level.name}] ${it.message}" }
+                        clipboardManager.setText(AnnotatedString(text))
+                    },
+                    containerColor = FloconTheme.colorPalette.secondary,
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        FloconIcon(
+                            imageVector = Icons.Outlined.ContentCopy,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Text("Copy All", style = FloconTheme.typography.bodySmall)
+                    }
+                }
+
+                FloconButton(
                     onClick = onClearLogs,
-                )
+                    containerColor = FloconTheme.colorPalette.secondary,
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        FloconIcon(
+                            imageVector = Icons.Outlined.Delete,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Text("Clear", style = FloconTheme.typography.bodySmall)
+                    }
+                }
             }
         }
 
@@ -729,17 +778,31 @@ private fun LogsPane(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.primary)
             ) {
-                Text(
-                    text = "No logs yet",
-                    style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.4f),
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    FloconIcon(
+                        imageVector = Icons.Outlined.Info,
+                        tint = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.3f),
+                        modifier = Modifier.size(36.dp)
+                    )
+                    Text(
+                        text = "No system logs generated yet",
+                        style = FloconTheme.typography.bodyMedium,
+                        color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.4f),
+                    )
+                }
             }
         } else {
             ConsoleLogPanel(
                 logs = logs,
-                modifier = Modifier.fillMaxWidth().weight(1f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
             )
         }
     }
@@ -749,11 +812,29 @@ private fun LogsPane(
 private fun AboutPane(
     modifier: Modifier = Modifier,
 ) {
-    AboutScreen(
-        modifier = modifier
-            .fillMaxSize()
-            .background(FloconTheme.colorPalette.primary),
-    )
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier.fillMaxSize()
+    ) {
+        Text(
+            text = "Open Source Licenses",
+            style = FloconTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = FloconTheme.colorPalette.onPrimary,
+        )
+        Text(
+            text = "Flocon is built using open source software. The licenses of libraries used in this project are listed below.",
+            style = FloconTheme.typography.bodySmall,
+            color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f),
+        )
+        AboutScreen(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .clip(FloconTheme.shapes.medium)
+                .background(FloconTheme.colorPalette.primary),
+        )
+    }
 }
 
 // ---------------------------------------------------------------------------
