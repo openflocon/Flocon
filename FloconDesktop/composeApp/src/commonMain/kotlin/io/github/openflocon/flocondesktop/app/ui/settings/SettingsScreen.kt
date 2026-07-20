@@ -3,6 +3,8 @@ package io.github.openflocon.flocondesktop.app.ui.settings
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,16 +23,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cable
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.ModeNight
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material.icons.outlined.Warning
@@ -58,8 +61,12 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_save
 import flocondesktop.composeapp.generated.resources.settings_adb_setup_title
 import flocondesktop.composeapp.generated.resources.settings_adb_valid
-import flocondesktop.composeapp.generated.resources.settings_font_size_multiplier
 import flocondesktop.composeapp.generated.resources.settings_test
+import flocondesktop.composeapp.generated.resources.settings_theme
+import flocondesktop.composeapp.generated.resources.settings_theme_dark
+import flocondesktop.composeapp.generated.resources.settings_theme_light
+import flocondesktop.composeapp.generated.resources.settings_theme_system
+import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
@@ -171,6 +178,7 @@ private fun SettingsScreen(
 
                 SettingsTab.Appearance -> AppearancePane(
                     fontSizeMultiplier = uiState.fontSizeMultiplier,
+                    currentTheme = uiState.theme,
                     onAction = onAction,
                 )
 
@@ -430,40 +438,6 @@ private fun AdbPane(
                 )
             }
         }
-        FloconSection(
-            title = stringResource(Res.string.settings_theme),
-            initialValue = true
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .padding(8.dp)
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary)
-                    .padding(all = 8.dp)
-            ) {
-                ThemeSetting.entries.forEach { theme ->
-                    ThemeButton(
-                        theme = theme,
-                        selected = uiState.theme == theme,
-                        onClick = { onAction(SettingsAction.ThemeChange(theme)) },
-                    )
-                }
-            }
-        }
-        FloconSection(
-            title = stringResource(Res.string.settings_about_title),
-            initialValue = true
-        ) {
-            SettingsButton(
-                text = stringResource(Res.string.general_save),
-                onClick = saveAdbPath,
-            )
-            SettingsButton(
-                text = stringResource(Res.string.settings_test),
-                onClick = testAdbPath,
-            )
-        }
     }
 }
 
@@ -486,12 +460,14 @@ private fun AdbForwardStatusBadge(
             FloconTheme.colorPalette.onAccent,
             Icons.Outlined.Check
         )
+
         AdbForwardStatus.NOK -> BadgeTheme(
             "FAILED",
             FloconTheme.colorPalette.error.copy(alpha = 0.2f),
             FloconTheme.colorPalette.error,
             Icons.Outlined.ErrorOutline
         )
+
         AdbForwardStatus.UNKNOWN -> BadgeTheme(
             "PENDING",
             FloconTheme.colorPalette.secondary.copy(alpha = 0.5f),
@@ -525,6 +501,7 @@ private fun AdbForwardStatusBadge(
 @Composable
 private fun AppearancePane(
     fontSizeMultiplier: Float,
+    currentTheme: ThemeSetting,
     onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -532,6 +509,26 @@ private fun AppearancePane(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
+        SettingsCard(
+            title = stringResource(Res.string.settings_theme),
+            icon = Icons.Outlined.ModeNight,
+            description = "Choose the color scheme of Flocon. Light mode uses bright backgrounds, Dark mode uses dark backgrounds, and System automatically matches your operating system."
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                ThemeSetting.entries.forEach { theme ->
+                    ThemeButton(
+                        theme = theme,
+                        selected = currentTheme == theme,
+                        onClick = { onAction(SettingsAction.ThemeChange(theme)) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+
         SettingsCard(
             title = "Text Scaling",
             icon = Icons.Outlined.TextFields,
@@ -747,31 +744,67 @@ private fun ThemeButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    FloconButton(
+    val interactionSource = remember { MutableInteractionSource() }
+    val hovered by interactionSource.collectIsHoveredAsState()
+    val shape = FloconTheme.shapes.medium
+
+    val bgColor = when {
+        selected -> FloconTheme.colorPalette.accent
+        hovered -> FloconTheme.colorPalette.secondary
+        else -> FloconTheme.colorPalette.secondary.copy(alpha = 0.5f)
+    }
+
+    val contentColor = when {
+        selected -> FloconTheme.colorPalette.onAccent
+        else -> FloconTheme.colorPalette.onPrimary
+    }
+
+    val borderColor = if (selected) {
+        FloconTheme.colorPalette.onAccent.copy(alpha = 0.5f)
+    } else {
+        Color.Transparent
+    }
+
+    val icon = when (theme) {
+        ThemeSetting.Dark -> Icons.Outlined.ModeNight
+        ThemeSetting.Light -> Icons.Outlined.LightMode
+        ThemeSetting.System -> Icons.Outlined.Computer
+    }
+
+    FloconSurface(
         onClick = onClick,
-        containerColor = if (selected) {
-            FloconTheme.colorPalette.accent
-        } else {
-            FloconTheme.colorPalette.secondary
-        },
-        modifier = modifier
+        color = bgColor,
+        contentColor = contentColor,
+        shape = shape,
+        border = BorderStroke(1.dp, borderColor),
+        modifier = modifier.height(40.dp),
+        interactionSource = interactionSource
     ) {
-        Text(
-            text = stringResource(
-                when (theme) {
-                    ThemeSetting.Dark -> Res.string.settings_theme_dark
-                    ThemeSetting.Light -> Res.string.settings_theme_light
-                    ThemeSetting.System -> Res.string.settings_theme_system
-                }
-            ),
-            style = FloconTheme.typography.bodySmall
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+        ) {
+            FloconIcon(
+                imageVector = icon,
+                tint = contentColor,
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                text = stringResource(
+                    when (theme) {
+                        ThemeSetting.Dark -> Res.string.settings_theme_dark
+                        ThemeSetting.Light -> Res.string.settings_theme_light
+                        ThemeSetting.System -> Res.string.settings_theme_system
+                    }
+                ),
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                style = FloconTheme.typography.bodySmall
+            )
+        }
     }
 }
 
 @Composable
-private fun LicensesWindow(
-    onCloseRequest: () -> Unit
 private fun ConsoleLogPanel(
     logs: List<LogEntryUiModel>,
     modifier: Modifier = Modifier,

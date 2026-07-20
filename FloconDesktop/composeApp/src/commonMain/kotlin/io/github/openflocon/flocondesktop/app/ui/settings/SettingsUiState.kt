@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.app.ui.settings
 
 import androidx.compose.runtime.Immutable
+import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
@@ -8,8 +9,8 @@ import io.github.openflocon.flocondesktop.common.log.LogLevel
 @Immutable
 data class SettingsUiState(
     val fontSizeMultiplier: Float,
-    val logs: List<LogEntryUiModel> = emptyList(),
-    val adbForwardStatus: AdbForwardStatus = AdbForwardStatus.UNKNOWN,
+    val logs: List<LogEntryUiModel>,
+    val adbForwardStatus: AdbForwardStatus,
     val theme: ThemeSetting
 )
 

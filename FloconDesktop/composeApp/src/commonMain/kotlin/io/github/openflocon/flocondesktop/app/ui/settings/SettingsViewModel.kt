@@ -9,6 +9,7 @@ import flocondesktop.composeapp.generated.resources.settings_test_failure
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.models.settings.ThemeSetting
+import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
@@ -45,11 +46,13 @@ class SettingsViewModel(
 
     val uiState = combine(
         fontSizeMultiplierUseCase(),
+        observeThemeUseCase(),
         logManager.logs,
         settingsRepository.adbForwardStatus,
-    ) { multiplier, logs, forwardStatus ->
+    ) { multiplier, theme, logs, forwardStatus ->
         SettingsUiState(
             fontSizeMultiplier = multiplier,
+            theme = theme,
             logs = logs.map { it.toUiModel() },
             adbForwardStatus = forwardStatus,
         )
@@ -60,6 +63,8 @@ class SettingsViewModel(
             initialValue = SettingsUiState(
                 fontSizeMultiplier = 1f,
                 theme = ThemeSetting.DEFAULT,
+                logs = emptyList(),
+                adbForwardStatus = AdbForwardStatus.UNKNOWN
             )
         )
 
