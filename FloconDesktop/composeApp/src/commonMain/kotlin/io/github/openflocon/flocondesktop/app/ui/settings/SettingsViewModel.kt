@@ -65,12 +65,6 @@ class SettingsViewModel(
             adbForwardStatus = forwardStatus,
             serverError = serverErrorMsg,
         )
-    val uiState = combine(fontSizeMultiplierUseCase(), logManager.logs) { multiplier, logs ->
-        SettingsUiState(
-            fontSizeMultiplier = multiplier,
-            logs = logs.map { it.toUiModel() },
-            adbForwardStatus = forwardStatus,
-        )
     }
         .stateIn(
             scope = viewModelScope,
