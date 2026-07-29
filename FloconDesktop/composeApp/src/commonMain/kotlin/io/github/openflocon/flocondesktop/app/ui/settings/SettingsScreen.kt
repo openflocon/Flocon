@@ -554,35 +554,6 @@ private fun AppearancePane(
                     modifier = Modifier.width(48.dp)
                 )
             }
-
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                text = "Live Preview",
-                style = FloconTheme.typography.labelSmall,
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f)
-            )
-
-            // Scaled text preview container
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(FloconTheme.shapes.small)
-                    .background(FloconTheme.colorPalette.secondary)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = "The quick brown fox jumps over the lazy dog.",
-                    style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colorPalette.onPrimary
-                )
-                Text(
-                    text = "[12:00:00 DEBUG] [AppViewModel] Live layout preview active.",
-                    style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                    color = FloconTheme.colorPalette.onAccent
-                )
-            }
         }
     }
 }
