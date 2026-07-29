@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.SinglePaneSceneStrategy
@@ -13,11 +14,11 @@ import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
+import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.databaseRoutes
-import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
 import io.github.openflocon.flocondesktop.features.files.filesRoutes
 import io.github.openflocon.flocondesktop.features.images.imageRoutes
@@ -55,15 +56,19 @@ private fun Content(
     navigationState: MainFloconNavigationState,
     onAction: (AppAction) -> Unit
 ) {
-    FloconNavigation(
-        navigationState = navigationState,
-        sceneStrategies = listOf(
+    val sceneStrategies = remember {
+        listOf(
             PanelSceneStrategy(),
             WindowSceneStrategy(),
             DialogSceneStrategy(),
             BigDialogSceneStrategy(),
             SinglePaneSceneStrategy()
-        ),
+        )
+    }
+    
+    FloconNavigation(
+        navigationState = navigationState,
+        sceneStrategies = sceneStrategies,
         sceneDecoratorStrategies = listOf(
             MenuSceneStrategy(
                 menuContent = {

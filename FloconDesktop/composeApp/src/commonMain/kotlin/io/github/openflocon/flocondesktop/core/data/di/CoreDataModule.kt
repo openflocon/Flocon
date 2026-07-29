@@ -14,7 +14,7 @@ import org.koin.dsl.module
 
 val coreDataModule =
     module {
-        factoryOf(::SettingsRepositoryImpl) {
+        singleOf(::SettingsRepositoryImpl) {
             bind<SettingsRepository>()
         }
         singleOf(::SettingsDataSourcePrefs) {

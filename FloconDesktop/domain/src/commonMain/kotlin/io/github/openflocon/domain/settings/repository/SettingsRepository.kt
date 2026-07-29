@@ -5,6 +5,8 @@ import io.github.openflocon.domain.models.settings.ThemeSetting
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
+enum class AdbForwardStatus { UNKNOWN, OK, NOK }
+
 interface SettingsRepository {
     var networkSettings: NetworkSettings
     val networkSettingsFlow: Flow<NetworkSettings>
@@ -20,4 +22,7 @@ interface SettingsRepository {
     val adbPath: Flow<String?>
     val fontSizeMultiplier: StateFlow<Float>
     val theme: StateFlow<ThemeSetting>
+    val adbForwardStatus: StateFlow<AdbForwardStatus>
+
+    fun setAdbForwardStatus(status: AdbForwardStatus)
 }

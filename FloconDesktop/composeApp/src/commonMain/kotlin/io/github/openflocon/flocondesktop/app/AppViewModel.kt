@@ -10,17 +10,20 @@ import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
 import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
+import io.github.openflocon.domain.settings.repository.AdbForwardStatus
+import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.app.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.buildMenu
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
+import io.github.openflocon.flocondesktop.common.log.LogManager
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
+import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.DashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
-import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.files.FilesRoutes
 import io.github.openflocon.flocondesktop.features.images.ImageRoutes
@@ -49,6 +52,8 @@ internal class AppViewModel(
     private val restartAppUseCase: RestartAppUseCase,
     private val recordVideoDelegate: RecordVideoDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
+    private val logManager: LogManager,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel(messagesServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -87,9 +92,14 @@ internal class AppViewModel(
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            initAdbPathUseCase().alsoFailure {
-                initialSetupStateHolder.setRequiresInitialSetup()
-            }
+            initAdbPathUseCase()
+                .alsoFailure {
+                    logManager.e(TAG, "ADB init failed", it)
+                    initialSetupStateHolder.setRequiresInitialSetup()
+                }
+                .alsoSuccess {
+                    logManager.d(TAG, "ADB init OK")
+                }
 
             messagesServerDelegate.initialize()
 
@@ -97,6 +107,13 @@ internal class AppViewModel(
                 while (isActive) {
                     // ensure we have the forward enabled
                     startAdbForwardUseCase()
+                        .alsoFailure {
+                            settingsRepository.setAdbForwardStatus(AdbForwardStatus.NOK)
+                            logManager.e(TAG, "ADB forward failed", it)
+                        }
+                        .alsoSuccess {
+                            settingsRepository.setAdbForwardStatus(AdbForwardStatus.OK)
+                        }
                     delay(1_500)
                 }
             }
@@ -117,23 +134,30 @@ internal class AppViewModel(
     }
 
     private fun onSelectMenu(action: AppAction.SelectMenu) {
-        contentState.update { it.copy(current = action.menu) }
-        navigationState.menu(
-            when (action.menu) {
-                SubScreen.Analytics -> AnalyticsRoutes.Main
-                SubScreen.Dashboard -> DashboardRoutes.Main
-                SubScreen.Database -> DatabaseRoutes.Main
-                SubScreen.Deeplinks -> DeeplinkRoutes.Main
-                SubScreen.AdbCommander -> AdbCommanderRoutes.Main
-                SubScreen.Files -> FilesRoutes.Main
-                SubScreen.Images -> ImageRoutes.Main
-                SubScreen.Network -> NetworkRoutes.Main
-                SubScreen.Settings -> SettingsRoutes.Main
-                SubScreen.SharedPreferences -> SharedPreferencesRoutes.Main
-                SubScreen.Tables -> TableRoutes.Main
-                SubScreen.CrashReporter -> CrashReporterRoutes.Main
-            }
-        )
+        if (action.menu != SubScreen.Settings) {
+            contentState.update { it.copy(current = action.menu) }
+        }
+
+        val route = when (action.menu) {
+            SubScreen.Analytics -> AnalyticsRoutes.Main
+            SubScreen.Dashboard -> DashboardRoutes.Main
+            SubScreen.Database -> DatabaseRoutes.Main
+            SubScreen.Deeplinks -> DeeplinkRoutes.Main
+            SubScreen.AdbCommander -> AdbCommanderRoutes.Main
+            SubScreen.Files -> FilesRoutes.Main
+            SubScreen.Images -> ImageRoutes.Main
+            SubScreen.Network -> NetworkRoutes.Main
+            SubScreen.Settings -> SettingsRoutes.Main
+            SubScreen.SharedPreferences -> SharedPreferencesRoutes.Main
+            SubScreen.Tables -> TableRoutes.Main
+            SubScreen.CrashReporter -> CrashReporterRoutes.Main
+        }
+
+        if (route !is SettingsRoutes) {
+            navigationState.menu(route)
+        } else {
+            navigationState.navigate(route)
+        }
     }
 
     private fun onDeviceSelected(action: AppAction.SelectDevice) {
@@ -183,5 +207,9 @@ internal class AppViewModel(
                 },
             )
         }
+    }
+
+    companion object {
+        private const val TAG = "AppViewModel"
     }
 }

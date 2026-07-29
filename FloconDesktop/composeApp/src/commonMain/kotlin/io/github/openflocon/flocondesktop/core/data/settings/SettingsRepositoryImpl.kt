@@ -2,11 +2,13 @@ package io.github.openflocon.flocondesktop.core.data.settings
 
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.ThemeSetting
+import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSource
 import io.github.openflocon.flocondesktop.core.data.settings.models.toDomain
 import io.github.openflocon.flocondesktop.core.data.settings.models.toLocal
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.mapLatest
 
@@ -18,6 +20,13 @@ internal class SettingsRepositoryImpl(
     override val adbPath: Flow<String?> = localSettingsDataSource.adbPath
     override val fontSizeMultiplier: StateFlow<Float> = localSettingsDataSource.fontSizeMultiplier
     override val theme: StateFlow<ThemeSetting> = localSettingsDataSource.theme
+
+    private val _adbForwardStatus = MutableStateFlow(AdbForwardStatus.UNKNOWN)
+    override val adbForwardStatus: StateFlow<AdbForwardStatus> = _adbForwardStatus
+
+    override fun setAdbForwardStatus(status: AdbForwardStatus) {
+        _adbForwardStatus.value = status
+    }
 
     override var networkSettings: NetworkSettings
         get() = localSettingsDataSource.networkSettings.toDomain()
