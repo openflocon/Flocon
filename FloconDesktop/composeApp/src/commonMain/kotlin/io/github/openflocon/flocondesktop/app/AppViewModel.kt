@@ -109,10 +109,10 @@ internal class AppViewModel(
                     startAdbForwardUseCase()
                         .alsoFailure {
                             settingsRepository.setAdbForwardStatus(AdbForwardStatus.NOK)
-                            logManager.e(TAG, "ADB forward failed", it)
                         }
                         .alsoSuccess {
                             settingsRepository.setAdbForwardStatus(AdbForwardStatus.OK)
+                            logManager.d(TAG, "ADB forward success")
                         }
                     delay(1_500)
                 }

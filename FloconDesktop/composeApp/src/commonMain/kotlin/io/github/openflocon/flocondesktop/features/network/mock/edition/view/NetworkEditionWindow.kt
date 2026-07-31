@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpSize
@@ -154,12 +152,12 @@ fun MockEditorScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(FloconTheme.colorPalette.error.copy(alpha = 0.15f))
+                    .background(FloconTheme.colorPalette.error)
                     .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
                     text = it,
-                    color = FloconTheme.colorPalette.error,
+                    color = FloconTheme.colorPalette.onError,
                     style = FloconTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                 )
@@ -185,7 +183,7 @@ fun MockEditorScreen(
             ) {
                 Text(
                     text = "Expectation",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = FloconTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = FloconTheme.colorPalette.onPrimary,
                 )
@@ -252,7 +250,7 @@ fun MockEditorScreen(
                             Text(
                                 text = "Enter a URL above to test pattern matching",
                                 style = FloconTheme.typography.labelSmall,
-                                color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                                color = FloconTheme.colorPalette.onSurface,
                                 modifier = Modifier.padding(start = 4.dp),
                             )
                         }
@@ -260,7 +258,7 @@ fun MockEditorScreen(
                             Text(
                                 text = "Enter a URL Pattern above first",
                                 style = FloconTheme.typography.labelSmall,
-                                color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                                color = FloconTheme.colorPalette.onSurface,
                                 modifier = Modifier.padding(start = 4.dp),
                             )
                         }
@@ -270,20 +268,20 @@ fun MockEditorScreen(
                                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFF2E7D32).copy(alpha = 0.15f))
+                                    .background(FloconTheme.colorPalette.accent)
                                     .padding(horizontal = 10.dp, vertical = 6.dp)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = null,
-                                    tint = Color(0xFF4CAF50),
+                                    tint = FloconTheme.colorPalette.onAccent,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
                                     text = "Matches pattern",
                                     style = FloconTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Medium,
-                                    color = Color(0xFF4CAF50),
+                                    color = FloconTheme.colorPalette.onAccent,
                                 )
                             }
                         }
@@ -293,20 +291,20 @@ fun MockEditorScreen(
                                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(FloconTheme.colorPalette.error.copy(alpha = 0.15f))
+                                    .background(FloconTheme.colorPalette.error)
                                     .padding(horizontal = 10.dp, vertical = 6.dp)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = null,
-                                    tint = FloconTheme.colorPalette.error,
+                                    tint = FloconTheme.colorPalette.onError,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
                                     text = "Does not match pattern",
                                     style = FloconTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Medium,
-                                    color = FloconTheme.colorPalette.error,
+                                    color = FloconTheme.colorPalette.onError,
                                 )
                             }
                         }
@@ -316,20 +314,20 @@ fun MockEditorScreen(
                                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(FloconTheme.colorPalette.onAccent.copy(alpha = 0.15f))
+                                    .background(FloconTheme.colorPalette.error)
                                     .padding(horizontal = 10.dp, vertical = 6.dp)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Warning,
                                     contentDescription = null,
-                                    tint = FloconTheme.colorPalette.onAccent,
+                                    tint = FloconTheme.colorPalette.onError,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
                                     text = "Invalid Regex syntax",
                                     style = FloconTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Medium,
-                                    color = FloconTheme.colorPalette.onAccent,
+                                    color = FloconTheme.colorPalette.onError,
                                 )
                             }
                         }
@@ -357,7 +355,7 @@ fun MockEditorScreen(
             ) {
                 Text(
                     text = "Response",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = FloconTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = FloconTheme.colorPalette.onPrimary,
                 )
@@ -379,7 +377,7 @@ fun MockEditorScreen(
 
                 Text(
                     text = "Type :",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = FloconTheme.typography.titleMedium,
                     color = FloconTheme.colorPalette.onPrimary,
                 )
 
