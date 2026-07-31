@@ -19,8 +19,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,6 +62,14 @@ import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.TabType
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+
+private enum class TestPatternStatus {
+    Empty,
+    NoPattern,
+    Matches,
+    NoMatch,
+    InvalidRegex,
+}
 
 @Composable
 fun NetworkEditionWindow(
@@ -110,44 +121,71 @@ fun MockEditorScreen(
     onCancel: () -> Unit,
 ) {
     var mock by remember { mutableStateOf(createEditable(initialMock)) }
+    var testUrl by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
 
-    // TODO more granularity on error
     var error by remember { mutableStateOf<String?>(null) }
+
+    val urlPattern = mock.expectation.urlPattern
+    val urlPatternError = remember(urlPattern) {
+        if (urlPattern.isNullOrBlank()) {
+            "URL Pattern cannot be empty"
+        } else {
+            runCatching { Regex(urlPattern) }
+                .exceptionOrNull()
+                ?.let { "Invalid Regex syntax: ${it.message}" }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         FloconDialogHeader(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             title = "Mock Edition"
         )
 
         error?.let {
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                text = it, color = MaterialTheme.colorScheme.error,
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(FloconTheme.colorPalette.error)
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = it,
+                    color = FloconTheme.colorPalette.onError,
+                    style = FloconTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                )
+            }
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .weight(1f)
+                .padding(horizontal = 12.dp)
                 .verticalScroll(scrollState),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            // Section Expectation Card
             Column(
                 modifier = Modifier
                     .weight(2f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(FloconTheme.colorPalette.primary)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                // Section Expectation
                 Text(
                     text = "Expectation",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = FloconTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
+                    color = FloconTheme.colorPalette.onPrimary,
                 )
                 FloconTextField(
                     value = mock.displayName,
@@ -157,20 +195,146 @@ fun MockEditorScreen(
                     label = defaultLabel("Display name"),
                     placeholder = defaultPlaceHolder("Enter a display name"),
                     modifier = Modifier.fillMaxWidth(),
-                    containerColor = FloconTheme.colorPalette.primary,
+                    containerColor = FloconTheme.colorPalette.surface,
                 )
+
                 FloconTextField(
                     value = mock.expectation.urlPattern ?: "",
                     onValueChange = { newValue ->
                         mock = mock.copy(expectation = mock.expectation.copy(urlPattern = newValue))
                     },
-                    label = defaultLabel("URL Pattern"),
+                    label = defaultLabel("URL Pattern (Regex)"),
                     placeholder = defaultPlaceHolder("https://www.myDomain.*"),
+                    isError = urlPatternError != null,
                     modifier = Modifier.fillMaxWidth(),
-                    containerColor = FloconTheme.colorPalette.primary
+                    containerColor = FloconTheme.colorPalette.surface,
                 )
+                if (urlPatternError != null) {
+                    Text(
+                        text = urlPatternError,
+                        color = FloconTheme.colorPalette.error,
+                        style = FloconTheme.typography.labelSmall,
+                        modifier = Modifier.padding(start = 4.dp),
+                    )
+                }
+
+                // Test URL Pattern field
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    FloconTextField(
+                        value = testUrl,
+                        onValueChange = { testUrl = it },
+                        label = defaultLabel("Test URL Pattern"),
+                        placeholder = defaultPlaceHolder("https://www.myDomain.com/api/v1"),
+                        modifier = Modifier.fillMaxWidth(),
+                        containerColor = FloconTheme.colorPalette.surface,
+                    )
+
+                    val testStatus = remember(urlPattern, testUrl) {
+                        if (testUrl.isBlank()) {
+                            TestPatternStatus.Empty
+                        } else if (urlPattern.isNullOrBlank()) {
+                            TestPatternStatus.NoPattern
+                        } else {
+                            runCatching {
+                                val regex = Regex(urlPattern)
+                                if (regex.matches(testUrl)) TestPatternStatus.Matches else TestPatternStatus.NoMatch
+                            }.getOrElse { TestPatternStatus.InvalidRegex }
+                        }
+                    }
+
+                    when (testStatus) {
+                        TestPatternStatus.Empty -> {
+                            Text(
+                                text = "Enter a URL above to test pattern matching",
+                                style = FloconTheme.typography.labelSmall,
+                                color = FloconTheme.colorPalette.onSurface,
+                                modifier = Modifier.padding(start = 4.dp),
+                            )
+                        }
+                        TestPatternStatus.NoPattern -> {
+                            Text(
+                                text = "Enter a URL Pattern above first",
+                                style = FloconTheme.typography.labelSmall,
+                                color = FloconTheme.colorPalette.onSurface,
+                                modifier = Modifier.padding(start = 4.dp),
+                            )
+                        }
+                        TestPatternStatus.Matches -> {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(FloconTheme.colorPalette.accent)
+                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = FloconTheme.colorPalette.onAccent,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = "Matches pattern",
+                                    style = FloconTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Medium,
+                                    color = FloconTheme.colorPalette.onAccent,
+                                )
+                            }
+                        }
+                        TestPatternStatus.NoMatch -> {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(FloconTheme.colorPalette.error)
+                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = null,
+                                    tint = FloconTheme.colorPalette.onError,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = "Does not match pattern",
+                                    style = FloconTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Medium,
+                                    color = FloconTheme.colorPalette.onError,
+                                )
+                            }
+                        }
+                        TestPatternStatus.InvalidRegex -> {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(FloconTheme.colorPalette.error)
+                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Warning,
+                                    contentDescription = null,
+                                    tint = FloconTheme.colorPalette.onError,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = "Invalid Regex syntax",
+                                    style = FloconTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Medium,
+                                    color = FloconTheme.colorPalette.onError,
+                                )
+                            }
+                        }
+                    }
+                }
+
                 MockNetworkMethodDropdown(
-                    // TODO should be a dropdown
                     label = "Method",
                     value = mock.expectation.method,
                     onValueChange = { newValue ->
@@ -179,17 +343,21 @@ fun MockEditorScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
+
+            // Section Response Card
             Column(
                 modifier = Modifier
                     .weight(3f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(FloconTheme.colorPalette.primary)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                // Section Response
                 Text(
                     text = "Response",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = FloconTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
+                    color = FloconTheme.colorPalette.onPrimary,
                 )
 
                 FloconTextField(
@@ -197,11 +365,9 @@ fun MockEditorScreen(
                     maxLines = 1,
                     value = mock.delay.toString(),
                     placeholder = defaultPlaceHolder("0"),
-                    containerColor = FloconTheme.colorPalette.primary,
+                    containerColor = FloconTheme.colorPalette.surface,
                     onValueChange = { newValue ->
-                        // On vérifie si la nouvelle valeur est vide ou si elle contient uniquement des chiffres
                         if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                            // Si c'est le cas, on met à jour l'état
                             val newDelay = newValue.toLongOrNull() ?: 0L
                             mock = mock.copy(delay = newDelay)
                         }
@@ -211,7 +377,8 @@ fun MockEditorScreen(
 
                 Text(
                     text = "Type :",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = FloconTheme.typography.titleMedium,
+                    color = FloconTheme.colorPalette.onPrimary,
                 )
 
                 Row(modifier = Modifier.fillMaxWidth()) {
@@ -221,8 +388,7 @@ fun MockEditorScreen(
                         isSelected = mock.responseType == EditableMockNetworkUiModel.ResponseType.BODY,
                         tabType = TabType.Start,
                         onSelected = {
-                            mock =
-                                mock.copy(responseType = EditableMockNetworkUiModel.ResponseType.BODY)
+                            mock = mock.copy(responseType = EditableMockNetworkUiModel.ResponseType.BODY)
                         }
                     )
                     FloconTab(
@@ -231,11 +397,11 @@ fun MockEditorScreen(
                         isSelected = mock.responseType == EditableMockNetworkUiModel.ResponseType.EXCEPTION,
                         tabType = TabType.End,
                         onSelected = {
-                            mock =
-                                mock.copy(responseType = EditableMockNetworkUiModel.ResponseType.EXCEPTION)
+                            mock = mock.copy(responseType = EditableMockNetworkUiModel.ResponseType.EXCEPTION)
                         }
                     )
                 }
+
                 when (mock.responseType) {
                     EditableMockNetworkUiModel.ResponseType.EXCEPTION -> {
                         NetworkExceptionSelector(
@@ -258,7 +424,7 @@ fun MockEditorScreen(
                             maxLines = 1,
                             placeholder = defaultPlaceHolder("eg: 200"),
                             value = bodyResponse.httpCode.toString(),
-                            containerColor = FloconTheme.colorPalette.primary,
+                            containerColor = FloconTheme.colorPalette.surface,
                             onValueChange = { newValue ->
                                 if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
                                     mock = mock.copy(
@@ -276,7 +442,7 @@ fun MockEditorScreen(
                             maxLines = 1,
                             value = bodyResponse.mediaType,
                             placeholder = defaultPlaceHolder("application/json"),
-                            containerColor = FloconTheme.colorPalette.primary,
+                            containerColor = FloconTheme.colorPalette.surface,
                             onValueChange = { newValue ->
                                 mock = mock.copy(
                                     bodyResponse = bodyResponse.copy(mediaType = newValue)
@@ -315,18 +481,18 @@ fun MockEditorScreen(
                         ) {
                             MockNetworkLabelView("Headers")
                             Box(
-                                modifier = Modifier.size(28.dp)
-                                    .clip(
-                                        RoundedCornerShape(4.dp),
-                                    ).clickable {
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(FloconTheme.colorPalette.surface)
+                                    .clickable {
                                         val newHeaders = bodyResponse.headers + HeaderUiModel(
                                             key = "",
                                             value = "",
                                         )
-                                        mock =
-                                            mock.copy(
-                                                bodyResponse = bodyResponse.copy(headers = newHeaders)
-                                            )
+                                        mock = mock.copy(
+                                            bodyResponse = bodyResponse.copy(headers = newHeaders)
+                                        )
                                     },
                                 contentAlignment = Alignment.Center,
                             ) {
@@ -340,7 +506,7 @@ fun MockEditorScreen(
 
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
                         ) {
                             bodyResponse.headers.fastForEach { header ->
                                 HeaderInputField(
@@ -354,10 +520,9 @@ fun MockEditorScreen(
                                                 it
                                             }
                                         }
-                                        mock =
-                                            mock.copy(
-                                                bodyResponse = bodyResponse.copy(headers = newHeaders)
-                                            )
+                                        mock = mock.copy(
+                                            bodyResponse = bodyResponse.copy(headers = newHeaders)
+                                        )
                                     },
                                     onValueChange = { newValue ->
                                         val newHeaders = bodyResponse.headers.map {
@@ -372,8 +537,7 @@ fun MockEditorScreen(
                                         )
                                     },
                                     onRemove = {
-                                        val newHeaders =
-                                            bodyResponse.headers.filterNot { it.id == header.id }
+                                        val newHeaders = bodyResponse.headers.filterNot { it.id == header.id }
                                         mock = mock.copy(
                                             bodyResponse = bodyResponse.copy(headers = newHeaders)
                                         )
@@ -403,7 +567,7 @@ fun MockEditorScreen(
                             )
                         }
 
-                        if(isEditSelected) {
+                        if (isEditSelected) {
                             FloconTextField(
                                 value = bodyResponse.body,
                                 onValueChange = { newValue ->
@@ -411,9 +575,9 @@ fun MockEditorScreen(
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(400.dp),
+                                    .height(350.dp),
                                 singleLine = false,
-                                containerColor = FloconTheme.colorPalette.primary
+                                containerColor = FloconTheme.colorPalette.surface
                             )
                         } else {
                             var jsonError by remember(bodyResponse.body) { mutableStateOf<Throwable?>(null) }
@@ -421,15 +585,15 @@ fun MockEditorScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(400.dp)
+                                    .height(350.dp)
                                     .background(
-                                        color = FloconTheme.colorPalette.primary,
+                                        color = FloconTheme.colorPalette.surface,
                                         shape = FloconTheme.shapes.medium,
                                     )
                                     .padding(vertical = 4.dp, horizontal = 8.dp),
                             ) {
                                 val throwable = jsonError
-                                if(throwable == null) {
+                                if (throwable == null) {
                                     FloconJsonTree(
                                         json = bodyResponse.body,
                                         initialState = TreeState.EXPANDED,
@@ -439,7 +603,8 @@ fun MockEditorScreen(
                                 } else {
                                     Text(
                                         text = throwable.localizedMessage,
-                                        style = FloconTheme.typography.bodySmall
+                                        style = FloconTheme.typography.bodySmall,
+                                        color = FloconTheme.colorPalette.error,
                                     )
                                 }
                             }
@@ -448,8 +613,11 @@ fun MockEditorScreen(
                 }
             }
         }
+
         Row(
-            modifier = Modifier.fillMaxWidth().padding(all = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -459,20 +627,28 @@ fun MockEditorScreen(
                     mock = mock.copy(isShared = it)
                 }
             )
-            Text("Shared across apps & devices", style = FloconTheme.typography.bodySmall, color = FloconTheme.colorPalette.onSurface)
+            Text(
+                text = "Shared across apps & devices",
+                style = FloconTheme.typography.bodySmall,
+                color = FloconTheme.colorPalette.onSurface
+            )
             Spacer(modifier = Modifier.weight(1f))
             FloconDialogButtons(
                 onCancel = onCancel,
                 onValidate = {
-                    editableToUi(mock).fold(
-                        doOnFailure = {
-                            error = "Some fields are required"
-                        },
-                        doOnSuccess = {
-                            onSave(it)
-                            error = null
-                        },
-                    )
+                    if (urlPatternError != null) {
+                        error = urlPatternError
+                    } else {
+                        editableToUi(mock).fold(
+                            doOnFailure = {
+                                error = "Some fields are required"
+                            },
+                            doOnSuccess = {
+                                onSave(it)
+                                error = null
+                            },
+                        )
+                    }
                 },
             )
         }
@@ -487,11 +663,11 @@ fun NetworkMockMediaType(text: String, onClicked: (text: String) -> Unit) {
         style = FloconTheme.typography.bodySmall,
         modifier = Modifier
             .clip(RoundedCornerShape(20.dp))
-            .background(FloconTheme.colorPalette.primary.copy(alpha = 0.8f))
+            .background(FloconTheme.colorPalette.surface)
             .clickable {
                 onClicked(text)
             }
-            .padding(horizontal = 12.dp, vertical = 2.dp),
+            .padding(horizontal = 12.dp, vertical = 4.dp),
     )
 }
 
@@ -513,20 +689,21 @@ private fun HeaderInputField(
             onValueChange = onKeyChange,
             placeholder = defaultPlaceHolder("Key"),
             modifier = Modifier.weight(1f),
-            containerColor = FloconTheme.colorPalette.primary
+            containerColor = FloconTheme.colorPalette.surface
         )
         FloconTextField(
             value = value,
             onValueChange = onValueChange,
             placeholder = defaultPlaceHolder("Value"),
             modifier = Modifier.weight(1f),
-            containerColor = FloconTheme.colorPalette.primary
+            containerColor = FloconTheme.colorPalette.surface
         )
 
         Box(
             modifier = Modifier
                 .size(28.dp)
-                .clip(RoundedCornerShape(2.dp))
+                .clip(RoundedCornerShape(4.dp))
+                .background(FloconTheme.colorPalette.surface)
                 .clickable {
                     onRemove()
                 }.padding(all = 4.dp),
@@ -540,3 +717,4 @@ private fun HeaderInputField(
         }
     }
 }
+
