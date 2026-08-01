@@ -66,6 +66,12 @@ internal class SettingsDataSourcePrefs(
         settings.putString(THEME, value.name)
     }
 
+    override fun isOnboardingCompleted(): Boolean = settings.getBoolean(ONBOARDING_COMPLETED, false)
+
+    override suspend fun setOnboardingCompleted(completed: Boolean) {
+        settings.putBoolean(ONBOARDING_COMPLETED, completed)
+    }
+
     private fun String?.toThemeSetting(): ThemeSetting = this
         ?.let { name -> ThemeSetting.entries.firstOrNull { it.name == name } }
         ?: ThemeSetting.DEFAULT
@@ -102,6 +108,7 @@ internal class SettingsDataSourcePrefs(
         private const val ADB_PATH = "adb_path"
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier"
         private const val THEME = "theme"
+        private const val ONBOARDING_COMPLETED = "onboarding_completed"
 
         private const val NETWORK_SETTINGS = "network_settings"
     }

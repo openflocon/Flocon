@@ -87,7 +87,7 @@
     <string name="screenshot_saved_at">Success, file saved at %1$s</string>
     <string name="search">Search</string>
     <string name="settings_adb_setup_title">Please setup ADB first, this field is mandatory</string>
-    <string name="settings_adb_valid">ADB configuraton is valid</string>
+    <string name="settings_adb_valid">ADB configuration is valid</string>
     <string name="settings_font_size_multiplier">Font Size Multiplier : %1$sx</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_theme_dark">Dark</string>
