@@ -86,8 +86,9 @@ nav:
     - Troubleshooting: troubleshooting.md
   - Features:
     - Networking:
-      - REST & HTTP: network.md
-      - Mocking Tutorial: mocking.md
+      - HTTP & REST: network.md
+      - Mocking: mocking.md
+      - Bad Network Simulation: bad-quality.md
       - GraphQL: graphql.md
       - WebSockets: websocket.md
       - gRPC: grpc.md

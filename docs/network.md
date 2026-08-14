@@ -38,6 +38,14 @@ Flocon allows you to **mock HTTP requests on the fly** without editing your code
 
 ---
 
+## 📉 Bad Network Simulation (Network Conditioning)
+
+Flocon also includes a built-in network conditioner to simulate real-world conditions like subway network drops, slow 2G/3G speeds, high latency jitter, and random packet loss without modifying device OS settings.
+
+[:octicons-pulse-16: Bad Network Simulation Guide](bad-quality.md){ .md-button style="margin-top: 0.5rem;" }
+
+---
+
 ## Setup & Integration
 
 ### With OkHttp (Android)
