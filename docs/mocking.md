@@ -113,16 +113,7 @@ Inside the Mock Editor modal:
     - **Headers**: Add custom response headers (e.g., `Content-Type: application/json`).
 3. Click **Save & Enable Mock**.
 
-<!-- ========================================== -->
-<!-- IMAGE PLACEHOLDER: STEP 5 - MOCK CONFIGURATION MODAL -->
-<!-- Description: Screenshot of the Mock Editor modal with status code, delay, and edited JSON body -->
-<!-- ========================================== -->
-<div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
-  <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Mock Editor Configuration</p>
-  <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot of the Mock Editor dialog showing configured status code, delay, and JSON payload (e.g. <code>../assets/screenshots/mocking_step5_editor.png</code>)
-  </p>
-</div>
+<img width="1290" alt="Mock Editor Configuration" src="../assets/screenshots/mocking_step5_editor.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
 ---
 
@@ -133,16 +124,7 @@ Inside the Mock Editor modal:
 3. **In the mobile app**: The app receives the mock response immediately without contacting the backend server!
 4. **In Flocon Desktop**: The request is logged in the Network Inspector with a visible **`[MOCKED]`** tag and purple badge.
 
-<!-- ========================================== -->
-<!-- IMAGE PLACEHOLDER: STEP 6 - MOCKED REQUEST IN DESKTOP -->
-<!-- Description: Screenshot showing the intercepted request marked with the [MOCKED] badge in the event table -->
-<!-- ========================================== -->
-<div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
-  <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Intercepted Mock in Event Log</p>
-  <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot of the Network Inspector showing the `[MOCKED]` badge and response payload (e.g. <code>../assets/screenshots/mocking_step6_mocked_result.png</code>)
-  </p>
-</div>
+<img width="1290" alt="Intercepted Mock in Event Log" src="../assets/screenshots/mocking_step6_mocked_result.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
 ---
 
@@ -161,17 +143,6 @@ Use the **Export** and **Import** buttons in the dialog to save your mocks to `.
 - Share mock suites with your team.
 - Attach edge-case scenarios to bug reports for QA.
 - Switch between different test profiles (e.g. Happy Path, Edge Cases, Outage Simulation).
-
-<!-- ========================================== -->
-<!-- IMAGE PLACEHOLDER: STEP 7 - MOCKS LIST & EXPORT -->
-<!-- Description: Screenshot of the Mocks list with toggles and the Export/Import buttons -->
-<!-- ========================================== -->
-<div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
-  <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Mocks List with Toggle & Export</p>
-  <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot of the Mocks Manager dialog showing toggle switches and export/import options (e.g. <code>../assets/screenshots/mocking_step7_mocks_list.png</code>)
-  </p>
-</div>
 
 ---
 

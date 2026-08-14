@@ -22,17 +22,6 @@ With Flocon's Bad Network Simulation, you can configure:
 
 ## How It Works
 
-<!-- ========================================== -->
-<!-- IMAGE PLACEHOLDER: BAD QUALITY CONFIGURATION MODAL -->
-<!-- Description: Screenshot of Flocon Desktop Bad Quality / Network Conditioner settings dialog -->
-<!-- ========================================== -->
-<div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
-  <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Bad Network Conditioner Modal</p>
-  <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot of the Bad Quality / Network Conditioner configuration dialog in Flocon Desktop (e.g. <code>../assets/screenshots/bad_quality_config.png</code>)
-  </p>
-</div>
-
 1. Open **Flocon Desktop** and navigate to the **Network** tab.
 2. Click the **Network Conditioner / Bad Quality** icon (or access it from the tools menu).
 3. **Configure Latency**:
