@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.mock.list.view
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -102,9 +103,15 @@ private fun NetworkMocksContent(
         )
         MocksHeaderView(Modifier.fillMaxWidth())
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().height(400.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp)
         ) {
-            items(mocks) {
+            items(
+                items = mocks,
+                key = MockNetworkLineUiModel::id
+            ) {
                 MockLineView(
                     item = it,
                     onClicked = { id -> onAction(NetworkMockAction.OnItemClicked(id)) },
@@ -125,11 +132,7 @@ private fun NetworkMocksContent(
                             )
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                HorizontalDivider(
-                    Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.outline
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
