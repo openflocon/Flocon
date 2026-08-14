@@ -1,44 +1,53 @@
-### 🔗 Deeplink Launcher (android only)
+---
+title: Deeplink Launcher
+description: Interactive deeplink runner with parameter autocompletion and execution.
+---
 
-<img width="1293" height="836" alt="Screenshot 2025-09-12 at 15 41 39" src="https://github.com/user-attachments/assets/eeaa30fb-6567-437a-96a4-dff44c6c6a54" />
+# 🔗 Deeplink Launcher
 
-Flocon includes a **deeplink runner**, which lists all the deeplinks supported by your app (either auto-discovered or manually registered).
+Flocon includes an **interactive deeplink runner** for Android that eliminates the need to manually construct and execute cumbersome `adb shell am start` commands in terminal.
+
+---
+
+## Overview
+
+<img width="1293" height="836" alt="Deeplink Runner" src="https://github.com/user-attachments/assets/eeaa30fb-6567-437a-96a4-dff44c6c6a54" style="border-radius: 8px;" />
 
 From the desktop UI, you can:
+- Browse all registered application deeplinks.
+- Fill parameters interactively with **autocomplete suggestions**.
+- Trigger navigation instantly on the connected Android device.
 
-- Browse available deeplinks
-- Enter parameters interactively
-- Execute deeplinks directly on the device
-- Instantly navigate to specific app screens
+---
 
-No more typing long `adb shell am start` commands — Flocon makes deeplink testing accessible and efficient.
+## Defining Deeplinks in Kotlin
 
-**You can configure deeplinks directly from your Android code!**
+Declare deeplink routes and test variables directly from your Android codebase:
 
 ```kotlin
 Flocon.deeplinks {
-    variable("test_variable")
     variable("host") {
-        description = "Host variable"
-        autoComplete(listOf("flocon", "flocon2", "flocon3"))
+        description = "Host scheme/domain"
+        autoComplete(listOf("flocon", "myapp"))
     }
+
+    variable("sample_comment")
 
     deeplink("[host]://home") {
         "host" withVariable "host"
     }
-    deeplink("[host]://test") {
-        "host" withVariable "host"
-    }
+
     deeplink("[host]://user/[userId]") {
-        label = "User"
-        "userId" withAutoComplete listOf("Florent", "David", "Guillaume")
+        label = "User Profile"
+        "userId" withAutoComplete listOf("101", "202", "303")
         "host" withVariable "host"
     }
+
     deeplink("[host]://post/[postId]?comment=[commentText]") {
-        label = "Post"
-        description = "Open a post and send a comment"
+        label = "Post Detail"
+        description = "Opens a post and pre-fills comment text"
         "postId" withAutoComplete listOf("1", "2", "3")
-        "commentText" withVariable "test_variable"
+        "commentText" withVariable "sample_comment"
         "host" withVariable "host"
     }
 }

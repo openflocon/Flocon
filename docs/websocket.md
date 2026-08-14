@@ -1,77 +1,85 @@
-### 💬 Inspect Websockets
+---
+title: WebSocket Inspector
+description: Monitor and debug real-time WebSocket frames, messages, and events.
+---
 
-<img width="1442" height="572" alt="Screenshot 2025-10-04 at 23 44 57" src="https://github.com/user-attachments/assets/49cef28f-87c9-4af7-a929-63d428d99f9e" />
+# 💬 WebSocket Inspector
 
-Flocon doesn’t stop at HTTP — it also captures **all WebSocket communications** made by your Android app.  
-This allows you to inspect real-time data exchanges between your app and the server with full visibility.
+Flocon captures **all WebSocket communications** made by your application, giving you complete visibility into live feeds, chats, and multiplayer events.
 
-For each WebSocket connection, you can inspect:
+---
 
-- Connection URL  
-- **Sent and received frames** (text, binary, ping/pong)  
-- **Timestamps** and message order  
-- **Payloads**  
-- **Closes**
+## Overview
 
-With this feature, you can:
+<img width="1442" height="572" alt="WebSocket Inspection in Flocon" src="https://github.com/user-attachments/assets/49cef28f-87c9-4af7-a929-63d428d99f9e" style="border-radius: 8px;" />
 
-- Debug real-time features like chat, live feeds, or multiplayer updates  
-- Verify the exact content of messages exchanged  
-- Diagnose disconnection or synchronization issues  
+For every active WebSocket connection, Flocon records:
 
-#### With OkHttp3 (android only)
+- **Connection Lifecycle**: Connection URL, handshake status, opening timestamps, and closure codes
+- **Frames**: Sent and received text frames, binary payloads, and ping/pong heartbeats
+- **Order & Timestamps**: Precise sequential message ordering with millisecond timestamps
 
-Flocon-Okhttp-Interceptor has built-in websocket methods (⚠️ it's not possible through interceptors ⚠️) 
+---
 
-To log outgoing messages 
-```kotlin
-webSocket.sendWithFlocon("\"$text\"") // extension method that log to Flocon and performs the send
-```
+## Setup & Integration
 
-To log incoming messages 
-```kotlin
-val request = Request.Builder()
-       .url("wss://.......")
-       .build()
-val listener = object : WebSocketListener() {
-      // your listener
-}
+### With OkHttp (Android)
 
-webSocket = client.newWebSocket(
-      request,
-      listener.listenWithFlocon(id = "wss://......."), // extension method that wraps an existing WebSocketListener
+Flocon provides built-in WebSocket extension helpers for OkHttp:
+
+=== "Logging Outgoing Messages"
+
+    ```kotlin
+    // Sends the message and simultaneously logs it to Flocon
+    webSocket.sendWithFlocon("\"$messagePayload\"")
+    ```
+
+=== "Logging Incoming Messages"
+
+    ```kotlin
+    val request = Request.Builder()
+        .url("wss://your-websocket-endpoint.com")
+        .build()
+
+    val myListener = object : WebSocketListener() {
+        override fun onMessage(webSocket: WebSocket, text: String) {
+            // Your handler
+        }
+    }
+
+    // Wraps the listener to record all incoming frames in Flocon
+    val webSocket = client.newWebSocket(
+        request,
+        myListener.listenWithFlocon(id = "wss://your-websocket-endpoint.com")
     )
-}
-```
+    ```
 
-#### 🧰 Manually (kotlin multi platform compatible)
+---
 
-If you are using other websockets libs than okhttp, you can easily forward events to FloconWebSocket
+### Manual Logging (Kotlin Multiplatform)
 
-To log outgoing messages 
-```kotlin
-val message = "hello"
+If you use custom WebSocket implementations (or multiplatform WebSocket engines), forward events directly via `floconLogWebSocketEvent`:
 
-webSocket.send(message)
+=== "Outgoing Frames"
 
-floconLogWebSocketEvent(
-    FloconWebSocketEvent(
-        websocketUrl = "ws://...",
-        event = FloconWebSocketEvent.Event.SendMessage,
-        message = message,
-    )
-)
-```
-
-To log incoming messages 
-```kotlin
-myCustomWebSocket.onReceived {
+    ```kotlin
     floconLogWebSocketEvent(
         FloconWebSocketEvent(
-        websocketUrl = "ws://..."
-        event = FloconWebSocketEvent.Event.ReceiveMessage,
-        message = it,
+            websocketUrl = "wss://api.example.com/ws",
+            event = FloconWebSocketEvent.Event.SendMessage,
+            message = outgoingText,
+        )
     )
-    // handle your message
-)
-```
+    ```
+
+=== "Incoming Frames"
+
+    ```kotlin
+    floconLogWebSocketEvent(
+        FloconWebSocketEvent(
+            websocketUrl = "wss://api.example.com/ws",
+            event = FloconWebSocketEvent.Event.ReceiveMessage,
+            message = incomingText,
+        )
+    )
+    ```

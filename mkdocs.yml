@@ -1,45 +1,105 @@
 site_name: Flocon
-site_url: https://github.com/openflocon/Flocon
+site_description: An advanced, lightweight debugging & inspection tool for Android and Kotlin Multiplatform.
+site_url: https://openflocon.github.io/Flocon/
+repo_name: openflocon/Flocon
+repo_url: https://github.com/openflocon/Flocon
+edit_uri: edit/main/docs/
+
 theme:
   name: material
+  logo: assets/app_icon_small.png
+  favicon: assets/app_icon_small.png
+  palette:
+    # Light mode
+    - scheme: default
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    # Dark mode
+    - scheme: slate
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
   features:
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.tracking
+    - navigation.instant
+    - navigation.instant.progress
     - content.code.copy
-  
+    - content.tabs.link
+    - content.action.edit
+    - search.suggest
+    - search.highlight
+    - search.share
+
+extra_css:
+  - assets/custom.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/openflocon/Flocon
+    - icon: fontawesome/solid/cube
+      link: https://search.maven.org/artifact/io.github.openflocon/flocon
+    - icon: fontawesome/brands/android
+      link: https://developer.android.com/kotlin/multiplatform
+
 markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
-  - admonition
-  - pymdownx.details
+  - pymdownx.keys
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - attr_list
   - md_in_html
 
 nav:
   - Home: index.md
-  - Starting:
-    - Setup: setup.md
-    - MacOS Install: macos-install.md
+  - Getting Started:
+    - Installation & Setup: setup.md
+    - macOS Setup: macos-install.md
     - Troubleshooting: troubleshooting.md
   - Features:
-    - Network:
-      - REST: network.md
+    - Networking:
+      - REST & HTTP: network.md
       - GraphQL: graphql.md
-      - Websocket: websocket.md
-      - GRPC: grpc.md
-      - Images: image.md
-    - Database: database.md
-    - Analytics: analytics.md
-    - Files: files.md
-    - Shared Preferences: sharedpref.md
-    - Dashboard: dashboard.md
-    - Tables: table.md
-    - Deeplinks: deeplink.md
+      - WebSockets: websocket.md
+      - gRPC: grpc.md
+      - Image Viewer: image.md
+    - Storage & State:
+      - Databases (Room & SQLite): database.md
+      - Preferences & DataStore: sharedpref.md
+      - File Explorer: files.md
+    - Custom Debugging:
+      - Reactive Dashboards: dashboard.md
+      - Data Tables: table.md
+      - Deeplink Launcher: deeplink.md
+      - Analytics Viewer: analytics.md
   - About:
-    - Story: about.md
+    - The Story: about.md
     - Contributors: contributors.md

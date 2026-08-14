@@ -1,65 +1,101 @@
-### 📡 Network Request Inspector (kotlin multi platform compatible)
+---
+title: Network Inspection & Mocking
+description: Inspect and mock HTTP/REST requests using OkHttp and Ktor in Flocon.
+---
 
-<img width="1291" height="834" alt="Screenshot 2025-09-12 at 15 39 55" src="https://github.com/user-attachments/assets/48f86fdf-f552-4f68-abe2-8d61229ccb27" />
+# 📡 Network Request Inspector & Mocking
 
-<img width="1292" height="833" alt="Screenshot 2025-09-12 at 15 40 03" src="https://github.com/user-attachments/assets/c0f74bb4-85f3-4ced-b156-78dfae0189f3" />
+Flocon captures **all outgoing network requests** made by your Android or Kotlin Multiplatform app — whether they are simple REST calls or multipart uploads — and displays them in a clean, real-time desktop UI.
 
-Flocon captures **all outgoing network requests** made by the Android app — whether they’re simple REST API calls or complex multipart uploads — and displays them in an organized UI.
+---
 
-For each request, you can inspect:
+## Overview
 
-- HTTP method (GET, POST, etc.)
-- Full URL
-- Request headers and body
-- Response headers and body
-- Status code and response time
-- Timestamp
+<img width="1291" height="834" alt="Network Inspector UI" src="https://github.com/user-attachments/assets/48f86fdf-f552-4f68-abe2-8d61229ccb27" style="border-radius: 8px;" />
 
-This feature is invaluable for diagnosing backend issues, debugging unexpected API failures, and verifying request payloads and authentication headers.
+<img width="1292" height="833" alt="Network Request Detail View" src="https://github.com/user-attachments/assets/c0f74bb4-85f3-4ced-b156-78dfae0189f3" style="border-radius: 8px; margin-top: 1rem;" />
 
-#### 🎭 HTTP Request Mocking (kotlin multi platform compatible)
+For every captured request, Flocon provides:
 
-<img width="1293" height="836" alt="Screenshot 2025-09-12 at 15 40 38" src="https://github.com/user-attachments/assets/3a529e3f-488e-4dba-aee1-fc6f70efcb08" />
+- **Method & URL**: HTTP method (`GET`, `POST`, `PUT`, `DELETE`, etc.) and full endpoint URL
+- **Headers & Body**: Formatted JSON/text request and response payloads with search & copy
+- **Metrics**: HTTP status code, response time duration, payload size, and timestamps
+- **Error Details**: Clear diagnostics on connection drops, timeouts, and server errors
 
-Beyond simple inspection, Flocon now allows you to mock HTTP requests. This powerful feature gives you full control over your app's network layer without needing to change any code. You can intercept specific network calls and provide custom responses, making it easy to test various scenarios.
+---
 
-With this feature, you can:
+## 🎭 HTTP Request Mocking
 
-- Simulate network errors: Test how your app handles different HTTP status codes (e.g., 404 Not Found, 500 Server Error).
-- Create test data: Mock responses with specific data to test different UI states, even if your backend isn't ready yet.
-- Create a new mock from an existing request, then test your app with some differences inside the prefious body
-- Reduce dependencies: Develop and test features without needing a stable internet connection or a complete backend environment.
+Flocon allows you to **mock HTTP requests on the fly** without editing your codebase or redeploying your application:
 
-#### With OkHttp (android only)
+<img width="1293" height="836" alt="Network Mocking in Flocon" src="https://github.com/user-attachments/assets/3a529e3f-488e-4dba-aee1-fc6f70efcb08" style="border-radius: 8px;" />
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-okhttp-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-okhttp-interceptor)
+- **Simulate Network Errors**: Test 401 Unauthorized, 404 Not Found, 429 Rate Limit, or 500 Internal Server Error handling.
+- **Custom Response Payloads**: Inject mock JSON data to test unreleased backend features or rare edge cases.
+- **Clone from Existing Request**: Convert any captured real request into an active mock with a single click in the desktop UI.
 
-```
-debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
-releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
-```
+---
+
+## Setup & Integration
+
+### With OkHttp (Android)
+
+=== "libs.versions.toml"
+
+    ```toml
+    [libraries]
+    flocon-okhttp = { module = "io.github.openflocon:flocon-okhttp-interceptor", version.ref = "flocon" }
+    flocon-okhttp-no-op = { module = "io.github.openflocon:flocon-okhttp-interceptor-no-op", version.ref = "flocon" }
+    ```
+
+=== "build.gradle.kts"
+
+    ```kotlin
+    dependencies {
+        debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
+    }
+    ```
+
+Add the interceptor to your `OkHttpClient` builder:
 
 ```kotlin
-val okHttpClient = OkHttpClient()
-            .newBuilder()
-            .addInterceptor(FloconOkhttpInterceptor())
-            .build()
+val okHttpClient = OkHttpClient.Builder()
+    .addInterceptor(FloconOkhttpInterceptor())
+    .build()
 ```
 
-#### With Ktor (kotlin multi platform compatible)
+---
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-ktor-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-ktor-interceptor)
+### With Ktor (Kotlin Multiplatform)
 
-tested with ktor `3.2.3`
+=== "libs.versions.toml"
 
-```
-debugImplementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
-releaseImplementation("io.github.openflocon:flocon-ktor-interceptor-no-op:LAST_VERSION")
-```
+    ```toml
+    [libraries]
+    flocon-ktor = { module = "io.github.openflocon:flocon-ktor-interceptor", version.ref = "flocon" }
+    flocon-ktor-no-op = { module = "io.github.openflocon:flocon-ktor-interceptor-no-op", version.ref = "flocon" }
+    ```
+
+=== "build.gradle.kts"
+
+    ```kotlin
+    kotlin {
+        sourceSets {
+            commonMain.dependencies {
+                implementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
+            }
+        }
+    }
+    ```
+
+Install the plugin into your Ktor `HttpClient`:
 
 ```kotlin
-val httpClient = HttpClient(YourClient) { 
+val httpClient = HttpClient {
     install(FloconKtorPlugin)
-    ...
 }
 ```
+
+!!! tip "Ktor Compatibility"
+    Tested and verified with Ktor `3.x` and `2.x`.

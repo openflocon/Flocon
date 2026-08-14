@@ -1,46 +1,59 @@
-### 📈 Configurable Dashboards
+---
+title: Reactive Custom Dashboards
+description: Build interactive mobile debug dashboards rendered on your desktop in real time.
+---
 
-<img width="1027" height="561" alt="Screenshot 2025-09-12 at 15 45 05" src="https://github.com/user-attachments/assets/056feafc-fda9-46ff-aaf0-4b8a0801b72e" />
-<img width="373" height="312" alt="Screenshot 2025-09-12 at 15 44 57" src="https://github.com/user-attachments/assets/03b7ed4a-4de0-472d-87aa-850b33a3843f" />
+# 📈 Reactive Custom Dashboards
 
-Your Android application can define and expose **custom dashboards**, which Flocon renders dynamically in the desktop interface.
+Your application can expose **custom dashboards** defined in Kotlin, which Flocon renders dynamically into interactive desktop controls.
 
-Use cases include:
-- Displaying live business metrics
-- Monitoring app state variables
-- Debugging real-time values (e.g., geolocation, battery, app mode)
-- Real-time in-app variables editing
-- Performing mobile callbacks from the desktop app
+---
 
-#### Basic Usage
+## Overview
 
-Dashboards are defined programmatically on the mobile side via the SDK. They can be static or update live as data changes.
+<img width="1027" height="561" alt="Desktop Dashboard View" src="https://github.com/user-attachments/assets/056feafc-fda9-46ff-aaf0-4b8a0801b72e" style="border-radius: 8px;" />
+
+<img width="373" height="312" alt="Mobile Dashboard View" src="https://github.com/user-attachments/assets/03b7ed4a-4de0-472d-87aa-850b33a3843f" style="border-radius: 8px; margin-top: 1rem;" />
+
+Use cases:
+- Toggle feature flags or mock environments.
+- Display live business metrics and battery/network health.
+- Mutate state variables on-the-fly without rebuilding.
+- Trigger in-app test actions (reset caches, seed test data, trigger notifications).
+
+---
+
+## Defining Dashboards
+
+### Static Dashboard
 
 ```kotlin
 floconDashboard(id = "main") {
-    section(name = "App Info") {
-        text(label = "Version", value = "1.0.0")
-        label(label = "Status: Online")
+    section(name = "App Status") {
+        text(label = "Environment", value = "Staging")
+        label(label = "Build: #142")
         button(
-            text = "Reset Cache",
-            onClick = { /* Handle click */ }
+            text = "Clear Image Cache",
+            onClick = { clearImageCache() }
         )
     }
 }
 ```
 
-#### Reactive Dashboards
+---
 
-You can bind a `section` to a Kotlin `Flow`. The section will automatically refresh in the Flocon Desktop app whenever the flow emits a new value.
+### Reactive Dashboard (Kotlin `Flow`)
+
+You can bind a dashboard section directly to a Kotlin `StateFlow` or `Flow`. The desktop UI updates automatically whenever new data is emitted:
 
 ```kotlin
 floconDashboard(id = "user_dashboard") {
-    section(name = "User Profile", userFlow) { user ->
-        text(label = "Username", value = user.name)
+    section(name = "Active User", userFlow) { user ->
+        text(label = "User ID", value = user.id)
         text(label = "Email", value = user.email)
         
         textField(
-            label = "Update Display Name",
+            label = "Display Name",
             value = user.displayName,
             onSubmitted = { newName ->
                 userViewModel.updateName(newName)
@@ -48,68 +61,51 @@ floconDashboard(id = "user_dashboard") {
         )
         
         checkBox(
-            label = "Beta Tester",
+            label = "Beta Features Enabled",
             value = user.isBeta,
-            onUpdated = { enabled ->
-                userViewModel.setBeta(enabled)
+            onUpdated = { isEnabled ->
+                userViewModel.setBeta(isEnabled)
             }
         )
     }
 }
 ```
 
-#### Available Elements
+---
 
-Flocon provides several UI elements to build your dashboards:
+## Available UI Components
 
 | Element | Description |
 | :--- | :--- |
-| `text` | A labeled read-only text field. Supports custom colors. |
-| `label` | A simple text label. |
-| `button` | An actionable button that triggers a callback on the device. |
-| `textField`| An input field that sends its content back to the device. |
-| `checkBox` | A toggle switch for boolean values. |
-| `plainText`| Optimized for displaying long strings or logs. |
-| `json` | Renders a JSON string with syntax highlighting and tree view. |
-| `markdown` | Renders rich text using Markdown syntax. |
-| `html` | Renders basic HTML content. |
+| `text` | Read-only labeled text (supports custom hex/RGB colors). |
+| `label` | Simple heading or status text. |
+| `button` | Actionable button that executes a callback inside your running app. |
+| `textField` | Text input that sends entered values back to the app on submit. |
+| `checkBox` | Toggle switch for boolean properties. |
+| `plainText` | Optimized scrolling container for multi-line logs and text dumps. |
+| `json` | Formatted JSON tree visualizer with expand/collapse. |
+| `markdown` | Renders rich text with Markdown formatting. |
+| `html` | Renders styled HTML snippets. |
 
-#### Forms
+---
 
-Use the `form` element to group multiple inputs with a single submit action.
+## Multi-input Forms
+
+Group inputs together with a single submission action:
 
 ```kotlin
 floconDashboard(id = "settings") {
     form(
-        name = "App Settings",
-        submitText = "Save Changes",
+        name = "Server Configuration",
+        submitText = "Apply Settings",
         onSubmitted = { values ->
-            val theme = values["theme_input"]
-            val notifications = values["notif_check"]
-            // Save settings...
+            val host = values["host_input"]
+            val mockMode = values["mock_mode"]
+            applyNewConfig(host, mockMode)
         }
     ) {
-        textField(id = "theme_input", label = "Theme Name", value = "Dark")
-        checkBox(id = "notif_check", label = "Enable Notifications", value = true)
-    }
-}
-```
-
-#### Rich Content
-
-You can also display rich content like Markdown or HTML.
-
-```kotlin
-floconDashboard(id = "docs") {
-    section("Documentation") {
-        markdown(
-            label = "Release Notes",
-            value = """
-                # Version 2.0
-                - Added **Reactive** support
-                - New `form` element
-            """.trimIndent()
-        )
+        textField(id = "host_input", label = "API Host", value = "https://staging.api.com")
+        checkBox(id = "mock_mode", label = "Enable Mock Mode", value = false)
     }
 }
 ```

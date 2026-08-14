@@ -1,54 +1,65 @@
-### 📊 Analytics Event Viewer
+---
+title: Analytics Event Viewer
+description: Inspect and validate real-time analytics events and custom telemetry streams.
+---
 
-<img width="1296" height="837" alt="Screenshot 2025-09-12 at 15 41 27" src="https://github.com/user-attachments/assets/e3f2a6ab-bf25-48ac-b9fe-8ea3f81206a1" />
+# 📊 Analytics Event Viewer
 
-<img width="1294" height="838" alt="Screenshot 2025-09-12 at 15 41 32" src="https://github.com/user-attachments/assets/b7be4f8d-afcb-4bbc-8da4-c09e1cd240a6" />
+Flocon streams and displays **analytics events** emitted by your application in real time, making it easy for developers, QA engineers, and product teams to verify tracking payloads.
 
-Flocon shows a real-time stream of **analytics events** emitted by your application. Whether you’re using Firebase Analytics, Segment, or a custom solution, the Flocon SDK can be plugged and forward these events to the desktop UI.
+---
 
-Each event includes:
-- The event name
-- Parameters and metadata (key-value pairs)
-- Timestamps
+## Overview
 
-This is especially useful for QA teams and product analysts to validate that the right events are triggered at the right time with the correct payloads.
+<img width="1296" height="837" alt="Analytics Events Stream" src="https://github.com/user-attachments/assets/e3f2a6ab-bf25-48ac-b9fe-8ea3f81206a1" style="border-radius: 8px;" />
 
-#### Usage
+<img width="1294" height="838" alt="Event Payload Details" src="https://github.com/user-attachments/assets/b7be4f8d-afcb-4bbc-8da4-c09e1cd240a6" style="border-radius: 8px; margin-top: 1rem;" />
 
-You can log events by identifying the source (e.g., `"firebase"`, `"segment"`, or any custom ID). Flocon Desktop will group events by these IDs.
+Every recorded event details:
+- **Event Name**: Unique tracking identifier
+- **Parameters & Properties**: Full key-value dictionary
+- **Timestamp & Source**: Accurate timestamp and stream category (e.g. Firebase, Segment, Custom)
+
+---
+
+## Usage
+
+Log individual or batched events by stream name:
 
 ```kotlin
 floconAnalytics("firebase").logEvents(
     AnalyticsEvent(
-        eventName = "clicked_user",
-        "userId" analyticsProperty "1024",
-        "username" analyticsProperty "florent",
-        "index" analyticsProperty "3",
-    ),
-    AnalyticsEvent(
-        eventName = "opened_profile",
-        "userId" analyticsProperty "2048",
-        "username" analyticsProperty "kevin",
-        "age" analyticsProperty "34",
+        eventName = "button_clicked",
+        "button_id" analyticsProperty "checkout_pay",
+        "cart_total" analyticsProperty "49.99",
+        "currency" analyticsProperty "EUR"
     )
 )
 ```
 
-#### Custom Analytics Wrapper
+---
 
-Often, you want to forward all your app's analytics to Flocon. You can easily do this in your analytics tracking implementation:
+## Generic Analytics Forwarder
+
+Forward all app tracking calls to Flocon alongside your existing provider:
 
 ```kotlin
-fun trackEvent(name: String, params: Map<String, Any>) {
-    // Forward to Flocon
-    floconAnalytics("app_events").logEvents(
-        AnalyticsEvent(
-            eventName = name,
-            params.map { it.key analyticsProperty it.value.toString() }
+class AnalyticsTracker(private val firebaseAnalytics: FirebaseAnalytics) {
+
+    fun track(event: String, parameters: Map<String, Any> = emptyMap()) {
+        // 1. Forward to Flocon Desktop
+        floconAnalytics("app_telemetry").logEvents(
+            AnalyticsEvent(
+                eventName = event,
+                parameters.map { it.key analyticsProperty it.value.toString() }
+            )
         )
-    )
-    
-    // Original tracking (e.g., Firebase)
-    firebaseAnalytics.logEvent(name, bundleOf(...))
+
+        // 2. Forward to Firebase
+        val bundle = Bundle().apply {
+            parameters.forEach { (k, v) -> putString(k, v.toString()) }
+        }
+        firebaseAnalytics.logEvent(event, bundle)
+    }
 }
 ```
