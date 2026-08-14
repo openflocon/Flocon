@@ -69,16 +69,7 @@ Add the appropriate network interceptor to your project depending on your networ
 2. Open **Flocon Desktop** on your computer.
 3. Verify that your device and application package name appear in the top-left device selector.
 
-<!-- ========================================== -->
-<!-- IMAGE PLACEHOLDER: STEP 2 - DEVICE CONNECTED -->
-<!-- Description: Screenshot showing Flocon Desktop connected with device and app selected in the top bar -->
-<!-- ========================================== -->
-<div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
-  <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Device Connected</p>
-  <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot of Flocon Desktop connected to your running app (e.g. <code>docs/assets/screenshots/mocking_step2_connected.png</code>)
-  </p>
-</div>
+<img width="1290" alt="Flocon Desktop Connected" src="assets/screenshots/mocking_step2_connected.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
 ---
 
@@ -88,16 +79,7 @@ Add the appropriate network interceptor to your project depending on your networ
 2. In Flocon Desktop, open the **Network** tab.
 3. You will see the live request appear in the list with its method, URL, status code, and response time.
 
-<!-- ========================================== -->
-<!-- IMAGE PLACEHOLDER: STEP 3 - REQUEST CAPTURED -->
-<!-- Description: Screenshot of Network Inspector showing captured real API requests in the list -->
-<!-- ========================================== -->
-<div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
-  <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Captured Network Request</p>
-  <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot of the Network Inspector table showing incoming requests (e.g. <code>docs/assets/screenshots/mocking_step3_request.png</code>)
-  </p>
-</div>
+<img width="1290" alt="Captured Network Request" src="assets/screenshots/mocking_step3_request.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
 ---
 
@@ -113,16 +95,7 @@ Click the **Mocks** icon (WiFi Tethering icon) in the top-right action toolbar o
 2. In the right-hand details panel, click the **Create Mock** (or **Mock this Call**) button.
 3. The Mocks Manager dialog will open immediately with the endpoint URL, HTTP method, request headers, and original JSON response body already pre-filled.
 
-<!-- ========================================== -->
-<!-- IMAGE PLACEHOLDER: STEP 4 - OPEN MOCKS DIALOG -->
-<!-- Description: Screenshot showing the Mocks toolbar button and the "Create Mock" button highlighted on a selected request -->
-<!-- ========================================== -->
-<div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
-  <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Opening the Mocks Manager Dialog</p>
-  <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot showing both the top toolbar "Mocks" icon and the "Create Mock" button in the details panel (e.g. <code>docs/assets/screenshots/mocking_step4_open_dialog.png</code>)
-  </p>
-</div>
+<img width="1290" alt="Open Mocks Manager Dialog / Create Mock Button" src="assets/screenshots/mocking_step4_create_button.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
 ---
 
