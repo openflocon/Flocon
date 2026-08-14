@@ -69,7 +69,7 @@ Add the appropriate network interceptor to your project depending on your networ
 2. Open **Flocon Desktop** on your computer.
 3. Verify that your device and application package name appear in the top-left device selector.
 
-<img width="1290" alt="Flocon Desktop Connected" src="assets/screenshots/mocking_step2_connected.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
+<img width="1290" alt="Flocon Desktop Connected" src="../assets/screenshots/mocking_step2_connected.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
 ---
 
@@ -79,7 +79,7 @@ Add the appropriate network interceptor to your project depending on your networ
 2. In Flocon Desktop, open the **Network** tab.
 3. You will see the live request appear in the list with its method, URL, status code, and response time.
 
-<img width="1290" alt="Captured Network Request" src="assets/screenshots/mocking_step3_request.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
+<img width="1290" alt="Captured Network Request" src="../assets/screenshots/mocking_step3_request.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
 ---
 
@@ -95,7 +95,7 @@ Click the **Mocks** icon (WiFi Tethering icon) in the top-right action toolbar o
 2. In the right-hand details panel, click the **Create Mock** (or **Mock this Call**) button.
 3. The Mocks Manager dialog will open immediately with the endpoint URL, HTTP method, request headers, and original JSON response body already pre-filled.
 
-<img width="1290" alt="Open Mocks Manager Dialog / Create Mock Button" src="assets/screenshots/mocking_step4_create_button.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
+<img width="1290" alt="Open Mocks Manager Dialog / Create Mock Button" src="../assets/screenshots/mocking_step4_create_button.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
 ---
 
@@ -120,7 +120,7 @@ Inside the Mock Editor modal:
 <div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
   <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Mock Editor Configuration</p>
   <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot of the Mock Editor dialog showing configured status code, delay, and JSON payload (e.g. <code>docs/assets/screenshots/mocking_step5_editor.png</code>)
+    Replace with screenshot of the Mock Editor dialog showing configured status code, delay, and JSON payload (e.g. <code>../assets/screenshots/mocking_step5_editor.png</code>)
   </p>
 </div>
 
@@ -140,7 +140,7 @@ Inside the Mock Editor modal:
 <div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
   <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Intercepted Mock in Event Log</p>
   <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot of the Network Inspector showing the `[MOCKED]` badge and response payload (e.g. <code>docs/assets/screenshots/mocking_step6_mocked_result.png</code>)
+    Replace with screenshot of the Network Inspector showing the `[MOCKED]` badge and response payload (e.g. <code>../assets/screenshots/mocking_step6_mocked_result.png</code>)
   </p>
 </div>
 
@@ -169,7 +169,7 @@ Use the **Export** and **Import** buttons in the dialog to save your mocks to `.
 <div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
   <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Mocks List with Toggle & Export</p>
   <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot of the Mocks Manager dialog showing toggle switches and export/import options (e.g. <code>docs/assets/screenshots/mocking_step7_mocks_list.png</code>)
+    Replace with screenshot of the Mocks Manager dialog showing toggle switches and export/import options (e.g. <code>../assets/screenshots/mocking_step7_mocks_list.png</code>)
   </p>
 </div>
 
