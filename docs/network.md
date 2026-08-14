@@ -34,6 +34,8 @@ Flocon allows you to **mock HTTP requests on the fly** without editing your code
 - **Custom Response Payloads**: Inject mock JSON data to test unreleased backend features or rare edge cases.
 - **Clone from Existing Request**: Convert any captured real request into an active mock with a single click in the desktop UI.
 
+[:octicons-play-16: Step-by-Step Mocking Tutorial](mocking.md){ .md-button .md-button--primary style="margin-top: 1rem;" }
+
 ---
 
 ## Setup & Integration
