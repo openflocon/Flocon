@@ -85,7 +85,7 @@ Add the appropriate network interceptor to your project depending on your networ
 ## Step 3: Trigger a Baseline Network Call
 
 1. In your mobile application, perform an action that triggers a network request (e.g., loading a profile screen, fetching items).
-2. In Flocon Desktop, open the **Network Inspector** tab.
+2. In Flocon Desktop, open the **Network** tab.
 3. You will see the live request appear in the list with its method, URL, status code, and response time.
 
 <!-- ========================================== -->
@@ -101,27 +101,26 @@ Add the appropriate network interceptor to your project depending on your networ
 
 ---
 
-## Step 4: Create a Mock
+## Step 4: Open the Mocks Manager Dialog
 
-There are two ways to create a mock rule:
+You can access the **Mocks Manager Dialog** in one of two ways:
 
-### Option A: From an Existing Request (Recommended)
-1. Select the captured request in the list.
-2. In the right-hand details pane, click the **Create Mock** (or **Mock this Call**) button.
-3. Flocon automatically populates the URL pattern, HTTP method, headers, and original JSON response body into the Mock Editor.
+### Method A: From the Network Toolbar (Mocks Icon)
+Click the **Mocks** icon (WiFi Tethering icon) in the top-right action toolbar of the Network tab. This opens the Mocks Manager dialog displaying all existing mock rules and an **Add Mock** button.
 
-### Option B: From Scratch in the Mocks Manager
-1. Navigate to the **Mocks** section in the navigation sidebar.
-2. Click the **+ Add Mock** button to open a blank Mock Editor.
+### Method B: Directly from a Captured Request (Recommended)
+1. In the Network Inspector table, select the request you wish to mock.
+2. In the right-hand details panel, click the **Create Mock** (or **Mock this Call**) button.
+3. The Mocks Manager dialog will open immediately with the endpoint URL, HTTP method, request headers, and original JSON response body already pre-filled.
 
 <!-- ========================================== -->
-<!-- IMAGE PLACEHOLDER: STEP 4 - CREATE MOCK BUTTON -->
-<!-- Description: Screenshot showing the "Create Mock" button highlighted on a selected request -->
+<!-- IMAGE PLACEHOLDER: STEP 4 - OPEN MOCKS DIALOG -->
+<!-- Description: Screenshot showing the Mocks toolbar button and the "Create Mock" button highlighted on a selected request -->
 <!-- ========================================== -->
 <div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
-  <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Create Mock Button</p>
+  <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Opening the Mocks Manager Dialog</p>
   <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot showing the "Create Mock" action button in the request detail view (e.g. <code>docs/assets/screenshots/mocking_step4_create_button.png</code>)
+    Replace with screenshot showing both the top toolbar "Mocks" icon and the "Create Mock" button in the details panel (e.g. <code>docs/assets/screenshots/mocking_step4_open_dialog.png</code>)
   </p>
 </div>
 
@@ -129,17 +128,17 @@ There are two ways to create a mock rule:
 
 ## Step 5: Configure Mock Rules & Response
 
-In the Mock Editor dialog, customize how the response should behave:
+Inside the Mock Editor modal:
 
-1. **Expectation Rules**:
-    - **URL Match**: Enter the endpoint URL or URL pattern (supports wildcards/exact match, e.g. `https://api.example.com/users/*`).
+1. **Set URL & Method Expectations**:
+    - **URL Matching Pattern**: Enter the endpoint URL or URL pattern (supports wildcards/exact match, e.g. `https://api.example.com/users/*`).
     - **HTTP Method**: Choose `GET`, `POST`, `PUT`, `DELETE`, etc.
-2. **Response Configuration**:
-    - **HTTP Status Code**: Set the desired code (e.g., `200 OK`, `401 Unauthorized`, `500 Internal Server Error`).
+2. **Configure the Simulated Response**:
+    - **HTTP Status Code**: Set the desired code (e.g., `200 OK`, `401 Unauthorized`, `404 Not Found`, `500 Internal Server Error`).
     - **Response Body**: Edit the JSON payload directly with syntax highlighting.
-    - **Response Delay (ms)**: Set an artificial delay (e.g., `1500 ms`) to test loading skeletons and progress spinners.
-    - **Headers**: Add custom headers (e.g., `Content-Type: application/json` or custom authorization tokens).
-3. Click **Save / Enable Mock**.
+    - **Response Delay (ms)**: Set an artificial delay (e.g., `1500 ms`) to test loading skeletons, shimmer effects, and progress spinners.
+    - **Headers**: Add custom response headers (e.g., `Content-Type: application/json`).
+3. Click **Save & Enable Mock**.
 
 <!-- ========================================== -->
 <!-- IMAGE PLACEHOLDER: STEP 5 - MOCK CONFIGURATION MODAL -->
@@ -154,7 +153,7 @@ In the Mock Editor dialog, customize how the response should behave:
 
 ---
 
-## Step 6: Trigger the Call & Observe the Result
+## Step 6: Trigger the Call & Verify
 
 1. Return to your mobile application.
 2. Re-trigger the same action (e.g., pull to refresh or re-open the screen).
@@ -174,19 +173,21 @@ In the Mock Editor dialog, customize how the response should behave:
 
 ---
 
-## Step 7: Advanced Mocking Features
+## Step 7: Advanced Mock Management
 
-### 1. Simulating Network Errors & Connection Drops
-Instead of returning a JSON body with a 500 code, you can simulate a hard network failure (e.g. `IOException` / Socket Timeout). In the Mock Editor, select **Error / Exception** mode to test retry mechanisms and offline fallback screens.
+Inside the **Mocks Manager Dialog**:
 
-### 2. Live Enable / Disable Toggling
-In the **Mocks Manager** list, each mock has an **Enabled / Disabled** switch. Toggle mocks on and off instantly without deleting your configuration.
+### 1. Live Enable / Disable Toggling
+Each mock has an **Enabled / Disabled** toggle switch. Switch mocks on and off instantly without deleting your configuration rules.
+
+### 2. Simulating Hard Network Failures
+Instead of returning a JSON body with an HTTP 500 status code, select **Error / Exception** mode in the editor to simulate physical connection drops (`IOException`, timeouts) and test retry/offline UI states.
 
 ### 3. Export & Import Mock Profiles
-Save your mock suites to `.json` files to:
-- Share test scenarios with other developers on your team.
-- Attach mock scenarios to Jira / GitHub bug reports for QA reproduction.
-- Switch between different test environments (e.g., Happy Path, Edge Cases, Outage Simulation).
+Use the **Export** and **Import** buttons in the dialog to save your mocks to `.json` files. You can:
+- Share mock suites with your team.
+- Attach edge-case scenarios to bug reports for QA.
+- Switch between different test profiles (e.g. Happy Path, Edge Cases, Outage Simulation).
 
 <!-- ========================================== -->
 <!-- IMAGE PLACEHOLDER: STEP 7 - MOCKS LIST & EXPORT -->
@@ -195,7 +196,7 @@ Save your mock suites to `.json` files to:
 <div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: rgba(99, 102, 241, 0.05);">
   <p style="margin: 0; font-weight: 600; color: #6366f1;">📸 Screenshot Placeholder: Mocks List with Toggle & Export</p>
   <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: gray;">
-    Replace with screenshot of the Mocks list view showing toggle switches and export/import options (e.g. <code>docs/assets/screenshots/mocking_step7_mocks_list.png</code>)
+    Replace with screenshot of the Mocks Manager dialog showing toggle switches and export/import options (e.g. <code>docs/assets/screenshots/mocking_step7_mocks_list.png</code>)
   </p>
 </div>
 
@@ -207,7 +208,7 @@ Save your mock suites to `.json` files to:
 | :--- | :--- |
 | **1. Install Interceptor** | Add `FloconOkhttpInterceptor` (OkHttp) or `FloconKtorPlugin` (Ktor) |
 | **2. Connect App** | Ensure device appears in Flocon Desktop top bar |
-| **3. Capture Request** | Trigger request from mobile app |
-| **4. Create Mock** | Click **Create Mock** on captured request or click **+ Add Mock** |
-| **5. Customize Payload** | Modify status code, response body, latency delay |
+| **3. Capture Request** | Trigger baseline request from mobile app |
+| **4. Open Mock Manager** | Click the **Mocks** toolbar icon or **Create Mock** on a captured request |
+| **5. Customize Rules** | Modify status code, response body, latency delay |
 | **6. Verify** | Re-run in mobile app and look for the `[MOCKED]` indicator |
