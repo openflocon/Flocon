@@ -1,13 +1,17 @@
-@file:OptIn(ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalUuidApi::class, ExperimentalComposeUiApi::class)
 
 package io.github.openflocon.navigation.scene
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.v2.Window
+import androidx.compose.ui.window.v2.WindowBoundsProvider
+import androidx.compose.ui.window.v2.WindowPositionProvider
+import androidx.compose.ui.window.v2.rememberWindowState
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavMetadataKey
 import androidx.navigation3.runtime.get
@@ -35,8 +39,15 @@ data class WindowScene(
         val windowProperties = entry.metadata[WindowPropertiesKey]
 
         val state = rememberWindowState(
-            size = windowProperties?.size ?: DpSize(800.dp, 600.dp),
+            initialPlacement = WindowPlacement.Floating,
+            initialBoundsProvider = WindowBoundsProvider(
+                sizeProvider = {
+                    windowProperties?.size ?: DpSize(800.dp, 600.dp)
+                },
+                positionProvider = WindowPositionProvider.CenteredInParentWindow
+            )
         )
+
         Window(
             onCloseRequest = onBack,
             state = state,
@@ -77,4 +88,4 @@ data class WindowProperties(
     val isWindow: Boolean = true
 }
 
-private object WindowPropertiesKey: NavMetadataKey<WindowProperties>
+private object WindowPropertiesKey : NavMetadataKey<WindowProperties>
