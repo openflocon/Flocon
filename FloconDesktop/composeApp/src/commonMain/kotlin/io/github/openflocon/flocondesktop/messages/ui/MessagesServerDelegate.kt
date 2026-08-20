@@ -12,6 +12,8 @@ import io.github.openflocon.domain.messages.usecase.StartServerUseCase
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -25,6 +27,9 @@ class MessagesServerDelegate(
     private val feedbackDisplayer: FeedbackDisplayer,
     private val dispatcherProvider: DispatcherProvider,
 ) : CloseableScoped by closeableDelegate {
+
+    private val _serverError = MutableStateFlow<String?>(null)
+    val serverError = _serverError.asStateFlow()
 
     fun initialize() {
         coroutineScope.launch {
@@ -44,6 +49,7 @@ class MessagesServerDelegate(
             while (isActive) {
                 startServer().fold(
                     doOnSuccess = {
+                        _serverError.value = null
                         delay(20.seconds)
                     },
                     doOnFailure = {
@@ -54,20 +60,31 @@ class MessagesServerDelegate(
         }
     }
 
+    fun relaunchServer() {
+        coroutineScope.launch {
+            startServer().fold(
+                doOnSuccess = {
+                    _serverError.value = null
+                },
+                doOnFailure = {
+                    // error is set inside startServer
+                }
+            )
+        }
+    }
+
     private fun startServer(): Either<Throwable, Unit> = try {
         startServerUseCase()
         Success(Unit)
     } catch (t: Throwable) {
-        feedbackDisplayer.displayMessage(
-            buildString {
-                append("Cannot start server on port ${Constant.SERVER_WEBSOCKET_PORT}")
-                t.message?.let {
-                    append(" : ")
-                    append(it)
-                }
-            },
-            type = FeedbackDisplayer.MessageType.Error,
-        )
+        val errorMsg = buildString {
+            append("Cannot start server on port ${Constant.SERVER_WEBSOCKET_PORT}")
+            t.message?.let {
+                append(" : ")
+                append(it)
+            }
+        }
+        _serverError.value = errorMsg
         Failure(t)
     }
 }

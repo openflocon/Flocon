@@ -36,12 +36,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
+enum class AdbErrorType { NONE, SETUP_REQUIRED, PORT_FORWARD_ERROR, SERVER_ERROR }
+
 internal class AppViewModel(
-    messagesServerDelegate: MessagesServerDelegate,
+    private val messagesServerDelegate: MessagesServerDelegate,
     initAdbPathUseCase: InitAdbPathUseCase,
     startAdbForwardUseCase: StartAdbForwardUseCase,
     val navigationState: MainFloconNavigationState,
@@ -55,6 +59,25 @@ internal class AppViewModel(
     private val logManager: LogManager,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel(messagesServerDelegate) {
+
+    val serverError = messagesServerDelegate.serverError
+
+    val adbErrorState = combine(
+        initialSetupStateHolder.needsAdbSetup,
+        settingsRepository.adbForwardStatus,
+        messagesServerDelegate.serverError
+    ) { needsSetup, forwardStatus, serverErrorMsg ->
+        when {
+            serverErrorMsg != null -> AdbErrorType.SERVER_ERROR
+            needsSetup -> AdbErrorType.SETUP_REQUIRED
+            forwardStatus == AdbForwardStatus.NOK -> AdbErrorType.PORT_FORWARD_ERROR
+            else -> AdbErrorType.NONE
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AdbErrorType.NONE
+    )
 
     private val contentState = MutableStateFlow(
         ContentUiState(

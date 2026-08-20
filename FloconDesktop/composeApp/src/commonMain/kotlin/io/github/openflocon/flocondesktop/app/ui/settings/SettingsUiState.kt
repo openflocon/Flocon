@@ -11,7 +11,8 @@ data class SettingsUiState(
     val fontSizeMultiplier: Float,
     val logs: List<LogEntryUiModel>,
     val adbForwardStatus: AdbForwardStatus,
-    val theme: ThemeSetting
+    val theme: ThemeSetting,
+    val serverError: String? = null
 )
 
 fun previewSettingsUiState() = SettingsUiState(
