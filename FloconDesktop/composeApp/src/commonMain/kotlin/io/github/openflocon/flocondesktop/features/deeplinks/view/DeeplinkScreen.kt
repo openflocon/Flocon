@@ -96,7 +96,7 @@ private fun DeeplinkScreen(
                     .fillMaxWidth()
             ) {
                 // Left: Variables
-                DeeplinkPanel(
+                DeeplinkScrollablePanel(
                     title = "Variables",
                     modifier = Modifier
                         .weight(0.3f)
@@ -104,11 +104,12 @@ private fun DeeplinkScreen(
                         .clip(FloconTheme.shapes.medium)
                         .background(FloconTheme.colorPalette.primary),
                 ) {
-                    DeeplinkVariablesPanelView(
-                        variables = state.variables,
-                        onVariableChanged = setVariable,
-                        modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    )
+                    items(state.variables) { item ->
+                        DeeplinkVariableChip(
+                            variable = item,
+                            onValueChange = { setVariable(item.name, it) },
+                        )
+                    }
                 }
 
                 // Right: Deeplinks (non-history)

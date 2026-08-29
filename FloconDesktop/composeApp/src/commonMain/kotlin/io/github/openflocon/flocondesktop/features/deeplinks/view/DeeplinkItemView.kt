@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -72,7 +73,7 @@ fun DeeplinkItemView(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row(
+            FlowRow(
                     modifier =
                             Modifier.weight(1f)
                                     .clip(FloconTheme.shapes.medium)
@@ -81,7 +82,7 @@ fun DeeplinkItemView(
                                             else FloconTheme.colorPalette.surface
                                     )
                                     .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalArrangement = Arrangement.Center,
             ) {
                 item.parts.fastForEach { part ->
                     TextFieldPart(
@@ -172,7 +173,9 @@ private fun TextFieldPart(
                                     text = item,
                                     style = FloconTheme.typography.bodySmall,
                                     modifier =
-                                            Modifier.clickable {
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
                                                         value = item
                                                         isExpanded = false
                                                     }
