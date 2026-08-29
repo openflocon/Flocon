@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -33,32 +34,9 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVaria
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun DeeplinkVariablesPanelView(
-    variables: List<DeeplinkVariableViewState>,
-    onVariableChanged: (name: String, value: String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    if (variables.isEmpty()) return
-
-    FlowRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        variables.forEach { variable ->
-            DeeplinkVariableChip(
-                variable = variable,
-                onValueChange = { onVariableChanged(variable.name, it) },
-            )
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DeeplinkVariableChip(
+internal fun DeeplinkVariableChip(
     variable: DeeplinkVariableViewState,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -167,7 +145,6 @@ private fun VariableInputField(
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            maxLines = 1,
             textStyle = FloconTheme.typography.bodySmall.copy(
                 color = FloconTheme.colorPalette.onSurface,
                 fontWeight = FontWeight.Bold,
@@ -182,36 +159,41 @@ private fun VariableInputField(
 @Preview
 private fun DeeplinkVariablesPanelViewPreview() {
     FloconTheme {
-        DeeplinkVariablesPanelView(
-            modifier =
-                Modifier.background(FloconTheme.colorPalette.primary)
-                    .fillMaxWidth()
-                    .padding(8.dp),
-            variables =
-                listOf(
-                    DeeplinkVariableViewState(
-                        name = "userId",
-                        description = "The user id",
-                        value = "",
-                        mode = DeeplinkVariableViewState.Mode.Input,
-                    ),
-                    DeeplinkVariableViewState(
-                        name = "env",
-                        description = null,
-                        value = "staging",
-                        mode =
-                            DeeplinkVariableViewState.Mode.AutoComplete(
-                                listOf("dev", "staging", "prod")
-                            ),
-                    ),
-                    DeeplinkVariableViewState(
-                        name = "token",
-                        description = null,
-                        value = "",
-                        mode = DeeplinkVariableViewState.Mode.Input,
-                    ),
+        Column(
+            modifier = Modifier.background(FloconTheme.colorPalette.primary)
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            DeeplinkVariableChip(
+                variable = DeeplinkVariableViewState(
+                    name = "userId",
+                    description = "The user id",
+                    value = "",
+                    mode = DeeplinkVariableViewState.Mode.Input,
                 ),
-            onVariableChanged = { _, _ -> },
-        )
+                onValueChange = {}
+            )
+            DeeplinkVariableChip(
+                variable =  DeeplinkVariableViewState(
+                    name = "env",
+                    description = null,
+                    value = "staging",
+                    mode =
+                        DeeplinkVariableViewState.Mode.AutoComplete(
+                            listOf("dev", "staging", "prod")
+                        ),
+                ),
+                onValueChange = {}
+            )
+            DeeplinkVariableChip(
+                variable = DeeplinkVariableViewState(
+                    name = "token",
+                    description = null,
+                    value = "",
+                    mode = DeeplinkVariableViewState.Mode.Input,
+                ),
+                onValueChange = {}
+            )
+        }
     }
 }
