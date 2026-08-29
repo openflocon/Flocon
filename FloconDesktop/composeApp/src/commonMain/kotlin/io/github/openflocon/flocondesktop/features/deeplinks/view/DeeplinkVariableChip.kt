@@ -5,13 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -99,11 +95,13 @@ internal fun DeeplinkVariableChip(
                                 Text(
                                     text = suggestion,
                                     style = FloconTheme.typography.bodySmall,
-                                    modifier = Modifier.clickable {
-                                        value = suggestion
-                                        onValueChange(suggestion)
-                                        isExpanded = false
-                                    }
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            value = suggestion
+                                            onValueChange(suggestion)
+                                            isExpanded = false
+                                        }
                                         .padding(
                                             vertical = 4.dp,
                                             horizontal = 8.dp
@@ -132,9 +130,7 @@ private fun VariableInputField(
         modifier = modifier.background(
             color = FloconTheme.colorPalette.primary,
             shape = RoundedCornerShape(2.dp),
-        )
-            .padding(horizontal = 4.dp, vertical = 2.dp)
-            .width(IntrinsicSize.Min),
+        ).padding(horizontal = 4.dp, vertical = 2.dp),
     ) {
         Text(
             text = placeholder,
@@ -143,6 +139,7 @@ private fun VariableInputField(
             modifier = Modifier.graphicsLayer { alpha = if (isValueEmpty) 1f else 0f },
         )
         BasicTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = value,
             onValueChange = onValueChange,
             textStyle = FloconTheme.typography.bodySmall.copy(

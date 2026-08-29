@@ -78,7 +78,7 @@ class DeepLinkViewModel(
 
     fun setVariable(name: String, value: String) {
         variableValues.update { current ->
-            if(value.isNotEmpty()) {
+            if (value.isNotEmpty()) {
                 current + (name to value)
             } else {
                 current - name
