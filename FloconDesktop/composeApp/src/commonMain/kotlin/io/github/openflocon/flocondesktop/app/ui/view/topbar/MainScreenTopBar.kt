@@ -28,6 +28,14 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActio
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Warning
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconTextButton
+import androidx.compose.ui.graphics.Color
+
+import io.github.openflocon.flocondesktop.app.AdbErrorType
+
 @Composable
 fun MainScreenTopBar(
     modifier: Modifier = Modifier,
@@ -41,6 +49,9 @@ fun MainScreenTopBar(
     recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
+    adbError: AdbErrorType,
+    serverError: String?,
+    onFixAdbClicked: () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -50,14 +61,54 @@ fun MainScreenTopBar(
     ) {
         Title()
         Spacer(modifier = Modifier.width(18.dp))
-        TopBarDeviceAndAppView(
-            devicesState = devicesState,
-            appsState = appsState,
-            onDeviceSelected = onDeviceSelected,
-            onAppSelected = onAppSelected,
-            deleteDevice = deleteDevice,
-            deleteApp = deleteApp,
-        )
+        if (adbError != AdbErrorType.NONE) {
+            val errorMessage = when (adbError) {
+                AdbErrorType.SERVER_ERROR -> serverError ?: "Server Error"
+                AdbErrorType.SETUP_REQUIRED -> "ADB Error: Setup is required"
+                AdbErrorType.PORT_FORWARD_ERROR -> "ADB Error: Port forwarding failed"
+                else -> ""
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier
+                    .clip(FloconTheme.shapes.small)
+                    .background(FloconTheme.colorPalette.error.copy(alpha = 0.15f))
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            ) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.Warning,
+                    tint = FloconTheme.colorPalette.error,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = errorMessage,
+                    color = FloconTheme.colorPalette.error,
+                    style = FloconTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium
+                )
+                FloconTextButton(
+                    onClick = onFixAdbClicked,
+                    containerColor = FloconTheme.colorPalette.error
+                ) {
+                    Text(
+                        text = "Configure",
+                        color = FloconTheme.colorPalette.onError,
+                        style = FloconTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        } else {
+            TopBarDeviceAndAppView(
+                devicesState = devicesState,
+                appsState = appsState,
+                onDeviceSelected = onDeviceSelected,
+                onAppSelected = onAppSelected,
+                deleteDevice = deleteDevice,
+                deleteApp = deleteApp,
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
         TopBarActions(
             onTakeScreenshotClicked = onTakeScreenshotClicked,

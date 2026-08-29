@@ -15,6 +15,9 @@ internal interface SettingsDataSource {
     suspend fun setFontSizeMultiplier(value: Float)
     suspend fun setTheme(value: ThemeSetting)
 
+    fun isOnboardingCompleted(): Boolean
+    suspend fun setOnboardingCompleted(completed: Boolean)
+
     val adbPath: Flow<String?>
     val fontSizeMultiplier: StateFlow<Float>
     val theme: StateFlow<ThemeSetting>

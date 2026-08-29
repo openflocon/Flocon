@@ -49,4 +49,10 @@ internal class SettingsRepositoryImpl(
     override suspend fun setTheme(value: ThemeSetting) {
         localSettingsDataSource.setTheme(value)
     }
+
+    override fun isOnboardingCompleted(): Boolean = localSettingsDataSource.isOnboardingCompleted()
+
+    override suspend fun setOnboardingCompleted(completed: Boolean) {
+        localSettingsDataSource.setOnboardingCompleted(completed)
+    }
 }
