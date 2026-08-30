@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -36,13 +37,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.sebastianneubauer.jsontree.TreeState
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
-import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.view.NetworkExceptionSelector
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.createEditable
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.editableToUi
@@ -54,7 +51,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.DefaultLabel
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
-import io.github.openflocon.library.designsystem.components.FloconDialogHeader
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTab
@@ -72,45 +69,17 @@ private enum class TestPatternStatus {
 }
 
 @Composable
-fun NetworkEditionWindow(
-    instanceId: String,
-    state: SelectedMockUiModel,
-    onCloseRequest: () -> Unit,
-    onCancel: () -> Unit,
-    onSave: (MockNetworkUiModel) -> Unit,
-) {
-    val windowState: FloconWindowState = remember(instanceId) {
-        createFloconWindowState(
-            size = DpSize(900.dp, 800.dp)
-        )
-    }
-    key(windowState, instanceId) {
-        FloconWindow(
-            title = "Mock Edition",
-            state = windowState,
-            onCloseRequest = onCloseRequest,
-        ) {
-            FloconSurface {
-                NetworkEditionContent(
-                    state = state,
-                    onCancel = onCancel,
-                    onSave = onSave,
-                )
-            }
-        }
-    }
-}
-
-@Composable
 fun NetworkEditionContent(
     onCancel: () -> Unit,
     onSave: (MockNetworkUiModel) -> Unit,
     state: SelectedMockUiModel,
+    modifier: Modifier = Modifier,
 ) {
     MockEditorScreen(
         initialMock = state,
         onSave = onSave,
         onCancel = onCancel,
+        modifier = modifier,
     )
 }
 
@@ -119,6 +88,7 @@ fun MockEditorScreen(
     initialMock: SelectedMockUiModel,
     onSave: (MockNetworkUiModel) -> Unit,
     onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var mock by remember { mutableStateOf(createEditable(initialMock)) }
     var testUrl by remember { mutableStateOf("") }
@@ -138,13 +108,31 @@ fun MockEditorScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        FloconDialogHeader(
-            modifier = Modifier.fillMaxWidth(),
-            title = "Mock Edition"
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            FloconIconButton(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                onClick = onCancel,
+                tooltip = "Back to list",
+            )
+            Text(
+                text = when (initialMock) {
+                    is SelectedMockUiModel.Edition -> "Edit Mock"
+                    SelectedMockUiModel.Creation -> "Create Mock"
+                },
+                style = FloconTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = FloconTheme.colorPalette.onPrimary,
+            )
+        }
 
         error?.let {
             Box(
