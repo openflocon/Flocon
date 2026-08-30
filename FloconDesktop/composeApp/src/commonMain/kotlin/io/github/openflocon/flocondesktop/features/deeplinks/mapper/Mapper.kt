@@ -53,9 +53,9 @@ internal fun mapToUi(
 
 internal fun parseDeeplinkString(
     input: String,
-    deepLink: DeeplinkDomainModel,
-    variables: List<DeeplinkVariableDomainModel>,
-    variableValues: Map<String, String>
+    deepLink: DeeplinkDomainModel = DeeplinkDomainModel(uri = "", description = "", parameters = emptyList()),
+    variables: List<DeeplinkVariableDomainModel> = emptyList(),
+    variableValues: Map<String, String> = emptyMap()
 ): List<DeeplinkPart> {
     val regex = "\\[([^\\[\\]]*)\\]".toRegex() // Regex pour trouver [quelquechose]
     val result = mutableListOf<DeeplinkPart>()

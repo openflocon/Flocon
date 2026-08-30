@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,7 +16,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.SelectedBadQualityUiModel
@@ -22,6 +26,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultLabel
@@ -92,10 +97,28 @@ fun BadNetworkQualityEditionContent(
         modifier = modifier
             .fillMaxWidth(),
     ) {
-        FloconDialogHeader(
-            title = state.title(),
-            modifier = Modifier.fillMaxWidth(),
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            FloconIconButton(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                onClick = close,
+                tooltip = "Back to list",
+            )
+            Text(
+                text = when (state) {
+                    is SelectedBadQualityUiModel.Edition -> "Edit Bad Quality Profile"
+                    SelectedBadQualityUiModel.Creation -> "Create Bad Quality Profile"
+                },
+                style = FloconTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = FloconTheme.colorPalette.onPrimary,
+            )
+        }
 
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),

@@ -104,8 +104,6 @@ class NetworkViewModel(
     private val contentState = MutableStateFlow(
         ContentUiState(
             selectedRequestId = null,
-            badNetworkQualityDisplayed = false,
-            websocketMocksDisplayed = false,
             selecting = false,
             multiSelectedIds = emptySet()
         )
@@ -239,7 +237,7 @@ class NetworkViewModel(
             }
 
             is NetworkAction.OpenBadNetworkQuality -> openBadNetworkQuality()
-            is NetworkAction.CloseBadNetworkQuality -> closeBadNetworkQuality()
+            is NetworkAction.CloseBadNetworkQuality -> { /* handled by navigation */ }
             is NetworkAction.CopyCUrl -> onCopyCUrl(action)
             is NetworkAction.Replay -> onReplay(action)
             is NetworkAction.CopyUrl -> onCopyUrl(action)
@@ -264,11 +262,7 @@ class NetworkViewModel(
             is NetworkAction.Up -> selectRequest(action.itemIdToSelect)
             is NetworkAction.UpdateDisplayOldSessions -> toggleDisplayOldSessions(action)
             NetworkAction.OpenWebsocketMocks -> openWebsocketMocks()
-            NetworkAction.CloseWebsocketMocks -> contentState.update {
-                it.copy(
-                    websocketMocksDisplayed = false
-                )
-            }
+            NetworkAction.CloseWebsocketMocks -> { /* handled by navigation */ }
 
             is NetworkAction.Pinned -> onPinned(action)
             is NetworkAction.DetailAction -> detailDelegate.onAction(action.action)
@@ -396,27 +390,11 @@ class NetworkViewModel(
     }
 
     private fun openWebsocketMocks() {
-        contentState.update { state ->
-            state.copy(
-                websocketMocksDisplayed = true,
-            )
-        }
+        navigationState.navigate(NetworkRoutes.WebsocketMocks)
     }
 
     private fun openBadNetworkQuality() {
-        contentState.update { state ->
-            state.copy(
-                badNetworkQualityDisplayed = true,
-            )
-        }
-    }
-
-    private fun closeBadNetworkQuality() {
-        contentState.update { state ->
-            state.copy(
-                badNetworkQualityDisplayed = false,
-            )
-        }
+        navigationState.navigate(NetworkRoutes.BadNetworkQuality)
     }
 
     private fun onClosePanel() {

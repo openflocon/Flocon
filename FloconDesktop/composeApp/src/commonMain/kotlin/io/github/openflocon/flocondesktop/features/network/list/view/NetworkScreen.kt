@@ -66,7 +66,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
-import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailContent
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
@@ -78,7 +77,6 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewNet
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeaderView
-import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockWindow
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconAnimateVisibility
 import io.github.openflocon.library.designsystem.components.FloconButton
@@ -456,22 +454,6 @@ fun NetworkScreen(
                 )
             }
         }
-    }
-
-    if (uiState.contentState.badNetworkQualityDisplayed) {
-        BadNetworkQualityWindow(
-            onCloseRequest = {
-                onAction(NetworkAction.CloseBadNetworkQuality)
-            },
-        )
-    }
-
-    if (uiState.contentState.websocketMocksDisplayed) {
-        NetworkWebsocketMockWindow(
-            onCloseRequest = {
-                onAction(NetworkAction.CloseWebsocketMocks)
-            }
-        )
     }
 }
 

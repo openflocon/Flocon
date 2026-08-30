@@ -7,14 +7,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
+import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityScreen
 import io.github.openflocon.flocondesktop.features.network.body.NetworkBodyWindow
 import io.github.openflocon.flocondesktop.features.network.body.NetworkDiffWindow
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailScreen
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
-import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
+import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksScreen
 import io.github.openflocon.flocondesktop.features.network.search.view.NetworkSearchScreen
+import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockScreen
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.PanelRoute
 import io.github.openflocon.navigation.WindowRoute
@@ -34,7 +36,13 @@ internal sealed interface NetworkRoutes : FloconRoute {
     data object Main : NetworkRoutes
 
     @Serializable
-    data class Mocks(val id: String?) : NetworkRoutes
+    data class Mocks(val id: String? = null) : NetworkRoutes
+
+    @Serializable
+    data object BadNetworkQuality : NetworkRoutes
+
+    @Serializable
+    data object WebsocketMocks : NetworkRoutes
 
     @Serializable
     data class Panel(val requestId: String) :
@@ -90,9 +98,23 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
             BigDialogProperties(title = "Mocks")
         )
     ) {
-        NetworkMocksWindow(
+        NetworkMocksScreen(
             fromNetworkCallId = it.id
         )
+    }
+    entry<NetworkRoutes.BadNetworkQuality>(
+        metadata = BigDialogSceneStrategy.bigDialog(
+            BigDialogProperties(title = "Bad Network Quality")
+        )
+    ) {
+        BadNetworkQualityScreen()
+    }
+    entry<NetworkRoutes.WebsocketMocks>(
+        metadata = BigDialogSceneStrategy.bigDialog(
+            BigDialogProperties(title = "WebSocket Mock")
+        )
+    ) {
+        NetworkWebsocketMockScreen()
     }
     entry<NetworkRoutes.WindowDetail>(
         metadata = WindowSceneStrategy.window()

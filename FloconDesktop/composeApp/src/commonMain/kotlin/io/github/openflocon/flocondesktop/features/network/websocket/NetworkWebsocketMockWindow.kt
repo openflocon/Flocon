@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,7 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -41,12 +42,28 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.domain.network.models.NetworkWebsocketId
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialog
-import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import org.koin.compose.viewmodel.koinViewModel
+
+@Composable
+fun NetworkWebsocketMockScreen(
+    modifier: Modifier = Modifier,
+) {
+    val viewModel: NetworkWebsocketMockViewModel = koinViewModel()
+    val ids by viewModel.clientsIds.collectAsStateWithLifecycle()
+    val selectedId by viewModel.selectedClientId.collectAsStateWithLifecycle()
+
+    NetworkWebsocketMockContent(
+        selectedId = selectedId,
+        ids = ids,
+        onClientSelected = viewModel::onClientSelected,
+        onSend = viewModel::send,
+        modifier = modifier.fillMaxSize(),
+    )
+}
 
 @Composable
 fun NetworkWebsocketMockWindow(
@@ -83,15 +100,11 @@ private fun NetworkWebsocketMockContent(
     ids: List<NetworkWebsocketId>,
     onClientSelected: (String) -> Unit,
     onSend: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     ) {
-        FloconDialogHeader(
-            title = "Network Websocket Mock",
-            modifier = Modifier.fillMaxWidth(),
-        )
-
         Column(
             modifier = Modifier.fillMaxWidth()
                 .padding(vertical = 12.dp)
@@ -207,7 +220,7 @@ private fun NetworkWebsocketMockContent(
                 ) {
                     FloconIcon(
                         modifier = Modifier.size(14.dp),
-                        imageVector = Icons.Filled.Send,
+                        imageVector = Icons.AutoMirrored.Filled.Send,
                         tint = FloconTheme.colorPalette.onTertiary,
                     )
                 }
