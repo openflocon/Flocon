@@ -18,21 +18,27 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.CompareArrows
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Compare
 import androidx.compose.material.icons.outlined.CompareArrows
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.outlined.Difference
 import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -42,6 +48,7 @@ import coil3.compose.AsyncImage
 import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
+import com.composeunstyled.DropdownPanelAnchor
 import com.sebastianneubauer.jsontree.TreeState
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailAction
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
@@ -55,9 +62,14 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconCodeBlock
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconJsonTree
+
+import kotlinx.coroutines.launch
+
 import io.github.openflocon.library.designsystem.components.FloconLineDescription
 import io.github.openflocon.library.designsystem.components.FloconSection
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
@@ -95,48 +107,113 @@ fun NetworkDetailContent(
     val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
     val linesLabelWidth: Dp = 130.dp
     val headersLabelWidth: Dp = 150.dp
+    val fullContentGraphicsLayer = rememberGraphicsLayer()
+    val coroutineScope = rememberCoroutineScope()
+    var shareMenuExpanded by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
             .background(FloconTheme.colorPalette.primary)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(vertical = 8.dp, horizontal = 4.dp),
         ) {
+            // Top action bar
             Row(
-                modifier = Modifier.fillMaxSize()
-                    .padding(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                FloconIconButton(
-                    tooltip = "Share as Markdown",
-                    imageVector = Icons.Outlined.Share,
-                    onClick = { onAction(NetworkDetailAction.ShareAsMarkdown) }
-                )
-            }
-            Request(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                state = uiState,
-                onAction = onAction,
-                linesLabelWidth = linesLabelWidth,
-                headersLabelWidth = headersLabelWidth,
-            )
-            FloconHorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 12.dp)
-                    .padding(vertical = 8.dp),
-            )
-            Response(
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Network Details",
+                    style = FloconTheme.typography.titleMedium,
+                    color = FloconTheme.colorPalette.onPrimary
+                )
+
+                FloconDropdownMenu(
+                    expanded = shareMenuExpanded,
+                    onDismissRequest = { shareMenuExpanded = false },
+                    onExpandRequest = { shareMenuExpanded = true },
+                    anchor = DropdownPanelAnchor.BottomEnd,
+                    anchorContent = {
+                        FloconIconButton(
+                            tooltip = "Share & Export",
+                            imageVector = Icons.Outlined.Share,
+                            onClick = { shareMenuExpanded = true }
+                        )
+                    }
+                ) {
+                    FloconDropdownMenuItem(
+                        text = "Copy as Markdown",
+                        leadingIcon = Icons.Outlined.Share,
+                        onClick = {
+                            shareMenuExpanded = false
+                            onAction(NetworkDetailAction.ShareAsMarkdown)
+                        }
+                    )
+                    FloconDropdownMenuItem(
+                        text = "Export full log as Image",
+                        leadingIcon = Icons.Outlined.CameraAlt,
+                        onClick = {
+                            shareMenuExpanded = false
+                            coroutineScope.launch {
+                                val bitmap = fullContentGraphicsLayer.toImageBitmap()
+                                onAction(NetworkDetailAction.CopyImage(bitmap))
+                            }
+                        }
+                    )
+                    FloconDropdownMenuItem(
+                        text = "Copy cURL command",
+                        leadingIcon = Icons.Outlined.Terminal,
+                        onClick = {
+                            shareMenuExpanded = false
+                            onAction(NetworkDetailAction.CopyCurl)
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                state = uiState,
-                onAction = onAction,
-                headersLabelWidth = headersLabelWidth,
-            )
+                    .fillMaxWidth()
+                    .drawWithContent {
+                        fullContentGraphicsLayer.record {
+                            this@drawWithContent.drawContent()
+                        }
+                        drawLayer(fullContentGraphicsLayer)
+                    }
+            ) {
+                Request(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    state = uiState,
+                    onAction = onAction,
+                    linesLabelWidth = linesLabelWidth,
+                    headersLabelWidth = headersLabelWidth,
+                )
+
+                FloconHorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    color = FloconTheme.colorPalette.secondary,
+                )
+
+                Response(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    state = uiState,
+                    onAction = onAction,
+                    headersLabelWidth = headersLabelWidth,
+                )
+            }
         }
         FloconVerticalScrollbar(
             adapter = scrollAdapter,
@@ -154,9 +231,25 @@ private fun Request(
     headersLabelWidth: Dp,
     modifier: Modifier = Modifier,
 ) {
+    val graphicsLayer = rememberGraphicsLayer()
+    val coroutineScope = rememberCoroutineScope()
+
     FloconSection(
         title = "Request",
         initialValue = true,
+        actions = {
+            FloconIconButton(
+                tooltip = "Copy as image",
+                imageVector = Icons.Outlined.CameraAlt,
+                onClick = {
+                    coroutineScope.launch {
+                        val bitmap = graphicsLayer.toImageBitmap()
+                        onAction(NetworkDetailAction.CopyImage(bitmap))
+                    }
+                },
+                modifier = Modifier.padding(end = 12.dp)
+            )
+        },
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
@@ -164,6 +257,12 @@ private fun Request(
         ) {
             Column(
                 modifier = Modifier
+                    .drawWithContent {
+                        graphicsLayer.record {
+                            this@drawWithContent.drawContent()
+                        }
+                        drawLayer(graphicsLayer)
+                    }
                     .background(
                         color = FloconTheme.colorPalette.secondary,
                         shape = RoundedCornerShape(12.dp),
@@ -177,6 +276,7 @@ private fun Request(
                     contentColor = FloconTheme.colorPalette.onPrimary,
                     labelWidth = linesLabelWidth,
                 )
+
                 FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Method",
@@ -296,6 +396,7 @@ private fun Request(
             }
 
             state.requestHeaders?.let {
+                Spacer(modifier = Modifier.height(12.dp))
                 FloconSection(
                     title = "Request - Headers",
                     initialValue = true,
@@ -305,12 +406,14 @@ private fun Request(
                         headers = state.requestHeaders,
                         labelWidth = headersLabelWidth,
                         onAuthorizationClicked = { token -> onAction(NetworkDetailAction.DisplayBearerJwt(token)) },
+                        onCopyValue = { value -> onAction(NetworkDetailAction.CopyText(value)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(12.dp))
             FloconSection(
                 title = state.requestBodyTitle,
                 initialValue = true,
@@ -439,6 +542,7 @@ private fun Response(
                     }
 
                     response.headers?.let {
+                        Spacer(modifier = Modifier.height(12.dp))
                         FloconSection(
                             title = "Response - Headers",
                             initialValue = true,
@@ -448,6 +552,7 @@ private fun Response(
                                 headers = response.headers,
                                 labelWidth = headersLabelWidth,
                                 onAuthorizationClicked = { token -> onAction(NetworkDetailAction.DisplayBearerJwt(token)) },
+                                onCopyValue = { value -> onAction(NetworkDetailAction.CopyText(value)) },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
@@ -455,6 +560,7 @@ private fun Response(
                         }
                     }
 
+                    Spacer(modifier = Modifier.height(12.dp))
                     FloconSection(
                         title = "Response - Body",
                         initialValue = true,
@@ -490,6 +596,7 @@ private fun Response(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
+
                         var jsonError by remember(response.body) { mutableStateOf(false) }
 
                         if(!jsonError) {

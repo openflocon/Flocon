@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.detail
 
+import androidx.compose.ui.graphics.ImageBitmap
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 
 sealed interface NetworkDetailAction {
@@ -10,7 +11,10 @@ sealed interface NetworkDetailAction {
 
     data class CopyText(val text: String) : NetworkDetailAction
 
+    data class CopyImage(val bitmap: ImageBitmap) : NetworkDetailAction
+
     data class DiffWithClipboard(val text: String) : NetworkDetailAction
+
 
     sealed interface OpenBodyExternally : NetworkDetailAction {
         data class Request(val item: NetworkDetailViewState) : OpenBodyExternally
@@ -18,4 +22,7 @@ sealed interface NetworkDetailAction {
     }
 
     data object ShareAsMarkdown : NetworkDetailAction
+
+    data object CopyCurl : NetworkDetailAction
 }
+
