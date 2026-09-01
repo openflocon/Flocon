@@ -18,10 +18,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.v2.Window
+import androidx.compose.ui.window.v2.WindowBoundsProvider
+import androidx.compose.ui.window.v2.WindowPositionProvider
+import androidx.compose.ui.window.v2.rememberWindowState
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon
 import io.github.openflocon.flocondesktop.BuildConfig
@@ -40,10 +41,11 @@ internal fun AboutScreen(
         title = "About",
         onCloseRequest = onCloseRequest,
         state = rememberWindowState(
-            placement = WindowPlacement.Floating,
-            position = WindowPosition(Alignment.Center),
-            size = DpSize(Dp.Unspecified, Dp.Unspecified)
-        )
+            initialPlacement = WindowPlacement.Floating,
+            initialBoundsProvider = WindowBoundsProvider(
+                positionProvider = WindowPositionProvider.CenteredOnScreen,
+            ),
+        ),
     ) {
         FloconSurface {
             Column(
