@@ -7,9 +7,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
-import io.github.openflocon.flocondesktop.features.network.body.NetworkBodyWindow
 import io.github.openflocon.flocondesktop.features.network.body.NetworkDiffWindow
+import io.github.openflocon.flocondesktop.features.network.body.NetworkJsonScreen
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkBodyDetailUi
+
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailScreen
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
@@ -102,17 +103,20 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
     entry<NetworkRoutes.JsonDetail>(
         metadata = WindowSceneStrategy.window(
             WindowProperties(
+                title = "Body",
                 size = DpSize(
-                    width = 1200.0.dp,
-                    height = 800.0.dp
+                    width = 900.0.dp,
+                    height = 700.0.dp
                 )
             )
         )
     ) {
-        NetworkBodyWindow(
-            body = NetworkBodyDetailUi(text = it.json)
+        NetworkJsonScreen(
+            json = it.json,
+            key = it.id,
         )
     }
+
     entry<NetworkRoutes.Diff>(
         metadata = WindowSceneStrategy.window(WindowProperties(title = "Diff"))
     ) {

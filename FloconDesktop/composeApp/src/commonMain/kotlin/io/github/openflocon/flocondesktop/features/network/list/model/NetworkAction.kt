@@ -1,8 +1,10 @@
 package io.github.openflocon.flocondesktop.features.network.list.model
 
+import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.NetworkColumnsTypeUiModel
+
 
 sealed interface NetworkAction {
 
@@ -44,9 +46,12 @@ sealed interface NetworkAction {
 
     data class ToggleAutoScroll(val value: Boolean) : NetworkAction
 
+    data class SetDefaultSelectedTab(val tab: NetworkDetailTab) : NetworkAction
+
     data object ClearOldSession : NetworkAction
 
     data class DetailAction(val action: NetworkDetailAction) : NetworkAction
+
 
     data class SelectLine(val id: String, val selected: Boolean) : NetworkAction
 

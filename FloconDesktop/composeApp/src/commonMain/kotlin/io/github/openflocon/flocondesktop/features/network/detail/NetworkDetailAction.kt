@@ -13,7 +13,10 @@ sealed interface NetworkDetailAction {
 
     data class CopyImage(val bitmap: ImageBitmap) : NetworkDetailAction
 
+    data class SaveImage(val bitmap: ImageBitmap) : NetworkDetailAction
+
     data class DiffWithClipboard(val text: String) : NetworkDetailAction
+
 
 
     sealed interface OpenBodyExternally : NetworkDetailAction {

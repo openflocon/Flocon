@@ -20,7 +20,9 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMet
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.library.designsystem.common.readFromClipboard
+import io.github.openflocon.library.designsystem.common.saveImageToFile
 import io.github.openflocon.navigation.MainFloconNavigationState
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -48,15 +50,20 @@ class NetworkDetailDelegate(
     private val openBodyDelegate: OpenBodyDelegate by inject()
     private val getNetworkCallAsMarkdownUseCase: GetNetworkCallAsMarkdownUseCase by inject()
     private val generateCurlCommandUseCase: GenerateCurlCommandUseCase by inject()
+    private val observeNetworkSettingsUseCase: io.github.openflocon.flocondesktop.core.data.settings.usecase.ObserveNetworkSettingsUseCase by inject()
 
     private val requestId = MutableStateFlow("")
 
-    val uiState: StateFlow<NetworkDetailViewState> = requestId.flatMapLatest {
-        observeNetworkRequestsByIdUseCase(it)
+    val uiState: StateFlow<NetworkDetailViewState> = kotlinx.coroutines.flow.combine(
+        requestId.flatMapLatest {
+            observeNetworkRequestsByIdUseCase(it)
+        }
+            .distinctUntilChanged()
+            .filterNotNull(),
+        observeNetworkSettingsUseCase()
+    ) { call, settings ->
+        call.toDetailUi(settings.defaultSelectedTab)
     }
-        .distinctUntilChanged()
-        .filterNotNull()
-        .map(FloconNetworkCallDomainModel::toDetailUi)
         .flowOn(dispatcherProvider.viewModel)
         .stateInWhileSubscribed(
             NetworkDetailViewState(
@@ -80,8 +87,10 @@ class NetworkDetailDelegate(
                 canOpenRequestBody = false,
                 imageUrl = null,
                 imageHeaders = null,
+                defaultSelectedTab = io.github.openflocon.domain.models.settings.NetworkDetailTab.Request,
             )
         )
+
 
     fun setRequestId(requestId: String) {
         this@NetworkDetailDelegate.requestId.update { requestId }
@@ -91,6 +100,7 @@ class NetworkDetailDelegate(
         when (action) {
             is NetworkDetailAction.CopyText -> onCopyText(action)
             is NetworkDetailAction.CopyImage -> onCopyImage(action)
+            is NetworkDetailAction.SaveImage -> onSaveImage(action)
             is NetworkDetailAction.DisplayBearerJwt -> displayBearerJwt(action.token)
             is NetworkDetailAction.JsonDetail -> onJsonDetail(action)
             is NetworkDetailAction.DiffWithClipboard -> onDiffWithClipboard(action)
@@ -114,6 +124,17 @@ class NetworkDetailDelegate(
             feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
         }
     }
+
+    private fun onSaveImage(action: NetworkDetailAction.SaveImage) {
+        val id = requestId.value.takeIf { it.isNotBlank() } ?: System.currentTimeMillis().toString()
+        val saved = saveImageToFile(action.bitmap, defaultFileName = "network_$id.png")
+        if (saved) {
+            coroutineScope.launch {
+                feedbackDisplayer.displayMessage("Image saved successfully")
+            }
+        }
+    }
+
 
     private fun onJsonDetail(action: NetworkDetailAction.JsonDetail) {
         navigationState.navigate(NetworkRoutes.JsonDetail(action.json))

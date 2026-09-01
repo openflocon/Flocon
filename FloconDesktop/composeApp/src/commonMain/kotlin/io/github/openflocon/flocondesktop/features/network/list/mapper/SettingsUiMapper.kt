@@ -7,5 +7,7 @@ fun NetworkSettings.toUi() = NetworkSettingsUiModel(
     pinPanel = pinnedDetails,
     displayOldSessions = displayOldSessions,
     autoScroll = autoScroll,
-    invertList = invertList
+    invertList = invertList,
+    defaultSelectedTab = defaultSelectedTab,
 )
+
