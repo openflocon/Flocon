@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package io.github.openflocon.flocondesktop
 
 import androidx.compose.runtime.Composable
@@ -8,17 +10,19 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.unit.size
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Notification
 import androidx.compose.ui.window.Tray
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.v2.Window
+import androidx.compose.ui.window.v2.rememberWindowState
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
@@ -31,8 +35,7 @@ import io.github.openflocon.flocondesktop.window.MIN_WINDOW_HEIGHT
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_WIDTH
 import io.github.openflocon.flocondesktop.window.WindowStateData
 import io.github.openflocon.flocondesktop.window.WindowStateSaver
-import io.github.openflocon.flocondesktop.window.size
-import io.github.openflocon.flocondesktop.window.windowPosition
+import io.github.openflocon.flocondesktop.window.windowBoundsProvider
 import io.github.openflocon.library.designsystem.components.escape.LocalEscapeHandlerStack
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -54,8 +57,7 @@ fun main() {
         var openAbout by remember { mutableStateOf(false) }
         val savedState = remember { WindowStateSaver.load() }
         val windowState = rememberWindowState(
-            size = savedState.size(),
-            position = savedState.windowPosition(),
+            initialBoundsProvider = savedState.windowBoundsProvider(),
         )
 
         with(Desktop.getDesktop()) {
@@ -77,16 +79,17 @@ fun main() {
         Window(
             state = windowState,
             onCloseRequest = {
-                val currentSize = windowState.size
-                val currentPosition = windowState.position
-                WindowStateSaver.save(
-                    WindowStateData(
-                        width = currentSize.width.value.toInt(),
-                        height = currentSize.height.value.toInt(),
-                        x = currentPosition.x.value.toInt(),
-                        y = currentPosition.y.value.toInt(),
-                    ),
-                )
+                if (windowState.isInitialized) {
+                    val currentBounds = windowState.bounds
+                    WindowStateSaver.save(
+                        WindowStateData(
+                            width = currentBounds.size.width.value.toInt(),
+                            height = currentBounds.size.height.value.toInt(),
+                            x = currentBounds.left.value.toInt(),
+                            y = currentBounds.top.value.toInt(),
+                        ),
+                    )
+                }
 
                 exitApplication()
             },

@@ -1,7 +1,10 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package io.github.openflocon.flocon.myapplication.multi
 
-import androidx.compose.ui.window.Window
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.v2.Window
 import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.ktor.client.HttpClient
