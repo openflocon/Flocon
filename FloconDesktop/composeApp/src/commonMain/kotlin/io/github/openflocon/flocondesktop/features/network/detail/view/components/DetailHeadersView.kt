@@ -97,17 +97,17 @@ private fun HeaderItemRow(
     }
 
     Row(
-        modifier = modifier.padding(vertical = 4.dp),
+        modifier = modifier
+            .padding(vertical = 4.dp)
+            .onPointerEvent(PointerEventType.Enter) { isTitleHovered = true }
+            .onPointerEvent(PointerEventType.Exit) { isTitleHovered = false },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // Header Name / Title with hover-copy icon
         Box(
             modifier = Modifier
                 .width(labelWidth)
-                .padding(end = 8.dp)
-                .onPointerEvent(PointerEventType.Enter) { isTitleHovered = true }
-                .onPointerEvent(PointerEventType.Exit) { isTitleHovered = false },
+                .padding(end = 8.dp),
             contentAlignment = Alignment.CenterStart
         ) {
             Row(
