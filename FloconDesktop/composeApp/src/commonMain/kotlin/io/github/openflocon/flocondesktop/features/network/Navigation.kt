@@ -100,7 +100,14 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
         NetworkDetailScreen(requestId = it.requestId, key = it.windowKey)
     }
     entry<NetworkRoutes.JsonDetail>(
-        metadata = WindowSceneStrategy.window()
+        metadata = WindowSceneStrategy.window(
+            WindowProperties(
+                size = DpSize(
+                    width = 1200.0.dp,
+                    height = 800.0.dp
+                )
+            )
+        )
     ) {
         NetworkBodyWindow(
             body = NetworkBodyDetailUi(text = it.json)
