@@ -15,7 +15,14 @@ internal interface SettingsDataSource {
     suspend fun setFontSizeMultiplier(value: Float)
     suspend fun setTheme(value: ThemeSetting)
 
+    fun getDismissedDesktopVersion(): String?
+    suspend fun setDismissedDesktopVersion(version: String)
+
+    fun getDismissedClientVersion(): String?
+    suspend fun setDismissedClientVersion(version: String)
+
     val adbPath: Flow<String?>
     val fontSizeMultiplier: StateFlow<Float>
     val theme: StateFlow<ThemeSetting>
+    val dismissedClientVersionFlow: Flow<String?>
 }

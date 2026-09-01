@@ -49,4 +49,18 @@ internal class SettingsRepositoryImpl(
     override suspend fun setTheme(value: ThemeSetting) {
         localSettingsDataSource.setTheme(value)
     }
+
+    override fun getDismissedDesktopVersion(): String? = localSettingsDataSource.getDismissedDesktopVersion()
+
+    override suspend fun setDismissedDesktopVersion(version: String) {
+        localSettingsDataSource.setDismissedDesktopVersion(version)
+    }
+
+    override val dismissedClientVersionFlow: Flow<String?> = localSettingsDataSource.dismissedClientVersionFlow
+
+    override fun getDismissedClientVersion(): String? = localSettingsDataSource.getDismissedClientVersion()
+
+    override suspend fun setDismissedClientVersion(version: String) {
+        localSettingsDataSource.setDismissedClientVersion(version)
+    }
 }

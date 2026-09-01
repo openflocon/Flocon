@@ -66,6 +66,20 @@ internal class SettingsDataSourcePrefs(
         settings.putString(THEME, value.name)
     }
 
+    override fun getDismissedDesktopVersion(): String? = settings.getStringOrNull(DISMISSED_DESKTOP_VERSION)
+
+    override suspend fun setDismissedDesktopVersion(version: String) {
+        settings.putString(DISMISSED_DESKTOP_VERSION, version)
+    }
+
+    override val dismissedClientVersionFlow: Flow<String?> = flowSettings.getStringOrNullFlow(DISMISSED_CLIENT_VERSION)
+
+    override fun getDismissedClientVersion(): String? = settings.getStringOrNull(DISMISSED_CLIENT_VERSION)
+
+    override suspend fun setDismissedClientVersion(version: String) {
+        settings.putString(DISMISSED_CLIENT_VERSION, version)
+    }
+
     private fun String?.toThemeSetting(): ThemeSetting = this
         ?.let { name -> ThemeSetting.entries.firstOrNull { it.name == name } }
         ?: ThemeSetting.DEFAULT
@@ -102,6 +116,8 @@ internal class SettingsDataSourcePrefs(
         private const val ADB_PATH = "adb_path"
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier"
         private const val THEME = "theme"
+        private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
+        private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"
 
         private const val NETWORK_SETTINGS = "network_settings"
     }
