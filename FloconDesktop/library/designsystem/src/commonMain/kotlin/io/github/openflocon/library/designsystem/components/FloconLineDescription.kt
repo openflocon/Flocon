@@ -34,24 +34,28 @@ fun FloconLineDescription(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         CompositionLocalProvider(LocalContentColor provides contentColor) {
-            Text(
-                text = label,
-                style = FloconTheme.typography.titleSmall,
+            SelectionContainer(
                 modifier = if (labelWidth != null) {
                     Modifier
                         .width(labelWidth)
                         .padding(end = 8.dp)
                 } else {
                     Modifier.weight(1f)
-                },
-            )
-            SelectionContainer(
+                }
+            ) {
+                Text(
+                    text = label,
+                    style = FloconTheme.typography.titleSmall,
+                )
+            }
+            Row(
                 modifier = Modifier
                     .weight(1f)
-                    .wrapContentWidth(align = Alignment.Start)
-            ) {
-                content()
-            }
+                    .wrapContentWidth(align = Alignment.Start),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                content = content
+            )
         }
     }
 }
@@ -70,12 +74,15 @@ fun FloconLineDescription(
         contentColor = contentColor,
         modifier = modifier,
     ) {
-        Text(
-            text = value,
-            style = FloconTheme.typography.bodyMedium,
-        )
+        SelectionContainer {
+            Text(
+                text = value,
+                style = FloconTheme.typography.bodyMedium,
+            )
+        }
     }
 }
+
 
 @Preview
 @Composable

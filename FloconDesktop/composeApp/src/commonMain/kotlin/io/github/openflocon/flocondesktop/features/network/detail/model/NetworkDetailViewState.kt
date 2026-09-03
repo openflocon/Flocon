@@ -30,7 +30,9 @@ data class NetworkDetailViewState(
     val imageHeaders: PersistentMap<String, String>?,
     // response
     val response: Response?,
+    val defaultSelectedTab: io.github.openflocon.domain.models.settings.NetworkDetailTab = io.github.openflocon.domain.models.settings.NetworkDetailTab.Request,
 ) {
+
     @Immutable
     sealed interface Response {
         @Immutable
