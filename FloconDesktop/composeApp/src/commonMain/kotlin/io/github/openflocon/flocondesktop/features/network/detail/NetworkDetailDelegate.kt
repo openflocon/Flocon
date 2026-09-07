@@ -4,7 +4,6 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
-import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
@@ -12,6 +11,7 @@ import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUse
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
+import io.github.openflocon.flocondesktop.core.data.settings.usecase.ObserveNetworkSettingsUseCase
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.network.detail.mapper.toDetailUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -52,7 +51,7 @@ class NetworkDetailDelegate(
     private val openBodyDelegate: OpenBodyDelegate by inject()
     private val getNetworkCallAsMarkdownUseCase: GetNetworkCallAsMarkdownUseCase by inject()
     private val generateCurlCommandUseCase: GenerateCurlCommandUseCase by inject()
-    private val observeNetworkSettingsUseCase: io.github.openflocon.flocondesktop.core.data.settings.usecase.ObserveNetworkSettingsUseCase by inject()
+    private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase by inject()
 
     private val requestId = MutableStateFlow("")
 
