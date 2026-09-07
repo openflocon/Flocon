@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import kotlin.time.Clock
 
 class NetworkDetailDelegate(
     private val closeableDelegate: CloseableDelegate,
@@ -126,8 +127,9 @@ class NetworkDetailDelegate(
     }
 
     private fun onSaveImage(action: NetworkDetailAction.SaveImage) {
+        val time = Clock.System.now().epochSeconds
         val id = requestId.value.takeIf { it.isNotBlank() } ?: System.currentTimeMillis().toString()
-        val saved = saveImageToFile(action.bitmap, defaultFileName = "network_$id.png")
+        val saved = saveImageToFile(action.bitmap, defaultFileName = "network_${id}_$time.png")
         if (saved) {
             coroutineScope.launch {
                 feedbackDisplayer.displayMessage("Image saved successfully")
