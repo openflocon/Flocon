@@ -53,9 +53,15 @@ internal fun mapToUi(
 
 internal fun parseDeeplinkString(
     input: String,
-    deepLink: DeeplinkDomainModel,
-    variables: List<DeeplinkVariableDomainModel>,
-    variableValues: Map<String, String>
+    deepLink: DeeplinkDomainModel = DeeplinkDomainModel(
+        id = 0,
+        label = null,
+        link = input,
+        description = null,
+        parameters = emptyList()
+    ),
+    variables: List<DeeplinkVariableDomainModel> = emptyList(),
+    variableValues: Map<String, String> = emptyMap()
 ): List<DeeplinkPart> {
     val regex = "\\[([^\\[\\]]*)\\]".toRegex() // Regex pour trouver [quelquechose]
     val result = mutableListOf<DeeplinkPart>()
@@ -91,12 +97,20 @@ internal fun parseDeeplinkString(
                     )
                 }
             )
+        } else {
+            result.add(
+                DeeplinkPart.TextField(
+                    label = value,
+                    autoComplete = null
+                )
+            )
         }
 
         lastIndex = range.last + 1
     }
 
     // 3. Ajouter la dernière partie "Text" après le dernier [value] (s'il y en a une)
+
     if (lastIndex < input.length) {
         val remainingText = input.substring(lastIndex)
         if (remainingText.isNotEmpty()) {

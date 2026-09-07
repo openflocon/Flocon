@@ -13,8 +13,9 @@ sealed interface DeeplinkPart {
     @Immutable
     data class TextField(
         val label: String,
-        val autoComplete: List<String>?,
+        val autoComplete: List<String>? = null,
     ) : DeeplinkPart
+
 
     @Immutable
     data class Variable(

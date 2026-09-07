@@ -4,12 +4,15 @@ package io.github.openflocon.navigation.scene
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberWindowState
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavMetadataKey
+import androidx.navigation3.runtime.contains
 import androidx.navigation3.runtime.get
 import androidx.navigation3.runtime.metadata
 import androidx.navigation3.scene.OverlayScene
@@ -33,10 +36,11 @@ data class WindowScene(
 
     override val content: @Composable (() -> Unit) = {
         val windowProperties = entry.metadata[WindowPropertiesKey]
-
         val state = rememberWindowState(
             size = windowProperties?.size ?: DpSize(800.dp, 600.dp),
+            position = WindowPosition.Aligned(Alignment.Center)
         )
+
         Window(
             onCloseRequest = onBack,
             state = state,
@@ -52,7 +56,7 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
     override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? {
         val entry = entries.last()
 
-        if (entry.metadata[WindowPropertiesKey]?.isWindow == true) {
+        if (entry.metadata.contains(WindowPropertiesKey)) {
             return WindowScene(
                 entry = entry,
                 previousEntries = entries.dropLast(1),
@@ -73,8 +77,6 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
 data class WindowProperties(
     val size: DpSize? = null,
     val title: String? = null
-) {
-    val isWindow: Boolean = true
-}
+)
 
 private object WindowPropertiesKey: NavMetadataKey<WindowProperties>

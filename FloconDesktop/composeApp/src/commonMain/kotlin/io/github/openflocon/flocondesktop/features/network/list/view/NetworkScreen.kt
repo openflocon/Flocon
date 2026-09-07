@@ -19,14 +19,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ManageSearch
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.ManageSearch
 import androidx.compose.material.icons.filled.ScreenSearchDesktop
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
+
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.ImportExport
+import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
@@ -47,6 +51,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.composeunstyled.DropdownPanelAnchor
+import io.github.openflocon.domain.models.settings.NetworkDetailTab
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
+import io.github.openflocon.library.designsystem.components.FloconMenuItem
+
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -313,6 +324,44 @@ fun NetworkScreen(
                                 it()
                             }
                         )
+                        FloconDropdownSeparator()
+                        var defaultTabMenuExpanded by remember { mutableStateOf(false) }
+
+                        FloconDropdownMenu(
+                            expanded = defaultTabMenuExpanded,
+                            onDismissRequest = { defaultTabMenuExpanded = false },
+                            onExpandRequest = { defaultTabMenuExpanded = true },
+                            anchor = DropdownPanelAnchor.BottomStart,
+                            anchorContent = {
+                                FloconMenuItem(
+                                    text = "Default detail tab: ${uiState.settings.defaultSelectedTab.name}",
+                                    leadingIcon = Icons.Outlined.Layers,
+                                    trailingIcon = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                    onClick = { defaultTabMenuExpanded = !defaultTabMenuExpanded }
+                                )
+                            }
+                        ) {
+                            FloconDropdownMenuItem(
+                                text = "Request",
+                                leadingIcon = Icons.Outlined.Upload,
+                                trailingIcon = if (uiState.settings.defaultSelectedTab == NetworkDetailTab.Request) Icons.Outlined.Check else null,
+                                onClick = {
+                                    onAction(NetworkAction.SetDefaultSelectedTab(NetworkDetailTab.Request))
+                                    defaultTabMenuExpanded = false
+                                }
+                            )
+                            FloconDropdownMenuItem(
+                                text = "Response",
+                                leadingIcon = Icons.Outlined.Download,
+                                trailingIcon = if (uiState.settings.defaultSelectedTab == NetworkDetailTab.Response) Icons.Outlined.Check else null,
+                                onClick = {
+                                    onAction(NetworkAction.SetDefaultSelectedTab(NetworkDetailTab.Response))
+                                    defaultTabMenuExpanded = false
+                                }
+                            )
+                        }
+
+
                         FloconDropdownMenuItem(
                             text = "Select items",
                             leadingIcon = Icons.Sharp.SelectAll,
@@ -326,6 +375,8 @@ fun NetworkScreen(
                         )
                     }
                 },
+
+
             )
             Column(
                 modifier = Modifier
