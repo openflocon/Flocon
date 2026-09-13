@@ -18,13 +18,15 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAct
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 fun DatabaseTabQueryView(
     tab: DatabaseTabState,
-    favoritesTitles: Set<String>,
+    favoritesTitles: ImmutableSet<String>,
 ) {
     val viewModel: DatabaseTabViewModel = koinViewModel(
         key = tab.id,
@@ -68,11 +70,11 @@ fun DatabaseTabQueryView(
 private fun DatabaseTabViewContent(
     query: String,
     autoUpdate: Boolean,
-    favoritesTitles: Set<String>,
+    favoritesTitles: ImmutableSet<String>,
     updateQuery: (String) -> Unit,
     onAction: (action: DatabaseTabAction) -> Unit,
     state: DatabaseScreenState,
-    lastQueries: List<String>,
+    lastQueries: ImmutableList<String>,
 ) {
     Column(
         Modifier.fillMaxSize(),

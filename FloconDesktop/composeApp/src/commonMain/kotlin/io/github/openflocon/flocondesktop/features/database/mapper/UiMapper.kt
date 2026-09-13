@@ -10,6 +10,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiM
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
+import kotlinx.collections.immutable.toImmutableList
 
 fun DeviceDataBaseDomainModel.toUi(selected: DatabaseAndTablesDomainModel): DeviceDataBaseUiModel {
     val isSelected = this.id == selected.database.id
@@ -20,7 +21,7 @@ fun DeviceDataBaseDomainModel.toUi(selected: DatabaseAndTablesDomainModel): Devi
         tables = if (isSelected) {
             selected.tables.map {
                 it.toUi()
-            }
+            }.toImmutableList()
         } else null
     )
 }
@@ -38,7 +39,7 @@ fun DatabaseTableDomainModel.toUi(): TableUiModel = TableUiModel(
                 }
             },
         )
-    }
+    }.toImmutableList()
 )
 
 fun DatabaseExecuteSqlResponseDomainModel.toUi(): QueryResultUiModel = when (this) {
@@ -51,7 +52,7 @@ fun DatabaseExecuteSqlResponseDomainModel.toUi(): QueryResultUiModel = when (thi
             rows =
             values.map {
                 DatabaseRowUiModel(it)
-            },
+            }.toImmutableList(),
         )
 
     is DatabaseExecuteSqlResponseDomainModel.UpdateDelete -> QueryResultUiModel.Text("Done, affected=$affectedCount")

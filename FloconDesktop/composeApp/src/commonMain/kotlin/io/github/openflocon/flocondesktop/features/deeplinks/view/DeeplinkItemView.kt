@@ -44,6 +44,8 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeepli
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentMapOf
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -51,7 +53,7 @@ fun DeeplinkItemView(
         item: DeeplinkViewState,
         submit: (DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) -> Unit,
         removeFromHistory: (DeeplinkViewState) -> Unit,
-        variableValues: Map<String, String> = emptyMap(),
+        variableValues: ImmutableMap<String, String> = persistentMapOf(),
         modifier: Modifier = Modifier,
 ) {
     val values = remember(item.deeplinkId) { mutableStateMapOf<DeeplinkPart.TextField, String>() }
@@ -132,7 +134,7 @@ fun DeeplinkItemView(
 @Composable
 private fun TextFieldPart(
         part: DeeplinkPart,
-        variableValues: Map<String, String>,
+        variableValues: ImmutableMap<String, String>,
         onFieldValueChanged: (DeeplinkPart.TextField, value: String) -> Unit
 ) {
     when (part) {

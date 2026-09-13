@@ -38,10 +38,11 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun BadQualityErrorsListView(
-    errors: List<BadQualityConfigUiModel.Error>,
+    errors: ImmutableList<BadQualityConfigUiModel.Error>,
     onErrorslicked: (error: BadQualityConfigUiModel.Error) -> Unit,
     deleteError: (error: BadQualityConfigUiModel.Error) -> Unit,
     modifier: Modifier = Modifier,

@@ -36,14 +36,16 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAct
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun DatabaseQueryToolbarView(
-    favoritesTitles: Set<String>,
+    favoritesTitles: ImmutableSet<String>,
     onAction: (action: DatabaseTabAction) -> Unit,
     isQueryEmpty: Boolean,
-    lastQueries: List<String>,
+    lastQueries: ImmutableList<String>,
     modifier: Modifier = Modifier,
 ) {
     var showFavoriteDialog by remember { mutableStateOf(false) }

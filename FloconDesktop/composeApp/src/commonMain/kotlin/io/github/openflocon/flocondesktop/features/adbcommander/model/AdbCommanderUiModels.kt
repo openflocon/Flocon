@@ -1,14 +1,17 @@
 package io.github.openflocon.flocondesktop.features.adbcommander.model
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 data class AdbCommanderUiState(
     val commandInput: String = "",
-    val consoleOutput: List<ConsoleOutputEntry> = emptyList(),
-    val savedCommands: List<SavedCommandUiModel> = emptyList(),
-    val flows: List<FlowUiModel> = emptyList(),
-    val history: List<HistoryEntryUiModel> = emptyList(),
+    val consoleOutput: PersistentList<ConsoleOutputEntry> = persistentListOf(),
+    val savedCommands: ImmutableList<SavedCommandUiModel> = persistentListOf(),
+    val flows: ImmutableList<FlowUiModel> = persistentListOf(),
+    val history: ImmutableList<HistoryEntryUiModel> = persistentListOf(),
     val flowExecution: FlowExecutionUiModel? = null,
     val isExecuting: Boolean = false,
     val showFlowEditor: Boolean = false,
@@ -50,7 +53,7 @@ data class HistoryEntryUiModel(
 @Immutable
 data class FlowExecutionUiModel(
     val flowName: String,
-    val steps: List<FlowExecutionStepUiModel>,
+    val steps: ImmutableList<FlowExecutionStepUiModel>,
     val status: String,
     val isRunning: Boolean,
 )
@@ -69,7 +72,7 @@ data class FlowEditorState(
     val flowId: Long? = null,
     val name: String = "",
     val description: String = "",
-    val steps: List<FlowEditorStepState> = listOf(FlowEditorStepState()),
+    val steps: PersistentList<FlowEditorStepState> = persistentListOf(FlowEditorStepState()),
 )
 
 @Immutable

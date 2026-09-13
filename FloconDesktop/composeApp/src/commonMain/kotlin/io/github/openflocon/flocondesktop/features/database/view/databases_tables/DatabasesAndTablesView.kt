@@ -23,13 +23,14 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavori
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DatabasesAndTablesView(
     modifier: Modifier = Modifier,
     state: DatabasesStateUiModel,
-    favorites: List<DatabaseFavoriteQueryUiModel>,
+    favorites: ImmutableList<DatabaseFavoriteQueryUiModel>,
     onAction: (DatabaseScreenAction) -> Unit,
 ) {
     val borderColor = FloconTheme.colorPalette.secondary

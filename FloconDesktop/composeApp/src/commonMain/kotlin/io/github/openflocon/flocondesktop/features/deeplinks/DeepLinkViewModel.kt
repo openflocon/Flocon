@@ -18,6 +18,8 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +37,7 @@ class DeepLinkViewModel(
     private val removeFromDeeplinkHistoryUseCase: RemoveFromDeeplinkHistoryUseCase,
 ) : ViewModel() {
 
-    private val variableValues = MutableStateFlow<Map<String, String>>(emptyMap())
+    private val variableValues = MutableStateFlow<PersistentMap<String, String>>(persistentMapOf())
 
     val state: StateFlow<DeeplinkScreenState> = combine(
         observeCurrentDeviceDeeplinkUseCase(),
@@ -79,9 +81,9 @@ class DeepLinkViewModel(
     fun setVariable(name: String, value: String) {
         variableValues.update { current ->
             if (value.isNotEmpty()) {
-                current + (name to value)
+                current.putting(name, value)
             } else {
-                current - name
+                current.removing(name)
             }
         }
     }

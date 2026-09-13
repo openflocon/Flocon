@@ -14,6 +14,7 @@ import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableD
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.features.database.mapper.toUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -60,7 +61,7 @@ class DatabaseSelectorDelegate(
                         it.toUi(
                             selected = selected,
                         )
-                    },
+                    }.toImmutableList(),
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)

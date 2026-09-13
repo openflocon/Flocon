@@ -29,6 +29,8 @@ import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconOverflow
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,7 +74,7 @@ sealed interface NetworkMockAction {
 
 @Composable
 private fun NetworkMocksContent(
-    mocks: List<MockNetworkLineUiModel>,
+    mocks: ImmutableList<MockNetworkLineUiModel>,
     onAction: (NetworkMockAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -146,7 +148,7 @@ private fun NetworkMocksContentPreview() {
         NetworkMocksContent(
             mocks = List(10) {
                 previewMockNetworkLineUiModel()
-            },
+            }.toImmutableList(),
             onAction = {},
         )
     }

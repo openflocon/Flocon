@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.detail.model
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentMap
 
 @Immutable
@@ -25,7 +26,7 @@ data class NetworkDetailViewState(
     val canOpenRequestBody: Boolean,
 
     val requestSize: String,
-    val requestHeaders: List<NetworkDetailHeaderUi>?,
+    val requestHeaders: ImmutableList<NetworkDetailHeaderUi>?,
     val imageUrl: String?, // filled only if it's an image url
     val imageHeaders: PersistentMap<String, String>?,
     // response
@@ -41,7 +42,7 @@ data class NetworkDetailViewState(
             val responseBodyIsNotBlank: Boolean,
             val canOpenResponseBody: Boolean,
             val size: String,
-            val headers: List<NetworkDetailHeaderUi>?,
+            val headers: ImmutableList<NetworkDetailHeaderUi>?,
         ) : Response
 
         @Immutable

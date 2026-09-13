@@ -61,6 +61,7 @@ import io.github.openflocon.library.designsystem.components.FloconTextFieldWitho
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -195,7 +196,7 @@ private fun DatabaseLogsHeader(
     onPreviousPage: () -> Unit,
     isNextEnabled: Boolean,
     isPreviousEnabled: Boolean,
-    filterChips: List<FilterChipUiModel>,
+    filterChips: ImmutableList<FilterChipUiModel>,
     modifier: Modifier = Modifier,
 ) {
     FloconPageTopBar(modifier) {
@@ -344,7 +345,7 @@ private fun PageSelectorView(
 @Composable
 private fun FilterChips(
     modifier: Modifier = Modifier,
-    filterChips: List<FilterChipUiModel>,
+    filterChips: ImmutableList<FilterChipUiModel>,
     toggleFilterType: (FilterChipUiModel) -> Unit,
     removeFilterChip: (FilterChipUiModel) -> Unit
 ) {
