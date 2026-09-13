@@ -31,6 +31,8 @@ import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowU
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -114,38 +116,32 @@ fun AnalyticsRowView(
 private fun contextualActions(
     onAction: (AnalyticsAction) -> Unit,
     state: AnalyticsRowUiModel
-): List<FloconContextMenuItem> {
+): ImmutableList<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
     val removeString = stringResource(Res.string.remove)
     val removeLinesAboveString = stringResource(Res.string.remove_lines_above)
     val clearOldSessionsString = stringResource(Res.string.clear_old_sessions)
     return remember(state) {
-        buildList {
-            add(
-                FloconContextMenuItem.Item(
-                    label = removeString,
-                    onClick = {
-                        onActionCallback(AnalyticsAction.Remove(state))
-                    }
-                ),
-            )
-            add(
-                FloconContextMenuItem.Item(
-                    label = removeLinesAboveString,
-                    onClick = {
-                        onActionCallback(AnalyticsAction.RemoveLinesAbove(state))
-                    }
-                ),
-            )
-            add(
-                FloconContextMenuItem.Item(
-                    label = clearOldSessionsString,
-                    onClick = {
-                        onActionCallback(AnalyticsAction.ClearOldSession)
-                    }
-                ),
-            )
-        }
+        persistentListOf(
+            FloconContextMenuItem.Item(
+                label = removeString,
+                onClick = {
+                    onActionCallback(AnalyticsAction.Remove(state))
+                }
+            ),
+            FloconContextMenuItem.Item(
+                label = removeLinesAboveString,
+                onClick = {
+                    onActionCallback(AnalyticsAction.RemoveLinesAbove(state))
+                }
+            ),
+            FloconContextMenuItem.Item(
+                label = clearOldSessionsString,
+                onClick = {
+                    onActionCallback(AnalyticsAction.ClearOldSession)
+                }
+            ),
+        )
     }
 }
 

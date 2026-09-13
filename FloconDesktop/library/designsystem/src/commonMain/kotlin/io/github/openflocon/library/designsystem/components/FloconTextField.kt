@@ -38,6 +38,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.theme.contentColorFor
+import java.awt.SystemColor
+import java.awt.SystemColor.text
 
 @Composable
 fun FloconTextField(
@@ -306,7 +308,6 @@ private fun ContainerBox(
     )
 }
 
-@Composable
 fun defaultLabel(text: String): @Composable () -> Unit = {
     DefaultLabel(text)
 }
@@ -319,7 +320,6 @@ fun DefaultLabel(text: String) {
     )
 }
 
-@Composable
 fun defaultPlaceHolder(text: String?, color: Color? = null): @Composable (() -> Unit)? = if (text.isNullOrEmpty())
     null
 else {

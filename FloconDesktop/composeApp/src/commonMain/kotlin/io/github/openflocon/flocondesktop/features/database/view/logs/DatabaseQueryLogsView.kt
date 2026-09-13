@@ -61,6 +61,7 @@ import io.github.openflocon.library.designsystem.components.FloconTextFieldWitho
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.collections.immutable.persistentListOf
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -132,7 +133,7 @@ fun DatabaseQueryLogsView(
                     ContextualView(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        items = listOf(
+                        items = persistentListOf(
                             FloconContextMenuItem.Item("Copy Query") {
                                 viewModel.copyQuery(log.sqlQuery)
                             },

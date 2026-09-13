@@ -4,10 +4,11 @@ import androidx.compose.foundation.ContextMenuArea
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 actual fun ContextualView(
-    items: List<FloconContextMenuItem>,
+    items: ImmutableList<FloconContextMenuItem>,
     modifier: Modifier,
     content: @Composable (() -> Unit)
 ) {
