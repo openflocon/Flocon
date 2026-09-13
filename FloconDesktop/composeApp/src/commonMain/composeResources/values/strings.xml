@@ -74,7 +74,7 @@
     <string name="network_header_time">Time</string>
     <string name="new_client_version">New client version available: %1$s</string>
     <string name="new_client_version_desc">Don’t forget to update the app version\n(current: %1$s)</string>
-    <string name="new_desktop_version">New destkop version available: %1$s</string>
+    <string name="new_desktop_version">New desktop version available: %1$s</string>
     <string name="update_available_desktop">Update: %1$s</string>
     <string name="update_available_client">SDK update: %1$s</string>
     <string name="no_analytics">No analytics</string>
@@ -89,7 +89,7 @@
     <string name="screenshot_saved_at">Success, file saved at %1$s</string>
     <string name="search">Search</string>
     <string name="settings_adb_setup_title">Please setup ADB first, this field is mandatory</string>
-    <string name="settings_adb_valid">ADB configuraton is valid</string>
+    <string name="settings_adb_valid">ADB configuration is valid</string>
     <string name="settings_font_size_multiplier">Font Size Multiplier : %1$sx</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_theme_dark">Dark</string>
