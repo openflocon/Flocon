@@ -12,10 +12,11 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.badquality.list.model.NetworkBadQualityLineUiModel
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun NetworkBadQualityContent(
-    lines: List<NetworkBadQualityLineUiModel>,
+    lines: ImmutableList<NetworkBadQualityLineUiModel>,
     onItemClicked: (id: String) -> Unit,
     onDeleteClicked: (id: String) -> Unit,
     setEnabled: (id: String?) -> Unit,

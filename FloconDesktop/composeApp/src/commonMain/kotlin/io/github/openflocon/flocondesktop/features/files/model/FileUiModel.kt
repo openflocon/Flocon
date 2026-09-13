@@ -4,6 +4,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 data class FileUiModel(
@@ -13,7 +15,7 @@ data class FileUiModel(
     val icon: ImageVector,
     val dateFormatted: String?,
     val sizeFormatted: String?,
-    val contextualActions: List<ContextualAction>,
+    val contextualActions: ImmutableList<ContextualAction>,
 ) {
 
     data class ContextualAction(
@@ -40,6 +42,6 @@ fun previewFileUiModel(
     path = FilePathUiModel.Constants.CachesDir,
     sizeFormatted = "100 MB",
     icon = Icons.Outlined.Folder,
-    contextualActions = listOf(),
+    contextualActions = persistentListOf(),
     dateFormatted = "2022-01-01 12:10",
 )

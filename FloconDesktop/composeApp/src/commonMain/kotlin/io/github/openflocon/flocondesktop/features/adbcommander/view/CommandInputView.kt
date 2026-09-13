@@ -53,13 +53,14 @@ import io.github.openflocon.library.designsystem.components.FloconExposedDropdow
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommandInputView(
     commandInput: String,
-    history: List<HistoryEntryUiModel>,
+    history: ImmutableList<HistoryEntryUiModel>,
     onAction: (AdbCommanderAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {

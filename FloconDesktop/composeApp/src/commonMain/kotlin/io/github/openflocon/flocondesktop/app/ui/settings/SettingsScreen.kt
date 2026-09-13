@@ -78,6 +78,7 @@ import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -560,7 +561,7 @@ private fun AppearancePane(
 
 @Composable
 private fun LogsPane(
-    logs: List<LogEntryUiModel>,
+    logs: ImmutableList<LogEntryUiModel>,
     onClearLogs: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -777,7 +778,7 @@ private fun ThemeButton(
 
 @Composable
 private fun ConsoleLogPanel(
-    logs: List<LogEntryUiModel>,
+    logs: ImmutableList<LogEntryUiModel>,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()

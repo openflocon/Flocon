@@ -46,6 +46,7 @@ import io.github.openflocon.library.designsystem.components.FloconExposedDropdow
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import kotlinx.collections.immutable.ImmutableList
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -80,7 +81,7 @@ private fun NetworkWebsocketMockContent(
 @Composable
 private fun NetworkWebsocketMockContent(
     selectedId: String?,
-    ids: List<NetworkWebsocketId>,
+    ids: ImmutableList<NetworkWebsocketId>,
     onClientSelected: (String) -> Unit,
     onSend: (String) -> Unit,
 ) {

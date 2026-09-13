@@ -30,6 +30,7 @@ kotlin {
                 api(compose.components.resources)
                 api(compose.components.uiToolingPreview)
                 api(libs.other.jsontree)
+                api(libs.kotlinx.immutable)
 
                 api(libs.compose.navigation3.ui)
 //                api(libs.compose.navigation3.runtime)

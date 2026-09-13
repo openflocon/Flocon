@@ -45,11 +45,13 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconSmallIconButton
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DetailHeadersView(
-    headers: List<NetworkDetailHeaderUi>,
+    headers: ImmutableList<NetworkDetailHeaderUi>,
     labelWidth: Dp,
     onAuthorizationClicked: (value: String) -> Unit,
     modifier: Modifier = Modifier,
@@ -214,7 +216,7 @@ private fun HeaderValueText(
 private fun DetailHeadersViewPreview() {
     FloconTheme {
         DetailHeadersView(
-            headers = listOf(
+            headers = persistentListOf(
                 previewNetworkDetailHeaderUi()
             ),
             labelWidth = 100.dp,

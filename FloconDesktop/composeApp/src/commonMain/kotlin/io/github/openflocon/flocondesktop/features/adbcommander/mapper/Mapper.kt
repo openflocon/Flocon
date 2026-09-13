@@ -12,6 +12,7 @@ import io.github.openflocon.flocondesktop.features.adbcommander.model.SavedComma
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.collections.immutable.toImmutableList
 
 fun AdbCommandDomainModel.toUiModel() = SavedCommandUiModel(
     id = id,
@@ -48,7 +49,7 @@ fun AdbFlowExecutionState.toUiModel() = FlowExecutionUiModel(
                 AdbFlowExecutionState.StepStatus.WaitingDelay,
             ),
         )
-    },
+    }.toImmutableList(),
     status = status.name,
     isRunning = status == AdbFlowExecutionState.FlowStatus.Running,
 )

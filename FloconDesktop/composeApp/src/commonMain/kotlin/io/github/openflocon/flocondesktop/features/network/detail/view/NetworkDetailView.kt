@@ -83,6 +83,7 @@ import io.github.openflocon.library.designsystem.components.FloconTab
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.TabType
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -557,7 +558,7 @@ private fun Request(
             )
         }
 
-        state.requestHeaders?.let {
+        state.requestHeaders?.let { requestHeaders ->
             Spacer(modifier = Modifier.height(12.dp))
             FloconSection(
                 title = "Headers",
@@ -572,7 +573,7 @@ private fun Request(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 DetailHeadersView(
-                    headers = state.requestHeaders,
+                    headers = requestHeaders,
                     labelWidth = headersLabelWidth,
                     onAuthorizationClicked = { token -> onAction(NetworkDetailAction.DisplayBearerJwt(token)) },
                     onCopyValue = { value -> onAction(NetworkDetailAction.CopyText(value)) },
@@ -1252,7 +1253,7 @@ private fun NetworkDetailViewPreview() {
                     status = NetworkStatusUi.Status.SUCCESS,
                 ),
                 requestHeaders =
-                listOf(
+                persistentListOf(
                     previewNetworkDetailHeaderUi(),
                     previewNetworkDetailHeaderUi(),
                     previewNetworkDetailHeaderUi(),
@@ -1291,7 +1292,7 @@ private fun NetworkDetailViewPreview() {
                     canOpenResponseBody = true,
                     responseBodyIsNotBlank = true,
                     headers =
-                    listOf(
+                    persistentListOf(
                         previewNetworkDetailHeaderUi(),
                         previewNetworkDetailHeaderUi(),
                         previewNetworkDetailHeaderUi(),

@@ -43,12 +43,13 @@ import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSection
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CommandLibraryPanel(
-    savedCommands: List<SavedCommandUiModel>,
-    flows: List<FlowUiModel>,
+    savedCommands: ImmutableList<SavedCommandUiModel>,
+    flows: ImmutableList<FlowUiModel>,
     onAction: (AdbCommanderAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {

@@ -18,6 +18,8 @@ import io.github.openflocon.flocondesktop.features.network.list.mapper.toNetwork
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.common.isImageUrl
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentMap
 
 fun FloconNetworkCallDomainModel.toDetailUi(
@@ -144,7 +146,7 @@ private fun graphQlStatus(networkCall: FloconNetworkCallDomainModel): NetworkSta
 
 fun httpBodyToUi(body: String?): String = body?.let { JsonPrettyPrinter.prettyPrint(body) } ?: ""
 
-fun toNetworkHeadersUi(headers: Map<String, String>?): List<NetworkDetailHeaderUi>? = headers?.let {
+fun toNetworkHeadersUi(headers: Map<String, String>?): ImmutableList<NetworkDetailHeaderUi>? = headers?.let {
     it
         .map { (key, value) ->
             NetworkDetailHeaderUi(
@@ -152,6 +154,7 @@ fun toNetworkHeadersUi(headers: Map<String, String>?): List<NetworkDetailHeaderU
                 value = value,
             )
         }.sortedBy { it.name }
+        .toImmutableList()
 }?.takeIf { it.isNotEmpty() }
 
 fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState.Method = when (request.request.specificInfos) {

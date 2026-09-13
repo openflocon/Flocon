@@ -26,6 +26,10 @@ import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommand
 import io.github.openflocon.flocondesktop.features.adbcommander.model.ConsoleOutputEntry
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowEditorState
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowEditorStepState
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -67,9 +71,9 @@ class AdbCommanderViewModel(
 
     val uiState: StateFlow<AdbCommanderUiState> = combine(
         localState,
-        observeSavedCommandsUseCase().mapLatest { list -> list.map { it.toUiModel() } },
-        observeCommandHistoryUseCase().mapLatest { list -> list.map { it.toUiModel() } },
-        domainFlows.mapLatest { list -> list.map { it.toUiModel() } },
+        observeSavedCommandsUseCase().mapLatest { list -> list.map { it.toUiModel() }.toImmutableList() },
+        observeCommandHistoryUseCase().mapLatest { list -> list.map { it.toUiModel() }.toImmutableList() },
+        domainFlows.mapLatest { list -> list.map { it.toUiModel() }.toImmutableList() },
     ) { local, savedCommands, history, flows ->
         local.copy(
             savedCommands = savedCommands,
@@ -129,10 +133,12 @@ class AdbCommanderViewModel(
                     localState.update {
                         it.copy(
                             isExecuting = false,
-                            consoleOutput = it.consoleOutput + ConsoleOutputEntry(
-                                command = command,
-                                output = error.message ?: "Unknown error",
-                                isSuccess = false,
+                            consoleOutput = it.consoleOutput.adding(
+                                ConsoleOutputEntry(
+                                    command = command,
+                                    output = error.message ?: "Unknown error",
+                                    isSuccess = false,
+                                ),
                             ),
                         )
                     }
@@ -142,10 +148,12 @@ class AdbCommanderViewModel(
                         it.copy(
                             isExecuting = false,
                             commandInput = "",
-                            consoleOutput = it.consoleOutput + ConsoleOutputEntry(
-                                command = command,
-                                output = output.ifEmpty { "(no output)" },
-                                isSuccess = true,
+                            consoleOutput = it.consoleOutput.adding(
+                                ConsoleOutputEntry(
+                                    command = command,
+                                    output = output.ifEmpty { "(no output)" },
+                                    isSuccess = true,
+                                ),
                             ),
                         )
                     }
@@ -230,7 +238,7 @@ class AdbCommanderViewModel(
                                 label = step.label ?: "",
                                 delayAfterMs = step.delayAfterMs.toString(),
                             )
-                        } ?: listOf(FlowEditorStepState()),
+                        }?.toPersistentList() ?: persistentListOf(FlowEditorStepState()),
                     ),
                 )
             }
@@ -262,9 +270,10 @@ class AdbCommanderViewModel(
 
     private fun onFlowEditorStepCommandChanged(index: Int, command: String) {
         localState.update {
-            val steps = it.flowEditorState.steps.toMutableList()
-            if (index < steps.size) {
-                steps[index] = steps[index].copy(command = command)
+            val steps = it.flowEditorState.steps.mutate { steps ->
+                if (index < steps.size) {
+                    steps[index] = steps[index].copy(command = command)
+                }
             }
             it.copy(flowEditorState = it.flowEditorState.copy(steps = steps))
         }
@@ -272,9 +281,10 @@ class AdbCommanderViewModel(
 
     private fun onFlowEditorStepLabelChanged(index: Int, label: String) {
         localState.update {
-            val steps = it.flowEditorState.steps.toMutableList()
-            if (index < steps.size) {
-                steps[index] = steps[index].copy(label = label)
+            val steps = it.flowEditorState.steps.mutate { steps ->
+                if (index < steps.size) {
+                    steps[index] = steps[index].copy(label = label)
+                }
             }
             it.copy(flowEditorState = it.flowEditorState.copy(steps = steps))
         }
@@ -282,9 +292,10 @@ class AdbCommanderViewModel(
 
     private fun onFlowEditorStepDelayChanged(index: Int, delay: String) {
         localState.update {
-            val steps = it.flowEditorState.steps.toMutableList()
-            if (index < steps.size) {
-                steps[index] = steps[index].copy(delayAfterMs = delay)
+            val steps = it.flowEditorState.steps.mutate { steps ->
+                if (index < steps.size) {
+                    steps[index] = steps[index].copy(delayAfterMs = delay)
+                }
             }
             it.copy(flowEditorState = it.flowEditorState.copy(steps = steps))
         }
@@ -294,7 +305,7 @@ class AdbCommanderViewModel(
         localState.update {
             it.copy(
                 flowEditorState = it.flowEditorState.copy(
-                    steps = it.flowEditorState.steps + FlowEditorStepState()
+                    steps = it.flowEditorState.steps.adding(FlowEditorStepState())
                 )
             )
         }
@@ -302,9 +313,10 @@ class AdbCommanderViewModel(
 
     private fun onFlowEditorRemoveStep(index: Int) {
         localState.update {
-            val steps = it.flowEditorState.steps.toMutableList()
-            if (steps.size > 1 && index < steps.size) {
-                steps.removeAt(index)
+            val steps = it.flowEditorState.steps.mutate { steps ->
+                if (steps.size > 1 && index < steps.size) {
+                    steps.removeAt(index)
+                }
             }
             it.copy(flowEditorState = it.flowEditorState.copy(steps = steps))
         }
@@ -377,7 +389,7 @@ class AdbCommanderViewModel(
     }
 
     private fun onClearConsole() {
-        localState.update { it.copy(consoleOutput = emptyList(), flowExecution = null) }
+        localState.update { it.copy(consoleOutput = persistentListOf(), flowExecution = null) }
     }
 
     private fun onCopyCommand() {

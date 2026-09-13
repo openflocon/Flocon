@@ -1,11 +1,14 @@
 package io.github.openflocon.flocondesktop.features.dashboard.model
 
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+
 data class DashboardViewState(
-    val items: List<DashboardContainerViewState>,
+    val items: ImmutableList<DashboardContainerViewState>,
 )
 
 fun previewDashboardViewState() = DashboardViewState(
-    items = listOf(
+    items = persistentListOf(
         previewDashboardContainerViewState(),
         previewDashboardContainerViewState(),
         previewDashboardContainerViewState(),

@@ -25,10 +25,11 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
 fun SaveFavoriteDialog(
-    favoritesTitles: Set<String>,
+    favoritesTitles: ImmutableSet<String>,
     onDismiss: () -> Unit,
     onSave: (queryName: String) -> Unit
 ) {
