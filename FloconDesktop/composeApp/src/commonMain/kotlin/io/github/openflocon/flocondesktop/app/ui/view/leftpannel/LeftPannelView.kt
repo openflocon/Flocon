@@ -26,6 +26,9 @@ import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuState
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.previewMenuState
 import io.github.openflocon.flocondesktop.app.ui.view.displayName
 import io.github.openflocon.library.designsystem.FloconTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import org.jetbrains.compose.resources.stringResource
 
 val PanelMaxWidth = 275.dp
@@ -48,7 +51,7 @@ fun LeftPanelView(
     ) {
         MenuSection(
             current = current,
-            items = state.sections,
+            items = state.sections.toImmutableList(),
             expanded = expanded,
             onClickItem = onClickItem,
         )
@@ -56,7 +59,7 @@ fun LeftPanelView(
         Spacer(Modifier.weight(1f))
         MenuItems(
             current = current,
-            items = state.bottomItems,
+            items = state.bottomItems.toImmutableList(),
             expanded = expanded,
             onClickItem = onClickItem,
         )
@@ -66,7 +69,7 @@ fun LeftPanelView(
 @Composable
 private fun ColumnScope.MenuSection(
     current: SubScreen,
-    items: List<MenuSection>,
+    items: ImmutableList<MenuSection>,
     expanded: Boolean,
     onClickItem: (MenuItem) -> Unit,
 ) {
@@ -77,7 +80,7 @@ private fun ColumnScope.MenuSection(
         )
         MenuItems(
             current = current,
-            items = section.items,
+            items = section.items.toImmutableList(),
             expanded = expanded,
             onClickItem = onClickItem,
         )
@@ -87,7 +90,7 @@ private fun ColumnScope.MenuSection(
 @Composable
 private fun ColumnScope.MenuItems(
     current: SubScreen,
-    items: List<MenuItem>,
+    items: ImmutableList<MenuItem>,
     expanded: Boolean,
     onClickItem: (MenuItem) -> Unit,
 ) {
