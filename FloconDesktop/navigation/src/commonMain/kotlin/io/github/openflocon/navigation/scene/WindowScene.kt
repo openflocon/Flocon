@@ -1,15 +1,16 @@
-@file:OptIn(ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalUuidApi::class, ExperimentalComposeUiApi::class)
 
 package io.github.openflocon.navigation.scene
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.v2.DialogWindow
+import androidx.compose.ui.window.v2.WindowBoundsProvider
+import androidx.compose.ui.window.v2.WindowPositionProvider
+import androidx.compose.ui.window.v2.rememberDialogState
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavMetadataKey
 import androidx.navigation3.runtime.contains
@@ -26,7 +27,7 @@ import kotlin.uuid.ExperimentalUuidApi
 data class WindowScene(
     private val entry: NavEntry<FloconRoute>,
     override val previousEntries: List<NavEntry<FloconRoute>>,
-    private val onBack: () -> Unit
+    private val onBack: () -> Unit,
 ) : OverlayScene<FloconRoute> {
 
     override val key: Any = entry.contentKey
@@ -36,12 +37,17 @@ data class WindowScene(
 
     override val content: @Composable (() -> Unit) = {
         val windowProperties = entry.metadata[WindowPropertiesKey]
-        val state = rememberWindowState(
-            size = windowProperties?.size ?: DpSize(800.dp, 600.dp),
-            position = WindowPosition.Aligned(Alignment.Center)
+
+        val state = rememberDialogState(
+            initialBoundsProvider = WindowBoundsProvider(
+                sizeProvider = {
+                    windowProperties?.size ?: DpSize(800.dp, 600.dp)
+                },
+                positionProvider = WindowPositionProvider.CenteredInParentWindow,
+            ),
         )
 
-        Window(
+        DialogWindow(
             onCloseRequest = onBack,
             state = state,
             title = windowProperties?.title ?: "",
@@ -60,7 +66,7 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
             return WindowScene(
                 entry = entry,
                 previousEntries = entries.dropLast(1),
-                onBack = onBack
+                onBack = onBack,
             )
         }
 
@@ -79,4 +85,4 @@ data class WindowProperties(
     val title: String? = null
 )
 
-private object WindowPropertiesKey: NavMetadataKey<WindowProperties>
+private object WindowPropertiesKey : NavMetadataKey<WindowProperties>
