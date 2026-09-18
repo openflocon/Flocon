@@ -78,12 +78,12 @@ kotlin {
                 implementation(libs.ktor.client.cio)
 
                 implementation(libs.sqlite.jdbc)
-                implementation(libs.sqlite.bundled)
+                implementation(libs.androidx.sqlite.bundled)
 
                 // Compose Desktop
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.coroutines.swing)
-                implementation(libs.ktor.clientJava)
+                implementation(libs.ktor.client.java)
             }
         }
 
@@ -149,9 +149,6 @@ android {
     buildFeatures {
         compose = true
     }
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
 }
 
 dependencies {

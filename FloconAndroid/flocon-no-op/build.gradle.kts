@@ -22,7 +22,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
+                implementation(libs.kotlinx.coroutines.core)
                 api(project(":flocon-base"))
             }
         }
@@ -78,14 +78,6 @@ android {
 }
 
 mavenPublishing {
-    publishToMavenCentral(automaticRelease = true)
-
-    if (project.hasProperty("signing.required") && project.property("signing.required") == "false") {
-        // Skip signing
-    } else {
-        signAllPublications()
-    }
-
     coordinates(
         groupId = project.property("floconGroupId") as String,
         artifactId = "flocon-no-op",
@@ -94,27 +86,5 @@ mavenPublishing {
 
     pom {
         name = "Flocon No Op"
-        description = project.property("floconDescription") as String
-        inceptionYear = "2025"
-        url = "https://github.com/openflocon/Flocon"
-        licenses {
-            license {
-                name = "The Apache License, Version 2.0"
-                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-            }
-        }
-        developers {
-            developer {
-                id = "openflocon"
-                name = "Open Flocon"
-                url = "https://github.com/openflocon"
-            }
-        }
-        scm {
-            url = "https://github.com/openflocon/Flocon"
-            connection = "scm:git:git://github.com/openflocon/Flocon.git"
-            developerConnection = "scm:git:ssh://git@github.com/openflocon/Flocon.git"
-        }
     }
-}
+}
