@@ -14,7 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "My Application"
+rootProject.name = "flocon"
 include(":sample-android-only")
 include(":sample-multiplatform")
 include(":flocon-base")
