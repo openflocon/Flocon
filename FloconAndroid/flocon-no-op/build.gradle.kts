@@ -29,6 +29,8 @@ kotlin {
         
         val androidMain by getting {
             dependencies {
+                implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
+                implementation(libs.kotlinx.coroutines.android)
             }
         }
         
