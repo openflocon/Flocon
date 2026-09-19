@@ -45,6 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianneubauer.jsontree.search.rememberSearchState
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.match_case_disabled
+import flocondesktop.composeapp.generated.resources.match_case_enabled
 import flocondesktop.composeapp.generated.resources.search
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.body.model.previewNetworkBodyDetailUi
@@ -58,6 +60,7 @@ import io.github.openflocon.library.designsystem.components.FloconTextFieldWitho
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -79,31 +82,15 @@ fun NetworkJsonScreen(
 }
 
 @Composable
-fun NetworkBodyWindow(
-    body: NetworkBodyDetailUi
-) {
-    NetworkBodyContent(
-        body = body,
-        modifier = Modifier.fillMaxSize(),
-    )
-}
-
-
-@Composable
 private fun NetworkBodyContent(
     body: NetworkBodyDetailUi,
     modifier: Modifier = Modifier,
 ) {
     var jsonError by remember { mutableStateOf(false) }
-    var query by remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
     val searchState = rememberSearchState()
     val listState = rememberLazyListState()
-
-    LaunchedEffect(query) {
-        searchState.query = query
-    }
 
     val resultIndex = searchState.selectedResultListIndex
     LaunchedEffect(resultIndex) {
@@ -121,9 +108,12 @@ private fun NetworkBodyContent(
             if (!jsonError) {
                 SearchBar(
                     modifier = Modifier.fillMaxWidth(),
-                    query = query,
+                    query = searchState.query ?: "",
                     queryChanged = {
-                        query = it
+                        searchState.query = it
+                    },
+                    matchCaseChanged = {
+                        searchState.caseSensitive = !searchState.caseSensitive
                     },
                     previousClicked = {
                         scope.launch {
@@ -135,6 +125,7 @@ private fun NetworkBodyContent(
                     },
                     selectedResultIndex = searchState.selectedResultIndex,
                     totalResults = searchState.totalResults,
+                    matchCase = searchState.caseSensitive
                 )
             }
             FloconJsonTree(
@@ -157,9 +148,11 @@ private fun SearchBar(
     previousClicked: () -> Unit,
     nextClicked: () -> Unit,
     queryChanged: (String) -> Unit,
+    matchCaseChanged: () -> Unit,
     modifier: Modifier = Modifier,
     selectedResultIndex: Int?,
     totalResults: Int,
+    matchCase: Boolean,
 ) {
     val focusRequester = remember { FocusRequester() }
 
@@ -191,13 +184,28 @@ private fun SearchBar(
                     )
                 },
                 trailingComponent = {
-                    if (query.isNotEmpty()) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
                         FloconSmallIconButton(
-                            imageVector = Icons.Outlined.Close,
-                            onClick = { queryChanged("") },
-                            contentDescription = "Clear",
+                            imageVector = if(matchCase) {
+                                vectorResource(Res.drawable.match_case_enabled)
+                            } else {
+                                vectorResource(Res.drawable.match_case_disabled)
+                            },
+                            onClick = { matchCaseChanged() },
+                            contentDescription = "Match Case",
                             modifier = Modifier.size(16.dp)
                         )
+
+                        if (query.isNotEmpty()) {
+                            FloconSmallIconButton(
+                                imageVector = Icons.Outlined.Close,
+                                onClick = { queryChanged("") },
+                                contentDescription = "Clear",
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
                 },
                 containerColor = FloconTheme.colorPalette.secondary,
@@ -302,8 +310,10 @@ private fun SearchBarPreview() {
             previousClicked = {},
             nextClicked = {},
             queryChanged = {},
+            matchCaseChanged = {},
             totalResults = 3,
             selectedResultIndex = 1,
+            matchCase = false
         )
     }
 }
