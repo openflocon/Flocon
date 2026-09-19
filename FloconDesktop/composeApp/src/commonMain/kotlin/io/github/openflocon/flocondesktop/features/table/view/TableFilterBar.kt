@@ -19,11 +19,12 @@ import flocondesktop.composeapp.generated.resources.filter
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TableFilterBar(
-    tableItems: List<TableRowUiModel>,
+    tableItems: ImmutableList<TableRowUiModel>,
     onItemsChange: (List<TableRowUiModel>) -> Unit,
     onResetClicked: () -> Unit,
     modifier: Modifier = Modifier,

@@ -50,6 +50,7 @@ import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiM
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.navigation.MainFloconNavigationState
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -315,7 +316,7 @@ private fun DatabaseResultViewPreviewText() {
 private fun DatabaseResultViewPreviewValues() {
     val result = QueryResultUiModel.Values(
         columns = listOf("ID", "Name", "Email"),
-        rows = listOf(
+        rows = persistentListOf(
             DatabaseRowUiModel(items = listOf("1", "John Doe", "john.doe@example.com")),
             DatabaseRowUiModel(items = listOf("2", "Jane Smith", "jane.smith@example.com")),
             DatabaseRowUiModel(items = listOf("3", "Peter Jones", null)),

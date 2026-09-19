@@ -24,6 +24,8 @@ import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.flocondesktop.features.table.model.previewTableRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -66,29 +68,25 @@ fun TableRowView(
 private fun contextualActions(
     onAction: (TableAction) -> Unit,
     state: TableRowUiModel
-): List<FloconContextMenuItem> {
+): ImmutableList<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
     val removeString = stringResource(Res.string.remove)
     val removeAboveString = stringResource(Res.string.remove_lines_above)
     return remember(state) {
-        buildList {
-            add(
-                FloconContextMenuItem.Item(
-                    label = removeString,
-                    onClick = {
-                        onActionCallback(TableAction.Remove(state))
-                    }
-                ),
-            )
-            add(
-                FloconContextMenuItem.Item(
-                    label = removeAboveString,
-                    onClick = {
-                        onActionCallback(TableAction.RemoveLinesAbove(state))
-                    }
-                ),
-            )
-        }
+        persistentListOf(
+            FloconContextMenuItem.Item(
+                label = removeString,
+                onClick = {
+                    onActionCallback(TableAction.Remove(state))
+                }
+            ),
+            FloconContextMenuItem.Item(
+                label = removeAboveString,
+                onClick = {
+                    onActionCallback(TableAction.RemoveLinesAbove(state))
+                }
+            ),
+        )
     }
 }
 

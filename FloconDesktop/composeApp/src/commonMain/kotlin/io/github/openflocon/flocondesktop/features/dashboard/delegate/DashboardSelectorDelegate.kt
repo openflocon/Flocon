@@ -9,6 +9,7 @@ import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableD
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +37,7 @@ class DashboardSelectorDelegate(
                 val sortedDashboards = dashboards.sortedBy { it }
 
                 DashboardsStateUiModel.WithContent(
-                    dashboards = sortedDashboards.map { it.toUi() },
+                    dashboards = sortedDashboards.map { it.toUi() }.toImmutableList(),
                     selected = selected?.toUi() ?: run {
                         sortedDashboards.first().let {
                             selectCurrentDeviceDashboardUseCase(it)

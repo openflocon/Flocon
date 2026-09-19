@@ -49,6 +49,7 @@ import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val replayColor = Color(0xFF242D44)
@@ -214,7 +215,7 @@ fun NetworkItemView(
 private fun contextualActions(
     onAction: (NetworkAction) -> Unit,
     state: NetworkItemViewState
-): List<FloconContextMenuItem> {
+): ImmutableList<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
     return remember(state) {
         buildMenu {
