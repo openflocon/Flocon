@@ -43,11 +43,13 @@ class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : Flo
     }
 
     override fun back(count: Int) {
-        repeat(count) { _stack.removeLast() }
+        repeat(count.coerceAtMost(_stack.lastIndex)) { _stack.removeLast() }
     }
 
     override fun remove(route: FloconRoute) {
-        _stack.remove(route)
+        if (_stack.indexOf(route) > 0) {
+            _stack.remove(route)
+        }
     }
 
     fun menu(route: FloconRoute) {
