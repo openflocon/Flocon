@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.internal.types.error.ErrorModuleDescriptor.platform
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -31,6 +32,8 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.brotli.dec)
+                implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
+                implementation(libs.kotlinx.coroutines.android)
             }
         }
         
