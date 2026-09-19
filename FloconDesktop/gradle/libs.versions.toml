@@ -114,5 +114,4 @@ kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", vers
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 room = { id = "androidx.room", version.ref = "room" }
-stability-analyzer = { id = "com.github.skydoves.compose.stability.analyzer", version = "0.13.0" }
 
