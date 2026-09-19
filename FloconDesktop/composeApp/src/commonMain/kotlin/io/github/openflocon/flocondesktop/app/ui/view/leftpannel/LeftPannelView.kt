@@ -63,7 +63,7 @@ fun LeftPanelView(
         ) {
             MenuSection(
                 current = current,
-                items = state.sections.toImmutableList(),
+                items = state.sections,
                 expanded = expanded,
                 onClickItem = onClickItem,
             )
@@ -71,7 +71,7 @@ fun LeftPanelView(
             Spacer(Modifier.weight(1f))
             MenuItems(
                 current = current,
-                items = state.bottomItems.toImmutableList(),
+                items = state.bottomItems,
                 expanded = expanded,
                 onClickItem = onClickItem,
             )
@@ -104,7 +104,7 @@ private fun ColumnScope.MenuSection(
         )
         MenuItems(
             current = current,
-            items = section.items.toImmutableList(),
+            items = section.items,
             expanded = expanded,
             onClickItem = onClickItem,
         )
