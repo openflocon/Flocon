@@ -31,6 +31,8 @@ import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuState
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.previewMenuState
 import io.github.openflocon.flocondesktop.app.ui.view.displayName
 import io.github.openflocon.library.designsystem.FloconTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.resources.stringResource
@@ -91,7 +93,7 @@ fun LeftPanelView(
 @Composable
 private fun ColumnScope.MenuSection(
     current: SubScreen,
-    items: List<MenuSection>,
+    items: ImmutableList<MenuSection>,
     expanded: Boolean,
     onClickItem: (MenuItem) -> Unit,
 ) {
@@ -112,7 +114,7 @@ private fun ColumnScope.MenuSection(
 @Composable
 private fun ColumnScope.MenuItems(
     current: SubScreen,
-    items: List<MenuItem>,
+    items: ImmutableList<MenuItem>,
     expanded: Boolean,
     onClickItem: (MenuItem) -> Unit,
 ) {

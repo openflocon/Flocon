@@ -19,6 +19,8 @@ import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
 import io.github.openflocon.flocondesktop.common.log.LogManager
 import io.github.openflocon.flocondesktop.common.log.toUiModel
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -53,7 +55,7 @@ class SettingsViewModel(
         SettingsUiState(
             fontSizeMultiplier = multiplier,
             theme = theme,
-            logs = logs.map { it.toUiModel() },
+            logs = logs.map { it.toUiModel() }.toImmutableList(),
             adbForwardStatus = forwardStatus,
         )
     }
@@ -63,7 +65,7 @@ class SettingsViewModel(
             initialValue = SettingsUiState(
                 fontSizeMultiplier = 1f,
                 theme = ThemeSetting.DEFAULT,
-                logs = emptyList(),
+                logs = persistentListOf(),
                 adbForwardStatus = AdbForwardStatus.UNKNOWN
             )
         )

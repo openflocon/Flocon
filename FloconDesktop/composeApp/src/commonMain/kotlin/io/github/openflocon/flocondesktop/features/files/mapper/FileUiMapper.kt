@@ -15,6 +15,8 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 fun FileUiModel.icon(): ImageVector = if (this.isDirectory) Icons.Outlined.Folder else Icons.Outlined.Drafts
 
@@ -72,7 +74,7 @@ fun FilePathDomainModel.toUi(): FilePathUiModel = when (this) {
 fun buildContextualActions(
     isFolder: Boolean,
     isConstant: Boolean,
-): List<FileUiModel.ContextualAction> {
+): ImmutableList<FileUiModel.ContextualAction> {
     val contextualActions = mutableListOf<FileUiModel.ContextualAction>()
     contextualActions.add(
         FileUiModel.ContextualAction(
@@ -104,5 +106,5 @@ fun buildContextualActions(
             ),
         )
     }
-    return contextualActions
+    return contextualActions.toImmutableList()
 }

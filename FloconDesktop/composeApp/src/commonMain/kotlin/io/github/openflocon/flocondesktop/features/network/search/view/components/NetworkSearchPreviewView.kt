@@ -44,11 +44,12 @@ import io.github.openflocon.library.designsystem.components.FloconHorizontalDivi
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 internal fun NetworkSearchPreviewView(
     request: FloconNetworkCallDomainModel,
-    matches: List<Match>,
+    matches: ImmutableList<Match>,
     currentMatchIndex: Int,
     onNextMatch: () -> Unit,
     onPrevMatch: () -> Unit,

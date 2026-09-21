@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.common.log
 
+import androidx.compose.runtime.Immutable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +18,7 @@ data class LogEntry(
     val timestamp: Instant,
 )
 
+@Immutable
 data class LogEntryUiModel(
     val level: LogLevel,
     val message: String,

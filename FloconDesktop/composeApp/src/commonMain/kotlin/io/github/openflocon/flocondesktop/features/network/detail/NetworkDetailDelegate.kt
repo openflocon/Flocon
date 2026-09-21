@@ -23,6 +23,7 @@ import io.github.openflocon.library.designsystem.common.readFromClipboard
 import io.github.openflocon.library.designsystem.common.saveImageToFile
 import io.github.openflocon.navigation.MainFloconNavigationState
 
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -82,7 +83,7 @@ class NetworkDetailDelegate(
                 requestBodyTitle = "",
                 requestBody = "",
                 requestSize = "",
-                requestHeaders = emptyList(),
+                requestHeaders = persistentListOf(),
                 response = null,
                 requestBodyIsNotBlank = false,
                 canOpenRequestBody = false,

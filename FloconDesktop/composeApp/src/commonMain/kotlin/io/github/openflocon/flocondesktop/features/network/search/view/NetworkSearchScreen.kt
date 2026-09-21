@@ -49,6 +49,7 @@ import io.github.openflocon.library.designsystem.components.FloconTextFieldWitho
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.collections.immutable.ImmutableList
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -87,7 +88,7 @@ private fun NetworkSearchScreen(
     uiState: NetworkSearchUiState,
     selectedRequestId: String?,
     selectedRequest: FloconNetworkCallDomainModel?,
-    matches: List<Match>,
+    matches: ImmutableList<Match>,
     currentMatchIndex: Int,
     onNextMatch: () -> Unit,
     onPrevMatch: () -> Unit,

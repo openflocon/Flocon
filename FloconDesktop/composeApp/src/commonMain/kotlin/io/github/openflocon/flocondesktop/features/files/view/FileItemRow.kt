@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -37,6 +38,8 @@ import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
@@ -52,18 +55,21 @@ fun FileItemRow(
     modifier: Modifier = Modifier,
 ) {
     val shiftPressed = remember { mutableStateOf(false) }
-    
+    val onContextualActionCallback by rememberUpdatedState(onContextualAction)
+
     ContextualView(
-        items = file.contextualActions.map { action ->
-            FloconContextMenuItem.Item(
-                label = action.text,
-                onClick = {
-                    onContextualAction(
-                        file,
-                        action.id,
-                    )
-                }
-            )
+        items = remember(file) {
+            file.contextualActions.map { action ->
+                FloconContextMenuItem.Item(
+                    label = action.text,
+                    onClick = {
+                        onContextualActionCallback(
+                            file,
+                            action.id,
+                        )
+                    }
+                )
+            }.toImmutableList()
         },
     ) {
         Row(
@@ -165,7 +171,7 @@ private fun FileItemRowPreview_folder() {
         path = FilePathUiModel.Constants.CachesDir,
         icon = Icons.Outlined.Folder,
         sizeFormatted = "1 MB",
-        contextualActions = emptyList(),
+        contextualActions = persistentListOf(),
         dateFormatted = "2022-01-01 12:10",
     )
     FloconTheme {
@@ -190,7 +196,7 @@ private fun FileItemRowPreview_file() {
         path = FilePathUiModel.Real("absolutePath"),
         icon = Icons.Outlined.Drafts,
         sizeFormatted = "1 MB",
-        contextualActions = emptyList(),
+        contextualActions = persistentListOf(),
         dateFormatted = "2022-01-01 12:10",
     )
     FloconTheme {
@@ -219,7 +225,7 @@ private fun FileItemRowPreview() {
                         path = FilePathUiModel.Constants.CachesDir,
                         icon = Icons.Outlined.Folder,
                         sizeFormatted = "1 MB",
-                        contextualActions = emptyList(),
+                        contextualActions = persistentListOf(),
                         dateFormatted = "2022-01-01 12:10",
                     ),
                     index = 0,
@@ -236,7 +242,7 @@ private fun FileItemRowPreview() {
                         path = FilePathUiModel.Real("absolutePath"),
                         icon = Icons.Outlined.Drafts,
                         sizeFormatted = "1 MB",
-                        contextualActions = emptyList(),
+                        contextualActions = persistentListOf(),
                         dateFormatted = "2022-01-01 12:10",
                     ),
                     index = 1,

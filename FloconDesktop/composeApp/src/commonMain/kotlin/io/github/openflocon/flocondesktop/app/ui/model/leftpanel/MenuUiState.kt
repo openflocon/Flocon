@@ -11,26 +11,28 @@ import flocondesktop.composeapp.generated.resources.menu_storage
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.view.displayName
 import io.github.openflocon.flocondesktop.app.ui.view.icon
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.getString
 
 @Immutable
 data class MenuState(
-    val sections: List<MenuSection>,
-    val bottomItems: List<MenuItem>,
+    val sections: ImmutableList<MenuSection>,
+    val bottomItems: ImmutableList<MenuItem>,
 )
 
 fun previewMenuState() = MenuState(
-    bottomItems = listOf(
+    bottomItems = persistentListOf(
         MenuItem(
             screen = SubScreen.Settings,
             icon = Icons.Outlined.Settings,
             isEnabled = true,
         ),
     ),
-    sections = listOf(
+    sections = persistentListOf(
         MenuSection(
             title = Res.string.menu_network,
-            items = listOf(
+            items = persistentListOf(
                 MenuItem(
                     screen = SubScreen.Network,
                     icon = Icons.Outlined.Settings,
@@ -50,7 +52,7 @@ fun previewMenuState() = MenuState(
         ),
         MenuSection(
             title = Res.string.menu_storage,
-            items = listOf(
+            items = persistentListOf(
                 MenuItem(
                     screen = SubScreen.Network,
                     icon = Icons.Outlined.Settings,
@@ -70,7 +72,7 @@ fun previewMenuState() = MenuState(
         ),
         MenuSection(
             title = Res.string.menu_data,
-            items = listOf(
+            items = persistentListOf(
                 MenuItem(
                     screen = SubScreen.Dashboard,
                     icon = Icons.Outlined.Settings,
@@ -87,20 +89,20 @@ fun previewMenuState() = MenuState(
 )
 
 internal fun buildMenu() = MenuState(
-    bottomItems = listOf(
+    bottomItems = persistentListOf(
         item(subScreen = SubScreen.Settings)
     ),
-    sections = listOf(
+    sections = persistentListOf(
         MenuSection(
             title = Res.string.menu_network,
-            items = listOf(
+            items = persistentListOf(
                 item(subScreen = SubScreen.Network),
                 item(subScreen = SubScreen.Images),
             ),
         ),
         MenuSection(
             title = Res.string.menu_storage,
-            items = listOf(
+            items = persistentListOf(
                 item(SubScreen.Database),
                 item(SubScreen.SharedPreferences),
                 item(SubScreen.Files),
@@ -108,7 +110,7 @@ internal fun buildMenu() = MenuState(
         ),
         MenuSection(
             title = Res.string.menu_data,
-            items = listOf(
+            items = persistentListOf(
                 item(SubScreen.Dashboard),
                 item(SubScreen.Analytics),
                 item(SubScreen.Tables),
@@ -117,7 +119,7 @@ internal fun buildMenu() = MenuState(
         ),
         MenuSection(
             title = Res.string.menu_actions,
-            items = listOf(
+            items = persistentListOf(
                 item(SubScreen.Deeplinks),
                 item(SubScreen.AdbCommander),
             ),

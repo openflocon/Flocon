@@ -33,6 +33,8 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.rememberPopupPositionProviderAtPosition
 import com.composeunstyled.currentWindowContainerSize
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlin.math.roundToInt
 
 internal class FloconMenuRepresentation : ContextMenuRepresentation {
@@ -52,7 +54,8 @@ internal class FloconMenuRepresentation : ContextMenuRepresentation {
             Menu(
                 offset = status.rect.center,
                 items = items.invoke()
-                    .filterIsInstance<FloconContextMenuItem>(),
+                    .filterIsInstance<FloconContextMenuItem>()
+                    .toImmutableList(),
                 hide = ::hide
             )
         }
@@ -62,7 +65,7 @@ internal class FloconMenuRepresentation : ContextMenuRepresentation {
 @Composable
 private fun Menu(
     offset: Offset,
-    items: List<FloconContextMenuItem>,
+    items: ImmutableList<FloconContextMenuItem>,
     hide: () -> Unit,
     modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource? = null
@@ -146,7 +149,7 @@ private fun SubMenu(
     if (hovered) {
         Menu(
             offset = offset,
-            items = item.items,
+            items = item.items.toImmutableList(),
             hide = hide,
             interactionSource = interactionSource,
             modifier = Modifier

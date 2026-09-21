@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.features.table.model
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 sealed interface TableContentStateUiModel {
@@ -13,20 +15,20 @@ sealed interface TableContentStateUiModel {
     @Immutable
     data class WithContent(
         val columns: TableColumnsUiModel,
-        val rows: List<TableRowUiModel>,
+        val rows: ImmutableList<TableRowUiModel>,
     ) : TableContentStateUiModel
 }
 
-fun TableContentStateUiModel.items(): List<TableRowUiModel> = when (this) {
+fun TableContentStateUiModel.items(): ImmutableList<TableRowUiModel> = when (this) {
     is TableContentStateUiModel.Empty,
     is TableContentStateUiModel.Loading,
-    -> emptyList()
+    -> persistentListOf()
     is TableContentStateUiModel.WithContent -> rows
 }
 
 fun previewTableContentStateUiModel(): TableContentStateUiModel = TableContentStateUiModel.WithContent(
     columns = previewTableColumnsUiModel(),
-    rows = listOf(
+    rows = persistentListOf(
         previewTableRowUiModel(),
         previewTableRowUiModel(),
         previewTableRowUiModel(),

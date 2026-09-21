@@ -19,6 +19,9 @@ import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.search.model.NetworkSearchUiState
 import io.github.openflocon.library.designsystem.common.asState
 import io.github.openflocon.navigation.MainFloconNavigationState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -92,7 +95,7 @@ class NetworkSearchViewModel(
             initialValue = null
         )
 
-    private val _matches = MutableStateFlow<List<Match>>(emptyList())
+    private val _matches = MutableStateFlow<ImmutableList<Match>>(persistentListOf())
     val matches = _matches.asStateFlow()
 
     private val _currentMatchIndex = MutableStateFlow(0)
@@ -161,7 +164,7 @@ class NetworkSearchViewModel(
                     matches
                 }
             }.collect {
-                _matches.value = it
+                _matches.value = it.toImmutableList()
                 _currentMatchIndex.value = 0
             }
         }
