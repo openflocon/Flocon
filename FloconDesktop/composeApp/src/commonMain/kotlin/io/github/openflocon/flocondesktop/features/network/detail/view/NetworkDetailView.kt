@@ -760,7 +760,7 @@ private fun Response(
                                 color = FloconTheme.colorPalette.secondary,
                                 shape = RoundedCornerShape(12.dp),
                             )
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                            .padding(horizontal = 8.dp, vertical = 8.dp),
                     ) {
                         FloconLineDescription(
                             modifier = Modifier
