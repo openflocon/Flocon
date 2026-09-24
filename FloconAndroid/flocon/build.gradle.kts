@@ -24,7 +24,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(libs.jetbrains.kotlinx.coroutines.core.fixed)
+                implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)
                 api(project(":flocon-base"))
             }
@@ -34,7 +34,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.jakewharton.process.phoenix)
-                implementation("com.squareup.okhttp3:okhttp:4.12.0")
+                implementation(libs.okhttp)
 
                 implementation(libs.androidx.sqlite)
                 implementation(libs.androidx.sqlite.framework)
@@ -71,7 +71,7 @@ kotlin {
                 implementation(libs.androidx.sqlite.bundled)
 
                 // to store the device id
-                implementation("com.russhwolf:multiplatform-settings:1.3.0")
+                implementation(libs.multiplatform.settings)
             }
         }
     }
@@ -107,20 +107,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
 }
 
 mavenPublishing {
-    publishToMavenCentral(automaticRelease = true)
-
-    if (project.hasProperty("signing.required") && project.property("signing.required") == "false") {
-        // Skip signing
-    } else {
-        signAllPublications()
-    }
-
     coordinates(
         groupId = project.property("floconGroupId") as String,
         artifactId = "flocon",
@@ -129,27 +118,5 @@ mavenPublishing {
 
     pom {
         name = "Flocon"
-        description = project.property("floconDescription") as String
-        inceptionYear = "2025"
-        url = "https://github.com/openflocon/Flocon"
-        licenses {
-            license {
-                name = "The Apache License, Version 2.0"
-                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-            }
-        }
-        developers {
-            developer {
-                id = "openflocon"
-                name = "Open Flocon"
-                url = "https://github.com/openflocon"
-            }
-        }
-        scm {
-            url = "https://github.com/openflocon/Flocon"
-            connection = "scm:git:git://github.com/openflocon/Flocon.git"
-            developerConnection = "scm:git:ssh://git@github.com/openflocon/Flocon.git"
-        }
     }
-}
+}

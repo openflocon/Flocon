@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.apollo)
-    id("com.google.protobuf")
+    alias(libs.plugins.protobuf)
 }
 
 android {
@@ -133,7 +133,6 @@ dependencies {
 
     // region graphql
     implementation(libs.apollo.runtime)
-    //implementation(libs.apollo.http.okhttprealization)
     // endregion
 
     // region ktor

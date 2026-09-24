@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.internal.types.error.ErrorModuleDescriptor.platform
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -24,7 +23,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":flocon-base"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+                implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.ktor.client.core)
             }
         }
@@ -82,46 +81,14 @@ android {
     }
 }
 
-
 mavenPublishing {
-    publishToMavenCentral(automaticRelease = true)
-
-    if (project.hasProperty("signing.required") && project.property("signing.required") == "false") {
-        // Skip signing
-    } else {
-        signAllPublications()
-    }
-
     coordinates(
         groupId = project.property("floconGroupId") as String,
         artifactId = "flocon-ktor-interceptor",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
-
     pom {
         name = "Flocon Ktor Interceptor"
-        description = project.property("floconDescription") as String
-        inceptionYear = "2025"
-        url = "https://github.com/openflocon/Flocon"
-        licenses {
-            license {
-                name = "The Apache License, Version 2.0"
-                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-            }
-        }
-        developers {
-            developer {
-                id = "openflocon"
-                name = "Open Flocon"
-                url = "https://github.com/openflocon"
-            }
-        }
-        scm {
-            url = "https://github.com/openflocon/Flocon"
-            connection = "scm:git:git://github.com/openflocon/Flocon.git"
-            developerConnection = "scm:git:ssh://git@github.com/openflocon/Flocon.git"
-        }
     }
-}
+}
