@@ -29,6 +29,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -53,6 +55,7 @@ fun FloconIconButton(
             .size(Size)
             .clip(FloconTheme.shapes.medium)
             .clickable(enabled = enabled, onClick = onClick)
+            .pointerHoverIcon(PointerIcon.Hand)
             .padding(all = 8.dp)
     ) {
         CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.onSurface) {
@@ -75,6 +78,7 @@ fun FloconIconTonalButton(
             .clip(FloconTheme.shapes.medium)
             .background(containerColor)
             .clickable(enabled = enabled, onClick = onClick)
+            .pointerHoverIcon(PointerIcon.Hand)
             .padding(all = 8.dp)
     ) {
         CompositionLocalProvider(
@@ -141,6 +145,7 @@ fun FloconIconToggleButton(
                     value = value,
                     onValueChange = onValueChange
                 )
+                .pointerHoverIcon(PointerIcon.Hand)
                 .padding(Padding)
         ) {
             CompositionLocalProvider(LocalContentColor provides contentColor) {
@@ -174,6 +179,7 @@ fun FloconIconButton(
                 .clickable(
                     onClick = onClick,
                 )
+                .pointerHoverIcon(PointerIcon.Hand)
                 .padding(Padding)
         ) {
             CompositionLocalProvider(LocalContentColor provides contentColor) {

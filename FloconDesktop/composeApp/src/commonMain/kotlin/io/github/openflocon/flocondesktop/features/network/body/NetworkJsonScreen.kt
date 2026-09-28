@@ -41,6 +41,8 @@ import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianneubauer.jsontree.search.rememberSearchState
@@ -195,7 +197,9 @@ private fun SearchBar(
                             },
                             onClick = { matchCaseChanged() },
                             contentDescription = "Match Case",
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier
+                                .size(16.dp)
+                                .pointerHoverIcon(PointerIcon.Hand)
                         )
 
                         if (query.isNotEmpty()) {
