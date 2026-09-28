@@ -1,18 +1,65 @@
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+
 plugins {
     alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.compose.multiplatform) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.android.kotlin.multiplatform.library) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.vanniktech.maven.publish) apply false
     alias(libs.plugins.protobuf) apply false
 }
 
 subprojects {
+    plugins.withId("com.android.library") {
+        configure<LibraryExtension> {
+            compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+            defaultConfig {
+                minSdk = libs.versions.android.minSdk.get().toInt()
+                testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                consumerProguardFiles("consumer-rules.pro")
+            }
+
+            buildTypes {
+                release {
+                    isMinifyEnabled = false
+                    proguardFiles(
+                        getDefaultProguardFile("proguard-android-optimize.txt"),
+                        "proguard-rules.pro"
+                    )
+                }
+            }
+
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_11
+                targetCompatibility = JavaVersion.VERSION_11
+            }
+        }
+    }
+
+    plugins.withId("com.android.application") {
+        configure<ApplicationExtension> {
+            compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+            defaultConfig {
+                minSdk = libs.versions.android.minSdk.get().toInt()
+                testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+            }
+
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_11
+                targetCompatibility = JavaVersion.VERSION_11
+            }
+        }
+    }
+
     plugins.withId("com.vanniktech.maven.publish") {
-        configure<com.vanniktech.maven.publish.MavenPublishBaseExtension> {
+        configure<MavenPublishBaseExtension> {
             publishToMavenCentral(automaticRelease = true)
 
             if (project.hasProperty("signing.required") && project.property("signing.required") == "false") {
@@ -47,4 +94,4 @@ subprojects {
             }
         }
     }
-}
+}

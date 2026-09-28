@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
@@ -11,7 +11,13 @@ plugins {
 }
 
 kotlin {
-    androidTarget {
+    android {
+        namespace = "io.github.openflocon.flocon.myapplication.multi"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        androidResources {
+            enable = true
+        }
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -101,55 +107,6 @@ kotlin {
     }
 }
 
-android {
-    namespace = "io.github.openflocon.flocon.myapplication.multi"
-    compileSdk = 36
-
-    defaultConfig {
-        applicationId = "io.github.openflocon.flocon.myapplication.multi"
-        minSdk = 23
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    signingConfigs {
-        named("debug") {
-            // just a dummy keystore to be able to test the release build
-            keyAlias = "release"
-            keyPassword = "release"
-            storeFile = file("../sample-android-only/release.jks")
-            storePassword = "release"
-        }
-        register("release") {
-            keyAlias = "release"
-            keyPassword = "release"
-            storeFile = file("../sample-android-only/release.jks")
-            storePassword = "release"
-        }
-    }
-
-    buildTypes {
-        debug {
-            signingConfig = signingConfigs.getByName("debug")
-        }
-        release {
-            isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    buildFeatures {
-        compose = true
-    }
-}
 
 dependencies {
     listOf(

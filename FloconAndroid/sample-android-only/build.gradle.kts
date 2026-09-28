@@ -1,40 +1,33 @@
 import com.google.protobuf.gradle.id
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.apollo)
     alias(libs.plugins.protobuf)
 }
 
-android {
+configure<com.android.build.api.dsl.ApplicationExtension> {
     namespace = "io.github.openflocon.flocon.myapplication"
-    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.github.openflocon.flocon.myapplication"
-        minSdk = 23
-        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     val githubToken = System.getenv("GITHUB_TOKEN_GRPC") ?: ""
 
     signingConfigs {
-        named("debug")  {
+        named("debug") {
             // just a dummy keystore to be able to test the release build
             keyAlias = "release"
             keyPassword = "release"
             storeFile = file("release.jks")
             storePassword = "release"
         }
-        register("release")  {
+        register("release") {
             keyAlias = "release"
             keyPassword = "release"
             storeFile = file("release.jks")
@@ -54,19 +47,9 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
     buildFeatures {
         compose = true
         buildConfig = true
-    }
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
     }
 }
 
