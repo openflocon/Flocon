@@ -1,34 +1,53 @@
-name: Publish Android libs to maven MavenCentral
+name: Android - Publish to MavenCentral
+
 on:
   release:
-    types: [released, prereleased]
-  # Allows you to run this workflow manually from the Actions tab
+    types: [published, released, prereleased]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 1.9.6). Leave empty to use tag ref'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
 jobs:
   publish:
-    name: Release build and publish
-    runs-on: macOS-latest
+    name: Publish to MavenCentral
+    runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v6
+
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Run unit tests
+        working-directory: FloconAndroid
+        run: ./gradlew test
+
       - name: Check release # be sure op and no-op versions are building
         working-directory: FloconAndroid
         run: ./gradlew :sample-android-only:assemble
+
       - name: Publish to MavenCentral
-        run: |
-            ./gradlew \
-              publishToMavenCentral \
-              --no-configuration-cache
         working-directory: FloconAndroid
         env:
-          PROJECT_VERSION_NAME: ${{ github.ref_name }}
+          PROJECT_VERSION_NAME: ${{ inputs.version || github.ref_name }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALUSERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALPASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY }}
+        run: |
+          ./gradlew \
+            publishToMavenCentral \
+            --no-configuration-cache
