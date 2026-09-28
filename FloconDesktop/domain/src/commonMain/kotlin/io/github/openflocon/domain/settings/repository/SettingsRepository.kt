@@ -19,9 +19,6 @@ interface SettingsRepository {
 
     suspend fun setTheme(value: ThemeSetting)
 
-    fun isOnboardingCompleted(): Boolean
-    suspend fun setOnboardingCompleted(completed: Boolean)
-
     fun getDismissedDesktopVersion(): String?
 
     suspend fun setDismissedDesktopVersion(version: String)

@@ -15,10 +15,13 @@ import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUse
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.domain.settings.usecase.SetFontSizeMultiplierUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
+import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
 import io.github.openflocon.flocondesktop.common.log.LogManager
 import io.github.openflocon.flocondesktop.common.log.toUiModel
+import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
+import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,10 +30,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import io.github.openflocon.navigation.MainFloconNavigationState
-import io.github.openflocon.flocondesktop.features.onboarding.OnboardingRoutes
-import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
-import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import org.jetbrains.compose.resources.getString
 
 class SettingsViewModel(
@@ -74,7 +73,7 @@ class SettingsViewModel(
             initialValue = SettingsUiState(
                 fontSizeMultiplier = 1f,
                 theme = ThemeSetting.DEFAULT,
-                logs = emptyList(),
+                logs = persistentListOf(),
                 adbForwardStatus = AdbForwardStatus.UNKNOWN,
                 serverError = null
             )
@@ -170,13 +169,6 @@ class SettingsViewModel(
                     saveAdb()
                 },
             )
-        }
-    }
-
-    fun launchOnboarding() {
-        viewModelScope.launch {
-            settingsRepository.setOnboardingCompleted(false)
-            navigationState.navigate(OnboardingRoutes.Main)
         }
     }
 

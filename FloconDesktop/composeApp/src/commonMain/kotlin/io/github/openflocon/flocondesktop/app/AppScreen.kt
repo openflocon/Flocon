@@ -10,12 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.SinglePaneSceneStrategy
-import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
+import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
-import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
+import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
@@ -26,7 +26,6 @@ import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
 import io.github.openflocon.flocondesktop.features.files.filesRoutes
 import io.github.openflocon.flocondesktop.features.images.imageRoutes
 import io.github.openflocon.flocondesktop.features.network.networkRoutes
-import io.github.openflocon.flocondesktop.features.onboarding.onboardingRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -82,7 +81,7 @@ private fun Content(
             SinglePaneSceneStrategy()
         )
     }
-    
+
     FloconNavigation(
         navigationState = navigationState,
         sceneStrategies = sceneStrategies,
@@ -110,7 +109,6 @@ private fun Content(
                         onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
                         updateChip = updateChip,
                         onUpdateChipClicked = onUpdateChipClicked,
-                        onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
                         adbError = adbError,
                         serverError = serverError,
                         onFixAdbClicked = { navigationState.navigate(SettingsRoutes.Main) }
@@ -134,6 +132,5 @@ private fun Content(
         tableRoutes()
         settingsRoutes()
         crashReporterRoutes()
-        onboardingRoutes()
     }
 }

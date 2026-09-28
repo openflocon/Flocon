@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.List
@@ -44,6 +45,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +56,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
@@ -70,22 +73,19 @@ import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
+import io.github.openflocon.flocondesktop.common.utils.pickAdbFile
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
-import io.github.openflocon.flocondesktop.common.utils.pickAdbFile
 import io.github.openflocon.library.designsystem.components.FloconIconButton
-import androidx.compose.material.icons.outlined.FolderOpen
 import io.github.openflocon.library.designsystem.components.FloconSlider
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 // ---------------------------------------------------------------------------
@@ -122,7 +122,6 @@ fun SettingsScreen(
         onAction = viewModel::onAction,
         onClearLogs = viewModel::clearLogs,
         needsAdbSetup = needsAdbSetup,
-        onLaunchOnboarding = viewModel::launchOnboarding,
         onRelaunchAdbAndServer = viewModel::relaunchAdbAndServer,
     )
 }
@@ -141,7 +140,6 @@ private fun SettingsScreen(
     needsAdbSetup: Boolean,
     onAction: (SettingsAction) -> Unit,
     onClearLogs: () -> Unit,
-    onLaunchOnboarding: () -> Unit,
     onRelaunchAdbAndServer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -199,9 +197,7 @@ private fun SettingsScreen(
                     onClearLogs = onClearLogs,
                 )
 
-                SettingsTab.About -> AboutPane(
-                    onLaunchOnboarding = onLaunchOnboarding
-                )
+                SettingsTab.About -> AboutPane()
             }
         }
     }
@@ -454,7 +450,8 @@ private fun AdbPane(
                 val serverStarted = serverError == null
                 val serverBgColor = if (serverStarted) FloconTheme.colorPalette.secondary else FloconTheme.colorPalette.error.copy(alpha = 0.12f)
                 val serverTextColor = if (serverStarted) FloconTheme.colorPalette.onPrimary else FloconTheme.colorPalette.error
-                val serverBadgeBgColor = if (serverStarted) FloconTheme.colorPalette.accent.copy(alpha = 0.2f) else FloconTheme.colorPalette.error.copy(alpha = 0.2f)
+                val serverBadgeBgColor =
+                    if (serverStarted) FloconTheme.colorPalette.accent.copy(alpha = 0.2f) else FloconTheme.colorPalette.error.copy(alpha = 0.2f)
                 val serverBadgeTextColor = if (serverStarted) FloconTheme.colorPalette.onAccent else FloconTheme.colorPalette.error
 
                 Row(
@@ -488,7 +485,8 @@ private fun AdbPane(
                     }
 
                     Text(
-                        text = if (serverStarted) "Local WebSocket server is running successfully on port 9023." else serverError ?: "Local server failed to start.",
+                        text = if (serverStarted) "Local WebSocket server is running successfully on port 9023." else serverError
+                            ?: "Local server failed to start.",
                         color = serverTextColor,
                         style = FloconTheme.typography.bodySmall,
                         modifier = Modifier.weight(1f)
@@ -765,31 +763,12 @@ private data class BadgeTheme(
 
 @Composable
 private fun AboutPane(
-    onLaunchOnboarding: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier.fillMaxSize()
     ) {
-        SettingsCard(
-            title = "Setup Guide",
-            icon = Icons.Outlined.Info,
-            description = "Click below to relaunch the initial onboarding and step-by-step setup guide."
-        ) {
-            FloconButton(
-                onClick = onLaunchOnboarding,
-                containerColor = FloconTheme.colorPalette.secondary
-            ) {
-                Text(
-                    text = "Launch Onboarding",
-                    color = FloconTheme.colorPalette.onSecondary
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
         Text(
             text = "Open Source Licenses",
             style = FloconTheme.typography.titleMedium,
@@ -970,7 +949,6 @@ private fun SettingsScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
-            onLaunchOnboarding = {},
             needsAdbSetup = false,
             onRelaunchAdbAndServer = {},
         )
@@ -991,7 +969,6 @@ private fun SettingsScreenPreview_needsAdbSetup() {
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
-            onLaunchOnboarding = {},
             needsAdbSetup = true,
             onRelaunchAdbAndServer = {},
         )
@@ -1011,7 +988,6 @@ private fun SettingsScreen_LogsPreview() {
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
-            onLaunchOnboarding = {},
             needsAdbSetup = false,
             onRelaunchAdbAndServer = {},
         )

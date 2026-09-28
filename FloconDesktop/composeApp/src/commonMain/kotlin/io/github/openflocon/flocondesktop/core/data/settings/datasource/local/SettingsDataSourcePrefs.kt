@@ -66,12 +66,6 @@ internal class SettingsDataSourcePrefs(
         settings.putString(THEME, value.name)
     }
 
-    override fun isOnboardingCompleted(): Boolean = settings.getBoolean(ONBOARDING_COMPLETED, false)
-
-    override suspend fun setOnboardingCompleted(completed: Boolean) {
-        settings.putBoolean(ONBOARDING_COMPLETED, completed)
-    }
-
     override fun getDismissedDesktopVersion(): String? = settings.getStringOrNull(DISMISSED_DESKTOP_VERSION)
 
     override suspend fun setDismissedDesktopVersion(version: String) {
@@ -122,7 +116,6 @@ internal class SettingsDataSourcePrefs(
         private const val ADB_PATH = "adb_path"
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier"
         private const val THEME = "theme"
-        private const val ONBOARDING_COMPLETED = "onboarding_completed"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
         private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"
 

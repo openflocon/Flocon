@@ -21,9 +21,6 @@ internal interface SettingsDataSource {
     fun getDismissedClientVersion(): String?
     suspend fun setDismissedClientVersion(version: String)
 
-    fun isOnboardingCompleted(): Boolean
-    suspend fun setOnboardingCompleted(completed: Boolean)
-
     val adbPath: Flow<String?>
     val fontSizeMultiplier: StateFlow<Float>
     val theme: StateFlow<ThemeSetting>
