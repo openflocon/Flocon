@@ -3,7 +3,6 @@ package io.github.openflocon.flocon.myapplication.multi
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import coil3.ImageLoader
 import coil3.PlatformContext

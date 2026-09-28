@@ -14,14 +14,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.layout.onFirstVisible
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.onVisibilityChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.v2.Window
+import androidx.compose.ui.window.v2.WindowBoundsProvider
+import androidx.compose.ui.window.v2.WindowPositionProvider
+import androidx.compose.ui.window.v2.WindowSizeProvider
+import androidx.compose.ui.window.v2.rememberWindowState
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon
 import io.github.openflocon.flocondesktop.BuildConfig
@@ -36,21 +40,25 @@ import java.net.URI
 internal fun AboutScreen(
     onCloseRequest: () -> Unit
 ) {
+    val windowState = rememberWindowState(
+        initialPlacement = WindowPlacement.Floating,
+        initialBoundsProvider = WindowBoundsProvider(
+            positionProvider = WindowPositionProvider.CenteredOnScreen,
+            sizeProvider = WindowSizeProvider.Fixed(400.dp, 600.dp)
+        )
+    )
+
     Window(
         title = "About",
         onCloseRequest = onCloseRequest,
-        state = rememberWindowState(
-            placement = WindowPlacement.Floating,
-            position = WindowPosition(Alignment.Center),
-            size = DpSize(Dp.Unspecified, Dp.Unspecified)
-        )
+        state = windowState,
+        resizable = false
     ) {
         FloconSurface {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .padding(16.dp)
+                modifier = Modifier.padding(16.dp)
             ) {
                 Image(
                     painter = painterResource(Res.drawable.app_icon),
