@@ -32,6 +32,7 @@ kotlin {
         
         val androidMain by getting {
             dependencies {
+                implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.jakewharton.process.phoenix)
                 implementation("com.squareup.okhttp3:okhttp:4.12.0")
