@@ -5,8 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowCircleUp
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
+import io.github.openflocon.flocondesktop.app.AdbErrorType
 import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
@@ -36,15 +38,9 @@ import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActions
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.resources.painterResource
-
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Warning
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconTextButton
-import androidx.compose.ui.graphics.Color
-
-import io.github.openflocon.flocondesktop.app.AdbErrorType
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun MainScreenTopBar(
