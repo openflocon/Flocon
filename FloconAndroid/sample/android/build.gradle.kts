@@ -6,13 +6,12 @@ plugins {
 android {
     namespace = "com.flocon.sample.android"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "com.flocon.sample.android"
         minSdk = 24
-        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
