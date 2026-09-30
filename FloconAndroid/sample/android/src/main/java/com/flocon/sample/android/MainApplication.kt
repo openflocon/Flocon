@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.myapplication.multi
+package com.flocon.sample.android
 
 import android.app.Application
 
