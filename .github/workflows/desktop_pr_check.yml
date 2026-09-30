@@ -35,4 +35,4 @@ jobs:
 
       - name: Run tests and assemble
         working-directory: FloconDesktop
-        run: ./gradlew test assemble
+        run: ./gradlew allTests assemble
