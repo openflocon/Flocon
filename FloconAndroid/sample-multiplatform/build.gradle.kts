@@ -1,7 +1,6 @@
 import com.android.build.api.dsl.AndroidSourceSet
 
 plugins {
-
     id("flocon.kotlin.library")
     id("flocon.android.library")
     id("flocon.jvm.library")

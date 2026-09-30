@@ -26,13 +26,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import okhttp3.OkHttpClient
 
-object AndroidTestContext {
-    lateinit var okHttpClient: OkHttpClient
-    lateinit var dummyHttpCaller: DummyHttpCaller
-    lateinit var dummyWebsocketCaller: DummyWebsocketCaller
-    lateinit var graphQlTester: GraphQlTester
-    lateinit var inMemoryDb: DogDatabase
-}
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -11,15 +11,6 @@ kotlin {
     android {
         namespace = "io.github.openflocon.flocon.deeplinks.noop"
     }
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(projects.flocon)
-                implementation(libs.kotlinx.coroutines.core)
-            }
-        }
-    }
 }
 
 mavenPublishing {

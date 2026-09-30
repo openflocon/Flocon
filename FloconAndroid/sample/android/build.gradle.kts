@@ -26,17 +26,39 @@ android {
             }
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         compose = true
     }
 }
 
 dependencies {
+    implementation(libs.firebase.crashlytics.buildtools)
+
     implementation(projects.sampleMultiplatform)
+
+    implementation(projects.flocon)
+    implementation(projects.deeplinks)
+    implementation(projects.database.room3)
+    implementation(projects.database.room)
+    implementation(projects.network.ktorInterceptor)
+    implementation(projects.network.okhttpInterceptor)
+    implementation(projects.sharedprefs)
+    implementation(projects.datastores)
+    implementation(projects.analytics)
+    implementation(projects.crashreporter)
+    implementation(projects.tables)
+
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp)
+
+    implementation(libs.ktor.client.okhttp)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)

@@ -11,6 +11,14 @@ kotlin {
     android {
         namespace = "io.github.openflocon.flocon.grpc.base"
     }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.flocon)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
+        }
+    }
 }
 
 dependencies {

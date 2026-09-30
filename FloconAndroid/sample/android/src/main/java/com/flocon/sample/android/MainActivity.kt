@@ -1,47 +1,123 @@
 package com.flocon.sample.android
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.flocon.sample.android.ui.theme.FloconSampleAppTheme
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.analytics.FloconAnalytics
+import io.github.openflocon.flocon.database.core.FloconDatabase
+import io.github.openflocon.flocon.database.room.room
+import io.github.openflocon.flocon.deeplinks.FloconDeeplinks
+import io.github.openflocon.flocon.ktor.FloconKtorPlugin
+import io.github.openflocon.flocon.myapplication.multi.Databases.getDogDatabase
+import io.github.openflocon.flocon.myapplication.multi.Databases.getFoodDatabase
+import io.github.openflocon.flocon.myapplication.multi.DummyHttpCaller
+import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
+import io.github.openflocon.flocon.myapplication.multi.DummyWebsocketCaller
+import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
+import io.github.openflocon.flocon.myapplication.multi.database.initializeDatabases
+import io.github.openflocon.flocon.myapplication.multi.graphql.GraphQlTester
+import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeDatastores
+import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
+import io.github.openflocon.flocon.myapplication.multi.ui.App
+import io.github.openflocon.flocon.network.core.FloconNetwork
+import io.github.openflocon.flocon.startFlocon
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import okhttp3.OkHttpClient
+
+object AndroidTestContext {
+    lateinit var okHttpClient: OkHttpClient
+    lateinit var dummyHttpCaller: DummyHttpCaller
+    lateinit var dummyWebsocketCaller: DummyWebsocketCaller
+    lateinit var graphQlTester: GraphQlTester
+    lateinit var inMemoryDb: DogDatabase
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            FloconSampleAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+
+        FloconLogger.enabled = true
+
+        startFlocon(FloconContext(this)) {
+            install(FloconDeeplinks) {
+                deeplink("flocon://home")
+                deeplink("flocon://test")
+                deeplink("flocon://user/[userId]") {
+                    label = "User"
+                    "userId" withAutoComplete listOf("Florent", "David", "Guillaume")
+                }
+                deeplink("flocon://post/[postId]?comment=[commentText]") {
+                    label = "Post"
+                    description = "Open a post and send a comment"
                 }
             }
+            install(FloconNetwork)
+//            install(FloconTable)
+            install(FloconAnalytics)
+            install(FloconDatabase) {
+                room()
+            }
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+        intent.data?.let {
+            Toast.makeText(this, "opened with : $it", Toast.LENGTH_LONG).show()
+        }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FloconSampleAppTheme {
-        Greeting("Android")
+        // Initialize OkHttpClient with Flocon OkHttp Interceptor
+//        val okHttpClient = OkHttpClient()
+//            .newBuilder()
+//            .addInterceptor(
+//                FloconOkhttpInterceptor(
+//                    isImage = {
+//                        it.request.url.toString().contains("picsum")
+//                    }
+//                )
+//            )
+//            .build()
+
+//        AndroidTestContext.okHttpClient = okHttpClient
+//        AndroidTestContext.dummyHttpCaller = DummyHttpCaller(okHttpClient)
+//        AndroidTestContext.dummyWebsocketCaller = DummyWebsocketCaller(okHttpClient)
+//        AndroidTestContext.dummyWebsocketCaller.connectToWebsocket()
+//        AndroidTestContext.graphQlTester = GraphQlTester(okHttpClient)
+//        AndroidTestContext.inMemoryDb = Databases.getInMemoryDogDatabase(applicationContext)
+//
+//        initializeImages(context = this, okHttpClient = okHttpClient)
+
+        // Initialize Ktor client with Flocon plugin
+        val ktorClient = HttpClient(OkHttp) {
+            install(FloconKtorPlugin) {
+                /*
+                shouldLog = {
+                    val url = it.url.toString()
+                    println("url: $url")
+                    url.contains("1").not()
+                }
+                 */
+            }
+        }
+
+        // Initialize the HTTP caller
+        DummyHttpKtorCaller.initialize(ktorClient)
+
+        initializeSharedPreferences(applicationContext)
+        initializeDatastores(applicationContext)
+
+        val dogDatabase = getDogDatabase(this)
+
+        initializeDatabases(
+            dogDatabase = dogDatabase,
+            foodDatabase = getFoodDatabase(this),
+        )
+
+        setContent {
+            App()
+        }
     }
 }

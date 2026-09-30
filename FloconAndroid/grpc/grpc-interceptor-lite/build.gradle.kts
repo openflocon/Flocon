@@ -11,13 +11,15 @@ kotlin {
     android {
         namespace = "io.github.openflocon.flocon.grpc.lite"
     }
-}
 
-dependencies {
-    //api(projects.grpc.grpcInterceptorBase)
-
-//    implementation(libs.grpc.android)
-//    implementation(libs.gson)
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.flocon)
+            implementation(projects.grpc.grpcInterceptorBase)
+            implementation(libs.grpc.android)
+            implementation(libs.gson)
+        }
+    }
 }
 
 mavenPublishing {

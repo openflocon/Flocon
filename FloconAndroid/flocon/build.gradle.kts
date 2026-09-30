@@ -12,9 +12,6 @@ plugins {
 kotlin {
     android {
         namespace = "io.github.openflocon.flocon"
-        androidResources {
-            enable = true
-        }
     }
 
     sourceSets {

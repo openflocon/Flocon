@@ -11,13 +11,18 @@ kotlin {
     android {
         namespace = "io.github.openflocon.flocon.grpc"
     }
-}
 
-dependencies {
-    //api(projects.grpc.grpcInterceptorBase)
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.flocon)
+            implementation(projects.grpc.grpcInterceptorBase)
 
-//    implementation(libs.grpc.android)
-//    implementation(libs.protobuf.util)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.grpc.android)
+            implementation(libs.protobuf.util)
+        }
+    }
 }
 
 mavenPublishing {
@@ -26,8 +31,4 @@ mavenPublishing {
         artifactId = "flocon-grpc-interceptor",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
-
-    pom {
-        name = "Flocon Grpc Interceptor"
-    }
 }

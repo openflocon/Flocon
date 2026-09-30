@@ -13,16 +13,13 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
+        commonMain.dependencies {
+            api(projects.flocon)
+            api(projects.network.core)
 
-                api(projects.flocon)
-                api(projects.network.core)
-
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.ktor.client.core)
-                implementation(libs.brotli.dec)
-            }
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.ktor.client.core)
+            implementation(libs.brotli.dec)
         }
     }
 }
