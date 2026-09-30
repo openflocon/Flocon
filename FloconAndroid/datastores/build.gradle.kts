@@ -1,22 +1,28 @@
 import com.android.build.api.dsl.LibraryExtension
 
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.vanniktech.maven.publish)
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
+    id("flocon.publish")
 }
 
-configure<LibraryExtension> {
-    namespace = "io.github.openflocon.flocon.datastores"
+kotlin {
+    android {
+        namespace = "io.github.openflocon.flocon.datastores"
+    }
 }
 
 dependencies {
-    implementation(project(":flocon-base"))
-
-    implementation(platform(libs.kotlinx.coroutines.bom))
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
-
-    implementation(libs.androidx.datastore.preferences)
+//    implementation(project(":flocon-base"))
+//
+//    implementation(platform(libs.kotlinx.coroutines.bom))
+//    implementation(libs.kotlinx.coroutines.core)
+//    implementation(libs.kotlinx.coroutines.android)
+//
+//    implementation(libs.androidx.datastore.preferences)
 }
 
 mavenPublishing {

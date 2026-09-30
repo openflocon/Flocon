@@ -1,15 +1,18 @@
 plugins {
-    id("flocon.kotlin.multiplatform")
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
     id("flocon.publish")
     alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
-    wasmJs {
-        outputModuleName = "flocon_network_core_no_op"
-        browser()
-        binaries.executable()
+    android {
+        namespace = "io.github.openflocon.flocon.network.core.noop"
     }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -19,34 +22,8 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
             }
         }
-        
-        val androidMain by getting {
-            dependencies {
-            }
-        }
-        
-        val jvmMain by getting {
-            dependencies {
-            }
-        }
-
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val wasmJsMain by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-        }
     }
 }
-
-android {
-    namespace = "io.github.openflocon.flocon.network.core.noop"
-}
-
 
 mavenPublishing {
     coordinates(

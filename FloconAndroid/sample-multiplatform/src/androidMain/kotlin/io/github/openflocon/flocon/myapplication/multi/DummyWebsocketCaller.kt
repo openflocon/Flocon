@@ -1,13 +1,11 @@
 package io.github.openflocon.flocon.myapplication.multi
 
-import io.github.openflocon.flocon.okhttp.websocket.sendWithFlocon
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
-import io.github.openflocon.flocon.okhttp.websocket.listenWithFlocon
 
 class DummyWebsocketCaller(val client: OkHttpClient) {
 
@@ -56,14 +54,14 @@ class DummyWebsocketCaller(val client: OkHttpClient) {
                 super.onOpen(webSocket, response)
             }
         }
-        this.ws = client.newWebSocket(
-            request,
-            listener.listenWithFlocon(id = url),
-        )
+//        this.ws = client.newWebSocket(
+//            request,
+//            listener.listenWithFlocon(id = url),
+//        )
     }
 
     fun send(text: String) {
-        ws?.sendWithFlocon("\"$text\"")
+//        ws?.sendWithFlocon("\"$text\"")
     }
 
 }

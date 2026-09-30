@@ -1,16 +1,23 @@
 plugins {
+    id("flocon.kotlin.library")
     id("flocon.android.library")
+    id("flocon.jvm.library")
     id("flocon.publish")
 }
 
-android {
-    namespace = "io.github.openflocon.flocon.okhttp"
-}
+kotlin {
+    android {
+        namespace = "io.github.openflocon.flocon.okhttp"
+    }
 
-dependencies {
-    implementation(projects.network.coreNoOp)
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.okhttp)
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.network.core)
+
+            implementation(dependencies.platform(libs.okhttp.bom))
+            implementation(libs.okhttp)
+        }
+    }
 }
 
 mavenPublishing {

@@ -1,16 +1,22 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.vanniktech.maven.publish)
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.jvm.library")
+    id("flocon.ios.library")
+    id("flocon.wasm.library")
+    id("flocon.publish")
 }
 
-configure<com.android.build.api.dsl.LibraryExtension> {
-    namespace = "io.github.openflocon.flocon.okhttp"
-}
+kotlin {
+    android {
+        namespace = "io.github.openflocon.flocon.analytics.noop"
+    }
 
-dependencies {
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.okhttp)
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.flocon)
+        }
+    }
 }
 
 mavenPublishing {
@@ -21,6 +27,6 @@ mavenPublishing {
     )
 
     pom {
-        name = "Flocon OkHttp Interceptor"
+        name = "Flocon Analytics No-Op"
     }
 }

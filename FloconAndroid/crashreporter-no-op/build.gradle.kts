@@ -1,21 +1,23 @@
 plugins {
-    id("flocon.kotlin.multiplatform")
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
     id("flocon.publish")
 }
 
 kotlin {
+    android {
+        namespace = "io.github.openflocon.flocon.crashreporter.noop"
+    }
+
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(project(":flocon"))
-                implementation(libs.kotlinx.coroutines.core)
-            }
+        commonMain.dependencies {
+            implementation(projects.flocon)
+            implementation(libs.kotlinx.coroutines.core)
         }
     }
-}
-
-android {
-    namespace = "io.github.openflocon.flocon.crashreporter.noop"
 }
 
 mavenPublishing {

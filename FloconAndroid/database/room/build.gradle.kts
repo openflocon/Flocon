@@ -1,40 +1,29 @@
 plugins {
-    id("flocon.kotlin.multiplatform")
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
     id("flocon.publish")
 }
 
 kotlin {
+    android {
+        namespace = "io.github.openflocon.flocon.database.room"
+    }
+
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(projects.flocon)
-                api(projects.database.core)
-                implementation(libs.androidx.room.runtime)
-                implementation(libs.androidx.sqlite.bundled)
-            }
-        }
-        
-        val androidMain by getting {
-            dependencies {
-                implementation(libs.kotlinx.coroutines.android)
-                implementation(libs.androidx.room.sqlite.wrapper)
-            }
+        commonMain.dependencies {
+            implementation(projects.flocon)
+            implementation(projects.database.core)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
 
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
+        androidMain.dependencies {
+            implementation(libs.kotlinx.coroutines.android)
+//                implementation(libs.androidx.room.sqlite.wrapper)
         }
     }
-}
-
-android {
-    namespace = "io.github.openflocon.flocon.database.room"
 }
 
 mavenPublishing {

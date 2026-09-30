@@ -1,39 +1,24 @@
 plugins {
-    id("flocon.kotlin.multiplatform")
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
     id("flocon.publish")
 }
 
 kotlin {
-    wasmJs {
-        outputModuleName = "flocon_database_core_no_op"
-        browser()
-        binaries.executable()
+    android {
+        namespace = "io.github.openflocon.flocon.database.core.noop"
     }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(projects.flocon)
-                implementation(libs.kotlinx.coroutines.core)
-            }
-        }
-
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
+        commonMain.dependencies {
+            implementation(projects.flocon)
+            implementation(libs.kotlinx.coroutines.core)
         }
     }
 }
-
-android {
-    namespace = "io.github.openflocon.flocon.database.core.noop"
-}
-
 
 mavenPublishing {
     coordinates(

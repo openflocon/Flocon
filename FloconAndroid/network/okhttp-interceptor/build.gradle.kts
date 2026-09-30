@@ -1,24 +1,37 @@
 plugins {
+    id("flocon.kotlin.library")
     id("flocon.android.library")
+    id("flocon.jvm.library")
     id("flocon.publish")
 }
 
-android {
-    namespace = "io.github.openflocon.flocon.okhttp"
-}
+kotlin {
+    android {
+        namespace = "io.github.openflocon.flocon.okhttp"
+    }
 
-dependencies {
-    api(projects.network.core)
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.network.core)
 
-    implementation(platform(libs.kotlinx.coroutines.bom))
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
+            implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
+            implementation(libs.kotlinx.coroutines.core)
+        }
 
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.okhttp)
-    implementation(libs.brotli.dec)
+        androidMain.dependencies {
+            implementation(dependencies.platform(libs.okhttp.bom))
+            implementation(libs.okhttp)
+            implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
+            implementation(libs.kotlinx.coroutines.android)
+        }
 
-    testImplementation(libs.junit)
+        jvmMain.dependencies {
+            implementation(dependencies.platform(libs.okhttp.bom))
+            implementation(libs.okhttp)
+            implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
+            implementation(libs.kotlinx.coroutines.android)
+        }
+    }
 }
 
 mavenPublishing {

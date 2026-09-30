@@ -1,24 +1,22 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.kotlin.multiplatform.library)
-    alias(libs.plugins.vanniktech.maven.publish)
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
+    id("flocon.publish")
 }
 
 kotlin {
     android {
-        namespace = "io.github.openflocon.flocon"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
+        namespace = "io.github.openflocon.flocon.noop"
     }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
-                api(project(":flocon-base"))
+//                api(project(":flocon-base"))
             }
         }
         
@@ -27,21 +25,6 @@ kotlin {
                 implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
                 implementation(libs.kotlinx.coroutines.android)
             }
-        }
-        
-        val jvmMain by getting {
-            dependencies {
-            }
-        }
-
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
         }
     }
 }
@@ -57,4 +40,4 @@ mavenPublishing {
     pom {
         name = "Flocon No Op"
     }
-}
+}

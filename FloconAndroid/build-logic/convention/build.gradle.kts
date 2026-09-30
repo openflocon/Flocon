@@ -1,3 +1,6 @@
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.`kotlin-dsl`
+
 plugins {
     `kotlin-dsl`
 }
@@ -18,14 +21,28 @@ dependencies {
 
 gradlePlugin {
     plugins {
+        register("floconKotlinMultiplatform") {
+            id = "flocon.kotlin.library"
+            implementationClass = "io.github.openflocon.buildlogic.FloconKotlinMultiplatformConventionPlugin"
+        }
+
         register("floconAndroidLibrary") {
             id = "flocon.android.library"
             implementationClass = "io.github.openflocon.buildlogic.FloconAndroidLibraryConventionPlugin"
         }
-        register("floconKotlinMultiplatform") {
-            id = "flocon.kotlin.multiplatform"
-            implementationClass = "io.github.openflocon.buildlogic.FloconKotlinMultiplatformConventionPlugin"
+        register("floconIosLibrary") {
+            id = "flocon.ios.library"
+            implementationClass = "io.github.openflocon.buildlogic.FloconKotlinIosConventionPlugin"
         }
+        register("floconJvmLibrary") {
+            id = "flocon.jvm.library"
+            implementationClass = "io.github.openflocon.buildlogic.FloconKotlinJvmConventionPlugin"
+        }
+        register("floconWasmLibrary") {
+            id = "flocon.wasm.library"
+            implementationClass = "io.github.openflocon.buildlogic.FloconKotlinWasmConventionPlugin"
+        }
+
         register("floconPublish") {
             id = "flocon.publish"
             implementationClass = "io.github.openflocon.buildlogic.FloconPublishConventionPlugin"

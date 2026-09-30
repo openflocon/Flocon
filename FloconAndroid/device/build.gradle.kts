@@ -1,9 +1,17 @@
 plugins {
-    id("flocon.kotlin.multiplatform")
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
     id("flocon.publish")
 }
 
 kotlin {
+    android {
+        namespace = "io.github.openflocon.flocon.device"
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -13,10 +21,6 @@ kotlin {
             }
         }
     }
-}
-
-android {
-    namespace = "io.github.openflocon.flocon.device"
 }
 
 mavenPublishing {

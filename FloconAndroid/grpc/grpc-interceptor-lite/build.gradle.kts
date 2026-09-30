@@ -1,17 +1,23 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.vanniktech.maven.publish)
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
+    id("flocon.publish")
 }
 
-configure<com.android.build.api.dsl.LibraryExtension> {
-    namespace = "io.github.openflocon.flocon.grpc.lite"
+kotlin {
+    android {
+        namespace = "io.github.openflocon.flocon.grpc.lite"
+    }
 }
 
 dependencies {
-    api(projects.grpc.grpcInterceptorBase)
+    //api(projects.grpc.grpcInterceptorBase)
 
-    implementation(libs.grpc.android)
-    implementation(libs.gson)
+//    implementation(libs.grpc.android)
+//    implementation(libs.gson)
 }
 
 mavenPublishing {

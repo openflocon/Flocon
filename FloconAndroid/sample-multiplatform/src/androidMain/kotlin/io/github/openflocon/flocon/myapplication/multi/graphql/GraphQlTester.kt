@@ -7,12 +7,11 @@ import com.apollographql.apollo.network.http.HttpInterceptor
 import com.apollographql.apollo.network.http.HttpInterceptorChain
 import com.apollographql.apollo.network.okHttpClient
 import com.github.GetUserInfoQuery
-import io.github.openflocon.flocon.myapplication.multi.BuildConfig
 import okhttp3.OkHttpClient
 
 class GraphQlTester(val client: OkHttpClient) {
 
-    private val GITHUB_TOKEN = BuildConfig.GITHUB_TOKEN
+//    private val GITHUB_TOKEN = BuildConfig.GITHUB_TOKEN
 
     val githubApolloClient by lazy {
         ApolloClient.Builder()
@@ -25,7 +24,7 @@ class GraphQlTester(val client: OkHttpClient) {
                 ): HttpResponse {
                     return chain.proceed(
                         request.newBuilder()
-                            .addHeader("Authorization", "Bearer $GITHUB_TOKEN")
+//                            .addHeader("Authorization", "Bearer $GITHUB_TOKEN")
                             .build()
                     )
                 }

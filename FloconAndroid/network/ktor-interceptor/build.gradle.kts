@@ -1,13 +1,15 @@
 plugins {
-    id("flocon.kotlin.multiplatform")
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
     id("flocon.publish")
 }
 
 kotlin {
-    wasmJs {
-        outputModuleName = "flocon_ktor_interceptor"
-        browser()
-        binaries.executable()
+    android {
+        namespace = "io.github.openflocon.flocon.ktor"
     }
 
     sourceSets {
@@ -19,36 +21,10 @@ kotlin {
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.ktor.client.core)
-            }
-        }
-        
-        val androidMain by getting {
-            dependencies {
                 implementation(libs.brotli.dec)
             }
-        }
-        
-        val jvmMain by getting {
-            dependencies {
-                implementation(libs.brotli.dec)
-            }
-        }
-
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val wasmJsMain by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
         }
     }
-}
-
-android {
-    namespace = "io.github.openflocon.flocon.ktor"
 }
 
 mavenPublishing {

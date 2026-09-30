@@ -1,43 +1,22 @@
 plugins {
-    id("flocon.kotlin.multiplatform")
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
     id("flocon.publish")
 }
 
 kotlin {
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(projects.database.coreNoOp)
-            }
-        }
-        
-        val androidMain by getting {
-            dependencies {
-            }
-        }
-        
-        val jvmMain by getting {
-            dependencies {
-            }
-        }
+    android {
+        namespace = "io.github.openflocon.flocon.database.room.noop"
+    }
 
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.database.coreNoOp)
         }
     }
 }
-
-android {
-    namespace = "io.github.openflocon.flocon.database.room.noop"
-}
-
-
 
 mavenPublishing {
     coordinates(

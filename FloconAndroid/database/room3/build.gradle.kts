@@ -1,25 +1,29 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.vanniktech.maven.publish)
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
+    id("flocon.publish")
 }
 
-configure<com.android.build.api.dsl.LibraryExtension> {
-    namespace = "io.github.openflocon.flocon.okhttp"
-}
+kotlin {
+    android {
+        namespace = "io.github.openflocon.flocon.database.room3"
+    }
 
-dependencies {
-    implementation(project(":flocon-base"))
+    sourceSets {
+        commonMain.dependencies {
+            api(projects.flocon)
+            api(projects.database.core)
 
-    implementation(platform(libs.kotlinx.coroutines.bom))
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
+            implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
+            implementation(libs.kotlinx.coroutines.core)
 
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.okhttp)
-    implementation(libs.brotli.dec)
-
-    testImplementation(libs.junit)
+            implementation(dependencies.platform(libs.okhttp.bom))
+            implementation(libs.brotli.dec)
+        }
+    }
 }
 
 mavenPublishing {

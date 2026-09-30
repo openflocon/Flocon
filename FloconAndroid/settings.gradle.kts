@@ -9,6 +9,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
 }
@@ -22,7 +23,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "flocon"
 include(":sample-multiplatform")
 include(":flocon")
 include(":flocon-no-op")
@@ -60,3 +60,4 @@ include(":database:room3-no-op")
 
 includeBuild("build-logic")
 
+include(":sample:android")

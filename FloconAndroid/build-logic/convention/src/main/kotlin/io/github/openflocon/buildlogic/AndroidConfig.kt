@@ -1,22 +1,22 @@
 package io.github.openflocon.buildlogic
 
-import com.android.build.gradle.LibraryExtension
-import org.gradle.api.JavaVersion
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 internal fun Project.configureAndroidLibrary() {
-    extensions.configure<LibraryExtension> {
-        compileSdk = 36
-
-        defaultConfig {
+    extensions.configure<KotlinMultiplatformExtension> {
+        (this as ExtensionAware).extensions.configure<KotlinMultiplatformAndroidLibraryExtension>("androidLibrary") {
+            compileSdk = 36
             minSdk = 23
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
 
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_11
-            targetCompatibility = JavaVersion.VERSION_11
+//            withDeviceTestBuilder {
+//                sourceSetTreeName = "test"
+//            }.configure {
+//                instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+//            }
         }
     }
 }

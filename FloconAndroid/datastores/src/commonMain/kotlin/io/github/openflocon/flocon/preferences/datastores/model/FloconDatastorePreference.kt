@@ -9,14 +9,10 @@ package io.github.openflocon.flocon.preferences.datastores.model
 //import androidx.datastore.preferences.core.intPreferencesKey
 //import androidx.datastore.preferences.core.longPreferencesKey
 //import androidx.datastore.preferences.core.stringPreferencesKey
-import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.pluginsold.sharedprefs.model.FloconPreference
-import io.github.openflocon.flocon.pluginsold.sharedprefs.model.FloconPreferenceValue
-import kotlinx.coroutines.flow.first
 
 interface FloconDatastoreMapper {
-    fun fromDatastore(datastoreValue: String) : String
-    fun toDatastore(valueForDatastore: String) : String
+    fun fromDatastore(datastoreValue: String): String
+    fun toDatastore(valueForDatastore: String): String
 }
 
 //class FloconDatastorePreference(
