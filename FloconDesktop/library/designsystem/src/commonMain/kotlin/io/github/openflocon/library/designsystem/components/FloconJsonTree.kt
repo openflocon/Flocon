@@ -12,6 +12,7 @@ import androidx.compose.ui.text.TextStyle
 import com.sebastianneubauer.jsontree.JsonTree
 import com.sebastianneubauer.jsontree.TreeState
 import com.sebastianneubauer.jsontree.defaultDarkColors
+import com.sebastianneubauer.jsontree.defaultLightColors
 import com.sebastianneubauer.jsontree.search.SearchState
 import com.sebastianneubauer.jsontree.search.rememberSearchState
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -36,7 +37,7 @@ fun FloconJsonTree(
             icon = Icons.Outlined.ChevronRight,
             searchState = searchState,
             lazyListState = lazyListState,
-            colors = defaultDarkColors,
+            colors = if(FloconTheme.isDarkTheme) defaultDarkColors else defaultLightColors,
             textStyle = textStyle,
             onError = onError,
             modifier = Modifier.fillMaxSize()

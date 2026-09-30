@@ -22,6 +22,7 @@ dependencyResolutionManagement {
     }
 }
 
+rootProject.name = "flocon"
 include(":sample-multiplatform")
 include(":flocon")
 include(":flocon-no-op")

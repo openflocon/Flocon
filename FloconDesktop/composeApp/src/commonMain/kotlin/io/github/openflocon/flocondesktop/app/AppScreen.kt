@@ -5,19 +5,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
+import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
+import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.databaseRoutes
-import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
 import io.github.openflocon.flocondesktop.features.files.filesRoutes
 import io.github.openflocon.flocondesktop.features.images.imageRoutes
@@ -37,12 +40,17 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AppScreen() {
     val viewModel = koinViewModel<AppViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val versionCheckerViewModel = koinViewModel<VersionCheckerViewModel>()
+    val updateChip by versionCheckerViewModel.updateChip.collectAsStateWithLifecycle()
+    val uriHandler = LocalUriHandler.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         Content(
             uiState = uiState,
             navigationState = viewModel.navigationState,
-            onAction = viewModel::onAction
+            onAction = viewModel::onAction,
+            updateChip = updateChip,
+            onUpdateChipClicked = { uriHandler.openUri(it.link) },
         )
         FeedbackDisplayerView()
         VersionCheckerView()
@@ -53,17 +61,23 @@ fun AppScreen() {
 private fun Content(
     uiState: AppUiState,
     navigationState: MainFloconNavigationState,
-    onAction: (AppAction) -> Unit
+    onAction: (AppAction) -> Unit,
+    updateChip: VersionCheckerViewModel.UpdateChipUiModel?,
+    onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit,
 ) {
-    FloconNavigation(
-        navigationState = navigationState,
-        sceneStrategies = listOf(
+    val sceneStrategies = remember {
+        listOf(
             PanelSceneStrategy(),
             WindowSceneStrategy(),
             DialogSceneStrategy(),
             BigDialogSceneStrategy(),
             SinglePaneSceneStrategy()
-        ),
+        )
+    }
+    
+    FloconNavigation(
+        navigationState = navigationState,
+        sceneStrategies = sceneStrategies,
         sceneDecoratorStrategies = listOf(
             MenuSceneStrategy(
                 menuContent = {
@@ -85,7 +99,9 @@ private fun Content(
                         onAppSelected = { onAction(AppAction.SelectApp(it)) },
                         onRecordClicked = { onAction(AppAction.Record) },
                         onRestartClicked = { onAction(AppAction.Restart) },
-                        onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) }
+                        onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
+                        updateChip = updateChip,
+                        onUpdateChipClicked = onUpdateChipClicked,
                     )
                 }
             )

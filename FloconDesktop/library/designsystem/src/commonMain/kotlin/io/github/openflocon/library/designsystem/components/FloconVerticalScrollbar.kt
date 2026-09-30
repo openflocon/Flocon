@@ -6,8 +6,10 @@ import androidx.compose.foundation.ScrollbarStyle
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 
+@Immutable
 interface FloconScrollAdapter
 
 @Composable

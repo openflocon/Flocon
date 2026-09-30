@@ -14,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -190,7 +189,7 @@ fun DashboardContainerView(
 @Composable
 private fun DashboardContainerViewPreview() {
     FloconTheme {
-        Box(modifier = Modifier.background(Color.White).padding(all = 8.dp)) {
+        Box(modifier = Modifier.background(FloconTheme.colorPalette.surface).padding(all = 8.dp)) {
             DashboardContainerView(
                 onClickButton = {},
                 viewState = previewDashboardContainerViewState(),

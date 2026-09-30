@@ -25,3 +25,6 @@ local.properties
 kotlin-js-store/
 
 FloconAndroid/.idea/
+site/
+.venv/
+venv/

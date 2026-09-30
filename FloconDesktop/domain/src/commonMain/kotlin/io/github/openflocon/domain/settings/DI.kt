@@ -2,7 +2,9 @@ package io.github.openflocon.domain.settings
 
 import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.domain.settings.usecase.SetFontSizeMultiplierUseCase
+import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
 import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -14,4 +16,6 @@ internal val settingsModule = module {
     factoryOf(::TestAdbUseCase)
     factoryOf(::ObserveFontSizeMultiplierUseCase)
     factoryOf(::SetFontSizeMultiplierUseCase)
+    factoryOf(::ObserveThemeUseCase)
+    factoryOf(::SetThemeUseCase)
 }

@@ -19,7 +19,6 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
-import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
@@ -69,7 +68,6 @@ class ServerJvm(
         val server: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration> =
             embeddedServer(Netty, port = port) {
                 install(WebSockets) {
-                    pingPeriod = 15.seconds
                     timeout = 15.seconds
                     maxFrameSize = Long.MAX_VALUE
                     masking = false
@@ -253,7 +251,7 @@ class ServerJvm(
 
                     call.respondText("file received : ${savedFile?.absolutePath ?: "inconnu"}")
                 }
-                
+
                 // Add network export routes
                 networkExportRoutes(
                     json = json,

@@ -2,11 +2,14 @@ package io.github.openflocon.flocondesktop.window
 
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.v2.WindowBoundsProvider
+import androidx.compose.ui.window.v2.WindowPositionProvider
 import java.awt.Toolkit
 import kotlin.math.min
 
-fun WindowStateData?.windowPosition() = this?.let { WindowPosition(x.dp, y.dp) } ?: WindowPosition.PlatformDefault
+fun WindowStateData?.windowPositionProvider(): WindowPositionProvider =
+    this?.let { WindowPositionProvider.Absolute(x.dp, y.dp) } ?: WindowPositionProvider.Default
+
 fun WindowStateData?.size(): DpSize {
     val screenSize = Toolkit.getDefaultToolkit().screenSize
 
@@ -23,3 +26,9 @@ fun WindowStateData?.size(): DpSize {
         width = width, height = height,
     )
 }
+
+fun WindowStateData?.windowBoundsProvider(): WindowBoundsProvider =
+    WindowBoundsProvider(
+        positionProvider = windowPositionProvider(),
+        sizeProvider = { size() },
+    )

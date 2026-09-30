@@ -1,14 +1,21 @@
-@file:OptIn(ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalUuidApi::class, ExperimentalComposeUiApi::class)
 
 package io.github.openflocon.navigation.scene
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.v2.DialogWindow
+import androidx.compose.ui.window.v2.WindowBoundsProvider
+import androidx.compose.ui.window.v2.WindowPositionProvider
+import androidx.compose.ui.window.v2.rememberDialogState
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavMetadataKey
+import androidx.navigation3.runtime.contains
+import androidx.navigation3.runtime.get
+import androidx.navigation3.runtime.metadata
 import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
@@ -20,7 +27,7 @@ import kotlin.uuid.ExperimentalUuidApi
 data class WindowScene(
     private val entry: NavEntry<FloconRoute>,
     override val previousEntries: List<NavEntry<FloconRoute>>,
-    private val onBack: () -> Unit
+    private val onBack: () -> Unit,
 ) : OverlayScene<FloconRoute> {
 
     override val key: Any = entry.contentKey
@@ -29,18 +36,21 @@ data class WindowScene(
     override val entries: List<NavEntry<FloconRoute>> = listOf(entry)
 
     override val content: @Composable (() -> Unit) = {
-        val width = entry.metadata[WindowSceneStrategy.SIZE_WIDTH] as? Number
-        val height = entry.metadata[WindowSceneStrategy.SIZE_HEIGHT] as? Number
-        val size = if (width != null && height != null) {
-            DpSize(width.toInt().dp, height.toInt().dp)
-        } else null
+        val windowProperties = entry.metadata[WindowPropertiesKey]
 
-        val state = rememberWindowState(
-            size = size ?: DpSize(800.dp, 600.dp),
+        val state = rememberDialogState(
+            initialBoundsProvider = WindowBoundsProvider(
+                sizeProvider = {
+                    windowProperties?.size ?: DpSize(800.dp, 600.dp)
+                },
+                positionProvider = WindowPositionProvider.CenteredInParentWindow,
+            ),
         )
-        Window(
+
+        DialogWindow(
             onCloseRequest = onBack,
             state = state,
+            title = windowProperties?.title ?: "",
         ) {
             entry.Content()
         }
@@ -52,11 +62,11 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
     override fun SceneStrategyScope<FloconRoute>.calculateScene(entries: List<NavEntry<FloconRoute>>): Scene<FloconRoute>? {
         val entry = entries.last()
 
-        if (entry.metadata[IS_WINDOW] == true) {
+        if (entry.metadata.contains(WindowPropertiesKey)) {
             return WindowScene(
                 entry = entry,
                 previousEntries = entries.dropLast(1),
-                onBack = onBack
+                onBack = onBack,
             )
         }
 
@@ -64,16 +74,15 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
     }
 
     companion object {
-        private const val IS_WINDOW = "is_window"
-        internal const val SIZE_WIDTH = "SIZE_WIDTH"
-        internal const val SIZE_HEIGHT = "SIZE_HEIGHT"
-
-        fun window(size: DpSize? = null) = buildMap {
-            put(IS_WINDOW, true)
-            size?.let {
-                put(SIZE_WIDTH, it.width.value)
-                put(SIZE_HEIGHT, it.height.value)
-            }
+        fun window(windowProperties: WindowProperties = WindowProperties()) = metadata {
+            put(WindowPropertiesKey, windowProperties)
         }
     }
 }
+
+data class WindowProperties(
+    val size: DpSize? = null,
+    val title: String? = null
+)
+
+private object WindowPropertiesKey : NavMetadataKey<WindowProperties>

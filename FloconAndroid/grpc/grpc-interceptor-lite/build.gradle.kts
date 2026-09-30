@@ -1,15 +1,11 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    id("flocon.android.library")
-    id("flocon.publish")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.vanniktech.maven.publish)
 }
 
-
-android {
+configure<com.android.build.api.dsl.LibraryExtension> {
     namespace = "io.github.openflocon.flocon.grpc.lite"
 }
-
 
 dependencies {
     api(projects.grpc.grpcInterceptorBase)
@@ -24,4 +20,8 @@ mavenPublishing {
         artifactId = "flocon-grpc-interceptor-lite",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
-}
+
+    pom {
+        name = "Flocon Grpc Interceptor Lite"
+    }
+}

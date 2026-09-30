@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.detail.mapper
 
+import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.isImage
 import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
@@ -17,9 +18,13 @@ import io.github.openflocon.flocondesktop.features.network.list.mapper.toNetwork
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.common.isImageUrl
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentMap
 
-fun FloconNetworkCallDomainModel.toDetailUi(): NetworkDetailViewState {
+fun FloconNetworkCallDomainModel.toDetailUi(
+    defaultSelectedTab: NetworkDetailTab = NetworkDetailTab.Request,
+): NetworkDetailViewState {
     val imageUrl = request.url.takeIf { response?.isImage() == true || it.isImageUrl() }
     return NetworkDetailViewState(
         callId = callId,
@@ -56,6 +61,7 @@ fun FloconNetworkCallDomainModel.toDetailUi(): NetworkDetailViewState {
             }
         },
         graphQlSection = graphQlSection(this),
+        defaultSelectedTab = defaultSelectedTab,
     )
 }
 
@@ -70,8 +76,9 @@ private fun requestBodyTitle(request: FloconNetworkCallDomainModel): String = wh
     is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "Content"
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
     FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
-    FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> "Request - Body"
+    FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> "Body"
 }
+
 
 private fun toDetailHttpStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.response?.let { response ->
     when (response) {
@@ -139,7 +146,7 @@ private fun graphQlStatus(networkCall: FloconNetworkCallDomainModel): NetworkSta
 
 fun httpBodyToUi(body: String?): String = body?.let { JsonPrettyPrinter.prettyPrint(body) } ?: ""
 
-fun toNetworkHeadersUi(headers: Map<String, String>?): List<NetworkDetailHeaderUi>? = headers?.let {
+fun toNetworkHeadersUi(headers: Map<String, String>?): ImmutableList<NetworkDetailHeaderUi>? = headers?.let {
     it
         .map { (key, value) ->
             NetworkDetailHeaderUi(
@@ -147,6 +154,7 @@ fun toNetworkHeadersUi(headers: Map<String, String>?): List<NetworkDetailHeaderU
                 value = value,
             )
         }.sortedBy { it.name }
+        .toImmutableList()
 }?.takeIf { it.isNotEmpty() }
 
 fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewState.Method = when (request.request.specificInfos) {

@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
@@ -20,7 +20,13 @@ fun com.android.build.api.dsl.AndroidSourceSet.proto(action: org.gradle.api.file
 }
 
 kotlin {
-    androidTarget {
+    android {
+        namespace = "io.github.openflocon.flocon.myapplication.multi"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        androidResources {
+            enable = true
+        }
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -28,8 +34,10 @@ kotlin {
 
     jvm("desktop")
 
+    // Compose Multiplatform 1.11 dropped the iosX64 (Intel Mac simulator) variant, so the
+    // sample's iosX64CompilationDependenciesMetadata can no longer resolve compose.runtime
+    // for that target. Apple-silicon devs use iosSimulatorArm64; real devices use iosArm64.
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -109,18 +117,14 @@ kotlin {
                 // Compose Desktop
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.coroutines.swing)
-                implementation(libs.ktor.clientJava)
-
-                implementation(project(":database:room"))
+                implementation(libs.ktor.client.java)
             }
         }
 
-        val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
         val iosMain by creating {
             dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
@@ -131,73 +135,12 @@ kotlin {
     }
 }
 
-android {
-    namespace = "io.github.openflocon.flocon.myapplication.multi"
-    compileSdk = 36
-
-    defaultConfig {
-        applicationId = "io.github.openflocon.flocon.myapplication.multi"
-        minSdk = 23
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    val githubToken = System.getenv("GITHUB_TOKEN_GRPC") ?: ""
-
-    signingConfigs {
-        named("debug") {
-            // just a dummy keystore to be able to test the release build
-            keyAlias = "release"
-            keyPassword = "release"
-            storeFile = file("release.jks")
-            storePassword = "release"
-        }
-        register("release") {
-            keyAlias = "release"
-            keyPassword = "release"
-            storeFile = file("release.jks")
-            storePassword = "release"
-        }
-    }
-
-    buildTypes {
-        debug {
-            buildConfigField("String", "GITHUB_TOKEN", "\"$githubToken\"")
-            signingConfig = signingConfigs.getByName("debug")
-        }
-        release {
-            isMinifyEnabled = true
-            buildConfigField("String", "GITHUB_TOKEN", "\"$githubToken\"")
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
-
-//    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-//    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets.getByName("main").proto {
-        srcDir("src/androidMain/proto")
-    }
-}
 
 dependencies {
     listOf(
         "kspAndroid",
         "kspDesktop",
         "kspIosSimulatorArm64",
-        "kspIosX64",
         "kspIosArm64"
     ).forEach {
         add(it, libs.androidx.room.compiler)

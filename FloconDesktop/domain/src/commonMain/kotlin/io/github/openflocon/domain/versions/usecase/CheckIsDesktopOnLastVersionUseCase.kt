@@ -1,22 +1,28 @@
 package io.github.openflocon.domain.versions.usecase
 
 import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
 import io.github.openflocon.domain.versions.repository.VersionsCheckerRepository
 
 class CheckIsDesktopOnLastVersionUseCase(
     private val versionsCheckerRepository: VersionsCheckerRepository,
+    private val settingsRepository: SettingsRepository,
 ) {
     suspend operator fun invoke(current: String): Either<Throwable, IsLastVersionDomainModel> = versionsCheckerRepository.checkIsLastVersion()
         .mapSuccess { lastVersion ->
-            val isLastVersion = isRemoteVersionNewer(localVersion = current, remoteVersion = lastVersion)
-            when (isLastVersion) {
-                true -> IsLastVersionDomainModel.NewVersionAvailable(
+            val isNewerThanCurrent = isRemoteVersionNewer(localVersion = current, remoteVersion = lastVersion)
+            val dismissedVersion = settingsRepository.getDismissedDesktopVersion()
+            val isNewerThanDismissed = dismissedVersion == null || isRemoteVersionNewer(localVersion = dismissedVersion, remoteVersion = lastVersion)
+
+            if (isNewerThanCurrent && isNewerThanDismissed) {
+                IsLastVersionDomainModel.NewVersionAvailable(
                     name = lastVersion,
                     link = "https://github.com/openflocon/Flocon/releases/tag/$lastVersion",
                     oldVersion = current,
                 )
-                false -> IsLastVersionDomainModel.RunningLastVersion
+            } else {
+                IsLastVersionDomainModel.RunningLastVersion
             }
         }
 }

@@ -5,9 +5,8 @@ import androidx.compose.animation.core.EaseOutExpo
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateTo
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 import kotlinx.coroutines.launch
 
@@ -114,14 +114,15 @@ fun FloconPanel(
             modifier = Modifier.padding(8.dp),
             content = { scope.actions() }
         )
-        Box(
+        FloconSurface(
+            color = FloconTheme.colorPalette.primary,
+            border = BorderStroke(width = 1.dp, color = FloconTheme.colorPalette.surface),
             modifier = Modifier
                 .width(PANEL_WIDTH)
                 .fillMaxHeight()
                 .graphicsLayer {
                     this.translationX = state.translationX.value.toPx()
                 }
-                .border(width = 1.dp, color = FloconTheme.colorPalette.surface)
         ) {
             scope.content()
         }

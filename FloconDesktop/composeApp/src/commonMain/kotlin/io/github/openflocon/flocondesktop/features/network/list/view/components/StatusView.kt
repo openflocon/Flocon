@@ -17,16 +17,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-// Custom colors for networkStatusUi/method views to integrate better with the theme
-val successTagBackground = Color(0xFF28A745).copy(alpha = 0.3f) // Muted green for success
-val successTagText = Color(0xFF28A745) // Brighter green for text
-
-val errorTagBackground = Color(0xFFDC3545).copy(alpha = 0.3f) // Muted red for error
-val errorTagText = Color(0xFFDC3545) // Brighter red for text
-val exceptionTagText = Color(0xFF7B1FA2)
-
-val loadingTagBackground = Color(0xFF6C757D).copy(alpha = 0.3f) // Muted gray for OTHER
-val loadingTagText = Color(0xFF6C757D)
+private val successTagText = Color(0xFF28A745)
 
 @Composable
 fun StatusView(
@@ -51,9 +42,9 @@ fun StatusView(
                 style = FloconTheme.typography.labelSmall.copy(
                     color = when (status.status) {
                         NetworkStatusUi.Status.SUCCESS -> successTagText
-                        NetworkStatusUi.Status.EXCEPTION -> exceptionTagText
-                        NetworkStatusUi.Status.ERROR -> errorTagText
-                        NetworkStatusUi.Status.LOADING -> loadingTagText
+                        NetworkStatusUi.Status.EXCEPTION -> FloconTheme.colorPalette.exceptions
+                        NetworkStatusUi.Status.ERROR -> FloconTheme.colorPalette.error
+                        else -> successTagText
                     },
                 ),
             )

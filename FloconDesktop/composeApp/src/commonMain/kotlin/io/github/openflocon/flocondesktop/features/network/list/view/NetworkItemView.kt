@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,13 +44,12 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewNet
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewStateError
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
-import io.github.openflocon.flocondesktop.features.network.list.view.components.errorTagText
-import io.github.openflocon.flocondesktop.features.network.list.view.components.exceptionTagText
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val replayColor = Color(0xFF242D44)
@@ -69,12 +67,10 @@ fun NetworkItemView(
 ) {
     val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
 
-    val errorColor = remember(state) {
-        when (state.status.status) {
-            NetworkStatusUi.Status.ERROR -> errorTagText
-            NetworkStatusUi.Status.EXCEPTION -> exceptionTagText
-            else -> null
-        }
+    val errorColor = when (state.status.status) {
+        NetworkStatusUi.Status.ERROR -> FloconTheme.colorPalette.error
+        NetworkStatusUi.Status.EXCEPTION -> FloconTheme.colorPalette.exceptions
+        else -> null
     }
 
     ContextualView(
@@ -219,7 +215,7 @@ fun NetworkItemView(
 private fun contextualActions(
     onAction: (NetworkAction) -> Unit,
     state: NetworkItemViewState
-): List<FloconContextMenuItem> {
+): ImmutableList<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
     return remember(state) {
         buildMenu {

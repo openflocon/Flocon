@@ -18,6 +18,8 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +37,7 @@ class DeepLinkViewModel(
     private val removeFromDeeplinkHistoryUseCase: RemoveFromDeeplinkHistoryUseCase,
 ) : ViewModel() {
 
-    private val variableValues = MutableStateFlow<Map<String, String>>(emptyMap())
+    private val variableValues = MutableStateFlow<PersistentMap<String, String>>(persistentMapOf())
 
     val state: StateFlow<DeeplinkScreenState> = combine(
         observeCurrentDeviceDeeplinkUseCase(),
@@ -46,22 +48,29 @@ class DeepLinkViewModel(
             deepLinks = mapToUi(
                 history = history,
                 deepLinks = deepLinks.deeplinks,
+                variables = deepLinks.variables,
                 variableValues = variablesValues
             ),
             variables = deepLinks.variables.map { variable ->
                 DeeplinkVariableViewState(
                     name = variable.name,
                     description = variable.description,
-                    value = variablesValues.getOrDefault(
-                        variable.name,
-                        ""
-                    ),
-                    mode = when (val m = variable.mode) {
+                    value = when(val mode = variable.mode) {
+                        is DeeplinkVariableDomainModel.Mode.AutoComplete -> variablesValues.getOrDefault(
+                            key = variable.name,
+                            defaultValue = mode.suggestions.firstOrNull() ?: ""
+                        )
+                        is DeeplinkVariableDomainModel.Mode.Input -> variablesValues.getOrDefault(
+                            key = variable.name,
+                            defaultValue = ""
+                        )
+                    },
+                    mode = when (val mode = variable.mode) {
                         DeeplinkVariableDomainModel.Mode.Input ->
                             DeeplinkVariableViewState.Mode.Input
 
                         is DeeplinkVariableDomainModel.Mode.AutoComplete ->
-                            DeeplinkVariableViewState.Mode.AutoComplete(m.suggestions)
+                            DeeplinkVariableViewState.Mode.AutoComplete(mode.suggestions)
                     }
                 )
             }
@@ -70,7 +79,13 @@ class DeepLinkViewModel(
         .stateInWhileSubscribed(DeeplinkScreenState(emptyList(), emptyList()))
 
     fun setVariable(name: String, value: String) {
-        variableValues.update { current -> current + (name to value) }
+        variableValues.update { current ->
+            if (value.isNotEmpty()) {
+                current.putting(name, value)
+            } else {
+                current.removing(name)
+            }
+        }
     }
 
     fun removeFromHistory(viewState: DeeplinkViewState) {

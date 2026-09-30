@@ -34,6 +34,10 @@ jobs:
         with:
           gradle-version: '8.12'
 
+      - name: Install rpmbuild (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y rpm
+
       # - name: Generate aboutlibraries
       #   working-directory: FloconDesktop
       #   run: ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.outputFile=src/commonMain/composeResources/files/aboutlibraries.json
@@ -45,12 +49,19 @@ jobs:
           PROJECT_VERSION_NAME: ${{ github.ref_name }}
 
       # Upload OS-specific artifacts
-      - name: Upload Linux artifact
+      - name: Upload Linux deb artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
           name: linux-deb
           path: FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb
+
+      - name: Upload Linux rpm artifact
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-rpm
+          path: FloconDesktop/composeApp/build/compose/binaries/main/rpm/*.rpm
 
       - name: Rename macOS x64 dmg
         if: matrix.os == 'macos-15-intel'
@@ -122,10 +133,15 @@ jobs:
         uses: actions/checkout@v4
 
       # Download artifacts from all platforms
-      - name: Download Linux artifact
+      - name: Download Linux deb artifact
         uses: actions/download-artifact@v4
         with:
           name: linux-deb
+
+      - name: Download Linux rpm artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-rpm
 
       - name: Download macOS arm64 artifact
         uses: actions/download-artifact@v4
@@ -173,6 +189,7 @@ jobs:
           generate_release_notes: true
           files: |
             *.deb
+            *.rpm
             *.dmg
             *.msi
             *.jar

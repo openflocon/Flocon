@@ -1,41 +1,22 @@
+import com.android.build.api.dsl.LibraryExtension
+
 plugins {
-    id("flocon.kotlin.multiplatform")
-    id("flocon.publish")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.vanniktech.maven.publish)
 }
 
-kotlin {
-    wasmJs {
-        outputModuleName = "flocon_datastores"
-        browser()
-        binaries.executable()
-    }
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(projects.flocon)
-                implementation(projects.sharedprefs)
-                implementation(libs.kotlinx.coroutines.core)
-            }
-        }
-
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            dependencies {
-                implementation(libs.androidx.datastore.preferences)
-            }
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-        }
-    }
-}
-
-android {
+configure<LibraryExtension> {
     namespace = "io.github.openflocon.flocon.datastores"
+}
+
+dependencies {
+    implementation(project(":flocon-base"))
+
+    implementation(platform(libs.kotlinx.coroutines.bom))
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
+    implementation(libs.androidx.datastore.preferences)
 }
 
 mavenPublishing {
@@ -44,4 +25,8 @@ mavenPublishing {
         artifactId = "flocon-datastores",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
+
+    pom {
+        name = "Flocon Datastores Integration"
+    }
 }

@@ -2,12 +2,15 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.vanniktech.maven.publish)
 }
 
 kotlin {
-    androidTarget {
+    android {
+        namespace = "io.github.openflocon.flocon.ktor"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -57,38 +60,9 @@ kotlin {
     }
 }
 
-android {
-    namespace = "io.github.openflocon.flocon.database.room3.noop"
-    compileSdk = 36
 
-    defaultConfig {
-        minSdk = 23
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-}
 
 mavenPublishing {
-    publishToMavenCentral(automaticRelease = true)
-
-    if (project.hasProperty("signing.required") && project.property("signing.required") == "false") {
-        // Skip signing
-    } else {
-        signAllPublications()
-    }
-
     coordinates(
         groupId = project.property("floconGroupId") as String,
         artifactId = "flocon-database-room3-no-op",
@@ -96,28 +70,6 @@ mavenPublishing {
     )
 
     pom {
-        name = "Flocon Room 3 Implementation No-Op"
-        description = project.property("floconDescription") as String
-        inceptionYear = "2025"
-        url = "https://github.com/openflocon/Flocon"
-        licenses {
-            license {
-                name = "The Apache License, Version 2.0"
-                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-            }
-        }
-        developers {
-            developer {
-                id = "openflocon"
-                name = "Open Flocon"
-                url = "https://github.com/openflocon"
-            }
-        }
-        scm {
-            url = "https://github.com/openflocon/Flocon"
-            connection = "scm:git:git://github.com/openflocon/Flocon.git"
-            developerConnection = "scm:git:ssh://git@github.com/openflocon/Flocon.git"
-        }
+        name = "Flocon Ktor Interceptor No Op"
     }
-}
+}

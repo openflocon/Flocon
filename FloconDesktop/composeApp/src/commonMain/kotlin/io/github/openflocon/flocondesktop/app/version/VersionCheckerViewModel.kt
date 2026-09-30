@@ -6,12 +6,19 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.new_client_version
 import flocondesktop.composeapp.generated.resources.new_client_version_desc
 import flocondesktop.composeapp.generated.resources.new_desktop_version
+import flocondesktop.composeapp.generated.resources.update_available_client
+import flocondesktop.composeapp.generated.resources.update_available_desktop
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
 import io.github.openflocon.domain.versions.usecase.CheckIsDesktopOnLastVersionUseCase
+import io.github.openflocon.domain.versions.usecase.DismissClientVersionUseCase
+import io.github.openflocon.domain.versions.usecase.DismissDesktopVersionUseCase
 import io.github.openflocon.domain.versions.usecase.ObserveIsClientOnLastVersionUseCase
+import io.github.openflocon.domain.versions.usecase.ObserveUpdateAvailableUseCase
 import io.github.openflocon.flocondesktop.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -22,9 +29,17 @@ import org.jetbrains.compose.resources.getString
 
 class VersionCheckerViewModel(
     private val checkIsDesktopOnLastVersionUseCase: CheckIsDesktopOnLastVersionUseCase,
+    private val dismissDesktopVersionUseCase: DismissDesktopVersionUseCase,
+    private val dismissClientVersionUseCase: DismissClientVersionUseCase,
     private val observeIsClientOnLastVersionUseCase: ObserveIsClientOnLastVersionUseCase,
+    private val observeUpdateAvailableUseCase: ObserveUpdateAvailableUseCase,
     private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
+
+    data class UpdateChipUiModel(
+        val text: String,
+        val link: String,
+    )
 
     data class VersionAvailableUiModel(
         val version: String,
@@ -37,6 +52,31 @@ class VersionCheckerViewModel(
         val desktop: VersionAvailableUiModel?,
         val client: VersionAvailableUiModel?,
     )
+
+    val updateChip: StateFlow<UpdateChipUiModel?> = observeUpdateAvailableUseCase(BuildConfig.APP_VERSION)
+        .map { update ->
+            when (update) {
+                is ObserveUpdateAvailableUseCase.UpdateAvailableDomainModel.DesktopUpdate -> {
+                    UpdateChipUiModel(
+                        text = getString(Res.string.update_available_desktop, update.version),
+                        link = update.link,
+                    )
+                }
+                is ObserveUpdateAvailableUseCase.UpdateAvailableDomainModel.ClientUpdate -> {
+                    UpdateChipUiModel(
+                        text = getString(Res.string.update_available_client, update.version),
+                        link = update.link,
+                    )
+                }
+                ObserveUpdateAvailableUseCase.UpdateAvailableDomainModel.None -> null
+            }
+        }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null,
+        )
 
     private val hiddenClientDialogs = MutableStateFlow<Set<VersionAvailableUiModel>>(emptySet())
     private val desktopVersionAvailable = MutableStateFlow<VersionAvailableUiModel?>(null)
@@ -108,9 +148,15 @@ class VersionCheckerViewModel(
 
     fun hideDesktopNewVersionDialog(uimodel: VersionAvailableUiModel) {
         desktopVersionAvailable.update { null }
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            dismissDesktopVersionUseCase(uimodel.version)
+        }
     }
 
     fun hideClientNewVersionDialog(uimodel: VersionAvailableUiModel) {
         hiddenClientDialogs.update { it + uimodel }
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            dismissClientVersionUseCase(uimodel.version)
+        }
     }
 }

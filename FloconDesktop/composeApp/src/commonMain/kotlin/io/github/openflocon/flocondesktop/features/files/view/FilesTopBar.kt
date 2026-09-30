@@ -37,6 +37,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -215,7 +216,7 @@ private fun FilesTopBarPreview() {
         path = FilePathUiModel.Constants.CachesDir,
         icon = Icons.Outlined.Folder,
         sizeFormatted = "10 KB",
-        contextualActions = emptyList(),
+        contextualActions = persistentListOf(),
         dateFormatted = "2022-01-01 12:10",
     )
     FloconTheme {

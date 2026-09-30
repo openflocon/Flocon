@@ -17,6 +17,7 @@ import io.github.openflocon.flocondesktop.features.table.model.TableColumnsUiMod
 import io.github.openflocon.flocondesktop.features.table.model.TableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
@@ -57,7 +58,7 @@ class TableViewModel(
                                     addAll(item.values)
                                 },
                             )
-                        },
+                        }.toImmutableList(),
                     )
                 }
             }

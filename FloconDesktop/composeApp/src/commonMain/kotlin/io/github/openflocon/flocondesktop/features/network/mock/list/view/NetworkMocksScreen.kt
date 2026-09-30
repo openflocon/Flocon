@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.mock.list.view
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,6 +29,8 @@ import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconOverflow
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +74,7 @@ sealed interface NetworkMockAction {
 
 @Composable
 private fun NetworkMocksContent(
-    mocks: List<MockNetworkLineUiModel>,
+    mocks: ImmutableList<MockNetworkLineUiModel>,
     onAction: (NetworkMockAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -102,9 +105,15 @@ private fun NetworkMocksContent(
         )
         MocksHeaderView(Modifier.fillMaxWidth())
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().height(400.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp)
         ) {
-            items(mocks) {
+            items(
+                items = mocks,
+                key = MockNetworkLineUiModel::id
+            ) {
                 MockLineView(
                     item = it,
                     onClicked = { id -> onAction(NetworkMockAction.OnItemClicked(id)) },
@@ -125,11 +134,7 @@ private fun NetworkMocksContent(
                             )
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                HorizontalDivider(
-                    Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.outline
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -143,7 +148,7 @@ private fun NetworkMocksContentPreview() {
         NetworkMocksContent(
             mocks = List(10) {
                 previewMockNetworkLineUiModel()
-            },
+            }.toImmutableList(),
             onAction = {},
         )
     }

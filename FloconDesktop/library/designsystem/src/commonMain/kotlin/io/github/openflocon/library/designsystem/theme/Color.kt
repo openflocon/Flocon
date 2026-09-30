@@ -42,19 +42,19 @@ data class FloconColorPaletteNew(
 )
 
 internal val lightPalette = FloconColorPaletteNew(
-    surface = Color(0xFF2C2C2E),
-    onSurface = Color(0xffF2F2F7),
-    primary = Color(0xFF29282c),
-    onPrimary = Color(0xffF2F2F7),
-    secondary = Color(0xff494c54),
-    onSecondary = Color(0xFFbfc8e0),
-    tertiary = Color(0xFFe2e2e9),
-    onTertiary = Color(0xFF2e3036),
-    accent = Color(0xFF4a330c),
-    onAccent = Color(0xFFfcaf28),
-    error = Color(0xFFCF6679),
-    onError = Color(0xFF000000),
-    exceptions = Color(0xFF7B1FA2)
+    surface = Color(0xFFF2F2F7),
+    onSurface = Color(0xFF1C1C1E),
+    primary = Color(0xFFFFFFFF),
+    onPrimary = Color(0xFF1C1C1E),
+    secondary = Color(0xFFE4E6EC),
+    onSecondary = Color(0xFF3A3C42),
+    tertiary = Color(0xFF2e3036),
+    onTertiary = Color(0xFFe2e2e9),
+    accent = Color(0xFFEDC25E),
+    onAccent = Color(0xFF4a330c),
+    error = Color(0xFFC62828),
+    onError = Color(0xFFFFFFFF),
+    exceptions = Color(0xFF9C27B0)
 )
 
 internal val darkPalette = FloconColorPaletteNew(
@@ -68,9 +68,9 @@ internal val darkPalette = FloconColorPaletteNew(
     onTertiary = Color(0xFF2e3036),
     accent = Color(0xFF4a330c),
     onAccent = Color(0xFFfcaf28),
-    error = Color(0xFFCF6679),
+    error = Color(0xFFFF6B6B),
     onError = Color(0xFF000000),
-    exceptions = Color(0xFF7B1FA2)
+    exceptions = Color(0xFFAB47BC)
 )
 
 /**

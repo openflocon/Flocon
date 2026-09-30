@@ -1,15 +1,22 @@
 plugins {
-    id("flocon.kotlin.multiplatform")
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.serialization)
     id("flocon.publish")
     alias(libs.plugins.buildconfig)
 }
 
 kotlin {
-    wasmJs {
-        outputModuleName = "flocon"
-        binaries.executable()
-        browser()
+    android {
+        namespace = "io.github.openflocon.flocon"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        androidResources {
+            enable = true
+        }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
 
     sourceSets {
@@ -22,9 +29,13 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
+                implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.jakewharton.process.phoenix)
-                implementation("com.squareup.okhttp3:okhttp:4.12.0")
+                implementation(libs.okhttp)
+
+                implementation(libs.androidx.sqlite)
+                implementation(libs.androidx.sqlite.framework)
             }
         }
 
@@ -56,8 +67,7 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
 
                 // to store the device id
-                implementation("com.russhwolf:multiplatform-settings:1.3.0")
-                implementation(libs.androidx.sqlite.bundled)
+                implementation(libs.multiplatform.settings)
             }
         }
     }
@@ -69,16 +79,6 @@ buildConfig {
     buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String)
 }
 
-android {
-    namespace = "io.github.openflocon.flocon"
-
-    sourceSets {
-        getByName("main") {
-            manifest.srcFile("src/androidMain/AndroidManifest.xml")
-            res.srcDirs("src/androidMain/res")
-        }
-    }
-}
 
 mavenPublishing {
     coordinates(
@@ -86,4 +86,8 @@ mavenPublishing {
         artifactId = "flocon",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
-}
+
+    pom {
+        name = "Flocon"
+    }
+}

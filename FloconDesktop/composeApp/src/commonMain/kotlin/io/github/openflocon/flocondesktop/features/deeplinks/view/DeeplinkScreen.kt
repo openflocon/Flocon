@@ -39,6 +39,7 @@ import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.collections.immutable.toImmutableMap
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -64,7 +65,7 @@ private fun DeeplinkScreen(
     modifier: Modifier = Modifier,
 ) {
     val variableValues by remember(state.variables) {
-        derivedStateOf { state.variables.associate { it.name to it.value } }
+        derivedStateOf { state.variables.associate { it.name to it.value }.toImmutableMap() }
     }
     val deepLinks by remember(state.deepLinks) {
         derivedStateOf { state.deepLinks.filter { !it.isHistory } }
@@ -96,7 +97,7 @@ private fun DeeplinkScreen(
                     .fillMaxWidth()
             ) {
                 // Left: Variables
-                DeeplinkPanel(
+                DeeplinkScrollablePanel(
                     title = "Variables",
                     modifier = Modifier
                         .weight(0.3f)
@@ -104,11 +105,12 @@ private fun DeeplinkScreen(
                         .clip(FloconTheme.shapes.medium)
                         .background(FloconTheme.colorPalette.primary),
                 ) {
-                    DeeplinkVariablesPanelView(
-                        variables = state.variables,
-                        onVariableChanged = setVariable,
-                        modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    )
+                    items(state.variables) { item ->
+                        DeeplinkVariableChip(
+                            variable = item,
+                            onValueChange = { setVariable(item.name, it) },
+                        )
+                    }
                 }
 
                 // Right: Deeplinks (non-history)

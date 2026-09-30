@@ -21,6 +21,9 @@ import io.github.openflocon.flocondesktop.features.database.model.toDomain
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToCsvProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToMarkdownProcessor
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -56,7 +59,7 @@ class DatabaseQueryLogsViewModel(
     private val _showTransactions = MutableStateFlow(false)
     val showTransactions = _showTransactions.asStateFlow()
 
-    private val _filterChips = MutableStateFlow<List<FilterChipUiModel>>(emptyList())
+    private val _filterChips = MutableStateFlow<PersistentList<FilterChipUiModel>>(persistentListOf())
     val filterChips = _filterChips.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
@@ -141,7 +144,7 @@ class DatabaseQueryLogsViewModel(
     fun addIncludeFilter() {
         val query = _searchQuery.value.trim()
         if (query.isNotEmpty() && !_filterChips.value.any { it.text == query }) {
-            _filterChips.update { it + FilterChipUiModel(query, FilterChipUiModel.FilterType.INCLUDE) }
+            _filterChips.update { it.adding(FilterChipUiModel(query, FilterChipUiModel.FilterType.INCLUDE)) }
             _searchQuery.value = ""
             _page.value = 0
         }
@@ -150,7 +153,7 @@ class DatabaseQueryLogsViewModel(
     fun addExcludeFilter() {
         val query = _searchQuery.value.trim()
         if (query.isNotEmpty() && !_filterChips.value.any { it.text == query }) {
-            _filterChips.update { it + FilterChipUiModel(query, FilterChipUiModel.FilterType.EXCLUDE) }
+            _filterChips.update { it.adding(FilterChipUiModel(query, FilterChipUiModel.FilterType.EXCLUDE)) }
             _searchQuery.value = ""
             _page.value = 0
         }
@@ -158,15 +161,19 @@ class DatabaseQueryLogsViewModel(
     
     fun toggleFilterType(chip: FilterChipUiModel) {
         _filterChips.update { list ->
-            list.map {
-                if (it == chip) {
-                    it.copy(type = if (it.type == FilterChipUiModel.FilterType.INCLUDE)
-                        FilterChipUiModel.FilterType.EXCLUDE
-                    else
-                        FilterChipUiModel.FilterType.INCLUDE
-                    )
-                } else {
-                    it
+            list.mutate { chips ->
+                chips.replaceAll {
+                    if (it == chip) {
+                        it.copy(
+                            type = if (it.type == FilterChipUiModel.FilterType.INCLUDE) {
+                                FilterChipUiModel.FilterType.EXCLUDE
+                            } else {
+                                FilterChipUiModel.FilterType.INCLUDE
+                            },
+                        )
+                    } else {
+                        it
+                    }
                 }
             }
         }
@@ -175,13 +182,13 @@ class DatabaseQueryLogsViewModel(
     
     fun addFilter(text: String, type: FilterChipUiModel.FilterType) {
          if (text.isNotEmpty() && !_filterChips.value.any { it.text == text }) {
-            _filterChips.update { it + FilterChipUiModel(text, type) }
+            _filterChips.update { it.adding(FilterChipUiModel(text, type)) }
             _page.value = 0
         }
     }
 
     fun removeFilterChip(chip: FilterChipUiModel) {
-        _filterChips.update { it - chip }
+        _filterChips.update { it.removing(chip) }
         _page.value = 0
     }
 

@@ -15,6 +15,7 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.Share
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.view.PreferenceAutoUpdate
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -54,7 +55,7 @@ class SharedPreferencesViewModel(
                                 key = it.key,
                                 value = it.value.toUi(),
                             )
-                        },
+                        }.toImmutableList(),
                     )
                 }
             }

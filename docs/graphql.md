@@ -1,20 +1,34 @@
-### 🛰️ GraphQL Request Inspector
+---
+title: GraphQL Inspector
+description: Debug Apollo GraphQL queries and mutations in real time with Flocon.
+---
 
-Flocon also supports **GraphQL** requests via a dedicated Apollo interceptor.
+# 🛰️ GraphQL Request Inspector
 
-Just like with REST, all outgoing GraphQL requests made through [Apollo Client](https://www.apollographql.com/docs/android/) are captured and displayed in Flocon’s interface — allowing you to debug your queries and mutations in real time.
+Flocon supports **GraphQL** requests via Apollo Client, capturing and visualizing all queries, mutations, and subscriptions in real time.
 
+---
 
-For each GraphQL call, you can inspect:
+## Capabilities
 
-- Response data or error payload
-- Headers, status code, and response time
-- The operation type (query / mutation)
+For each GraphQL request, Flocon inspects:
+- **Operation Details**: Query / Mutation name, Operation type, and Variables payload
+- **Response Payloads**: Formatted GraphQL response data or GraphQL error arrays
+- **HTTP Transport**: Headers, HTTP status codes, latency, and transport timestamps
+
+---
+
+## Setup with Apollo Client
+
+Apollo Client delegates network calls to OkHttp on Android. By attaching the `FloconOkhttpInterceptor` to the underlying HTTP client, GraphQL requests are automatically intercepted:
 
 ```kotlin
-ApolloClient.Builder()
-            // just set your already configured with flocon okhttp interceptor client
-            .okHttpClient(client)
-            // regular builder methods
-            .build()
+val okHttpClient = OkHttpClient.Builder()
+    .addInterceptor(FloconOkhttpInterceptor())
+    .build()
+
+val apolloClient = ApolloClient.Builder()
+    .serverUrl("https://your-api.com/graphql")
+    .okHttpClient(okHttpClient)
+    .build()
 ```

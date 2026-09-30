@@ -16,8 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.components.FloconMenuRepresentation
@@ -47,15 +47,21 @@ object FloconTheme {
         @Composable @ReadOnlyComposable
         get() = LocalFloconShape.current
 
+    val isDarkTheme: Boolean
+        @Composable @ReadOnlyComposable
+        get() = LocalIsDarkTheme.current
+
     val spacing: FloconSpacing
         @Composable @ReadOnlyComposable
         get() = LocalFloconSpacing.current
 }
 
+private val LocalIsDarkTheme = staticCompositionLocalOf { true }
+
 @Composable
 fun FloconTheme(
     fontSizeMultiplier: Float = 1f,
-    isDarkTheme: Boolean = isSystemInDarkTheme(), // TODO Add setting and override
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     val colorPalette = when {
@@ -64,8 +70,8 @@ fun FloconTheme(
     }
     val ripple = ripple(color = colorPalette.accent)
     val selectionTextColor = TextSelectionColors(
-        handleColor = Color.White,
-        backgroundColor = Color.White.copy(alpha = 0.5f)
+        handleColor = colorPalette.accent,
+        backgroundColor = colorPalette.accent.copy(alpha = 0.5f)
     )
 
     val materialTypo = MaterialTheme.typography
@@ -97,6 +103,7 @@ fun FloconTheme(
     ) {
         CompositionLocalProvider(
             LocalIndication provides ripple,
+            LocalIsDarkTheme provides isDarkTheme,
             LocalFloconColorPalette provides colorPalette,
             LocalFloconSpacing provides FloconSpacing(),
             LocalTextSelectionColors provides selectionTextColor,

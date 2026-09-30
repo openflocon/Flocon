@@ -45,6 +45,10 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAct
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -133,8 +137,8 @@ class ColorsTransformation : VisualTransformation {
 fun DatabaseQueryView(
     query: String,
     autoUpdate: Boolean,
-    favoritesTitles: Set<String>,
-    lastQueries: List<String>,
+    favoritesTitles: ImmutableSet<String>,
+    lastQueries: ImmutableList<String>,
     updateQuery: (query: String) -> Unit,
     onAction: (action: DatabaseTabAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -249,8 +253,8 @@ private fun DatabaseQueryViewPreview() {
             updateQuery = {},
             autoUpdate = true,
             onAction = {},
-            favoritesTitles = emptySet(),
-            lastQueries = emptyList(),
+            favoritesTitles = persistentSetOf(),
+            lastQueries = persistentListOf(),
         )
     }
 }

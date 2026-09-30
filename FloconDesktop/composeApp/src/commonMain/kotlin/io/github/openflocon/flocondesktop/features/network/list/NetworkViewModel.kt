@@ -271,6 +271,7 @@ class NetworkViewModel(
             }
 
             is NetworkAction.Pinned -> onPinned(action)
+            is NetworkAction.SetDefaultSelectedTab -> setDefaultSelectedTab(action)
             is NetworkAction.DetailAction -> detailDelegate.onAction(action.action)
             is NetworkAction.SelectLine -> onSelectLine(action)
             NetworkAction.ClearMultiSelect -> onClearMultiSelect()
@@ -281,6 +282,7 @@ class NetworkViewModel(
             is NetworkAction.ShareAsMarkdown -> onShareAsMarkdown(action)
         }
     }
+
 
     private fun onShareAsMarkdown(action: NetworkAction.ShareAsMarkdown) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
@@ -371,6 +373,17 @@ class NetworkViewModel(
             )
         }
     }
+
+    private fun setDefaultSelectedTab(action: NetworkAction.SetDefaultSelectedTab) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            saveNetworkSettingsUseCase(
+                settings.value.copy(
+                    defaultSelectedTab = action.tab
+                )
+            )
+        }
+    }
+
 
     private fun onSelectRequest(action: NetworkAction.SelectRequest) {
         selectRequest(action.id)

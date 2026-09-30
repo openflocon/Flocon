@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,6 +44,8 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeepli
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentMapOf
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -50,7 +53,7 @@ fun DeeplinkItemView(
         item: DeeplinkViewState,
         submit: (DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) -> Unit,
         removeFromHistory: (DeeplinkViewState) -> Unit,
-        variableValues: Map<String, String> = emptyMap(),
+        variableValues: ImmutableMap<String, String> = persistentMapOf(),
         modifier: Modifier = Modifier,
 ) {
     val values = remember(item.deeplinkId) { mutableStateMapOf<DeeplinkPart.TextField, String>() }
@@ -72,7 +75,7 @@ fun DeeplinkItemView(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row(
+            FlowRow(
                     modifier =
                             Modifier.weight(1f)
                                     .clip(FloconTheme.shapes.medium)
@@ -81,7 +84,7 @@ fun DeeplinkItemView(
                                             else FloconTheme.colorPalette.surface
                                     )
                                     .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalArrangement = Arrangement.Center,
             ) {
                 item.parts.fastForEach { part ->
                     TextFieldPart(
@@ -131,7 +134,7 @@ fun DeeplinkItemView(
 @Composable
 private fun TextFieldPart(
         part: DeeplinkPart,
-        variableValues: Map<String, String>,
+        variableValues: ImmutableMap<String, String>,
         onFieldValueChanged: (DeeplinkPart.TextField, value: String) -> Unit
 ) {
     when (part) {
@@ -172,7 +175,9 @@ private fun TextFieldPart(
                                     text = item,
                                     style = FloconTheme.typography.bodySmall,
                                     modifier =
-                                            Modifier.clickable {
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
                                                         value = item
                                                         isExpanded = false
                                                     }

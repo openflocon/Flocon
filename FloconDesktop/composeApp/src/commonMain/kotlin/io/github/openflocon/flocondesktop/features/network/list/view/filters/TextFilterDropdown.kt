@@ -29,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -177,7 +176,7 @@ private fun FilterItemView(
         Icon(
             imageVector = Icons.Filled.Delete,
             contentDescription = null,
-            tint = Color.Gray,
+            tint = FloconTheme.colorPalette.onSecondary,
             modifier = Modifier.size(32.dp)
                 .graphicsLayer {
                     alpha = binAlpha
@@ -257,14 +256,14 @@ private fun TextFilterButton(
             .clip(RoundedCornerShape(6.dp))
             .size(32.dp)
             .graphicsLayer { alpha = if (enabled) 1f else 0.5f }
-            .background(Color.White)
+            .background(FloconTheme.colorPalette.primary)
             .clickable(onClick = onClick, enabled = enabled)
             .padding(all = 8.dp),
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = Color.Black,
+            tint = FloconTheme.colorPalette.onPrimary,
             modifier = Modifier.fillMaxSize(),
         )
     }

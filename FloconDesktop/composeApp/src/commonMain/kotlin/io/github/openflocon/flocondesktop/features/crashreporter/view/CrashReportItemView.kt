@@ -22,6 +22,8 @@ import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashRepo
 import io.github.openflocon.flocondesktop.features.crashreporter.model.previewCrashReportItem
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -76,20 +78,18 @@ internal fun CrashReportItemView(
 @Composable
 private fun contextualActions(
     onDelete: () -> Unit,
-): List<FloconContextMenuItem> {
+): ImmutableList<FloconContextMenuItem> {
     val onDeleteCallback by rememberUpdatedState(onDelete)
     val deleteString = stringResource(Res.string.general_delete)
     return remember {
-        buildList {
-            add(
-                FloconContextMenuItem.Item(
-                    label = deleteString,
-                    onClick = {
-                        onDeleteCallback()
-                    }
-                ),
-            )
-        }
+        persistentListOf(
+            FloconContextMenuItem.Item(
+                label = deleteString,
+                onClick = {
+                    onDeleteCallback()
+                }
+            ),
+        )
     }
 }
 

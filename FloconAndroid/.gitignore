@@ -20,3 +20,6 @@ local.properties
 # Kotlin Multiplatform
 .kotlin/
 kotlin-js-store/
+
+# iOS
+xcuserdata/

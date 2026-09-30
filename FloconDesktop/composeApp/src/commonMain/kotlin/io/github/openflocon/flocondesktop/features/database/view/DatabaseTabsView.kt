@@ -29,11 +29,12 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabSta
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabViewAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.buildMenu
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun DatabaseTabsView(
     modifier: Modifier = Modifier,
-    tabs: List<DatabaseTabState>,
+    tabs: ImmutableList<DatabaseTabState>,
     selected: DatabaseTabState?,
     onAction: (DatabaseTabViewAction) -> Unit,
 ) {

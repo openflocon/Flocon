@@ -2,12 +2,14 @@ package io.github.openflocon.flocondesktop.features.dashboard.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 data class DashboardContainerViewState(
     val containerName: String,
     val containerConfig: ContainerConfig,
-    val rows: List<RowItem>,
+    val rows: ImmutableList<RowItem>,
 ) {
     @Immutable
     sealed interface RowItem {
@@ -89,7 +91,7 @@ data class DashboardContainerViewState(
 fun previewDashboardContainerViewState() = DashboardContainerViewState(
     containerName = "User",
     containerConfig = DashboardContainerViewState.ContainerConfig.Section,
-    rows = listOf(
+    rows = persistentListOf(
         DashboardContainerViewState.RowItem.Text("username", "flo", color = null),
         DashboardContainerViewState.RowItem.Text("user.id", "1234567", color = Color.Red),
         DashboardContainerViewState.RowItem.CheckBox(label = "isEnabled", value = true, "id"),

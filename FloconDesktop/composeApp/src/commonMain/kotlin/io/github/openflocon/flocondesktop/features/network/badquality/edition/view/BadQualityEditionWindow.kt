@@ -27,6 +27,9 @@ import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import java.util.UUID
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 fun BadQualityEditionWindow(
@@ -84,7 +87,7 @@ fun BadNetworkQualityEditionContent(
             config?.errorProbability?.let { it * 100.0 }?.toString() ?: "100",
         )
     }
-    var errors by remember(state) { mutableStateOf(config?.errors ?: emptyList()) }
+    var errors by remember(state) { mutableStateOf(config?.errors?.toPersistentList() ?: persistentListOf()) }
     var selectedErrorToEdit by remember { mutableStateOf<BadQualityConfigUiModel.Error?>(null) }
 
     Column(
@@ -172,7 +175,7 @@ fun BadNetworkQualityEditionContent(
                 selectedErrorToEdit = error
             },
             deleteError = { error ->
-                errors = errors.filterNot { it == error }
+                errors = errors.filterNot { it == error }.toPersistentList()
             },
         )
         selectedErrorToEdit?.let { selectedError ->
@@ -196,9 +199,9 @@ fun BadNetworkQualityEditionContent(
                                             if (it.uuid == selectedError.uuid) {
                                                 error
                                             } else it
-                                        }
+                                        }.toPersistentList()
                                     } else {
-                                        errors + error
+                                        errors.adding(error)
                                     }
                                     selectedErrorToEdit = null
                                 },
@@ -218,9 +221,9 @@ fun BadNetworkQualityEditionContent(
                                             if (it.uuid == selectedError.uuid) {
                                                 error
                                             } else it
-                                        }
+                                        }.toPersistentList()
                                     } else {
-                                        errors + error
+                                        errors.adding(error)
                                     }
                                     selectedErrorToEdit = null
                                 },

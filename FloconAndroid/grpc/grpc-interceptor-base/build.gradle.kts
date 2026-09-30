@@ -1,15 +1,11 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    id("flocon.android.library")
-    id("flocon.publish")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.vanniktech.maven.publish)
 }
 
-
-android {
+configure<com.android.build.api.dsl.LibraryExtension> {
     namespace = "io.github.openflocon.flocon.grpc.base"
 }
-
 
 dependencies {
     implementation(projects.network.core)
@@ -20,11 +16,14 @@ dependencies {
     implementation(libs.grpc.android)
 }
 
-
 mavenPublishing {
     coordinates(
         groupId = project.property("floconGroupId") as String,
         artifactId = "flocon-grpc-interceptor-base",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
-}
+
+    pom {
+        name = "Flocon Grpc Interceptor"
+    }
+}

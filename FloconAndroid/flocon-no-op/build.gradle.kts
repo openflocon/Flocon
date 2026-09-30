@@ -1,20 +1,36 @@
 plugins {
-    id("flocon.kotlin.multiplatform")
-    id("flocon.publish")
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.vanniktech.maven.publish)
 }
 
 kotlin {
-    wasmJs {
-        outputModuleName = "flocon_no_op"
-        binaries.executable()
-        browser()
+    android {
+        namespace = "io.github.openflocon.flocon"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(projects.flocon)
                 implementation(libs.kotlinx.coroutines.core)
+                api(project(":flocon-base"))
+            }
+        }
+        
+        val androidMain by getting {
+            dependencies {
+                implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
+                implementation(libs.kotlinx.coroutines.android)
+            }
+        }
+        
+        val jvmMain by getting {
+            dependencies {
             }
         }
 
@@ -30,10 +46,6 @@ kotlin {
     }
 }
 
-android {
-    namespace = "io.github.openflocon.flocon"
-}
-
 
 mavenPublishing {
     coordinates(
@@ -41,4 +53,8 @@ mavenPublishing {
         artifactId = "flocon-no-op",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
-}
+
+    pom {
+        name = "Flocon No Op"
+    }
+}

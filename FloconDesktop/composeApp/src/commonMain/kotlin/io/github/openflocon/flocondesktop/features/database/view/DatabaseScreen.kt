@@ -23,6 +23,8 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabasesState
 import io.github.openflocon.flocondesktop.features.database.view.databases_tables.DatabasesAndTablesView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -53,8 +55,8 @@ fun DatabaseScreen(modifier: Modifier = Modifier) {
 @Composable
 fun DatabaseScreen(
     deviceDataBases: DatabasesStateUiModel,
-    favorites: List<DatabaseFavoriteQueryUiModel>,
-    tabs: List<DatabaseTabState>,
+    favorites: ImmutableList<DatabaseFavoriteQueryUiModel>,
+    tabs: ImmutableList<DatabaseTabState>,
     selectedTab: DatabaseTabState?,
     onAction: (DatabaseScreenAction) -> Unit,
     modifier: Modifier = Modifier
@@ -86,7 +88,7 @@ fun DatabaseScreen(
                     DatabaseTabView(
                         tab = it,
                         favoritesTitles = remember(favorites) {
-                            favorites.map { it.title }.toSet()
+                            favorites.map { it.title }.toImmutableSet()
                         },
                     )
                 }
