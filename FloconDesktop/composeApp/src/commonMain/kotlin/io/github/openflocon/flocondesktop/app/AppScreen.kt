@@ -10,11 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.SinglePaneSceneStrategy
+import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
-import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
+import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
@@ -43,10 +44,14 @@ fun AppScreen() {
     val versionCheckerViewModel = koinViewModel<VersionCheckerViewModel>()
     val updateChip by versionCheckerViewModel.updateChip.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
+    val adbError by viewModel.adbErrorState.collectAsStateWithLifecycle()
+    val serverError by viewModel.serverError.collectAsStateWithLifecycle()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Content(
             uiState = uiState,
+            adbError = adbError,
+            serverError = serverError,
             navigationState = viewModel.navigationState,
             onAction = viewModel::onAction,
             updateChip = updateChip,
@@ -60,6 +65,8 @@ fun AppScreen() {
 @Composable
 private fun Content(
     uiState: AppUiState,
+    adbError: AdbErrorType,
+    serverError: String?,
     navigationState: MainFloconNavigationState,
     onAction: (AppAction) -> Unit,
     updateChip: VersionCheckerViewModel.UpdateChipUiModel?,
@@ -74,7 +81,7 @@ private fun Content(
             SinglePaneSceneStrategy()
         )
     }
-    
+
     FloconNavigation(
         navigationState = navigationState,
         sceneStrategies = sceneStrategies,
@@ -102,6 +109,9 @@ private fun Content(
                         onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
                         updateChip = updateChip,
                         onUpdateChipClicked = onUpdateChipClicked,
+                        adbError = adbError,
+                        serverError = serverError,
+                        onFixAdbClicked = { navigationState.navigate(SettingsRoutes.Main) }
                     )
                 }
             )

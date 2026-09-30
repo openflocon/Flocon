@@ -5,8 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowCircleUp
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
+import io.github.openflocon.flocondesktop.app.AdbErrorType
 import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
@@ -36,6 +38,8 @@ import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActions
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconTextButton
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -51,6 +55,9 @@ fun MainScreenTopBar(
     recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
+    adbError: AdbErrorType,
+    serverError: String?,
+    onFixAdbClicked: () -> Unit,
     updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
     onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit = {},
 ) {
@@ -65,14 +72,54 @@ fun MainScreenTopBar(
             onUpdateChipClicked = onUpdateChipClicked,
         )
         Spacer(modifier = Modifier.width(18.dp))
-        TopBarDeviceAndAppView(
-            devicesState = devicesState,
-            appsState = appsState,
-            onDeviceSelected = onDeviceSelected,
-            onAppSelected = onAppSelected,
-            deleteDevice = deleteDevice,
-            deleteApp = deleteApp,
-        )
+        if (adbError != AdbErrorType.NONE) {
+            val errorMessage = when (adbError) {
+                AdbErrorType.SERVER_ERROR -> serverError ?: "Server Error"
+                AdbErrorType.SETUP_REQUIRED -> "ADB Error: Setup is required"
+                AdbErrorType.PORT_FORWARD_ERROR -> "ADB Error: Port forwarding failed"
+                else -> ""
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier
+                    .clip(FloconTheme.shapes.small)
+                    .background(FloconTheme.colorPalette.error.copy(alpha = 0.15f))
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            ) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.Warning,
+                    tint = FloconTheme.colorPalette.error,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = errorMessage,
+                    color = FloconTheme.colorPalette.error,
+                    style = FloconTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium
+                )
+                FloconTextButton(
+                    onClick = onFixAdbClicked,
+                    containerColor = FloconTheme.colorPalette.error
+                ) {
+                    Text(
+                        text = "Configure",
+                        color = FloconTheme.colorPalette.onError,
+                        style = FloconTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        } else {
+            TopBarDeviceAndAppView(
+                devicesState = devicesState,
+                appsState = appsState,
+                onDeviceSelected = onDeviceSelected,
+                onAppSelected = onAppSelected,
+                deleteDevice = deleteDevice,
+                deleteApp = deleteApp,
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
         TopBarActions(
             onTakeScreenshotClicked = onTakeScreenshotClicked,

@@ -13,8 +13,9 @@ class ExecuteAdbCommandUseCase(
     suspend operator fun invoke(
         target: AdbCommandTargetDomainModel,
         command: String,
+        adbPathOverride: String? = null,
     ): Either<Throwable, String> {
-        val adbPath = settingsRepository.getAdbPath() ?: return Failure(Throwable("No adb path"))
+        val adbPath = adbPathOverride ?: settingsRepository.getAdbPath() ?: return Failure(Throwable("No adb path"))
 
         val deviceSerial = when (target) {
             is AdbCommandTargetDomainModel.Device -> adbRepository.getAdbSerial(target.deviceId)
