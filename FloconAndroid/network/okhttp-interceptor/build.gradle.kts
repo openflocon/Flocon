@@ -16,11 +16,14 @@ kotlin {
 
             implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutines.core)
+
+            implementation(dependencies.platform(libs.okhttp.bom))
+            implementation(libs.okhttp)
+
+            implementation(libs.brotli.dec)
         }
 
         androidMain.dependencies {
-            implementation(dependencies.platform(libs.okhttp.bom))
-            implementation(libs.okhttp)
             implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutines.android)
         }

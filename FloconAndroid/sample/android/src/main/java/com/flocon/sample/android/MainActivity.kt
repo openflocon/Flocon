@@ -14,12 +14,8 @@ import io.github.openflocon.flocon.deeplinks.FloconDeeplinks
 import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.github.openflocon.flocon.myapplication.multi.Databases.getDogDatabase
 import io.github.openflocon.flocon.myapplication.multi.Databases.getFoodDatabase
-import io.github.openflocon.flocon.myapplication.multi.DummyHttpCaller
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
-import io.github.openflocon.flocon.myapplication.multi.DummyWebsocketCaller
-import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.initializeDatabases
-import io.github.openflocon.flocon.myapplication.multi.graphql.GraphQlTester
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeDatastores
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.multi.ui.App
@@ -27,15 +23,6 @@ import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.startFlocon
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
-import okhttp3.OkHttpClient
-
-object AndroidTestContext {
-    lateinit var okHttpClient: OkHttpClient
-    lateinit var dummyHttpCaller: DummyHttpCaller
-    lateinit var dummyWebsocketCaller: DummyWebsocketCaller
-    lateinit var graphQlTester: GraphQlTester
-    lateinit var inMemoryDb: DogDatabase
-}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,15 +58,15 @@ class MainActivity : ComponentActivity() {
 
         // Initialize OkHttpClient with Flocon OkHttp Interceptor
 //        val okHttpClient = OkHttpClient()
-//            .newBuilder()
-//            .addInterceptor(
-//                FloconOkhttpInterceptor(
-//                    isImage = {
-//                        it.request.url.toString().contains("picsum")
-//                    }
-//                )
-//            )
-//            .build()
+////            .newBuilder()
+////            .addInterceptor(
+////                FloconOkhttpInterceptor(
+////                    isImage = {
+////                        it.request.url.toString().contains("picsum")
+////                    }
+////                )
+////            )
+////            .build()
 
 //        AndroidTestContext.okHttpClient = okHttpClient
 //        AndroidTestContext.dummyHttpCaller = DummyHttpCaller(okHttpClient)

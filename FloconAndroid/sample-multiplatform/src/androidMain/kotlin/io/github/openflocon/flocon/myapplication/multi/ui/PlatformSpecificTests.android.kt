@@ -14,9 +14,9 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.myapplication.multi.Databases
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.grpc.GrpcController
+import io.github.openflocon.flocon.myapplication.multi.tester.FloconOkHttpTester
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
@@ -33,7 +33,7 @@ actual fun PlatformSpecificTests(modifier: Modifier) {
     ) {
         Button(
             onClick = {
-//                AndroidTestContext.dummyHttpCaller.call()
+                FloconOkHttpTester.call()
             }
         ) {
             Text("okhttp test")
@@ -41,7 +41,7 @@ actual fun PlatformSpecificTests(modifier: Modifier) {
 
         Button(
             onClick = {
-//                AndroidTestContext.dummyHttpCaller.callGzip()
+                FloconOkHttpTester.callGzip()
             }
         ) {
             Text("okhttp gzip test")

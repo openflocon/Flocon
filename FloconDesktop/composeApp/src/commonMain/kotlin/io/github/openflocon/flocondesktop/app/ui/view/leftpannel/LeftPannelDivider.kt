@@ -7,8 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
-import io.github.openflocon.library.designsystem.FloconTheme
-
 @Composable
 fun LeftPannelDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(

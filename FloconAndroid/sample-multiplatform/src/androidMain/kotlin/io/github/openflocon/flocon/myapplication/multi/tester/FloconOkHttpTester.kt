@@ -1,17 +1,30 @@
-package io.github.openflocon.flocon.myapplication.multi
+package io.github.openflocon.flocon.myapplication.multi.tester
 
 import android.util.Log
+import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.io.IOException
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 
-class DummyHttpCaller(val client: OkHttpClient) {
+object FloconOkHttpTester {
+
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(
+            FloconOkhttpInterceptor(
+                isImage = {
+                    it.request.url
+                        .toString()
+                        .contains("picsum")
+                }
+            )
+        )
+        .build()
 
     fun call() {
         GlobalScope.launch(Dispatchers.IO) {
@@ -32,7 +45,7 @@ class DummyHttpCaller(val client: OkHttpClient) {
                         call: Call,
                         response: Response
                     ) {
-                        Log.d("NET_NET", response.body?.string() ?: "")
+                        Log.d("NET_NET", response.body.string() ?: "")
                     }
 
                 })
@@ -63,7 +76,7 @@ class DummyHttpCaller(val client: OkHttpClient) {
                         call: Call,
                         response: Response
                     ) {
-                        Log.d("NET_NET", response.body?.string() ?: "")
+                        Log.d("NET_NET", response.body.string() ?: "")
                     }
 
                 })
@@ -73,4 +86,5 @@ class DummyHttpCaller(val client: OkHttpClient) {
             }
         }
     }
+
 }
