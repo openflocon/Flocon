@@ -61,6 +61,6 @@ mavenPublishing {
 
 
     pom {
-        name = "Flocon"
+        name = "Flocon Tables No-Op"
     }
 }

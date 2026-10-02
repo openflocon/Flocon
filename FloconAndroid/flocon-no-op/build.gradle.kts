@@ -37,6 +37,6 @@ mavenPublishing {
     )
 
     pom {
-        name = "Flocon No Op"
+        name = "Flocon No-Op"
     }
 }

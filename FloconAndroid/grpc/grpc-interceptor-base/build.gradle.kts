@@ -38,6 +38,6 @@ mavenPublishing {
     )
 
     pom {
-        name = "Flocon Grpc Interceptor"
+        name = "Flocon gRPC Interceptor Base"
     }
 }
