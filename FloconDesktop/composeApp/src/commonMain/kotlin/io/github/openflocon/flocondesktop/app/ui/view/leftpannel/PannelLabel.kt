@@ -35,7 +35,7 @@ fun PannelLabel(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 12.dp, bottom = 4.dp),
+                        .padding(start = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.extraSmall),
                     text = text,
                     style = FloconTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.Thin,

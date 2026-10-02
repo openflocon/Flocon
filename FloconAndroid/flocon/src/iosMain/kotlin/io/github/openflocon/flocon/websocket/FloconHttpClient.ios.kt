@@ -17,6 +17,7 @@ internal actual fun buildFloconHttpClient(): FloconHttpClient {
     return FloconHttpClientIOs()
 }
 
+@OptIn(io.github.openflocon.flocon.dsl.FloconMarker::class)
 internal class FloconHttpClientIOs() : FloconHttpClient {
 
     // client configurable selon la plateforme (Android, iOS, JVM, etc.)

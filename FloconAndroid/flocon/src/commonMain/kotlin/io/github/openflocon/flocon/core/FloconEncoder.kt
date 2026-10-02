@@ -1,22 +1,42 @@
 package io.github.openflocon.flocon.core
 
-import io.github.openflocon.flocon.plugins.deeplinks.model.DeeplinkParameterRemote
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
+import kotlinx.serialization.serializer
 
-internal object FloconEncoder {
-    val json = Json {
+class FloconEncoder internal constructor(
+    val module: SerializersModule
+) {
+    private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
         encodeDefaults = false
-
-        serializersModule = SerializersModule {
-            polymorphic(DeeplinkParameterRemote::class) {
-                subclass(DeeplinkParameterRemote.AutoComplete::class)
-                subclass(DeeplinkParameterRemote.Variable::class)
-            }
-        }
+        serializersModule = module
     }
+
+    fun <T> encode(serializer: KSerializer<T>, body: T): String = json.encodeToString(
+        serializer = serializer,
+        value = body
+    )
+
+    fun <T> decode(serializer: KSerializer<T>, body: String): T = json.decodeFromString(
+        deserializer = serializer,
+        string = body
+    )
+
+}
+
+inline fun <reified T> FloconEncoder.encode(body: T) = encode(
+    serializer = module.serializer<T>(),
+    body = body
+)
+
+inline fun <reified T> FloconEncoder.decode(body: String): T? = try {
+    decode(
+        serializer = module.serializer<T>(),
+        body = body
+    )
+} catch (_: Throwable) {
+    null
 }

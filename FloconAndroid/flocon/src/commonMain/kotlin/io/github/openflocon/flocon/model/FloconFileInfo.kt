@@ -1,6 +1,9 @@
 package io.github.openflocon.flocon.model
 
-internal data class FloconFileInfo(
+import io.github.openflocon.flocon.dsl.FloconMarker
+
+@FloconMarker
+data class FloconFileInfo(
     val path: String,
     val requestId: String,
 )

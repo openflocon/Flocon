@@ -131,7 +131,7 @@ private fun ColumnScope.MenuItems(
             onClick = { onClickItem(item) },
         )
         if (index != items.lastIndex)
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(FloconTheme.spacing.extraSmall))
     }
 }
 

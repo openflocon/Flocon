@@ -12,7 +12,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 internal fun MockNetworkLabelView(label: String) {
     Text(
         label,
-        modifier = Modifier.padding(start = 4.dp),
+        modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
         color = FloconTheme.colorPalette.onSurface,
         style = FloconTheme.typography.bodyMedium.copy(
             fontWeight = FontWeight.Thin,

@@ -31,8 +31,6 @@ class DeeplinkRepositoryImpl(
             Protocol.FromDevice.Deeplink.Method.GetDeeplinks -> {
                 val deeplinks = remote.getItems(message) ?: return
 
-                println(deeplinks.toString())
-
                 localDeeplinkDataSource.update(
                     deviceIdAndPackageNameDomainModel = deviceIdAndPackageName,
                     deeplinks = deeplinks

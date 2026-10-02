@@ -1,17 +1,28 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.vanniktech.maven.publish)
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
+    id("flocon.publish")
 }
 
-configure<com.android.build.api.dsl.LibraryExtension> {
-    namespace = "io.github.openflocon.flocon.grpc"
-}
+kotlin {
+    android {
+        namespace = "io.github.openflocon.flocon.grpc"
+    }
 
-dependencies {
-    api(project(":grpc:grpc-interceptor-base"))
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.flocon)
+            implementation(projects.grpc.grpcInterceptorBase)
 
-    implementation(libs.grpc.android)
-    implementation(libs.protobuf.util)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.grpc.android)
+            implementation(libs.protobuf.util)
+        }
+    }
 }
 
 mavenPublishing {
@@ -21,7 +32,8 @@ mavenPublishing {
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
 
+
     pom {
-        name = "Flocon Grpc Interceptor"
+        name = "Flocon gRPC Interceptor"
     }
 }

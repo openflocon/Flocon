@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 internal fun TopBarActions(
@@ -26,7 +27,7 @@ internal fun TopBarActions(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
     ) {
         TopBarButton(
             active = false,
