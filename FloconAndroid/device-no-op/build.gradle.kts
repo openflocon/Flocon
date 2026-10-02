@@ -19,4 +19,9 @@ mavenPublishing {
         artifactId = "flocon-device-no-op",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
+
+
+    pom {
+        name = "Flocon Device No-Op"
+    }
 }

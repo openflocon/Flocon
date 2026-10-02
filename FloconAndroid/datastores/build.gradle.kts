@@ -30,4 +30,9 @@ mavenPublishing {
         artifactId = "flocon-datastores",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
+
+
+    pom {
+        name = "Flocon Datastores"
+    }
 }

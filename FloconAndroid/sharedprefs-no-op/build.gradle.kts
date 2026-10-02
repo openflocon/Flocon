@@ -28,4 +28,9 @@ mavenPublishing {
         artifactId = "flocon-sharedprefs-no-op",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
+
+
+    pom {
+        name = "Flocon Shared Preferences No-Op"
+    }
 }

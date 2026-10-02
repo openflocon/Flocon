@@ -26,5 +26,10 @@ mavenPublishing {
         artifactId = "flocon-database-core-no-op",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
+
+
+    pom {
+        name = "Flocon Database Core No-Op"
+    }
 }
 

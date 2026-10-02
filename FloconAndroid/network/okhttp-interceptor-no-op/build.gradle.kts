@@ -26,4 +26,9 @@ mavenPublishing {
         artifactId = "flocon-okhttp-interceptor-no-op",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
+
+
+    pom {
+        name = "Flocon OkHttp Interceptor No-Op"
+    }
 }
