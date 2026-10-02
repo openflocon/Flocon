@@ -13,6 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.analytics.analyticsPlugin
+import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
+import io.github.openflocon.flocon.analytics.model.analyticsProperty
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
 import io.github.openflocon.flocon.myapplication.multi.dashboard.initializeDashboard
 import kotlin.random.Random
@@ -56,31 +60,46 @@ fun App() {
                     Button(
                         onClick = {
                             Random.nextInt(from = 0, until = 1000).toString()
-//                            floconTable("analytics").log(
-//                                "name" toParam "new name $value",
-//                                "value1" toParam "value1 $value",
-//                                "value2" toParam "value2 $value",
-//                            )
+                            Flocon.analyticsPlugin.log(
+                                AnalyticsEvent(
+                                    eventName = "clicked user",
+                                    analyticsTableId = "analytics",
+                                    properties = listOf(
+                                        "userId" analyticsProperty "1024",
+                                        "username" analyticsProperty "florent",
+                                        "index" analyticsProperty "3"
+                                    )
+                                )
+                            )
                         }
                     ) {
                         Text("send table event")
                     }
                     Button(
                         onClick = {
-//                            floconAnalytics("firebase").logEvents(
-//                                AnalyticsEvent(
-//                                    eventName = "clicked user",
-//                                    "userId" analyticsProperty "1024",
-//                                    "username" analyticsProperty "florent",
-//                                    "index" analyticsProperty "3",
-//                                ),
-//                                AnalyticsEvent(
-//                                    eventName = "opened profile",
-//                                    "userId" analyticsProperty "2048",
-//                                    "username" analyticsProperty "kevin",
-//                                    "age" analyticsProperty "34",
-//                                ),
-//                            )
+                            Flocon.analyticsPlugin
+                                .log(
+                                    listOf(
+                                        AnalyticsEvent(
+                                            eventName = "clicked user",
+                                            analyticsTableId = "firebase",
+                                            properties = listOf(
+                                                "userId" analyticsProperty "1024",
+                                                "username" analyticsProperty "florent",
+                                                "index" analyticsProperty "3"
+                                            )
+                                        ),
+                                        AnalyticsEvent(
+                                            eventName = "opened profile",
+                                            analyticsTableId = "firebase",
+                                            properties = listOf(
+                                                "userId" analyticsProperty "2048",
+                                                "username" analyticsProperty "kevin",
+                                                "age" analyticsProperty "34"
+                                            )
+                                        )
+                                    )
+                                )
                         }
                     ) {
                         Text("send analytics event")

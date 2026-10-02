@@ -21,6 +21,7 @@ import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initial
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.startFlocon
+import io.github.openflocon.flocon.tables.FloconTable
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             install(FloconNetwork)
-//            install(FloconTable)
+            install(FloconTable)
             install(FloconAnalytics)
             install(FloconDatabase) {
                 room()

@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.analytics
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
@@ -7,15 +8,19 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
+import io.github.openflocon.flocon.analytics.model.toItem
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.analytics.model.AnalyticsItem
+import io.github.openflocon.flocon.dsl.FloconMarker
+import io.github.openflocon.flocon.error.pluginNotInitialized
 
 class FloconAnalyticsConfig : FloconPluginConfig
 
 interface FloconAnalyticsPlugin : FloconPlugin {
-    fun registerAnalytics(analyticsItems: List<AnalyticsItem>)
+    fun log(analyticsItems: List<AnalyticsEvent>)
+    fun log(analyticsItem: AnalyticsEvent)
 }
 
 object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyticsPlugin> {
@@ -31,6 +36,7 @@ object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyt
             sender = floconConfig.client as FloconMessageSender,
             encoder = encoder
         )
+            .also { FloconAnalyticsPluginImpl.plugin = it }
     }
 }
 
@@ -52,21 +58,35 @@ internal class FloconAnalyticsPluginImpl(
         // no op
     }
 
-    override fun registerAnalytics(analyticsItems: List<AnalyticsItem>) {
+    override fun log(analyticsItem: AnalyticsEvent) {
+        log(listOf(analyticsItem))
+    }
+
+    override fun log(analyticsItems: List<AnalyticsEvent>) {
         sendAnalytics(analyticsItems)
     }
 
-    private fun sendAnalytics(analyticsItems: List<AnalyticsItem>) {
-        analyticsItems.takeIf { it.isNotEmpty() }?.forEach { toSend ->
-            try {
-                sender.send(
-                    plugin = Protocol.FromDevice.Analytics.Plugin,
-                    method = Protocol.FromDevice.Analytics.Method.AddItems,
-                    body = encoder.encode(toSend)
-                )
-            } catch (t: Throwable) {
-                FloconLogger.logError("error on sendAnalytics", t)
+    private fun sendAnalytics(analyticsItems: List<AnalyticsEvent>) {
+        analyticsItems.takeIf { it.isNotEmpty() }
+            ?.map(AnalyticsEvent::toItem)
+            ?.forEach { toSend ->
+                try {
+                    sender.send(
+                        plugin = Protocol.FromDevice.Analytics.Plugin,
+                        method = Protocol.FromDevice.Analytics.Method.AddItems,
+                        body = encoder.encode(toSend)
+                    )
+                } catch (t: Throwable) {
+                    FloconLogger.logError("error on sendAnalytics", t)
+                }
             }
-        }
+    }
+
+    companion object {
+        var plugin: FloconAnalyticsPlugin? = null
     }
 }
+
+@OptIn(FloconMarker::class)
+val Flocon.Companion.analyticsPlugin: FloconAnalyticsPlugin
+    get() = FloconAnalyticsPluginImpl.plugin ?: pluginNotInitialized("Database")

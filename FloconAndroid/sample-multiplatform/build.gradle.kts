@@ -43,7 +43,9 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.flocon)
             implementation(projects.deeplinks)
+            implementation(projects.analytics)
             implementation(projects.network.ktorInterceptor)
+            implementation(projects.database.room3)
 
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
@@ -67,7 +69,6 @@ kotlin {
             // Apollo (GraphQL)
             implementation(libs.apollo.runtime)
 
-            implementation(projects.database.room3)
         }
 
         androidMain.dependencies {
