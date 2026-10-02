@@ -38,6 +38,6 @@ mavenPublishing {
     )
 
     pom {
-        name = "Flocon OkHttp Interceptor"
+        name = "Flocon Room3 Database"
     }
 }
