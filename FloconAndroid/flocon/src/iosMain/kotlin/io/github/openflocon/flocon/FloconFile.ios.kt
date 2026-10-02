@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon
 
-internal actual class FloconFile {
-    // TODO
-}
+import io.github.openflocon.flocon.dsl.FloconMarker
+
+@FloconMarker
+actual class FloconFile

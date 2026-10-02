@@ -13,15 +13,19 @@ kotlin {
     }
 
     sourceSets {
-        commonMain.dependencies {
-            api(projects.flocon)
-            api(projects.database.core)
+        commonMain {
+            kotlin.srcDir("src/roomMain/kotlin")
+            dependencies {
+                api(projects.flocon)
+                api(projects.database.core)
+                api(libs.androidx.room3.runtime)
 
-            implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
-            implementation(libs.kotlinx.coroutines.core)
+                implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
+                implementation(libs.kotlinx.coroutines.core)
 
-            implementation(dependencies.platform(libs.okhttp.bom))
-            implementation(libs.brotli.dec)
+                implementation(dependencies.platform(libs.okhttp.bom))
+                implementation(libs.brotli.dec)
+            }
         }
     }
 }

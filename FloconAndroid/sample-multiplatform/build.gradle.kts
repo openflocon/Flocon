@@ -29,16 +29,6 @@ kotlin {
         namespace = "io.github.openflocon.flocon.myapplication.multi"
     }
 
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
-
     sourceSets {
         commonMain.dependencies {
             implementation(projects.flocon)
@@ -107,22 +97,6 @@ kotlin {
             implementation(projects.tables)
         }
 
-        jvmMain.dependencies {
-            // Ktor client for desktop/JVM
-            implementation(libs.ktor.client.cio)
-
-            implementation(libs.sqlite.jdbc)
-            implementation(libs.androidx.sqlite.bundled)
-
-            // Compose Desktop
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutines.swing)
-            implementation(libs.ktor.client.java)
-        }
-
-        iosMain.dependencies {
-            implementation(libs.ktor.client.cio)
-        }
     }
 }
 
@@ -161,22 +135,6 @@ dependencies {
 //room {
 //    schemaDirectory("$projectDir/schemas")
 //}
-
-compose.desktop {
-    application {
-        mainClass = "io.github.openflocon.flocon.myapplication.multi.MainKt"
-
-        nativeDistributions {
-            targetFormats(
-                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg,
-                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Msi,
-                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Deb
-            )
-            packageName = "FloconMultiApp"
-            packageVersion = "1.0.0"
-        }
-    }
-}
 
 apollo {
     service("github") {

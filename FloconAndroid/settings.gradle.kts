@@ -61,3 +61,6 @@ include(":database:room3-no-op")
 includeBuild("build-logic")
 
 include(":sample:android")
+include(":sample:desktop")
+include(":sample:wasm")
+include(":sample:ios")
