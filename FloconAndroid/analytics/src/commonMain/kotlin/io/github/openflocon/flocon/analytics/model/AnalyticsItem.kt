@@ -19,12 +19,10 @@ internal data class AnalyticsItem(
     val properties: List<AnalyticsPropertiesConfig>,
 )
 
-internal fun AnalyticsEvent.toItem() {
-    AnalyticsItem(
-        id = Uuid.random().toString(),
-        analyticsTableId = analyticsTableId,
-        eventName = eventName,
-        createdAt = Clock.System.now().toEpochMilliseconds(),
-        properties = properties
-    )
-}
+internal fun AnalyticsEvent.toItem() = AnalyticsItem(
+    id = Uuid.random().toString(),
+    analyticsTableId = analyticsTableId,
+    eventName = eventName,
+    createdAt = Clock.System.now().toEpochMilliseconds(),
+    properties = properties
+)

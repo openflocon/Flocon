@@ -9,6 +9,7 @@ import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
+import io.github.openflocon.flocon.analytics.model.AnalyticsItem
 import io.github.openflocon.flocon.analytics.model.toItem
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
@@ -69,12 +70,12 @@ internal class FloconAnalyticsPluginImpl(
     private fun sendAnalytics(analyticsItems: List<AnalyticsEvent>) {
         analyticsItems.takeIf { it.isNotEmpty() }
             ?.map(AnalyticsEvent::toItem)
-            ?.forEach { toSend ->
+            ?.let { toSend ->
                 try {
                     sender.send(
                         plugin = Protocol.FromDevice.Analytics.Plugin,
                         method = Protocol.FromDevice.Analytics.Method.AddItems,
-                        body = encoder.encode(toSend)
+                        body = encoder.encode<List<AnalyticsItem>>(toSend)
                     )
                 } catch (t: Throwable) {
                     FloconLogger.logError("error on sendAnalytics", t)

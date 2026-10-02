@@ -5,6 +5,8 @@ plugins {
     id("flocon.jvm.library")
     id("flocon.wasm.library")
     id("flocon.publish")
+
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
