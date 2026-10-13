@@ -194,21 +194,26 @@ internal class DatabaseMcpToolProvider(
         // the logs are stored by database name
         val databaseName = databaseRepository.getDatabaseById(databaseId)?.name ?: databaseId
 
-        val logs = databaseRepository.getQueryLogs(
-            dbName = databaseName,
-            showTransactions = request.booleanArg(ARG_INCLUDE_TRANSACTIONS) ?: false,
-            filters = listOfNotNull(text?.let { FilterQueryLogDomainModel(text = it, type = FilterQueryLogDomainModel.FilterType.INCLUDE) }),
-            deviceIdAndPackageName = target,
-        )
-            .filter { includeOldSessions || it.appInstance == target.appInstance }
-            .sortedByDescending { it.timestamp }
+        val showTransactions = request.booleanArg(ARG_INCLUDE_TRANSACTIONS) ?: false
+        val filters = listOfNotNull(text?.let { FilterQueryLogDomainModel(text = it, type = FilterQueryLogDomainModel.FilterType.INCLUDE) })
+        val appInstance = target.appInstance.takeUnless { includeOldSessions }
 
+        // apps can log millions of queries: filtered and limited by the database, without counting them
+        val logs = databaseRepository.getLatestQueryLogs(
+            dbName = databaseName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = target,
+            appInstance = appInstance,
+            limit = limit + 1,
+        )
         val returned = logs.take(limit)
+
         return DatabaseQueryLogsMcpResult(
             databaseId = databaseId,
             databaseName = databaseName,
-            totalMatching = logs.size,
             returned = returned.size,
+            hasMore = logs.size > limit,
             queries = returned.map {
                 DatabaseQueryLogMcpModel(
                     sql = it.toFullSql(),

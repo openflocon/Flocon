@@ -48,8 +48,8 @@ internal data class DatabaseQueryMcpResult(
 internal data class DatabaseQueryLogsMcpResult(
     val databaseId: String,
     val databaseName: String,
-    val totalMatching: Int,
     val returned: Int,
+    val hasMore: Boolean,
     val queries: List<DatabaseQueryLogMcpModel>,
 )
 

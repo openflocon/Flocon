@@ -163,6 +163,7 @@ class DatabaseMcpToolProviderTest {
         val result = server.callTool("list_database_query_logs", mapOf("databaseId" to "/data/databases/app.db")).json()
 
         assertEquals("app.db", result["databaseName"]!!.jsonPrimitive.content)
+        assertEquals(false, result["hasMore"]!!.jsonPrimitive.boolean)
         assertEquals(
             listOf("SELECT * FROM dogs", "INSERT INTO users VALUES ('2', 'flo')"),
             result["queries"]!!.jsonArray.map { it.jsonObject["sql"]!!.jsonPrimitive.content },
@@ -173,11 +174,13 @@ class DatabaseMcpToolProviderTest {
     fun `list_database_query_logs filters`() = runBlocking {
         val result = server.callTool(
             "list_database_query_logs",
-            mapOf("databaseId" to "/data/databases/app.db", "text" to "users", "includeOldSessions" to true, "includeTransactions" to true),
+            mapOf("databaseId" to "/data/databases/app.db", "text" to "users", "includeOldSessions" to true, "includeTransactions" to true, "limit" to 1),
         ).json()
 
+        assertEquals(true, result["hasMore"]!!.jsonPrimitive.boolean)
+
         assertEquals(
-            listOf("INSERT INTO users VALUES ('2', 'flo')", "SELECT * FROM users WHERE id = '1'"),
+            listOf("INSERT INTO users VALUES ('2', 'flo')"),
             result["queries"]!!.jsonArray.map { it.jsonObject["sql"]!!.jsonPrimitive.content },
         )
     }
@@ -235,16 +238,34 @@ private class FakeDatabaseRepository(
             ?: Failure(Exception("timeout"))
     }
 
+    private fun filteredLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        appInstance: Long?,
+    ) = logs
+        .filter { it.dbName == dbName }
+        .filter { showTransactions || !it.isTransaction }
+        .filter { appInstance == null || it.appInstance == appInstance }
+        .filter { log -> filters.all { log.sqlQuery.contains(it.text) || log.bindArgs.orEmpty().any { arg -> arg.contains(it.text) } } }
+
+    override suspend fun getLatestQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        appInstance: Long?,
+        limit: Int,
+    ): List<DatabaseQueryLogDomainModel> = filteredLogs(dbName, showTransactions, filters, appInstance)
+        .sortedByDescending { it.timestamp }
+        .take(limit)
+
     override suspend fun getQueryLogs(
         dbName: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): List<DatabaseQueryLogDomainModel> = logs
-        .filter { it.dbName == dbName }
-        .filter { showTransactions || !it.isTransaction }
-        .filter { log -> filters.all { log.sqlQuery.contains(it.text) || log.bindArgs.orEmpty().any { arg -> arg.contains(it.text) } } }
-        .sortedBy { it.timestamp }
+    ): List<DatabaseQueryLogDomainModel> = error("not used")
 
     override suspend fun registerDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databases: List<DeviceDataBaseDomainModel>) =
         error("not used")
