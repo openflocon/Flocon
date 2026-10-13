@@ -75,6 +75,7 @@ kotlin {
             implementation(projects.data.core)
 
             implementation(projects.domain)
+            implementation(projects.mcp)
 
             implementation(projects.library.designsystem)
 

@@ -24,6 +24,7 @@ import io.github.openflocon.flocondesktop.core.di.coreModule
 import io.github.openflocon.flocondesktop.features.featuresModule
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.mcp.mcpModule
 import io.github.openflocon.navigation.MainFloconNavigationState
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
@@ -46,6 +47,7 @@ fun App() {
                 dataCoreModule,
                 dataLocalModule,
                 dataRemoteModule,
+                mcpModule,
                 // Temporary
                 module {
 //                    scope<MainRoutes.Sub> {

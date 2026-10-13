@@ -23,6 +23,10 @@
 -dontwarn com.typesafe.**
 -dontwarn org.slf4j.**
 
+# MCP (Model Context Protocol)
+-keep class io.modelcontextprotocol.** { *; }
+-dontwarn io.github.oshai.kotlinlogging.**
+
 # Obfuscation breaks coroutines/ktor for some reason
 -dontobfuscate
 
