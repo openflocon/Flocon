@@ -77,6 +77,8 @@ class FloconMcpServer(
               create_network_mock with fromCallId starts from a captured call. Prefer disabling a mock
               (update_network_mock) over deleting it, and tell the user which mocks you left enabled.
             - Files of the app: list_files browses the "files" / "caches" directories, read_file returns a file content.
+            - Analytics events sent by the app: count_analytics_events gives an overview per event name,
+              list_analytics_events the events with their properties.
         """.trimIndent()
     }
 }

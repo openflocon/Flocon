@@ -1,17 +1,19 @@
 ---
 title: AI Agents (MCP)
-description: Let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect the network calls captured by Flocon, mock them, and read the files of the app, through the Model Context Protocol.
+description: Let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect the network calls captured by Flocon, mock them, and read the files and analytics events of the app, through the Model Context Protocol.
 ---
 
 # 🤖 AI Agents (MCP)
 
-Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI** or **Antigravity** can inspect the network calls made by your mobile app, mock them, and read its files, without any copy / paste.
+Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI** or **Antigravity** can inspect the network calls made by your mobile app, mock them, and read its files and analytics events, without any copy / paste.
 
 > *"List the failed calls of the last launch and explain why the login fails"*
 
 > *"Make the login call return a 500 so I can check the error screen"*
 
 > *"Read the json cached by the app for the feed and check if it's up to date"*
+
+> *"Check that the `post_liked` event is sent with the right properties when I like a post"*
 
 The server starts automatically with Flocon Desktop and listens on:
 
@@ -132,6 +134,9 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `delete_network_mock` | Deletes a mock. |
 | `list_files` | Content of a directory of the app: `files`, `caches`, or the absolute path of a sub directory. |
 | `read_file` | Downloads a file of the app: text files returned as text (truncated if too long), images as images, metadata only for the other binary files. A copy is saved on your computer (`localPath`). |
+| `list_analytics_tables` | Analytics tables of the app: one per analytics SDK / tracker (ex: `amplitude`). |
+| `list_analytics_events` | Analytics events with their properties, newest first. Filters: table, exact event names, text, start timestamp, previous sessions. |
+| `count_analytics_events` | Number of events per event name, the most frequent first (same filters). |
 
 ---
 
@@ -157,6 +162,10 @@ Just ask your agent in natural language, it picks the tool and the filters. Some
 | *"Disable this mock"* | `update_network_mock` | `{"mockId": "...", "enabled": false}` |
 | *"What's in the cache of the app?"* | `list_files` | `{"path": "caches"}` |
 | *"Show me the content of this config file"* | `read_file` | `{"path": "/data/user/0/io.flocon.sample/files/config.json"}` |
+| *"Which analytics events were sent since the launch?"* | `count_analytics_events` | `{}` |
+| *"Show me the last `screen_view` events"* | `list_analytics_events` | `{"eventNames": ["screen_view"], "limit": 10}` |
+| *"Which events contain this post id?"* | `list_analytics_events` | `{"text": "anOoozPo4GM2"}` |
+| *"In which order were the events sent after I tapped the button?"* | `list_analytics_events` | `{"sinceTimestamp": 1791903486834, "order": "oldest_first"}` |
 | *"Same on my iPhone"* | any tool | `{"deviceId": "...", "packageName": "..."}` (from `list_devices`) |
 
 Available filters of `list_network_calls`:
