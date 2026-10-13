@@ -1,11 +1,11 @@
 ---
 title: AI Agents (MCP)
-description: Let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect the network calls captured by Flocon, mock them, and read the files and analytics events of the app, through the Model Context Protocol.
+description: Let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect the network calls captured by Flocon, mock them, and read the files, analytics events and databases of the app, through the Model Context Protocol.
 ---
 
 # 🤖 AI Agents (MCP)
 
-Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI** or **Antigravity** can inspect the network calls made by your mobile app, mock them, and read its files and analytics events, without any copy / paste.
+Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI** or **Antigravity** can inspect the network calls made by your mobile app, mock them, and read its files, analytics events and databases, without any copy / paste.
 
 > *"List the failed calls of the last launch and explain why the login fails"*
 
@@ -14,6 +14,8 @@ Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelc
 > *"Read the json cached by the app for the feed and check if it's up to date"*
 
 > *"Check that the `post_liked` event is sent with the right properties when I like a post"*
+
+> *"Check in the database if the user I just created is saved with the right email"*
 
 The server starts automatically with Flocon Desktop and listens on:
 
@@ -24,6 +26,7 @@ http://localhost:9042/mcp
 !!! info "Local only"
     The MCP server only listens on `127.0.0.1`: it is not reachable from your local network.
     Agents can't modify, delete or replay the captured calls, nor modify or delete the files of the app: the only tools modifying Flocon are the **network mocks** ones.
+    Only read only SQL queries (`SELECT`, `PRAGMA` without value, `EXPLAIN`) can be executed on the databases.
 
 ---
 
@@ -137,6 +140,10 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_analytics_tables` | Analytics tables of the app: one per analytics SDK / tracker (ex: `amplitude`). |
 | `list_analytics_events` | Analytics events with their properties, newest first. Filters: table, exact event names, text, start timestamp, previous sessions. |
 | `count_analytics_events` | Number of events per event name, the most frequent first (same filters). |
+| `list_databases` | SQLite databases of the app (Room, SQLDelight...), with their `databaseId`. |
+| `list_database_tables` | Schema of a database: tables, columns, types, primary keys. |
+| `query_database` | Executes a read only SQL query and returns the rows (100 by default, long values truncated). |
+| `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). |
 
 ---
 
@@ -166,6 +173,9 @@ Just ask your agent in natural language, it picks the tool and the filters. Some
 | *"Show me the last `screen_view` events"* | `list_analytics_events` | `{"eventNames": ["screen_view"], "limit": 10}` |
 | *"Which events contain this post id?"* | `list_analytics_events` | `{"text": "anOoozPo4GM2"}` |
 | *"In which order were the events sent after I tapped the button?"* | `list_analytics_events` | `{"sinceTimestamp": 1791903486834, "order": "oldest_first"}` |
+| *"What's in the users table?"* | `query_database` | `{"databaseId": "...", "sql": "SELECT * FROM users LIMIT 20"}` |
+| *"How many dogs per owner?"* | `query_database` | `{"databaseId": "...", "sql": "SELECT ownerId, COUNT(*) FROM dogs GROUP BY ownerId"}` |
+| *"Which queries did the app run on the users table?"* | `list_database_query_logs` | `{"databaseId": "...", "text": "users"}` |
 | *"Same on my iPhone"* | any tool | `{"deviceId": "...", "packageName": "..."}` (from `list_devices`) |
 
 Available filters of `list_network_calls`:
