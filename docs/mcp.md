@@ -1,11 +1,11 @@
 ---
 title: AI Agents (MCP)
-description: Let Claude Code, Cursor, Codex or Gemini CLI inspect the network calls captured by Flocon, through the Model Context Protocol.
+description: Let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect the network calls captured by Flocon, through the Model Context Protocol.
 ---
 
 # 🤖 AI Agents (MCP)
 
-Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex** or **Gemini CLI** can inspect the network calls made by your mobile app, without any copy / paste.
+Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI** or **Antigravity** can inspect the network calls made by your mobile app, without any copy / paste.
 
 > *"List the failed calls of the last launch and explain why the login fails"*
 
@@ -89,6 +89,25 @@ No plugin is needed: declare the Flocon server in your agent configuration. Floc
 
     !!! note
         Gemini CLI uses `httpUrl` for Streamable HTTP servers: `url` is for the older SSE transport.
+
+=== "Antigravity"
+
+    In the Agent panel, open **⋯ → MCP Servers → Manage MCP Servers → View raw config**, and add:
+
+    ```json
+    {
+      "mcpServers": {
+        "flocon": {
+          "serverUrl": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
+
+    Then click **Refresh** in the MCP servers list.
+
+    !!! note
+        Antigravity uses `serverUrl` for remote HTTP servers, not `url` nor `httpUrl`.
 
 ---
 

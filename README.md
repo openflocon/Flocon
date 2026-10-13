@@ -66,7 +66,7 @@ Visit the full documentation site for setup guides, feature details, and advance
     - [File Explorer](https://openflocon.github.io/Flocon/files)
     - [Analytics Viewer](https://openflocon.github.io/Flocon/analytics)
     - [Image Previewer](https://openflocon.github.io/Flocon/image)
-- 🤖 **[AI Agents (MCP)](https://openflocon.github.io/Flocon/mcp)** — let Claude Code, Cursor, Codex or Gemini CLI inspect your network calls
+- 🤖 **[AI Agents (MCP)](https://openflocon.github.io/Flocon/mcp)** — let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect your network calls
 - ❓ **[Troubleshooting](https://openflocon.github.io/Flocon/troubleshooting)**
 
 ---
