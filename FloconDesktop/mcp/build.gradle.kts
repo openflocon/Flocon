@@ -8,14 +8,10 @@ kotlin {
 
     jvm("desktop")
 
-    compilerOptions {
-        freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
-        freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
-        freeCompilerArgs.add("-Xcontext-parameters")
-        freeCompilerArgs.add("-Xcontext-sensitive-resolution")
-    }
-
     sourceSets {
+        val desktopMain by getting
+        val desktopTest by getting
+
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
@@ -27,13 +23,13 @@ kotlin {
             implementation(projects.domain)
         }
 
-        getByName("desktopMain").dependencies {
+        desktopMain.dependencies {
             implementation(libs.ktor.server.core)
             implementation(libs.ktor.server.netty)
             implementation(libs.mcp.sdk.server)
         }
 
-        getByName("desktopTest").dependencies {
+        desktopTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.ktor.server.test.host)
             implementation(libs.mcp.sdk.client)

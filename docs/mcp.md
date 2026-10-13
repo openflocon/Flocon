@@ -1,11 +1,11 @@
 ---
 title: AI Agents (MCP)
-description: Let Claude Code, Cursor or Codex inspect the network calls captured by Flocon, through the Model Context Protocol.
+description: Let Claude Code, Cursor, Codex or Gemini CLI inspect the network calls captured by Flocon, through the Model Context Protocol.
 ---
 
 # 🤖 AI Agents (MCP)
 
-Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor** or **Codex** can inspect the network calls made by your mobile app, without any copy / paste.
+Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex** or **Gemini CLI** can inspect the network calls made by your mobile app, without any copy / paste.
 
 > *"List the failed calls of the last launch and explain why the login fails"*
 
@@ -69,6 +69,27 @@ No plugin is needed: declare the Flocon server in your agent configuration. Floc
     url = "http://localhost:9042/mcp"
     ```
 
+=== "Gemini CLI"
+
+    ```bash
+    gemini mcp add --transport http flocon http://localhost:9042/mcp
+    ```
+
+    Or in `.gemini/settings.json` (project) or `~/.gemini/settings.json` (global):
+
+    ```json
+    {
+      "mcpServers": {
+        "flocon": {
+          "httpUrl": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
+
+    !!! note
+        Gemini CLI uses `httpUrl` for Streamable HTTP servers: `url` is for the older SSE transport.
+
 ---
 
 ## Available tools
@@ -81,6 +102,42 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_network_calls` | Network calls (HTTP, GraphQL, gRPC, WebSocket), newest first, without bodies. Filters: full text, url, methods, HTTP status codes, errors only, type, start timestamp, previous sessions. |
 | `get_network_call` | Full details of a call: request & response headers and bodies (truncated if too long), GraphQL query, gRPC status, error, and the equivalent cURL command. |
 | `search_network_calls` | Searches a text in headers, bodies, url, method or status. |
+
+---
+
+## Examples
+
+Just ask your agent in natural language, it picks the tool and the filters. Some examples, with the arguments the agent sends:
+
+| You ask | Tool | Arguments |
+|---|---|---|
+| *"Which calls failed since the last app launch?"* | `list_network_calls` | `{"onlyErrors": true}` |
+| *"Show me the last 10 POST calls on /login"* | `list_network_calls` | `{"methods": ["POST"], "urlContains": "/login", "limit": 10}` |
+| *"Did the app get any 401 or 403?"* | `list_network_calls` | `{"statusCodes": [401, 403]}` |
+| *"List the GraphQL calls, oldest first"* | `list_network_calls` | `{"type": "graphql", "order": "oldest_first"}` |
+| *"Which calls were made in the previous sessions too?"* | `list_network_calls` | `{"includeOldSessions": true}` |
+| *"Which request sends this token in its headers?"* | `search_network_calls` | `{"query": "eyJhbGci", "scopes": ["RequestHeader"]}` |
+| *"Find the response that contains the user `john`"* | `search_network_calls` | `{"query": "john", "scopes": ["ResponseBody"]}` |
+| *"Explain why this call failed"* | `get_network_call` | `{"callId": "..."}` |
+| *"Give me the full body of this call"* | `get_network_call` | `{"callId": "...", "maxBodyChars": 200000}` |
+| *"Same on my iPhone"* | any tool | `{"deviceId": "...", "packageName": "..."}` (from `list_devices`) |
+
+Available filters of `list_network_calls`:
+
+| Argument | Description |
+|---|---|
+| `text` | Full text filter: url, method, status, duration and bodies. |
+| `urlContains` | Url contains this text (case insensitive). |
+| `methods` | HTTP methods, ex: `["GET", "POST"]`. |
+| `statusCodes` | HTTP status codes, ex: `[401, 500]`. |
+| `onlyErrors` | Exceptions, HTTP codes >= 400, GraphQL errors, gRPC status != `OK`. |
+| `type` | `http`, `graphql`, `grpc` or `websocket`. |
+| `sinceTimestamp` | Calls started after this epoch timestamp, in milliseconds. |
+| `includeOldSessions` | Include previous app launches (default `false`). |
+| `order` | `newest_first` (default) or `oldest_first`. |
+| `limit` | Max number of calls, default 50, max 500. |
+
+`search_network_calls` scopes: `RequestHeader`, `RequestBody`, `ResponseHeader`, `ResponseBody`, `Url`, `Method`, `Status` (all by default).
 
 ---
 
