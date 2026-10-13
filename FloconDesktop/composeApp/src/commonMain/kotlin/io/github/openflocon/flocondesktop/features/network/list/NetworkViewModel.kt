@@ -62,6 +62,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -171,9 +172,18 @@ class NetworkViewModel(
     )
         .distinctUntilChanged()
 
+    // true while the reset is running: the paging list can take a few seconds to reflect
+    // the delete, so we display an empty list immediately instead of waiting for Room
+    private val isClearing = MutableStateFlow(false)
+
     val items: Flow<PagingData<NetworkItemViewState>> =
-        observeCurrentDeviceIdAndPackageNameUseCase()
-            .flatMapLatest { deviceIdAndPackageName ->
+        combine(
+            observeCurrentDeviceIdAndPackageNameUseCase(),
+            isClearing,
+        ) { deviceIdAndPackageName, isClearing -> deviceIdAndPackageName to isClearing }
+            .distinctUntilChanged()
+            .flatMapLatest { (deviceIdAndPackageName, isClearing) ->
+                if (isClearing) return@flatMapLatest flowOf(PagingData.empty())
                 sortAndFilter.flatMapLatest { (sorted, filter) ->
                     observeNetworkRequestsUseCase(
                         sortedBy = sorted,
@@ -437,8 +447,20 @@ class NetworkViewModel(
     }
 
     private fun onReset() {
+        isClearing.value = true
+        contentState.update {
+            it.copy(
+                selectedRequestId = null,
+                selecting = false,
+                multiSelectedIds = emptySet(),
+            )
+        }
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            resetCurrentDeviceHttpRequestsUseCase()
+            try {
+                resetCurrentDeviceHttpRequestsUseCase()
+            } finally {
+                isClearing.value = false
+            }
         }
     }
 
