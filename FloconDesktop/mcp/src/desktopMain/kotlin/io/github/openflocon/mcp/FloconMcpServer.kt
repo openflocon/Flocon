@@ -73,6 +73,9 @@ class FloconMcpServer(
               Use list_devices to see the other devices / apps, then pass deviceId and packageName.
             - list_network_calls and search_network_calls return summaries; use get_network_call with a callId
               to get headers, bodies and the cURL command.
+            - Network mocks make the app receive a fake response (or exception) instead of calling the server:
+              create_network_mock with fromCallId starts from a captured call. Prefer disabling a mock
+              (update_network_mock) over deleting it, and tell the user which mocks you left enabled.
         """.trimIndent()
     }
 }

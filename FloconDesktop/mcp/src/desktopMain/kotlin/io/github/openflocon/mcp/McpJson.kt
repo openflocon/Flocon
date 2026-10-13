@@ -35,6 +35,19 @@ internal val readOnlyToolAnnotations = ToolAnnotations(
     openWorldHint = false,
 )
 
+/**
+ * For the tools modifying the Flocon configuration (ex: mocks)
+ */
+internal fun writeToolAnnotations(
+    destructive: Boolean,
+    idempotent: Boolean,
+) = ToolAnnotations(
+    readOnlyHint = false,
+    destructiveHint = destructive,
+    idempotentHint = idempotent,
+    openWorldHint = false,
+)
+
 internal inline fun <reified T> jsonResult(value: T): CallToolResult = CallToolResult.success(mcpOutputJson.encodeToString(value))
 
 /**
@@ -71,6 +84,15 @@ internal fun CallToolRequest.stringListArg(name: String): List<String>? = when (
     is JsonArray -> value.mapNotNull { it.jsonPrimitive.contentOrNull?.takeIf(String::isNotBlank) }
     is JsonPrimitive -> listOfNotNull(value.contentOrNull?.takeIf(String::isNotBlank))
     else -> throw McpToolException("Argument '$name' must be an array of strings")
+}
+
+internal fun CallToolRequest.stringMapArg(name: String): Map<String, String>? = when (val value = argument(name)) {
+    null -> null
+    is JsonObject -> value.mapValues { (key, element) ->
+        (element as? JsonPrimitive)?.contentOrNull ?: throw McpToolException("Argument '$name.$key' must be a string")
+    }
+
+    else -> throw McpToolException("Argument '$name' must be an object of strings")
 }
 
 internal fun CallToolRequest.intListArg(name: String): List<Int>? = when (val value = argument(name)) {
@@ -135,6 +157,19 @@ internal fun JsonObjectBuilder.arrayProperty(
         putJsonObject("items") {
             put("type", itemType)
             enum?.let { values -> putJsonArray("enum") { values.forEach { add(it) } } }
+        }
+    }
+}
+
+internal fun JsonObjectBuilder.stringMapProperty(
+    name: String,
+    description: String,
+) {
+    putJsonObject(name) {
+        put("type", "object")
+        put("description", description)
+        putJsonObject("additionalProperties") {
+            put("type", "string")
         }
     }
 }

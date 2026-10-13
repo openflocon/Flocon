@@ -2,6 +2,7 @@ package io.github.openflocon.mcp
 
 import io.github.openflocon.domain.mcp.repository.McpServerRepository
 import io.github.openflocon.mcp.devices.DevicesMcpToolProvider
+import io.github.openflocon.mcp.mocks.NetworkMocksMcpToolProvider
 import io.github.openflocon.mcp.network.NetworkMcpToolProvider
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -15,4 +16,5 @@ val mcpModule = module {
     // tools, one provider per feature
     singleOf(::DevicesMcpToolProvider) bind McpToolProvider::class
     singleOf(::NetworkMcpToolProvider) bind McpToolProvider::class
+    singleOf(::NetworkMocksMcpToolProvider) bind McpToolProvider::class
 }
