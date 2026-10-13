@@ -76,6 +76,7 @@ class FloconMcpServer(
             - Network mocks make the app receive a fake response (or exception) instead of calling the server:
               create_network_mock with fromCallId starts from a captured call. Prefer disabling a mock
               (update_network_mock) over deleting it, and tell the user which mocks you left enabled.
+            - Files of the app: list_files browses the "files" / "caches" directories, read_file returns a file content.
         """.trimIndent()
     }
 }
