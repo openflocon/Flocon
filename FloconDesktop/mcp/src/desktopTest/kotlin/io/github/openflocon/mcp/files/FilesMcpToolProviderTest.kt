@@ -61,6 +61,8 @@ class FilesMcpToolProviderTest {
             "/data/files/big.json" to "x".repeat(500).toByteArray(),
             "/data/files/avatar.png" to byteArrayOf(0x89.toByte(), 'P'.code.toByte(), 'N'.code.toByte(), 'G'.code.toByte(), 0),
             "/data/files/app.db" to "SQLite format 3\u0000\u0000\u0001".toByteArray(),
+            // OkHttp cache entry: no extension
+            "/data/cache/a1b2.1" to "RIFF\u0084\u0026\u0000\u0000WEBPVP8 ".toByteArray(Charsets.ISO_8859_1),
         ),
         downloadDir = downloadDir,
     )
@@ -163,6 +165,14 @@ class FilesMcpToolProviderTest {
     }
 
     @Test
+    fun `read_file detects images without extension`() = runBlocking {
+        val result = server.callTool("read_file", mapOf("path" to "/data/cache/a1b2.1"))
+
+        assertEquals(false, result.isError)
+        assertEquals("image/webp", (result.content[1] as ImageContent).mimeType)
+    }
+
+    @Test
     fun `read_file does not return the binary content`() = runBlocking {
         val result = server.callTool("read_file", mapOf("path" to "/data/files/app.db")).json()
 
@@ -172,11 +182,11 @@ class FilesMcpToolProviderTest {
     }
 
     @Test
-    fun `read_file when the app does not answer`() = runBlocking {
+    fun `read_file when the app does not send the file`() = runBlocking {
         val result = server.callTool("read_file", mapOf("path" to "/data/files/unknown"))
 
         assertEquals(true, result.isError)
-        assertTrue(result.text().contains("did not answer"))
+        assertTrue(result.text().contains("did not send '/data/files/unknown'"))
     }
 
     private fun file(path: String, isDirectory: Boolean = false) = FileDomainModel(

@@ -121,7 +121,12 @@ internal class FilesMcpToolProvider(
 
         val downloaded = filesRepository.downloadFile(deviceIdAndPackageName = target, path = path)
             .fold(
-                doOnFailure = { throw McpToolException("$APP_NOT_ANSWERING Also check that '$path' is a file, not a directory.") },
+                doOnFailure = {
+                    throw McpToolException(
+                        "The app did not send '$path': check that this file exists (not a directory, see list_files) " +
+                            "and that the app is connected to Flocon.",
+                    )
+                },
                 doOnSuccess = { File(it.localPath) },
             )
 
@@ -134,7 +139,10 @@ internal class FilesMcpToolProvider(
         maxChars: Int,
     ): CallToolResult {
         val size = file.length()
-        val imageMimeType = imageMimeTypes[file.extension.lowercase()]
+        // UTF-8 uses up to 4 bytes per char
+        val head = file.inputStream().use { it.readNBytes(maxOf(maxChars * 4, BINARY_DETECTION_BYTES)) }
+        // cached images often have no extension (ex: OkHttp cache entries)
+        val imageMimeType = head.imageMimeType() ?: imageMimeTypes[file.extension.lowercase()]
 
         if (imageMimeType != null && size <= MAX_IMAGE_BYTES) {
             val metadata = FileContentMcpModel(
@@ -156,8 +164,6 @@ internal class FilesMcpToolProvider(
             )
         }
 
-        // UTF-8 uses up to 4 bytes per char
-        val head = file.inputStream().use { it.readNBytes(maxOf(maxChars * 4, BINARY_DETECTION_BYTES)) }
         val isBinary = head.take(BINARY_DETECTION_BYTES).contains(0.toByte()) || imageMimeType != null
         if (isBinary) {
             return jsonResult(
@@ -194,6 +200,16 @@ internal class FilesMcpToolProvider(
         )
     }
 
+    private fun ByteArray.imageMimeType(): String? = when {
+        startsWith(PNG_SIGNATURE) -> "image/png"
+        startsWith(JPEG_SIGNATURE) -> "image/jpeg"
+        startsWith("GIF87a".encodeToByteArray()) || startsWith("GIF89a".encodeToByteArray()) -> "image/gif"
+        size >= 12 && startsWith("RIFF".encodeToByteArray()) && copyOfRange(8, 12).contentEquals("WEBP".encodeToByteArray()) -> "image/webp"
+        else -> null
+    }
+
+    private fun ByteArray.startsWith(prefix: ByteArray): Boolean = size >= prefix.size && copyOfRange(0, prefix.size).contentEquals(prefix)
+
     private fun File.isSqliteDatabase(): Boolean = inputStream().use { it.readNBytes(SQLITE_HEADER.length) }.decodeToString() == SQLITE_HEADER
 
     private fun String.requireAbsolute(): String = also {
@@ -226,6 +242,9 @@ internal class FilesMcpToolProvider(
         const val SQLITE_HEADER = "SQLite format 3\u0000"
 
         const val APP_NOT_ANSWERING = "The app did not answer: check that it is running and connected to Flocon."
+
+        val PNG_SIGNATURE = byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A)
+        val JPEG_SIGNATURE = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 0xFF.toByte())
 
         val imageMimeTypes = mapOf(
             "png" to "image/png",
