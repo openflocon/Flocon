@@ -32,11 +32,18 @@ http://localhost:9042/mcp
 
 ## Setup
 
-No plugin is needed: declare the Flocon server in your agent configuration. Flocon Desktop must be running.
+Declare the Flocon server in your agent configuration. Flocon Desktop must be running.
 
 === "Claude Code"
 
-    For you only:
+    With the Flocon plugin (recommended), it declares the server and adds a skill explaining the tools to Claude:
+
+    ```
+    /plugin marketplace add openflocon/Flocon
+    /plugin install flocon@flocon
+    ```
+
+    Or manually, for you only:
 
     ```bash
     claude mcp add --transport http flocon http://localhost:9042/mcp
