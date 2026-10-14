@@ -1,31 +1,20 @@
 package io.github.openflocon.mcp.files
 
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.domain.files.repository.FilesRepository
-import io.github.openflocon.mcp.ARG_DEVICE_ID
-import io.github.openflocon.mcp.ARG_PACKAGE_NAME
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
-import io.github.openflocon.mcp.intArg
-import io.github.openflocon.mcp.integerProperty
+import io.github.openflocon.mcp.addTypedTool
+import io.github.openflocon.mcp.addTypedToolWithResult
 import io.github.openflocon.mcp.jsonResult
 import io.github.openflocon.mcp.mcpOutputJson
-import io.github.openflocon.mcp.properties
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.github.openflocon.mcp.requiredStringArg
-import io.github.openflocon.mcp.safeToolCall
-import io.github.openflocon.mcp.stringArg
-import io.github.openflocon.mcp.stringProperty
-import io.github.openflocon.mcp.targetProperties
 import io.modelcontextprotocol.kotlin.sdk.server.Server
-import io.modelcontextprotocol.kotlin.sdk.types.CallToolRequest
 import io.modelcontextprotocol.kotlin.sdk.types.CallToolResult
 import io.modelcontextprotocol.kotlin.sdk.types.ImageContent
 import io.modelcontextprotocol.kotlin.sdk.types.TextContent
-import io.modelcontextprotocol.kotlin.sdk.types.ToolSchema
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -38,55 +27,30 @@ internal class FilesMcpToolProvider(
 ) : McpToolProvider {
 
     override fun register(server: Server) {
-        server.addTool(
+        server.addTypedTool(
             name = "list_files",
             title = "List files",
             description = "Lists the content of a directory of the mobile app: name, absolute path, size, last modification. " +
                 "Start with \"$PATH_FILES\" or \"$PATH_CACHES\", then use the absolute path of a sub directory. " +
                 "The app must be connected to Flocon, otherwise the last known content is returned.",
-            inputSchema = ToolSchema(
-                properties = properties {
-                    stringProperty(
-                        ARG_PATH,
-                        "\"$PATH_FILES\" (internal files directory of the app), \"$PATH_CACHES\" (cache directory of the app), " +
-                            "or the absolute path of a directory returned by list_files. Default \"$PATH_FILES\".",
-                    )
-                    targetProperties()
-                },
-            ),
-            toolAnnotations = readOnlyToolAnnotations,
-        ) { request ->
-            safeToolCall { jsonResult(listFiles(request)) }
-        }
+            annotations = readOnlyToolAnnotations,
+            handler = ::listFiles,
+        )
 
-        server.addTool(
+        server.addTypedToolWithResult(
             name = "read_file",
             title = "Read file",
             description = "Downloads a file of the mobile app and returns its content: text files (json, xml, logs...) as text, " +
                 "images as images, and only the metadata for the other binary files. " +
                 "The file is also saved on this computer (localPath). The app must be connected to Flocon.",
-            inputSchema = ToolSchema(
-                properties = properties {
-                    stringProperty(ARG_PATH, "Absolute path of the file, from list_files.")
-                    integerProperty(
-                        ARG_MAX_CHARS,
-                        "Text content longer than this is truncated. Default $DEFAULT_MAX_CHARS.",
-                        minimum = 100,
-                        maximum = MAX_CHARS.toLong(),
-                    )
-                    targetProperties()
-                },
-                required = listOf(ARG_PATH),
-            ),
-            toolAnnotations = readOnlyToolAnnotations,
-        ) { request ->
-            safeToolCall { readFile(request) }
-        }
+            annotations = readOnlyToolAnnotations,
+            handler = ::readFile,
+        )
     }
 
-    private suspend fun listFiles(request: CallToolRequest): FilesMcpResult {
-        val target = request.resolveTarget()
-        val pathArg = request.stringArg(ARG_PATH) ?: PATH_FILES
+    private suspend fun listFiles(input: ListFilesInput): FilesMcpResult {
+        val target = targetResolver.resolve(input)
+        val pathArg = input.path.takeIf { it.isNotBlank() } ?: PATH_FILES
         val path = when (pathArg.lowercase()) {
             PATH_FILES -> FilePathDomainModel.Constants.FilesDir
             PATH_CACHES -> FilePathDomainModel.Constants.CachesDir
@@ -114,10 +78,10 @@ internal class FilesMcpToolProvider(
         )
     }
 
-    private suspend fun readFile(request: CallToolRequest): CallToolResult {
-        val target = request.resolveTarget()
-        val path = request.requiredStringArg(ARG_PATH).requireAbsolute()
-        val maxChars = (request.intArg(ARG_MAX_CHARS) ?: DEFAULT_MAX_CHARS).coerceIn(100, MAX_CHARS)
+    private suspend fun readFile(input: ReadFileInput): CallToolResult {
+        val target = targetResolver.resolve(input)
+        val path = input.path.requireAbsolute()
+        val maxChars = input.maxChars.coerceIn(100, MAX_CHARS)
 
         val downloaded = filesRepository.downloadFile(deviceIdAndPackageName = target, path = path)
             .fold(
@@ -195,7 +159,7 @@ internal class FilesMcpToolProvider(
                 content = text.take(maxChars),
                 truncated = truncated,
                 localPath = file.absolutePath,
-                hint = if (truncated) "Truncated content, increase $ARG_MAX_CHARS or open the localPath copy." else null,
+                hint = if (truncated) "Truncated content, increase maxChars or open the localPath copy." else null,
             ),
         )
     }
@@ -218,24 +182,11 @@ internal class FilesMcpToolProvider(
         }
     }
 
-    private suspend fun CallToolRequest.resolveTarget(): DeviceIdAndPackageNameDomainModel = targetResolver.resolve(
-        deviceId = stringArg(ARG_DEVICE_ID),
-        packageName = stringArg(ARG_PACKAGE_NAME),
-    )
-
     private companion object {
-        const val ARG_PATH = "path"
-        const val ARG_MAX_CHARS = "maxChars"
-
-        const val PATH_FILES = "files"
-        const val PATH_CACHES = "caches"
-
         const val TYPE_TEXT = "text"
         const val TYPE_IMAGE = "image"
         const val TYPE_BINARY = "binary"
 
-        const val DEFAULT_MAX_CHARS = 20_000
-        const val MAX_CHARS = 200_000
         const val MAX_IMAGE_BYTES = 5L * 1024 * 1024
         const val BINARY_DETECTION_BYTES = 8_000
 

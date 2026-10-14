@@ -2,6 +2,7 @@ package io.github.openflocon.mcp
 
 import io.modelcontextprotocol.kotlin.sdk.server.Server
 import io.modelcontextprotocol.kotlin.sdk.types.CallToolRequest
+import io.modelcontextprotocol.kotlin.sdk.types.CallToolResult
 import io.modelcontextprotocol.kotlin.sdk.types.ToolAnnotations
 import io.modelcontextprotocol.kotlin.sdk.types.ToolSchema
 import kotlinx.schema.generator.json.FunctionCallingSchemaConfig
@@ -69,6 +70,21 @@ internal inline fun <reified I : Any, reified O> Server.addTypedTool(
     annotations: ToolAnnotations,
     crossinline handler: suspend (I) -> O,
 ) {
+    addTypedToolWithResult<I>(name = name, title = title, description = description, annotations = annotations) { input ->
+        jsonResult(handler(input))
+    }
+}
+
+/**
+ * Same as [addTypedTool], for the tools building their result themselves (ex: an image)
+ */
+internal inline fun <reified I : Any> Server.addTypedToolWithResult(
+    name: String,
+    title: String,
+    description: String,
+    annotations: ToolAnnotations,
+    crossinline handler: suspend (I) -> CallToolResult,
+) {
     addTool(
         name = name,
         title = title,
@@ -76,7 +92,7 @@ internal inline fun <reified I : Any, reified O> Server.addTypedTool(
         inputSchema = toolSchemaOf<I>(),
         toolAnnotations = annotations,
     ) { request ->
-        safeToolCall { jsonResult(handler(request.decodeArguments<I>())) }
+        safeToolCall { handler(request.decodeArguments<I>()) }
     }
 }
 

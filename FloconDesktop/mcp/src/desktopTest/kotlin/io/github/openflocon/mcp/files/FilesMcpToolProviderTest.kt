@@ -135,6 +135,14 @@ class FilesMcpToolProviderTest {
     }
 
     @Test
+    fun `read_file requires a path`() = runBlocking {
+        val result = server.callTool("read_file")
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("path"))
+    }
+
+    @Test
     fun `read_file returns the text content`() = runBlocking {
         val result = server.callTool("read_file", mapOf("path" to "/data/files/notes.txt")).json()
 
