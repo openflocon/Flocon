@@ -252,6 +252,24 @@ class DatabaseRepositoryImpl(
         )
     }
 
+    override suspend fun getLatestQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        appInstance: Long?,
+        limit: Int,
+    ): List<DatabaseQueryLogDomainModel> = withContext(dispatcherProvider.data) {
+        localDatabaseDataSource.getLatestQueryLogs(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            appInstance = appInstance,
+            limit = limit,
+        )
+    }
+
     override suspend fun deleteAllQueryLogs(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         withContext(dispatcherProvider.data) {
             localDatabaseDataSource.deleteAllQueryLogs(deviceIdAndPackageName)

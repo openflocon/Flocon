@@ -1,9 +1,15 @@
 package io.github.openflocon.data.local.database.models
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(
+    indices = [
+        // apps can log millions of queries: the logs are always read for one database of an app, ordered by time
+        Index(value = ["deviceId", "packageName", "dbName", "timestamp"]),
+    ],
+)
 data class DatabaseQueryLogEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val dbName: String,

@@ -101,6 +101,20 @@ interface DatabaseRepository {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): List<DatabaseQueryLogDomainModel>
 
+    /**
+     * The most recent query logs first, filtered and limited by the database
+     *
+     * @param appInstance only the logs of this app session, all the sessions when null
+     */
+    suspend fun getLatestQueryLogs(
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        appInstance: Long?,
+        limit: Int,
+    ): List<DatabaseQueryLogDomainModel>
+
     suspend fun deleteAllQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     )

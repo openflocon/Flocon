@@ -2,6 +2,7 @@ package io.github.openflocon.mcp
 
 import io.github.openflocon.domain.mcp.repository.McpServerRepository
 import io.github.openflocon.mcp.analytics.AnalyticsMcpToolProvider
+import io.github.openflocon.mcp.database.DatabaseMcpToolProvider
 import io.github.openflocon.mcp.devices.DevicesMcpToolProvider
 import io.github.openflocon.mcp.files.FilesMcpToolProvider
 import io.github.openflocon.mcp.mocks.NetworkMocksMcpToolProvider
@@ -21,4 +22,5 @@ val mcpModule = module {
     singleOf(::NetworkMocksMcpToolProvider) bind McpToolProvider::class
     singleOf(::FilesMcpToolProvider) bind McpToolProvider::class
     singleOf(::AnalyticsMcpToolProvider) bind McpToolProvider::class
+    singleOf(::DatabaseMcpToolProvider) bind McpToolProvider::class
 }

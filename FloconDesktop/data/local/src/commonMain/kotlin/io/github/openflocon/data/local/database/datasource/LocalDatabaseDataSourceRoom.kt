@@ -278,6 +278,38 @@ internal class LocalDatabaseDataSourceRoom(
         }
     }
 
+    override suspend fun getLatestQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        appInstance: Long?,
+        limit: Int,
+    ): List<DatabaseQueryLogDomainModel> {
+        val (whereClause, queryParams) = buildWhereClauseAndParams(
+            dbName = dbName,
+            showTransactions = showTransactions,
+            filters = filters,
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            appInstance = appInstance,
+        )
+        queryParams.add(limit)
+        val query = createRawQuery("SELECT * FROM DatabaseQueryLogEntity $whereClause ORDER BY timestamp DESC LIMIT ?", queryParams)
+
+        return databaseQueryLogDao.getLogs(query).map { entity ->
+            DatabaseQueryLogDomainModel(
+                dbName = entity.dbName,
+                sqlQuery = entity.sqlQuery,
+                bindArgs = entity.bindArgs?.let {
+                    json.decodeFromString(it)
+                } ?: emptyList(),
+                timestamp = entity.timestamp,
+                isTransaction = entity.isTransaction,
+                appInstance = entity.appInstance
+            )
+        }
+    }
+
     override suspend fun deleteAllQueryLogs(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         databaseQueryLogDao.deleteAll(
             deviceId = deviceIdAndPackageName.deviceId,
@@ -334,12 +366,18 @@ internal class LocalDatabaseDataSourceRoom(
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        appInstance: Long? = null,
     ): Pair<String, ArrayList<Any>> {
         val queryParams = ArrayList<Any>()
         var whereClause = "WHERE deviceId = ? AND packageName = ? AND dbName = ?"
         queryParams.add(deviceIdAndPackageName.deviceId)
         queryParams.add(deviceIdAndPackageName.packageName)
         queryParams.add(dbName)
+
+        if (appInstance != null) {
+            whereClause += " AND appInstance = ?"
+            queryParams.add(appInstance)
+        }
 
         if (!showTransactions) {
             whereClause += " AND isTransaction = 0"
