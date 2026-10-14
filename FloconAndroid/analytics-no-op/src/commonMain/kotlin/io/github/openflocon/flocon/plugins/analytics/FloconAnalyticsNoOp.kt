@@ -23,9 +23,7 @@ object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyt
         pluginConfig: FloconAnalyticsConfig,
         floconConfig: FloconConfig,
         encoder: FloconEncoder
-    ): FloconAnalyticsPlugin {
-        return FloconAnalyticsNoOpImpl()
-    }
+    ): FloconAnalyticsPlugin = FloconAnalyticsNoOpImpl()
 }
 
 internal class FloconAnalyticsNoOpImpl : FloconPlugin, FloconAnalyticsPlugin {
@@ -35,15 +33,7 @@ internal class FloconAnalyticsNoOpImpl : FloconPlugin, FloconAnalyticsPlugin {
     override suspend fun onMessageReceived(
         method: String,
         body: String,
-    ) {
-        // no op
-    }
-
-    override suspend fun onConnectedToServer() {
-        // no op
-    }
-
-    override fun registerAnalytics(analyticsItems: List<AnalyticsItem>) {
-        // no op
-    }
+    )= Unit
+    override suspend fun onConnectedToServer() = Unit
+    override fun registerAnalytics(analyticsItems: List<AnalyticsItem>) = Unit
 }

@@ -90,4 +90,12 @@ internal class FloconAnalyticsPluginImpl(
 
 @OptIn(FloconMarker::class)
 val Flocon.Companion.analyticsPlugin: FloconAnalyticsPlugin
-    get() = FloconAnalyticsPluginImpl.plugin ?: pluginNotInitialized("Database")
+    get() = FloconAnalyticsPluginImpl.plugin ?: pluginNotInitialized("Analytics", NoOpAnalyticsPlugin())
+
+private class NoOpAnalyticsPlugin : FloconAnalyticsPlugin {
+    override val key: String = ""
+    override fun log(analyticsItems: List<AnalyticsEvent>) = Unit
+    override fun log(analyticsItem: AnalyticsEvent) = Unit
+    override suspend fun onMessageReceived(method: String, body: String) = Unit
+    override suspend fun onConnectedToServer() = Unit
+}
