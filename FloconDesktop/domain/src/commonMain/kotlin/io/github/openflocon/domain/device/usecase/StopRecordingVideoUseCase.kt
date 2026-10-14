@@ -12,6 +12,7 @@ import java.nio.file.Paths
 class StopRecordingVideoUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val executeAdbCommandUseCase: ExecuteAdbCommandUseCase,
+    private val getFloconDocumentPathUseCase: GetFloconDocumentPathUseCase,
 ) {
 
     suspend operator fun invoke(recording: RecordingDomainModel): Either<Throwable, String> {
@@ -27,7 +28,7 @@ class StopRecordingVideoUseCase(
         // wait until the record is done
         recording.completableDeferred.await()
 
-        val parentFile = Paths.get(System.getProperty("user.home"), ".flocon", "ScreenRecord").toFile()
+        val parentFile = File(getFloconDocumentPathUseCase(), "ScreenRecord")
         if (!parentFile.exists()) {
             parentFile.mkdirs()
         }

@@ -100,6 +100,7 @@ private fun Content(
                         onRecordClicked = { onAction(AppAction.Record) },
                         onRestartClicked = { onAction(AppAction.Restart) },
                         onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
+                        onOpenFolderClicked = { onAction(AppAction.OpenFloconFolder) },
                         updateChip = updateChip,
                         onUpdateChipClicked = onUpdateChipClicked,
                     )
