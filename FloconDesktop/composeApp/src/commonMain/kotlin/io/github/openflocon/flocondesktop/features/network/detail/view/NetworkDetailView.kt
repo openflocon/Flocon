@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
@@ -387,17 +388,19 @@ private fun SummaryCard(
             when (val m = state.method) {
                 is NetworkDetailViewState.Method.Http -> MethodView(method = m.method)
                 is NetworkDetailViewState.Method.MethodName -> {
-                    Text(
-                        text = m.name,
-                        style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onSecondary,
-                        modifier = Modifier.weight(2f)
-                            .background(
-                                color = FloconTheme.colorPalette.primary.copy(alpha = 0.8f),
-                                shape = RoundedCornerShape(4.dp),
-                            )
-                            .padding(horizontal = 8.dp, vertical = 6.dp),
-                    )
+                    SelectionContainer {
+                        Text(
+                            text = m.name,
+                            style = FloconTheme.typography.bodySmall,
+                            color = FloconTheme.colorPalette.onSecondary,
+                            modifier = Modifier.weight(2f)
+                                .background(
+                                    color = FloconTheme.colorPalette.primary.copy(alpha = 0.8f),
+                                    shape = RoundedCornerShape(4.dp),
+                                )
+                                .padding(horizontal = 8.dp, vertical = 6.dp),
+                        )
+                    }
                 }
             }
         }
