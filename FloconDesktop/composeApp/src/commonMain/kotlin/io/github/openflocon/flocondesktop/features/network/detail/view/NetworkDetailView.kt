@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.detail.view
 
+
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -23,14 +23,15 @@ import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.outlined.Difference
+import androidx.compose.material.icons.outlined.Html
 import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material3.Text
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +43,6 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
-
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
@@ -50,17 +50,19 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-
-
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import coil3.PlatformContext
 import coil3.compose.AsyncImage
 import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
+import com.composeunstyled.DropdownPanelAnchor
 import com.sebastianneubauer.jsontree.TreeState
 import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailAction
+import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailEvent
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
@@ -69,10 +71,8 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMet
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
-import com.composeunstyled.DropdownPanelAnchor
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
-
 import io.github.openflocon.library.designsystem.components.FloconCodeBlock
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
@@ -87,9 +87,14 @@ import io.github.openflocon.library.designsystem.components.rememberFloconScroll
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.awt.FileDialog
+import java.awt.Frame
+import java.io.File
+import javax.swing.SwingUtilities
+import kotlin.coroutines.resume
 
 private const val LARGE_BODY_LENGTH = 1_000_000
 
@@ -102,6 +107,17 @@ fun NetworkDetailScreen(
         parametersOf(requestId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val lifecycle = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        viewModel.event
+            .flowWithLifecycle(lifecycle = lifecycle.lifecycle)
+            .collect { event ->
+                when (event) {
+                    is NetworkDetailEvent.CreateHtmlFile -> saveHtmlFile(event.html, "$requestId.html")
+                }
+            }
+    }
 
     NetworkDetailContent(
         uiState = uiState,
@@ -264,6 +280,14 @@ fun NetworkDetailContent(
                         onClick = {
                             shareMenuExpanded = false
                             onAction(NetworkDetailAction.ShareAsMarkdown)
+                        }
+                    )
+                    FloconDropdownMenuItem(
+                        text = "Save as HTML",
+                        leadingIcon = Icons.Outlined.Html,
+                        onClick = {
+                            shareMenuExpanded = false
+                            onAction(NetworkDetailAction.SaveAsHtml)
                         }
                     )
                     FloconDropdownMenuItem(
@@ -1155,10 +1179,10 @@ private fun FullLogExportView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                            color = FloconTheme.colorPalette.secondary,
-                            shape = RoundedCornerShape(12.dp),
-                        )
-                        .padding(12.dp)
+                                color = FloconTheme.colorPalette.secondary,
+                                shape = RoundedCornerShape(12.dp),
+                            )
+                            .padding(12.dp)
                     ) {
                         Text(
                             text = "Response Headers",
@@ -1238,7 +1262,7 @@ private fun formatBodyForExport(body: String, maxLines: Int = 30): String {
     }
 }
 
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 private fun NetworkDetailViewPreview() {
@@ -1251,19 +1275,19 @@ private fun NetworkDetailViewPreview() {
                 method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
                 statusLabel = "Status",
                 status =
-                NetworkStatusUi(
-                    text = "200",
-                    status = NetworkStatusUi.Status.SUCCESS,
-                ),
+                    NetworkStatusUi(
+                        text = "200",
+                        status = NetworkStatusUi.Status.SUCCESS,
+                    ),
                 requestHeaders =
-                persistentListOf(
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                    previewNetworkDetailHeaderUi(),
-                ),
+                    persistentListOf(
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                    ),
                 requestBodyTitle = "Body",
                 requestBody =
-                """
+                    """
                         {
                             "id": "123",
                             "name": "Flocon App",
@@ -1281,7 +1305,7 @@ private fun NetworkDetailViewPreview() {
                 requestSize = "0kb",
                 response = NetworkDetailViewState.Response.Success(
                     body =
-                    """
+                        """
                         {
                             "networkStatusUi": "success",
                             "message": "Data received and processed.",
@@ -1295,13 +1319,13 @@ private fun NetworkDetailViewPreview() {
                     canOpenResponseBody = true,
                     responseBodyIsNotBlank = true,
                     headers =
-                    persistentListOf(
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                    ),
+                        persistentListOf(
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                            previewNetworkDetailHeaderUi(),
+                        ),
                 ),
                 graphQlSection = null,
                 imageUrl = null,
@@ -1312,5 +1336,31 @@ private fun NetworkDetailViewPreview() {
             ),
             onAction = {}
         )
+    }
+}
+
+// TODO: Use a compose picker instead
+// Opens a native "Save As" dialog and writes the HTML string to the chosen file.
+// Runs on IO dispatcher since FileDialog + file write are blocking calls.
+suspend fun saveHtmlFile(
+    content: String,
+    defaultFileName: String,
+    parent: Frame? = null,
+): File? = suspendCancellableCoroutine { continuation ->
+    SwingUtilities.invokeLater {
+        val dialog = FileDialog(parent, "Save HTML File", FileDialog.SAVE)
+        dialog.file = defaultFileName
+        dialog.isVisible = true // blocks the EDT until closed, which is fine here
+
+        val directory = dialog.directory
+        val fileName = dialog.file
+
+        val file = if (directory != null && fileName != null) {
+            File(directory, fileName).apply { writeText(content) }
+        } else {
+            null
+        }
+
+        continuation.resume(file)
     }
 }
