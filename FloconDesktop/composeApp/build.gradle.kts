@@ -28,13 +28,7 @@ kotlin {
         freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
         freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
         freeCompilerArgs.add("-opt-in=androidx.compose.ui.ExperimentalComposeUiApi")
-        freeCompilerArgs.add("-Xcontext-parameters")
         freeCompilerArgs.add("-Xcontext-sensitive-resolution")
-    }
-
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    compilerOptions {
-        languageVersion.set(KotlinVersion.KOTLIN_2_2)
     }
 
     jvm("desktop")
@@ -75,6 +69,7 @@ kotlin {
             implementation(projects.data.core)
 
             implementation(projects.domain)
+            implementation(projects.mcp)
 
             implementation(projects.library.designsystem)
 

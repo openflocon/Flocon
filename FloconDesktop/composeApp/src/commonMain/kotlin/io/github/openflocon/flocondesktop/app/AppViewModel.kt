@@ -30,6 +30,7 @@ import io.github.openflocon.flocondesktop.features.images.ImageRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.TableRoutes
+import io.github.openflocon.flocondesktop.messages.ui.McpServerDelegate
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.delay
@@ -42,6 +43,7 @@ import org.jetbrains.compose.resources.getString
 
 internal class AppViewModel(
     messagesServerDelegate: MessagesServerDelegate,
+    mcpServerDelegate: McpServerDelegate,
     initAdbPathUseCase: InitAdbPathUseCase,
     startAdbForwardUseCase: StartAdbForwardUseCase,
     val navigationState: MainFloconNavigationState,
@@ -54,7 +56,7 @@ internal class AppViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
     private val logManager: LogManager,
     private val settingsRepository: SettingsRepository,
-) : ViewModel(messagesServerDelegate) {
+) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
 
     private val contentState = MutableStateFlow(
         ContentUiState(
@@ -102,6 +104,7 @@ internal class AppViewModel(
                 }
 
             messagesServerDelegate.initialize()
+            mcpServerDelegate.initialize()
 
             launch {
                 while (isActive) {

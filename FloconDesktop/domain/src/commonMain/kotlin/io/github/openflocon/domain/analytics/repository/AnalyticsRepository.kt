@@ -1,8 +1,10 @@
 package io.github.openflocon.domain.analytics.repository
 
 import androidx.paging.PagingData
+import io.github.openflocon.domain.analytics.models.AnalyticsEventCountDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
+import io.github.openflocon.domain.analytics.models.AnalyticsSearchDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +21,24 @@ interface AnalyticsRepository {
         analyticsTableId: AnalyticsTableId,
         filter: String?,
     ): List<AnalyticsItemDomainModel>
+
+    /**
+     * Filtered, sorted and limited by the database
+     */
+    suspend fun searchAnalytics(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        search: AnalyticsSearchDomainModel,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<AnalyticsItemDomainModel>
+
+    /**
+     * Number of events per event name, the most frequent first
+     */
+    suspend fun countAnalyticsByEventName(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        search: AnalyticsSearchDomainModel,
+    ): List<AnalyticsEventCountDomainModel>
 
     suspend fun deleteAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsId: AnalyticsIdentifierDomainModel)
     fun observeAnalyticsById(id: String, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsItemDomainModel?>

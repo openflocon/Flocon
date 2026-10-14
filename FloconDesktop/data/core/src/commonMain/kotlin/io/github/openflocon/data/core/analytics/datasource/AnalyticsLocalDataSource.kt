@@ -1,8 +1,10 @@
 package io.github.openflocon.data.core.analytics.datasource
 
 import androidx.paging.PagingData
+import io.github.openflocon.domain.analytics.models.AnalyticsEventCountDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
+import io.github.openflocon.domain.analytics.models.AnalyticsSearchDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +23,18 @@ interface AnalyticsLocalDataSource {
         analyticsTableId: AnalyticsTableId,
         filter: String?,
     ): List<AnalyticsItemDomainModel>
+
+    suspend fun search(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        search: AnalyticsSearchDomainModel,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<AnalyticsItemDomainModel>
+
+    suspend fun countByEventName(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        search: AnalyticsSearchDomainModel,
+    ): List<AnalyticsEventCountDomainModel>
 
     fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>>
     suspend fun getDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<AnalyticsIdentifierDomainModel>

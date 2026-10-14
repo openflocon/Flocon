@@ -66,6 +66,7 @@ Visit the full documentation site for setup guides, feature details, and advance
     - [File Explorer](https://openflocon.github.io/Flocon/files)
     - [Analytics Viewer](https://openflocon.github.io/Flocon/analytics)
     - [Image Previewer](https://openflocon.github.io/Flocon/image)
+- 🤖 **[AI Agents (MCP)](https://openflocon.github.io/Flocon/mcp)** — let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect your network calls, mock them, simulate a bad network, read your app files, analytics events and databases
 - ❓ **[Troubleshooting](https://openflocon.github.io/Flocon/troubleshooting)**
 
 ---
@@ -80,6 +81,7 @@ Visit the full documentation site for setup guides, feature details, and advance
 | **Dashboards & Tables** | ✅ | ✅ |
 | **Analytics & Images** | ✅ | ✅ |
 | **Deeplink & Files** | ✅ | ❌ |
+| **AI Agents (MCP)** | ✅ | ✅ |
 
 ---
 

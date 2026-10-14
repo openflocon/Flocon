@@ -1,4 +1,5 @@
-name: Desktop Pull Request Check
+name: Desktop - Pull Request Check
+
 on:
   pull_request:
     branches: [ main ]
@@ -6,12 +7,18 @@ on:
     paths:
       - 'FloconDesktop/**'
       - '.github/workflows/desktop_pr_check.yml'
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    name: Build FloconDesktop
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -26,6 +33,6 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
 
-      - name: Build with Gradle
+      - name: Run tests and assemble
         working-directory: FloconDesktop
-        run: ./gradlew assemble
+        run: ./gradlew allTests assemble

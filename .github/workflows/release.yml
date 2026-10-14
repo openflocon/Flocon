@@ -1,197 +1,108 @@
-name: Build Desktop App then create a new release
+name: Desktop - Build and Release
 
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version tag (e.g. 1.9.6). Leave empty to use git tag/branch ref'
+        required: false
+        type: string
+      draft:
+        description: 'Create as draft release'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
+    name: Build (${{ matrix.platform }})
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - os: macos-15-intel # runner Intel (x64)
-            arch: x64
-            jdk_url: "https://corretto.aws/downloads/latest/amazon-corretto-17-x64-macos-jdk.pkg"
-          - os: macos-latest 
+          - os: macos-15-intel
+            platform: macos-x64
+          - os: macos-latest
+            platform: macos-arm64
           - os: ubuntu-latest
+            platform: linux-x64
           - os: windows-latest
+            platform: windows-x64
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v6
 
-      - name: Set up temurin JDK
+      - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
-          token: ${{ secrets.GITHUB_TOKEN }}
-
 
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: '8.12'
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Install rpmbuild (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install -y rpm
 
-      # - name: Generate aboutlibraries
-      #   working-directory: FloconDesktop
-      #   run: ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.outputFile=src/commonMain/composeResources/files/aboutlibraries.json
-
       - name: Build with Gradle
         working-directory: FloconDesktop
         run: ./gradlew packageDistributionForCurrentOS packageUberJarForCurrentOS
         env:
-          PROJECT_VERSION_NAME: ${{ github.ref_name }}
+          PROJECT_VERSION_NAME: ${{ inputs.version || github.ref_name }}
 
-      # Upload OS-specific artifacts
-      - name: Upload Linux deb artifact
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-deb
-          path: FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb
-
-      - name: Upload Linux rpm artifact
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-rpm
-          path: FloconDesktop/composeApp/build/compose/binaries/main/rpm/*.rpm
-
-      - name: Rename macOS x64 dmg
-        if: matrix.os == 'macos-15-intel'
+      - name: Prepare and rename artifacts
+        shell: bash
         run: |
-          mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg FloconDesktop/composeApp/build/compose/binaries/main/dmg/macos-x64.dmg
+          mkdir -p dist
+          if [ "${{ matrix.platform }}" = "macos-arm64" ]; then
+            mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg dist/Flocon-macos-arm64.dmg
+            mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-macos-arm64.jar
+          elif [ "${{ matrix.platform }}" = "macos-x64" ]; then
+            mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg dist/Flocon-macos-x64.dmg
+            mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-macos-x64.jar
+          elif [ "${{ matrix.platform }}" = "linux-x64" ]; then
+            mv FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb dist/
+            mv FloconDesktop/composeApp/build/compose/binaries/main/rpm/*.rpm dist/
+            mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-linux-x64.jar
+          elif [ "${{ matrix.platform }}" = "windows-x64" ]; then
+            mv FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi dist/
+            mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-windows-x64.jar
+          fi
 
-      - name: Rename macOS arm64 dmg
-        if: matrix.os == 'macos-latest'
-        run: |
-          mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg FloconDesktop/composeApp/build/compose/binaries/main/dmg/macos-arm64.dmg
-
-      - name: Upload macOS arm64 artifact
-        if: matrix.os == 'macos-latest'
+      - name: Upload platform artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: macos-arm64-dmg
-          path: FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg
-
-      - name: Upload macOS x64 artifact
-        if: matrix.os == 'macos-15-intel'
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-x64-dmg
-          path: FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg
-
-      - name: Upload Windows artifact
-        if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-msi
-          path: FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi
-
-      - name: Upload Linux Release Jar
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-jar
-          path: FloconDesktop/composeApp/build/compose/jars/*.jar
-
-      - name: Upload macOS arm64 Release Jar
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-arm64-jar
-          path: FloconDesktop/composeApp/build/compose/jars/*.jar
-
-      - name: Upload macOS x64 Release Jar
-        if: matrix.os == 'macos-15-intel'
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-x64-jar
-          path: FloconDesktop/composeApp/build/compose/jars/*.jar
-
-      - name: Upload Windows Release Jar
-        if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-jar
-          path: FloconDesktop/composeApp/build/compose/jars/*.jar
+          name: desktop-${{ matrix.platform }}
+          path: dist/*
+          retention-days: 3
 
   release:
+    name: Publish Release
     needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-
-      # Download artifacts from all platforms
-      - name: Download Linux deb artifact
+      - name: Download all platform artifacts
         uses: actions/download-artifact@v4
         with:
-          name: linux-deb
+          path: release-assets
+          merge-multiple: true
 
-      - name: Download Linux rpm artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-rpm
+      - name: List downloaded artifacts
+        run: ls -la release-assets
 
-      - name: Download macOS arm64 artifact
-        uses: actions/download-artifact@v4
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v3
         with:
-          name: macos-arm64-dmg
-
-      - name: Download macOS x64 artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-x64-dmg
-
-      - name: Download Windows artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-msi
-
-      - name: Download Linux jar
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-jar
-      
-      - name: Download macOS arm64 jar
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-arm64-jar
-
-      - name: Download macOS x64 jar
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-x64-jar
-
-      - name: Download Windows jar
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-jar
-
-      # List downloaded artifacts
-      - name: Check downloaded artifacts
-        run: ls -R
-
-      # Create GitHub Release
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          generate_release_notes: true
-          files: |
-            *.deb
-            *.rpm
-            *.dmg
-            *.msi
-            *.jar
+          draft: ${{ inputs.draft || false }}
+          tag_name: ${{ inputs.version || github.ref_name }}
+          files: release-assets/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

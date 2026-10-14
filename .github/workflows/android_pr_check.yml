@@ -1,14 +1,24 @@
-name: Android Pull Request Check
+name: Android - Pull Request Check
+
 on:
   pull_request:
     branches: [ main ]
-    types: [opened, synchronize, reopened, ready_for_review] 
-  # Allows you to run this workflow manually from the Actions tab
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'FloconAndroid/**'
+      - '.github/workflows/android_pr_check.yml'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    name: Build FloconAndroid
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -23,6 +33,6 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
 
-      - name: Build with Gradle
+      - name: Run tests and assemble
         working-directory: FloconAndroid
-        run: ./gradlew assemble
+        run: ./gradlew test assemble
