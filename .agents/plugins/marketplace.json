@@ -1,0 +1,21 @@
+{
+  "name": "flocon",
+  "interface": {
+    "displayName": "Flocon"
+  },
+  "plugins": [
+    {
+      "name": "flocon",
+      "source": {
+        "source": "local",
+        "path": "./plugins/flocon"
+      },
+      "description": "Let your AI agent inspect and mock the network calls of your mobile app, and read its files, analytics events and databases through Flocon Desktop",
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
