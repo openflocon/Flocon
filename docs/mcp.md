@@ -168,6 +168,11 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `create_network_mock` | Creates a mock returning a body or throwing an exception, from scratch or from a captured call (`fromCallId`). |
 | `update_network_mock` | Updates some fields of a mock, or enables / disables it. |
 | `delete_network_mock` | Deletes a mock. |
+| `list_bad_network_configs` | Bad network configs of the app (latency, random errors) and the active one. |
+| `create_bad_network_config` | Creates a config: random latency, and errors (HTTP response or exception) triggered with a probability. Optionally active right away. |
+| `update_bad_network_config` | Updates some fields of a config. |
+| `set_active_bad_network_config` | Activates a config (only one at a time), or turns the simulation off when no `configId` is given. |
+| `delete_bad_network_config` | Deletes a config. |
 | `list_files` | Content of a directory of the app: `files`, `caches`, or the absolute path of a sub directory. |
 | `read_file` | Downloads a file of the app: text files returned as text (truncated if too long), images as images, metadata only for the other binary files. A copy is saved on your computer (`localPath`). |
 | `list_analytics_tables` | Analytics tables of the app: one per analytics SDK / tracker (ex: `amplitude`). |
@@ -200,6 +205,9 @@ Just ask your agent in natural language, it picks the tool and the filters. Some
 | *"Return an empty list of users, after 2 seconds"* | `create_network_mock` | `{"urlPattern": ".*/users", "method": "GET", "body": "[]", "delayMs": 2000}` |
 | *"Which mocks are enabled?"* | `list_network_mocks` | `{"onlyEnabled": true}` |
 | *"Disable this mock"* | `update_network_mock` | `{"mockId": "...", "enabled": false}` |
+| *"Simulate a slow network"* | `create_bad_network_config` | `{"name": "Slow", "latencyTriggerProbability": 1, "minLatencyMs": 2000, "maxLatencyMs": 5000, "enabled": true}` |
+| *"Make 30% of the calls fail with a timeout or a 503"* | `create_bad_network_config` | `{"name": "Flaky", "errorProbability": 0.3, "errors": [{"exceptionClassPath": "java.net.SocketTimeoutException"}, {"httpCode": 503}], "enabled": true}` |
+| *"Turn the bad network off"* | `set_active_bad_network_config` | `{}` |
 | *"What's in the cache of the app?"* | `list_files` | `{"path": "caches"}` |
 | *"Show me the content of this config file"* | `read_file` | `{"path": "/data/user/0/io.flocon.sample/files/config.json"}` |
 | *"Which analytics events were sent since the launch?"* | `count_analytics_events` | `{}` |
@@ -243,6 +251,19 @@ Arguments of `create_network_mock` and `update_network_mock`:
 | `displayName` | Name displayed in Flocon. |
 
 The mocks are sent to the app as soon as they change: no need to restart it.
+
+Arguments of `create_bad_network_config` and `update_bad_network_config`:
+
+| Argument | Description |
+|---|---|
+| `name` | Name displayed in Flocon. |
+| `latencyTriggerProbability` | Chance, from 0 to 1, that a request is delayed. |
+| `minLatencyMs`, `maxLatencyMs` | Range of the random delay, in milliseconds. |
+| `errorProbability` | Chance, from 0 to 1, that a request fails (needs at least one error). |
+| `errors` | Possible errors, one is picked per failure according to its `weight` (default 1). Each is either `httpCode` (+ `body`, `contentType`) or `exceptionClassPath`. |
+| `enabled` | *(create only)* Activates the config right away, the others are deactivated. |
+
+Only one config is active at a time per app, and it is sent to the app as soon as it changes.
 
 ---
 

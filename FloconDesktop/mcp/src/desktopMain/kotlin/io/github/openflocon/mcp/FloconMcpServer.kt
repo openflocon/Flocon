@@ -76,6 +76,9 @@ class FloconMcpServer(
             - Network mocks make the app receive a fake response (or exception) instead of calling the server:
               create_network_mock with fromCallId starts from a captured call. Prefer disabling a mock
               (update_network_mock) over deleting it, and tell the user which mocks you left enabled.
+            - Bad network simulation: list_bad_network_configs shows the configs (latency, random errors) and the active one,
+              set_active_bad_network_config turns one on (only one at a time) or off. Always turn the simulation off
+              when you are done and tell the user which config you left active.
             - Files of the app: list_files browses the "files" / "caches" directories, read_file returns a file content.
             - Analytics events sent by the app: count_analytics_events gives an overview per event name,
               list_analytics_events the events with their properties.
