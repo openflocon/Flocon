@@ -133,6 +133,15 @@ class NetworkMocksMcpToolProviderTest {
     }
 
     @Test
+    fun `create a disabled mock`() = runBlocking {
+        val result = server.callTool("create_network_mock", mapOf("urlPattern" to ".*", "enabled" to false)).json()
+
+        assertTrue(result["message"]!!.jsonPrimitive.content.contains("disabled"))
+        assertFalse(mocksRepository.mocksOf(sample).single().isEnabled)
+        assertEquals(emptyList(), mocksRepository.sentToDevice[sample])
+    }
+
+    @Test
     fun `invalid arguments are errors`() = runBlocking {
         val invalidRegex = server.callTool("create_network_mock", mapOf("urlPattern" to "[a-"))
         assertEquals(true, invalidRegex.isError)

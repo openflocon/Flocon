@@ -126,10 +126,10 @@ internal class NetworkMocksMcpToolProvider(
         val isApplied = sendMocksToConnectedApps(target)
 
         return NetworkMockChangeMcpResult(
-            message = if (isApplied) {
-                "Mock created, it is applied by the app from now on."
-            } else {
-                "Mock created, it will be applied when the app connects to Flocon."
+            message = when {
+                !mock.isEnabled -> "Mock created, disabled: enable it with update_network_mock."
+                isApplied -> "Mock created, it is applied by the app from now on."
+                else -> "Mock created, it will be applied when the app connects to Flocon."
             },
             mock = mock.toMcpModel(maxBodyChars = null),
         )
