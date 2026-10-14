@@ -18,10 +18,10 @@ internal fun checkReadOnlySql(sql: String) {
     val statement = statements.single()
 
     when (statement.firstWord().uppercase()) {
-        "SELECT", "EXPLAIN" -> Unit
+        SELECT, EXPLAIN -> Unit
         PRAGMA -> checkReadOnlyPragma(statement)
-        "WITH" -> throw McpToolException("Common table expressions (WITH) are not supported, use a sub query in a SELECT.")
-        else -> throw McpToolException("Only read only queries are allowed: SELECT, PRAGMA (without value) or EXPLAIN.")
+        WITH -> throw McpToolException("Common table expressions ($WITH) are not supported, use a sub query in a $SELECT.")
+        else -> throw McpToolException("Only read only queries are allowed: $SELECT, $PRAGMA (without value) or $EXPLAIN.")
     }
 }
 
@@ -31,17 +31,21 @@ internal fun checkReadOnlySql(sql: String) {
 private fun checkReadOnlyPragma(statement: String) {
     val outsideQuotes = statement.withoutQuotedParts()
     if (outsideQuotes.contains('=')) {
-        throw McpToolException("PRAGMA can only be read, not assigned.")
+        throw McpToolException("$PRAGMA can only be read, not assigned.")
     }
     if (outsideQuotes.contains('(')) {
         val name = outsideQuotes.trim().substring(PRAGMA.length).substringBefore('(').trim().substringAfterLast('.').lowercase()
         if (name !in pragmasWithArgument) {
-            throw McpToolException("PRAGMA $name(...) modifies the database, only these pragmas accept an argument: $pragmasWithArgument")
+            throw McpToolException("$PRAGMA $name(...) modifies the database, only these pragmas accept an argument: $pragmasWithArgument")
         }
     }
 }
 
+// the first keyword of a statement, uppercase
+private const val SELECT = "SELECT"
+private const val EXPLAIN = "EXPLAIN"
 private const val PRAGMA = "PRAGMA"
+private const val WITH = "WITH"
 
 private val pragmasWithArgument = setOf(
     "table_info",
@@ -61,7 +65,7 @@ private fun String.firstWord(): String = trim().takeWhile { !it.isWhitespace() &
 /**
  * Splits on the `;` that are not in a string / identifier / comment, ignores the empty statements
  */
-private fun String.splitStatements(): List<String> {
+internal fun String.splitStatements(): List<String> {
     val statements = mutableListOf<String>()
     val current = StringBuilder()
     forEachOutsideQuotes(
@@ -79,14 +83,17 @@ private fun String.splitStatements(): List<String> {
     return statements.filter { it.isNotBlank() }
 }
 
-private fun String.withoutQuotedParts(): String = buildString {
+internal fun String.withoutQuotedParts(): String = buildString {
     this@withoutQuotedParts.forEachOutsideQuotes(onQuoted = {}, onCode = { append(it) })
 }
 
 /**
- * Handles 'strings', "identifiers", `identifiers`, [identifiers], -- comments and /* comments */
+ * Calls [onCode] for each char of the SQL code, and [onQuoted] for each char of
+ * 'strings', "identifiers", `identifiers`, [identifiers], -- comments and /* comments */, delimiters included.
+ *
+ * A quote or a comment that is not closed lasts until the end.
  */
-private inline fun String.forEachOutsideQuotes(
+internal inline fun String.forEachOutsideQuotes(
     onQuoted: (Char) -> Unit,
     onCode: (Char) -> Unit,
 ) {
