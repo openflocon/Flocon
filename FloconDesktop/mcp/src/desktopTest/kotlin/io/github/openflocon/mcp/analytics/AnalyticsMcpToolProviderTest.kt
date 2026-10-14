@@ -15,6 +15,7 @@ import io.github.openflocon.mcp.McpTestServer
 import io.github.openflocon.mcp.app
 import io.github.openflocon.mcp.json
 import io.github.openflocon.mcp.targetResolver
+import io.github.openflocon.mcp.text
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -119,6 +120,14 @@ class AnalyticsMcpToolProviderTest {
 
         assertEquals(3, result["returned"]!!.jsonPrimitive.int)
         assertEquals(true, result["hasMore"]!!.jsonPrimitive.boolean)
+    }
+
+    @Test
+    fun `invalid arguments are errors`() = runBlocking {
+        val result = server.callTool("list_analytics_events", mapOf("order" to "random"))
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("random"))
     }
 
     @Test
