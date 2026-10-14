@@ -4,43 +4,39 @@ import io.modelcontextprotocol.kotlin.sdk.server.Server
 import io.modelcontextprotocol.kotlin.sdk.types.CallToolRequest
 import io.modelcontextprotocol.kotlin.sdk.types.ToolAnnotations
 import io.modelcontextprotocol.kotlin.sdk.types.ToolSchema
+import kotlinx.schema.generator.json.FunctionCallingSchemaConfig
+import kotlinx.schema.generator.json.TypeGraphToFunctionCallingSchemaTransformer
+import kotlinx.schema.generator.json.serialization.SerializationClassSchemaIntrospector
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialInfo
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PolymorphicKind
-import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.SerialKind
-import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.add
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.serializer
 
 /**
- * The arguments of a tool are a @[Serializable] class: its JSON schema is generated from it, and the arguments are decoded into it.
+ * The arguments of a tool are a @[Serializable] class: its JSON schema is generated from it by kotlinx-schema,
+ * and the arguments are decoded into it.
  *
  * - a property without default value is required
- * - [McpDescription] and [McpRange] describe the property to the AI agent
+ * - [McpDescription] describes the property to the AI agent
  * - enums are listed with their [SerialName]
  */
 @OptIn(ExperimentalSerializationApi::class)
 @SerialInfo
 @Target(AnnotationTarget.PROPERTY)
 annotation class McpDescription(val value: String)
-
-@OptIn(ExperimentalSerializationApi::class)
-@SerialInfo
-@Target(AnnotationTarget.PROPERTY)
-annotation class McpRange(
-    val min: Int = Int.MIN_VALUE,
-    val max: Int = Int.MAX_VALUE,
-)
 
 /**
  * Arguments of the tools targeting a device / app, by default the one selected in Flocon
@@ -86,6 +82,30 @@ internal inline fun <reified I : Any, reified O> Server.addTypedTool(
 
 internal inline fun <reified I : Any> toolSchemaOf(): ToolSchema = serializer<I>().descriptor.toToolSchema()
 
+/**
+ * Function calling schema: flat, without `$defs` / `$ref` that some MCP clients don't resolve
+ */
+private val schemaGenerator = TypeGraphToFunctionCallingSchemaTransformer(
+    // only the properties without default value are required
+    config = FunctionCallingSchemaConfig(strictMode = false),
+)
+
+private val schemaIntrospector = SerializationClassSchemaIntrospector(
+    config = SerializationClassSchemaIntrospector.Config(
+        descriptionExtractor = { annotations -> annotations.filterIsInstance<McpDescription>().firstOrNull()?.value },
+    ),
+)
+
+internal fun SerialDescriptor.toToolSchema(): ToolSchema {
+    val parameters = Json.encodeToJsonElement(
+        schemaGenerator.transform(schemaIntrospector.introspect(this), serialName).parameters,
+    ).jsonObject
+    return ToolSchema(
+        properties = parameters["properties"]?.withoutNullTypes()?.jsonObject,
+        required = parameters["required"]?.jsonArray?.map { it.jsonPrimitive.content }?.takeIf { it.isNotEmpty() },
+    )
+}
+
 internal val mcpInputJson = Json {
     ignoreUnknownKeys = true
     isLenient = true
@@ -104,70 +124,18 @@ internal inline fun <reified I : Any> CallToolRequest.decodeArguments(): I {
     }
 }
 
-@OptIn(ExperimentalSerializationApi::class)
-internal fun SerialDescriptor.toToolSchema(): ToolSchema {
-    require(kind == StructureKind.CLASS || kind == StructureKind.OBJECT) { "$serialName must be a class" }
-    return ToolSchema(
-        properties = propertiesSchema(),
-        required = requiredProperties().takeIf { it.isNotEmpty() },
+/**
+ * `"type": ["string", "null"]` becomes `"type": "string"`: Gemini rejects the union types,
+ * and the optional properties are already absent from `required`
+ */
+private fun JsonElement.withoutNullTypes(): JsonElement = when (this) {
+    is JsonObject -> JsonObject(
+        mapValues { (key, value) ->
+            val types = (value as? JsonArray)?.filterNot { it.jsonPrimitive.contentOrNull == "null" }
+            if (key == "type" && types?.size == 1) types.single() else value.withoutNullTypes()
+        },
     )
-}
 
-@OptIn(ExperimentalSerializationApi::class)
-private fun SerialDescriptor.requiredProperties(): List<String> = (0 until elementsCount)
-    .filterNot { isElementOptional(it) }
-    .map { getElementName(it) }
-
-@OptIn(ExperimentalSerializationApi::class)
-private fun SerialDescriptor.propertiesSchema(): JsonObject = buildJsonObject {
-    for (index in 0 until elementsCount) {
-        val annotations = getElementAnnotations(index)
-        put(
-            getElementName(index),
-            getElementDescriptor(index).schema(
-                description = annotations.filterIsInstance<McpDescription>().firstOrNull()?.value,
-                range = annotations.filterIsInstance<McpRange>().firstOrNull(),
-            ),
-        )
-    }
-}
-
-@OptIn(ExperimentalSerializationApi::class)
-private fun SerialDescriptor.schema(
-    description: String? = null,
-    range: McpRange? = null,
-): JsonObject = buildJsonObject {
-    when (val kind = kind) {
-        PrimitiveKind.STRING, PrimitiveKind.CHAR -> put("type", "string")
-        PrimitiveKind.BOOLEAN -> put("type", "boolean")
-        PrimitiveKind.BYTE, PrimitiveKind.SHORT, PrimitiveKind.INT, PrimitiveKind.LONG -> put("type", "integer")
-        PrimitiveKind.FLOAT, PrimitiveKind.DOUBLE -> put("type", "number")
-        SerialKind.ENUM -> {
-            put("type", "string")
-            putJsonArray("enum") { (0 until elementsCount).forEach { add(getElementName(it)) } }
-        }
-
-        StructureKind.LIST -> {
-            put("type", "array")
-            put("items", getElementDescriptor(0).schema())
-        }
-
-        StructureKind.MAP -> {
-            put("type", "object")
-            put("additionalProperties", getElementDescriptor(1).schema())
-        }
-
-        StructureKind.CLASS, StructureKind.OBJECT -> {
-            put("type", "object")
-            put("properties", propertiesSchema())
-            requiredProperties().takeIf { it.isNotEmpty() }?.let { required ->
-                putJsonArray("required") { required.forEach { add(it) } }
-            }
-        }
-
-        is PolymorphicKind, SerialKind.CONTEXTUAL -> error("$serialName: $kind arguments are not supported")
-    }
-    description?.let { put("description", it) }
-    range?.min?.takeIf { it != Int.MIN_VALUE }?.let { put("minimum", it) }
-    range?.max?.takeIf { it != Int.MAX_VALUE }?.let { put("maximum", it) }
+    is JsonArray -> JsonArray(map { it.withoutNullTypes() })
+    is JsonPrimitive -> this
 }

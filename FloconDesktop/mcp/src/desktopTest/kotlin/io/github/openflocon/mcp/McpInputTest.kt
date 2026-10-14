@@ -22,7 +22,6 @@ class McpInputTest {
         @McpDescription("The id.")
         val id: String,
         @McpDescription("Max items.")
-        @McpRange(min = 1, max = 10)
         val limit: Int = 5,
         val enabled: Boolean? = null,
         val order: McpOrder = McpOrder.NewestFirst,
@@ -32,7 +31,7 @@ class McpInputTest {
     )
 
     @Test
-    fun `the schema is generated from the class`() {
+    fun `the schema is generated from the class, flat and without null types`() {
         val schema = toolSchemaOf<SampleInput>()
 
         assertEquals(listOf("id"), schema.required)
@@ -41,7 +40,7 @@ class McpInputTest {
                 """
                 {
                   "id": {"type": "string", "description": "The id."},
-                  "limit": {"type": "integer", "description": "Max items.", "minimum": 1, "maximum": 10},
+                  "limit": {"type": "integer", "description": "Max items."},
                   "enabled": {"type": "boolean"},
                   "order": {"type": "string", "enum": ["newest_first", "oldest_first"]},
                   "codes": {"type": "array", "items": {"type": "integer"}},

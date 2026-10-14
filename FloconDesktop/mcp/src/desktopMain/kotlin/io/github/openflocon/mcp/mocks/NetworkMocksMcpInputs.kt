@@ -2,7 +2,6 @@ package io.github.openflocon.mcp.mocks
 
 import io.github.openflocon.mcp.DEVICE_ID_DESCRIPTION
 import io.github.openflocon.mcp.McpDescription
-import io.github.openflocon.mcp.McpRange
 import io.github.openflocon.mcp.McpTargetArguments
 import io.github.openflocon.mcp.PACKAGE_NAME_DESCRIPTION
 import kotlinx.serialization.Serializable
@@ -16,7 +15,7 @@ private const val URL_PATTERN_DESCRIPTION =
     "Regex that must match the whole url of the request, query included. Ex: \".*/users/[0-9]+\" or \".*/login.*\"."
 private const val METHOD_DESCRIPTION = "HTTP method to match, ex: \"GET\", or \"$METHOD_WILDCARD\" for any method."
 private const val DISPLAY_NAME_DESCRIPTION = "Name displayed in Flocon."
-private const val HTTP_CODE_DESCRIPTION = "HTTP status code of the mocked response. Default 200."
+private const val HTTP_CODE_DESCRIPTION = "HTTP status code of the mocked response, from 100 to 599. Default 200."
 private const val BODY_DESCRIPTION = "Body of the mocked response."
 private const val MEDIA_TYPE_DESCRIPTION = "Media type of the mocked response body. Default \"$DEFAULT_MEDIA_TYPE\"."
 private const val HEADERS_DESCRIPTION = "Headers of the mocked response, ex: {\"Cache-Control\": \"no-cache\"}."
@@ -51,8 +50,7 @@ internal data class ListNetworkMocksInput(
 internal data class GetNetworkMockInput(
     @McpDescription(MOCK_ID_DESCRIPTION)
     val mockId: String,
-    @McpDescription("Bodies longer than this are truncated. Default $DEFAULT_MAX_BODY_CHARS.")
-    @McpRange(min = 100, max = MAX_BODY_CHARS)
+    @McpDescription("Bodies longer than this are truncated, from 100 to $MAX_BODY_CHARS. Default $DEFAULT_MAX_BODY_CHARS.")
     val maxBodyChars: Int = DEFAULT_MAX_BODY_CHARS,
 )
 
@@ -67,7 +65,6 @@ internal data class CreateNetworkMockInput(
     @McpDescription(DISPLAY_NAME_DESCRIPTION)
     val displayName: String? = null,
     @McpDescription(HTTP_CODE_DESCRIPTION)
-    @McpRange(min = 100, max = 599)
     override val httpCode: Int? = null,
     @McpDescription(BODY_DESCRIPTION)
     override val body: String? = null,
@@ -76,7 +73,6 @@ internal data class CreateNetworkMockInput(
     @McpDescription(HEADERS_DESCRIPTION)
     override val headers: Map<String, String>? = null,
     @McpDescription(DELAY_MS_DESCRIPTION)
-    @McpRange(min = 0)
     override val delayMs: Long? = null,
     @McpDescription(EXCEPTION_CLASS_PATH_DESCRIPTION)
     override val exceptionClassPath: String? = null,
@@ -102,7 +98,6 @@ internal data class UpdateNetworkMockInput(
     @McpDescription(DISPLAY_NAME_DESCRIPTION)
     val displayName: String? = null,
     @McpDescription(HTTP_CODE_DESCRIPTION)
-    @McpRange(min = 100, max = 599)
     override val httpCode: Int? = null,
     @McpDescription(BODY_DESCRIPTION)
     override val body: String? = null,
@@ -111,7 +106,6 @@ internal data class UpdateNetworkMockInput(
     @McpDescription(HEADERS_DESCRIPTION)
     override val headers: Map<String, String>? = null,
     @McpDescription(DELAY_MS_DESCRIPTION)
-    @McpRange(min = 0)
     override val delayMs: Long? = null,
     @McpDescription(EXCEPTION_CLASS_PATH_DESCRIPTION)
     override val exceptionClassPath: String? = null,

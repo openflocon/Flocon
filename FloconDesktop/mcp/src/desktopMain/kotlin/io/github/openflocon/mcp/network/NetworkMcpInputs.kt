@@ -4,7 +4,6 @@ import io.github.openflocon.domain.network.models.SearchScope
 import io.github.openflocon.mcp.DEVICE_ID_DESCRIPTION
 import io.github.openflocon.mcp.McpDescription
 import io.github.openflocon.mcp.McpOrder
-import io.github.openflocon.mcp.McpRange
 import io.github.openflocon.mcp.McpTargetArguments
 import io.github.openflocon.mcp.PACKAGE_NAME_DESCRIPTION
 import kotlinx.serialization.Serializable
@@ -38,8 +37,7 @@ internal data class ListNetworkCallsInput(
     val includeOldSessions: Boolean = false,
     @McpDescription("Sort order on the start time. Default newest_first.")
     val order: McpOrder = McpOrder.NewestFirst,
-    @McpDescription("Maximum number of calls returned. Default $DEFAULT_LIMIT.")
-    @McpRange(min = 1, max = MAX_LIMIT)
+    @McpDescription("Maximum number of calls returned, from 1 to $MAX_LIMIT. Default $DEFAULT_LIMIT.")
     val limit: Int = DEFAULT_LIMIT,
 ) : McpTargetArguments
 
@@ -51,8 +49,7 @@ internal data class GetNetworkCallInput(
     override val deviceId: String? = null,
     @McpDescription(PACKAGE_NAME_DESCRIPTION)
     override val packageName: String? = null,
-    @McpDescription("Bodies longer than this are truncated. Default $DEFAULT_MAX_BODY_CHARS.")
-    @McpRange(min = 100, max = MAX_BODY_CHARS)
+    @McpDescription("Bodies longer than this are truncated, from 100 to $MAX_BODY_CHARS. Default $DEFAULT_MAX_BODY_CHARS.")
     val maxBodyChars: Int = DEFAULT_MAX_BODY_CHARS,
     @McpDescription("Include the equivalent cURL command. Default true.")
     val includeCurl: Boolean = true,
@@ -70,7 +67,6 @@ internal data class SearchNetworkCallsInput(
     override val packageName: String? = null,
     @McpDescription("Include calls from previous app launches. Default true.")
     val includeOldSessions: Boolean = true,
-    @McpDescription("Maximum number of calls returned. Default $DEFAULT_LIMIT.")
-    @McpRange(min = 1, max = MAX_LIMIT)
+    @McpDescription("Maximum number of calls returned, from 1 to $MAX_LIMIT. Default $DEFAULT_LIMIT.")
     val limit: Int = DEFAULT_LIMIT,
 ) : McpTargetArguments
