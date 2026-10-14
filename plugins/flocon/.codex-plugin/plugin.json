@@ -1,0 +1,24 @@
+{
+  "name": "flocon",
+  "version": "1.0.0",
+  "description": "Connects your AI agent to the Flocon Desktop MCP server: network calls, mocks, files, analytics events and databases of your mobile app",
+  "author": { "name": "openflocon", "url": "https://github.com/openflocon" },
+  "homepage": "https://openflocon.github.io/Flocon/mcp",
+  "repository": "https://github.com/openflocon/Flocon",
+  "keywords": ["flocon", "mcp", "android", "ios", "kmp", "debug", "network"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Flocon",
+    "shortDescription": "Debug your mobile app with Flocon",
+    "longDescription": "Inspect and mock the network calls of your mobile app, and read its files, analytics events and databases through Flocon Desktop. Flocon Desktop must be running.",
+    "developerName": "openflocon",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "websiteURL": "https://openflocon.github.io/Flocon/",
+    "defaultPrompt": [
+      "List the failed network calls of my app and explain why they fail",
+      "Make the login call return a 500 so I can check the error screen",
+      "Check in the database that the user I just created is saved correctly"
+    ]
+  }
+}

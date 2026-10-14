@@ -64,7 +64,9 @@ Declare the Flocon server in your agent configuration. Flocon Desktop must be ru
 
 === "Cursor"
 
-    In `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global):
+    With the Flocon plugin: in the Cursor dashboard, open **Plugins & MCPs → Add Marketplace → Import from Repo**, paste `https://github.com/openflocon/Flocon`, then install **flocon** from **Customize**.
+
+    Or manually, in `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global):
 
     ```json
     {
@@ -78,7 +80,15 @@ Declare the Flocon server in your agent configuration. Flocon Desktop must be ru
 
 === "Codex"
 
-    In `~/.codex/config.toml`:
+    With the Flocon plugin:
+
+    ```bash
+    codex plugin marketplace add openflocon/Flocon
+    ```
+
+    Then install **flocon** from the `/plugins` browser.
+
+    Or manually, in `~/.codex/config.toml`:
 
     ```toml
     [mcp_servers.flocon]
@@ -86,6 +96,14 @@ Declare the Flocon server in your agent configuration. Flocon Desktop must be ru
     ```
 
 === "Gemini CLI"
+
+    With the Flocon extension, from a clone of this repository:
+
+    ```bash
+    gemini extensions install ./plugins/flocon
+    ```
+
+    Or manually:
 
     ```bash
     gemini mcp add --transport http flocon http://localhost:9042/mcp
@@ -107,6 +125,14 @@ Declare the Flocon server in your agent configuration. Flocon Desktop must be ru
         Gemini CLI uses `httpUrl` for Streamable HTTP servers: `url` is for the older SSE transport.
 
 === "Antigravity"
+
+    With the Flocon plugin:
+
+    ```bash
+    agy plugin install https://github.com/openflocon/Flocon/tree/main/plugins/flocon
+    ```
+
+    Or manually:
 
     In the Agent panel, open **⋯ → MCP Servers → Manage MCP Servers → View raw config**, and add:
 
