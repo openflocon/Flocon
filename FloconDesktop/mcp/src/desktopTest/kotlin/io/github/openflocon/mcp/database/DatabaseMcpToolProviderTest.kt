@@ -143,6 +143,15 @@ class DatabaseMcpToolProviderTest {
     }
 
     @Test
+    fun `query_database requires the sql`() = runBlocking {
+        val result = server.callTool("query_database", mapOf("databaseId" to "/data/databases/app.db"))
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("sql"))
+        assertTrue(databaseRepository.executedQueries.isEmpty())
+    }
+
+    @Test
     fun `query_database returns the SQL errors`() = runBlocking {
         val result = server.callTool("query_database", mapOf("databaseId" to "/data/databases/app.db", "sql" to "SELECT * FROM unknown"))
 
