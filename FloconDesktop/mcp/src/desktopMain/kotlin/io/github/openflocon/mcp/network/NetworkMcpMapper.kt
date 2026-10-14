@@ -6,12 +6,22 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel.R
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel.Response
 import io.github.openflocon.domain.network.models.byteSize
 import io.github.openflocon.domain.network.models.httpCode
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 
+@Serializable
 internal enum class NetworkCallType(val value: String) {
+    @SerialName("http")
     Http("http"),
+
+    @SerialName("graphql")
     GraphQl("graphql"),
+
+    @SerialName("grpc")
     Grpc("grpc"),
+
+    @SerialName("websocket")
     WebSocket("websocket"),
 }
 

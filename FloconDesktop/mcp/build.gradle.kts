@@ -27,6 +27,7 @@ kotlin {
             implementation(libs.ktor.server.core)
             implementation(libs.ktor.server.netty)
             implementation(libs.mcp.sdk.server)
+            implementation(libs.kotlinx.schema.generator.json)
         }
 
         desktopTest.dependencies {

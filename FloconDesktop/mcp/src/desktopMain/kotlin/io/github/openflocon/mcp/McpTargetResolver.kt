@@ -31,6 +31,11 @@ class McpTargetResolver(
             ?: throw McpToolException("App '$packageName' not found on device '$deviceId'. ${availableTargetsHint()}")
     }
 
+    internal suspend fun resolve(arguments: McpTargetArguments): DeviceIdAndPackageNameDomainModel = resolve(
+        deviceId = arguments.deviceId?.takeIf { it.isNotBlank() },
+        packageName = arguments.packageName?.takeIf { it.isNotBlank() },
+    )
+
     /**
      * All the device / app couples known by Flocon, the current one first
      */
@@ -84,3 +89,5 @@ internal fun DeviceAppDomainModel.toTarget(deviceId: String) = DeviceIdAndPackag
 
 internal fun DeviceIdAndPackageNameDomainModel.isSameApp(other: DeviceIdAndPackageNameDomainModel): Boolean =
     deviceId == other.deviceId && packageName == other.packageName
+
+internal fun McpTargetArguments.hasExplicitTarget(): Boolean = !deviceId.isNullOrBlank() || !packageName.isNullOrBlank()
