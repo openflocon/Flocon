@@ -155,13 +155,7 @@ Declare the Flocon server in your agent configuration. Flocon Desktop must be ru
 
 ## Examples
 
-Just ask your agent in plain English. Here is what you can ask and how the agent responds:
-
-| You ask | Agent response |
-|---|---|
-## Examples
-
-Just ask your agent in plain English. Here is what you can ask and how the agent responds:
+Just ask your agent in plain text. Here is what you can ask and how the agent responds:
 
 | You ask | Agent response |
 |---|---|
