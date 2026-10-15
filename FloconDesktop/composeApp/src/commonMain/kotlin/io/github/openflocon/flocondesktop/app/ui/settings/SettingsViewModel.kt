@@ -15,10 +15,13 @@ import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUse
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.domain.settings.usecase.SetFontSizeMultiplierUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
+import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
 import io.github.openflocon.flocondesktop.common.log.LogManager
 import io.github.openflocon.flocondesktop.common.log.toUiModel
+import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
+import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +43,9 @@ class SettingsViewModel(
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val dispatcherProvider: DispatcherProvider,
     private val logManager: LogManager,
+    private val navigationState: MainFloconNavigationState,
+    private val startAdbForwardUseCase: StartAdbForwardUseCase,
+    private val messagesServerDelegate: MessagesServerDelegate,
 ) : ViewModel() {
 
     private val _adbPathInput = MutableStateFlow("")
@@ -51,12 +57,14 @@ class SettingsViewModel(
         observeThemeUseCase(),
         logManager.logs,
         settingsRepository.adbForwardStatus,
-    ) { multiplier, theme, logs, forwardStatus ->
+        messagesServerDelegate.serverError,
+    ) { multiplier, theme, logs, forwardStatus, serverErrorMsg ->
         SettingsUiState(
             fontSizeMultiplier = multiplier,
             theme = theme,
             logs = logs.map { it.toUiModel() }.toImmutableList(),
             adbForwardStatus = forwardStatus,
+            serverError = serverErrorMsg,
         )
     }
         .stateIn(
@@ -66,15 +74,25 @@ class SettingsViewModel(
                 fontSizeMultiplier = 1f,
                 theme = ThemeSetting.DEFAULT,
                 logs = persistentListOf(),
-                adbForwardStatus = AdbForwardStatus.UNKNOWN
+                adbForwardStatus = AdbForwardStatus.UNKNOWN,
+                serverError = null
             )
         )
 
     init {
         viewModelScope.launch {
-            // Utiliser GlobalScope ici pour la simplicité de l'exemple, mais préférez un scope dédié
             settingsRepository.adbPath.collect { path ->
-                path?.let { _adbPathInput.value = it }
+                path?.let {
+                    _adbPathInput.value = it
+                    testAdbUseCase(it).fold(
+                        doOnFailure = {
+                            initialSetupStateHolder.setRequiresInitialSetup()
+                        },
+                        doOnSuccess = {
+                            initialSetupStateHolder.setAdbIsWorking()
+                        }
+                    )
+                }
             }
         }
     }
@@ -104,7 +122,19 @@ class SettingsViewModel(
 
     fun saveAdbPath() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            saveAdb()
+            val path = adbPathInput.value
+            testAdbUseCase(path).fold(
+                doOnFailure = {
+                    feedbackDisplayer.displayMessage(
+                        message = "Cannot save: ADB path is invalid.",
+                        type = FeedbackDisplayer.MessageType.Error
+                    )
+                },
+                doOnSuccess = {
+                    saveAdb()
+                    feedbackDisplayer.displayMessage("ADB path saved successfully!")
+                }
+            )
         }
     }
 
@@ -117,11 +147,10 @@ class SettingsViewModel(
 
     fun testAdbPath() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            saveAdb()
             val path = adbPathInput.value
             Logger.d(TAG) { "Testing ADB path: $path" }
             logManager.d(TAG, "Testing ADB path: $path")
-            testAdbUseCase().fold(
+            testAdbUseCase(path).fold(
                 doOnFailure = {
                     val msg = "ADB test failed: ${it.message}"
                     Logger.e(TAG, it) { msg }
@@ -137,6 +166,7 @@ class SettingsViewModel(
                     logManager.d(TAG, "ADB test succeeded")
                     feedbackDisplayer.displayMessage(getString(Res.string.general_success))
                     initialSetupStateHolder.setAdbIsWorking()
+                    saveAdb()
                 },
             )
         }
@@ -144,6 +174,26 @@ class SettingsViewModel(
 
     fun clearLogs() {
         logManager.clear()
+    }
+
+    fun relaunchAdbAndServer() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            logManager.d(TAG, "User requested relaunch of ADB Server connection & websocket server")
+            messagesServerDelegate.relaunchServer()
+            startAdbForwardUseCase().fold(
+                doOnSuccess = {
+                    settingsRepository.setAdbForwardStatus(AdbForwardStatus.OK)
+                    feedbackDisplayer.displayMessage("Services relaunched successfully")
+                },
+                doOnFailure = {
+                    settingsRepository.setAdbForwardStatus(AdbForwardStatus.NOK)
+                    feedbackDisplayer.displayMessage(
+                        message = "ADB Port Forward failed: ${it.message}",
+                        type = FeedbackDisplayer.MessageType.Error
+                    )
+                }
+            )
+        }
     }
 
     companion object {

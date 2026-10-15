@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.List
@@ -44,6 +45,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +56,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
@@ -70,17 +73,19 @@ import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
+import io.github.openflocon.flocondesktop.common.utils.pickAdbFile
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSlider
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 // ---------------------------------------------------------------------------
@@ -117,6 +122,7 @@ fun SettingsScreen(
         onAction = viewModel::onAction,
         onClearLogs = viewModel::clearLogs,
         needsAdbSetup = needsAdbSetup,
+        onRelaunchAdbAndServer = viewModel::relaunchAdbAndServer,
     )
 }
 
@@ -134,6 +140,7 @@ private fun SettingsScreen(
     needsAdbSetup: Boolean,
     onAction: (SettingsAction) -> Unit,
     onClearLogs: () -> Unit,
+    onRelaunchAdbAndServer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by remember { mutableStateOf(SettingsTab.Adb) }
@@ -175,6 +182,8 @@ private fun SettingsScreen(
                     testAdbPath = testAdbPath,
                     needsAdbSetup = needsAdbSetup,
                     adbForwardStatus = uiState.adbForwardStatus,
+                    serverError = uiState.serverError,
+                    onRelaunchAdbAndServer = onRelaunchAdbAndServer,
                 )
 
                 SettingsTab.Appearance -> AppearancePane(
@@ -324,8 +333,11 @@ private fun AdbPane(
     testAdbPath: () -> Unit,
     needsAdbSetup: Boolean,
     adbForwardStatus: AdbForwardStatus,
+    serverError: String?,
+    onRelaunchAdbAndServer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val scope = rememberCoroutineScope()
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
@@ -335,7 +347,49 @@ private fun AdbPane(
             icon = Icons.Outlined.Settings,
             description = "Flocon communicates with Android devices using the Android Debug Bridge (ADB). Set the path to your adb binary below."
         ) {
-            // Setup alert or status
+            Text(
+                text = "ADB Executable Path",
+                style = FloconTheme.typography.labelSmall,
+                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f)
+            )
+
+            FloconTextFieldWithoutM3(
+                value = adbPathText,
+                onValueChange = onAdbPathChanged,
+                placeholder = defaultPlaceHolder("Eg: /Users/youruser/Library/Android/sdk/platform-tools/adb"),
+                containerColor = FloconTheme.colorPalette.secondary,
+                contentPadding = PaddingValues(12.dp),
+                trailingComponent = {
+                    FloconIconButton(
+                        onClick = {
+                            scope.launch {
+                                pickAdbFile()?.let { onAdbPathChanged(it) }
+                            }
+                        }
+                    ) {
+                        FloconIcon(
+                            imageVector = Icons.Outlined.FolderOpen,
+                            tint = FloconTheme.colorPalette.onSecondary
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SettingsButton(
+                    text = stringResource(Res.string.general_save),
+                    onClick = saveAdbPath,
+                )
+                SettingsButton(
+                    text = stringResource(Res.string.settings_test),
+                    onClick = testAdbPath,
+                )
+            }
+
+            Spacer(Modifier.height(4.dp))
+
+            // Setup alert or status at the bottom
             if (needsAdbSetup) {
                 Row(
                     modifier = Modifier
@@ -381,73 +435,111 @@ private fun AdbPane(
                     )
                 }
             }
-
-            Spacer(Modifier.height(4.dp))
-
-            Text(
-                text = "ADB Executable Path",
-                style = FloconTheme.typography.labelSmall,
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f)
-            )
-
-            FloconTextFieldWithoutM3(
-                value = adbPathText,
-                onValueChange = onAdbPathChanged,
-                placeholder = defaultPlaceHolder("Eg: /Users/youruser/Library/Android/sdk/platform-tools/adb"),
-                containerColor = FloconTheme.colorPalette.secondary,
-                contentPadding = PaddingValues(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SettingsButton(
-                    text = stringResource(Res.string.general_save),
-                    onClick = saveAdbPath,
-                )
-                SettingsButton(
-                    text = stringResource(Res.string.settings_test),
-                    onClick = testAdbPath,
-                )
-            }
         }
 
         SettingsCard(
-            title = "ADB Reverse Port Forwarding",
+            title = "ADB Health Status",
             icon = Icons.Outlined.Cable,
-            description = "Flocon runs a local server that communicates with the daemon on the device. Reverse port forwarding enables high-throughput data transfer (logs, preferences, screenshots)."
+            description = "Flocon runs a local server and uses ADB reverse port forwarding to transfer data (logs, preferences, screenshots) from your Android device."
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(FloconTheme.shapes.small)
-                    .background(FloconTheme.colorPalette.secondary)
-                    .padding(12.dp)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                AdbForwardStatusBadge(status = adbForwardStatus)
+                // Status 1: Local Server
+                val serverStarted = serverError == null
+                val serverBgColor = if (serverStarted) FloconTheme.colorPalette.secondary else FloconTheme.colorPalette.error.copy(alpha = 0.12f)
+                val serverTextColor = if (serverStarted) FloconTheme.colorPalette.onPrimary else FloconTheme.colorPalette.error
+                val serverBadgeBgColor =
+                    if (serverStarted) FloconTheme.colorPalette.accent.copy(alpha = 0.2f) else FloconTheme.colorPalette.error.copy(alpha = 0.2f)
+                val serverBadgeTextColor = if (serverStarted) FloconTheme.colorPalette.onAccent else FloconTheme.colorPalette.error
 
-                Text(
-                    text = when (adbForwardStatus) {
-                        AdbForwardStatus.OK -> "Reverse port forwarding is active and healthy."
-                        AdbForwardStatus.NOK -> "Connection failed. Please ensure ADB is configured correctly and your device is connected."
-                        AdbForwardStatus.UNKNOWN -> "Status unknown. Waiting for device or forwarding loop to initialize."
-                    },
-                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.8f),
-                    style = FloconTheme.typography.bodySmall,
-                    modifier = Modifier.weight(1f)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(FloconTheme.shapes.small)
+                        .background(serverBgColor)
+                        .padding(12.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier
+                            .clip(FloconTheme.shapes.small)
+                            .background(serverBadgeBgColor)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        FloconIcon(
+                            imageVector = if (serverStarted) Icons.Outlined.Check else Icons.Outlined.ErrorOutline,
+                            tint = serverBadgeTextColor,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Text(
+                            text = if (serverStarted) "STARTED" else "FAILED",
+                            color = serverBadgeTextColor,
+                            style = FloconTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Text(
+                        text = if (serverStarted) "Local WebSocket server is running successfully on port 9023." else serverError
+                            ?: "Local server failed to start.",
+                        color = serverTextColor,
+                        style = FloconTheme.typography.bodySmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                // Status 2: ADB Reverse Port Forwarding
+                val forwardBgColor = when (adbForwardStatus) {
+                    AdbForwardStatus.NOK -> FloconTheme.colorPalette.error.copy(alpha = 0.12f)
+                    else -> FloconTheme.colorPalette.secondary
+                }
+                val forwardTextColor = when (adbForwardStatus) {
+                    AdbForwardStatus.NOK -> FloconTheme.colorPalette.error
+                    AdbForwardStatus.UNKNOWN -> FloconTheme.colorPalette.onSecondary.copy(alpha = 0.8f)
+                    else -> FloconTheme.colorPalette.onPrimary
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(FloconTheme.shapes.small)
+                        .background(forwardBgColor)
+                        .padding(12.dp)
+                ) {
+                    AdbForwardStatusBadge(status = adbForwardStatus)
+
+                    Text(
+                        text = when (adbForwardStatus) {
+                            AdbForwardStatus.OK -> "Reverse port forwarding is active and healthy."
+                            AdbForwardStatus.NOK -> "Connection failed. Please ensure ADB is configured correctly and your device is connected."
+                            AdbForwardStatus.UNKNOWN -> "Status unknown. Waiting for device or forwarding loop to initialize."
+                        },
+                        color = forwardTextColor,
+                        style = FloconTheme.typography.bodySmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                // Relaunch / Retry Button
+                FloconButton(
+                    onClick = onRelaunchAdbAndServer,
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(
+                        text = "Relaunch Services",
+                        style = FloconTheme.typography.labelMedium
+                    )
+                }
             }
         }
     }
 }
-
-private data class BadgeTheme(
-    val label: String,
-    val bgColor: Color,
-    val textColor: Color,
-    val icon: ImageVector
-)
 
 @Composable
 private fun AdbForwardStatusBadge(
@@ -658,6 +750,17 @@ private fun LogsPane(
     }
 }
 
+private data class BadgeTheme(
+    val label: String,
+    val bgColor: Color,
+    val textColor: Color,
+    val icon: ImageVector
+)
+
+// ---------------------------------------------------------------------------
+// Shared helpers
+// ---------------------------------------------------------------------------
+
 @Composable
 private fun AboutPane(
     modifier: Modifier = Modifier,
@@ -847,6 +950,7 @@ private fun SettingsScreenPreview() {
             onAction = {},
             onClearLogs = {},
             needsAdbSetup = false,
+            onRelaunchAdbAndServer = {},
         )
     }
 }
@@ -866,6 +970,7 @@ private fun SettingsScreenPreview_needsAdbSetup() {
             onAction = {},
             onClearLogs = {},
             needsAdbSetup = true,
+            onRelaunchAdbAndServer = {},
         )
     }
 }
@@ -884,6 +989,7 @@ private fun SettingsScreen_LogsPreview() {
             onAction = {},
             onClearLogs = {},
             needsAdbSetup = false,
+            onRelaunchAdbAndServer = {},
         )
     }
 }
