@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,22 +33,24 @@ fun StatusView(
         when (status.status) {
             NetworkStatusUi.Status.SUCCESS,
             NetworkStatusUi.Status.ERROR,
-            NetworkStatusUi.Status.EXCEPTION -> BasicText(
-                text = status.text,
-                autoSize = TextAutoSize.StepBased(
-                    maxFontSize = textSize,
-                    minFontSize = 8.sp,
-                ),
-                maxLines = 1,
-                style = FloconTheme.typography.labelSmall.copy(
-                    color = when (status.status) {
-                        NetworkStatusUi.Status.SUCCESS -> successTagText
-                        NetworkStatusUi.Status.EXCEPTION -> FloconTheme.colorPalette.exceptions
-                        NetworkStatusUi.Status.ERROR -> FloconTheme.colorPalette.error
-                        else -> successTagText
-                    },
-                ),
-            )
+            NetworkStatusUi.Status.EXCEPTION -> SelectionContainer {
+                BasicText(
+                    text = status.text,
+                    autoSize = TextAutoSize.StepBased(
+                        maxFontSize = textSize,
+                        minFontSize = 8.sp,
+                    ),
+                    maxLines = 1,
+                    style = FloconTheme.typography.labelSmall.copy(
+                        color = when (status.status) {
+                            NetworkStatusUi.Status.SUCCESS -> successTagText
+                            NetworkStatusUi.Status.EXCEPTION -> FloconTheme.colorPalette.exceptions
+                            NetworkStatusUi.Status.ERROR -> FloconTheme.colorPalette.error
+                            else -> successTagText
+                        },
+                    ),
+                )
+            }
 
             NetworkStatusUi.Status.LOADING -> Box(
                 modifier = Modifier.fillMaxSize(),
