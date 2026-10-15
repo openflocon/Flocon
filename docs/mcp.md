@@ -24,9 +24,9 @@ http://localhost:9042/mcp
 ```
 
 !!! info "Local only"
-    The MCP server only listens on `127.0.0.1`: it is not reachable from your local network.
-    Agents can't modify, delete or replay the captured calls, nor modify or delete the files of the app: the only tools modifying Flocon are the **network mocks** ones.
-    Only read only SQL queries (`SELECT`, `PRAGMA` without value, `EXPLAIN`) can be executed on the databases.
+The MCP server only listens on `127.0.0.1`: it is not reachable from your local network.
+Agents can't modify, delete or replay the captured calls, nor modify or delete the files of the app: the only tools modifying Flocon are the **network mocks** ones.
+Only read only SQL queries (`SELECT`, `PRAGMA` without value, `EXPLAIN`) can be executed on the databases.
 
 ---
 
@@ -129,7 +129,7 @@ Declare the Flocon server in your agent configuration. Flocon Desktop must be ru
     With the Flocon plugin:
 
     ```bash
-    agy plugin install https://github.com/openflocon/Flocon/tree/main/plugins/flocon
+    agy plugin install [https://github.com/openflocon/Flocon/tree/main/plugins/flocon](https://github.com/openflocon/Flocon/tree/main/plugins/flocon)
     ```
 
     Or manually:
@@ -150,6 +150,29 @@ Declare the Flocon server in your agent configuration. Flocon Desktop must be ru
 
     !!! note
         Antigravity uses `serverUrl` for remote HTTP servers, not `url` nor `httpUrl`.
+
+---
+
+## Examples
+
+Just ask your agent in plain English. Here is what you can ask and how the agent responds:
+
+| You ask | Agent response |
+|---|---|
+| *"Which calls failed since the last app launch?"* | *"The call `POST /v1/auth/login` failed with status `401 Unauthorized`. The response body returned: `{"error": "invalid_credentials"}`."* |
+| *"Show me the last 10 requests on /login"* | *"Found 10 calls: 8 succeeded with `200 OK` (average 120 ms) and 2 failed with `401 Unauthorized` at 14:22:01 and 14:21:45."* |
+| *"Did the app get any 401 or 403 errors?"* | *"Yes, 2 calls returned a `401` on `/v1/auth/refresh` around 10:14 AM. No `403` status codes were recorded."* |
+| *"Make the checkout call return a 500 error"* | *"Mock created: subsequent calls to `POST /v1/checkout` will now return an HTTP `500 Internal Server Error`. You can now trigger the action in the app."* |
+| *"Simulate a 2-second timeout on /feed"* | *"Mock created: all requests matching `/feed` will now wait 2,000 ms and throw a `SocketTimeoutException`."* |
+| *"Simulate a flaky network with random errors"* | *"Network simulation active: 30% of outgoing requests will randomly fail with either a timeout or an HTTP 503."* |
+| *"Turn off the bad network simulation"* | *"Network simulation disabled. All network traffic is back to normal latency and reliability."* |
+| *"What's inside the cache of the app?"* | *"Found 3 items in `caches/`: `feed_cache.json` (24 KB), `user_session.bin` (2 KB), and `images/` (14 cached files)."* |
+| *"Show me the content of this config file"* | *"Here is the content of `/files/config.json`: `{"feature_new_checkout": true, "environment": "staging"}`."* |
+| *"Was the `post_liked` event sent when I liked the post?"* | *"Yes, `post_liked` was recorded 4 seconds ago in Amplitude with properties: `post_id: "anOoozPo4GM2"`, `source: "feed"`."* |
+| *"How many analytics events were sent since launch?"* | *"Recorded 24 events: 14 `screen_view`, 6 `button_click`, 3 `scroll_feed`, and 1 `app_open`."* |
+| *"Check in the database if the user was saved with the right email"* | *"Found record in SQLite table `users`: `id: 42`, `email: "john.doe@example.com"`, `created_at: 1791903486`."* |
+| *"Which queries did the app run on the users table?"* | *"Last queries executed:\n1. `SELECT * FROM users WHERE id = ? [42]`\n2. `UPDATE users SET last_login = ? WHERE id = ? [1791903500, 42]`."* |
+| *"Run the same check on my connected iPhone"* | *"Switched target to `iPhone 15 Pro (iOS 17.4)`. The latest failed call on this device is `GET /v2/profile` with status `404`."* |
 
 ---
 
@@ -185,88 +208,6 @@ By default, every tool targets the **device and app currently selected in Flocon
 
 ---
 
-## Examples
-
-Just ask your agent in natural language, it picks the tool and the filters. Some examples, with the arguments the agent sends:
-
-| You ask | Tool | Arguments |
-|---|---|---|
-| *"Which calls failed since the last app launch?"* | `list_network_calls` | `{"onlyErrors": true}` |
-| *"Show me the last 10 POST calls on /login"* | `list_network_calls` | `{"methods": ["POST"], "urlContains": "/login", "limit": 10}` |
-| *"Did the app get any 401 or 403?"* | `list_network_calls` | `{"statusCodes": [401, 403]}` |
-| *"List the GraphQL calls, oldest first"* | `list_network_calls` | `{"type": "graphql", "order": "oldest_first"}` |
-| *"Which calls were made in the previous sessions too?"* | `list_network_calls` | `{"includeOldSessions": true}` |
-| *"Which request sends this token in its headers?"* | `search_network_calls` | `{"query": "eyJhbGci", "scopes": ["RequestHeader"]}` |
-| *"Find the response that contains the user `john`"* | `search_network_calls` | `{"query": "john", "scopes": ["ResponseBody"]}` |
-| *"Explain why this call failed"* | `get_network_call` | `{"callId": "..."}` |
-| *"Give me the full body of this call"* | `get_network_call` | `{"callId": "...", "maxBodyChars": 200000}` |
-| *"Make this call return a 500"* | `create_network_mock` | `{"fromCallId": "...", "httpCode": 500}` |
-| *"Simulate a timeout on every call to /feed"* | `create_network_mock` | `{"urlPattern": ".*/feed.*", "exceptionClassPath": "java.net.SocketTimeoutException"}` |
-| *"Return an empty list of users, after 2 seconds"* | `create_network_mock` | `{"urlPattern": ".*/users", "method": "GET", "body": "[]", "delayMs": 2000}` |
-| *"Which mocks are enabled?"* | `list_network_mocks` | `{"onlyEnabled": true}` |
-| *"Disable this mock"* | `update_network_mock` | `{"mockId": "...", "enabled": false}` |
-| *"Simulate a slow network"* | `create_bad_network_config` | `{"name": "Slow", "latencyTriggerProbability": 1, "minLatencyMs": 2000, "maxLatencyMs": 5000, "enabled": true}` |
-| *"Make 30% of the calls fail with a timeout or a 503"* | `create_bad_network_config` | `{"name": "Flaky", "errorProbability": 0.3, "errors": [{"exceptionClassPath": "java.net.SocketTimeoutException"}, {"httpCode": 503}], "enabled": true}` |
-| *"Turn the bad network off"* | `set_active_bad_network_config` | `{}` |
-| *"What's in the cache of the app?"* | `list_files` | `{"path": "caches"}` |
-| *"Show me the content of this config file"* | `read_file` | `{"path": "/data/user/0/io.flocon.sample/files/config.json"}` |
-| *"Which analytics events were sent since the launch?"* | `count_analytics_events` | `{}` |
-| *"Show me the last `screen_view` events"* | `list_analytics_events` | `{"eventNames": ["screen_view"], "limit": 10}` |
-| *"Which events contain this post id?"* | `list_analytics_events` | `{"text": "anOoozPo4GM2"}` |
-| *"In which order were the events sent after I tapped the button?"* | `list_analytics_events` | `{"sinceTimestamp": 1791903486834, "order": "oldest_first"}` |
-| *"What's in the users table?"* | `query_database` | `{"databaseId": "...", "sql": "SELECT * FROM users LIMIT 20"}` |
-| *"How many dogs per owner?"* | `query_database` | `{"databaseId": "...", "sql": "SELECT ownerId, COUNT(*) FROM dogs GROUP BY ownerId"}` |
-| *"Which queries did the app run on the users table?"* | `list_database_query_logs` | `{"databaseId": "...", "text": "users"}` |
-| *"Same on my iPhone"* | any tool | `{"deviceId": "...", "packageName": "..."}` (from `list_devices`) |
-
-Available filters of `list_network_calls`:
-
-| Argument | Description |
-|---|---|
-| `text` | Full text filter: url, method, status, duration and bodies. |
-| `urlContains` | Url contains this text (case insensitive). |
-| `methods` | HTTP methods, ex: `["GET", "POST"]`. |
-| `statusCodes` | HTTP status codes, ex: `[401, 500]`. |
-| `onlyErrors` | Exceptions, HTTP codes >= 400, GraphQL errors, gRPC status != `OK`. |
-| `type` | `http`, `graphql`, `grpc` or `websocket`. |
-| `sinceTimestamp` | Calls started after this epoch timestamp, in milliseconds. |
-| `includeOldSessions` | Include previous app launches (default `false`). |
-| `order` | `newest_first` (default) or `oldest_first`. |
-| `limit` | Max number of calls, default 50, max 500. |
-
-`search_network_calls` scopes: `RequestHeader`, `RequestBody`, `ResponseHeader`, `ResponseBody`, `Url`, `Method`, `Status` (all by default).
-
-Arguments of `create_network_mock` and `update_network_mock`:
-
-| Argument | Description |
-|---|---|
-| `fromCallId` | *(create only)* Captured call used as a template: its exact url, method and response are copied. |
-| `urlPattern` | Regex matching the **whole** url, query included, ex: `.*/users/[0-9]+`. |
-| `method` | `GET`, `POST`... or `*` for any method (default). |
-| `httpCode`, `body`, `mediaType`, `headers` | Mocked response (default `200`, empty body, `application/json`). |
-| `exceptionClassPath` | Throws this exception instead of returning a response, ex: `java.net.SocketTimeoutException`, `java.net.UnknownHostException`, `java.io.IOException`. |
-| `delayMs` | Delay before the response, in milliseconds. |
-| `enabled` | Whether the mock is active (default `true`). |
-| `shared` | Applies the mock to all the devices and apps (default `false`: only the targeted app). |
-| `displayName` | Name displayed in Flocon. |
-
-The mocks are sent to the app as soon as they change: no need to restart it.
-
-Arguments of `create_bad_network_config` and `update_bad_network_config`:
-
-| Argument | Description |
-|---|---|
-| `name` | Name displayed in Flocon. |
-| `latencyTriggerProbability` | Chance, from 0 to 1, that a request is delayed. |
-| `minLatencyMs`, `maxLatencyMs` | Range of the random delay, in milliseconds. |
-| `errorProbability` | Chance, from 0 to 1, that a request fails (needs at least one error). |
-| `errors` | Possible errors, one is picked per failure according to its `weight` (default 1). Each is either `httpCode` (+ `body`, `contentType`) or `exceptionClassPath`. |
-| `enabled` | *(create only)* Activates the config right away, the others are deactivated. |
-
-Only one config is active at a time per app, and it is sent to the app as soon as it changes.
-
----
-
 ## Testing the server
 
 You can browse the tools with the [MCP Inspector](https://github.com/modelcontextprotocol/inspector):
@@ -278,4 +219,4 @@ npx @modelcontextprotocol/inspector
 Then connect to `http://localhost:9042/mcp` with the **Streamable HTTP** transport.
 
 !!! warning "Port already used"
-    If the port `9042` is already used by another program, Flocon Desktop displays an error and retries every 10 seconds.
+If the port `9042` is already used by another program, Flocon Desktop displays an error and retries every 10 seconds.
