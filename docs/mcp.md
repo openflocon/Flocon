@@ -130,6 +130,7 @@ Declare the Flocon server in your agent configuration. Flocon Desktop must be ru
 
     ```bash
     agy plugin install https://github.com/openflocon/Flocon/tree/main/plugins/flocon    ```
+    ```
 
     Or manually:
 
