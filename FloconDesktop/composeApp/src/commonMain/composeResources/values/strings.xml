@@ -81,7 +81,7 @@
     <string name="no_devices_found">No Devices Found</string>
     <string name="open_external">Open in external editor</string>
     <string name="preferences">Preferences</string>
-    <string name="record_saved_at">Record saved at %s</string>
+    <string name="record_saved_at">Record saved at %1$s</string>
     <string name="refresh">refresh</string>
     <string name="remove">Remove</string>
     <string name="remove_lines_above">Remove lines above</string>

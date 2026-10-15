@@ -6,11 +6,11 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.then
 import java.io.File
-import java.nio.file.Paths
 
 class TakeScreenshotUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val executeAdbCommandUseCase: ExecuteAdbCommandUseCase,
+    private val getFloconDocumentPathUseCase: GetFloconDocumentPathUseCase,
 ) {
 
     suspend operator fun invoke(): Either<Throwable, String> {
@@ -19,7 +19,7 @@ class TakeScreenshotUseCase(
         val fileName = "screenshot_${current.packageName}_${System.currentTimeMillis()}.png"
         val onDeviceFilePath = "/sdcard/$fileName"
 
-        val parentFile = Paths.get(System.getProperty("user.home"), ".flocon", "Screenshot").toFile()
+        val parentFile = File(getFloconDocumentPathUseCase(), "Screenshot")
         if (!parentFile.exists()) {
             parentFile.mkdirs()
         }
