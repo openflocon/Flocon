@@ -50,6 +50,14 @@ internal class SettingsRepositoryImpl(
         localSettingsDataSource.setTheme(value)
     }
 
+    override val floconDocumentsPath: Flow<String?> = localSettingsDataSource.floconDocumentsPath
+
+    override fun getFloconDocumentsPath(): String? = localSettingsDataSource.getFloconDocumentsPath()
+
+    override suspend fun setFloconDocumentsPath(path: String) {
+        localSettingsDataSource.setFloconDocumentsPath(path)
+    }
+
     override fun getDismissedDesktopVersion(): String? = localSettingsDataSource.getDismissedDesktopVersion()
 
     override suspend fun setDismissedDesktopVersion(version: String) {
