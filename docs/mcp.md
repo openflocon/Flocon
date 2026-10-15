@@ -159,21 +159,31 @@ Just ask your agent in plain English. Here is what you can ask and how the agent
 
 | You ask | Agent response |
 |---|---|
+## Examples
+
+Just ask your agent in plain English. Here is what you can ask and how the agent responds:
+
+| You ask | Agent response |
+|---|---|
 | *"Which calls failed since the last app launch?"* | *"The call `POST /v1/auth/login` failed with status `401 Unauthorized`. The response body returned: `{"error": "invalid_credentials"}`."* |
 | *"Show me the last 10 requests on /login"* | *"Found 10 calls: 8 succeeded with `200 OK` (average 120 ms) and 2 failed with `401 Unauthorized` at 14:22:01 and 14:21:45."* |
 | *"Did the app get any 401 or 403 errors?"* | *"Yes, 2 calls returned a `401` on `/v1/auth/refresh` around 10:14 AM. No `403` status codes were recorded."* |
+| *"Find the call that returned product ID 98412"* | *"Found call `GET /v2/products/featured`: the string `"id": 98412` is present in the response body."* |
+| *"Were there any 500 errors during yesterday's session?"* | *"Scanned previous sessions from yesterday: found 1 call `GET /v1/feed` with `500 Server Error` on session #12 at 18:22."* |
 | *"Make the checkout call return a 500 error"* | *"Mock created: subsequent calls to `POST /v1/checkout` will now return an HTTP `500 Internal Server Error`. You can now trigger the action in the app."* |
 | *"Simulate a 2-second timeout on /feed"* | *"Mock created: all requests matching `/feed` will now wait 2,000 ms and throw a `SocketTimeoutException`."* |
+| *"Return an empty list with a 3-second delay on /notifications"* | *"Mock created: `GET /notifications` will respond after 3,000 ms with HTTP `200 OK` and body `[]`."* |
+| *"Simulate a DNS failure on the payment endpoint"* | *"Mock created: all requests matching `.*/checkout/pay` will immediately throw a `java.net.UnknownHostException`."* |
+| *"Which mocks are currently active?"* | *"Two mocks are active: `POST /v1/checkout` returning HTTP `500`, and `GET /notifications` returning `200 OK` with a 3,000 ms delay."* |
+| *"Disable the mock on the checkout endpoint"* | *"Disabled mock for `POST /v1/checkout`. Live network calls will now hit your backend normally."* |
 | *"Simulate a flaky network with random errors"* | *"Network simulation active: 30% of outgoing requests will randomly fail with either a timeout or an HTTP 503."* |
 | *"Turn off the bad network simulation"* | *"Network simulation disabled. All network traffic is back to normal latency and reliability."* |
-| *"What's inside the cache of the app?"* | *"Found 3 items in `caches/`: `feed_cache.json` (24 KB), `user_session.bin` (2 KB), and `images/` (14 cached files)."* |
-| *"Show me the content of this config file"* | *"Here is the content of `/files/config.json`: `{"feature_new_checkout": true, "environment": "staging"}`."* |
-| *"Was the `post_liked` event sent when I liked the post?"* | *"Yes, `post_liked` was recorded 4 seconds ago in Amplitude with properties: `post_id: "anOoozPo4GM2"`, `source: "feed"`."* |
+| *"Download the cached avatar of the logged-in user"* | *"Downloaded image from `/caches/avatars/user_42.png` (84 KB). Local copy saved to `.flocon/downloads/user_42.png`."* |
+| *"Was the post_liked event sent when I liked the post?"* | *"Yes, `post_liked` was recorded 4 seconds ago in Amplitude with properties: `post_id: "anOoozPo4GM2"`, `source: "feed"`."* |
 | *"How many analytics events were sent since launch?"* | *"Recorded 24 events: 14 `screen_view`, 6 `button_click`, 3 `scroll_feed`, and 1 `app_open`."* |
+| *"Did Amplitude track the checkout event?"* | *"Checked both trackers: `checkout_completed` was recorded in Amplitude (16:04:12) with matching `order_id: 1042`."* |
 | *"Check in the database if the user was saved with the right email"* | *"Found record in SQLite table `users`: `id: 42`, `email: "john.doe@example.com"`, `created_at: 1791903486`."* |
-| *"Which queries did the app run on the users table?"* | *"Last queries executed:\n1. `SELECT * FROM users WHERE id = ? [42]`\n2. `UPDATE users SET last_login = ? WHERE id = ? [1791903500, 42]`."* |
-| *"Run the same check on my connected iPhone"* | *"Switched target to `iPhone 15 Pro (iOS 17.4)`. The latest failed call on this device is `GET /v2/profile` with status `404`."* |
-
+| *"Which queries did the app run on the users table?"* | *"Last queries executed: `SELECT * FROM users WHERE id = 42` followed by `UPDATE users SET last_login = 1791903500 WHERE id = 42`."* |
 ---
 
 ## Available tools
