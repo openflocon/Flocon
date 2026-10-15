@@ -24,9 +24,9 @@ http://localhost:9042/mcp
 ```
 
 !!! info "Local only"
-The MCP server only listens on `127.0.0.1`: it is not reachable from your local network.
-Agents can't modify, delete or replay the captured calls, nor modify or delete the files of the app: the only tools modifying Flocon are the **network mocks** ones.
-Only read only SQL queries (`SELECT`, `PRAGMA` without value, `EXPLAIN`) can be executed on the databases.
+    The MCP server only listens on `127.0.0.1`: it is not reachable from your local network.
+    Agents can't modify, delete or replay the captured calls, nor modify or delete the files of the app: the only tools modifying Flocon are the **network mocks** ones.
+    Only read only SQL queries (`SELECT`, `PRAGMA` without value, `EXPLAIN`) can be executed on the databases.
 
 ---
 
@@ -219,4 +219,4 @@ npx @modelcontextprotocol/inspector
 Then connect to `http://localhost:9042/mcp` with the **Streamable HTTP** transport.
 
 !!! warning "Port already used"
-If the port `9042` is already used by another program, Flocon Desktop displays an error and retries every 10 seconds.
+    If the port `9042` is already used by another program, Flocon Desktop displays an error and retries every 10 seconds.
