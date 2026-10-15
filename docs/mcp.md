@@ -169,7 +169,6 @@ Just ask your agent in plain English. Here is what you can ask and how the agent
 | *"Show me the last 10 requests on /login"* | *"Found 10 calls: 8 succeeded with `200 OK` (average 120 ms) and 2 failed with `401 Unauthorized` at 14:22:01 and 14:21:45."* |
 | *"Did the app get any 401 or 403 errors?"* | *"Yes, 2 calls returned a `401` on `/v1/auth/refresh` around 10:14 AM. No `403` status codes were recorded."* |
 | *"Find the call that returned product ID 98412"* | *"Found call `GET /v2/products/featured`: the string `"id": 98412` is present in the response body."* |
-| *"Were there any 500 errors during yesterday's session?"* | *"Scanned previous sessions from yesterday: found 1 call `GET /v1/feed` with `500 Server Error` on session #12 at 18:22."* |
 | *"Make the checkout call return a 500 error"* | *"Mock created: subsequent calls to `POST /v1/checkout` will now return an HTTP `500 Internal Server Error`. You can now trigger the action in the app."* |
 | *"Simulate a 2-second timeout on /feed"* | *"Mock created: all requests matching `/feed` will now wait 2,000 ms and throw a `SocketTimeoutException`."* |
 | *"Return an empty list with a 3-second delay on /notifications"* | *"Mock created: `GET /notifications` will respond after 3,000 ms with HTTP `200 OK` and body `[]`."* |
