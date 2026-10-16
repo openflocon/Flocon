@@ -27,6 +27,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
+import io.github.openflocon.flocondesktop.common.utils.FolderPicker
+import io.github.openflocon.flocondesktop.common.utils.OpenFile
+import java.io.File
 import org.jetbrains.compose.resources.getString
 
 class SettingsViewModel(
@@ -45,6 +49,11 @@ class SettingsViewModel(
     private val _adbPathInput = MutableStateFlow("")
     val adbPathInput = _adbPathInput.asStateFlow()
     val needsAdbSetup = initialSetupStateHolder.needsAdbSetup
+
+    private val _floconDocumentsPathInput = MutableStateFlow(
+        settingsRepository.getFloconDocumentsPath() ?: GetFloconDocumentPathUseCase.defaultPath().absolutePath
+    )
+    val floconDocumentsPathInput = _floconDocumentsPathInput.asStateFlow()
 
     val uiState = combine(
         fontSizeMultiplierUseCase(),
@@ -75,6 +84,11 @@ class SettingsViewModel(
             // Utiliser GlobalScope ici pour la simplicité de l'exemple, mais préférez un scope dédié
             settingsRepository.adbPath.collect { path ->
                 path?.let { _adbPathInput.value = it }
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.floconDocumentsPath.collect { path ->
+                path?.let { _floconDocumentsPathInput.value = it }
             }
         }
     }
@@ -144,6 +158,68 @@ class SettingsViewModel(
 
     fun clearLogs() {
         logManager.clear()
+    }
+
+    fun onFloconDocumentsPathChanged(newPath: String) {
+        _floconDocumentsPathInput.value = newPath
+    }
+
+    fun saveFloconDocumentsPath() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val path = _floconDocumentsPathInput.value.trim()
+            val finalPath = path.ifBlank { GetFloconDocumentPathUseCase.defaultPath().absolutePath }
+            Logger.d(TAG) { "Saving Flocon documents path: $finalPath" }
+            logManager.d(TAG, "Saving Flocon documents path: $finalPath")
+            settingsRepository.setFloconDocumentsPath(finalPath)
+            _floconDocumentsPathInput.value = finalPath
+            feedbackDisplayer.displayMessage(getString(Res.string.general_success))
+        }
+    }
+
+    fun pickFloconDocumentsFolder() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val currentPath = _floconDocumentsPathInput.value.ifBlank {
+                GetFloconDocumentPathUseCase.defaultPath().absolutePath
+            }
+            val selected = FolderPicker.pickFolder(
+                title = "Select Flocon Documents Folder",
+                initialPath = currentPath,
+            )
+            if (selected != null) {
+                val path = selected.absolutePath
+                Logger.d(TAG) { "Picked Flocon documents folder: $path" }
+                logManager.d(TAG, "Picked Flocon documents folder: $path")
+                _floconDocumentsPathInput.value = path
+                settingsRepository.setFloconDocumentsPath(path)
+                feedbackDisplayer.displayMessage(getString(Res.string.general_success))
+            }
+        }
+    }
+
+    fun resetFloconDocumentsPath() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val defaultPath = GetFloconDocumentPathUseCase.defaultPath().absolutePath
+            Logger.d(TAG) { "Resetting Flocon documents path to: $defaultPath" }
+            logManager.d(TAG, "Resetting Flocon documents path to: $defaultPath")
+            _floconDocumentsPathInput.value = defaultPath
+            settingsRepository.setFloconDocumentsPath(defaultPath)
+            feedbackDisplayer.displayMessage(getString(Res.string.general_success))
+        }
+    }
+
+    fun openFloconDocumentsFolder() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val path = _floconDocumentsPathInput.value.ifBlank {
+                GetFloconDocumentPathUseCase.defaultPath().absolutePath
+            }
+            val folder = File(path)
+            if (!folder.exists()) {
+                folder.mkdirs()
+            }
+            OpenFile.openFileOnDesktop(folder.absolutePath).alsoFailure {
+                feedbackDisplayer.displayMessage(it.message)
+            }
+        }
     }
 
     companion object {

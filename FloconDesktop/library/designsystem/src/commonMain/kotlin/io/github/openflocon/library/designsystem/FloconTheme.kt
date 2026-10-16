@@ -18,6 +18,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.components.FloconMenuRepresentation
@@ -71,7 +72,7 @@ fun FloconTheme(
     val ripple = ripple(color = colorPalette.accent)
     val selectionTextColor = TextSelectionColors(
         handleColor = colorPalette.accent,
-        backgroundColor = colorPalette.accent.copy(alpha = 0.5f)
+        backgroundColor = colorPalette.accent,
     )
 
     val materialTypo = MaterialTheme.typography

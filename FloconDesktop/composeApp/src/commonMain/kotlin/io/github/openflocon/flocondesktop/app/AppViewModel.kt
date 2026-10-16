@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.screenshot_saved_at
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
@@ -18,6 +19,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.buildMenu
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.common.log.LogManager
+import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
@@ -56,6 +58,7 @@ internal class AppViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
     private val logManager: LogManager,
     private val settingsRepository: SettingsRepository,
+    private val getFloconDocumentPathUseCase: GetFloconDocumentPathUseCase,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -130,6 +133,7 @@ internal class AppViewModel(
             AppAction.Record -> onRecord()
             AppAction.Restart -> onRestart()
             AppAction.Screenshoot -> onTakeScreenshot()
+            AppAction.OpenFloconFolder -> onOpenFloconFolder()
             is AppAction.SelectApp -> onAppSelected(action)
             is AppAction.SelectDevice -> onDeviceSelected(action)
         }
@@ -208,6 +212,18 @@ internal class AppViewModel(
                     feedbackDisplayer.displayMessage(getString(Res.string.screenshot_saved_at, it))
                 },
             )
+        }
+    }
+
+    private fun onOpenFloconFolder() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val folder = getFloconDocumentPathUseCase()
+            if (!folder.exists()) {
+                folder.mkdirs()
+            }
+            OpenFile.openFileOnDesktop(folder.absolutePath).alsoFailure {
+                feedbackDisplayer.displayMessage(it.message)
+            }
         }
     }
 

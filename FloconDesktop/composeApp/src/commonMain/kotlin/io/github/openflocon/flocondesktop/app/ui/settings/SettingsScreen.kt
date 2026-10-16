@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.List
@@ -88,6 +89,7 @@ import org.koin.compose.viewmodel.koinViewModel
 // ---------------------------------------------------------------------------
 
 private enum class SettingsTab(val label: String, val icon: ImageVector) {
+    General("General", Icons.Outlined.Folder),
     Adb("Adb", Icons.Outlined.Cable),
     Appearance("Appearance", Icons.Outlined.TextFields),
     Logs("Logs", Icons.Outlined.List),
@@ -105,6 +107,7 @@ fun SettingsScreen(
     val viewModel: SettingsViewModel = koinViewModel()
     val needsAdbSetup by viewModel.needsAdbSetup.collectAsState()
     val adbPathText by viewModel.adbPathInput.collectAsState()
+    val floconDocumentsPathText by viewModel.floconDocumentsPathInput.collectAsState()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     SettingsScreen(
@@ -114,6 +117,12 @@ fun SettingsScreen(
         onAdbPathChanged = viewModel::onAdbPathChanged,
         saveAdbPath = viewModel::saveAdbPath,
         testAdbPath = viewModel::testAdbPath,
+        floconDocumentsPathText = floconDocumentsPathText,
+        onFloconDocumentsPathChanged = viewModel::onFloconDocumentsPathChanged,
+        onPickFloconDocumentsFolder = viewModel::pickFloconDocumentsFolder,
+        onSaveFloconDocumentsPath = viewModel::saveFloconDocumentsPath,
+        onResetFloconDocumentsPath = viewModel::resetFloconDocumentsPath,
+        onOpenFloconDocumentsFolder = viewModel::openFloconDocumentsFolder,
         onAction = viewModel::onAction,
         onClearLogs = viewModel::clearLogs,
         needsAdbSetup = needsAdbSetup,
@@ -131,12 +140,18 @@ private fun SettingsScreen(
     onAdbPathChanged: (String) -> Unit,
     saveAdbPath: () -> Unit,
     testAdbPath: () -> Unit,
+    floconDocumentsPathText: String,
+    onFloconDocumentsPathChanged: (String) -> Unit,
+    onPickFloconDocumentsFolder: () -> Unit,
+    onSaveFloconDocumentsPath: () -> Unit,
+    onResetFloconDocumentsPath: () -> Unit,
+    onOpenFloconDocumentsFolder: () -> Unit,
     needsAdbSetup: Boolean,
     onAction: (SettingsAction) -> Unit,
     onClearLogs: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var selectedTab by remember { mutableStateOf(SettingsTab.Adb) }
+    var selectedTab by remember { mutableStateOf(if (needsAdbSetup) SettingsTab.Adb else SettingsTab.General) }
 
     Row(modifier = modifier) {
         // ── Drawer ──────────────────────────────────────────────────────────
@@ -168,6 +183,15 @@ private fun SettingsScreen(
                 .padding(16.dp)
         ) {
             when (selectedTab) {
+                SettingsTab.General -> GeneralPane(
+                    floconDocumentsPath = floconDocumentsPathText,
+                    onFloconDocumentsPathChanged = onFloconDocumentsPathChanged,
+                    onPickFolder = onPickFloconDocumentsFolder,
+                    onSavePath = onSaveFloconDocumentsPath,
+                    onResetPath = onResetFloconDocumentsPath,
+                    onOpenFolder = onOpenFloconDocumentsFolder,
+                )
+
                 SettingsTab.Adb -> AdbPane(
                     adbPathText = adbPathText,
                     onAdbPathChanged = onAdbPathChanged,
@@ -315,6 +339,69 @@ private fun SettingsCard(
 // ---------------------------------------------------------------------------
 // Content panes
 // ---------------------------------------------------------------------------
+
+@Composable
+private fun GeneralPane(
+    floconDocumentsPath: String,
+    onFloconDocumentsPathChanged: (String) -> Unit,
+    onPickFolder: () -> Unit,
+    onSavePath: () -> Unit,
+    onResetPath: () -> Unit,
+    onOpenFolder: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
+        SettingsCard(
+            title = "Flocon Documents",
+            icon = Icons.Outlined.Folder,
+            description = "Directory where screenshots, screen recordings, and exported files are saved. Defaults to ~/Documents/Flocon."
+        ) {
+            Text(
+                text = "Documents Folder Path",
+                style = FloconTheme.typography.labelSmall,
+                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FloconTextFieldWithoutM3(
+                    value = floconDocumentsPath,
+                    onValueChange = onFloconDocumentsPathChanged,
+                    placeholder = defaultPlaceHolder("~/Documents/Flocon"),
+                    containerColor = FloconTheme.colorPalette.secondary,
+                    contentPadding = PaddingValues(12.dp),
+                    modifier = Modifier.weight(1f)
+                )
+
+                SettingsButton(
+                    text = "Pick...",
+                    onClick = onPickFolder,
+                )
+            }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SettingsButton(
+                    text = stringResource(Res.string.general_save),
+                    onClick = onSavePath,
+                )
+                SettingsButton(
+                    text = "Reset to default",
+                    onClick = onResetPath,
+                )
+                SettingsButton(
+                    text = "Open Folder",
+                    onClick = onOpenFolder,
+                )
+            }
+        }
+    }
+}
 
 @Composable
 private fun AdbPane(
@@ -837,12 +924,19 @@ private fun ConsoleLogPanel(
 private fun SettingsScreenPreview() {
     FloconTheme {
         var adbPath by remember { mutableStateOf("/usr/local/bin/adb") }
+        var floconPath by remember { mutableStateOf("/Users/user/Documents/Flocon") }
         SettingsScreen(
             uiState = previewSettingsUiState(),
             adbPathText = adbPath,
             onAdbPathChanged = { adbPath = it },
             saveAdbPath = { Logger.d { "Save ADB: $adbPath" } },
             testAdbPath = { Logger.d { "Test ADB: $adbPath" } },
+            floconDocumentsPathText = floconPath,
+            onFloconDocumentsPathChanged = { floconPath = it },
+            onPickFloconDocumentsFolder = {},
+            onSaveFloconDocumentsPath = {},
+            onResetFloconDocumentsPath = {},
+            onOpenFloconDocumentsFolder = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
@@ -856,12 +950,19 @@ private fun SettingsScreenPreview() {
 private fun SettingsScreenPreview_needsAdbSetup() {
     FloconTheme {
         var adbPath by remember { mutableStateOf("/usr/local/bin/adb") }
+        var floconPath by remember { mutableStateOf("/Users/user/Documents/Flocon") }
         SettingsScreen(
             uiState = previewSettingsUiState(),
             adbPathText = adbPath,
             onAdbPathChanged = { adbPath = it },
             saveAdbPath = { Logger.d { "Save ADB: $adbPath" } },
             testAdbPath = { Logger.d { "Test ADB: $adbPath" } },
+            floconDocumentsPathText = floconPath,
+            onFloconDocumentsPathChanged = { floconPath = it },
+            onPickFloconDocumentsFolder = {},
+            onSaveFloconDocumentsPath = {},
+            onResetFloconDocumentsPath = {},
+            onOpenFloconDocumentsFolder = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
@@ -880,6 +981,12 @@ private fun SettingsScreen_LogsPreview() {
             onAdbPathChanged = {},
             saveAdbPath = {},
             testAdbPath = {},
+            floconDocumentsPathText = "/Users/user/Documents/Flocon",
+            onFloconDocumentsPathChanged = {},
+            onPickFloconDocumentsFolder = {},
+            onSaveFloconDocumentsPath = {},
+            onResetFloconDocumentsPath = {},
+            onOpenFloconDocumentsFolder = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "flocon",
+  "version": "1.0.0",
+  "description": "Connects your AI agent to the Flocon Desktop MCP server: network calls, mocks, files, analytics events and databases of your mobile app",
+  "author": { "name": "openflocon", "url": "https://github.com/openflocon" },
+  "homepage": "https://openflocon.github.io/Flocon/mcp",
+  "repository": "https://github.com/openflocon/Flocon",
+  "keywords": ["flocon", "mcp", "android", "ios", "kmp", "debug", "network"]
+}

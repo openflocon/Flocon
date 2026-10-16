@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "flocon": {
+      "serverUrl": "http://localhost:9042/mcp"
+    }
+  }
+}

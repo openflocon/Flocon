@@ -32,11 +32,18 @@ http://localhost:9042/mcp
 
 ## Setup
 
-No plugin is needed: declare the Flocon server in your agent configuration. Flocon Desktop must be running.
+Declare the Flocon server in your agent configuration. Flocon Desktop must be running.
 
 === "Claude Code"
 
-    For you only:
+    With the Flocon plugin (recommended), it declares the server and adds a skill explaining the tools to Claude:
+
+    ```
+    /plugin marketplace add openflocon/Flocon
+    /plugin install flocon@flocon
+    ```
+
+    Or manually, for you only:
 
     ```bash
     claude mcp add --transport http flocon http://localhost:9042/mcp
@@ -57,7 +64,9 @@ No plugin is needed: declare the Flocon server in your agent configuration. Floc
 
 === "Cursor"
 
-    In `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global):
+    With the Flocon plugin: in the Cursor dashboard, open **Plugins & MCPs → Add Marketplace → Import from Repo**, paste `https://github.com/openflocon/Flocon`, then install **flocon** from **Customize**.
+
+    Or manually, in `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global):
 
     ```json
     {
@@ -71,7 +80,15 @@ No plugin is needed: declare the Flocon server in your agent configuration. Floc
 
 === "Codex"
 
-    In `~/.codex/config.toml`:
+    With the Flocon plugin:
+
+    ```bash
+    codex plugin marketplace add openflocon/Flocon
+    ```
+
+    Then install **flocon** from the `/plugins` browser.
+
+    Or manually, in `~/.codex/config.toml`:
 
     ```toml
     [mcp_servers.flocon]
@@ -79,6 +96,14 @@ No plugin is needed: declare the Flocon server in your agent configuration. Floc
     ```
 
 === "Gemini CLI"
+
+    With the Flocon extension, from a clone of this repository:
+
+    ```bash
+    gemini extensions install ./plugins/flocon
+    ```
+
+    Or manually:
 
     ```bash
     gemini mcp add --transport http flocon http://localhost:9042/mcp
@@ -101,6 +126,14 @@ No plugin is needed: declare the Flocon server in your agent configuration. Floc
 
 === "Antigravity"
 
+    With the Flocon plugin:
+
+    ```bash
+    agy plugin install https://github.com/openflocon/Flocon/tree/main/plugins/flocon
+    ```
+
+    Or manually:
+
     In the Agent panel, open **⋯ → MCP Servers → Manage MCP Servers → View raw config**, and add:
 
     ```json
@@ -119,6 +152,104 @@ No plugin is needed: declare the Flocon server in your agent configuration. Floc
         Antigravity uses `serverUrl` for remote HTTP servers, not `url` nor `httpUrl`.
 
 ---
+
+## Examples
+
+Just ask your agent in plain text. Here is what you can ask and how the agent responds:
+
+> Responses are illustrative: endpoints, ids and values depend on your app.
+
+---
+
+**Prompt**
+
+> My article page doesn't display, is it caused by a network call?
+
+**Response**
+
+Yes. When the article page opened, `GET /articles/42` failed with a **500 Internal Server Error** (`{"error":"article_service_unavailable"}`). The app received no article data, which explains the empty page. Retrying the call would not help until the backend is fixed. I can mock a valid response if you want to check the UI in the meantime.
+
+---
+
+**Prompt**
+
+> Among the posts displayed on screen, is there one created by "florent"?
+
+**Response**
+
+Yes. The last `GET /posts` response contains 12 posts, and one of them was written by `florent`: "Why I switched to Compose" (`id: post_7`). It is also stored locally: the `posts` table has a matching row with `author = "florent"`.
+
+---
+
+**Prompt**
+
+> Add latency to all calls.
+
+**Response**
+
+Done. Every network call from the app now has an extra **2 s** of latency. Navigate in the app to check your loading states. Ask me to remove it whenever you're done.
+
+---
+
+**Prompt**
+
+> Transform the response of `user/me` so the username is "jean.jacques.nom.a.rallonge".
+
+**Response**
+
+Done. I created a mock on `GET /user/me`. It returns the last real response with only `username` replaced by `jean.jacques.nom.a.rallonge`. Reopen the profile screen to check how the long name is displayed.
+
+---
+
+**Prompt**
+
+> Does the article with id "ID1" exist in the database? If so, what is its price?
+
+**Response**
+
+Yes, the `articles` table contains `ID1`: "Wireless Headphones", with a price of **59.90 €**.
+
+---
+
+**Prompt**
+
+> Was the `postViewed` analytics event triggered?
+
+**Response**
+
+Yes, `postViewed` was sent 3 times since the app started:
+
+- `postViewed` → `{ postId: "post_7" }`
+- `postViewed` → `{ postId: "post_3" }`
+- `postViewed` → `{ postId: "post_12" }`
+
+---
+
+**Prompt**
+
+> Show me the slow calls in the app.
+
+**Response**
+
+3 calls took more than 1 second:
+
+| Method | URL | Duration |
+|--------|-----|----------|
+| GET | `/posts/search?q=compose` | 3.4 s |
+| GET | `/articles/ID1/reviews` | 2.1 s |
+| POST | `/orders` | 1.3 s |
+
+The search call is the slowest. It may be worth adding a loading state or debouncing the input.
+
+---
+
+**Prompt**
+
+> Make the articles endpoint fail with a 500 so I can check my error screen.
+
+**Response**
+
+Mock created for `GET /articles/*`: status **500**, body `{"error":"internal_error"}`. Open an article in the app to see the error screen. I can disable the mock when you're done.
 
 ## Available tools
 
@@ -149,88 +280,6 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_database_tables` | Schema of a database: tables, columns, types, primary keys. |
 | `query_database` | Executes a read only SQL query and returns the rows (100 by default, long values truncated). |
 | `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). |
-
----
-
-## Examples
-
-Just ask your agent in natural language, it picks the tool and the filters. Some examples, with the arguments the agent sends:
-
-| You ask | Tool | Arguments |
-|---|---|---|
-| *"Which calls failed since the last app launch?"* | `list_network_calls` | `{"onlyErrors": true}` |
-| *"Show me the last 10 POST calls on /login"* | `list_network_calls` | `{"methods": ["POST"], "urlContains": "/login", "limit": 10}` |
-| *"Did the app get any 401 or 403?"* | `list_network_calls` | `{"statusCodes": [401, 403]}` |
-| *"List the GraphQL calls, oldest first"* | `list_network_calls` | `{"type": "graphql", "order": "oldest_first"}` |
-| *"Which calls were made in the previous sessions too?"* | `list_network_calls` | `{"includeOldSessions": true}` |
-| *"Which request sends this token in its headers?"* | `search_network_calls` | `{"query": "eyJhbGci", "scopes": ["RequestHeader"]}` |
-| *"Find the response that contains the user `john`"* | `search_network_calls` | `{"query": "john", "scopes": ["ResponseBody"]}` |
-| *"Explain why this call failed"* | `get_network_call` | `{"callId": "..."}` |
-| *"Give me the full body of this call"* | `get_network_call` | `{"callId": "...", "maxBodyChars": 200000}` |
-| *"Make this call return a 500"* | `create_network_mock` | `{"fromCallId": "...", "httpCode": 500}` |
-| *"Simulate a timeout on every call to /feed"* | `create_network_mock` | `{"urlPattern": ".*/feed.*", "exceptionClassPath": "java.net.SocketTimeoutException"}` |
-| *"Return an empty list of users, after 2 seconds"* | `create_network_mock` | `{"urlPattern": ".*/users", "method": "GET", "body": "[]", "delayMs": 2000}` |
-| *"Which mocks are enabled?"* | `list_network_mocks` | `{"onlyEnabled": true}` |
-| *"Disable this mock"* | `update_network_mock` | `{"mockId": "...", "enabled": false}` |
-| *"Simulate a slow network"* | `create_bad_network_config` | `{"name": "Slow", "latencyTriggerProbability": 1, "minLatencyMs": 2000, "maxLatencyMs": 5000, "enabled": true}` |
-| *"Make 30% of the calls fail with a timeout or a 503"* | `create_bad_network_config` | `{"name": "Flaky", "errorProbability": 0.3, "errors": [{"exceptionClassPath": "java.net.SocketTimeoutException"}, {"httpCode": 503}], "enabled": true}` |
-| *"Turn the bad network off"* | `set_active_bad_network_config` | `{}` |
-| *"What's in the cache of the app?"* | `list_files` | `{"path": "caches"}` |
-| *"Show me the content of this config file"* | `read_file` | `{"path": "/data/user/0/io.flocon.sample/files/config.json"}` |
-| *"Which analytics events were sent since the launch?"* | `count_analytics_events` | `{}` |
-| *"Show me the last `screen_view` events"* | `list_analytics_events` | `{"eventNames": ["screen_view"], "limit": 10}` |
-| *"Which events contain this post id?"* | `list_analytics_events` | `{"text": "anOoozPo4GM2"}` |
-| *"In which order were the events sent after I tapped the button?"* | `list_analytics_events` | `{"sinceTimestamp": 1791903486834, "order": "oldest_first"}` |
-| *"What's in the users table?"* | `query_database` | `{"databaseId": "...", "sql": "SELECT * FROM users LIMIT 20"}` |
-| *"How many dogs per owner?"* | `query_database` | `{"databaseId": "...", "sql": "SELECT ownerId, COUNT(*) FROM dogs GROUP BY ownerId"}` |
-| *"Which queries did the app run on the users table?"* | `list_database_query_logs` | `{"databaseId": "...", "text": "users"}` |
-| *"Same on my iPhone"* | any tool | `{"deviceId": "...", "packageName": "..."}` (from `list_devices`) |
-
-Available filters of `list_network_calls`:
-
-| Argument | Description |
-|---|---|
-| `text` | Full text filter: url, method, status, duration and bodies. |
-| `urlContains` | Url contains this text (case insensitive). |
-| `methods` | HTTP methods, ex: `["GET", "POST"]`. |
-| `statusCodes` | HTTP status codes, ex: `[401, 500]`. |
-| `onlyErrors` | Exceptions, HTTP codes >= 400, GraphQL errors, gRPC status != `OK`. |
-| `type` | `http`, `graphql`, `grpc` or `websocket`. |
-| `sinceTimestamp` | Calls started after this epoch timestamp, in milliseconds. |
-| `includeOldSessions` | Include previous app launches (default `false`). |
-| `order` | `newest_first` (default) or `oldest_first`. |
-| `limit` | Max number of calls, default 50, max 500. |
-
-`search_network_calls` scopes: `RequestHeader`, `RequestBody`, `ResponseHeader`, `ResponseBody`, `Url`, `Method`, `Status` (all by default).
-
-Arguments of `create_network_mock` and `update_network_mock`:
-
-| Argument | Description |
-|---|---|
-| `fromCallId` | *(create only)* Captured call used as a template: its exact url, method and response are copied. |
-| `urlPattern` | Regex matching the **whole** url, query included, ex: `.*/users/[0-9]+`. |
-| `method` | `GET`, `POST`... or `*` for any method (default). |
-| `httpCode`, `body`, `mediaType`, `headers` | Mocked response (default `200`, empty body, `application/json`). |
-| `exceptionClassPath` | Throws this exception instead of returning a response, ex: `java.net.SocketTimeoutException`, `java.net.UnknownHostException`, `java.io.IOException`. |
-| `delayMs` | Delay before the response, in milliseconds. |
-| `enabled` | Whether the mock is active (default `true`). |
-| `shared` | Applies the mock to all the devices and apps (default `false`: only the targeted app). |
-| `displayName` | Name displayed in Flocon. |
-
-The mocks are sent to the app as soon as they change: no need to restart it.
-
-Arguments of `create_bad_network_config` and `update_bad_network_config`:
-
-| Argument | Description |
-|---|---|
-| `name` | Name displayed in Flocon. |
-| `latencyTriggerProbability` | Chance, from 0 to 1, that a request is delayed. |
-| `minLatencyMs`, `maxLatencyMs` | Range of the random delay, in milliseconds. |
-| `errorProbability` | Chance, from 0 to 1, that a request fails (needs at least one error). |
-| `errors` | Possible errors, one is picked per failure according to its `weight` (default 1). Each is either `httpCode` (+ `body`, `contentType`) or `exceptionClassPath`. |
-| `enabled` | *(create only)* Activates the config right away, the others are deactivated. |
-
-Only one config is active at a time per app, and it is sent to the app as soon as it changes.
 
 ---
 

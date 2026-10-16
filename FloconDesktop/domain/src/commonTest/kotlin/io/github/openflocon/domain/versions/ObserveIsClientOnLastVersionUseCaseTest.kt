@@ -63,6 +63,9 @@ class ObserveIsClientOnLastVersionUseCaseTest {
         override suspend fun setAdbPath(path: String) {}
         override suspend fun setFontSizeMultiplier(value: Float) {}
         override suspend fun setTheme(value: ThemeSetting) {}
+        override fun getFloconDocumentsPath(): String? = null
+        override suspend fun setFloconDocumentsPath(path: String) {}
+        override val floconDocumentsPath: Flow<String?> = emptyFlow()
         override fun getDismissedDesktopVersion(): String? = null
         override suspend fun setDismissedDesktopVersion(version: String) {}
         override val adbPath: Flow<String?> = emptyFlow()

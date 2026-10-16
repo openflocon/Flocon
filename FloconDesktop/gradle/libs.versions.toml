@@ -6,6 +6,7 @@ buildconfig = "6.0.10"
 coil = "3.5.0"
 compose-multiplatform = "1.12.1"
 junit = "4.13.2"
+filekit = "0.16.0"
 kermit = "2.1.0"
 koin = "4.2.2"
 kotlin = "2.4.0"
@@ -57,6 +58,11 @@ ui-tooling-preview-desktop = { module = "org.jetbrains.compose.ui:ui-tooling-pre
 
 # Junit
 junit = { module = "junit:junit", version.ref = "junit" }
+
+# FileKit
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
+filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
+filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 
 # Kermit
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }

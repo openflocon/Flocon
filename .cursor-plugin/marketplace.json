@@ -1,0 +1,17 @@
+{
+  "name": "flocon",
+  "owner": {
+    "name": "openflocon"
+  },
+  "metadata": {
+    "description": "Plugins for Flocon, the debugging tool for mobile apps"
+  },
+  "plugins": [
+    {
+      "name": "flocon",
+      "source": "./plugins/flocon",
+      "description": "Let your AI agent inspect and mock the network calls of your mobile app, and read its files, analytics events and databases through Flocon Desktop",
+      "category": "Developer Tools"
+    }
+  ]
+}

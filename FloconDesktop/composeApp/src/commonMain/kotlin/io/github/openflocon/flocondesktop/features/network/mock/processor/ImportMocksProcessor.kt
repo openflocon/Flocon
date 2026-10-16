@@ -2,9 +2,11 @@ package io.github.openflocon.flocondesktop.features.network.mock.processor
 
 import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.openFilePicker
+import io.github.vinceglb.filekit.path
 import kotlinx.serialization.json.Json
-import java.awt.FileDialog
-import java.awt.Frame
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -22,15 +24,18 @@ class ImportMocksProcessor {
     }
 
     suspend operator fun invoke(): ImportResult {
-        val selectedFile = showOpenFileDialog(dialogName = "Importer les Mocks JSON")
+        val selectedFile = FileKit.openFilePicker(
+            type = FileKitType.File("json"),
+        )
 
         if (selectedFile == null) {
             Logger.d("Importing cancelled")
             return ImportResult.Cancelled
         }
 
+        val file = File(selectedFile.path)
         val jsonString = try {
-            selectedFile.readText() // Extension Kotlin pour lire le texte
+            file.readText()
         } catch (e: FileNotFoundException) {
             Logger.e("File not found during import", e)
             return ImportResult.Failure(e)
@@ -39,10 +44,8 @@ class ImportMocksProcessor {
             return ImportResult.Failure(e)
         }
 
-        // 3. Désérialiser et mapper vers le DomainModel
         val domainMocks = try {
             val exportedMocks: List<MockNetworkExportedModel> = json.decodeFromString(jsonString)
-
             exportedMocks.map { it.toDomainModel() }
         } catch (e: Exception) {
             Logger.e("Error deserializing or mapping mocks", e)
@@ -50,25 +53,5 @@ class ImportMocksProcessor {
         }
 
         return ImportResult.Success(domainMocks)
-    }
-}
-
-private fun showOpenFileDialog(dialogName: String): File? {
-    val parentFrame = Frame()
-    val dialog = FileDialog(parentFrame, dialogName, FileDialog.LOAD).apply {
-        filenameFilter = java.io.FilenameFilter { _, name -> name.endsWith(".json", ignoreCase = true) }
-    }
-
-    dialog.isVisible = true // Bloque jusqu'à ce que la boîte de dialogue soit fermée
-
-    val file = dialog.file
-    val directory = dialog.directory
-
-    parentFrame.dispose()
-
-    return if (file != null && directory != null) {
-        File(directory, file)
-    } else {
-        null
     }
 }

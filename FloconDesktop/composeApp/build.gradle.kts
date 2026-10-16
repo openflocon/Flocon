@@ -76,6 +76,9 @@ kotlin {
             implementation(projects.navigation)
 
             implementation(libs.kermit)
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.dialogs)
+            implementation(libs.filekit.dialogs.compose)
 
 //            implementation(libs.material3.adaptive)
         }
