@@ -139,7 +139,7 @@ fun MockEditorScreen(
 
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         FloconDialogHeader(
             modifier = Modifier.fillMaxWidth(),
@@ -453,7 +453,7 @@ fun MockEditorScreen(
 
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                         ) {
                             NetworkMockMediaType(
                                 text = "application/json",
@@ -590,7 +590,7 @@ fun MockEditorScreen(
                                         color = FloconTheme.colorPalette.surface,
                                         shape = FloconTheme.shapes.medium,
                                     )
-                                    .padding(vertical = 4.dp, horizontal = 8.dp),
+                                    .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
                             ) {
                                 val throwable = jsonError
                                 if (throwable == null) {
@@ -682,7 +682,7 @@ private fun HeaderInputField(
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         FloconTextField(
             value = key,
@@ -706,7 +706,7 @@ private fun HeaderInputField(
                 .background(FloconTheme.colorPalette.surface)
                 .clickable {
                     onRemove()
-                }.padding(all = 4.dp),
+                }.padding(all = FloconTheme.spacing.extraSmall),
             contentAlignment = Alignment.Center,
         ) {
             Image(

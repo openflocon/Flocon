@@ -17,6 +17,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.app.TopBarAppDropdown
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.device.TopBarDeviceDropdown
+import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 internal fun TopBarDeviceAndAppView(
@@ -30,7 +31,7 @@ internal fun TopBarDeviceAndAppView(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TopBarDeviceDropdown(

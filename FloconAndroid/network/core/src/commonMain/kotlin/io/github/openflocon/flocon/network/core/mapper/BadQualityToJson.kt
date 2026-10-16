@@ -1,0 +1,83 @@
+package io.github.openflocon.flocon.network.core.mapper
+
+import io.github.openflocon.flocon.network.core.model.BadQualityConfig
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal class BadQualityConfigSerializable(
+    val latency: LatencySerializable,
+    val errorProbability: Double,
+    val errors: List<ErrorSerializable>,
+) {
+    @Serializable
+    class LatencySerializable(
+        val latencyTriggerProbability: Float,
+        val minLatencyMs: Long,
+        val maxLatencyMs: Long,
+    )
+
+    @Serializable
+    class ErrorSerializable(
+        val weight: Float,
+        val errorCode: Int? = null,
+        val errorBody: String? = null,
+        val errorContentType: String? = null,
+        val errorException: String? = null,
+    )
+}
+
+internal fun BadQualityConfig.toSerializable(): BadQualityConfigSerializable {
+    return BadQualityConfigSerializable(
+        latency = BadQualityConfigSerializable.LatencySerializable(
+            latencyTriggerProbability = latency.latencyTriggerProbability,
+            minLatencyMs = latency.minLatencyMs,
+            maxLatencyMs = latency.maxLatencyMs
+        ),
+        errorProbability = errorProbability,
+        errors = errors.map { error ->
+            when (val t = error.type) {
+                is BadQualityConfig.Error.Type.Body -> BadQualityConfigSerializable.ErrorSerializable(
+                    weight = error.weight,
+                    errorCode = t.errorCode,
+                    errorBody = t.errorBody,
+                    errorContentType = t.errorContentType
+                )
+
+                is BadQualityConfig.Error.Type.ErrorThrow -> BadQualityConfigSerializable.ErrorSerializable(
+                    weight = error.weight,
+                    errorException = t.classPath
+                )
+            }
+        }
+    )
+}
+
+internal fun BadQualityConfigSerializable.toDomain(): BadQualityConfig {
+    val latencyConfig = BadQualityConfig.LatencyConfig(
+        latencyTriggerProbability = latency.latencyTriggerProbability,
+        minLatencyMs = latency.minLatencyMs,
+        maxLatencyMs = latency.maxLatencyMs
+    )
+
+    val errorsList = errors.map { e ->
+        val type = if (!e.errorException.isNullOrEmpty()) {
+            BadQualityConfig.Error.Type.ErrorThrow(e.errorException)
+        } else {
+            BadQualityConfig.Error.Type.Body(
+                errorCode = e.errorCode ?: 0,
+                errorBody = e.errorBody.orEmpty(),
+                errorContentType = e.errorContentType.orEmpty()
+            )
+        }
+        BadQualityConfig.Error(
+            weight = e.weight,
+            type = type
+        )
+    }
+
+    return BadQualityConfig(
+        latency = latencyConfig,
+        errorProbability = errorProbability,
+        errors = errorsList
+    )
+}

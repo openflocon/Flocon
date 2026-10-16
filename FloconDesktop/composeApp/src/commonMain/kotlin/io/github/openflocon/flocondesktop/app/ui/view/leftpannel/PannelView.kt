@@ -72,7 +72,7 @@ fun PanelView(
             0.3f
         } else 1f
     )
-    val horizontalPadding = 12.dp
+    val horizontalPadding = FloconTheme.spacing.medium
 
     Row(
         modifier = modifier
@@ -83,13 +83,13 @@ fun PanelView(
                 alpha = lineAlpha
             }
             .clickable(onClick = onClick, interactionSource = interactionSource, indication = null)
-            .padding(horizontal = horizontalPadding, vertical = 4.dp),
+            .padding(horizontal = horizontalPadding, vertical = FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             modifier = Modifier
                 .size(PanelContentMinSize - horizontalPadding.times(2))
-                .padding(4.dp),
+                .padding(FloconTheme.spacing.extraSmall),
             imageVector = icon,
             contentDescription = "Description de mon image",
             tint = iconColor,
@@ -104,7 +104,7 @@ fun PanelView(
                 color = FloconTheme.colorPalette.onSurface,
                 style = FloconTheme.typography.bodyMedium,
                 maxLines = 1,
-                modifier = Modifier.padding(start = 12.dp),
+                modifier = Modifier.padding(start = FloconTheme.spacing.medium),
             )
         }
     }
