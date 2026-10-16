@@ -19,6 +19,12 @@ interface SettingsRepository {
 
     suspend fun setTheme(value: ThemeSetting)
 
+    fun getFloconDocumentsPath(): String?
+
+    suspend fun setFloconDocumentsPath(path: String)
+
+    val floconDocumentsPath: Flow<String?>
+
     fun getDismissedDesktopVersion(): String?
 
     suspend fun setDismissedDesktopVersion(version: String)

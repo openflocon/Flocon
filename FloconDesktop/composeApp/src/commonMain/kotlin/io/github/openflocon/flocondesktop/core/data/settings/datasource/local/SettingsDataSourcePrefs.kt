@@ -41,6 +41,8 @@ internal class SettingsDataSourcePrefs(
         .mapLatest { json.decodeFromString<NetworkSettingsLocal>(it) }
         .stateIn(networkSettings)
 
+    override val floconDocumentsPath: Flow<String?> = flowSettings.getStringOrNullFlow(FLOCON_DOCUMENTS_PATH)
+
     override val adbPath: Flow<String?> = flowSettings.getStringOrNullFlow(ADB_PATH)
     override val fontSizeMultiplier: StateFlow<Float> = settings.toFlowSettings()
         .getFloatOrNullFlow(FONT_SIZE_MULTIPLIER)
@@ -56,6 +58,12 @@ internal class SettingsDataSourcePrefs(
 
     override suspend fun setAdbPath(path: String) {
         settings.putString(ADB_PATH, path)
+    }
+
+    override fun getFloconDocumentsPath(): String? = settings.getStringOrNull(FLOCON_DOCUMENTS_PATH)
+
+    override suspend fun setFloconDocumentsPath(path: String) {
+        settings.putString(FLOCON_DOCUMENTS_PATH, path)
     }
 
     override suspend fun setFontSizeMultiplier(value: Float) {
@@ -114,6 +122,7 @@ internal class SettingsDataSourcePrefs(
 
     companion object {
         private const val ADB_PATH = "adb_path"
+        private const val FLOCON_DOCUMENTS_PATH = "flocon_documents_path"
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier"
         private const val THEME = "theme"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"

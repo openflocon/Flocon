@@ -44,6 +44,9 @@ class CheckIsDesktopOnLastVersionUseCaseTest {
         override suspend fun setAdbPath(path: String) {}
         override suspend fun setFontSizeMultiplier(value: Float) {}
         override suspend fun setTheme(value: ThemeSetting) {}
+        override fun getFloconDocumentsPath(): String? = null
+        override suspend fun setFloconDocumentsPath(path: String) {}
+        override val floconDocumentsPath: Flow<String?> = emptyFlow()
         override fun getDismissedDesktopVersion(): String? = dismissedVersion
         override suspend fun setDismissedDesktopVersion(version: String) {
             dismissedVersion = version
