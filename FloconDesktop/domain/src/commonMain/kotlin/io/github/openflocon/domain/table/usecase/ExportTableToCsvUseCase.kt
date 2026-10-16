@@ -4,6 +4,9 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.table.models.TableDomainModel
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.openFileSaver
+import io.github.vinceglb.filekit.path
 import kotlinx.coroutines.flow.firstOrNull
 import java.io.File
 import java.text.SimpleDateFormat
@@ -18,9 +21,15 @@ class ExportTableToCsvUseCase(
             Throwable("no table to export")
         )
 
-        val fileName = "table_${System.currentTimeMillis()}.csv"
-        val desktopPath = System.getProperty("user.home") + File.separator + "Desktop"
-        val file = File(desktopPath, fileName)
+        val baseName = "table_${System.currentTimeMillis()}"
+
+        val selectedFile = FileKit.openFileSaver(
+            suggestedName = baseName,
+            defaultExtension = "csv",
+        ) ?: return Failure(Throwable("no file selected"))
+
+        val file = File(selectedFile.path)
+
         items.exportToCsv(file = file)
         return Success(file.absolutePath)
     }
