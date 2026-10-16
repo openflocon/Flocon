@@ -5,8 +5,7 @@ import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.toFullSql
-import java.awt.FileDialog
-import java.awt.Frame
+import io.github.vinceglb.filekit.core.FileKit
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -17,37 +16,19 @@ class ExportDatabaseQueryLogsToMarkdownProcessor {
     suspend operator fun invoke(
         logs: List<DatabaseQueryLogDomainModel>
     ): Either<Throwable, String> {
-        val fileName = "database_logs_${System.currentTimeMillis()}.md"
+        val baseName = "database_logs_${System.currentTimeMillis()}"
 
-        val file = showSaveFileDialog(defaultFileName = fileName, dialogName = "Export database logs as Markdown") ?: return Failure(
-            Throwable("no file selected")
-        )
+        val selectedFile = FileKit.saveFile(
+            baseName = baseName,
+            extension = "md",
+        ) ?: return Failure(Throwable("no file selected"))
 
+        val file = selectedFile.file
         exportToMarkdown(
             file = file,
             logs = logs,
         )
         return Success(file.absolutePath)
-    }
-
-    private fun showSaveFileDialog(dialogName: String, defaultFileName: String): File? {
-        val parentFrame = Frame()
-        val dialog = FileDialog(parentFrame, dialogName, FileDialog.SAVE).apply {
-            file = defaultFileName
-        }
-
-        dialog.isVisible = true 
-
-        val file = dialog.file
-        val directory = dialog.directory
-
-        parentFrame.dispose()
-
-        return if (file != null && directory != null) {
-            File(directory, file)
-        } else {
-            null
-        }
     }
 
     private fun exportToMarkdown(

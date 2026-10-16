@@ -6,8 +6,7 @@ import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.repository.NetworkCsvRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
-import java.awt.FileDialog
-import java.awt.Frame
+import io.github.vinceglb.filekit.core.FileKit
 import java.io.File
 
 class ExportNetworkCallsToCsvUseCase(
@@ -21,11 +20,13 @@ class ExportNetworkCallsToCsvUseCase(
     ): Either<Throwable, String> {
         val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("No device id"))
 
-        val fileName = "network_calls_${System.currentTimeMillis()}.csv"
-        val file = showSaveFileDialog(defaultFileName = fileName, dialogName = "Export network calls as CSV") ?: return Failure(
-            Throwable("no file selected")
-        )
+        val baseName = "network_calls_${System.currentTimeMillis()}"
+        val selectedFile = FileKit.saveFile(
+            baseName = baseName,
+            extension = "csv",
+        ) ?: return Failure(Throwable("no file selected"))
 
+        val file = selectedFile.file
         val requests = networkRepository.getRequests(
             deviceIdAndPackageName = deviceIdAndPackageName,
             ids = ids
@@ -38,25 +39,5 @@ class ExportNetworkCallsToCsvUseCase(
         )
 
         return Success(file.absolutePath)
-    }
-
-    private fun showSaveFileDialog(dialogName: String, defaultFileName: String): File? {
-        val parentFrame = Frame()
-        val dialog = FileDialog(parentFrame, dialogName, FileDialog.SAVE).apply {
-            file = defaultFileName
-        }
-
-        dialog.isVisible = true // Bloque jusqu'à ce que la boîte de dialogue soit fermée
-
-        val file = dialog.file
-        val directory = dialog.directory
-
-        parentFrame.dispose()
-
-        return if (file != null && directory != null) {
-            File(directory, file)
-        } else {
-            null
-        }
     }
 }

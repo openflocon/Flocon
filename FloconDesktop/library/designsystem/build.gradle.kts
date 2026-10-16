@@ -39,6 +39,7 @@ kotlin {
 //                api(libs.androidx.lifecycle.viewmodel.navigation3)
                 api(libs.kotlinx.serialization.core)
                 api("com.composables:core:1.43.1")
+                api(libs.filekit.core)
             }
         }
 

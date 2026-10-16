@@ -4,12 +4,11 @@ import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
+import io.github.vinceglb.filekit.core.FileKit
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.json.Json
-import java.awt.FileDialog
-import java.awt.Frame
 import java.io.File
 import kotlin.time.Clock
 
@@ -50,11 +49,14 @@ class ExportMocksProcessor(
 
             "${day}_${month}_${year}_${hour}_$minute"
         }
-        val selectedFile = showSaveFileDialog(defaultFileName = "flocon_mocks_$formattedDate.json", dialogName = "Export mocks")
+        val selectedFile = FileKit.saveFile(
+            baseName = "flocon_mocks_$formattedDate",
+            extension = "json",
+        )
 
         if (selectedFile != null) {
             try {
-                selectedFile.writeText(jsonString) // Extension Kotlin pour écrire du texte
+                selectedFile.file.writeText(jsonString)
                 return ExportResult.Success
             } catch (e: Exception) {
                 Logger.e("Error writing mocks", e)
@@ -64,26 +66,5 @@ class ExportMocksProcessor(
             Logger.d("Exporting cancelled")
             return ExportResult.Cancelled
         }
-    }
-}
-
-private fun showSaveFileDialog(dialogName: String, defaultFileName: String): File? {
-    val parentFrame = Frame()
-    val dialog = FileDialog(parentFrame, dialogName, FileDialog.SAVE).apply {
-        file = defaultFileName
-    }
-
-    dialog.isVisible = true // Bloque jusqu'à ce que la boîte de dialogue soit fermée
-
-    val file = dialog.file
-    val directory = dialog.directory
-
-    // Libérer la frame temporaire après utilisation
-    parentFrame.dispose()
-
-    return if (file != null && directory != null) {
-        File(directory, file)
-    } else {
-        null
     }
 }

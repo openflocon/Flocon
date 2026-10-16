@@ -1,35 +1,20 @@
 package io.github.openflocon.library.designsystem.common
 
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toAwtImage
-import java.awt.FileDialog
-import java.awt.Frame
-import java.awt.image.BufferedImage
-import java.io.File
-import javax.imageio.ImageIO
+import io.github.vinceglb.filekit.core.FileKit
 
-actual fun saveImageToFile(bitmap: ImageBitmap, defaultFileName: String): Boolean {
+actual suspend fun saveImageToFile(bitmap: ImageBitmap, defaultFileName: String): Boolean {
     return try {
-        val parentFrame = Frame()
-        val dialog = FileDialog(parentFrame, "Save Image", FileDialog.SAVE).apply {
-            file = defaultFileName
-        }
-        dialog.isVisible = true
-        val file = dialog.file
-        val directory = dialog.directory
-        parentFrame.dispose()
+        val baseName = defaultFileName.removeSuffix(".png")
+        val savedFile = FileKit.saveFile(
+            baseName = baseName,
+            extension = "png",
+        ) ?: return false
 
-        if (file != null && directory != null) {
-            val targetFile = File(directory, if (file.endsWith(".png", ignoreCase = true)) file else "$file.png")
-            val bufferedImage = ImageOptimizer.toOptimizedBufferedImage(bitmap)
-            ImageOptimizer.saveToFile(bufferedImage, targetFile)
-        } else {
-            false
-        }
+        val bufferedImage = ImageOptimizer.toOptimizedBufferedImage(bitmap)
+        ImageOptimizer.saveToFile(bufferedImage, savedFile.file)
     } catch (e: Exception) {
         e.printStackTrace()
         false
     }
 }
-
-

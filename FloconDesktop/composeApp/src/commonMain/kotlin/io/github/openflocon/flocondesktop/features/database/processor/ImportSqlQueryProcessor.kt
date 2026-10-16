@@ -1,30 +1,19 @@
 package io.github.openflocon.flocondesktop.features.database.processor
 
-import java.awt.FileDialog
-import java.awt.Frame
+import io.github.vinceglb.filekit.core.FileKit
+import io.github.vinceglb.filekit.core.PickerMode
+import io.github.vinceglb.filekit.core.PickerType
 import java.io.File
 
 class ImportSqlQueryProcessor {
 
-    suspend operator fun invoke(): String? = showOpenFileDialog(
-        dialogName = "Import Sql Query"
-    )?.readText()
+    suspend operator fun invoke(): String? {
+        val selectedFile = FileKit.pickFile(
+            type = PickerType.File(listOf("sql", "txt")),
+            mode = PickerMode.Single,
+            title = "Import Sql Query",
+        ) ?: return null
 
-    private fun showOpenFileDialog(dialogName: String): File? {
-        val parentFrame = Frame()
-        val dialog = FileDialog(parentFrame, dialogName, FileDialog.LOAD)
-
-        dialog.isVisible = true // Bloque jusqu'à ce que la boîte de dialogue soit fermée
-
-        val file = dialog.file
-        val directory = dialog.directory
-
-        parentFrame.dispose()
-
-        return if (file != null && directory != null) {
-            File(directory, file)
-        } else {
-            null
-        }
+        return File(selectedFile.path).readText()
     }
 }

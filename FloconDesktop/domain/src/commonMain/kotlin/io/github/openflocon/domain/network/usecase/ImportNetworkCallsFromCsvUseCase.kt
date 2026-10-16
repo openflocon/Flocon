@@ -7,8 +7,9 @@ import io.github.openflocon.domain.common.then
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.repository.NetworkCsvRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
-import java.awt.FileDialog
-import java.awt.Frame
+import io.github.vinceglb.filekit.core.FileKit
+import io.github.vinceglb.filekit.core.PickerMode
+import io.github.vinceglb.filekit.core.PickerType
 import java.io.File
 
 class ImportNetworkCallsFromCsvUseCase(
@@ -20,12 +21,15 @@ class ImportNetworkCallsFromCsvUseCase(
         val current = getCurrentDeviceIdAndPackageNameUseCase()
             ?: return Failure(Throwable("no current device"))
         return try {
-            val file = showOpenFileDialog(
-                dialogName = "Import Sql Query",
+            val selectedFile = FileKit.pickFile(
+                type = PickerType.File(listOf("csv")),
+                mode = PickerMode.Single,
+                title = "Import Network Calls",
             )
-            if (file == null) {
+            if (selectedFile == null) {
                 Failure(Throwable("no file selected"))
             } else {
+                val file = File(selectedFile.path)
                 networkCsvRepository.importCallsFromCsv(file = file, current.appInstance)
                     .then {
                         networkRepository.addCalls(
@@ -37,24 +41,6 @@ class ImportNetworkCallsFromCsvUseCase(
             }
         } catch (t: Throwable) {
             Failure(t)
-        }
-    }
-
-    private fun showOpenFileDialog(dialogName: String): File? {
-        val parentFrame = Frame()
-        val dialog = FileDialog(parentFrame, dialogName, FileDialog.LOAD)
-
-        dialog.isVisible = true // Bloque jusqu'à ce que la boîte de dialogue soit fermée
-
-        val file = dialog.file
-        val directory = dialog.directory
-
-        parentFrame.dispose()
-
-        return if (file != null && directory != null) {
-            File(directory, file)
-        } else {
-            null
         }
     }
 }

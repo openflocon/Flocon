@@ -3,8 +3,7 @@ package io.github.openflocon.flocondesktop.features.database.processor
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
-import java.awt.FileDialog
-import java.awt.Frame
+import io.github.vinceglb.filekit.core.FileKit
 import java.io.File
 
 class ExportDatabaseResultToCsvProcessor {
@@ -13,39 +12,20 @@ class ExportDatabaseResultToCsvProcessor {
         columns: List<String>,
         values: List<List<String>>,
     ): Either<Throwable, String> {
-        val fileName = "query_result_${System.currentTimeMillis()}.csv"
+        val baseName = "query_result_${System.currentTimeMillis()}"
 
-        val file = showSaveFileDialog(defaultFileName = fileName, dialogName = "Export query result as CSV") ?: return Failure(
-            Throwable("no file selected")
-        )
+        val selectedFile = FileKit.saveFile(
+            baseName = baseName,
+            extension = "csv",
+        ) ?: return Failure(Throwable("no file selected"))
 
+        val file = selectedFile.file
         exportToCsv(
             file = file,
             columns = columns,
             values = values,
         )
         return Success(file.absolutePath)
-    }
-
-    private fun showSaveFileDialog(dialogName: String, defaultFileName: String): File? {
-        val parentFrame = Frame()
-        val dialog = FileDialog(parentFrame, dialogName, FileDialog.SAVE).apply {
-            file = defaultFileName
-        }
-
-        dialog.isVisible = true // Bloque jusqu'à ce que la boîte de dialogue soit fermée
-
-        val file = dialog.file
-        val directory = dialog.directory
-
-        // Libérer la frame temporaire après utilisation
-        parentFrame.dispose()
-
-        return if (file != null && directory != null) {
-            File(directory, file)
-        } else {
-            null
-        }
     }
 }
 
