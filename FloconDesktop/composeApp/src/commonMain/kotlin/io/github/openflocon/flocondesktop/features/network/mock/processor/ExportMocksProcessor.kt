@@ -4,7 +4,9 @@ import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
-import io.github.vinceglb.filekit.core.FileKit
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.openFileSaver
+import io.github.vinceglb.filekit.path
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -49,14 +51,14 @@ class ExportMocksProcessor(
 
             "${day}_${month}_${year}_${hour}_$minute"
         }
-        val selectedFile = FileKit.saveFile(
-            baseName = "flocon_mocks_$formattedDate",
-            extension = "json",
+        val selectedFile = FileKit.openFileSaver(
+            suggestedName = "flocon_mocks_$formattedDate",
+            defaultExtension = "json",
         )
 
         if (selectedFile != null) {
             try {
-                selectedFile.file.writeText(jsonString)
+                File(selectedFile.path).writeText(jsonString)
                 return ExportResult.Success
             } catch (e: Exception) {
                 Logger.e("Error writing mocks", e)

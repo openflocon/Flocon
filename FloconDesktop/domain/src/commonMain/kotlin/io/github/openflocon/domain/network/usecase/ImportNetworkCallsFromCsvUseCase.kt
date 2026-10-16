@@ -7,9 +7,10 @@ import io.github.openflocon.domain.common.then
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.repository.NetworkCsvRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
-import io.github.vinceglb.filekit.core.FileKit
-import io.github.vinceglb.filekit.core.PickerMode
-import io.github.vinceglb.filekit.core.PickerType
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.openFilePicker
+import io.github.vinceglb.filekit.path
 import java.io.File
 
 class ImportNetworkCallsFromCsvUseCase(
@@ -21,10 +22,8 @@ class ImportNetworkCallsFromCsvUseCase(
         val current = getCurrentDeviceIdAndPackageNameUseCase()
             ?: return Failure(Throwable("no current device"))
         return try {
-            val selectedFile = FileKit.pickFile(
-                type = PickerType.File(listOf("csv")),
-                mode = PickerMode.Single,
-                title = "Import Network Calls",
+            val selectedFile = FileKit.openFilePicker(
+                type = FileKitType.File("csv"),
             )
             if (selectedFile == null) {
                 Failure(Throwable("no file selected"))

@@ -2,9 +2,10 @@ package io.github.openflocon.flocondesktop.features.network.mock.processor
 
 import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
-import io.github.vinceglb.filekit.core.FileKit
-import io.github.vinceglb.filekit.core.PickerMode
-import io.github.vinceglb.filekit.core.PickerType
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.openFilePicker
+import io.github.vinceglb.filekit.path
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileNotFoundException
@@ -23,10 +24,8 @@ class ImportMocksProcessor {
     }
 
     suspend operator fun invoke(): ImportResult {
-        val selectedFile = FileKit.pickFile(
-            type = PickerType.File(listOf("json")),
-            mode = PickerMode.Single,
-            title = "Importer les Mocks JSON",
+        val selectedFile = FileKit.openFilePicker(
+            type = FileKitType.File("json"),
         )
 
         if (selectedFile == null) {

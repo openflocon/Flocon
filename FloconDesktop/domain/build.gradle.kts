@@ -23,6 +23,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.filekit.core)
+            implementation(libs.filekit.dialogs)
         }
 
         commonTest.dependencies {

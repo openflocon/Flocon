@@ -1,7 +1,10 @@
 package io.github.openflocon.flocondesktop.common.utils
 
 import co.touchlab.kermit.Logger
-import io.github.vinceglb.filekit.core.FileKit
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.dialogs.openDirectoryPicker
+import io.github.vinceglb.filekit.path
 import java.io.File
 
 object FolderPicker {
@@ -13,9 +16,9 @@ object FolderPicker {
         initialPath: String? = null,
     ): File? {
         return try {
-            val directory = FileKit.pickDirectory(
-                initialDirectory = initialPath?.takeIf { it.isNotBlank() },
-                title = title,
+            val initialDirectory = initialPath?.takeIf { it.isNotBlank() }?.let { PlatformFile(File(it)) }
+            val directory = FileKit.openDirectoryPicker(
+                directory = initialDirectory,
             )
             if (directory != null) {
                 Logger.d(TAG) { "Folder picked via FileKit: ${directory.path}" }

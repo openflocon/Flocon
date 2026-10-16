@@ -40,6 +40,7 @@ kotlin {
                 api(libs.kotlinx.serialization.core)
                 api("com.composables:core:1.43.1")
                 api(libs.filekit.core)
+                api(libs.filekit.dialogs)
             }
         }
 

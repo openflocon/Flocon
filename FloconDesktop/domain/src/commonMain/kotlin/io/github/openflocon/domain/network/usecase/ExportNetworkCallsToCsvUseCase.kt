@@ -6,7 +6,9 @@ import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.network.repository.NetworkCsvRepository
 import io.github.openflocon.domain.network.repository.NetworkRepository
-import io.github.vinceglb.filekit.core.FileKit
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.openFileSaver
+import io.github.vinceglb.filekit.path
 import java.io.File
 
 class ExportNetworkCallsToCsvUseCase(
@@ -21,12 +23,12 @@ class ExportNetworkCallsToCsvUseCase(
         val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("No device id"))
 
         val baseName = "network_calls_${System.currentTimeMillis()}"
-        val selectedFile = FileKit.saveFile(
-            baseName = baseName,
-            extension = "csv",
+        val selectedFile = FileKit.openFileSaver(
+            suggestedName = baseName,
+            defaultExtension = "csv",
         ) ?: return Failure(Throwable("no file selected"))
 
-        val file = selectedFile.file
+        val file = File(selectedFile.path)
         val requests = networkRepository.getRequests(
             deviceIdAndPackageName = deviceIdAndPackageName,
             ids = ids

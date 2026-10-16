@@ -77,7 +77,8 @@ kotlin {
 
             implementation(libs.kermit)
             implementation(libs.filekit.core)
-            implementation(libs.filekit.compose)
+            implementation(libs.filekit.dialogs)
+            implementation(libs.filekit.dialogs.compose)
 
 //            implementation(libs.material3.adaptive)
         }
