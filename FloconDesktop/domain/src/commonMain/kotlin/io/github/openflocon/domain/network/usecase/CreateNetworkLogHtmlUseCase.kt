@@ -7,109 +7,131 @@ import io.github.openflocon.domain.network.models.responseBody
 import io.github.openflocon.domain.network.models.responseByteSizeFormatted
 import io.github.openflocon.domain.network.models.responseHeaders
 import io.github.openflocon.domain.network.repository.NetworkRepository
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
+import io.github.vinceglb.filekit.dialogs.openDirectoryPicker
 import kotlinx.coroutines.flow.firstOrNull
+import java.io.File
 
-class GetNetworkCallAsHtmlUseCase(
+class CreateNetworkLogHtmlUseCase(
     private val networkRepository: NetworkRepository,
     private val jsonFormatter: JsonFormatter,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
 ) {
-    suspend operator fun invoke(callId: String): String? {
-        val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return null
+    suspend operator fun invoke(callId: String) {
+        val deviceIdAndPackageName = getCurrentDeviceIdAndPackageNameUseCase() ?: return
         val call = networkRepository.observeRequest(
             deviceIdAndPackageName = deviceIdAndPackageName,
             requestId = callId
-        ).firstOrNull() ?: return null
+        )
+            .firstOrNull()
+            ?: return
+        val folder = FileKit.openDirectoryPicker(
+            dialogSettings = FileKitDialogSettings(
+                title = "Choose to create the file on"
+            )
+        ) ?: return
+        val file = File(folder.file, "$callId.html")
 
         val statusLabel = call.response?.statusFormatted ?: "Pending"
         val statusClass = statusBadgeClass(statusLabel)
         val methodClass = methodBadgeClass(call.request.method)
 
-        return buildString {
-            appendLine("<!DOCTYPE html>")
-            appendLine("<html lang=\"en\">")
-            appendLine("<head>")
-            appendLine("<meta charset=\"UTF-8\">")
-            appendLine("<title>${escapeHtml(call.request.method)} ${escapeHtml(call.request.url)}</title>")
-            appendLine("<style>${styleSheet()}</style>")
-            appendLine("</head>")
-            appendLine("<body>")
-            appendLine("<div class=\"card\">")
+        file.writer().use { writer ->
+            writer.appendLine("<!DOCTYPE html>")
+            writer.appendLine("<html lang=\"en\">")
+            writer.appendLine("<head>")
+            writer.appendLine("<meta charset=\"UTF-8\">")
+            writer.appendLine("<title>${escapeHtml(call.request.method)} ${escapeHtml(call.request.url)}</title>")
+            writer.appendLine("<style>${styleSheet()}</style>")
+            writer.appendLine("</head>")
+            writer.appendLine("<body>")
+            writer.appendLine("<div class=\"card\">")
 
             // Title row: URL + copy button
-            appendLine("<div class=\"title-row\">")
-            appendLine("<h1 class=\"url\" id=\"url-text\">${escapeHtml(call.request.url)}</h1>")
-            appendLine(copyButton(targetId = "url-text", label = "Copy URL"))
-            appendLine("</div>")
+            writer.appendLine("<div class=\"title-row\">")
+            writer.appendLine("<h1 class=\"url\" id=\"url-text\">${escapeHtml(call.request.url)}</h1>")
+            writer.appendLine(copyButton(targetId = "url-text", label = "Copy URL"))
+            writer.appendLine("</div>\n")
 
             // Badges row: method + status + meta
-            appendLine("<div class=\"meta\">")
-            appendLine("<span class=\"method-badge $methodClass\">${escapeHtml(call.request.method)}</span>")
-            appendLine("<span class=\"badge $statusClass\">${escapeHtml(statusLabel)}</span>")
-            appendLine("<span class=\"meta-item\"><strong>Time:</strong> ${escapeHtml(call.request.startTimeFormatted)}</span>")
-            appendLine("<span class=\"meta-item\"><strong>Duration:</strong> ${escapeHtml(call.response?.durationFormatted ?: "-")}</span>")
-            appendLine("<span class=\"meta-item\"><strong>Size:</strong> ${escapeHtml(call.responseByteSizeFormatted() ?: "-")}</span>")
-            appendLine("</div>")
+            writer.appendLine("<div class=\"meta\">")
+            writer.appendLine("<span class=\"method-badge $methodClass\">${escapeHtml(call.request.method)}</span>")
+            writer.appendLine("<span class=\"badge $statusClass\">${escapeHtml(statusLabel)}</span>")
+            writer.appendLine("<span class=\"meta-item\"><strong>Time:</strong> ${escapeHtml(call.request.startTimeFormatted)}</span>")
+            writer.appendLine("<span class=\"meta-item\"><strong>Duration:</strong> ${escapeHtml(call.response?.durationFormatted ?: "-")}</span>")
+            writer.appendLine("<span class=\"meta-item\"><strong>Size:</strong> ${escapeHtml(call.responseByteSizeFormatted() ?: "-")}</span>")
+            writer.appendLine("</div>")
 
             // Tabs
-            appendLine("<div class=\"tabs\">")
-            appendLine("<button class=\"tab-btn active\" data-tab=\"request-tab\" onclick=\"showTab(this)\">Request</button>")
-            appendLine("<button class=\"tab-btn\" data-tab=\"response-tab\" onclick=\"showTab(this)\">Response</button>")
-            appendLine("</div>")
+            writer.appendLine("<div class=\"tabs\">")
+            writer.appendLine("<button class=\"tab-btn active\" data-tab=\"request-tab\" onclick=\"showTab(this)\">Request</button>")
+            writer.appendLine("<button class=\"tab-btn\" data-tab=\"response-tab\" onclick=\"showTab(this)\">Response</button>")
+            writer.appendLine("</div>")
 
             // Request tab
-            appendLine("<div id=\"request-tab\" class=\"tab-content active\">")
-            appendLine(sectionWithCopy(
-                title = "Request Headers",
-                rawId = "request-headers-raw",
-                rawText = headersToRawText(call.request.headers),
-                visibleContent = headersTable(call.request.headers)
-            ))
+            writer.appendLine("<div id=\"request-tab\" class=\"tab-content active\">")
+            writer.appendLine(
+                sectionWithCopy(
+                    title = "Request Headers",
+                    rawId = "request-headers-raw",
+                    rawText = headersToRawText(call.request.headers),
+                    visibleContent = headersTable(call.request.headers)
+                )
+            )
             if (!call.request.body.isNullOrBlank()) {
                 val prettyBody = jsonFormatter.toPrettyJson(call.request.body)
-                appendLine(sectionWithCopy(
-                    title = "Request Body",
-                    rawId = "request-body-raw",
-                    rawText = prettyBody,
-                    visibleContent = codeBlock(prettyBody)
-                ))
+                writer.appendLine(
+                    sectionWithCopy(
+                        title = "Request Body",
+                        rawId = "request-body-raw",
+                        rawText = prettyBody,
+                        visibleContent = codeBlock(prettyBody)
+                    )
+                )
             }
-            appendLine("</div>")
+            writer.appendLine("</div>")
 
             // Response tab
-            appendLine("<div id=\"response-tab\" class=\"tab-content\">")
+            writer.appendLine("<div id=\"response-tab\" class=\"tab-content\">")
             call.responseHeaders()?.let { headers ->
-                appendLine(sectionWithCopy(
-                    title = "Response Headers",
-                    rawId = "response-headers-raw",
-                    rawText = headersToRawText(headers),
-                    visibleContent = headersTable(headers)
-                ))
+                writer.appendLine(
+                    sectionWithCopy(
+                        title = "Response Headers",
+                        rawId = "response-headers-raw",
+                        rawText = headersToRawText(headers),
+                        visibleContent = headersTable(headers)
+                    )
+                )
             }
             if (!call.responseBody().isNullOrBlank()) {
                 val prettyBody = call.responseBody()?.let { jsonFormatter.toPrettyJson(it) } ?: ""
-                appendLine(sectionWithCopy(
-                    title = "Response Body",
-                    rawId = "response-body-raw",
-                    rawText = prettyBody,
-                    visibleContent = codeBlock(prettyBody)
-                ))
-            } else if (call.response is io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel.Response.Failure) {
-                val issue = (call.response as io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel.Response.Failure).issue
-                appendLine(sectionWithCopy(
-                    title = "Error",
-                    rawId = "response-error-raw",
-                    rawText = issue,
-                    visibleContent = codeBlock(issue),
-                    variant = "error"
-                ))
+                writer.appendLine(
+                    sectionWithCopy(
+                        title = "Response Body",
+                        rawId = "response-body-raw",
+                        rawText = prettyBody,
+                        visibleContent = codeBlock(prettyBody)
+                    )
+                )
+            } else if (call.response is FloconNetworkCallDomainModel.Response.Failure) {
+                val issue = call.response.issue
+                writer.appendLine(
+                    sectionWithCopy(
+                        title = "Error",
+                        rawId = "response-error-raw",
+                        rawText = issue,
+                        visibleContent = codeBlock(issue),
+                        variant = "error"
+                    )
+                )
             }
-            appendLine("</div>")
+            writer.appendLine("</div>")
 
-            appendLine("</div>") // card
-            appendLine("<script>${script()}</script>")
-            appendLine("</body>")
-            appendLine("</html>")
+            writer.appendLine("</div>") // card
+            writer.appendLine("<script>${script()}</script>")
+            writer.appendLine("</body>")
+            writer.appendLine("</html>")
         }
     }
 
@@ -119,7 +141,13 @@ class GetNetworkCallAsHtmlUseCase(
     private fun headersTable(headers: Map<String, String>): String = buildString {
         appendLine("<table class=\"headers\">")
         headers.forEach { (key, value) ->
-            appendLine("<tr><td class=\"key\">${escapeHtml(key)}</td><td class=\"value\">${escapeHtml(value)}</td></tr>")
+            appendLine(
+                "<tr><td class=\"key\">${escapeHtml(key)}</td><td class=\"value\">${
+                    escapeHtml(
+                        value
+                    )
+                }</td></tr>"
+            )
         }
         appendLine("</table>")
     }

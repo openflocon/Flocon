@@ -9,7 +9,6 @@ class NetworkDetailViewModel(
 ) : ViewModel(delegate) {
 
     val uiState = delegate.uiState
-    val event = delegate.events
 
     init {
         delegate.setRequestId(requestId)

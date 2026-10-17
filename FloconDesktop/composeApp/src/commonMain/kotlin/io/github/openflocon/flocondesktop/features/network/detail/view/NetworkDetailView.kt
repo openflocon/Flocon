@@ -31,7 +31,6 @@ import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,9 +49,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.flowWithLifecycle
 import coil3.PlatformContext
 import coil3.compose.AsyncImage
 import coil3.network.NetworkHeaders
@@ -62,7 +59,6 @@ import com.composeunstyled.DropdownPanelAnchor
 import com.sebastianneubauer.jsontree.TreeState
 import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailAction
-import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailEvent
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
@@ -87,14 +83,8 @@ import io.github.openflocon.library.designsystem.components.rememberFloconScroll
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import java.awt.FileDialog
-import java.awt.Frame
-import java.io.File
-import javax.swing.SwingUtilities
-import kotlin.coroutines.resume
 
 private const val LARGE_BODY_LENGTH = 1_000_000
 
@@ -107,17 +97,6 @@ fun NetworkDetailScreen(
         parametersOf(requestId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val lifecycle = LocalLifecycleOwner.current
-
-    LaunchedEffect(Unit) {
-        viewModel.event
-            .flowWithLifecycle(lifecycle = lifecycle.lifecycle)
-            .collect { event ->
-                when (event) {
-                    is NetworkDetailEvent.CreateHtmlFile -> saveHtmlFile(event.html, "$requestId.html")
-                }
-            }
-    }
 
     NetworkDetailContent(
         uiState = uiState,
@@ -198,6 +177,8 @@ fun NetworkDetailContent(
     val fullLogGraphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
     var shareMenuExpanded by remember { mutableStateOf(false) }
+
+    var openFilePicker by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -602,7 +583,13 @@ private fun Request(
                 DetailHeadersView(
                     headers = requestHeaders,
                     labelWidth = headersLabelWidth,
-                    onAuthorizationClicked = { token -> onAction(NetworkDetailAction.DisplayBearerJwt(token)) },
+                    onAuthorizationClicked = { token ->
+                        onAction(
+                            NetworkDetailAction.DisplayBearerJwt(
+                                token
+                            )
+                        )
+                    },
                     onCopyValue = { value -> onAction(NetworkDetailAction.CopyText(value)) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -827,7 +814,13 @@ private fun Response(
                         DetailHeadersView(
                             headers = response.headers,
                             labelWidth = headersLabelWidth,
-                            onAuthorizationClicked = { token -> onAction(NetworkDetailAction.DisplayBearerJwt(token)) },
+                            onAuthorizationClicked = { token ->
+                                onAction(
+                                    NetworkDetailAction.DisplayBearerJwt(
+                                        token
+                                    )
+                                )
+                            },
                             onCopyValue = { value -> onAction(NetworkDetailAction.CopyText(value)) },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -863,7 +856,13 @@ private fun Response(
                             FloconIconButton(
                                 tooltip = "Open in external editor",
                                 imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                                onClick = { onAction(NetworkDetailAction.OpenBodyExternally.Response(response)) }
+                                onClick = {
+                                    onAction(
+                                        NetworkDetailAction.OpenBodyExternally.Response(
+                                            response
+                                        )
+                                    )
+                                }
                             )
                         }
                         if (response.responseBodyIsNotBlank) {
@@ -1256,7 +1255,8 @@ private fun FullLogExportView(
 private fun formatBodyForExport(body: String, maxLines: Int = 30): String {
     val lines = body.lines()
     return if (lines.size > maxLines) {
-        lines.take(maxLines).joinToString("\n") + "\n\n... (truncated, ${lines.size - maxLines} more lines)"
+        lines.take(maxLines)
+            .joinToString("\n") + "\n\n... (truncated, ${lines.size - maxLines} more lines)"
     } else {
         body
     }
@@ -1336,31 +1336,5 @@ private fun NetworkDetailViewPreview() {
             ),
             onAction = {}
         )
-    }
-}
-
-// TODO: Use a compose picker instead
-// Opens a native "Save As" dialog and writes the HTML string to the chosen file.
-// Runs on IO dispatcher since FileDialog + file write are blocking calls.
-suspend fun saveHtmlFile(
-    content: String,
-    defaultFileName: String,
-    parent: Frame? = null,
-): File? = suspendCancellableCoroutine { continuation ->
-    SwingUtilities.invokeLater {
-        val dialog = FileDialog(parent, "Save HTML File", FileDialog.SAVE)
-        dialog.file = defaultFileName
-        dialog.isVisible = true // blocks the EDT until closed, which is fine here
-
-        val directory = dialog.directory
-        val fileName = dialog.file
-
-        val file = if (directory != null && fileName != null) {
-            File(directory, fileName).apply { writeText(content) }
-        } else {
-            null
-        }
-
-        continuation.resume(file)
     }
 }

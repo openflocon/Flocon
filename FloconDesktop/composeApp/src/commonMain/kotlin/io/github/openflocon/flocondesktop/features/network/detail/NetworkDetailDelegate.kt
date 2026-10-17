@@ -6,7 +6,7 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
-import io.github.openflocon.domain.network.usecase.GetNetworkCallAsHtmlUseCase
+import io.github.openflocon.domain.network.usecase.CreateNetworkLogHtmlUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
@@ -24,11 +24,8 @@ import io.github.openflocon.library.designsystem.common.readFromClipboard
 import io.github.openflocon.library.designsystem.common.saveImageToFile
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
@@ -53,7 +50,7 @@ class NetworkDetailDelegate(
 
     private val openBodyDelegate: OpenBodyDelegate by inject()
     private val getNetworkCallAsMarkdownUseCase: GetNetworkCallAsMarkdownUseCase by inject()
-    private val getNetworkCallAsHtmlUseCase: GetNetworkCallAsHtmlUseCase by inject()
+    private val createNetworkLogHtmlUseCase: CreateNetworkLogHtmlUseCase by inject()
     private val generateCurlCommandUseCase: GenerateCurlCommandUseCase by inject()
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase by inject()
 
@@ -96,9 +93,6 @@ class NetworkDetailDelegate(
             )
         )
 
-    private val _events = MutableSharedFlow<NetworkDetailEvent>()
-    val events: SharedFlow<NetworkDetailEvent> = _events.asSharedFlow()
-
     fun setRequestId(requestId: String) {
         this@NetworkDetailDelegate.requestId.update { requestId }
     }
@@ -122,9 +116,7 @@ class NetworkDetailDelegate(
     private fun onSaveHtml() {
         coroutineScope.launch {
             val id = requestId.value
-            getNetworkCallAsHtmlUseCase(id)?.let {
-                _events.emit(NetworkDetailEvent.CreateHtmlFile(it))
-            }
+            createNetworkLogHtmlUseCase(id)
         }
     }
 
