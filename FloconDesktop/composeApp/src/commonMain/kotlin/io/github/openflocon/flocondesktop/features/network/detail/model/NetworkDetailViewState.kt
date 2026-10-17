@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.detail.model
 
 import androidx.compose.runtime.Immutable
+import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import kotlinx.collections.immutable.ImmutableList
@@ -31,7 +32,9 @@ data class NetworkDetailViewState(
     val imageHeaders: PersistentMap<String, String>?,
     // response
     val response: Response?,
-    val defaultSelectedTab: io.github.openflocon.domain.models.settings.NetworkDetailTab = io.github.openflocon.domain.models.settings.NetworkDetailTab.Request,
+    val defaultSelectedTab: NetworkDetailTab = NetworkDetailTab.Request,
+
+    val showHtmlDialog: Boolean = false
 ) {
 
     @Immutable

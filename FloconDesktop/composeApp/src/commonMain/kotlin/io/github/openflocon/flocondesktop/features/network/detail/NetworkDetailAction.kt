@@ -26,6 +26,8 @@ sealed interface NetworkDetailAction {
 
     data object ShareAsMarkdown : NetworkDetailAction
 
+    data object SaveAsHtml : NetworkDetailAction
+
     data object CopyCurl : NetworkDetailAction
 }
 

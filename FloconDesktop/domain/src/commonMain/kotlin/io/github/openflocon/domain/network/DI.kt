@@ -3,6 +3,7 @@ package io.github.openflocon.domain.network
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
+import io.github.openflocon.domain.network.usecase.CreateNetworkLogHtmlUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkFilterUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkRequestsUseCase
@@ -63,9 +64,10 @@ internal val networkModule = module {
     factoryOf(::UpdateNetworkMocksDeviceUseCase)
     factoryOf(::ObserveNetworkWebsocketIdsUseCase)
     factoryOf(::SendNetworkWebsocketMockUseCase)
-    // bad quality
     factoryOf(::GetNetworkCallAsMarkdownUseCase)
+    factoryOf(::CreateNetworkLogHtmlUseCase)
 
+    // bad quality
     factoryOf(::ObserveNetworkBadQualityUseCase)
     factoryOf(::SaveNetworkBadQualityUseCase)
     factoryOf(::DeleteBadQualityUseCase)
