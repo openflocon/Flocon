@@ -84,6 +84,8 @@ class FloconMcpServer(
               list_analytics_events the events with their properties.
             - Databases of the app: list_databases gives the databaseId, list_database_tables the schema,
               query_database runs read only SQL queries (add a LIMIT), list_database_query_logs the queries run by the app.
+            - SharedPreferences of the app: list_shared_preferences gives the sharedPreferenceId,
+              get_shared_preference_values the typed keys / values of a file (optional text filter and limit).
         """.trimIndent()
     }
 }
