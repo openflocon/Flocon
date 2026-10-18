@@ -84,6 +84,7 @@ class FloconMcpServer(
               list_analytics_events the events with their properties.
             - Databases of the app: list_databases gives the databaseId, list_database_tables the schema,
               query_database runs read only SQL queries (add a LIMIT), list_database_query_logs the queries run by the app.
+            - Deeplinks: list_deeplinks gives the deeplinks declared by the app with their parameters, list_deeplink_history those opened from Flocon (read only, nothing is opened).
         """.trimIndent()
     }
 }

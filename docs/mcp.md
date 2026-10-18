@@ -279,6 +279,8 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_databases` | SQLite databases of the app (Room, SQLDelight...), with their `databaseId`. |
 | `list_database_tables` | Schema of a database: tables, columns, types, primary keys. |
 | `query_database` | Executes a read only SQL query and returns the rows (100 by default, long values truncated). |
+| `list_deeplinks` | Deeplinks declared by the app (link, label, description, parameters) and their variables. |
+| `list_deeplink_history` | Deeplinks recently opened from Flocon. Read only: nothing is opened on the device. |
 | `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). |
 
 ---
