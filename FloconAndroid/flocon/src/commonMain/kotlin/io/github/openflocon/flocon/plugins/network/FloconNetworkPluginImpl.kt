@@ -47,16 +47,29 @@ internal class FloconNetworkPluginImpl(
 
     private val websocketListeners = MutableStateFlow<Map<String, FloconWebSocketMockListener>>(emptyMap())
 
-    private val _mocks = MutableStateFlow<List<MockNetworkResponse>>(dataSource.loadMocksFromFile())
+    private val _mocks = MutableStateFlow<List<MockNetworkResponse>>(emptyList())
     override val mocks : List<MockNetworkResponse>
         get() = _mocks.value
 
-    private val _badQualityConfig = MutableStateFlow<BadQualityConfig?>(dataSource.loadBadNetworkConfig())
+    private val _badQualityConfig = MutableStateFlow<BadQualityConfig?>(null)
 
     override val badQualityConfig: BadQualityConfig?
         get() {
              return _badQualityConfig.value
         }
+
+    // persisted state is read off the calling thread (disk access), unless the server already pushed a newer value
+    private val mocksUpdatedByServer = MutableStateFlow(false)
+    private val badQualityConfigUpdatedByServer = MutableStateFlow(false)
+
+    init {
+        coroutineScope.launch {
+            val savedMocks = dataSource.loadMocksFromFile()
+            _mocks.update { if (mocksUpdatedByServer.value) it else savedMocks }
+            val savedConfig = dataSource.loadBadNetworkConfig()
+            _badQualityConfig.update { if (badQualityConfigUpdatedByServer.value) it else savedConfig }
+        }
+    }
 
     override fun logRequest(request: FloconNetworkCallRequest) {
         try {
@@ -107,12 +120,14 @@ internal class FloconNetworkPluginImpl(
         when (messageFromServer.method) {
             Protocol.ToDevice.Network.Method.SetupMocks -> {
                 val setup = parseMockResponses(jsonString = messageFromServer.body)
+                mocksUpdatedByServer.value = true
                 _mocks.update { setup }
                 dataSource.saveMocksToFile(mocks)
             }
 
             Protocol.ToDevice.Network.Method.SetupBadNetworkConfig -> {
                 val config = parseBadQualityConfig(jsonString = messageFromServer.body)
+                badQualityConfigUpdatedByServer.value = true
                 _badQualityConfig.update { config }
                 dataSource.saveBadNetworkConfig(config)
             }
