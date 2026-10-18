@@ -24,6 +24,13 @@ class HandleIncomingMessagesUseCase(
 
     operator fun invoke(): Flow<Unit> = messagesRepository
         .listenMessages()
+        .map { message ->
+            // plugin and method names are matched in lowercase, so the case sent by the device does not matter
+            message.copy(
+                plugin = message.plugin.lowercase(),
+                method = message.method.lowercase(),
+            )
+        }
         .onEach { message ->
             val handleDeviceResult = handleDeviceAndAppUseCase(device = getDeviceAndApp(message))
 
