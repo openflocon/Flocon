@@ -78,8 +78,16 @@ internal class FloconDatabasePluginImpl(
     @OptIn(FloconMarker::class)
     private fun sendAllDatabases(sender: FloconMessageSender) {
         val databases = providers.flatMap { it.getAllDataBases(emptyList()) }
-        val all = registeredDatabases.updateAndGet { it + databases }
-            .map { DeviceDataBaseDataModel(id = it.id, name = it.displayName) }
+        
+        val updatedDatabases = registeredDatabases.updateAndGet { currentList ->
+            val dbMap = currentList.associateBy { it.id }.toMutableMap()
+            databases.forEach { db ->
+                dbMap[db.id] = db
+            }
+            dbMap.values.toList()
+        }
+
+        val all = updatedDatabases.map { DeviceDataBaseDataModel(id = it.id, name = it.displayName) }
 
         try {
             sender.send(
@@ -93,7 +101,11 @@ internal class FloconDatabasePluginImpl(
     }
 
     override fun register(floconDatabaseModel: FloconDatabaseModel) {
-        registeredDatabases.update { it + floconDatabaseModel }
+        registeredDatabases.update { currentList ->
+            val dbMap = currentList.associateBy { it.id }.toMutableMap()
+            dbMap[floconDatabaseModel.id] = floconDatabaseModel
+            dbMap.values.toList()
+        }
     }
 
     override fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>) {
