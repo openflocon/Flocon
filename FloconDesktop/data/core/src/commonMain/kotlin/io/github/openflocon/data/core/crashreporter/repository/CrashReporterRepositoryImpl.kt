@@ -66,6 +66,22 @@ class CrashReporterRepositoryImpl(
         deviceIdAndPackageName = deviceIdAndPackageName,
     ).flowOn(dispatcherProvider.data)
 
+    override suspend fun searchCrashReports(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sinceTimestamp: Long?,
+        text: String?,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<CrashReportDomainModel> = withContext(dispatcherProvider.data) {
+        localDataSource.search(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            sinceTimestamp = sinceTimestamp,
+            text = text,
+            newestFirst = newestFirst,
+            limit = limit,
+        )
+    }
+
     override suspend fun deleteCrashReport(crashId: String) {
         withContext(dispatcherProvider.data) {
             localDataSource.delete(crashId)
