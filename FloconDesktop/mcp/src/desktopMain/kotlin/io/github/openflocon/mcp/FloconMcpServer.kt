@@ -84,6 +84,7 @@ class FloconMcpServer(
               list_analytics_events the events with their properties.
             - Databases of the app: list_databases gives the databaseId, list_database_tables the schema,
               query_database runs read only SQL queries (add a LIMIT), list_database_query_logs the queries run by the app.
+            - Dashboards sent by the app: list_dashboards gives the ids, get_dashboard the containers and elements with their values.
         """.trimIndent()
     }
 }

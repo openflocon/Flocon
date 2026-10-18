@@ -276,6 +276,8 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_analytics_tables` | Analytics tables of the app: one per analytics SDK / tracker (ex: `amplitude`). |
 | `list_analytics_events` | Analytics events with their properties, newest first. Filters: table, exact event names, text, start timestamp, previous sessions. |
 | `count_analytics_events` | Number of events per event name, the most frequent first (same filters). |
+| `list_dashboards` | Ids of the dashboards sent by the app, and the one selected in Flocon Desktop. |
+| `get_dashboard` | A dashboard with its containers and elements (texts, values, check boxes, text fields, buttons). Read only: nothing is triggered. |
 | `list_databases` | SQLite databases of the app (Room, SQLDelight...), with their `databaseId`. |
 | `list_database_tables` | Schema of a database: tables, columns, types, primary keys. |
 | `query_database` | Executes a read only SQL query and returns the rows (100 by default, long values truncated). |
