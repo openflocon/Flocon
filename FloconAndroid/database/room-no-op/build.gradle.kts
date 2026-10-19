@@ -13,7 +13,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.database.coreNoOp)
+            api(projects.database.coreNoOp)
+            implementation(libs.androidx.room.runtime)
         }
     }
 }

@@ -20,4 +20,14 @@ interface FloconDatabasePlugin : FloconPlugin {
 
 @OptIn(FloconMarker::class)
 val Flocon.Companion.databasePlugin: FloconDatabasePlugin
-    get() = FloconDatabasePluginImpl.plugin ?: pluginNotInitialized("Database")
+    get() = FloconDatabasePluginImpl.plugin ?: pluginNotInitialized("Database", NoOpDatabasePlugin())
+
+@OptIn(FloconMarker::class)
+private class NoOpDatabasePlugin : FloconDatabasePlugin {
+    override val key: String = ""
+    override val providers: List<FloconDatabaseProvider> = emptyList()
+    override fun register(floconDatabaseModel: FloconDatabaseModel) = Unit
+    override fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>) = Unit
+    override suspend fun onMessageReceived(method: String, body: String) = Unit
+    override suspend fun onConnectedToServer() = Unit
+}

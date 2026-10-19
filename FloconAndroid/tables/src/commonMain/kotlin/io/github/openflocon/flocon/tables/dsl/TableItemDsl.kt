@@ -29,7 +29,7 @@ class TableItemDefinition internal constructor(private val name: String) {
         id = Uuid.random().toHexString(),
         name = name,
         createdAt = Clock.System.now().toEpochMilliseconds(),
-        columns = emptyList()
+        columns = columns.toList()
     )
 
 }

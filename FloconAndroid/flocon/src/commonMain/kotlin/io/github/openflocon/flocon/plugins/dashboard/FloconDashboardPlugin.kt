@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.dashboard
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
@@ -10,6 +11,8 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.dsl.FloconMarker
+import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.plugins.dashboard.mapper.toJson
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
@@ -36,6 +39,7 @@ object FloconDashboard : FloconPluginFactory<FloconDashboardConfig, FloconDashbo
             sender = floconConfig.client as FloconMessageSender,
             encoder = encoder
         )
+            .also { FloconDashboardPluginImpl.plugin = it }
     }
 }
 
@@ -122,4 +126,19 @@ internal class FloconDashboardPluginImpl(
             }
         }
     }
+
+    companion object {
+        var plugin: FloconDashboardPlugin? = null
+    }
+}
+
+@OptIn(FloconMarker::class)
+val Flocon.Companion.dashboardPlugin: FloconDashboardPlugin
+    get() = FloconDashboardPluginImpl.plugin ?: pluginNotInitialized("Dashboard", NoOpDashboardPlugin())
+
+private class NoOpDashboardPlugin : FloconDashboardPlugin {
+    override val key: String = ""
+    override fun registerDashboard(dashboardConfig: DashboardConfig) = Unit
+    override suspend fun onMessageReceived(method: String, body: String) = Unit
+    override suspend fun onConnectedToServer() = Unit
 }

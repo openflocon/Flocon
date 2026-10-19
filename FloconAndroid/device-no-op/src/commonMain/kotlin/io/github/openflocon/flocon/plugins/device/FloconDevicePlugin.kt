@@ -5,7 +5,6 @@ import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
-import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 
 class FloconDeviceConfig : FloconPluginConfig
@@ -16,7 +15,7 @@ interface FloconDevicePlugin : FloconPlugin {
 
 object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin> {
     override val name: String = "Device"
-    override val pluginId: String = Protocol.ToDevice.Device.Plugin
+    override val pluginId: String = "device"
     override fun createConfig(context: FloconContext) = FloconDeviceConfig()
     override fun install(
         pluginConfig: FloconDeviceConfig,
@@ -28,7 +27,7 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
 }
 
 internal class FloconDevicePluginNoOpImpl : FloconPlugin, FloconDevicePlugin {
-    override val key: String = Protocol.ToDevice.Device.Plugin
+    override val key: String = "device"
 
     override fun registerWithSerial(serial: String) {
         // no op

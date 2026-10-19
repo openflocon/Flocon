@@ -15,10 +15,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.flocon)
-            implementation(projects.network.core)
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.serialization.json)
+            api(projects.floconNoOp)
         }
     }
 }

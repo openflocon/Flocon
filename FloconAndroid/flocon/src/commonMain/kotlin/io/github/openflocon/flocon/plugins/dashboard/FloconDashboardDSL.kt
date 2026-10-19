@@ -40,7 +40,7 @@ fun CoroutineScope.floconDashboard(id: String, block: DashboardScope.() -> Unit)
 
         sectionsFlow.collect { containers ->
             val config = DashboardConfig(id = id, containers = containers)
-            //FloconApp.instance?.client?.dashboardPlugin?.registerDashboard(config)
+            FloconDashboardPluginImpl.plugin?.registerDashboard(config)
         }
     }
 

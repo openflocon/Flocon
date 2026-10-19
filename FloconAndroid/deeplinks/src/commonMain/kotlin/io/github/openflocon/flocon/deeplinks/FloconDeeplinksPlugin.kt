@@ -25,7 +25,7 @@ class DeeplinkLinkBuilder internal constructor(
         )
     }
 
-    fun build() = DeeplinkModel(
+    internal fun build() = DeeplinkModel(
         link = link,
         label = label,
         description = description,
@@ -56,7 +56,7 @@ class DeeplinkVariableBuilder internal constructor(
 
 }
 
-data class DeeplinkVariable(
+internal data class DeeplinkVariable(
     val name: String,
     val mode: Mode = Mode.Input,
     val description: String? = null

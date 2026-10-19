@@ -28,12 +28,6 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
         }
 
-        jvmMain.dependencies {
-            implementation(dependencies.platform(libs.okhttp.bom))
-            implementation(libs.okhttp)
-            implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
-            implementation(libs.kotlinx.coroutines.android)
-        }
     }
 }
 

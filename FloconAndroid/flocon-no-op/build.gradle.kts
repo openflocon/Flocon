@@ -13,17 +13,11 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.kotlinx.coroutines.core)
-            }
-        }
-        
-        val androidMain by getting {
-            dependencies {
-                implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
-                implementation(libs.kotlinx.coroutines.android)
-            }
+        commonMain.dependencies {
+            // the dashboard DSL exposes Flow / CoroutineScope / Job
+            api(dependencies.platform(libs.kotlinx.coroutines.bom))
+            api(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

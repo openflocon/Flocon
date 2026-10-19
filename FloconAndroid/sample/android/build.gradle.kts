@@ -76,3 +76,32 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.ui.tooling)
 }
+// Release builds use the no-op version of every Flocon module,
+// including the ones coming transitively from :sample-multiplatform
+val floconNoOpModules = mapOf(
+    ":flocon" to ":flocon-no-op",
+    ":analytics" to ":analytics-no-op",
+    ":crashreporter" to ":crashreporter-no-op",
+    ":database:core" to ":database:core-no-op",
+    ":database:room" to ":database:room-no-op",
+    ":database:room3" to ":database:room3-no-op",
+    ":datastores" to ":datastores-no-op",
+    ":deeplinks" to ":deeplinks-no-op",
+    ":device" to ":device-no-op",
+    ":files" to ":files-no-op",
+    ":network:core" to ":network:core-no-op",
+    ":network:ktor-interceptor" to ":network:ktor-interceptor-no-op",
+    ":network:okhttp-interceptor" to ":network:okhttp-interceptor-no-op",
+    ":sharedprefs" to ":sharedprefs-no-op",
+    ":tables" to ":tables-no-op",
+)
+
+configurations.configureEach {
+    if (name.startsWith("release")) {
+        resolutionStrategy.dependencySubstitution {
+            floconNoOpModules.forEach { (module, noOp) ->
+                substitute(project(module)).using(project(noOp))
+            }
+        }
+    }
+}

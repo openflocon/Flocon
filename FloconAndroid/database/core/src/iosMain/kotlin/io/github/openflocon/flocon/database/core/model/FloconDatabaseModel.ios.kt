@@ -4,7 +4,7 @@ import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.NativeSQLiteDriver
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
 
-actual fun openDbAndExecuteQuery(
+internal actual fun openDbAndExecuteQuery(
     path: String,
     query: String
 ): DatabaseExecuteSqlResponse {

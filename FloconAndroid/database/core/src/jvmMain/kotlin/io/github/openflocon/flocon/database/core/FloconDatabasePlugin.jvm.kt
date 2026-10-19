@@ -5,7 +5,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
 
-actual fun openDbAndExecuteQuery(
+internal actual fun openDbAndExecuteQuery(
     path: String,
     query: String
 ): DatabaseExecuteSqlResponse {

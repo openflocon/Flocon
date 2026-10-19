@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.database.core.model.fromdevice.sql
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DatabaseQueryLogModel(
+internal data class DatabaseQueryLogModel(
     val dbName: String,
     val sqlQuery: String,
     val bindArgs: List<String>?,

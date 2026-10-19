@@ -5,7 +5,6 @@ import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
-import io.github.openflocon.flocon.Protocol
 
 class FloconCrashReporterConfig : FloconPluginConfig {
     var catchFatalErrors: Boolean = true
@@ -17,7 +16,7 @@ interface FloconCrashReporterPlugin : FloconPlugin {
 
 object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, FloconCrashReporterPlugin> {
     override val name: String = "CrashReporter"
-    override val pluginId: String = Protocol.ToDevice.Analytics.Plugin // Same as real impl
+    override val pluginId: String = "crashreporter"
 
     override fun createConfig(context: FloconContext) = FloconCrashReporterConfig()
 
@@ -31,7 +30,7 @@ object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, Floc
 }
 
 internal class FloconCrashReporterNoOpImpl : FloconPlugin, FloconCrashReporterPlugin {
-    override val key: String = Protocol.FromDevice.CrashReporter.Plugin
+    override val key: String = "crashreporter"
 
     override fun setupCrashHandler() {
         // no op

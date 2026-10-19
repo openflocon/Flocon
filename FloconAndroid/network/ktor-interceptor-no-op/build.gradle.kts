@@ -14,7 +14,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.network.coreNoOp)
+            api(projects.network.coreNoOp)
+            implementation(libs.ktor.client.core)
         }
     }
 }

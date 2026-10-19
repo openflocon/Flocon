@@ -12,7 +12,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.network.core)
+            implementation(projects.network.coreNoOp)
 
             implementation(dependencies.platform(libs.okhttp.bom))
             implementation(libs.okhttp)

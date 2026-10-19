@@ -11,6 +11,12 @@ kotlin {
     android {
         namespace = "io.github.openflocon.flocon.files.noop"
     }
+
+    sourceSets {
+        commonMain.dependencies {
+            api(projects.floconNoOp)
+        }
+    }
 }
 
 mavenPublishing {

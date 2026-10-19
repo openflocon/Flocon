@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
 import java.util.Locale
 
-actual fun openDbAndExecuteQuery(
+internal actual fun openDbAndExecuteQuery(
     path: String,
     query: String
 ): DatabaseExecuteSqlResponse {

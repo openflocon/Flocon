@@ -23,7 +23,7 @@ data class FloconFileDatabaseModel(
 
 }
 
-expect fun openDbAndExecuteQuery(
+internal expect fun openDbAndExecuteQuery(
     path: String,
     query: String
 ): DatabaseExecuteSqlResponse

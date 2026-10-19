@@ -14,6 +14,7 @@ import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.network.core.FloconNetwork
+import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
 import io.github.openflocon.flocon.startFlocon
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.js.Js
@@ -25,6 +26,7 @@ fun main() {
     // actual class FloconContext on wasmJs takes no constructor parameters.
     startFlocon(FloconContext()) {
         install(FloconNetwork)
+        install(FloconDashboard)
         install(FloconAnalytics)
         install(FloconDeeplinks) {
             deeplink("flocon://home")

@@ -110,26 +110,6 @@ dependencies {
         add(it, libs.androidx.room3.compiler)
     }
 
-    // Flocon Android specific plugins (variant-aware dependencies)
-//    add("debugImplementation", projects.network.okhttpInterceptor)
-//    add("releaseImplementation", projects.network.okhttpInterceptorNoOp)
-//
-//    add("debugImplementation", projects.sharedprefs)
-//    add("releaseImplementation", projects.sharedprefsNoOp)
-//
-//    add("debugImplementation", projects.datastores)
-//    add("releaseImplementation", projects.datastoresNoOp)
-//
-//    add("debugImplementation", projects.grpc.grpcInterceptorLite)
-//
-//    add("debugImplementation", projects.analytics)
-//    add("releaseImplementation", projects.analyticsNoOp)
-//
-//    add("debugImplementation", projects.crashreporter)
-//    add("releaseImplementation", projects.crashreporterNoOp)
-//
-//    add("debugImplementation", projects.tables)
-//    add("releaseImplementation", projects.tablesNoOp)
 }
 
 //room {

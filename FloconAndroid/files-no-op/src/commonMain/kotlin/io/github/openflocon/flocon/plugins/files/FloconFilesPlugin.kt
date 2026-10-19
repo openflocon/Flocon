@@ -5,7 +5,6 @@ import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
-import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 
 class FloconFilesConfig : FloconPluginConfig {
@@ -16,7 +15,7 @@ interface FloconFilesPlugin : FloconPlugin
 
 object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
     override val name: String = "Files"
-    override val pluginId: String = Protocol.ToDevice.Files.Plugin
+    override val pluginId: String = "files"
     override fun createConfig(context: FloconContext) = FloconFilesConfig()
     override fun install(
         pluginConfig: FloconFilesConfig,
@@ -28,7 +27,7 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
 }
 
 internal class FloconFilesPluginNoOpImpl : FloconPlugin, FloconFilesPlugin {
-    override val key: String = Protocol.ToDevice.Files.Plugin
+    override val key: String = "files"
 
     override suspend fun onMessageReceived(
         method: String,

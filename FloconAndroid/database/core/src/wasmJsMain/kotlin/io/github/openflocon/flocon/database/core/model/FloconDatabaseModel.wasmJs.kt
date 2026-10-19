@@ -2,7 +2,7 @@ package io.github.openflocon.flocon.database.core.model
 
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
 
-actual fun openDbAndExecuteQuery(
+internal actual fun openDbAndExecuteQuery(
     path: String,
     query: String
 ): DatabaseExecuteSqlResponse {

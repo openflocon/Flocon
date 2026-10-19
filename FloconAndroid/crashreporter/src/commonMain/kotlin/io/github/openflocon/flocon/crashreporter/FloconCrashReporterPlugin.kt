@@ -29,8 +29,7 @@ interface FloconCrashReporterPlugin : FloconPlugin {
 
 object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, FloconCrashReporterPlugin> {
     override val name: String = "CrashReporter"
-    override val pluginId: String =
-        Protocol.ToDevice.Analytics.Plugin // Crash reporter is usually write-only but we can set an ID
+    override val pluginId: String = Protocol.FromDevice.CrashReporter.Plugin
 
     override fun createConfig(context: FloconContext) = FloconCrashReporterConfig()
 
@@ -45,6 +44,11 @@ object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, Floc
             sender = client,
             coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
         )
+            .also {
+                if (pluginConfig.catchFatalErrors) {
+                    it.setupCrashHandler()
+                }
+            }
     }
 }
 

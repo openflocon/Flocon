@@ -11,6 +11,13 @@ kotlin {
     android {
         namespace = "io.github.openflocon.flocon.database.room3.noop"
     }
+
+    sourceSets {
+        commonMain.dependencies {
+            api(projects.database.coreNoOp)
+            api(libs.androidx.room3.runtime)
+        }
+    }
 }
 
 mavenPublishing {

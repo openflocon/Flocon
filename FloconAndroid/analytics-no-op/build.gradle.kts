@@ -14,7 +14,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.flocon)
+            api(projects.floconNoOp)
         }
     }
 }

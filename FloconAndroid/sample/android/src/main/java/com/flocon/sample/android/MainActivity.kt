@@ -20,6 +20,7 @@ import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initial
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.network.core.FloconNetwork
+import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
 import io.github.openflocon.flocon.plugins.device.FloconDevice
 import io.github.openflocon.flocon.plugins.files.FloconFiles
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
@@ -49,6 +50,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             install(FloconNetwork)
+            install(FloconDashboard)
             install(FloconTable)
             install(FloconAnalytics)
             install(FloconDatabase) {

@@ -22,6 +22,7 @@ import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.network.core.FloconNetwork
+import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
 import io.github.openflocon.flocon.startFlocon
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -35,6 +36,7 @@ fun main() {
         context = FloconContext(appName = "Flocon Sample Desktop", packageName = "com.flocon.sample.desktop")
     ) {
         install(FloconNetwork)
+        install(FloconDashboard)
         install(FloconAnalytics)
         install(FloconDeeplinks) {
             deeplink("flocon://home")

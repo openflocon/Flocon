@@ -42,7 +42,14 @@ object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
 
 @OptIn(FloconMarker::class)
 val Flocon.Companion.tablePlugin: FloconTablePlugin
-    get() = FloconTablePluginImpl.plugin ?: pluginNotInitialized("table")
+    get() = FloconTablePluginImpl.plugin ?: pluginNotInitialized("Table", NoOpTablePlugin())
+
+private class NoOpTablePlugin : FloconTablePlugin {
+    override val key: String = ""
+    override fun registerItems(tableItems: List<TableItem>) = Unit
+    override suspend fun onMessageReceived(method: String, body: String) = Unit
+    override suspend fun onConnectedToServer() = Unit
+}
 
 internal class FloconTablePluginImpl(
     private val sender: FloconMessageSender,
