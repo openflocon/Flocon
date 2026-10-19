@@ -193,6 +193,8 @@ class ExecuteDeeplinkUseCaseTest {
         override val dismissedClientVersionFlow: Flow<String?> = emptyFlow()
         override fun getDismissedClientVersion(): String? = null
         override suspend fun setDismissedClientVersion(version: String) {}
+        override fun getLastSeenReleaseNotesVersion(): String? = null
+        override suspend fun setLastSeenReleaseNotesVersion(version: String) {}
         override val adbPath: Flow<String?> = emptyFlow()
         override val fontSizeMultiplier: StateFlow<Float> = MutableStateFlow(1f)
         override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)

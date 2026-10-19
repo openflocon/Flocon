@@ -1,5 +1,8 @@
 package io.github.openflocon.mcp.deeplink
 
+import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.common.Failure
+import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.domain.deeplink.models.DeeplinkVariableDomainModel
 import io.github.openflocon.domain.deeplink.models.Deeplinks
@@ -43,6 +46,13 @@ class DeeplinkMcpToolProviderTest {
         ),
     )
 
+    private val opened = mutableListOf<Triple<String, Long, DeviceIdAndPackageNameDomainModel>>()
+    private var openResult: Either<Throwable, String> = Success("Starting: Intent")
+    private val opener = DeeplinkOpener { link, deeplinkId, _, target ->
+        opened += Triple(link, deeplinkId, target)
+        openResult
+    }
+
     private val server = McpTestServer(
         toolProviders = listOf(
             DeeplinkMcpToolProvider(
@@ -56,6 +66,7 @@ class DeeplinkMcpToolProviderTest {
                     ),
                     history = listOf(profile.copy(id = 2, link = "app://profile/42?tab=posts", parameters = emptyList())),
                 ),
+                deeplinkOpener = opener,
                 targetResolver = targetResolver(devicesRepository),
             ),
         ),
@@ -68,11 +79,32 @@ class DeeplinkMcpToolProviderTest {
     fun tearDown() = runBlocking { server.stop() }
 
     @Test
-    fun `all the tools are read only`() = runBlocking {
+    fun `only open_deeplink is not read only`() = runBlocking {
         val tools = server.listTools()
 
-        assertEquals(setOf("list_deeplinks", "list_deeplink_history"), tools.map { it.name }.toSet())
-        assertTrue(tools.all { it.annotations?.readOnlyHint == true })
+        assertEquals(setOf("list_deeplinks", "list_deeplink_history", "open_deeplink"), tools.map { it.name }.toSet())
+        assertEquals(listOf("open_deeplink"), tools.filter { it.annotations?.readOnlyHint != true }.map { it.name })
+    }
+
+    @Test
+    fun `open_deeplink opens the link on the resolved target`() = runBlocking {
+        val result = server.callTool("open_deeplink", mapOf("link" to "app://profile/42?tab=posts", "deeplinkId" to 1)).json()
+
+        val (link, id, target) = opened.single()
+        assertEquals("app://profile/42?tab=posts", link)
+        assertEquals(1L, id)
+        assertEquals("pixel", target.deviceId)
+        assertEquals("io.flocon.sample", target.packageName)
+        assertEquals("Starting: Intent", result["output"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun `open_deeplink returns an error when the deeplink cannot be opened`() = runBlocking {
+        openResult = Failure(IllegalStateException("No device"))
+
+        val result = server.callTool("open_deeplink", mapOf("link" to "app://home"))
+
+        assertEquals(true, result.isError)
     }
 
     @Test

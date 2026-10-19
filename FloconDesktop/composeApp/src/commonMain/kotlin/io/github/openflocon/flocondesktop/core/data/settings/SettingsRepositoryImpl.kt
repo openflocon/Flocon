@@ -71,4 +71,10 @@ internal class SettingsRepositoryImpl(
     override suspend fun setDismissedClientVersion(version: String) {
         localSettingsDataSource.setDismissedClientVersion(version)
     }
+
+    override fun getLastSeenReleaseNotesVersion(): String? = localSettingsDataSource.getLastSeenReleaseNotesVersion()
+
+    override suspend fun setLastSeenReleaseNotesVersion(version: String) {
+        localSettingsDataSource.setLastSeenReleaseNotesVersion(version)
+    }
 }

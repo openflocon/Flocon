@@ -48,6 +48,23 @@ internal class ImagesLocalDataSourceRoom(
         }
         .flowOn(dispatcherProvider.data)
 
+    override suspend fun searchImages(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sinceTimestamp: Long?,
+        text: String?,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<DeviceImageDomainModel> = withContext(dispatcherProvider.data) {
+        imageDao.searchImages(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            sinceTimestamp = sinceTimestamp,
+            filter = text,
+            newestFirst = newestFirst,
+            limit = limit,
+        ).map { it.toDomainModel(json = json) }
+    }
+
     override suspend fun clearImages(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ) {

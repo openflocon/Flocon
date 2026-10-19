@@ -43,3 +43,12 @@ internal data class DeeplinkVariableMcpModel(
     val mode: String,
     val suggestions: List<String>? = null,
 )
+
+@Serializable
+internal data class OpenDeeplinkMcpResult(
+    val deviceId: String,
+    val packageName: String,
+    val link: String,
+    /** Output of the command that opened the deeplink */
+    val output: String,
+)

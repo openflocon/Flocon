@@ -62,6 +62,20 @@ class ImagesRepositoryImpl(
         .distinctUntilChanged()
         .flowOn(dispatcherProvider.data)
 
+    override suspend fun searchImages(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sinceTimestamp: Long?,
+        text: String?,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<DeviceImageDomainModel> = imagesLocalDataSource.searchImages(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+        sinceTimestamp = sinceTimestamp,
+        text = text,
+        newestFirst = newestFirst,
+        limit = limit,
+    )
+
     override suspend fun clearImages(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         withContext(dispatcherProvider.data) {
             imagesLocalDataSource.clearImages(deviceIdAndPackageName = deviceIdAndPackageName)
