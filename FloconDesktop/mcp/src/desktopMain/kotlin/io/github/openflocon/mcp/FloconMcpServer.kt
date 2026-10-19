@@ -86,6 +86,7 @@ class FloconMcpServer(
               query_database runs read only SQL queries (add a LIMIT), list_database_query_logs the queries run by the app.
             - Crashes reported by the app: list_crash_reports gives the exception type and message,
               get_crash_report the full stack trace.
+            - Custom tables sent by the app (Table plugin): list_tables gives the tableId, list_table_items the rows.
         """.trimIndent()
     }
 }
