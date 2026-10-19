@@ -22,7 +22,7 @@ internal class DevicesMcpToolProvider(
             inputSchema = ToolSchema(),
             toolAnnotations = readOnlyToolAnnotations,
         ) {
-            safeToolCall(toolName = "list_devices") { jsonResult(listDevices()) }
+            safeToolCall(toolName = "list_devices", argumentNames = emptySet()) { jsonResult(listDevices()) }
         }
     }
 

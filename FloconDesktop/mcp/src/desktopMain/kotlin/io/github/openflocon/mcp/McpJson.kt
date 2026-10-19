@@ -39,17 +39,17 @@ internal inline fun <reified T> jsonResult(value: T): CallToolResult = CallToolR
  * Executes a tool, [McpToolException] are returned to the agent as an error result
  */
 internal suspend fun safeToolCall(
-    toolName: String? = null,
-    argumentNames: Set<String> = emptySet(),
+    toolName: String,
+    argumentNames: Set<String>,
     block: suspend () -> CallToolResult,
 ): CallToolResult {
-    val logger = McpLogs.logger.takeIf { toolName != null }
+    val logger = McpLogs.logger
     val startedAt = TimeSource.Monotonic.markNow()
     return try {
         block().also { result ->
             val duration = startedAt.elapsedNow().inWholeMilliseconds
             if (result.isError == true) {
-                logger?.error("$toolName returned an error in $duration ms")
+                logger?.error("$toolName returned an error in $duration ms", null)
             } else {
                 logger?.info("$toolName ok in $duration ms${argumentNames.argumentsSuffix()}")
             }
@@ -57,7 +57,7 @@ internal suspend fun safeToolCall(
     } catch (e: CancellationException) {
         throw e
     } catch (e: McpToolException) {
-        logger?.error("$toolName failed: ${e.message}")
+        logger?.error("$toolName failed: ${e.message}", null)
         CallToolResult.error(e.message.orEmpty())
     } catch (t: Throwable) {
         logger?.error("$toolName crashed", t)

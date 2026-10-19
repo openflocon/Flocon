@@ -21,6 +21,7 @@ import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.buildMenu
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
+import io.github.openflocon.flocondesktop.common.log.LogDomain
 import io.github.openflocon.flocondesktop.common.log.LogManager
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
@@ -112,11 +113,11 @@ internal class AppViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             initAdbPathUseCase()
                 .alsoFailure {
-                    logManager.e(TAG, "ADB init failed", it)
+                    logManager.e(TAG, "ADB init failed", it, LogDomain.Default)
                     initialSetupStateHolder.setRequiresInitialSetup()
                 }
                 .alsoSuccess {
-                    logManager.d(TAG, "ADB init OK")
+                    logManager.d(TAG, "ADB init OK", LogDomain.Default)
                 }
 
             messagesServerDelegate.initialize()

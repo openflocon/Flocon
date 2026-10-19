@@ -22,7 +22,7 @@ import io.modelcontextprotocol.kotlin.sdk.types.ServerCapabilities
 class FloconMcpServer(
     private val toolProviders: List<McpToolProvider>,
     private val port: Int = Constant.MCP_SERVER_PORT,
-    private val logger: McpLogger? = null,
+    private val logger: McpLogger?,
 ) : McpServerRepository {
 
     init {

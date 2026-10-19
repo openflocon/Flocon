@@ -18,7 +18,7 @@ data class LogEntry(
     val level: LogLevel,
     val message: String,
     val timestamp: Instant,
-    val domain: LogDomain = LogDomain.Default,
+    val domain: LogDomain,
 )
 
 @Immutable
@@ -26,7 +26,7 @@ data class LogEntryUiModel(
     val level: LogLevel,
     val message: String,
     val timestamp: String,
-    val domain: LogDomain = LogDomain.Default,
+    val domain: LogDomain,
 )
 
 fun LogEntry.toUiModel(): LogEntryUiModel {
@@ -40,15 +40,15 @@ class LogManager {
     private val _logs = MutableStateFlow<List<LogEntry>>(emptyList())
     val logs: StateFlow<List<LogEntry>> = _logs.asStateFlow()
 
-    fun d(tag: String, message: String, domain: LogDomain = LogDomain.Default) {
+    fun d(tag: String, message: String, domain: LogDomain) {
         append(LogLevel.DEBUG, "[$tag] $message", domain)
     }
 
-    fun i(tag: String, message: String, domain: LogDomain = LogDomain.Default) {
+    fun i(tag: String, message: String, domain: LogDomain) {
         append(LogLevel.INFO, "[$tag] $message", domain)
     }
 
-    fun e(tag: String, message: String, throwable: Throwable? = null, domain: LogDomain = LogDomain.Default) {
+    fun e(tag: String, message: String, throwable: Throwable?, domain: LogDomain) {
         val suffix = throwable?.message?.let { ": $it" } ?: ""
         append(LogLevel.ERROR, "[$tag] $message$suffix", domain)
     }

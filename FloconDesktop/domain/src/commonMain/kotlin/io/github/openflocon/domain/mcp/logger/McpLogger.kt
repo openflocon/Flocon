@@ -5,5 +5,5 @@ package io.github.openflocon.domain.mcp.logger
  */
 interface McpLogger {
     fun info(message: String)
-    fun error(message: String, throwable: Throwable? = null)
+    fun error(message: String, throwable: Throwable?)
 }

@@ -62,6 +62,7 @@ class FloconMcpServerTest {
             ),
         ),
         port = port,
+        logger = null,
     )
     private val httpClient = HttpClient(CIO) { install(SSE) }
     private lateinit var client: Client
