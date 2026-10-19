@@ -15,9 +15,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -42,6 +45,9 @@ fun PanelView(
     isEnabled: Boolean, // just make it gray but still selectable
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isPinnable: Boolean = false,
+    isPinned: Boolean = false,
+    onTogglePin: () -> Unit = {},
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
@@ -105,6 +111,20 @@ fun PanelView(
                 style = FloconTheme.typography.bodyMedium,
                 maxLines = 1,
                 modifier = Modifier.padding(start = FloconTheme.spacing.medium),
+            )
+        }
+        // the pin is displayed on hover, and always for a pinned item
+        if (expanded && isPinnable && (hovered || isPinned)) {
+            Spacer(Modifier.weight(1f))
+            Icon(
+                modifier = Modifier
+                    .size(20.dp)
+                    .clip(shape)
+                    .clickable(onClick = onTogglePin)
+                    .padding(2.dp),
+                imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                contentDescription = if (isPinned) "Unpin" else "Pin",
+                tint = FloconTheme.colorPalette.onPrimary,
             )
         }
     }

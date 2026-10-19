@@ -11,6 +11,7 @@ import io.github.openflocon.domain.device.deviceModule
 import io.github.openflocon.domain.files.filesModule
 import io.github.openflocon.domain.images.imagesModule
 import io.github.openflocon.domain.mcp.mcpDomainModule
+import io.github.openflocon.domain.menu.menuModule
 import io.github.openflocon.domain.messages.messagesModule
 import io.github.openflocon.domain.network.networkModule
 import io.github.openflocon.domain.settings.settingsModule
@@ -38,5 +39,6 @@ val domainModule = module {
         versionModule,
         crashReporterDomainModule,
         mcpDomainModule,
+        menuModule,
     )
 }

@@ -16,6 +16,10 @@ internal sealed interface AppAction {
 
     data class SelectDevice(val device: DeviceItemUiModel) : AppAction
 
+    data class TogglePin(val menu: SubScreen) : AppAction
+
+    data class ToggleSection(val sectionId: String) : AppAction
+
     data object Record : AppAction
 
     data object Restart : AppAction
