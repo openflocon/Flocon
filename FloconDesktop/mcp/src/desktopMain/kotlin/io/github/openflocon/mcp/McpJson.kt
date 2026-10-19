@@ -49,18 +49,18 @@ internal suspend fun safeToolCall(
         block().also { result ->
             val duration = startedAt.elapsedNow().inWholeMilliseconds
             if (result.isError == true) {
-                logger?.error("$toolName returned an error in $duration ms", null)
+                logger.error("$toolName returned an error in $duration ms", null)
             } else {
-                logger?.info("$toolName ok in $duration ms${argumentNames.argumentsSuffix()}")
+                logger.info("$toolName ok in $duration ms${argumentNames.argumentsSuffix()}")
             }
         }
     } catch (e: CancellationException) {
         throw e
     } catch (e: McpToolException) {
-        logger?.error("$toolName failed: ${e.message}", null)
+        logger.error("$toolName failed: ${e.message}", null)
         CallToolResult.error(e.message.orEmpty())
     } catch (t: Throwable) {
-        logger?.error("$toolName crashed", t)
+        logger.error("$toolName crashed", t)
         throw t
     }
 }

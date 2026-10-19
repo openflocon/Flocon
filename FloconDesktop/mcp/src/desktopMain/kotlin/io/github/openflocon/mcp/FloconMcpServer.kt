@@ -22,7 +22,7 @@ import io.modelcontextprotocol.kotlin.sdk.types.ServerCapabilities
 class FloconMcpServer(
     private val toolProviders: List<McpToolProvider>,
     private val port: Int = Constant.MCP_SERVER_PORT,
-    private val logger: McpLogger?,
+    private val logger: McpLogger,
 ) : McpServerRepository {
 
     init {
@@ -41,7 +41,7 @@ class FloconMcpServer(
         }.start(wait = false)
 
         Logger.i(TAG) { "MCP server started on http://localhost:$port$PATH" }
-        logger?.info("Server started on http://localhost:$port$PATH (${toolProviders.size} tool providers)")
+        logger.info("Server started on http://localhost:$port$PATH (${toolProviders.size} tool providers)")
     }
 
     @Synchronized
