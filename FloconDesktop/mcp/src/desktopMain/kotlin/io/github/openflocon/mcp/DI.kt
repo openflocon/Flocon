@@ -9,6 +9,7 @@ import io.github.openflocon.mcp.files.FilesMcpToolProvider
 import io.github.openflocon.mcp.mocks.NetworkMocksMcpToolProvider
 import io.github.openflocon.mcp.network.NetworkMcpToolProvider
 import io.github.openflocon.mcp.sharedpreferences.SharedPreferencesMcpToolProvider
+import io.github.openflocon.mcp.table.TableMcpToolProvider
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -28,4 +29,5 @@ val mcpModule = module {
     singleOf(::DatabaseMcpToolProvider) bind McpToolProvider::class
     // explicit: the timeout has a default value that koin would try to inject
     single { SharedPreferencesMcpToolProvider(sharedPreferencesRepository = get(), targetResolver = get()) } bind McpToolProvider::class
+    singleOf(::TableMcpToolProvider) bind McpToolProvider::class
 }
