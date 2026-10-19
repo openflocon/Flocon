@@ -13,13 +13,12 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.menu.usecase.ObserveMenuPreferencesUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleCollapsedMenuSectionUseCase
 import io.github.openflocon.domain.menu.usecase.TogglePinnedMenuItemUseCase
-import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
-import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
+import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
+import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.domain.versions.usecase.ShouldShowReleaseNotesUseCase
 import io.github.openflocon.flocondesktop.BuildConfig
-import io.github.openflocon.flocondesktop.app.ui.releasenotes.ReleaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
@@ -27,6 +26,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.id
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuState
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.applyPreferences
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.buildMenu
+import io.github.openflocon.flocondesktop.app.ui.releasenotes.ReleaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.common.log.LogManager
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
@@ -54,6 +54,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class AppViewModel(
     messagesServerDelegate: MessagesServerDelegate,
@@ -138,14 +139,13 @@ internal class AppViewModel(
                     onSelectMenu(AppAction.SelectMenu(available.first().screen))
                 }
 
-            if (shouldShowReleaseNotesUseCase(current = BuildConfig.APP_VERSION)) {
-                withContext(dispatcherProvider.ui) {
-                    navigationState.navigate(ReleaseNotesRoutes.Current(BuildConfig.APP_VERSION))
+                if (shouldShowReleaseNotesUseCase(current = BuildConfig.APP_VERSION)) {
+                    withContext(dispatcherProvider.ui) {
+                        navigationState.navigate(ReleaseNotesRoutes.Current(BuildConfig.APP_VERSION))
+                    }
                 }
             }
-        }
 
-        viewModelScope.launch(dispatcherProvider.viewModel) {
             initAdbPathUseCase()
                 .alsoFailure {
                     logManager.e(TAG, "ADB init failed", it)
@@ -168,7 +168,7 @@ internal class AppViewModel(
                         .alsoSuccess {
                             settingsRepository.setAdbForwardStatus(AdbForwardStatus.OK)
                         }
-                    delay(1_500)
+                    delay(1_500.milliseconds)
                 }
             }
         }
@@ -180,9 +180,11 @@ internal class AppViewModel(
             is AppAction.TogglePin -> viewModelScope.launch(dispatcherProvider.viewModel) {
                 togglePinnedMenuItemUseCase(action.menu.id)
             }
+
             is AppAction.ToggleSection -> viewModelScope.launch(dispatcherProvider.viewModel) {
                 toggleCollapsedMenuSectionUseCase(action.sectionId)
             }
+
             is AppAction.DeleteApp -> deleteApp(action)
             is AppAction.DeleteDevice -> deleteDevice(action)
             AppAction.Record -> onRecord()
