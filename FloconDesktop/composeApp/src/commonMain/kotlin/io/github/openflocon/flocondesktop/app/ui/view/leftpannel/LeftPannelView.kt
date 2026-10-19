@@ -2,6 +2,7 @@
 
 package io.github.openflocon.flocondesktop.app.ui.view.leftpannel
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +50,8 @@ fun LeftPanelView(
     expanded: Boolean,
     onClickItem: (MenuItem) -> Unit,
     modifier: Modifier = Modifier,
+    onTogglePin: (MenuItem) -> Unit = {},
+    onToggleSection: (MenuSection) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     Box(
@@ -61,11 +65,26 @@ fun LeftPanelView(
                 .fillMaxHeight()
                 .verticalScroll(scrollState)
         ) {
+            if (state.pinnedItems.isNotEmpty()) {
+                // always visible, whatever the collapsed sections
+                MenuItems(
+                    current = current,
+                    items = state.pinnedItems,
+                    expanded = expanded,
+                    onClickItem = onClickItem,
+                    onTogglePin = onTogglePin,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(4.dp))
+            }
             MenuSection(
                 current = current,
                 items = state.sections,
                 expanded = expanded,
                 onClickItem = onClickItem,
+                onTogglePin = onTogglePin,
+                onToggleSection = onToggleSection,
             )
             Spacer(modifier = Modifier.height(12.dp))
             Spacer(Modifier.weight(1f))
@@ -96,18 +115,29 @@ private fun ColumnScope.MenuSection(
     items: ImmutableList<MenuSection>,
     expanded: Boolean,
     onClickItem: (MenuItem) -> Unit,
+    onTogglePin: (MenuItem) -> Unit,
+    onToggleSection: (MenuSection) -> Unit,
 ) {
     items.fastForEachIndexed { index, section ->
+        // a collapsed section can only be reopened from its title: when the panel is reduced, everything is displayed
+        val isCollapsed = section.isCollapsed && expanded
         PannelLabel(
             expanded = expanded,
             text = stringResource(section.title),
+            isCollapsed = if (expanded) section.isCollapsed else null,
+            onClick = { onToggleSection(section) },
         )
-        MenuItems(
-            current = current,
-            items = section.items,
-            expanded = expanded,
-            onClickItem = onClickItem,
-        )
+        AnimatedVisibility(visible = !isCollapsed) {
+            Column {
+                MenuItems(
+                    current = current,
+                    items = section.items,
+                    expanded = expanded,
+                    onClickItem = onClickItem,
+                    onTogglePin = onTogglePin,
+                )
+            }
+        }
     }
 }
 
@@ -117,6 +147,7 @@ private fun ColumnScope.MenuItems(
     items: ImmutableList<MenuItem>,
     expanded: Boolean,
     onClickItem: (MenuItem) -> Unit,
+    onTogglePin: (MenuItem) -> Unit = {},
 ) {
     items.fastForEachIndexed { index, item ->
         PanelView(
@@ -129,6 +160,9 @@ private fun ColumnScope.MenuItems(
             isSelected = current == item.screen,
             isEnabled = item.isEnabled,
             onClick = { onClickItem(item) },
+            isPinnable = item.isPinnable,
+            isPinned = item.isPinned,
+            onTogglePin = { onTogglePin(item) },
         )
         if (index != items.lastIndex)
             Spacer(Modifier.height(FloconTheme.spacing.extraSmall))

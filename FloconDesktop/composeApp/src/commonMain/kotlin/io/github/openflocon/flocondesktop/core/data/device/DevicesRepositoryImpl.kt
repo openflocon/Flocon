@@ -213,13 +213,24 @@ class DevicesRepositoryImpl(
 
     // endregion
 
-    override val pluginName = listOf(Protocol.FromDevice.Device.Plugin)
+    override val pluginName = listOf(
+        Protocol.FromDevice.Device.Plugin,
+        Protocol.FromDevice.Bonjour.Plugin,
+    )
 
     override suspend fun onMessageReceived(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         message: FloconIncomingMessageDomainModel,
     ) {
         when (message.method) {
+            Protocol.FromDevice.Bonjour.Method.Bonjour -> {
+                // null for an SDK that does not send its plugins: everything is displayed
+                localDevicesDataSource.saveInstalledPlugins(
+                    deviceId = message.deviceId,
+                    appPackageName = message.appPackageName,
+                    installedPlugins = remoteDeviceDataSource.getInstalledPlugins(message),
+                )
+            }
             Protocol.FromDevice.Device.Method.RegisterDevice -> {
                 remoteDeviceDataSource.getDeviceSerial(message)?.let { serial ->
                     adbRepository.saveAdbSerial(

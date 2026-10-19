@@ -107,5 +107,6 @@ The accessors are: `analyticsPlugin`, `crashReporterPlugin`, `dashboardPlugin`, 
   (`catchFatalErrors = true` by default) and sent to the desktop app on the next connection.
 - **Interceptors without Flocon**: the OkHttp, Ktor and gRPC interceptors let the calls go through
   untouched when `FloconNetwork` is not installed.
+- **Desktop menu**: when it connects, the SDK tells the desktop app which plugins are installed. The desktop only shows the menu items of the installed plugins (an older SDK that does not send them shows everything). Sections can be collapsed, and items can be pinned (pin icon on hover) to stay at the top.
 - **Release builds** now use `flocon-no-op` + one no-op per plugin: nothing is started and no
   connection is made to the desktop app.

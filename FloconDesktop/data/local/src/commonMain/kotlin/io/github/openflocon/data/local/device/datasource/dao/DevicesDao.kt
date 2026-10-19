@@ -71,6 +71,15 @@ interface DevicesDao {
 
     @Query(
         """
+        UPDATE DeviceAppEntity
+        SET installedPlugins = :installedPlugins
+        WHERE deviceId = :deviceId AND packageName = :packageName
+        """
+    )
+    suspend fun updateInstalledPlugins(deviceId: String, packageName: String, installedPlugins: String?)
+
+    @Query(
+        """
         SELECT iconEncoded IS NOT NULL 
         FROM DeviceAppEntity
         WHERE deviceId = :deviceId 

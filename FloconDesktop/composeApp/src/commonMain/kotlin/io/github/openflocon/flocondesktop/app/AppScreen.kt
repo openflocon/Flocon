@@ -85,7 +85,9 @@ private fun Content(
                         current = uiState.contentState.current,
                         state = uiState.menuState,
                         expanded = it,
-                        onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) }
+                        onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) },
+                        onTogglePin = { menu -> onAction(AppAction.TogglePin(menu.screen)) },
+                        onToggleSection = { section -> onAction(AppAction.ToggleSection(section.id)) },
                     )
                 },
                 topBarContent = {
