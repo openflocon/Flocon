@@ -5,6 +5,7 @@ import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
+import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 
 class DeeplinkModel
@@ -56,7 +57,7 @@ object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeepli
 }
 
 private object FloconDeeplinksPluginNoOp : FloconDeeplinksPlugin {
-    override val key: String = "DEEP_LINK"
+    override val key: String = Protocol.FromDevice.Deeplink.Plugin
     override suspend fun onMessageReceived(method: String, body: String) {}
     override suspend fun onConnectedToServer() {}
 }

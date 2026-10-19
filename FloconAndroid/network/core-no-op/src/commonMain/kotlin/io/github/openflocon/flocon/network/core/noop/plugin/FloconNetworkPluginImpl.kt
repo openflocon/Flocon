@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.network.core.noop.plugin
 
 import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
 import io.github.openflocon.flocon.network.core.model.BadQualityConfig
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
@@ -10,7 +11,7 @@ import io.github.openflocon.flocon.network.core.model.FloconWebSocketMockListene
 import io.github.openflocon.flocon.network.core.model.MockNetworkResponse
 
 internal class FloconNetworkPluginImpl : FloconPlugin, FloconNetworkPlugin {
-    override val key: String = "NETWORK"
+    override val key: String = Protocol.ToDevice.Network.Plugin
     override val mocks: Collection<MockNetworkResponse> = emptyList()
     override val badQualityConfig: BadQualityConfig? = null
 

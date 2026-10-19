@@ -43,7 +43,7 @@ internal class FloconDashboardPluginImpl(
     private val sender: FloconMessageSender,
     private val encoder: FloconEncoder
 ) : FloconPlugin, FloconDashboardPlugin {
-    override val key: String = "DASHBOARD"
+    override val key: String = Protocol.ToDevice.Dashboard.Plugin
 
     private val DashboardDispatcher = Dispatchers.Default.limitedParallelism(1)
 

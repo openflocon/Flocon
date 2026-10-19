@@ -28,7 +28,7 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
 }
 
 internal class FloconDevicePluginNoOpImpl : FloconPlugin, FloconDevicePlugin {
-    override val key: String = "DEVICE"
+    override val key: String = Protocol.ToDevice.Device.Plugin
 
     override fun registerWithSerial(serial: String) {
         // no op

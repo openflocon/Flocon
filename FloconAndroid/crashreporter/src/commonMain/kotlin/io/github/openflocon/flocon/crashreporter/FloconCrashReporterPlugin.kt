@@ -53,7 +53,7 @@ internal class FloconCrashReporterPluginImpl(
     private var sender: FloconMessageSender,
     private val coroutineScope: CoroutineScope,
 ) : FloconPlugin, FloconCrashReporterPlugin {
-    override val key: String = "CRASH_REPORTER"
+    override val key: String = Protocol.FromDevice.CrashReporter.Plugin
 
     private val dataSource = buildFloconCrashReporterDataSource(context)
 

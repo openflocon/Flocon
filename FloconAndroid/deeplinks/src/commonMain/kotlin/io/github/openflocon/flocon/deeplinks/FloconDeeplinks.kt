@@ -45,7 +45,7 @@ internal class FloconDeeplinksPluginImpl(
     private val sender: FloconMessageSender,
     private val encoder: FloconEncoder
 ) : FloconPlugin, FloconDeeplinksPlugin {
-    override val key: String = "DEEP_LINK"
+    override val key: String = Protocol.FromDevice.Deeplink.Plugin
 
     override suspend fun onMessageReceived(
         method: String,

@@ -35,7 +35,7 @@ internal class FloconNetworkPluginImpl(
     private val coroutineScope: CoroutineScope,
     private val encoder: FloconEncoder
 ) : FloconPlugin, FloconNetworkPlugin {
-    override val key: String = "NETWORK"
+    override val key: String = Protocol.ToDevice.Network.Plugin
 
     private val dataSource = buildFloconNetworkDataSource(context = context, encoder = encoder)
 

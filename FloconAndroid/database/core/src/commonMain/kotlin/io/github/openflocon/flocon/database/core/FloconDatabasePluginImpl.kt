@@ -30,7 +30,7 @@ internal class FloconDatabasePluginImpl(
     private val encoder: FloconEncoder
 ) : FloconPlugin, FloconDatabasePlugin {
 
-    override val key: String = Protocol.FromDevice.Database.Plugin
+    override val key: String = Protocol.ToDevice.Database.Plugin
 
     private val registeredDatabases = MutableStateFlow<List<FloconDatabaseModel>>(emptyList())
 

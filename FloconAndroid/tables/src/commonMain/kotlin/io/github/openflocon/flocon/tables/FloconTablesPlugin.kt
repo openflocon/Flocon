@@ -48,7 +48,7 @@ internal class FloconTablePluginImpl(
     private val sender: FloconMessageSender,
     private val encoder: FloconEncoder
 ) : FloconPlugin, FloconTablePlugin {
-    override val key: String = "TABLE"
+    override val key: String = Protocol.ToDevice.Table.Plugin
 
     override suspend fun onMessageReceived(
         method: String,

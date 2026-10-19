@@ -31,7 +31,7 @@ object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, Floc
 }
 
 internal class FloconCrashReporterNoOpImpl : FloconPlugin, FloconCrashReporterPlugin {
-    override val key: String = "CRASH_REPORTER"
+    override val key: String = Protocol.FromDevice.CrashReporter.Plugin
 
     override fun setupCrashHandler() {
         // no op

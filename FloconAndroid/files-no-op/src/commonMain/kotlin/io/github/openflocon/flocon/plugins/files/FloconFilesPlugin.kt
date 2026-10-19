@@ -28,7 +28,7 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
 }
 
 internal class FloconFilesPluginNoOpImpl : FloconPlugin, FloconFilesPlugin {
-    override val key: String = "FILES"
+    override val key: String = Protocol.ToDevice.Files.Plugin
 
     override suspend fun onMessageReceived(
         method: String,
