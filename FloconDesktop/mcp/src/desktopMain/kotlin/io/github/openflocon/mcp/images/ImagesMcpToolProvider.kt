@@ -7,7 +7,6 @@ import io.github.openflocon.mcp.McpToolProvider
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
 import io.modelcontextprotocol.kotlin.sdk.server.Server
-import kotlinx.coroutines.flow.first
 import kotlin.time.Instant
 
 internal class ImagesMcpToolProvider(
@@ -31,11 +30,13 @@ internal class ImagesMcpToolProvider(
         val limit = input.limit.coerceIn(1, MAX_LIMIT)
         val text = input.text?.takeIf { it.isNotBlank() }
 
-        val images = imagesRepository.observeImages(target).first()
-            .filter { text == null || it.url.contains(text, ignoreCase = true) }
-            .filter { input.sinceTimestamp == null || it.time >= input.sinceTimestamp }
-            .sortedBy { it.time }
-            .let { if (input.order == McpOrder.NewestFirst) it.reversed() else it }
+        val images = imagesRepository.searchImages(
+            deviceIdAndPackageName = target,
+            sinceTimestamp = input.sinceTimestamp,
+            text = text,
+            newestFirst = input.order == McpOrder.NewestFirst,
+            limit = limit + 1,
+        )
         val returned = images.take(limit)
 
         return ImagesMcpResult(
