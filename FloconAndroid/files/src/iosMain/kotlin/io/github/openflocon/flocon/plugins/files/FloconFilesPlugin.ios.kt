@@ -49,6 +49,7 @@ internal class FileDataSourceIOs : FileDataSource {
         return resolved?.takeIf { fileManager.fileExistsAtPath(it) }?.let { FloconFile(it) }
     }
 
+    @FloconMarker
     override fun getFolderContent(
         path: String,
         isConstantPath: Boolean,
