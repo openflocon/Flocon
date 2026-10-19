@@ -6,6 +6,7 @@ import io.modelcontextprotocol.kotlin.sdk.types.error
 import io.modelcontextprotocol.kotlin.sdk.types.success
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
+import kotlin.time.TimeSource
 
 internal val mcpOutputJson = Json {
     explicitNulls = false
@@ -37,13 +38,34 @@ internal inline fun <reified T> jsonResult(value: T): CallToolResult = CallToolR
 /**
  * Executes a tool, [McpToolException] are returned to the agent as an error result
  */
-internal suspend fun safeToolCall(block: suspend () -> CallToolResult): CallToolResult = try {
-    block()
-} catch (e: CancellationException) {
-    throw e
-} catch (e: McpToolException) {
-    CallToolResult.error(e.message.orEmpty())
+internal suspend fun safeToolCall(
+    toolName: String? = null,
+    argumentNames: Set<String> = emptySet(),
+    block: suspend () -> CallToolResult,
+): CallToolResult {
+    val logger = McpLogs.logger.takeIf { toolName != null }
+    val startedAt = TimeSource.Monotonic.markNow()
+    return try {
+        block().also { result ->
+            val duration = startedAt.elapsedNow().inWholeMilliseconds
+            if (result.isError == true) {
+                logger?.error("$toolName returned an error in $duration ms")
+            } else {
+                logger?.info("$toolName ok in $duration ms${argumentNames.argumentsSuffix()}")
+            }
+        }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: McpToolException) {
+        logger?.error("$toolName failed: ${e.message}")
+        CallToolResult.error(e.message.orEmpty())
+    } catch (t: Throwable) {
+        logger?.error("$toolName crashed", t)
+        throw t
+    }
 }
+
+private fun Set<String>.argumentsSuffix(): String = if (isEmpty()) "" else " (args: ${joinToString()})"
 
 internal const val ARG_DEVICE_ID = "deviceId"
 internal const val ARG_PACKAGE_NAME = "packageName"

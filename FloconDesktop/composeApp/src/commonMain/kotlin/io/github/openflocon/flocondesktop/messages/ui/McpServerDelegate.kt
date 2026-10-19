@@ -5,6 +5,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.mcp.logger.McpLogger
 import io.github.openflocon.domain.mcp.usecase.StartMcpServerUseCase
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
@@ -20,6 +21,7 @@ class McpServerDelegate(
     private val startMcpServerUseCase: StartMcpServerUseCase,
     private val closeableDelegate: CloseableDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
+    private val mcpLogger: McpLogger,
 ) : CloseableScoped by closeableDelegate {
 
     fun initialize() {
@@ -44,6 +46,7 @@ class McpServerDelegate(
         startMcpServerUseCase()
         Success(Unit)
     } catch (t: Throwable) {
+        mcpLogger.error("Cannot start the server on port ${Constant.MCP_SERVER_PORT}, retrying in 10s", t)
         if (displayError) {
             feedbackDisplayer.displayMessage(
                 buildString {

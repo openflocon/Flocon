@@ -17,11 +17,14 @@ import io.github.openflocon.domain.settings.usecase.SetFontSizeMultiplierUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
+import io.github.openflocon.flocondesktop.common.log.LogDomain
+import io.github.openflocon.flocondesktop.common.log.LogLevel
 import io.github.openflocon.flocondesktop.common.log.LogManager
 import io.github.openflocon.flocondesktop.common.log.toUiModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -55,17 +58,31 @@ class SettingsViewModel(
     )
     val floconDocumentsPathInput = _floconDocumentsPathInput.asStateFlow()
 
+    private val selectedLogDomains = MutableStateFlow(LogDomain.entries.toSet())
+    private val selectedLogLevels = MutableStateFlow(LogLevel.entries.toSet())
+
+    private val filteredLogs = combine(
+        logManager.logs,
+        selectedLogDomains,
+        selectedLogLevels,
+    ) { logs, domains, levels ->
+        logs.filter { it.domain in domains && it.level in levels }
+    }
+
     val uiState = combine(
         fontSizeMultiplierUseCase(),
         observeThemeUseCase(),
-        logManager.logs,
+        filteredLogs,
         settingsRepository.adbForwardStatus,
-    ) { multiplier, theme, logs, forwardStatus ->
+        combine(selectedLogDomains, selectedLogLevels) { domains, levels -> domains to levels },
+    ) { multiplier, theme, logs, forwardStatus, (domains, levels) ->
         SettingsUiState(
             fontSizeMultiplier = multiplier,
             theme = theme,
             logs = logs.map { it.toUiModel() }.toImmutableList(),
             adbForwardStatus = forwardStatus,
+            selectedLogDomains = domains,
+            selectedLogLevels = levels,
         )
     }
         .stateIn(
@@ -154,6 +171,14 @@ class SettingsViewModel(
                 },
             )
         }
+    }
+
+    fun toggleLogDomain(domain: LogDomain) {
+        selectedLogDomains.update { if (domain in it) it - domain else it + domain }
+    }
+
+    fun toggleLogLevel(level: LogLevel) {
+        selectedLogLevels.update { if (level in it) it - level else it + level }
     }
 
     fun clearLogs() {

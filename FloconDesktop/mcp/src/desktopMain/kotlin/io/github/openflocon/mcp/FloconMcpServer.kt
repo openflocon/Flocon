@@ -2,6 +2,7 @@ package io.github.openflocon.mcp
 
 import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.Constant
+import io.github.openflocon.domain.mcp.logger.McpLogger
 import io.github.openflocon.domain.mcp.repository.McpServerRepository
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
@@ -21,7 +22,12 @@ import io.modelcontextprotocol.kotlin.sdk.types.ServerCapabilities
 class FloconMcpServer(
     private val toolProviders: List<McpToolProvider>,
     private val port: Int = Constant.MCP_SERVER_PORT,
+    private val logger: McpLogger? = null,
 ) : McpServerRepository {
+
+    init {
+        McpLogs.logger = logger
+    }
 
     private var httpServer: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? = null
 
@@ -35,6 +41,7 @@ class FloconMcpServer(
         }.start(wait = false)
 
         Logger.i(TAG) { "MCP server started on http://localhost:$port$PATH" }
+        logger?.info("Server started on http://localhost:$port$PATH (${toolProviders.size} tool providers)")
     }
 
     @Synchronized

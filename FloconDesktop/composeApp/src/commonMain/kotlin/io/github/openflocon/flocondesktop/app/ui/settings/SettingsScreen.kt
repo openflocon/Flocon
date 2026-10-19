@@ -71,10 +71,12 @@ import flocondesktop.composeapp.generated.resources.settings_theme_system
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.AllReleaseNotesPane
+import io.github.openflocon.flocondesktop.common.log.LogDomain
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSlider
 import io.github.openflocon.library.designsystem.components.FloconSurface
@@ -128,6 +130,8 @@ fun SettingsScreen(
         onOpenFloconDocumentsFolder = viewModel::openFloconDocumentsFolder,
         onAction = viewModel::onAction,
         onClearLogs = viewModel::clearLogs,
+        onToggleLogDomain = viewModel::toggleLogDomain,
+        onToggleLogLevel = viewModel::toggleLogLevel,
         needsAdbSetup = needsAdbSetup,
     )
 }
@@ -152,6 +156,8 @@ private fun SettingsScreen(
     needsAdbSetup: Boolean,
     onAction: (SettingsAction) -> Unit,
     onClearLogs: () -> Unit,
+    onToggleLogDomain: (LogDomain) -> Unit,
+    onToggleLogLevel: (LogLevel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by remember { mutableStateOf(if (needsAdbSetup) SettingsTab.Adb else SettingsTab.General) }
@@ -212,6 +218,10 @@ private fun SettingsScreen(
 
                 SettingsTab.Logs -> LogsPane(
                     logs = uiState.logs,
+                    selectedDomains = uiState.selectedLogDomains,
+                    selectedLevels = uiState.selectedLogLevels,
+                    onToggleDomain = onToggleLogDomain,
+                    onToggleLevel = onToggleLogLevel,
                     onClearLogs = onClearLogs,
                 )
 
@@ -654,6 +664,10 @@ private fun AppearancePane(
 @Composable
 private fun LogsPane(
     logs: ImmutableList<LogEntryUiModel>,
+    selectedDomains: Set<LogDomain>,
+    selectedLevels: Set<LogLevel>,
+    onToggleDomain: (LogDomain) -> Unit,
+    onToggleLevel: (LogLevel) -> Unit,
     onClearLogs: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -679,7 +693,7 @@ private fun LogsPane(
             if (logs.isNotEmpty()) {
                 FloconButton(
                     onClick = {
-                        val text = logs.joinToString("\n") { "[${it.timestamp} ${it.level.name}] ${it.message}" }
+                        val text = logs.joinToString("\n") { "[${it.timestamp} ${it.level.name} ${it.domain.name}] ${it.message}" }
                         clipboardManager.setText(AnnotatedString(text))
                     },
                     containerColor = FloconTheme.colorPalette.secondary,
@@ -714,6 +728,26 @@ private fun LogsPane(
             }
         }
 
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            LogFilterGroup(
+                title = "Domain",
+                options = LogDomain.entries,
+                isSelected = { it in selectedDomains },
+                label = { it.name },
+                onToggle = onToggleDomain,
+            )
+            LogFilterGroup(
+                title = "Level",
+                options = LogLevel.entries,
+                isSelected = { it in selectedLevels },
+                label = { it.name },
+                onToggle = onToggleLevel,
+            )
+        }
+
         if (logs.isEmpty()) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -746,6 +780,46 @@ private fun LogsPane(
                     .fillMaxWidth()
                     .weight(1f),
             )
+        }
+    }
+}
+
+@Composable
+private fun <T> LogFilterGroup(
+    title: String,
+    options: List<T>,
+    isSelected: (T) -> Boolean,
+    label: (T) -> String,
+    onToggle: (T) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "$title:",
+            style = FloconTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
+            color = FloconTheme.colorPalette.onPrimary,
+            modifier = Modifier.width(64.dp),
+        )
+        options.forEach { option ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                FloconCheckbox(
+                    checked = isSelected(option),
+                    onCheckedChange = { onToggle(option) },
+                )
+                Text(
+                    text = label(option),
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.onPrimary,
+                )
+            }
         }
     }
 }
@@ -890,6 +964,7 @@ private fun ConsoleLogPanel(
         items(logs) { entry ->
             val color = when (entry.level) {
                 LogLevel.ERROR -> FloconTheme.colorPalette.onError
+                LogLevel.INFO -> FloconTheme.colorPalette.onPrimary
                 LogLevel.DEBUG -> FloconTheme.colorPalette.onAccent
             }
 
@@ -908,6 +983,12 @@ private fun ConsoleLogPanel(
                     fontWeight = FontWeight.Bold,
                     style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                     modifier = Modifier.width(48.dp)
+                )
+                Text(
+                    text = entry.domain.name,
+                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
+                    style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                    modifier = Modifier.width(56.dp)
                 )
                 Text(
                     text = entry.message,
@@ -945,6 +1026,8 @@ private fun SettingsScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
+            onToggleLogDomain = {},
+            onToggleLogLevel = {},
             needsAdbSetup = false,
         )
     }
@@ -971,6 +1054,8 @@ private fun SettingsScreenPreview_needsAdbSetup() {
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
+            onToggleLogDomain = {},
+            onToggleLogLevel = {},
             needsAdbSetup = true,
         )
     }
@@ -995,6 +1080,8 @@ private fun SettingsScreen_LogsPreview() {
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
+            onToggleLogDomain = {},
+            onToggleLogLevel = {},
             needsAdbSetup = false,
         )
     }

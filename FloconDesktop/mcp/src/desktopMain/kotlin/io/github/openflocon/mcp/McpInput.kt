@@ -92,7 +92,7 @@ internal inline fun <reified I : Any> Server.addTypedToolWithResult(
         inputSchema = toolSchemaOf<I>(),
         toolAnnotations = annotations,
     ) { request ->
-        safeToolCall { handler(request.decodeArguments<I>()) }
+        safeToolCall(toolName = name, argumentNames = request.arguments?.keys.orEmpty()) { handler(request.decodeArguments<I>()) }
     }
 }
 
