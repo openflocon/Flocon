@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.app.ui.settings
 
+import io.github.openflocon.domain.log.LogDomain
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -71,7 +72,6 @@ import flocondesktop.composeapp.generated.resources.settings_theme_system
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.AllReleaseNotesPane
-import io.github.openflocon.flocondesktop.common.log.LogDomain
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
 import io.github.openflocon.library.designsystem.FloconTheme

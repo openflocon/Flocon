@@ -1,9 +1,9 @@
 package io.github.openflocon.flocondesktop.app.ui.settings
 
+import io.github.openflocon.domain.log.LogDomain
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
-import io.github.openflocon.flocondesktop.common.log.LogDomain
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
 import kotlinx.collections.immutable.ImmutableList

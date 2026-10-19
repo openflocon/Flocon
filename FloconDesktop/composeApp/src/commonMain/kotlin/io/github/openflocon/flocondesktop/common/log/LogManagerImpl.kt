@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.common.log
 
 import androidx.compose.runtime.Immutable
+import io.github.openflocon.domain.log.LogDomain
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,8 +12,6 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 
 enum class LogLevel { DEBUG, INFO, ERROR }
-
-enum class LogDomain { Default, Mcp }
 
 data class LogEntry(
     val level: LogLevel,
@@ -35,25 +34,25 @@ fun LogEntry.toUiModel(): LogEntryUiModel {
     return LogEntryUiModel(level = level, message = message, timestamp = formatted, domain = domain)
 }
 
-class LogManager {
+class LogManagerImpl : LogManagerEditable {
 
     private val _logs = MutableStateFlow<List<LogEntry>>(emptyList())
-    val logs: StateFlow<List<LogEntry>> = _logs.asStateFlow()
+    override val logs: StateFlow<List<LogEntry>> = _logs.asStateFlow()
 
-    fun d(tag: String, message: String, domain: LogDomain) {
+    override fun d(tag: String, message: String, domain: LogDomain) {
         append(LogLevel.DEBUG, "[$tag] $message", domain)
     }
 
-    fun i(tag: String, message: String, domain: LogDomain) {
+    override fun i(tag: String, message: String, domain: LogDomain) {
         append(LogLevel.INFO, "[$tag] $message", domain)
     }
 
-    fun e(tag: String, message: String, throwable: Throwable?, domain: LogDomain) {
+    override fun e(tag: String, message: String, throwable: Throwable?, domain: LogDomain) {
         val suffix = throwable?.message?.let { ": $it" } ?: ""
         append(LogLevel.ERROR, "[$tag] $message$suffix", domain)
     }
 
-    fun clear() {
+    override fun clear() {
         _logs.value = emptyList()
     }
 

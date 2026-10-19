@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.app.ui.settings
 
+import io.github.openflocon.domain.log.LogDomain
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
@@ -17,9 +18,8 @@ import io.github.openflocon.domain.settings.usecase.SetFontSizeMultiplierUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
-import io.github.openflocon.flocondesktop.common.log.LogDomain
 import io.github.openflocon.flocondesktop.common.log.LogLevel
-import io.github.openflocon.flocondesktop.common.log.LogManager
+import io.github.openflocon.flocondesktop.common.log.LogManagerEditable
 import io.github.openflocon.flocondesktop.common.log.toUiModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -46,7 +46,7 @@ class SettingsViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val dispatcherProvider: DispatcherProvider,
-    private val logManager: LogManager,
+    private val logManager: LogManagerEditable,
 ) : ViewModel() {
 
     private val _adbPathInput = MutableStateFlow("")
