@@ -1,6 +1,9 @@
+import com.google.protobuf.gradle.id
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.protobuf)
 }
 
 android {
@@ -16,6 +19,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // optional, used by the GraphQL test (the calls are rejected without it, but still visible in Flocon)
+        buildConfigField("String", "GITHUB_TOKEN", "\"${System.getenv("GITHUB_TOKEN") ?: ""}\"")
     }
 
     buildTypes {
@@ -33,6 +39,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -58,6 +65,14 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
 
+    // gRPC
+    implementation(projects.grpc.grpcInterceptorLite)
+    implementation(libs.grpc.android)
+    implementation(libs.grpc.kotlin.stub)
+    implementation(libs.grpc.protobuf.lite)
+    implementation(libs.grpc.okhttp)
+    implementation(libs.protobuf.kotlin.lite)
+
     implementation(libs.ktor.client.okhttp)
 
     implementation(platform(libs.androidx.compose.bom))
@@ -76,6 +91,48 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.ui.tooling)
 }
+protobuf {
+    protoc {
+        artifact = libs.protobuf.protoc.get().toString()
+    }
+
+    generateProtoTasks {
+        val protocGenJava = libs.grpc.protoc.gen.java.get().toString()
+        val protocGenKotlin = libs.grpc.protoc.gen.kotlin.get().toString() + ":jdk8@jar"
+
+        plugins {
+            id("java") {
+                artifact = protocGenJava
+            }
+            id("grpc") {
+                artifact = protocGenJava
+            }
+            id("grpckt") {
+                artifact = protocGenKotlin
+            }
+        }
+
+        all().forEach {
+            it.plugins {
+                id("java") {
+                    option("lite")
+                }
+                id("grpc") {
+                    option("lite")
+                }
+                id("grpckt") {
+                    option("lite")
+                }
+            }
+            it.builtins {
+                id("kotlin") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+
 // Release builds use the no-op version of every Flocon module,
 // including the ones coming transitively from :sample-multiplatform
 val floconNoOpModules = mapOf(

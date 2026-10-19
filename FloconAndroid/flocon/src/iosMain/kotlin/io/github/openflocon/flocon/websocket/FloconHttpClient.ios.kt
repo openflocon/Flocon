@@ -45,44 +45,7 @@ internal class FloconHttpClientIOs() : FloconHttpClient {
         appPackageName: String,
         appInstance: Long
     ): Boolean {
-        /* no op for now on ios
-        val uploadUrl = "http://$address:$port/upload"
-
-        try {
-            val response: HttpResponse = client.submitFormWithBinaryData(
-                url = uploadUrl,
-                formData = formData {
-                    append("remotePath", infos.path)
-                    append("requestId", infos.requestId)
-                    append("deviceId", deviceId)
-                    append("appPackageName", appPackageName)
-                    append("appInstance", appInstance.toString())
-
-                    // Ajout du fichier binaire
-                    val fileBytes = file.file.readBytes()
-                    append(
-                        key = "file",
-                        value = fileBytes,
-                        headers = Headers.build {
-                            append(HttpHeaders.ContentDisposition, "filename=\"${file.file.name}\"")
-                            append(HttpHeaders.ContentType, "application/octet-stream")
-                        }
-                    )
-                }
-            )
-
-            if (response.status.isSuccess()) {
-                println("✅ Upload réussi : ${response.bodyAsText()}")
-                return true
-            } else {
-                println("❌ Erreur serveur (${response.status}): ${response.bodyAsText()}")
-                return false
-            }
-        } catch (e: Exception) {
-            println("❌ Erreur lors de l’envoi : ${e.message}")
-            return false
-        }
-         */
+        // not supported on iOS yet: the files plugin has no iOS data source, so no file is ever sent
         return false
     }
 }

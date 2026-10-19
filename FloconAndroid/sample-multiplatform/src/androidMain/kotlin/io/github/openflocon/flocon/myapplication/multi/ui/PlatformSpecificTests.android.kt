@@ -13,10 +13,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.myapplication.multi.Databases
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
-import io.github.openflocon.flocon.myapplication.multi.grpc.GrpcController
+import io.github.openflocon.flocon.myapplication.multi.tester.AndroidTestContext
 import io.github.openflocon.flocon.myapplication.multi.tester.FloconOkHttpTester
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
@@ -50,7 +51,7 @@ actual fun PlatformSpecificTests(modifier: Modifier) {
         Button(
             onClick = {
                 scope.launch {
-//                    AndroidTestContext.graphQlTester.fetchViewerInfo()
+                    AndroidTestContext.graphQlTester.fetchViewerInfo()
                 }
             }
         ) {
@@ -60,7 +61,7 @@ actual fun PlatformSpecificTests(modifier: Modifier) {
         Button(
             onClick = {
                 scope.launch {
-                    GrpcController.sayHello()
+                    AndroidTestContext.grpcSayHello()
                 }
             }
         ) {
@@ -69,7 +70,7 @@ actual fun PlatformSpecificTests(modifier: Modifier) {
 
         Button(
             onClick = {
-//                AndroidTestContext.dummyWebsocketCaller.send(Uuid.random().toString())
+                AndroidTestContext.dummyWebsocketCaller.send(Uuid.random().toString())
             }
         ) {
             Text("websocket test")
@@ -104,15 +105,15 @@ actual fun PlatformSpecificTests(modifier: Modifier) {
         Button(
             onClick = {
                 scope.launch {
-//                    AndroidTestContext.inMemoryDb.dogDao().insertDog(
-//                        DogEntity(
-//                            id = System.currentTimeMillis(),
-//                            name = "InMemory Flocon",
-//                            breed = "Golden Retriever ${System.currentTimeMillis()}",
-//                            age = 6,
-//                            pictureUrl = "https://picsum.photos/501/500.jpg",
-//                        )
-//                    )
+                    AndroidTestContext.inMemoryDb.dogDao().insertDog(
+                        DogEntity(
+                            id = System.currentTimeMillis(),
+                            name = "InMemory Flocon",
+                            breed = "Golden Retriever ${System.currentTimeMillis()}",
+                            age = 6,
+                            pictureUrl = "https://picsum.photos/501/500.jpg",
+                        )
+                    )
                 }
             }
         ) {

@@ -5,7 +5,7 @@ plugins {
     id("flocon.jvm.library")
     id("flocon.wasm.library")
     id("flocon.publish")
-    alias(libs.plugins.kotlin.serialization) // TODO Check if needed
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -21,7 +21,8 @@ kotlin {
         }
 
         iosMain.dependencies {
-            implementation(libs.androidx.sqlite.bundled) // TODO Check if needed
+            // NativeSQLiteDriver
+            implementation(libs.androidx.sqlite.framework)
         }
     }
 }

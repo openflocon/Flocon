@@ -1,27 +1,16 @@
-import com.android.build.api.dsl.AndroidSourceSet
-
 plugins {
     id("flocon.kotlin.library")
     id("flocon.android.library")
     id("flocon.jvm.library")
     id("flocon.ios.library")
     id("flocon.wasm.library")
-    id("flocon.publish")
 
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.buildconfig)
-//    alias(libs.plugins.androidx.room)
     alias(libs.plugins.apollo)
-//    alias(libs.plugins.protobuf)
-}
-
-fun AndroidSourceSet.proto(action: SourceDirectorySet.() -> Unit) {
-    (this as? ExtensionAware)?.extensions?.getByName("proto")?.let {
-        it as? SourceDirectorySet
-    }?.apply(action)
 }
 
 kotlin {
@@ -45,7 +34,6 @@ kotlin {
 
             // room
             implementation(libs.androidx.room3.runtime)
-//                implementation(libs.androidx.sqlite.bundled)
 
             // Compose Multiplatform
             implementation(compose.runtime)
@@ -72,13 +60,6 @@ kotlin {
 
             // OkHttp
             implementation(libs.okhttp)
-
-            // gRPC
-            implementation(libs.grpc.android)
-            implementation(libs.grpc.kotlin.stub)
-            implementation(libs.grpc.protobuf.lite)
-            implementation(libs.grpc.okhttp)
-            implementation(libs.protobuf.kotlin.lite)
 
             // Coil with OkHttp network fetcher
             implementation(libs.coil.network.okhttp)
@@ -112,56 +93,9 @@ dependencies {
 
 }
 
-//room {
-//    schemaDirectory("$projectDir/schemas")
-//}
-
 apollo {
     service("github") {
         packageName.set("com.github")
         srcDir("src/androidMain/graphql")
     }
 }
-
-//protobuf {
-//    protoc {
-////        artifact = libs.protobuf.protoc.get().toString()
-//    }
-//
-//    generateProtoTasks {
-////        val protocGenJava = libs.grpc.gen.java.get().toString()
-////        val protocGenKotlin = libs.grpc.gen.kotlin.get().toString() + ":jdk8@jar"
-//
-//        plugins {
-//            id("java") {
-////                artifact = protocGenJava
-//            }
-//            id("grpc") {
-////                artifact = protocGenJava
-//            }
-//            id("grpckt") {
-////                artifact = protocGenKotlin
-//            }
-//        }
-//
-//        all().forEach {
-//            it.plugins {
-//                id("java") {
-//                    option("lite")
-//                }
-//                id("grpc") {
-//                    option("lite")
-//                }
-//                id("grpckt") {
-//                    option("lite")
-//                }
-//            }
-//            it.builtins {
-//                id("kotlin") {
-//                    option("lite")
-//                }
-//            }
-//        }
-//    }
-//}
-

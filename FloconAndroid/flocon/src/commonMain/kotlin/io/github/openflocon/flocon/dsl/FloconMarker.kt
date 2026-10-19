@@ -7,6 +7,7 @@ package io.github.openflocon.flocon.dsl
 @Retention(AnnotationRetention.BINARY)
 @Target(
     AnnotationTarget.CLASS,
+    AnnotationTarget.CONSTRUCTOR,
     AnnotationTarget.FUNCTION,
     AnnotationTarget.FIELD,
     AnnotationTarget.PROPERTY

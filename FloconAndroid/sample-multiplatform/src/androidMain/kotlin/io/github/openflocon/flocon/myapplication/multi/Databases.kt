@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.myapplication.multi
 
 import android.content.Context
 import androidx.room3.Room
+import io.github.openflocon.flocon.database.room3.floconRegisterDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
 
@@ -19,10 +20,10 @@ object Databases {
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()
             dogDatabase = instance
-//            floconRegisterDatabase(
-//                displayName = "dogs",
-//                database = instance
-//            )
+            floconRegisterDatabase(
+                displayName = "dogs",
+                database = instance
+            )
             instance
         }
     }
@@ -37,10 +38,10 @@ object Databases {
                 name = "food_database"
             ).build()
             foodDatabase = instance
-//            floconRegisterDatabase(
-//                displayName = "food",
-//                database = instance
-//            )
+            floconRegisterDatabase(
+                displayName = "food",
+                database = instance
+            )
             instance
         }
     }
@@ -55,10 +56,10 @@ object Databases {
                 DogDatabase::class.java,
             ).build()
             inMemoryDogDatabase = instance
-//            floconRegisterDatabase(
-//                displayName = "inmemory_dogs",
-//                database = instance
-//            )
+            floconRegisterDatabase(
+                displayName = "inmemory_dogs",
+                database = instance
+            )
             instance
         }
     }

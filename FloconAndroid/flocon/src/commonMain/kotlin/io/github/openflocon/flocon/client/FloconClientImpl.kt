@@ -35,6 +35,7 @@ class FloconClient internal constructor(
     private val webSocketClient: FloconWebSocketClient = buildFloconWebSocketClient()
     private val httpClient: FloconHttpClient = buildFloconHttpClient()
 
+    @OptIn(FloconMarker::class)
     private var encoder = FloconEncoder(EmptySerializersModule())
 
     // Better way ?

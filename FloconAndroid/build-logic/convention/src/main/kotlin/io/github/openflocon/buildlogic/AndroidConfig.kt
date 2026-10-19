@@ -11,12 +11,6 @@ internal fun Project.configureAndroidLibrary() {
         (this as ExtensionAware).extensions.configure<KotlinMultiplatformAndroidLibraryExtension>("androidLibrary") {
             compileSdk = 36
             minSdk = 23
-
-//            withDeviceTestBuilder {
-//                sourceSetTreeName = "test"
-//            }.configure {
-//                instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-//            }
         }
     }
 }

@@ -1,5 +1,7 @@
 package io.github.openflocon.flocon.myapplication.multi
 
+import io.github.openflocon.flocon.okhttp.websocket.listenWithFlocon
+import io.github.openflocon.flocon.okhttp.websocket.sendWithFlocon
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -14,7 +16,7 @@ class DummyWebsocketCaller(val client: OkHttpClient) {
     fun connectToWebsocket() {
         val url = "wss://ws.postman-echo.com/raw"
         val request = Request.Builder()
-            .url("wss://ws.postman-echo.com/raw")
+            .url(url)
             .build()
         val listener = object : WebSocketListener() {
             override fun onClosed(
@@ -54,14 +56,14 @@ class DummyWebsocketCaller(val client: OkHttpClient) {
                 super.onOpen(webSocket, response)
             }
         }
-//        this.ws = client.newWebSocket(
-//            request,
-//            listener.listenWithFlocon(id = url),
-//        )
+        this.ws = client.newWebSocket(
+            request,
+            listener.listenWithFlocon(id = url),
+        )
     }
 
     fun send(text: String) {
-//        ws?.sendWithFlocon("\"$text\"")
+        ws?.sendWithFlocon("\"$text\"")
     }
 
 }

@@ -2,6 +2,7 @@ package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.client.FloconClient
 import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.dsl.FloconMarker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -53,6 +54,7 @@ data class FloconConfig internal constructor(
     val client: FloconClient
 )
 
+@OptIn(FloconMarker::class)
 fun startFlocon(
     context: FloconContext,
     block: FloconConfiguration.() -> Unit
