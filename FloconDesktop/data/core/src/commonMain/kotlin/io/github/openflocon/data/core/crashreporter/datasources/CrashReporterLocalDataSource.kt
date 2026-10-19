@@ -11,6 +11,13 @@ interface CrashReporterLocalDataSource {
         crashes: List<CrashReportDomainModel>
     )
     fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<PagingData<CrashReportDomainModel>>
+    suspend fun search(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sinceTimestamp: Long?,
+        text: String?,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<CrashReportDomainModel>
     suspend fun delete(crashId: String)
     suspend fun clearAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
     fun observeCrashReportById(
