@@ -68,6 +68,7 @@ dependencies {
     // gRPC
     implementation(projects.grpc.grpcInterceptorLite)
     implementation(libs.grpc.android)
+    implementation(libs.grpc.stub)
     implementation(libs.grpc.kotlin.stub)
     implementation(libs.grpc.protobuf.lite)
     implementation(libs.grpc.okhttp)
