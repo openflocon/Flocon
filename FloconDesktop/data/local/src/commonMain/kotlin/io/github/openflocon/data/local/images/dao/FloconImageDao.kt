@@ -37,6 +37,29 @@ interface FloconImageDao {
 
     @Query(
         """
+        SELECT *
+        FROM DeviceImageEntity
+        WHERE deviceId = :deviceId
+        AND packageName = :packageName
+        AND (:sinceTimestamp IS NULL OR time >= :sinceTimestamp)
+        AND (:filter IS NULL OR url LIKE '%' || :filter || '%')
+        ORDER BY
+            CASE WHEN :newestFirst = 1 THEN time END DESC,
+            CASE WHEN :newestFirst = 0 THEN time END ASC
+        LIMIT :limit
+        """
+    )
+    suspend fun searchImages(
+        deviceId: String,
+        packageName: String,
+        sinceTimestamp: Long?,
+        filter: String?,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<DeviceImageEntity>
+
+    @Query(
+        """
         DELETE FROM DeviceImageEntity 
         WHERE deviceId = :deviceId
         AND packageName = :packageName 

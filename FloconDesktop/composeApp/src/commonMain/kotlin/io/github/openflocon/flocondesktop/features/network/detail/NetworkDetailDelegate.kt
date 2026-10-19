@@ -6,6 +6,7 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
+import io.github.openflocon.domain.network.usecase.CreateNetworkLogHtmlUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
@@ -22,7 +23,6 @@ import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.library.designsystem.common.readFromClipboard
 import io.github.openflocon.library.designsystem.common.saveImageToFile
 import io.github.openflocon.navigation.MainFloconNavigationState
-
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,6 +50,7 @@ class NetworkDetailDelegate(
 
     private val openBodyDelegate: OpenBodyDelegate by inject()
     private val getNetworkCallAsMarkdownUseCase: GetNetworkCallAsMarkdownUseCase by inject()
+    private val createNetworkLogHtmlUseCase: CreateNetworkLogHtmlUseCase by inject()
     private val generateCurlCommandUseCase: GenerateCurlCommandUseCase by inject()
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase by inject()
 
@@ -92,7 +93,6 @@ class NetworkDetailDelegate(
             )
         )
 
-
     fun setRequestId(requestId: String) {
         this@NetworkDetailDelegate.requestId.update { requestId }
     }
@@ -109,6 +109,14 @@ class NetworkDetailDelegate(
             is NetworkDetailAction.OpenBodyExternally.Response -> openBodyDelegate.openBodyExternally(action.item)
             is NetworkDetailAction.ShareAsMarkdown -> copyAsMarkdown(requestId.value)
             is NetworkDetailAction.CopyCurl -> onCopyCurl()
+            is NetworkDetailAction.SaveAsHtml -> onSaveHtml()
+        }
+    }
+
+    private fun onSaveHtml() {
+        coroutineScope.launch {
+            val id = requestId.value
+            createNetworkLogHtmlUseCase(id)
         }
     }
 

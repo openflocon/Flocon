@@ -13,6 +13,7 @@ import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.domainModule
+import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
@@ -23,6 +24,7 @@ import io.github.openflocon.flocondesktop.common.di.commonModule
 import io.github.openflocon.flocondesktop.core.di.coreModule
 import io.github.openflocon.flocondesktop.features.featuresModule
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
+import io.github.openflocon.flocondesktop.iossimulator.IosSimulatorRepositoryImpl
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.mcp.mcpModule
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -55,6 +57,7 @@ fun App() {
 //                    }
                     single { MainFloconNavigationState(NetworkRoutes.Main) }
                     singleOf(::AdbRepositoryImpl) bind AdbRepository::class
+                    singleOf(::IosSimulatorRepositoryImpl) bind IosSimulatorRepository::class
                 },
             )
         },

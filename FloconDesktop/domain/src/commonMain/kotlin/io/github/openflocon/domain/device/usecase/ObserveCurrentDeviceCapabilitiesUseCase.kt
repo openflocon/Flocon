@@ -57,7 +57,7 @@ class ObserveCurrentDeviceCapabilitiesUseCase(
             recordScreen = false,
             restart = false,
             sharedPreferences = false, // may be possible on next versions
-            deeplinks = false,
+            deeplinks = true, // iOS Simulator only, through `xcrun simctl openurl`
             files = false, // may be possible on next versions
         )
     } else {
