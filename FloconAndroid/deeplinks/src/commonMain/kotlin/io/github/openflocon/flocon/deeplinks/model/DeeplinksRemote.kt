@@ -25,12 +25,15 @@ internal data class DeeplinkVariableRemote(
     val description: String? = null
 ) {
 
+    // same format as the desktop DeeplinkVariableReceivedDataModel
     @Serializable
-    @JsonClassDiscriminator("mode")
+    @JsonClassDiscriminator("type")
     sealed interface Mode {
+        @Serializable
         @SerialName("input")
         object Input : Mode
 
+        @Serializable
         @SerialName("auto_complete")
         data class AutoComplete(val suggestions: List<String>) : Mode
     }

@@ -2,6 +2,8 @@ package io.github.openflocon.flocon.network.core.mapper
 
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.network.core.model.MockNetworkResponse
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -62,7 +64,7 @@ private fun MockNetworkResponseDataModel.mapResponseToDomain(): MockNetworkRespo
     }
 }
 
-private fun MockNetworkResponse.toRemote(): MockNetworkResponseDataModel {
+internal fun MockNetworkResponse.toRemote(): MockNetworkResponseDataModel {
     return MockNetworkResponseDataModel(
         expectation = MockNetworkResponseDataModel.Expectation(
             urlPattern = expectation.urlPattern,
@@ -93,3 +95,11 @@ private fun MockNetworkResponse.mapResponseToRemote(): MockNetworkResponseDataMo
         )
     }
 }
+
+internal fun FloconEncoder.encodeMocks(mocks: List<MockNetworkResponse>): String =
+    encode(mocks.map { it.toRemote() })
+
+internal fun FloconEncoder.decodeMocks(json: String): List<MockNetworkResponse> =
+    decode<List<MockNetworkResponseDataModel>>(json)
+        .orEmpty()
+        .mapNotNull { it.toDomain() }

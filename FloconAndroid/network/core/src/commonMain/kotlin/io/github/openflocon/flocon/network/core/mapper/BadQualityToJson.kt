@@ -1,5 +1,8 @@
 package io.github.openflocon.flocon.network.core.mapper
 
+import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.network.core.model.BadQualityConfig
 import kotlinx.serialization.Serializable
 
@@ -81,3 +84,9 @@ internal fun BadQualityConfigSerializable.toDomain(): BadQualityConfig {
         errors = errorsList
     )
 }
+
+internal fun FloconEncoder.encodeBadQualityConfig(config: BadQualityConfig): String =
+    encode(config.toSerializable())
+
+internal fun FloconEncoder.decodeBadQualityConfig(json: String): BadQualityConfig? =
+    decode<BadQualityConfigSerializable>(json)?.toDomain()

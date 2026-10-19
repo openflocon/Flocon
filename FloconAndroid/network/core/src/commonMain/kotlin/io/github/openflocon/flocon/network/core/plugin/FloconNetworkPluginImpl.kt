@@ -10,6 +10,8 @@ import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
 import io.github.openflocon.flocon.network.core.datasource.buildFloconNetworkDataSource
+import io.github.openflocon.flocon.network.core.mapper.decodeBadQualityConfig
+import io.github.openflocon.flocon.network.core.mapper.decodeMocks
 import io.github.openflocon.flocon.network.core.mapper.WebSocketMockMessage
 import io.github.openflocon.flocon.network.core.mapper.floconNetworkCallRequestToJson
 import io.github.openflocon.flocon.network.core.mapper.floconNetworkCallResponseToJson
@@ -102,14 +104,13 @@ internal class FloconNetworkPluginImpl(
     ) {
         when (method) {
             Protocol.ToDevice.Network.Method.SetupMocks -> {
-                val setup = encoder.decode<List<MockNetworkResponse>>(body)
-                    .orEmpty()
+                val setup = encoder.decodeMocks(body)
                 _mocks.update { setup }
                 dataSource.saveMocksToFile(mocks)
             }
 
             Protocol.ToDevice.Network.Method.SetupBadNetworkConfig -> {
-                val config = encoder.decode<BadQualityConfig>(body)
+                val config = encoder.decodeBadQualityConfig(body)
                 _badQualityConfig.update { config }
                 dataSource.saveBadNetworkConfig(config)
             }

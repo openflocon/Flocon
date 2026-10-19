@@ -13,6 +13,7 @@ import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecut
 import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DatabaseQueryLogModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DeviceDataBaseDataModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.sql.QueryResultDataModel
+import io.github.openflocon.flocon.database.core.model.fromdevice.sql.toRemoteResult
 import io.github.openflocon.flocon.database.core.model.todevice.DatabaseQueryMessage
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.utils.currentTimeMillis
@@ -59,7 +60,7 @@ internal class FloconDatabasePluginImpl(
                         body = encoder.encode(
                             QueryResultDataModel(
                                 requestId = queryMessage.requestId,
-                                result = encoder.encode(result)
+                                result = result.toRemoteResult(encoder)
                             )
                         )
                     )
