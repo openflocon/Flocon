@@ -8,6 +8,7 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.model.FloconMessageFromServer
+import io.github.openflocon.flocon.model.toBonjourBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -48,8 +49,8 @@ class Flocon internal constructor(
             plugins.forEach { it.onConnectedToServer() }
 
             (client as? FloconMessageSender)?.let {
-                // if success, just send a bonjour
-                it.send("bonjour", method = "bonjour", body = "bonjour")
+                // if success, just send a bonjour with the installed plugins
+                it.send("bonjour", method = "bonjour", body = plugins.toBonjourBody(encoder))
                 it.sendPendingMessages()
             }
         } catch (t: Throwable) {
