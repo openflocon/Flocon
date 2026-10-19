@@ -38,7 +38,7 @@ internal class FileDataSourceIOs : FileDataSource {
 
     private val fileManager get() = NSFileManager.defaultManager
 
-    // same folders as FloconSwift
+    // the usual folders of an iOS app, then its whole container
     override fun defaultRoots(): List<FileRootDataModel> = listOfNotNull(
         searchPathDirectory(NSDocumentDirectory)?.let { FileRootDataModel(id = "documents", name = "Documents", path = it) },
         searchPathDirectory(NSApplicationSupportDirectory)?.let { FileRootDataModel(id = "applicationSupport", name = "Application Support", path = it) },
