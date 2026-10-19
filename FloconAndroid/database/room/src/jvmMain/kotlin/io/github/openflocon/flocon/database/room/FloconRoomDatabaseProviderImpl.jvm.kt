@@ -1,20 +1,49 @@
 package io.github.openflocon.flocon.database.room
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
+import io.github.openflocon.flocon.database.core.model.FloconFileDatabaseModel
 import io.github.openflocon.flocon.dsl.FloconMarker
+import java.io.File
 
+/**
+ * There is no default database folder on the JVM: the databases are found in the folders
+ * (or files) given with `path(...)`.
+ */
+@OptIn(markerClass = [FloconMarker::class])
 internal actual class FloconRoomDatabaseProviderImpl actual constructor(
     private val context: FloconContext,
-    paths: List<String>
+    private val paths: List<String>
 ) : FloconRoomDatabaseProvider {
 
     actual override fun register() {
-        // no op on JVM
+        val databases = getAllDataBases(emptyList())
+        databases.forEach { Flocon.databasePlugin.register(it) }
     }
 
-    @OptIn(FloconMarker::class)
+    @FloconMarker
     actual override fun getAllDataBases(registeredDatabases: List<FloconDatabaseModel>): List<FloconDatabaseModel> {
-        return emptyList()
+        return paths
+            .flatMap { File(it).walkTopDown().maxDepth(MAX_DEPTH).toList() }
+            .filter { it.isFile && isDatabaseFile(it.name) }
+            .distinctBy { it.absolutePath }
+            .map {
+                FloconFileDatabaseModel(
+                    id = it.absolutePath,
+                    displayName = it.name,
+                    absolutePath = it.absolutePath,
+                )
+            }
+    }
+
+    companion object {
+        private const val MAX_DEPTH = 7
+
+        internal fun isDatabaseFile(name: String): Boolean =
+            DATABASE_EXTENSIONS.any { name.endsWith(it) }
+
+        private val DATABASE_EXTENSIONS = listOf(".db", ".sqlite", ".sqlite3")
     }
 }

@@ -1,11 +1,12 @@
 package io.github.openflocon.flocon.utils
 
-// Using a simple polyfill/wrapper for time in wasmJs if needed, 
-// but for now we'll try to use what's available or stubs to make it compile.
-// Note: In a real app, you'd use a library like kotlinx-datetime.
+import kotlin.time.TimeSource
 
-actual fun currentTimeMillis(): Long = 0L // Stub for now to ensure compilation
+@JsFun("() => Date.now()")
+private external fun dateNow(): Double
 
-actual fun currentTimeNanos(): Long = 0L // Stub for now to ensure compilation
+actual fun currentTimeMillis(): Long = dateNow().toLong()
 
-actual fun createThrowableFromClassName(className: String): Throwable? = null
+actual fun currentTimeNanos(): Long = TimeSource.Monotonic.markNow().elapsedNow().inWholeNanoseconds
+
+actual fun createThrowableFromClassName(className: String): Throwable? = RuntimeException("Error: $className")

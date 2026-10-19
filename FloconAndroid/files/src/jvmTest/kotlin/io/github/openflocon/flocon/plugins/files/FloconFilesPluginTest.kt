@@ -39,13 +39,48 @@ class FloconFilesPluginTest {
     fun `listFiles answers with the request id`() = runTest {
         plugin.onMessageReceived(
             method = Protocol.ToDevice.Files.Method.ListFiles,
-            body = "{\"requestId\":\"42\",\"path\":\"/\",\"isConstantPath\":false}",
+            body = "{\"requestId\":\"42\",\"path\":\"/flocon/does/not/exist\",\"isConstantPath\":false}",
         )
 
         val (pluginName, method, body) = sender.messages.single()
         assertEquals(Protocol.FromDevice.Files.Plugin, pluginName)
         assertEquals(Protocol.FromDevice.Files.Method.ListFiles, method)
         assertEquals("{\"requestId\":\"42\",\"files\":[]}", body)
+    }
+
+    @Test
+    fun `listFiles lists the content of a folder`() = runTest {
+        val dir = kotlin.io.path.createTempDirectory("flocon-files").toFile()
+        try {
+            java.io.File(dir, "a.txt").writeText("abc")
+            java.io.File(dir, "sub").mkdir()
+
+            val files = FileDataSourceJvm().getFolderContent(dir.absolutePath, isConstantPath = false, withFoldersSize = true)
+
+            assertEquals(setOf("a.txt", "sub"), files.map { it.name }.toSet())
+            assertEquals(3L, files.single { it.name == "a.txt" }.size)
+            assertEquals(true, files.single { it.name == "sub" }.isDirectory)
+        } finally {
+            dir.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `deleteFile removes files and folders`() {
+        val dir = kotlin.io.path.createTempDirectory("flocon-files").toFile()
+        try {
+            val file = java.io.File(dir, "a.txt").apply { writeText("abc") }
+            val dataSource = FileDataSourceJvm()
+
+            dataSource.deleteFile(file.absolutePath)
+            assertEquals(false, file.exists())
+
+            java.io.File(dir, "b.txt").writeText("b")
+            dataSource.deleteFolderContent(dataSource.getFile(dir.absolutePath, isConstantPath = false)!!)
+            assertEquals(0, dir.listFiles()!!.size)
+        } finally {
+            dir.deleteRecursively()
+        }
     }
 
     @Test

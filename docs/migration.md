@@ -29,12 +29,18 @@ In 1.x, `io.github.openflocon:flocon` contained every feature. In 2.0, `flocon` 
 | Analytics | `flocon-analytics` | Android, JVM, iOS, Wasm |
 | Tables | `flocon-tables` | Android, JVM, iOS, Wasm |
 | Deeplinks | `flocon-deeplinks` | Android, JVM, iOS, Wasm |
-| Files | `flocon-files` | Android (other platforms: no file browsing yet) |
-| Device (app icon, restart app) | `flocon-device` | Android |
+| Files | `flocon-files` | Android, JVM, iOS (Wasm: no file browsing) |
+| Device (app icon, restart app) | `flocon-device` | Android (app icon also on iOS, restart on Android only) |
 | Crash reporter | `flocon-crashreporter` | Android, JVM, iOS, Wasm |
 
 Every artifact has a **`-no-op`** version with the same API (e.g. `flocon-analytics-no-op`), except the
 gRPC interceptors. See [Release builds](setup.md#4-release-builds-no-op).
+
+### Platform support details
+
+- **Wasm**: connects to the desktop app (WebSocket) but has no filesystem or SQLite, so files, databases and crash persistence are not available.
+- **iOS**: files, crash reporter (stored in Application Support), network mock persistence, `UserDefaults` preferences and the app icon work. Databases are searched in Documents/Library, or in the folders given with `path(...)`.
+- **JVM**: Room databases are found in the folders given with `room { path("...") }`.
 
 ---
 
