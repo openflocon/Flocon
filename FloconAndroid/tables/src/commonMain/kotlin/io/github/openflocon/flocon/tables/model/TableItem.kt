@@ -1,6 +1,5 @@
 package io.github.openflocon.flocon.tables.model
 
-import io.github.openflocon.flocon.pluginsold.tables.model.TableColumnConfig
 import kotlinx.serialization.Serializable
 
 data class TableItem(

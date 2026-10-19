@@ -11,6 +11,13 @@ kotlin {
     android {
         namespace = "io.github.openflocon.flocon.datastores.noop"
     }
+
+    sourceSets {
+        commonMain.dependencies {
+            // FloconDatastorePreference implements FloconPreference
+            api(projects.sharedprefsNoOp)
+        }
+    }
 }
 
 mavenPublishing {

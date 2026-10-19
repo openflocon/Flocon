@@ -1,10 +1,10 @@
-package io.github.openflocon.flocon.pluginsold.sharedprefs
+package io.github.openflocon.flocon.plugins.sharedprefs
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.os.Build
 import android.preference.PreferenceManager
-import io.github.openflocon.flocon.pluginsold.sharedprefs.model.FloconPreference
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
 import java.io.File
 
 internal object SharedPreferencesFinder {

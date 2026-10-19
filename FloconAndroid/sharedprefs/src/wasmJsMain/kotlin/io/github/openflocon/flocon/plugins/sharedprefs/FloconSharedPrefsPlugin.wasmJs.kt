@@ -1,10 +1,10 @@
 package io.github.openflocon.flocon.plugins.sharedprefs
 
 import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconSharedPreferenceModel
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
 
-internal actual fun buildFloconSharedPreferenceDataSource(context: FloconContext): FloconSharedPreferenceDataSource = object : FloconSharedPreferenceDataSource {
-    override fun getSharedPreferences(): List<FloconSharedPreferenceModel> = emptyList()
-    override fun getSharedPreferenceValue(fileName: String, key: String): String? = null
-    override fun setSharedPreferenceValue(fileName: String, key: String, value: String) {}
-}
+// no local preferences detected on this platform, use FloconPreferencesPlugin.register
+internal actual fun buildFloconPreferencesDataSource(context: FloconContext): FloconPreferencesDataSource =
+    object : FloconPreferencesDataSource {
+        override fun detectLocalPreferences(): List<FloconPreference> = emptyList()
+    }

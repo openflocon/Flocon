@@ -12,8 +12,11 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.dsl.FloconMarker
+import io.github.openflocon.flocon.model.FloconFileInfo
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
+import io.github.openflocon.flocon.plugins.files.model.fromdevice.FilesResultDataModel
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFileMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFilesMessage
 import io.github.openflocon.flocon.plugins.files.model.todevice.ToDeviceDeleteFolderContentMessage
@@ -74,7 +77,7 @@ internal class FloconFilesPluginImpl(
     private val encoder: FloconEncoder
 ) : FloconPlugin, FloconFilesPlugin {
 
-    override val key: String = "FILES"
+    override val key: String = Protocol.ToDevice.Files.Plugin
     private val fileDataSource = fileDataSource(context)
     private val withFoldersSize = MutableStateFlow(false)
 
@@ -101,13 +104,13 @@ internal class FloconFilesPluginImpl(
 
                 fileDataSource.getFile(path = getFileMessage.path, isConstantPath = false)
                     ?.let { file ->
-//                        floconFileSender.send(
-//                            file = file,
-//                            infos = FloconFileInfo(
-//                                requestId = getFileMessage.requestId,
-//                                path = getFileMessage.path,
-//                            )
-//                        )
+                        floconFileSender.send(
+                            file = file,
+                            infos = FloconFileInfo(
+                                requestId = getFileMessage.requestId,
+                                path = getFileMessage.path,
+                            )
+                        )
                     }
             }
 
@@ -165,21 +168,23 @@ internal class FloconFilesPluginImpl(
         isConstantPath: Boolean,
         requestId: String,
     ) {
-        fileDataSource.getFolderContent(
+        val files = fileDataSource.getFolderContent(
             path = path,
             isConstantPath = isConstantPath,
             withFoldersSize = withFoldersSize.value,
         )
 
         try {
-//            sender.send(
-//                plugin = Protocol.FromDevice.Files.Plugin,
-//                method = Protocol.FromDevice.Files.Method.ListFiles,
-//                body = FilesResultDataModel(
-//                    requestId = requestId,
-//                    files = files,
-//                ).toJson(),
-//            )
+            sender.send(
+                plugin = Protocol.FromDevice.Files.Plugin,
+                method = Protocol.FromDevice.Files.Method.ListFiles,
+                body = encoder.encode(
+                    FilesResultDataModel(
+                        requestId = requestId,
+                        files = files,
+                    )
+                ),
+            )
         } catch (t: Throwable) {
             FloconLogger.logError("File parsing error", t)
         }

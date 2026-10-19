@@ -20,6 +20,9 @@ import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initial
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.network.core.FloconNetwork
+import io.github.openflocon.flocon.plugins.device.FloconDevice
+import io.github.openflocon.flocon.plugins.files.FloconFiles
+import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
 import io.github.openflocon.flocon.startFlocon
 import io.github.openflocon.flocon.tables.FloconTable
 import io.ktor.client.HttpClient
@@ -51,6 +54,9 @@ class MainActivity : ComponentActivity() {
             install(FloconDatabase) {
                 room()
             }
+            install(FloconPreferences)
+            install(FloconFiles)
+            install(FloconDevice)
         }
 
         intent.data?.let {

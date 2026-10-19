@@ -23,7 +23,6 @@ kotlin {
         androidMain.dependencies {
             implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutines.android)
-            implementation(libs.jakewharton.process.phoenix)
             implementation(libs.okhttp)
 
             implementation(libs.androidx.sqlite)

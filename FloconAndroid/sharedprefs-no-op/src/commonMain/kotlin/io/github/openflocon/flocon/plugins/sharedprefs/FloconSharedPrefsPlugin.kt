@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.sharedprefs
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
@@ -7,12 +8,12 @@ import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconSharedPreferenceModel
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
 
 class FloconPreferencesConfig : FloconPluginConfig
 
 interface FloconPreferencesPlugin : FloconPlugin {
-    fun register(sharedPreference: FloconSharedPreferenceModel)
+    fun register(preference: FloconPreference)
 }
 
 object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPreferencesPlugin> {
@@ -24,12 +25,12 @@ object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPr
         floconConfig: FloconConfig,
         encoder: FloconEncoder
     ): FloconPreferencesPlugin {
-        return FloconSharedPrefsPluginNoOpImpl()
+        return FloconSharedPrefsPluginNoOpImpl
     }
 }
 
-internal class FloconSharedPrefsPluginNoOpImpl : FloconPlugin, FloconPreferencesPlugin {
-    override val key: String = "SHARED_PREF"
+internal object FloconSharedPrefsPluginNoOpImpl : FloconPlugin, FloconPreferencesPlugin {
+    override val key: String = Protocol.ToDevice.SharedPreferences.Plugin
 
     override suspend fun onMessageReceived(
         method: String,
@@ -42,7 +43,14 @@ internal class FloconSharedPrefsPluginNoOpImpl : FloconPlugin, FloconPreferences
         // no op
     }
 
-    override fun register(sharedPreference: FloconSharedPreferenceModel) {
+    override fun register(preference: FloconPreference) {
         // no op
     }
+}
+
+val Flocon.Companion.preferencesPlugin: FloconPreferencesPlugin
+    get() = FloconSharedPrefsPluginNoOpImpl
+
+fun floconRegisterPreference(preference: FloconPreference) {
+    Flocon.preferencesPlugin.register(preference)
 }

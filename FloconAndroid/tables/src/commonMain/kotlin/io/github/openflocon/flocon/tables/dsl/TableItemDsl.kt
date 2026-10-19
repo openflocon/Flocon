@@ -4,7 +4,7 @@ package io.github.openflocon.flocon.tables.dsl
 
 import io.github.openflocon.flocon.tables.FloconTablePlugin
 import io.github.openflocon.flocon.tables.model.TableItem
-import io.github.openflocon.flocon.pluginsold.tables.model.TableColumnConfig
+import io.github.openflocon.flocon.tables.model.TableColumnConfig
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi

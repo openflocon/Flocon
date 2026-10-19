@@ -1,8 +1,8 @@
-package io.github.openflocon.flocon.pluginsold.sharedprefs
+package io.github.openflocon.flocon.plugins.sharedprefs
 
 import android.content.SharedPreferences
-import io.github.openflocon.flocon.pluginsold.sharedprefs.model.FloconPreference
-import io.github.openflocon.flocon.pluginsold.sharedprefs.model.FloconPreferenceValue
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceValue
 
 data class FloconSharedPreference(
     override val name: String,

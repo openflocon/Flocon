@@ -1,18 +1,18 @@
-package io.github.openflocon.flocon.pluginsold.sharedprefs.model
+package io.github.openflocon.flocon.plugins.sharedprefs.model
 
 interface FloconPreference {
     val name: String
 
     suspend fun set(
         columnName: String,
-        value: FloconPreferenceValue
+        value: FloconPreferenceValue,
     )
 
     suspend fun columns(): List<String>
 
     suspend fun get(
         columnName: String,
-    ) : FloconPreferenceValue?
+    ): FloconPreferenceValue?
 }
 
 data class FloconPreferenceValue(

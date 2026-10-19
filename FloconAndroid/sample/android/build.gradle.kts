@@ -48,6 +48,8 @@ dependencies {
     implementation(projects.network.ktorInterceptor)
     implementation(projects.network.okhttpInterceptor)
     implementation(projects.sharedprefs)
+    implementation(projects.files)
+    implementation(projects.device)
     implementation(projects.datastores)
     implementation(projects.analytics)
     implementation(projects.crashreporter)

@@ -9,6 +9,8 @@ import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.encode
+import io.github.openflocon.flocon.plugins.device.model.fromdevice.RegisterDeviceDataModel
 
 class FloconDeviceConfig : FloconPluginConfig
 
@@ -25,28 +27,37 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
         floconConfig: FloconConfig,
         encoder: FloconEncoder
     ): FloconDevicePlugin {
-        return FloconDevicePluginImpl(
+        val plugin = FloconDevicePluginImpl(
             sender = floconConfig.client as FloconMessageSender,
-            context = floconConfig.context
+            context = floconConfig.context,
+            encoder = encoder,
         )
+        observeDeviceSerial(onSerial = plugin::registerWithSerial)
+        return plugin
     }
 }
 
 internal expect fun restartApp(context: FloconContext)
 
+/**
+ * Calls [onSerial] when the desktop sends the device serial (adb broadcast on Android)
+ */
+internal expect fun observeDeviceSerial(onSerial: (serial: String) -> Unit)
+
 internal class FloconDevicePluginImpl(
     private var sender: FloconMessageSender,
     private val context: FloconContext,
+    private val encoder: FloconEncoder,
 ) : FloconPlugin, FloconDevicePlugin {
-    override val key: String = "DEVICE"
+    override val key: String = Protocol.ToDevice.Device.Plugin
 
     override fun registerWithSerial(serial: String) {
         try {
-//            sender.send(
-//                plugin = Protocol.FromDevice.Device.Plugin,
-//                method = Protocol.FromDevice.Device.Method.RegisterDevice,
-//                body = RegisterDeviceDataModel(serial).toJson().toString(),
-//            )
+            sender.send(
+                plugin = Protocol.FromDevice.Device.Plugin,
+                method = Protocol.FromDevice.Device.Method.RegisterDevice,
+                body = encoder.encode(RegisterDeviceDataModel(serial)),
+            )
         } catch (t: Throwable) {
             FloconLogger.logError("Device parsing error", t)
         }
@@ -60,11 +71,11 @@ internal class FloconDevicePluginImpl(
             Protocol.ToDevice.Device.Method.GetAppIcon -> {
                 val icon = getAppIconBase64(context)
                 if (icon != null) {
-//                    sender.send(
-//                        plugin = Protocol.FromDevice.Device.Plugin,
-//                        method = Protocol.FromDevice.Device.Method.AppIcon,
-//                        body = icon,
-//                    )
+                    sender.send(
+                        plugin = Protocol.FromDevice.Device.Plugin,
+                        method = Protocol.FromDevice.Device.Method.AppIcon,
+                        body = icon,
+                    )
                 }
             }
 
