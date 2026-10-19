@@ -9,6 +9,13 @@ interface CrashReporterRepository {
     fun observeCrashReports(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Flow<PagingData<CrashReportDomainModel>>
+    suspend fun searchCrashReports(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sinceTimestamp: Long?,
+        text: String?,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<CrashReportDomainModel>
     suspend fun deleteCrashReport(crashId: String)
     suspend fun clearAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,)
     fun observeCrashReportById(id: String, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<CrashReportDomainModel?>

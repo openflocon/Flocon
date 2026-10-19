@@ -4,11 +4,14 @@ import io.github.openflocon.domain.mcp.repository.McpServerRepository
 import io.github.openflocon.mcp.analytics.AnalyticsMcpToolProvider
 import io.github.openflocon.mcp.badquality.BadNetworkMcpToolProvider
 import io.github.openflocon.mcp.dashboard.DashboardMcpToolProvider
+import io.github.openflocon.mcp.crashreporter.CrashReporterMcpToolProvider
 import io.github.openflocon.mcp.database.DatabaseMcpToolProvider
 import io.github.openflocon.mcp.devices.DevicesMcpToolProvider
 import io.github.openflocon.mcp.files.FilesMcpToolProvider
+import io.github.openflocon.mcp.images.ImagesMcpToolProvider
 import io.github.openflocon.mcp.mocks.NetworkMocksMcpToolProvider
 import io.github.openflocon.mcp.network.NetworkMcpToolProvider
+import io.github.openflocon.mcp.table.TableMcpToolProvider
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -27,4 +30,7 @@ val mcpModule = module {
     singleOf(::AnalyticsMcpToolProvider) bind McpToolProvider::class
     singleOf(::DatabaseMcpToolProvider) bind McpToolProvider::class
     singleOf(::DashboardMcpToolProvider) bind McpToolProvider::class
+    singleOf(::ImagesMcpToolProvider) bind McpToolProvider::class
+    singleOf(::CrashReporterMcpToolProvider) bind McpToolProvider::class
+    singleOf(::TableMcpToolProvider) bind McpToolProvider::class
 }
