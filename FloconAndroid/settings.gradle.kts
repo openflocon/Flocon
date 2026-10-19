@@ -15,7 +15,8 @@ plugins {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    // not FAIL_ON_PROJECT_REPOS: the Kotlin/Wasm tooling (binaryen, Node.js) adds its own download repositories
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
         google()
         mavenCentral()
