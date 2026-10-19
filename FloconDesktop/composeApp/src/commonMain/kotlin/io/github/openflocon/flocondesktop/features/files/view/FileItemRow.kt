@@ -168,7 +168,7 @@ private fun FileItemRowPreview_folder() {
     val file = FileUiModel(
         name = "MyFile",
         type = FileTypeUiModel.Folder,
-        path = FilePathUiModel.Constants.CachesDir,
+        path = FilePathUiModel.Root(id = "caches"),
         icon = Icons.Outlined.Folder,
         sizeFormatted = "1 MB",
         contextualActions = persistentListOf(),
@@ -222,7 +222,7 @@ private fun FileItemRowPreview() {
                     file = FileUiModel(
                         name = "MyFile",
                         type = FileTypeUiModel.Folder,
-                        path = FilePathUiModel.Constants.CachesDir,
+                        path = FilePathUiModel.Root(id = "caches"),
                         icon = Icons.Outlined.Folder,
                         sizeFormatted = "1 MB",
                         contextualActions = persistentListOf(),

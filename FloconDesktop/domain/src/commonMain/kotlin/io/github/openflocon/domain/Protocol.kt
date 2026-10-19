@@ -53,6 +53,7 @@ object Protocol {
 
             object Method {
                 const val ListFiles = "listfiles"
+                const val GetRoots = "getroots"
             }
         }
 
@@ -142,6 +143,7 @@ object Protocol {
                 const val DeleteFiles = "deleteFiles"
                 const val DeleteFolderContent = "deleteFolderContent"
                 const val GetFile = "getFile"
+                const val GetRoots = "getRoots"
             }
         }
 

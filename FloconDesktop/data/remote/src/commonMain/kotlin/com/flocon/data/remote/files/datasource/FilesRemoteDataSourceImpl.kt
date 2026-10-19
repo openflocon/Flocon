@@ -3,11 +3,13 @@ package com.flocon.data.remote.files.datasource
 import co.touchlab.kermit.Logger
 import com.flocon.data.remote.common.safeDecodeFromString
 import com.flocon.data.remote.files.models.FromDeviceFilesResultDataModel
+import com.flocon.data.remote.files.models.FromDeviceFilesRootsDataModel
 import com.flocon.data.remote.files.models.ToDeviceDeleteFileMessage
 import com.flocon.data.remote.files.models.ToDeviceDeleteFilesMessage
 import com.flocon.data.remote.files.models.ToDeviceDeleteFolderContentMessage
 import com.flocon.data.remote.files.models.ToDeviceGetFileMessage
 import com.flocon.data.remote.files.models.ToDeviceGetFilesMessage
+import com.flocon.data.remote.files.models.ToDeviceGetRootsMessage
 import com.flocon.data.remote.files.models.toDomain
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
@@ -21,10 +23,13 @@ import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
+import io.github.openflocon.domain.files.models.FileRootDomainModel
 import io.github.openflocon.domain.files.models.FromDeviceFilesResultDomainModel
+import io.github.openflocon.domain.files.models.FromDeviceFilesRootsDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
@@ -41,6 +46,9 @@ class FilesRemoteDataSourceImpl(
     private val getFilesResultReceived =
         MutableStateFlow<Set<FromDeviceFilesResultDomainModel>>(emptySet())
 
+    private val getRootsResultReceived =
+        MutableStateFlow<Set<FromDeviceFilesRootsDomainModel>>(emptySet())
+
     private val downloadFileResultReceived =
         MutableStateFlow<Set<FloconReceivedFileDomainModel>>(emptySet())
 
@@ -48,8 +56,37 @@ class FilesRemoteDataSourceImpl(
         getFilesResultReceived.update { it + received }
     }
 
+    override fun onGetRootsResultReceived(received: FromDeviceFilesRootsDomainModel) {
+        getRootsResultReceived.update { it + received }
+    }
+
     override fun onFloconReceivedFilesDomainModel(received: FloconReceivedFileDomainModel) {
         downloadFileResultReceived.update { it + received }
+    }
+
+    override suspend fun executeGetRoots(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Either<Throwable, List<FileRootDomainModel>> {
+        val requestId = newRequestId()
+
+        server.sendMessageToClient(
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
+            message = FloconOutgoingMessageDataModel(
+                plugin = Protocol.ToDevice.Files.Plugin,
+                method = Protocol.ToDevice.Files.Method.GetRoots,
+                body = json.encodeToString(
+                    ToDeviceGetRootsMessage(
+                        requestId = requestId,
+                    ),
+                ),
+            ),
+        )
+        // wait for result
+        return waitForResult(
+            requestId = requestId,
+            received = getRootsResultReceived,
+            requestIdOf = FromDeviceFilesRootsDomainModel::requestId,
+        ).mapSuccess { it.roots }
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -62,8 +99,7 @@ class FilesRemoteDataSourceImpl(
 
         val (filePath, isConstantPath) =
             when (path) {
-                FilePathDomainModel.Constants.CachesDir -> "caches" to true
-                FilePathDomainModel.Constants.FilesDir -> "files" to true
+                is FilePathDomainModel.Root -> path.id to true
                 is FilePathDomainModel.Real -> path.absolutePath to false
             }
 
@@ -117,8 +153,7 @@ class FilesRemoteDataSourceImpl(
 
         val (realPath, isConstantPath) =
             when (folderPath) {
-                FilePathDomainModel.Constants.CachesDir -> "caches" to true
-                FilePathDomainModel.Constants.FilesDir -> "files" to true
+                is FilePathDomainModel.Root -> folderPath.id to true
                 is FilePathDomainModel.Real -> folderPath.absolutePath to false
             }
 
@@ -150,15 +185,13 @@ class FilesRemoteDataSourceImpl(
 
         val (parentPath, isConstantParentPath) =
             when (folderPath) {
-                FilePathDomainModel.Constants.CachesDir -> "caches" to true
-                FilePathDomainModel.Constants.FilesDir -> "files" to true
+                is FilePathDomainModel.Root -> folderPath.id to true
                 is FilePathDomainModel.Real -> folderPath.absolutePath to false
             }
 
         val filePathValue =
             when (filePath) {
-                FilePathDomainModel.Constants.CachesDir -> return Failure(Exception("cannot delete cachedir"))
-                FilePathDomainModel.Constants.FilesDir -> return Failure(Exception("cannot delete FilesDir"))
+                is FilePathDomainModel.Root -> return Failure(Exception("cannot delete a root folder"))
                 is FilePathDomainModel.Real -> filePath.absolutePath
             }
 
@@ -191,15 +224,13 @@ class FilesRemoteDataSourceImpl(
 
         val (parentPath, isConstantParentPath) =
             when (folderPath) {
-                FilePathDomainModel.Constants.CachesDir -> "caches" to true
-                FilePathDomainModel.Constants.FilesDir -> "files" to true
+                is FilePathDomainModel.Root -> folderPath.id to true
                 is FilePathDomainModel.Real -> folderPath.absolutePath to false
             }
 
         val filePathsValue = filePaths.map { filePath ->
             when (filePath) {
-                FilePathDomainModel.Constants.CachesDir -> return Failure(Exception("cannot delete cachedir"))
-                FilePathDomainModel.Constants.FilesDir -> return Failure(Exception("cannot delete FilesDir"))
+                is FilePathDomainModel.Root -> return Failure(Exception("cannot delete a root folder"))
                 is FilePathDomainModel.Real -> filePath.absolutePath
             }
         }
@@ -227,15 +258,27 @@ class FilesRemoteDataSourceImpl(
     override fun getItems(message: FloconIncomingMessageDomainModel): FromDeviceFilesResultDomainModel? = json.safeDecodeFromString<FromDeviceFilesResultDataModel>(message.body)
         ?.toDomain()
 
-    private suspend fun waitForResult(requestId: String): Either<Exception, List<FileDomainModel>> {
+    override fun getRoots(message: FloconIncomingMessageDomainModel): FromDeviceFilesRootsDomainModel? = json.safeDecodeFromString<FromDeviceFilesRootsDataModel>(message.body)
+        ?.toDomain()
+
+    private suspend fun waitForResult(requestId: String): Either<Exception, List<FileDomainModel>> = waitForResult(
+        requestId = requestId,
+        received = getFilesResultReceived,
+        requestIdOf = FromDeviceFilesResultDomainModel::requestId,
+    ).mapSuccess(::getFilesFromResult)
+
+    private suspend fun <T> waitForResult(
+        requestId: String,
+        received: Flow<Set<T>>,
+        requestIdOf: (T) -> String,
+    ): Either<Exception, T> {
         try {
             val result = withTimeout(3_000) {
-                getFilesResultReceived
-                    .mapNotNull { it.firstOrNull { it.requestId == requestId } }
+                received
+                    .mapNotNull { it.firstOrNull { requestIdOf(it) == requestId } }
                     .first()
             }
-            val files: List<FileDomainModel> = getFilesFromResult(result)
-            return Success(files)
+            return Success(result)
         } catch (e: TimeoutCancellationException) {
             Logger.e { "Timeout: No response for the file request $requestId" }
             return Failure(e)
