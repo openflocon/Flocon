@@ -26,5 +26,6 @@ val mcpModule = module {
     singleOf(::FilesMcpToolProvider) bind McpToolProvider::class
     singleOf(::AnalyticsMcpToolProvider) bind McpToolProvider::class
     singleOf(::DatabaseMcpToolProvider) bind McpToolProvider::class
-    singleOf(::SharedPreferencesMcpToolProvider) bind McpToolProvider::class
+    // explicit: the timeout has a default value that koin would try to inject
+    single { SharedPreferencesMcpToolProvider(sharedPreferencesRepository = get(), targetResolver = get()) } bind McpToolProvider::class
 }
