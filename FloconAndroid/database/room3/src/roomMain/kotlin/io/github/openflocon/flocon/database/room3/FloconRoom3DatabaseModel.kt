@@ -4,6 +4,7 @@ import androidx.room3.RoomDatabase
 import androidx.room3.Transactor
 import androidx.room3.executeSQL
 import androidx.room3.useReaderConnection
+import androidx.sqlite.step
 import io.github.openflocon.flocon.database.core.FloconDatabasePlugin
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteResponse
