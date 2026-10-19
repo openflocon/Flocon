@@ -22,14 +22,32 @@ Every recorded event details:
 
 ---
 
-## Usage
-
-Log individual or batched events by stream name:
+## Setup
 
 ```kotlin
-floconAnalytics("firebase").logEvents(
+dependencies {
+    debugImplementation("io.github.openflocon:flocon-analytics:LAST_VERSION")
+    releaseImplementation("io.github.openflocon:flocon-analytics-no-op:LAST_VERSION")
+}
+```
+
+```kotlin
+startFlocon(context) {
+    install(FloconAnalytics)
+}
+```
+
+---
+
+## Usage
+
+Log individual or batched events; the `analyticsTableId` is the stream they are displayed in on the desktop (e.g. `firebase`):
+
+```kotlin
+Flocon.analyticsPlugin.log(
     AnalyticsEvent(
         eventName = "button_clicked",
+        analyticsTableId = "firebase",
         "button_id" analyticsProperty "checkout_pay",
         "cart_total" analyticsProperty "49.99",
         "currency" analyticsProperty "EUR"
@@ -48,10 +66,11 @@ class AnalyticsTracker(private val firebaseAnalytics: FirebaseAnalytics) {
 
     fun track(event: String, parameters: Map<String, Any> = emptyMap()) {
         // 1. Forward to Flocon Desktop
-        floconAnalytics("app_telemetry").logEvents(
+        Flocon.analyticsPlugin.log(
             AnalyticsEvent(
                 eventName = event,
-                parameters.map { it.key analyticsProperty it.value.toString() }
+                analyticsTableId = "app_telemetry",
+                properties = parameters.map { it.key analyticsProperty it.value.toString() }
             )
         )
 

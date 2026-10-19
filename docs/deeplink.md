@@ -22,33 +22,44 @@ From the desktop UI, you can:
 
 ## Defining Deeplinks in Kotlin
 
-Declare deeplink routes and test variables directly from your Android codebase:
+Add the module:
 
 ```kotlin
-Flocon.deeplinks {
-    variable("host") {
-        description = "Host scheme/domain"
-        autoComplete(listOf("flocon", "myapp"))
-    }
+dependencies {
+    debugImplementation("io.github.openflocon:flocon-deeplinks:LAST_VERSION")
+    releaseImplementation("io.github.openflocon:flocon-deeplinks-no-op:LAST_VERSION")
+}
+```
 
-    variable("sample_comment")
+Then declare deeplink routes and test variables when installing the plugin:
 
-    deeplink("[host]://home") {
-        "host" withVariable "host"
-    }
+```kotlin
+startFlocon(FloconContext(context)) {
+    install(FloconDeeplinks) {
+        variable("host") {
+            description = "Host scheme/domain"
+            autoComplete(listOf("flocon", "myapp"))
+        }
 
-    deeplink("[host]://user/[userId]") {
-        label = "User Profile"
-        "userId" withAutoComplete listOf("101", "202", "303")
-        "host" withVariable "host"
-    }
+        variable("sample_comment")
 
-    deeplink("[host]://post/[postId]?comment=[commentText]") {
-        label = "Post Detail"
-        description = "Opens a post and pre-fills comment text"
-        "postId" withAutoComplete listOf("1", "2", "3")
-        "commentText" withVariable "sample_comment"
-        "host" withVariable "host"
+        deeplink("[host]://home") {
+            "host" withVariable "host"
+        }
+
+        deeplink("[host]://user/[userId]") {
+            label = "User Profile"
+            "userId" withAutoComplete listOf("101", "202", "303")
+            "host" withVariable "host"
+        }
+
+        deeplink("[host]://post/[postId]?comment=[commentText]") {
+            label = "Post Detail"
+            description = "Opens a post and pre-fills comment text"
+            "postId" withAutoComplete listOf("1", "2", "3")
+            "commentText" withVariable "sample_comment"
+            "host" withVariable "host"
+        }
     }
 }
 ```

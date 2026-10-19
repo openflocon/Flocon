@@ -38,7 +38,6 @@ internal class FloconDatabasePluginImpl(
         method: String,
         body: String
     ) {
-        println("Database: $method & $body")
         when (method) {
             Protocol.ToDevice.Database.Method.GetDatabases -> sendAllDatabases(sender)
 

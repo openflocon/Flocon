@@ -33,7 +33,7 @@ class Flocon internal constructor(
         try {
             client.connect(
                 onClosed = {
-                    println("Client - Closed")
+                    FloconLogger.log("Client - Closed")
                     // try again to connect
                     config.scope.launch {
                         start(
@@ -69,7 +69,7 @@ class Flocon internal constructor(
     }
 
     private fun onMessageReceived(message: String) {
-        println("Message received : $message")
+        FloconLogger.log("Message received : $message")
         config.scope.launch {
             try {
                 val serialized = encoder.decode<FloconMessageFromServer>(message)
