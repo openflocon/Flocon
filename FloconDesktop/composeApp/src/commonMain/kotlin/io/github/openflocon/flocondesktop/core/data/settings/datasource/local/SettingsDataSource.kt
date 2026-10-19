@@ -29,6 +29,9 @@ internal interface SettingsDataSource {
     suspend fun setPinnedMenuItems(items: List<String>)
     suspend fun setCollapsedMenuSections(sections: Set<String>)
 
+    fun getLastSeenReleaseNotesVersion(): String?
+    suspend fun setLastSeenReleaseNotesVersion(version: String)
+
     val floconDocumentsPath: Flow<String?>
     val adbPath: Flow<String?>
     val fontSizeMultiplier: StateFlow<Float>

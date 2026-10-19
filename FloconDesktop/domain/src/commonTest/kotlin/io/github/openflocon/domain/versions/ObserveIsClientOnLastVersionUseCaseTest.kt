@@ -41,6 +41,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
         val versionFlow = MutableStateFlow(initialVersion)
         override val lastVersion: Flow<String?> = versionFlow.asStateFlow()
         override suspend fun checkIsLastVersion(): Either<Throwable, String> = throw NotImplementedError()
+        override suspend fun getReleaseNotes(): Either<Throwable, List<io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel>> = throw NotImplementedError()
     }
 
     private class FakeSettingsRepository(
@@ -68,6 +69,8 @@ class ObserveIsClientOnLastVersionUseCaseTest {
         override val floconDocumentsPath: Flow<String?> = emptyFlow()
         override fun getDismissedDesktopVersion(): String? = null
         override suspend fun setDismissedDesktopVersion(version: String) {}
+        override fun getLastSeenReleaseNotesVersion(): String? = null
+        override suspend fun setLastSeenReleaseNotesVersion(version: String) {}
         override val adbPath: Flow<String?> = emptyFlow()
         override val fontSizeMultiplier: StateFlow<Float> = MutableStateFlow(1f)
         override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)

@@ -17,6 +17,9 @@ import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
 import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
+import io.github.openflocon.domain.versions.usecase.ShouldShowReleaseNotesUseCase
+import io.github.openflocon.flocondesktop.BuildConfig
+import io.github.openflocon.flocondesktop.app.ui.releasenotes.ReleaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
@@ -49,6 +52,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 
 internal class AppViewModel(
@@ -56,6 +60,7 @@ internal class AppViewModel(
     mcpServerDelegate: McpServerDelegate,
     initAdbPathUseCase: InitAdbPathUseCase,
     startAdbForwardUseCase: StartAdbForwardUseCase,
+    shouldShowReleaseNotesUseCase: ShouldShowReleaseNotesUseCase,
     val navigationState: MainFloconNavigationState,
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val dispatcherProvider: DispatcherProvider,
@@ -131,6 +136,11 @@ internal class AppViewModel(
                 val current = contentState.value.current
                 if (available.isNotEmpty() && available.none { it.screen == current }) {
                     onSelectMenu(AppAction.SelectMenu(available.first().screen))
+                }
+
+            if (shouldShowReleaseNotesUseCase(current = BuildConfig.APP_VERSION)) {
+                withContext(dispatcherProvider.ui) {
+                    navigationState.navigate(ReleaseNotesRoutes.Current(BuildConfig.APP_VERSION))
                 }
             }
         }
