@@ -86,6 +86,9 @@ class FloconMcpServer(
               query_database runs read only SQL queries (add a LIMIT), list_database_query_logs the queries run by the app.
             - SharedPreferences of the app: list_shared_preferences gives the sharedPreferenceId,
               get_shared_preference_values the typed keys / values of a file (optional text filter and limit).
+            - Images loaded by the app: list_images gives their urls and load times.
+            - Crashes reported by the app: list_crash_reports gives the exception type and message,
+              get_crash_report the full stack trace.
             - Custom tables sent by the app (Table plugin): list_tables gives the tableId, list_table_items the rows.
         """.trimIndent()
     }

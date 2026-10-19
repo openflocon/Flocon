@@ -44,6 +44,21 @@ internal class CrashReporterLocalDataSourceRoom(
         pagingData.map { it.toDomain() }
     }
 
+    override suspend fun search(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sinceTimestamp: Long?,
+        text: String?,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<CrashReportDomainModel> = crashReportDao.search(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        sinceTimestamp = sinceTimestamp,
+        filter = text,
+        newestFirst = newestFirst,
+        limit = limit,
+    ).map { it.toDomain() }
+
     override suspend fun delete(crashId: String) {
         crashReportDao.delete(crashId)
     }
