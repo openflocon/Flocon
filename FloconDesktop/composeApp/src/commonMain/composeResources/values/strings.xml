@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Flocon</string>
+    <string name="release_notes_view_on_github">View on GitHub</string>
+    <string name="release_notes_error">Unable to load the release notes.</string>
+    <string name="release_notes_retry">Retry</string>
     <string name="auto_scroll">Auto scroll</string>
     <string name="auto_update">Auto Update</string>
     <string name="clear_old_sessions">Clear old sessions</string>

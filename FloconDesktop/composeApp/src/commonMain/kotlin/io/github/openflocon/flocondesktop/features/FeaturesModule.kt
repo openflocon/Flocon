@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features
 
+import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesModule
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsModule
 import io.github.openflocon.flocondesktop.features.analytics.analyticsModule
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterModule
@@ -29,6 +30,7 @@ val featuresModule = module {
         deeplinkModule,
         adbCommanderModule,
         settingsModule,
+        releaseNotesModule,
         crashReporterModule,
     )
 }

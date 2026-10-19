@@ -35,6 +35,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.ModeNight
+import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material.icons.outlined.Warning
@@ -69,6 +70,7 @@ import flocondesktop.composeapp.generated.resources.settings_theme_light
 import flocondesktop.composeapp.generated.resources.settings_theme_system
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
+import io.github.openflocon.flocondesktop.app.ui.releasenotes.AllReleaseNotesPane
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -93,6 +95,7 @@ private enum class SettingsTab(val label: String, val icon: ImageVector) {
     Adb("Adb", Icons.Outlined.Cable),
     Appearance("Appearance", Icons.Outlined.TextFields),
     Logs("Logs", Icons.Outlined.List),
+    ReleaseNotes("Release notes", Icons.Outlined.NewReleases),
     About("About", Icons.Outlined.Info),
 }
 
@@ -211,6 +214,8 @@ private fun SettingsScreen(
                     logs = uiState.logs,
                     onClearLogs = onClearLogs,
                 )
+
+                SettingsTab.ReleaseNotes -> AllReleaseNotesPane()
 
                 SettingsTab.About -> AboutPane()
             }
