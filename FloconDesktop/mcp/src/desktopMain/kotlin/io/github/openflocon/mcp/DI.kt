@@ -3,6 +3,7 @@ package io.github.openflocon.mcp
 import io.github.openflocon.domain.mcp.repository.McpServerRepository
 import io.github.openflocon.mcp.analytics.AnalyticsMcpToolProvider
 import io.github.openflocon.mcp.badquality.BadNetworkMcpToolProvider
+import io.github.openflocon.mcp.dashboard.DashboardMcpToolProvider
 import io.github.openflocon.mcp.crashreporter.CrashReporterMcpToolProvider
 import io.github.openflocon.mcp.database.DatabaseMcpToolProvider
 import io.github.openflocon.mcp.deeplink.DeeplinkMcpToolProvider
@@ -33,6 +34,7 @@ val mcpModule = module {
     singleOf(::DatabaseMcpToolProvider) bind McpToolProvider::class
     singleOf(::ExecuteDeeplinkOpener) bind DeeplinkOpener::class
     singleOf(::DeeplinkMcpToolProvider) bind McpToolProvider::class
+    singleOf(::DashboardMcpToolProvider) bind McpToolProvider::class
     singleOf(::ImagesMcpToolProvider) bind McpToolProvider::class
     singleOf(::CrashReporterMcpToolProvider) bind McpToolProvider::class
     singleOf(::TableMcpToolProvider) bind McpToolProvider::class

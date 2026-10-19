@@ -276,6 +276,8 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_analytics_tables` | Analytics tables of the app: one per analytics SDK / tracker (ex: `amplitude`). |
 | `list_analytics_events` | Analytics events with their properties, newest first. Filters: table, exact event names, text, start timestamp, previous sessions. |
 | `count_analytics_events` | Number of events per event name, the most frequent first (same filters). |
+| `list_dashboards` | Ids of the dashboards sent by the app, and the one selected in Flocon Desktop. |
+| `get_dashboard` | A dashboard with its containers and elements (texts, values, check boxes, text fields, buttons). Read only: nothing is triggered. |
 | `list_images` | Images loaded by the app (url, load time), newest first. Filters: text, start timestamp. Optionally the headers. |
 | `list_crash_reports` | Crashes reported by the app (exception type and message), newest first. Filters: text, start timestamp. |
 | `get_crash_report` | Full details of a crash, including its stack trace. |
