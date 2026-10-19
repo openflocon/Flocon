@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 internal fun Project.configureAndroidLibrary() {
     extensions.configure<KotlinMultiplatformExtension> {
         (this as ExtensionAware).extensions.configure<KotlinMultiplatformAndroidLibraryExtension>("androidLibrary") {
-            compileSdk = 36
+            compileSdk = 37
             minSdk = 23
         }
     }
