@@ -7,11 +7,11 @@ class McpLoggerImpl(
 ) : McpLogger {
 
     override fun info(message: String) {
-        logManager.i(TAG, message, LogDomain.Mcp)
+        logManager.i(TAG, message, domain = LogDomain.Mcp)
     }
 
     override fun error(message: String, throwable: Throwable?) {
-        logManager.e(TAG, message, throwable, LogDomain.Mcp)
+        logManager.e(TAG, message, throwable, domain = LogDomain.Mcp)
     }
 
     private companion object {

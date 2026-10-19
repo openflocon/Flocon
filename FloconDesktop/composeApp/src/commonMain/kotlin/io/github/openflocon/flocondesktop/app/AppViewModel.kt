@@ -113,11 +113,11 @@ internal class AppViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             initAdbPathUseCase()
                 .alsoFailure {
-                    logManager.e(TAG, "ADB init failed", it, LogDomain.Default)
+                    logManager.e(TAG, "ADB init failed", it, domain = LogDomain.Default)
                     initialSetupStateHolder.setRequiresInitialSetup()
                 }
                 .alsoSuccess {
-                    logManager.d(TAG, "ADB init OK", LogDomain.Default)
+                    logManager.d(TAG, "ADB init OK", domain = LogDomain.Default)
                 }
 
             messagesServerDelegate.initialize()
