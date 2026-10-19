@@ -9,6 +9,7 @@ import io.github.openflocon.mcp.files.FilesMcpToolProvider
 import io.github.openflocon.mcp.images.ImagesMcpToolProvider
 import io.github.openflocon.mcp.mocks.NetworkMocksMcpToolProvider
 import io.github.openflocon.mcp.network.NetworkMcpToolProvider
+import io.github.openflocon.mcp.table.TableMcpToolProvider
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -27,4 +28,5 @@ val mcpModule = module {
     singleOf(::AnalyticsMcpToolProvider) bind McpToolProvider::class
     singleOf(::DatabaseMcpToolProvider) bind McpToolProvider::class
     singleOf(::ImagesMcpToolProvider) bind McpToolProvider::class
+    singleOf(::TableMcpToolProvider) bind McpToolProvider::class
 }

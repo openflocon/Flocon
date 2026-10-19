@@ -85,6 +85,7 @@ class FloconMcpServer(
             - Databases of the app: list_databases gives the databaseId, list_database_tables the schema,
               query_database runs read only SQL queries (add a LIMIT), list_database_query_logs the queries run by the app.
             - Images loaded by the app: list_images gives their urls and load times.
+            - Custom tables sent by the app (Table plugin): list_tables gives the tableId, list_table_items the rows.
         """.trimIndent()
     }
 }

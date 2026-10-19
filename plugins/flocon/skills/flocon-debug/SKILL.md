@@ -26,6 +26,7 @@ By default every tool targets the device and app selected in Flocon Desktop. Cal
 | Check analytics events | `count_analytics_events` for an overview per event name, `list_analytics_events` for the properties, `list_analytics_tables` |
 | Check which images the app loaded | `list_images` (urls and load times) |
 | Check persisted data | `list_databases` (gives the `databaseId`), `list_database_tables` (schema), `query_database`, `list_database_query_logs` (queries run by the app) |
+| Check custom tables | `list_tables` (gives the `tableId`), `list_table_items` (rows, optional text filter) |
 
 ## Rules
 
