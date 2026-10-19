@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.crashreporter
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
@@ -9,15 +10,18 @@ import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.crashreporter.model.CrashReportDataModel
+import io.github.openflocon.flocon.dsl.FloconMarker
+import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.utils.currentTimeMillis
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 class FloconCrashReporterConfig : FloconPluginConfig {
     var catchFatalErrors: Boolean = true
@@ -43,8 +47,10 @@ object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, Floc
             context = floconConfig.context,
             sender = client,
             coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+            encoder = encoder,
         )
             .also {
+                FloconCrashReporterPluginImpl.plugin = it
                 if (pluginConfig.catchFatalErrors) {
                     it.setupCrashHandler()
                 }
@@ -56,6 +62,7 @@ internal class FloconCrashReporterPluginImpl(
     private val context: FloconContext,
     private var sender: FloconMessageSender,
     private val coroutineScope: CoroutineScope,
+    private val encoder: FloconEncoder,
 ) : FloconPlugin, FloconCrashReporterPlugin {
     override val key: String = Protocol.FromDevice.CrashReporter.Plugin
 
@@ -93,11 +100,11 @@ internal class FloconCrashReporterPluginImpl(
 
     private fun sendCrashes(crashes: List<CrashReportDataModel>) {
         try {
-//            sender.send(
-//                plugin = Protocol.FromDevice.CrashReporter.Plugin,
-//                method = Protocol.FromDevice.CrashReporter.Method.ReportCrash,
-//                body = crashReportsListToJson(crashes),
-//            )
+            sender.send(
+                plugin = Protocol.FromDevice.CrashReporter.Plugin,
+                method = Protocol.FromDevice.CrashReporter.Method.ReportCrash,
+                body = encoder.encode(crashes),
+            )
         } catch (t: Throwable) {
             FloconLogger.logError("Crash report sending error", t)
         }
@@ -113,4 +120,19 @@ internal class FloconCrashReporterPluginImpl(
             stackTrace = throwable.stackTraceToString(),
         )
     }
+
+    companion object {
+        var plugin: FloconCrashReporterPlugin? = null
+    }
+}
+
+@OptIn(FloconMarker::class)
+val Flocon.Companion.crashReporterPlugin: FloconCrashReporterPlugin
+    get() = FloconCrashReporterPluginImpl.plugin ?: pluginNotInitialized("CrashReporter", NoOpCrashReporterPlugin())
+
+private class NoOpCrashReporterPlugin : FloconCrashReporterPlugin {
+    override val key: String = ""
+    override fun setupCrashHandler() = Unit
+    override suspend fun onMessageReceived(method: String, body: String) = Unit
+    override suspend fun onConnectedToServer() = Unit
 }

@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.crashreporter
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
@@ -25,11 +26,11 @@ object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, Floc
         floconConfig: FloconConfig,
         encoder: io.github.openflocon.flocon.core.FloconEncoder
     ): FloconCrashReporterPlugin {
-        return FloconCrashReporterNoOpImpl()
+        return FloconCrashReporterNoOpImpl
     }
 }
 
-internal class FloconCrashReporterNoOpImpl : FloconPlugin, FloconCrashReporterPlugin {
+internal object FloconCrashReporterNoOpImpl : FloconPlugin, FloconCrashReporterPlugin {
     override val key: String = "crashreporter"
 
     override fun setupCrashHandler() {
@@ -47,3 +48,6 @@ internal class FloconCrashReporterNoOpImpl : FloconPlugin, FloconCrashReporterPl
         // no op
     }
 }
+
+val Flocon.Companion.crashReporterPlugin: FloconCrashReporterPlugin
+    get() = FloconCrashReporterNoOpImpl

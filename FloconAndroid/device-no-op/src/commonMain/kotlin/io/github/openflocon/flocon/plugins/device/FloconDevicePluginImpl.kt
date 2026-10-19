@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.device
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
@@ -22,11 +23,11 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
         floconConfig: FloconConfig,
         encoder: FloconEncoder
     ): FloconDevicePlugin {
-        return FloconDevicePluginNoOpImpl()
+        return FloconDevicePluginNoOpImpl
     }
 }
 
-internal class FloconDevicePluginNoOpImpl : FloconPlugin, FloconDevicePlugin {
+internal object FloconDevicePluginNoOpImpl : FloconPlugin, FloconDevicePlugin {
     override val key: String = "device"
 
     override fun registerWithSerial(serial: String) {
@@ -44,3 +45,6 @@ internal class FloconDevicePluginNoOpImpl : FloconPlugin, FloconDevicePlugin {
         // no op
     }
 }
+
+val Flocon.Companion.devicePlugin: FloconDevicePlugin
+    get() = FloconDevicePluginNoOpImpl

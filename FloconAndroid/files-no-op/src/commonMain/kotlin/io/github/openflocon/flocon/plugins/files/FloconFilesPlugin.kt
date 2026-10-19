@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.files
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
@@ -22,11 +23,11 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
         floconConfig: FloconConfig,
         encoder: FloconEncoder
     ): FloconFilesPlugin {
-        return FloconFilesPluginNoOpImpl()
+        return FloconFilesPluginNoOpImpl
     }
 }
 
-internal class FloconFilesPluginNoOpImpl : FloconPlugin, FloconFilesPlugin {
+internal object FloconFilesPluginNoOpImpl : FloconPlugin, FloconFilesPlugin {
     override val key: String = "files"
 
     override suspend fun onMessageReceived(
@@ -40,3 +41,6 @@ internal class FloconFilesPluginNoOpImpl : FloconPlugin, FloconFilesPlugin {
         // no op
     }
 }
+
+val Flocon.Companion.filesPlugin: FloconFilesPlugin
+    get() = FloconFilesPluginNoOpImpl

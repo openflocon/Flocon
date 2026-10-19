@@ -49,7 +49,3 @@ internal object FloconSharedPrefsPluginNoOpImpl : FloconPlugin, FloconPreference
 
 val Flocon.Companion.preferencesPlugin: FloconPreferencesPlugin
     get() = FloconSharedPrefsPluginNoOpImpl
-
-fun floconRegisterPreference(preference: FloconPreference) {
-    Flocon.preferencesPlugin.register(preference)
-}

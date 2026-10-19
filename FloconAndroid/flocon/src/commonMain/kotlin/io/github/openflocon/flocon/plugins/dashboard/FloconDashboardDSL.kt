@@ -15,22 +15,27 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
- * Creates a reactive dashboard attached to the [CoroutineScope].
+ * Creates a reactive dashboard, updated while [scope] is active.
  *
  * @param id The unique identifier for the dashboard.
+ * @param scope The scope collecting the sections flows.
  * @param block The builder block to define sections.
  * @return A [Job] representing the dashboard lifecycle.
  */
-fun CoroutineScope.floconDashboard(id: String, block: DashboardScope.() -> Unit): Job {
+fun FloconDashboardPlugin.dashboard(
+    id: String,
+    scope: CoroutineScope,
+    block: DashboardScope.() -> Unit,
+): Job {
     // distinct job to allow manual cancellation without affecting the parent scope,
     // and SupervisorJob to prevent child failures from cancelling the parent.
-    val job = SupervisorJob(coroutineContext[Job])
-    val scope = CoroutineScope(coroutineContext + job)
+    val job = SupervisorJob(scope.coroutineContext[Job])
+    val dashboardCoroutineScope = CoroutineScope(scope.coroutineContext + job)
 
     val dashboardScope = DashboardScopeImpl()
     dashboardScope.block()
 
-    scope.launch {
+    dashboardCoroutineScope.launch {
         val flows = dashboardScope.flows
         val sectionsFlow = if (flows.isEmpty()) {
             flowOf(emptyList())
@@ -40,7 +45,7 @@ fun CoroutineScope.floconDashboard(id: String, block: DashboardScope.() -> Unit)
 
         sectionsFlow.collect { containers ->
             val config = DashboardConfig(id = id, containers = containers)
-            FloconDashboardPluginImpl.plugin?.registerDashboard(config)
+            registerDashboard(config)
         }
     }
 

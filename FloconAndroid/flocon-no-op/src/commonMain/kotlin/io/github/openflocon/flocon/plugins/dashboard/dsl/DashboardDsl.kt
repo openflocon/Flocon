@@ -1,15 +1,18 @@
 package io.github.openflocon.flocon.plugins.dashboard.dsl
 
+import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPlugin
 import io.github.openflocon.flocon.plugins.dashboard.builder.DashboardBuilder
-import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
 
 @DslMarker
 annotation class DashboardDsl
 
-fun dashboardConfig(id: String, block: DashboardBuilder.() -> Unit): DashboardConfig {
-    val builder = DashboardBuilder(id = id)
-        .apply {
-            block()
-        }
-    return builder.build()
+/**
+ * Registers a static dashboard, see [io.github.openflocon.flocon.plugins.dashboard.dashboard] for a reactive one.
+ */
+fun FloconDashboardPlugin.registerDashboard(id: String, block: DashboardBuilder.() -> Unit) {
+    registerDashboard(
+        DashboardBuilder(id = id)
+            .apply(block)
+            .build()
+    )
 }

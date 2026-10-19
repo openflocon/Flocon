@@ -67,7 +67,19 @@ object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlu
 
 @OptIn(FloconMarker::class)
 val Flocon.Companion.networkPlugin: FloconNetworkPlugin
-    get() = FloconNetworkPluginImpl.plugin ?: pluginNotInitialized("Network")
+    get() = FloconNetworkPluginImpl.plugin ?: pluginNotInitialized("Network", NoOpNetworkPlugin())
+
+private class NoOpNetworkPlugin : FloconNetworkPlugin {
+    override val key: String = ""
+    override val mocks: Collection<MockNetworkResponse> = emptyList()
+    override val badQualityConfig: BadQualityConfig? = null
+    override fun logRequest(request: FloconNetworkCallRequest) = Unit
+    override fun logResponse(response: FloconNetworkCallResponse) = Unit
+    override fun logWebSocket(event: FloconWebSocketEvent) = Unit
+    override fun registerWebSocketMockListener(id: String, listener: FloconWebSocketMockListener) = Unit
+    override suspend fun onMessageReceived(method: String, body: String) = Unit
+    override suspend fun onConnectedToServer() = Unit
+}
 
 /**
  * The network plugin, or null if [FloconNetwork] is not installed (or Flocon not started yet).

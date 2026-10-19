@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.device
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
@@ -10,6 +11,8 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
+import io.github.openflocon.flocon.dsl.FloconMarker
+import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.plugins.device.model.fromdevice.RegisterDeviceDataModel
 
 class FloconDeviceConfig : FloconPluginConfig
@@ -32,6 +35,7 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
             context = floconConfig.context,
             encoder = encoder,
         )
+            .also { FloconDevicePluginImpl.plugin = it }
         observeDeviceSerial(onSerial = plugin::registerWithSerial)
         return plugin
     }
@@ -88,4 +92,19 @@ internal class FloconDevicePluginImpl(
     override suspend fun onConnectedToServer() {
         // no op
     }
+
+    companion object {
+        var plugin: FloconDevicePlugin? = null
+    }
+}
+
+@OptIn(FloconMarker::class)
+val Flocon.Companion.devicePlugin: FloconDevicePlugin
+    get() = FloconDevicePluginImpl.plugin ?: pluginNotInitialized("Device", NoOpDevicePlugin())
+
+private class NoOpDevicePlugin : FloconDevicePlugin {
+    override val key: String = ""
+    override fun registerWithSerial(serial: String) = Unit
+    override suspend fun onMessageReceived(method: String, body: String) = Unit
+    override suspend fun onConnectedToServer() = Unit
 }

@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.database.room
 
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.core.datasource.FloconDatabaseProvider
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
@@ -26,4 +27,13 @@ internal expect class FloconRoomDatabaseProviderImpl(
 val Flocon.Companion.databaseRoom: FloconRoomDatabaseProvider
     get() = databasePlugin.providers
         .firstNotNullOfOrNull { it as? FloconRoomDatabaseProvider }
-        ?: error("Room database provider not initialized")
+        ?: run {
+            FloconLogger.log("Room database provider not initialized")
+            NoOpRoomDatabaseProvider
+        }
+
+@OptIn(FloconMarker::class)
+private object NoOpRoomDatabaseProvider : FloconRoomDatabaseProvider {
+    override fun register() = Unit
+    override fun getAllDataBases(registeredDatabases: List<FloconDatabaseModel>): List<FloconDatabaseModel> = emptyList()
+}

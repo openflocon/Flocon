@@ -4,27 +4,21 @@ import androidx.room.RoomDatabase
 import androidx.room.Transactor
 import androidx.room.execSQL
 import androidx.room.useReaderConnection
-import io.github.openflocon.flocon.Flocon
-import io.github.openflocon.flocon.database.core.databasePlugin
+import io.github.openflocon.flocon.database.core.FloconDatabasePlugin
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteResponse
 import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
 
-fun floconRegisterDatabase(displayName: String, database: RoomDatabase) {
-    Flocon.databasePlugin.register(
+/**
+ * Registers a Room database, to browse it from the desktop app
+ */
+fun FloconDatabasePlugin.register(displayName: String, database: RoomDatabase) {
+    register(
         FloconRoomDatabaseModel(
             id = displayName,
             displayName = displayName,
             database = database
         )
-    )
-}
-
-fun floconLogDatabaseQuery(databaseName: String, sqlQuery: String, bindArgs: List<Any?>) {
-    Flocon.databasePlugin.logQuery(
-        dbName = databaseName,
-        sqlQuery = sqlQuery,
-        bindArgs = bindArgs,
     )
 }
 

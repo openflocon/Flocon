@@ -191,10 +191,6 @@ internal class FloconSharedPrefsPluginImpl(
 val Flocon.Companion.preferencesPlugin: FloconPreferencesPlugin
     get() = FloconSharedPrefsPluginImpl.plugin ?: pluginNotInitialized("Preferences", NoOpPreferencesPlugin())
 
-fun floconRegisterPreference(preference: FloconPreference) {
-    Flocon.preferencesPlugin.register(preference)
-}
-
 private class NoOpPreferencesPlugin : FloconPreferencesPlugin {
     override val key: String = ""
     override fun register(preference: FloconPreference) = Unit

@@ -15,11 +15,3 @@ data class AnalyticsEvent(
         properties = properties.toList()
     )
 }
-
-fun analyticsEvent(
-    name: String,
-    analyticsTableId: String,
-    properties: List<AnalyticsPropertiesConfig>
-) {
-    // no op
-}

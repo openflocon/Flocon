@@ -9,7 +9,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -28,16 +27,9 @@ class FloconDashboardPluginTest {
     private val sender = FakeFloconMessageSender()
     private val plugin = FloconDashboardPluginImpl(sender, FloconEncoder())
 
-    @AfterTest
-    fun tearDown() {
-        FloconDashboardPluginImpl.plugin = null
-    }
-
     @Test
-    fun `floconDashboard registers the dashboard`() = runBlocking {
-        FloconDashboardPluginImpl.plugin = plugin
-
-        val job = floconDashboard(id = "main") {
+    fun `dashboard registers the dashboard`() = runBlocking {
+        val job = plugin.dashboard(id = "main", scope = this) {
             section(name = "user") {
                 text(label = "name", value = "Florent")
             }

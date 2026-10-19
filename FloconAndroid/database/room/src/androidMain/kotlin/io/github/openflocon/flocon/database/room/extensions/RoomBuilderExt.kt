@@ -2,7 +2,8 @@ package io.github.openflocon.flocon.database.room.extensions
 
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabase.QueryCallback
-import io.github.openflocon.flocon.database.room.floconLogDatabaseQuery
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.database.core.databasePlugin
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -13,8 +14,8 @@ inline fun <reified T : RoomDatabase> RoomDatabase.Builder<T>.floconLogs(
 ): RoomDatabase.Builder<T> {
     return setQueryCallback(
         queryCallback = { sqlQuery, bindArgs ->
-            floconLogDatabaseQuery(
-                databaseName = name ?: "database",
+            Flocon.databasePlugin.logQuery(
+                dbName = name ?: "database",
                 sqlQuery = sqlQuery,
                 bindArgs = bindArgs
             )

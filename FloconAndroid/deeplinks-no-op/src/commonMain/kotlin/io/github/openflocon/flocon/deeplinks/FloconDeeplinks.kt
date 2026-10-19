@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.deeplinks
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconPlugin
@@ -52,3 +53,6 @@ internal object FloconDeeplinksPluginNoOp : FloconDeeplinksPlugin {
     override suspend fun onMessageReceived(method: String, body: String) {}
     override suspend fun onConnectedToServer() {}
 }
+
+val Flocon.Companion.deeplinksPlugin: FloconDeeplinksPlugin
+    get() = FloconDeeplinksPluginNoOp

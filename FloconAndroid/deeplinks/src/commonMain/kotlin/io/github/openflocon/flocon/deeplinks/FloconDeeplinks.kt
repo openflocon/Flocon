@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.deeplinks
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconEncoding
@@ -10,8 +11,9 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.deeplinks.model.DeeplinkModel
+import io.github.openflocon.flocon.dsl.FloconMarker
+import io.github.openflocon.flocon.error.pluginNotInitialized
 
 object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
     override val name: String = "Deeplinks"
@@ -34,6 +36,7 @@ object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeepli
             sender = floconConfig.client as FloconMessageSender,
             encoder = encoder
         )
+            .also { FloconDeeplinksPluginImpl.plugin = it }
 
         return plugin
     }
@@ -76,4 +79,18 @@ internal class FloconDeeplinksPluginImpl(
             FloconLogger.logError("deeplink mapping error", t)
         }
     }
+
+    companion object {
+        var plugin: FloconDeeplinksPlugin? = null
+    }
+}
+
+@OptIn(FloconMarker::class)
+val Flocon.Companion.deeplinksPlugin: FloconDeeplinksPlugin
+    get() = FloconDeeplinksPluginImpl.plugin ?: pluginNotInitialized("Deeplinks", NoOpDeeplinksPlugin())
+
+private class NoOpDeeplinksPlugin : FloconDeeplinksPlugin {
+    override val key: String = ""
+    override suspend fun onMessageReceived(method: String, body: String) = Unit
+    override suspend fun onConnectedToServer() = Unit
 }

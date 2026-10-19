@@ -2,7 +2,9 @@ package com.flocon.sample.ios
 
 import androidx.room3.Room
 import androidx.sqlite.driver.NativeSQLiteDriver
-import io.github.openflocon.flocon.database.room3.floconRegisterDatabase
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.database.core.databasePlugin
+import io.github.openflocon.flocon.database.room3.register
 import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -21,7 +23,7 @@ object Databases {
                 .setDriver(NativeSQLiteDriver())
                 .build()
             dogDatabase = instance
-            floconRegisterDatabase(displayName = "Dog Database", database = instance)
+            Flocon.databasePlugin.register(displayName = "Dog Database", database = instance)
             instance
         }
     }
@@ -35,7 +37,7 @@ object Databases {
                 .setDriver(NativeSQLiteDriver())
                 .build()
             foodDatabase = instance
-            floconRegisterDatabase(displayName = "Food Database", database = instance)
+            Flocon.databasePlugin.register(displayName = "Food Database", database = instance)
             instance
         }
     }

@@ -9,7 +9,7 @@ class FloconCrashReporterNoOpTest {
         // must not replace the app uncaught exception handler
         val handler = Thread.getDefaultUncaughtExceptionHandler()
 
-        FloconCrashReporterNoOpImpl().setupCrashHandler()
+        FloconCrashReporterNoOpImpl.setupCrashHandler()
 
         kotlin.test.assertSame(handler, Thread.getDefaultUncaughtExceptionHandler())
     }

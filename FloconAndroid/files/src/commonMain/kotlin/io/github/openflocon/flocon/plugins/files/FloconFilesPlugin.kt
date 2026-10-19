@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.plugins.files
 
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconFile
@@ -14,6 +15,7 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.dsl.FloconMarker
+import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.model.FloconFileInfo
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FilesResultDataModel
@@ -47,6 +49,7 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
             sender = client as FloconMessageSender,
             encoder = encoder
         )
+            .also { FloconFilesPluginImpl.plugin = it }
     }
 }
 
@@ -193,4 +196,18 @@ internal class FloconFilesPluginImpl(
     override suspend fun onConnectedToServer() {
         // no op
     }
+
+    companion object {
+        var plugin: FloconFilesPlugin? = null
+    }
+}
+
+@OptIn(FloconMarker::class)
+val Flocon.Companion.filesPlugin: FloconFilesPlugin
+    get() = FloconFilesPluginImpl.plugin ?: pluginNotInitialized("Files", NoOpFilesPlugin())
+
+private class NoOpFilesPlugin : FloconFilesPlugin {
+    override val key: String = ""
+    override suspend fun onMessageReceived(method: String, body: String) = Unit
+    override suspend fun onConnectedToServer() = Unit
 }
