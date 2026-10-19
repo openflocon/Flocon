@@ -107,6 +107,12 @@ internal class SettingsDataSourcePrefs(
         settings.putString(DISMISSED_CLIENT_VERSION, version)
     }
 
+    override fun getLastSeenReleaseNotesVersion(): String? = settings.getStringOrNull(LAST_SEEN_RELEASE_NOTES_VERSION)
+
+    override suspend fun setLastSeenReleaseNotesVersion(version: String) {
+        settings.putString(LAST_SEEN_RELEASE_NOTES_VERSION, version)
+    }
+
     private fun String?.toThemeSetting(): ThemeSetting = this
         ?.let { name -> ThemeSetting.entries.firstOrNull { it.name == name } }
         ?: ThemeSetting.DEFAULT
@@ -146,6 +152,7 @@ internal class SettingsDataSourcePrefs(
         private const val THEME = "theme"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
         private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"
+        private const val LAST_SEEN_RELEASE_NOTES_VERSION = "last_seen_release_notes_version"
 
         private const val NETWORK_SETTINGS = "network_settings"
 

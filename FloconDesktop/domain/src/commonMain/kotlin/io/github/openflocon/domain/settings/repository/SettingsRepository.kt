@@ -35,6 +35,10 @@ interface SettingsRepository {
 
     suspend fun setDismissedClientVersion(version: String)
 
+    fun getLastSeenReleaseNotesVersion(): String?
+
+    suspend fun setLastSeenReleaseNotesVersion(version: String)
+
     val adbPath: Flow<String?>
     val fontSizeMultiplier: StateFlow<Float>
     val theme: StateFlow<ThemeSetting>
