@@ -86,5 +86,19 @@ class ImagesMcpToolProviderTest {
 
 private class FakeImagesRepository(private val images: List<DeviceImageDomainModel>) : ImagesRepository {
     override fun observeImages(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeviceImageDomainModel>> = flowOf(images)
+
+    override suspend fun searchImages(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sinceTimestamp: Long?,
+        text: String?,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<DeviceImageDomainModel> = images
+        .filter { text == null || it.url.contains(text, ignoreCase = true) }
+        .filter { sinceTimestamp == null || it.time >= sinceTimestamp }
+        .sortedBy { it.time }
+        .let { if (newestFirst) it.reversed() else it }
+        .take(limit)
+
     override suspend fun clearImages(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
 }
