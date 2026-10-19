@@ -24,6 +24,9 @@ internal interface SettingsDataSource {
     fun getDismissedClientVersion(): String?
     suspend fun setDismissedClientVersion(version: String)
 
+    fun getLastSeenReleaseNotesVersion(): String?
+    suspend fun setLastSeenReleaseNotesVersion(version: String)
+
     val floconDocumentsPath: Flow<String?>
     val adbPath: Flow<String?>
     val fontSizeMultiplier: StateFlow<Float>

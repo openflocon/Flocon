@@ -34,6 +34,7 @@ class ObserveUpdateAvailableUseCaseTest {
         val versionFlow = MutableStateFlow(initialVersion)
         override val lastVersion: Flow<String?> = versionFlow.asStateFlow()
         override suspend fun checkIsLastVersion(): Either<Throwable, String> = throw NotImplementedError()
+        override suspend fun getReleaseNotes(): Either<Throwable, List<io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel>> = throw NotImplementedError()
     }
 
     private class FakeDevicesRepository(
