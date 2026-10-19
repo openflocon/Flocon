@@ -3,7 +3,7 @@ plugins {
     id("flocon.android.library")
     id("flocon.ios.library")
     id("flocon.jvm.library")
-    // id("flocon.wasm.library") TODO add it 1.3.0
+    // no wasm: DataStore does not support it
     id("flocon.publish")
 }
 
@@ -15,11 +15,12 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.flocon)
-            implementation(libs.androidx.datastore.core)
-        }
+            // FloconDatastorePreference implements FloconPreference
+            api(projects.sharedprefs)
+            api(libs.androidx.datastore.preferences.core)
 
-        androidMain.dependencies {
-            implementation(libs.androidx.datastore.preferences)
+            implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
+            implementation(libs.kotlinx.coroutines.core)
         }
     }
 }

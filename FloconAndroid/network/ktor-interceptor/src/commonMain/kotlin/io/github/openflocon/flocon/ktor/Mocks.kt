@@ -29,14 +29,6 @@ internal fun findMock(
     }
 }
 
-//fun test() {
-//    HttpClient {
-//        install() {
-//
-//        }
-//    }
-//}
-
 @OptIn(InternalAPI::class)
 internal suspend fun executeMock(
     request: HttpRequestBuilder,

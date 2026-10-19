@@ -1,7 +1,9 @@
 package io.github.openflocon.flocon.okhttp.websocket
 
-import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.network.core.model.FloconWebSocketEvent
+import io.github.openflocon.flocon.network.core.model.FloconWebSocketMockListener
+import io.github.openflocon.flocon.network.core.networkPluginOrNull
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -16,16 +18,17 @@ object FloconWebSocket {
         message: String? = null,
         error: Throwable? = null,
     ) {
+        val floconNetworkPlugin = Flocon.networkPluginOrNull ?: return
         val size = message?.toByteArray()?.size?.toLong()
-//        floconLogWebSocketEvent(
-//            FloconWebSocketEvent(
-//                websocketUrl = webSocket.request().url.toString(),
-//                event = event,
-//                message = message,
-//                error = error,
-//                size = size ?: 0L,
-//            )
-//        )
+        floconNetworkPlugin.logWebSocket(
+            FloconWebSocketEvent(
+                websocketUrl = webSocket.request().url.toString(),
+                event = event,
+                message = message,
+                error = error,
+                size = size ?: 0L,
+            )
+        )
     }
 
     fun send(webSocket: WebSocket, text: String) : Boolean {
@@ -41,7 +44,7 @@ object FloconWebSocket {
         log(
             webSocket = webSocket,
             event = FloconWebSocketEvent.Event.SendMessage,
-            message = bytes.toString(), // not sure
+            message = bytes.toString(),
         )
         return webSocket.send(bytes = bytes)
     }
@@ -51,13 +54,13 @@ object FloconWebSocket {
         private var websocketRef : WeakReference<WebSocket>? = null
 
         init {
-//            FloconApp.instance?.client?.networkPlugin?.registerWebSocketMockListener(id = id, listener = object: FloconWebSocketMockListener {
-//                override fun onMessage(message: String) {
-//                    websocketRef?.get()?.let { websocket ->
-//                        onMessage(websocket, message)
-//                    }
-//                }
-//            })
+            Flocon.networkPluginOrNull?.registerWebSocketMockListener(id = id, listener = object : FloconWebSocketMockListener {
+                override fun onMessage(message: String) {
+                    websocketRef?.get()?.let { websocket ->
+                        onMessage(websocket, message)
+                    }
+                }
+            })
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
@@ -106,7 +109,7 @@ object FloconWebSocket {
             log(
                 webSocket = webSocket,
                 event = FloconWebSocketEvent.Event.ReceiveMessage,
-                message = bytes.toString(), // TODO not sure
+                message = bytes.toString(),
             )
             listener.onMessage(webSocket, bytes)
             super.onMessage(webSocket, bytes)

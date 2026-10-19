@@ -80,7 +80,7 @@ internal class FloconNetworkPluginImpl(
         }
     }
 
-    override suspend fun logWebSocket(
+    override fun logWebSocket(
         event: FloconWebSocketEvent,
     ) {
         coroutineScope.launch {
@@ -127,7 +127,7 @@ internal class FloconNetworkPluginImpl(
         updateWebSocketIds()
     }
 
-    override suspend fun registerWebSocketMockListener(
+    override fun registerWebSocketMockListener(
         id: String,
         listener: FloconWebSocketMockListener
     ) {

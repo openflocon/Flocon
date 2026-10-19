@@ -21,8 +21,8 @@ internal class FloconNetworkPluginImpl : FloconPlugin, FloconNetworkPlugin {
     override fun logRequest(request: FloconNetworkCallRequest) = Unit // No op
     override fun logResponse(response: FloconNetworkCallResponse) = Unit // No op
 
-    override suspend fun logWebSocket(event: FloconWebSocketEvent) = Unit // No op
-    override suspend fun registerWebSocketMockListener(
+    override fun logWebSocket(event: FloconWebSocketEvent) = Unit // No op
+    override fun registerWebSocketMockListener(
         id: String,
         listener: FloconWebSocketMockListener
     ) = Unit // No op

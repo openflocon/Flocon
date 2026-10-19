@@ -1,9 +1,6 @@
 plugins {
     id("flocon.kotlin.library")
     id("flocon.android.library")
-    id("flocon.ios.library")
-    id("flocon.jvm.library")
-    id("flocon.wasm.library")
     id("flocon.publish")
 }
 
@@ -13,9 +10,9 @@ kotlin {
     }
 
     sourceSets {
-        commonMain.dependencies {
+        androidMain.dependencies {
             implementation(projects.flocon)
-            implementation(projects.grpc.grpcInterceptorBase)
+            api(projects.grpc.grpcInterceptorBase)
             implementation(libs.grpc.android)
             implementation(libs.gson)
         }

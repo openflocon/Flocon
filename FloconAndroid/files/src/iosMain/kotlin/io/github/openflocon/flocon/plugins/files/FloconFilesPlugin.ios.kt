@@ -9,9 +9,8 @@ internal actual fun fileDataSource(context: FloconContext): FileDataSource {
     return FileDataSourceIOs()
 }
 
-// TODO
-@io.github.openflocon.flocon.dsl.FloconMarker
 internal class FileDataSourceIOs : FileDataSource {
+    @FloconMarker
     override fun getFile(
         path: String,
         isConstantPath: Boolean
@@ -35,6 +34,7 @@ internal class FileDataSourceIOs : FileDataSource {
         // no op
     }
 
+    @FloconMarker
     override fun deleteFolderContent(folder: FloconFile) {
         // TODO
     }

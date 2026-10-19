@@ -3,11 +3,11 @@
 package io.github.openflocon.flocon.okhttp
 
 import io.github.openflocon.flocon.Flocon
-import io.github.openflocon.flocon.network.core.networkPlugin
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.network.core.model.FloconNetworkRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkResponse
+import io.github.openflocon.flocon.network.core.networkPluginOrNull
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Request
@@ -29,9 +29,9 @@ class FloconOkhttpInterceptor(
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        val floconNetworkPlugin = Flocon.networkPlugin
+        val floconNetworkPlugin = Flocon.networkPluginOrNull
 
-        if (!shouldLog(chain)) {
+        if (floconNetworkPlugin == null || !shouldLog(chain)) {
             // on no op, do not intercept the call, just execute it
             return chain.proceed(chain.request())
         }

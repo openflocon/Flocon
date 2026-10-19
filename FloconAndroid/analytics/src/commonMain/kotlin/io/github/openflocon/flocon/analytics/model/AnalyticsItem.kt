@@ -3,6 +3,8 @@ package io.github.openflocon.flocon.analytics.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Serializable
@@ -19,6 +21,7 @@ internal data class AnalyticsItem(
     val properties: List<AnalyticsPropertiesConfig>,
 )
 
+@OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 internal fun AnalyticsEvent.toItem() = AnalyticsItem(
     id = Uuid.random().toString(),
     analyticsTableId = analyticsTableId,

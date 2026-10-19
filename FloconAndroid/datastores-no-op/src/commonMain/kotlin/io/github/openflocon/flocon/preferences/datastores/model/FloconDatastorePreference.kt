@@ -11,6 +11,7 @@ interface FloconDatastoreMapper {
 class FloconDatastorePreference(
     override val name: String,
     @Suppress("UNUSED_PARAMETER") dataStore: Any? = null,
+    @Suppress("UNUSED_PARAMETER") mapper: FloconDatastoreMapper? = null,
 ) : FloconPreference {
 
     override suspend fun set(

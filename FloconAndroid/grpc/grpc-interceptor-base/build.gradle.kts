@@ -1,9 +1,6 @@
 plugins {
     id("flocon.kotlin.library")
     id("flocon.android.library")
-    id("flocon.ios.library")
-    id("flocon.jvm.library")
-    id("flocon.wasm.library")
     id("flocon.publish")
 }
 
@@ -13,21 +10,16 @@ kotlin {
     }
 
     sourceSets {
-        commonMain.dependencies {
-            implementation(projects.flocon)
+        androidMain.dependencies {
+            api(projects.flocon)
+            api(projects.network.core)
+            // FloconGrpcBaseInterceptor is a ClientInterceptor
+            api(libs.grpc.android)
+
+            implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.serialization.json)
         }
     }
-}
-
-dependencies {
-    //implementation(projects.network.core)
-
-//    implementation(platform(libs.kotlinx.coroutines.bom))
-//    implementation(libs.kotlinx.coroutines.core)
-//
-//    implementation(libs.grpc.android)
 }
 
 mavenPublishing {

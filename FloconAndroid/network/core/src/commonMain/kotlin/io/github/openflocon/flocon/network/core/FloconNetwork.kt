@@ -35,11 +35,11 @@ interface FloconNetworkPlugin : FloconPlugin {
     fun logRequest(request: FloconNetworkCallRequest)
     fun logResponse(response: FloconNetworkCallResponse)
 
-    suspend fun logWebSocket(
+    fun logWebSocket(
         event: FloconWebSocketEvent,
     )
 
-    suspend fun registerWebSocketMockListener(id: String, listener: FloconWebSocketMockListener)
+    fun registerWebSocketMockListener(id: String, listener: FloconWebSocketMockListener)
 }
 
 object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlugin> {
@@ -68,3 +68,11 @@ object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlu
 @OptIn(FloconMarker::class)
 val Flocon.Companion.networkPlugin: FloconNetworkPlugin
     get() = FloconNetworkPluginImpl.plugin ?: pluginNotInitialized("Network")
+
+/**
+ * The network plugin, or null if [FloconNetwork] is not installed (or Flocon not started yet).
+ * Used by the interceptors, which must let the calls go through in that case.
+ */
+@OptIn(FloconMarker::class)
+val Flocon.Companion.networkPluginOrNull: FloconNetworkPlugin?
+    get() = FloconNetworkPluginImpl.plugin
