@@ -98,12 +98,12 @@ internal class DeeplinkMcpToolProvider(
             when (parameter) {
                 is DeeplinkDomainModel.Parameter.AutoComplete -> DeeplinkParameterMcpModel(
                     name = parameter.name,
-                    type = "auto_complete",
+                    type = DeeplinkParameterType.AutoComplete,
                     suggestions = parameter.autoComplete,
                 )
                 is DeeplinkDomainModel.Parameter.Variable -> DeeplinkParameterMcpModel(
                     name = parameter.name,
-                    type = "variable",
+                    type = DeeplinkParameterType.Variable,
                     variableName = parameter.variableName,
                 )
             }
@@ -111,11 +111,11 @@ internal class DeeplinkMcpToolProvider(
     )
 
     private fun DeeplinkVariableDomainModel.toMcp() = when (val mode = mode) {
-        is DeeplinkVariableDomainModel.Mode.Input -> DeeplinkVariableMcpModel(name = name, description = description, mode = "input")
+        is DeeplinkVariableDomainModel.Mode.Input -> DeeplinkVariableMcpModel(name = name, description = description, mode = DeeplinkVariableMode.Input)
         is DeeplinkVariableDomainModel.Mode.AutoComplete -> DeeplinkVariableMcpModel(
             name = name,
             description = description,
-            mode = "auto_complete",
+            mode = DeeplinkVariableMode.AutoComplete,
             suggestions = mode.suggestions,
         )
     }

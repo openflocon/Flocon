@@ -1,5 +1,6 @@
 package io.github.openflocon.mcp.deeplink
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -29,8 +30,7 @@ internal data class DeeplinkMcpModel(
 @Serializable
 internal data class DeeplinkParameterMcpModel(
     val name: String,
-    /** "auto_complete" or "variable" */
-    val type: String,
+    val type: DeeplinkParameterType,
     val suggestions: List<String>? = null,
     val variableName: String? = null,
 )
@@ -39,8 +39,7 @@ internal data class DeeplinkParameterMcpModel(
 internal data class DeeplinkVariableMcpModel(
     val name: String,
     val description: String?,
-    /** "input" or "auto_complete" */
-    val mode: String,
+    val mode: DeeplinkVariableMode,
     val suggestions: List<String>? = null,
 )
 
@@ -52,3 +51,21 @@ internal data class OpenDeeplinkMcpResult(
     /** Output of the command that opened the deeplink */
     val output: String,
 )
+
+@Serializable
+internal enum class DeeplinkParameterType {
+    @SerialName("auto_complete")
+    AutoComplete,
+
+    @SerialName("variable")
+    Variable,
+}
+
+@Serializable
+internal enum class DeeplinkVariableMode {
+    @SerialName("input")
+    Input,
+
+    @SerialName("auto_complete")
+    AutoComplete,
+}
