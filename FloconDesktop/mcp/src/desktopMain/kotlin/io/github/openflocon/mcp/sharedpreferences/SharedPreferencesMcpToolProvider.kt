@@ -19,8 +19,10 @@ internal const val SHARED_PREFERENCES_TIMEOUT_MS = 3_000L
 internal class SharedPreferencesMcpToolProvider(
     private val sharedPreferencesRepository: SharedPreferencesRepository,
     private val targetResolver: McpTargetResolver,
-    private val answerTimeoutMs: Long = SHARED_PREFERENCES_TIMEOUT_MS,
 ) : McpToolProvider {
+
+    // not a constructor parameter: koin would try to inject it, it's only changed by the tests
+    internal var answerTimeoutMs: Long = SHARED_PREFERENCES_TIMEOUT_MS
 
     override fun register(server: Server) {
         server.addTypedTool(

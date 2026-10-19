@@ -54,8 +54,7 @@ class SharedPreferencesMcpToolProviderTest {
             SharedPreferencesMcpToolProvider(
                 sharedPreferencesRepository = repository,
                 targetResolver = targetResolver(devicesRepository),
-                answerTimeoutMs = 200,
-            ),
+            ).apply { answerTimeoutMs = 200 },
         ),
     )
 
