@@ -36,7 +36,19 @@ kotlin {
             }
         }
         
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+
+        // java.io.File code shared by Android and the JVM
+        val jvmAndroidMain by creating {
+            dependsOn(commonMain)
+        }
+
         val androidMain by getting {
+            dependsOn(jvmAndroidMain)
             dependencies {
                 implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
                 implementation(libs.kotlinx.coroutines.android)
@@ -49,6 +61,7 @@ kotlin {
         }
         
         val jvmMain by getting {
+            dependsOn(jvmAndroidMain)
             dependencies {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
@@ -101,4 +114,4 @@ mavenPublishing {
     pom {
         name = "Flocon"
     }
-}
+}

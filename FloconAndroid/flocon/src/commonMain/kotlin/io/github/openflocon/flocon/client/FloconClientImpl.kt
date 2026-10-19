@@ -66,7 +66,7 @@ internal class FloconClientImpl(
 
     // region plugins
     override val databasePlugin = FloconDatabasePluginImpl(context = appContext, sender = this)
-    private val filesPlugin = FloconFilesPluginImpl(context = appContext, sender = this, floconFileSender = this)
+    override val filesPlugin = FloconFilesPluginImpl(context = appContext, sender = this, floconFileSender = this)
     override val preferencesPlugin = FloconPreferencesPluginImpl(context = appContext, sender = this, scope = coroutineScope)
     override val dashboardPlugin = FloconDashboardPluginImpl(sender = this)
     override val tablePlugin = FloconTablePluginImpl(sender = this)

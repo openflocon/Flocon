@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 internal data class ToDeviceDeleteFolderContentMessage(
     val requestId: String,
     val path: String,
-    val isConstantPath: Boolean, // ex: context.files / context.caches
+    val isConstantPath: Boolean, // true: the path is the id of a root folder
 ) {
     companion object {
         fun fromJson(message: String): ToDeviceDeleteFolderContentMessage? {

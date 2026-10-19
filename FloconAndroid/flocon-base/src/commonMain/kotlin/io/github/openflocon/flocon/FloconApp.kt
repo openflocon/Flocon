@@ -6,6 +6,7 @@ import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPlugin
 import io.github.openflocon.flocon.plugins.database.FloconDatabasePlugin
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPlugin
 import io.github.openflocon.flocon.plugins.device.FloconDevicePlugin
+import io.github.openflocon.flocon.plugins.files.FloconFilesPlugin
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPlugin
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferencesPlugin
 import io.github.openflocon.flocon.plugins.tables.FloconTablePlugin
@@ -25,6 +26,7 @@ abstract class FloconApp {
         suspend fun disconnect()
 
         val databasePlugin: FloconDatabasePlugin
+        val filesPlugin: FloconFilesPlugin
         val dashboardPlugin: FloconDashboardPlugin
         val tablePlugin: FloconTablePlugin
         val deeplinksPlugin: FloconDeeplinksPlugin

@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.plugins.files.floconRegisterFolder
 import io.github.openflocon.flocon.myapplication.dashboard.initializeDashboard
 import io.github.openflocon.flocon.myapplication.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.database.initializeDatabases
@@ -83,6 +84,11 @@ class MainActivity : ComponentActivity() {
         Flocon.initialize(this)
         initializeDeeplinks()
         inMemoryDb = initializeInMemoryDatabases(applicationContext)
+        // shown in the Files section of the desktop app, next to Files and Caches
+        floconRegisterFolder(
+            displayName = "Databases",
+            absolutePath = applicationContext.getDatabasePath("dummy").parentFile!!.absolutePath,
+        )
 
         initializeSharedPreferencesAfterInit(applicationContext)
         initializeDatastores(applicationContext)
