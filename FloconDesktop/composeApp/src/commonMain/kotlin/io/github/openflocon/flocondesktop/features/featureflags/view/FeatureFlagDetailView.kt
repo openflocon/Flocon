@@ -26,7 +26,6 @@ import flocondesktop.composeapp.generated.resources.feature_flag_payload
 import flocondesktop.composeapp.generated.resources.feature_flag_provider
 import flocondesktop.composeapp.generated.resources.feature_flag_variant
 import flocondesktop.composeapp.generated.resources.name
-import io.github.openflocon.flocondesktop.features.analytics.view.AnalyticsDetailLineTextView
 import io.github.openflocon.flocondesktop.features.featureflags.FeatureFlagDetailViewModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagDetailUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -72,26 +71,23 @@ private fun Content(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                AnalyticsDetailLineTextView(
+                FeatureFlagDetailLineView(
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(Res.string.name),
                     value = uiState.name,
                     labelWidth = linesLabelWidth,
-                    withDivider = false,
                 )
-                AnalyticsDetailLineTextView(
+                FeatureFlagDetailLineView(
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(Res.string.feature_flag_provider),
                     value = uiState.provider,
                     labelWidth = linesLabelWidth,
-                    withDivider = false,
                 )
-                AnalyticsDetailLineTextView(
+                FeatureFlagDetailLineView(
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(Res.string.feature_flag_variant),
                     value = uiState.variant,
                     labelWidth = linesLabelWidth,
-                    withDivider = false,
                 )
                 Text(
                     text = stringResource(Res.string.feature_flag_payload),
