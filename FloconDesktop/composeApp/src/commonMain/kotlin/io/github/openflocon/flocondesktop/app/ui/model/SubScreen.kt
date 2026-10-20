@@ -18,6 +18,7 @@ sealed interface SubScreen {
     data object Analytics : SubScreen
 
     data object FeatureFlags : SubScreen
+
     data object Tables : SubScreen
 
     data object Settings : SubScreen
