@@ -8,9 +8,11 @@ import io.github.openflocon.data.local.timeline.datasource.KIND_DATABASE
 import io.github.openflocon.data.local.timeline.datasource.KIND_DEEPLINK
 import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK
 import io.github.openflocon.data.local.timeline.datasource.KIND_TABLE
+import io.github.openflocon.data.local.timeline.models.TimelineActivityRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
+import io.github.openflocon.domain.timeline.models.TimelineActivityDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
@@ -40,6 +42,20 @@ internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEv
     durationMs = durationMs,
     sessionStart = sessionStart,
 )
+
+internal fun toActivityDomain(
+    rows: List<TimelineActivityRowEntity>,
+    bucketCount: Int,
+): TimelineActivityDomainModel {
+    val (sessionRows, eventRows) = rows.partition { it.kind == KIND_APP_START }
+    return TimelineActivityDomainModel(
+        bucketCount = bucketCount,
+        sourceBuckets = eventRows
+            .groupBy { it.kind.toTimelineSource() }
+            .mapValues { (_, sourceRows) -> sourceRows.associate { it.bucket to it.count } },
+        sessionBuckets = sessionRows.map { it.bucket }.toSet(),
+    )
+}
 
 internal fun toSummaryDomain(
     summaryRows: List<TimelineSummaryRowEntity>,

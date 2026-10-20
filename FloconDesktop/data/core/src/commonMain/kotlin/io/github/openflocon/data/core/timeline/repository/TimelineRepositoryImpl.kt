@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import io.github.openflocon.data.core.timeline.datasources.TimelineLocalDataSource
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineActivityDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
@@ -15,6 +16,16 @@ class TimelineRepositoryImpl(
     private val localDataSource: TimelineLocalDataSource,
     private val dispatcherProvider: DispatcherProvider,
 ) : TimelineRepository {
+
+    override fun observeActivity(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: TimelineFilterDomainModel,
+        bucketCount: Int,
+    ): Flow<TimelineActivityDomainModel> = localDataSource.observeActivity(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+        filter = filter,
+        bucketCount = bucketCount,
+    ).flowOn(dispatcherProvider.data)
 
     override fun observeSummary(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

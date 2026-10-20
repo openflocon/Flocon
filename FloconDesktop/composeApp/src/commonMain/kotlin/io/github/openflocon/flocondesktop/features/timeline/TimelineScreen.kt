@@ -41,10 +41,12 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineActivityUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeaderView
 import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
+import io.github.openflocon.flocondesktop.features.timeline.view.TimelineActivityStrip
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeaderView
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowView
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -63,6 +65,7 @@ fun TimelineScreen(
     val selectedKey by viewModel.selectedKey.collectAsStateWithLifecycle()
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
+    val activity by viewModel.activity.collectAsStateWithLifecycle()
 
     TimelineContent(
         modifier = modifier.fillMaxSize(),
@@ -71,6 +74,7 @@ fun TimelineScreen(
         selectedSources = selectedSources,
         selectedKey = selectedKey,
         summary = summary,
+        activity = activity,
         isLive = isLive,
         onAction = viewModel::onAction,
     )
@@ -84,6 +88,7 @@ internal fun TimelineContent(
     selectedSources: Set<TimelineSource>,
     selectedKey: String?,
     summary: TimelineSummaryUiModel,
+    activity: TimelineActivityUiModel,
     isLive: Boolean,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -141,6 +146,10 @@ internal fun TimelineContent(
                     onClick = { onAction(TimelineAction.ToggleSource(source)) },
                 )
             }
+        }
+
+        if (!activity.isEmpty) {
+            TimelineActivityStrip(activity = activity)
         }
 
         if (rows.itemCount == 0) {

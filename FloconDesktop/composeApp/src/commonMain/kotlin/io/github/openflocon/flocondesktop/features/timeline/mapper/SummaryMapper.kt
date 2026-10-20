@@ -1,8 +1,11 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.common.time.formatTimestamp
+import io.github.openflocon.domain.timeline.models.TimelineActivityDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineActivityRowUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineActivityUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 
 internal fun TimelineSummaryDomainModel.toUi(selected: Set<TimelineSource>): TimelineSummaryUiModel {
@@ -24,6 +27,15 @@ internal fun TimelineSummaryDomainModel.toUi(selected: Set<TimelineSource>): Tim
         sessionEventCounts = sessionEventCounts,
     )
 }
+
+internal fun TimelineActivityDomainModel.toUi(selected: Set<TimelineSource>): TimelineActivityUiModel = TimelineActivityUiModel(
+    bucketCount = bucketCount,
+    rows = TimelineSource.entries
+        .filter { it != TimelineSource.AppStart && it in selected }
+        .map { TimelineActivityRowUiModel(source = it, buckets = sourceBuckets[it].orEmpty()) },
+    // the "App start" filter shows or hides the sessions
+    sessionBuckets = if (TimelineSource.AppStart in selected) sessionBuckets else emptySet(),
+)
 
 // hh:mm:ss, the milliseconds are too precise for a range
 private fun Long.toClock(): String = formatTimestamp(this).substringBeforeLast('.')
