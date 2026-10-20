@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Cable
 import androidx.compose.material.icons.outlined.Check
@@ -59,6 +60,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
@@ -88,7 +90,6 @@ import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.theme.AppScale
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 // ---------------------------------------------------------------------------
@@ -99,7 +100,7 @@ private enum class SettingsTab(val label: String, val icon: ImageVector) {
     General("General", Icons.Outlined.Folder),
     Adb("Adb", Icons.Outlined.Cable),
     Appearance("Appearance", Icons.Outlined.TextFields),
-    Logs("Logs", Icons.Outlined.List),
+    Logs("Logs", Icons.AutoMirrored.Outlined.List),
     ReleaseNotes("Release notes", Icons.Outlined.NewReleases),
     About("About", Icons.Outlined.Info),
 }

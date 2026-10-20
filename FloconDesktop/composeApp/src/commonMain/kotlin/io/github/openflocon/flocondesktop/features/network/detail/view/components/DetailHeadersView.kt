@@ -49,7 +49,7 @@ import io.github.openflocon.library.designsystem.components.FloconSmallIconButto
 import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun DetailHeadersView(

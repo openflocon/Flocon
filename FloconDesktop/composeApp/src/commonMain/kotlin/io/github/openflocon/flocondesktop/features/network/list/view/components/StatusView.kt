@@ -18,7 +18,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconStatusPill
 import io.github.openflocon.library.designsystem.components.floconMonoStyle
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 /**
  * The color of a status: an http code is colored by family (1xx info, 2xx success, 4xx warning, 5xx error),

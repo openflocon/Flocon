@@ -1,25 +1,26 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.actions
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.Videocam
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 
 @Composable
 internal fun TopBarActions(
@@ -31,10 +32,15 @@ internal fun TopBarActions(
     onOpenFolderClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val colors = FloconTheme.colors
+
     Row(
-        modifier = modifier,
+        modifier = modifier
+            .background(colors.bg100, FloconTheme.shapes.medium)
+            .border(1.dp, colors.line, FloconTheme.shapes.medium)
+            .padding(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny)
     ) {
         TopBarButton(
             active = false,
@@ -60,9 +66,12 @@ internal fun TopBarActions(
             onClicked = onTakeScreenshotClicked,
             isEnabled = devicesState.deviceSelected?.canScreenshot == true && devicesState.deviceSelected?.isActive == true,
         )
-        FloconVerticalDivider(
-            modifier = Modifier.height(30.dp)
-                .padding(horizontal = FloconTheme.spacing.tiny)
+        Box(
+            Modifier
+                .padding(horizontal = FloconTheme.spacing.extraSmall)
+                .width(1.dp)
+                .height(20.dp)
+                .background(colors.line)
         )
         TopBarButton(
             active = false,

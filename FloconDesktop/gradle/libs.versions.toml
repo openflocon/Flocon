@@ -4,7 +4,7 @@ agp = "9.2.0"
 androidx-lifecycle = "2.11.0"
 buildconfig = "6.0.10"
 coil = "3.5.0"
-compose-multiplatform = "1.12.1"
+compose-multiplatform = "1.12.2"
 junit = "4.13.2"
 filekit = "0.16.0"
 kermit = "2.1.0"
@@ -20,9 +20,10 @@ ktlint = "14.0.1"
 ktor = "3.5.1"
 logback = "1.5.18"
 mcp-sdk = "0.15.0"
-material3-adaptive = "1.3.0-beta02"
+material3-core = "1.12.0-alpha03"
+material3-adaptive = "1.3.0"
 multiplatform-settings = "1.3.0"
-navigation3 = "1.1.1"
+navigation3 = "1.2.0-rc01"
 opencsv = "5.12.0"
 other-jsontree = "2.8.0"
 paging = "3.5.0"
@@ -104,6 +105,9 @@ mcp-sdk-server = { module = "io.modelcontextprotocol:kotlin-sdk-server", version
 
 # Logback
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+# Material3
+material3-core = { module = "androidx.compose.material3:material3", version.ref = "material3-core" }
 
 # Multiplatform Settings
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }

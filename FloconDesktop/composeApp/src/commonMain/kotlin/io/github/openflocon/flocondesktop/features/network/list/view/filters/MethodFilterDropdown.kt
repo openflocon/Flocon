@@ -14,7 +14,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.col
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.previewMethodFilterState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun MethodFilterDropdownContent(

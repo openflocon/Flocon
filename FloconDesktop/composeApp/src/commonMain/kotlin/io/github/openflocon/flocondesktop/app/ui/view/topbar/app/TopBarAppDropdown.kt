@@ -5,8 +5,8 @@ package io.github.openflocon.flocondesktop.app.ui.view.topbar.app
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +19,9 @@ import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.TopBarSelector
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
@@ -37,11 +40,12 @@ internal fun TopBarAppDropdown(
             expanded = expanded,
             onExpandedChange = { expanded = false },
         ) {
-            val modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
+            val modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
 
             appsState.appSelected?.let {
                 TopBarSelector(
                     onClick = { expanded = true },
+                    modifier = Modifier.width(300.dp * FloconTheme.scale),
                 ) {
                     TopBarAppView(
                         deviceApp = it,
@@ -62,15 +66,13 @@ internal fun TopBarAppDropdown(
 
             when (appsState) {
                 AppsStateUiModel.Empty,
-                AppsStateUiModel.Loading -> {
-                    // no op
-                }
+                AppsStateUiModel.Loading -> Unit
 
                 is AppsStateUiModel.WithApps -> {
                     FloconExposedDropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.exposedDropdownSize(matchAnchorWidth = false)
+                        modifier = Modifier.exposedDropdownSize(matchAnchorWidth = true)
                     ) {
                         appsState.apps
                             .fastForEach { app ->
@@ -85,7 +87,6 @@ internal fun TopBarAppDropdown(
                                         expanded = false
                                     },
                                     modifier = Modifier
-                                        .fillMaxWidth()
                                         .clickable {
                                             onAppSelected(app)
                                             expanded = false

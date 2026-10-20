@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.theme.contentColorFor
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun FloconCodeBlock(
@@ -34,7 +33,13 @@ fun FloconCodeBlock(
                 color = containerColor,
                 shape = RoundedCornerShape(8.dp),
             )
-            .then(if (borderColor != null) Modifier.border(1.dp, borderColor, RoundedCornerShape(8.dp)) else Modifier)
+            .then(
+                if (borderColor != null) Modifier.border(
+                    1.dp,
+                    borderColor,
+                    RoundedCornerShape(8.dp)
+                ) else Modifier
+            )
             .padding(FloconTheme.spacing.small),
     ) {
         CompositionLocalProvider(LocalContentColor provides contentColor) {
@@ -48,18 +53,3 @@ fun FloconCodeBlock(
     }
 }
 
-@Preview
-@Composable
-private fun CodeBlockViewPreview() {
-    FloconTheme {
-        FloconCodeBlock(
-            code =
-            """
-                {
-                   "code" : "value"
-                }
-            """.trimIndent(),
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
-}

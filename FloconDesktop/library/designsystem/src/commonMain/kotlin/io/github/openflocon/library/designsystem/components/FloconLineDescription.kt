@@ -19,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun FloconLineDescription(
@@ -88,15 +87,3 @@ fun FloconLineDescription(
 }
 
 
-@Preview
-@Composable
-private fun DetailLineView_closed_Preview() {
-    FloconTheme {
-        FloconLineDescription(
-            label = "label",
-            value = "value",
-            labelWidth = 100.dp,
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
-}

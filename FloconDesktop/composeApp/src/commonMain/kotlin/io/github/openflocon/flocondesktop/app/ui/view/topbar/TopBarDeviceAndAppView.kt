@@ -31,7 +31,7 @@ internal fun TopBarDeviceAndAppView(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TopBarDeviceDropdown(

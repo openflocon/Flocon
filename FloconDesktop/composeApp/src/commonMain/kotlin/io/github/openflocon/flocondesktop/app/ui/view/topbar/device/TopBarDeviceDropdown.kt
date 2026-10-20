@@ -6,8 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.no_devices_found
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
@@ -49,18 +51,17 @@ internal fun TopBarDeviceDropdown(
                 onClick = {
                     expanded = true
                 },
-                modifier = modifier,
+                modifier = modifier.width(220.dp * FloconTheme.scale),
             ) {
                 TopBarDeviceView(
                     device = state.deviceSelected,
-                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                    modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                 )
             }
         }
         FloconExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.exposedDropdownSize(matchAnchorWidth = false),
+            onDismissRequest = { expanded = false }
         ) {
             if (state is DevicesStateUiModel.WithDevices) {
                 state.devices.forEach { device ->
@@ -74,7 +75,7 @@ internal fun TopBarDeviceDropdown(
                                 expanded = false
                             }
                             .then(
-                                if(isSelected) {
+                                if (isSelected) {
                                     Modifier.background(color = FloconTheme.colorPalette.onTertiary)
                                 } else {
                                     Modifier
@@ -100,7 +101,10 @@ private fun Empty() {
     ) {
         Text(
             text = stringResource(Res.string.no_devices_found),
-            modifier = Modifier.padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.medium),
+            modifier = Modifier.padding(
+                vertical = FloconTheme.spacing.extraSmall,
+                horizontal = FloconTheme.spacing.medium
+            ),
             style = FloconTheme.typography.bodyMedium,
             color = FloconTheme.colorPalette.onSurface,
         )

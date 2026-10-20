@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.outlined.Close
@@ -20,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,6 +29,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.skia.Image
 import kotlin.io.encoding.Base64
@@ -43,45 +42,55 @@ internal fun TopBarAppView(
     selected: Boolean = false,
     deleteClick: (() -> Unit)? = null,
 ) {
+    val colors = FloconTheme.colors
+
     Row(
-        modifier = modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        modifier = modifier.padding(
+            start = FloconTheme.spacing.small,
+            end = FloconTheme.spacing.extraSmall,
+            top = FloconTheme.spacing.small,
+            bottom = FloconTheme.spacing.small
+        ),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppImage(
             deviceApp = deviceApp,
             platform = platform,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier
+                .size(32.dp)
+                .clip(FloconTheme.shapes.medium),
         )
         Column {
             Text(
                 text = deviceApp.name,
-                style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                style = FloconTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = colors.ink,
             )
+            // the package is technical data
             Text(
                 text = deviceApp.packageName,
-                style = FloconTheme.typography.bodySmall.copy(
-                    fontSize = FloconTheme.typography.labelSmall.fontSize,
-                ),
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.8f),
+                style = floconMonoStyle(small = true),
+                color = colors.inkMuted,
+                maxLines = 1,
             )
         }
         if (!selected && deleteClick != null) {
             Spacer(modifier = Modifier.weight(1f))
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(FloconTheme.colorPalette.onPrimary.copy(alpha = 0.8f))
+                    .clip(FloconTheme.shapes.small)
+                    .background(colors.bg300)
                     .padding(FloconTheme.spacing.tiny)
                     .clickable(onClick = deleteClick),
                 contentAlignment = Alignment.Center,
             ) {
                 FloconIcon(
                     imageVector = Icons.Outlined.Close,
-                    tint = FloconTheme.colorPalette.primary,
+                    tint = colors.inkMuted,
                     modifier = Modifier.size(14.dp)
                 )
             }
@@ -113,25 +122,29 @@ private fun AppImage(
             modifier = modifier,
         )
     } else {
-        when (platform) {
-            DeviceItemUiModel.Platform.Desktop -> {
-                Image(
-                    imageVector = Icons.Default.Terminal,
-                    colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary),
-                    contentDescription = null,
-                    modifier = modifier,
-                )
-            }
+        // no icon: a soft square, like the device
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = modifier.background(FloconTheme.colors.catTableSoft),
+        ) {
+            when (platform) {
+                DeviceItemUiModel.Platform.Desktop -> {
+                    FloconIcon(
+                        imageVector = Icons.Default.Terminal,
+                        tint = FloconTheme.colors.catTable,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
 
-            DeviceItemUiModel.Platform.ios,
-            DeviceItemUiModel.Platform.Android,
-            DeviceItemUiModel.Platform.Unknown -> {
-                // Fallback : affiche une icône par défaut si iconEncoded est null ou invalide
-                Image(
-                    painter = painterResource(Res.drawable.smartphone),
-                    contentDescription = null,
-                    modifier = modifier,
-                )
+                DeviceItemUiModel.Platform.ios,
+                DeviceItemUiModel.Platform.Android,
+                DeviceItemUiModel.Platform.Unknown -> {
+                    Image(
+                        painter = painterResource(Res.drawable.smartphone),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
             }
         }
     }

@@ -28,7 +28,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.filters.Met
 import io.github.openflocon.flocondesktop.features.network.list.view.filters.TextFilterDropdownContent
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun NetworkItemHeaderView(
