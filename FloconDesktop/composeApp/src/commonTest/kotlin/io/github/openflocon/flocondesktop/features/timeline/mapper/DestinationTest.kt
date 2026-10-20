@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
+import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import kotlin.test.Test
@@ -38,8 +39,15 @@ class DestinationTest {
     }
 
     @Test
+    fun `a crash opens its detail panel`() {
+        assertEquals(
+            TimelineDestination.Panel(CrashReporterRoutes.Panel(crashId = "crash-1")),
+            row(TimelineSource.Crash, id = "crash-1").toDestination(),
+        )
+    }
+
+    @Test
     fun `the plugins without detail open their screen`() {
-        assertEquals(TimelineDestination.Screen(SubScreen.CrashReporter), row(TimelineSource.Crash).toDestination())
         assertEquals(TimelineDestination.Screen(SubScreen.Database), row(TimelineSource.Database).toDestination())
         assertEquals(TimelineDestination.Screen(SubScreen.Tables), row(TimelineSource.Table).toDestination())
         assertEquals(TimelineDestination.Screen(SubScreen.Deeplinks), row(TimelineSource.Deeplink).toDestination())

@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
+import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.navigation.FloconRoute
@@ -20,7 +21,7 @@ internal fun TimelineRowUiModel.toDestination(): TimelineDestination? = when (so
     TimelineSource.AppStart -> null
     TimelineSource.Network -> TimelineDestination.Panel(NetworkRoutes.Panel(requestId = id))
     TimelineSource.Analytics -> TimelineDestination.Panel(AnalyticsRoutes.Detail(id = id))
-    TimelineSource.Crash -> TimelineDestination.Screen(SubScreen.CrashReporter)
+    TimelineSource.Crash -> TimelineDestination.Panel(CrashReporterRoutes.Panel(crashId = id))
     TimelineSource.Database -> TimelineDestination.Screen(SubScreen.Database)
     TimelineSource.Table -> TimelineDestination.Screen(SubScreen.Tables)
     TimelineSource.Deeplink -> TimelineDestination.Screen(SubScreen.Deeplinks)

@@ -5,4 +5,5 @@ import org.koin.dsl.module
 
 internal val crashReporterModule = module {
     viewModelOf(::CrashReporterViewModel)
+    viewModelOf(::CrashReporterPanelViewModel)
 }
