@@ -23,6 +23,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.components.FloconMenuRepresentation
 import io.github.openflocon.library.designsystem.theme.FloconColorPaletteNew
+import io.github.openflocon.library.designsystem.theme.FloconColors
+import io.github.openflocon.library.designsystem.theme.FloconDarkColors
+import io.github.openflocon.library.designsystem.theme.FloconLightColors
+import io.github.openflocon.library.designsystem.theme.LocalFloconColors
 import io.github.openflocon.library.designsystem.theme.FloconShape
 import io.github.openflocon.library.designsystem.theme.FloconSpacing
 import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
@@ -40,6 +44,11 @@ object FloconTheme {
     val colorPalette: FloconColorPaletteNew
         @Composable @ReadOnlyComposable
         get() = LocalFloconColorPalette.current
+
+    // the tokens of the design system (categories, http statuses…), used by the screens redesigned with it
+    val colors: FloconColors
+        @Composable @ReadOnlyComposable
+        get() = LocalFloconColors.current
 
     val typography: Typography
         @Composable @ReadOnlyComposable
@@ -108,6 +117,7 @@ fun FloconTheme(
             LocalIndication provides ripple,
             LocalIsDarkTheme provides isDarkTheme,
             LocalFloconColorPalette provides colorPalette,
+            LocalFloconColors provides if (isDarkTheme) FloconDarkColors else FloconLightColors,
             LocalFloconSpacing provides remember(scale) { FloconSpacing().scaledBy(scale) },
             LocalTextSelectionColors provides selectionTextColor,
             LocalScrollbarStyle provides scrollbarStyle,
