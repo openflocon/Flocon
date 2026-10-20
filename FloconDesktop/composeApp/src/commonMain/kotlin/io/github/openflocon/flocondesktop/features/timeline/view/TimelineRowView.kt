@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,12 +42,14 @@ internal fun TimelineSource.label(): StringResource = when (this) {
 @Composable
 internal fun TimelineRowView(
     row: TimelineRowUiModel,
+    onClick: (TimelineRowUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colorPalette.primary)
+            .clickable { onClick(row) }
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),

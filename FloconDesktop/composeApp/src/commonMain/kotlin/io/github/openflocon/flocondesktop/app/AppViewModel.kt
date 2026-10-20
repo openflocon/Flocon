@@ -78,6 +78,7 @@ internal class AppViewModel(
     observeMenuPreferencesUseCase: ObserveMenuPreferencesUseCase,
     private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
     private val toggleCollapsedMenuSectionUseCase: ToggleCollapsedMenuSectionUseCase,
+    menuNavigator: MenuNavigator,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -131,6 +132,13 @@ internal class AppViewModel(
         )
 
     init {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            // a feature can ask to display another screen of the menu (ex: from the timeline)
+            menuNavigator.requests.collect { screen ->
+                onSelectMenu(AppAction.SelectMenu(screen))
+            }
+        }
+
         viewModelScope.launch(dispatcherProvider.viewModel) {
             // the selected item can be hidden when another app is selected: go to the first available one
             menuState.collect { menu ->

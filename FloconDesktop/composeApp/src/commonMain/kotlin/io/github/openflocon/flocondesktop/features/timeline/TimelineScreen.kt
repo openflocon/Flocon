@@ -26,7 +26,7 @@ import flocondesktop.composeapp.generated.resources.timeline_empty
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowView
 import io.github.openflocon.flocondesktop.features.timeline.view.label
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -39,7 +39,7 @@ fun TimelineScreen(
     modifier: Modifier = Modifier,
 ) {
     val viewModel: TimelineViewModel = koinViewModel()
-    val rows = viewModel.rows.collectAsLazyPagingItems()
+    val rows = viewModel.items.collectAsLazyPagingItems()
     val filterText = viewModel.filterText.collectAsStateWithLifecycle()
     val selectedSources by viewModel.selectedSources.collectAsStateWithLifecycle()
 
@@ -54,7 +54,7 @@ fun TimelineScreen(
 
 @Composable
 private fun TimelineScreen(
-    rows: LazyPagingItems<TimelineRowUiModel>,
+    rows: LazyPagingItems<TimelineItemUiModel>,
     filterText: State<String>,
     selectedSources: Set<TimelineSource>,
     onAction: (TimelineAction) -> Unit,
@@ -96,11 +96,23 @@ private fun TimelineScreen(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             items(count = rows.itemCount) { index ->
-                rows[index]?.let { row ->
-                    TimelineRowView(
-                        row = row,
+                when (val item = rows[index]) {
+                    is TimelineItemUiModel.Row -> TimelineRowView(
+                        row = item.row,
+                        onClick = { onAction(TimelineAction.Open(it)) },
                         modifier = Modifier.fillMaxWidth(),
                     )
+
+                    is TimelineItemUiModel.DayHeader -> Text(
+                        text = item.day,
+                        style = FloconTheme.typography.labelMedium,
+                        color = FloconTheme.colorPalette.onPrimary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, top = 12.dp, bottom = 4.dp),
+                    )
+
+                    null -> Unit
                 }
             }
         }
