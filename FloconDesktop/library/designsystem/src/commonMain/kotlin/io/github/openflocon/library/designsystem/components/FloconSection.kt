@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
@@ -77,8 +78,9 @@ fun FloconSection(
                 }
                 Text(
                     text = title,
-                    style = FloconTheme.typography.titleMedium,
-                    color = FloconTheme.colorPalette.onPrimary,
+                    style = FloconTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = FloconTheme.colors.ink,
                 )
             }
             actions?.invoke(this)

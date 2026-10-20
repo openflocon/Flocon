@@ -50,10 +50,10 @@ fun FloconDropdownMenu(
         DropdownMenuPanel(
             expanded = expanded,
             onDismissRequest = onDismissRequest,
-            shape = FloconTheme.shapes.medium,
-            backgroundColor = FloconTheme.colorPalette.primary,
-            contentColor = FloconTheme.colorPalette.onPrimary,
-            contentPadding = PaddingValues(FloconTheme.spacing.tiny),
+            shape = FloconTheme.shapes.large,
+            backgroundColor = FloconTheme.colors.bg100,
+            contentColor = FloconTheme.colors.ink,
+            contentPadding = PaddingValues(FloconTheme.spacing.compact),
             anchor = anchor,
             modifier = Modifier
                 .padding(top = FloconTheme.spacing.small)

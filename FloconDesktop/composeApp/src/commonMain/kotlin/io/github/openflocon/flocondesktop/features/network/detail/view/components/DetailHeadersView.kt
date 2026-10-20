@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -45,6 +46,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconSmallIconButton
+import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -59,12 +61,13 @@ fun DetailHeadersView(
 ) {
     Column(
         modifier = modifier
+            .background(FloconTheme.colors.bg200, FloconTheme.shapes.medium)
             .border(
                 width = 1.dp,
-                color = FloconTheme.colorPalette.secondary,
+                color = FloconTheme.colors.line,
                 shape = FloconTheme.shapes.medium
             )
-            .padding(FloconTheme.spacing.small)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall)
     ) {
         headers.fastForEachIndexed { index, item ->
             HeaderItemRow(
@@ -77,7 +80,7 @@ fun DetailHeadersView(
             if (index != headers.lastIndex) {
                 FloconHorizontalDivider(
                     modifier = Modifier.fillMaxWidth(),
-                    color = FloconTheme.colorPalette.secondary
+                    color = FloconTheme.colors.line
                 )
             }
         }
@@ -120,8 +123,9 @@ private fun HeaderItemRow(
                 SelectionContainer {
                     Text(
                         text = item.name,
-                        style = FloconTheme.typography.titleSmall,
-                        color = FloconTheme.colorPalette.onPrimary,
+                        style = floconMonoStyle(),
+                        fontWeight = FontWeight.Medium,
+                        color = FloconTheme.colors.ink,
                     )
                 }
                 if (isTitleHovered && onCopyValue != null) {
@@ -190,8 +194,8 @@ private fun HeaderValueText(
             SelectionContainer {
                 Text(
                     text = value,
-                    style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colorPalette.onPrimary,
+                    style = floconMonoStyle(),
+                    color = FloconTheme.colors.inkMuted,
                     maxLines = 10,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -201,8 +205,8 @@ private fun HeaderValueText(
         SelectionContainer(modifier = modifier) {
             Text(
                 text = value,
-                style = FloconTheme.typography.bodyMedium,
-                color = FloconTheme.colorPalette.onPrimary,
+                style = floconMonoStyle(),
+                color = FloconTheme.colors.inkMuted,
                 maxLines = 10,
                 overflow = TextOverflow.Ellipsis,
             )

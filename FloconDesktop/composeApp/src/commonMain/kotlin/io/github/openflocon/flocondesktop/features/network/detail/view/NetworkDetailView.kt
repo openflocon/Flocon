@@ -48,6 +48,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.foundation.border
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.PlatformContext
@@ -76,6 +78,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconLineDescription
 import io.github.openflocon.library.designsystem.components.FloconSection
+import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
 import io.github.openflocon.library.designsystem.components.FloconTab
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.TabType
@@ -182,7 +185,7 @@ fun NetworkDetailContent(
 
     Box(
         modifier = modifier
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.bg100)
     ) {
         // Hidden off-screen full log view for Save full log as Image
         Box(
@@ -239,7 +242,8 @@ fun NetworkDetailContent(
                 Text(
                     text = "Network Details",
                     style = FloconTheme.typography.titleMedium,
-                    color = FloconTheme.colorPalette.onPrimary
+                    fontWeight = FontWeight.SemiBold,
+                    color = FloconTheme.colors.ink
                 )
 
                 FloconDropdownMenu(
@@ -298,10 +302,17 @@ fun NetworkDetailContent(
             }
 
 
-            // Tab bar
-            Row(
-                modifier = Modifier
+            Box(
+                Modifier
                     .fillMaxWidth()
+                    .padding(vertical = FloconTheme.spacing.extraSmall)
+                    .height(1.dp)
+                    .background(FloconTheme.colors.line)
+            )
+
+            // Tab bar
+            FloconSegmentedRow(
+                modifier = Modifier
                     .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall)
             ) {
                 FloconTab(
@@ -368,11 +379,9 @@ private fun SummaryCard(
 ) {
     Column(
         modifier = modifier
-            .background(
-                color = FloconTheme.colorPalette.secondary,
-                shape = RoundedCornerShape(12.dp),
-            )
-            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+            .background(FloconTheme.colors.bg200, FloconTheme.shapes.medium)
+            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
     ) {
         FloconLineDescription(
             modifier = Modifier
@@ -682,7 +691,9 @@ private fun Request(
                 } else {
                     FloconCodeBlock(
                         code = state.requestBody,
-                        containerColor = FloconTheme.colorPalette.secondary,
+                        containerColor = FloconTheme.colors.bg000,
+                        contentColor = FloconTheme.colors.inkMuted,
+                        borderColor = FloconTheme.colors.line,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(FloconTheme.spacing.medium)
@@ -742,7 +753,9 @@ private fun Response(
                 ) {
                     FloconCodeBlock(
                         code = response.issue,
-                        containerColor = FloconTheme.colorPalette.secondary,
+                        containerColor = FloconTheme.colors.bg000,
+                        contentColor = FloconTheme.colors.inkMuted,
+                        borderColor = FloconTheme.colors.line,
                         modifier = Modifier
                             .fillMaxWidth()
                             .drawWithContent {
@@ -948,7 +961,9 @@ private fun Response(
                             } else {
                                 FloconCodeBlock(
                                     code = response.body,
-                                    containerColor = FloconTheme.colorPalette.secondary,
+                                    containerColor = FloconTheme.colors.bg000,
+                        contentColor = FloconTheme.colors.inkMuted,
+                        borderColor = FloconTheme.colors.line,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(FloconTheme.spacing.medium)

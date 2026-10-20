@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 
@@ -57,8 +58,9 @@ fun HeaderLabelItem(
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
     val shape = RoundedCornerShape(4.dp)
-    val typo = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
-    val textColor = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f)
+    // small capitals, like the titles of the groups of the design system
+    val typo = FloconTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em)
+    val textColor = FloconTheme.colors.inkFaint
 
     Row(
         modifier = modifier
@@ -74,11 +76,11 @@ fun HeaderLabelItem(
                 .weight(1f)
                 .fillMaxHeight()
                 .clip(shape)
-                .background(if (filtered) FloconTheme.colorPalette.accent.copy(alpha = 0.3f) else Color.Transparent)
+                .background(if (filtered) FloconTheme.colors.accentSoft else Color.Transparent)
                 .clickable(onClick = clickOnFilter),
         ) {
             Text(
-                text = text,
+                text = text.uppercase(),
                 style = typo,
                 textAlign = TextAlign.Center,
                 color = textColor,

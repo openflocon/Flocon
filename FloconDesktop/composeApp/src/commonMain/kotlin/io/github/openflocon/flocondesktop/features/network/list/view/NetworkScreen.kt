@@ -95,7 +95,9 @@ import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
 import io.github.openflocon.library.designsystem.components.FloconFeature
-import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
@@ -203,6 +205,7 @@ fun NetworkScreen(
                         placeholderText = stringResource(Res.string.filter),
                         onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
                         modifier = Modifier.fillMaxWidth(.7f),
+                        containerColor = FloconTheme.colors.bg200,
                     )
                 },
                 actions = {
@@ -380,14 +383,14 @@ fun NetworkScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary)
+                    .background(FloconTheme.colors.bg100, FloconTheme.shapes.large)
+                    .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large)
+                    .clip(FloconTheme.shapes.large)
             ) {
                 NetworkItemHeaderView(
                     columnWidths = columnWidths,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(FloconTheme.colorPalette.primary),
+                        .fillMaxWidth(),
                     clickOnSort = { type, sort ->
                         onAction(NetworkAction.HeaderAction.ClickOnSort(type, sort))
                     },
@@ -396,7 +399,12 @@ fun NetworkScreen(
                     },
                     state = uiState.headerState,
                 )
-                FloconHorizontalDivider()
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(FloconTheme.colors.line)
+                )
                 Row(
                     Modifier.fillMaxSize()
                 ) {

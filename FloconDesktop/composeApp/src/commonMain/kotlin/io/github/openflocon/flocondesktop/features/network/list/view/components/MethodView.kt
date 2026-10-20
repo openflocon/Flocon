@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconOutlinedPill
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -47,12 +48,27 @@ val patchMethodText = Color(0xFF6f42c1)
 val websocketMethodBackground = Color(0xFF17A2B8).copy(alpha = 0.3f) // Muted cyan for WEBSOCKET
 val websocketMethodText = Color(0xFF17A2B8)
 
-private val graphQlQueryMethodBackground =
-    Color(0XAAE235A9).copy(alpha = 0.8f) // Muted gray for OTHER
-private val graphQlQueryMethodText = Color(0XAAFFFFFF)
-
 val grpcMethodBackground = Color(0xff71CCCB)
 val grpcMethodText = Color(0xff244B5A)
+
+// the color of the method in the design system, null: neutral
+@Composable
+private fun NetworkMethodUi.color(): Color? {
+    val colors = FloconTheme.colors
+    return when (this) {
+        is NetworkMethodUi.Http.GET -> colors.catNetwork
+        is NetworkMethodUi.Http.POST -> colors.catAnalytics
+        is NetworkMethodUi.Http.PUT -> colors.accent
+        is NetworkMethodUi.Http.DELETE -> colors.catCrash
+        is NetworkMethodUi.Http.PATCH -> colors.catDeeplink
+        is NetworkMethodUi.GraphQl.QUERY,
+        is NetworkMethodUi.GraphQl.MUTATION -> colors.catDeeplink
+
+        is NetworkMethodUi.Grpc -> colors.catTable
+        is NetworkMethodUi.WebSocket -> colors.catDatabase
+        is NetworkMethodUi.OTHER -> null
+    }
+}
 
 @Composable
 fun MethodView(
@@ -61,28 +77,23 @@ fun MethodView(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    val (backgroundColor, textColor) =
-        when (method) {
-            is NetworkMethodUi.Http.DELETE -> deleteMethodBackground to deleteMethodText
-            is NetworkMethodUi.Http.GET -> getMethodBackground to getMethodText
-            is NetworkMethodUi.OTHER -> otherMethodBackground to otherMethodText
-            is NetworkMethodUi.Http.POST -> postMethodBackground to postMethodText
-            is NetworkMethodUi.Http.PUT -> putMethodBackground to putMethodText
-            is NetworkMethodUi.Http.PATCH -> patchMethodBackground to patchMethodText
-            is NetworkMethodUi.GraphQl.QUERY -> graphQlQueryMethodBackground to graphQlQueryMethodText
-            is NetworkMethodUi.GraphQl.MUTATION -> graphQlQueryMethodBackground to graphQlQueryMethodText
-            is NetworkMethodUi.Grpc -> grpcMethodBackground to grpcMethodText
-            is NetworkMethodUi.WebSocket -> websocketMethodBackground to websocketMethodText
-        }
+    val color = method.color()
+    val icon = method.icon
 
-    NetworkTag(
+    FloconOutlinedPill(
         text = method.text,
-        backgroundColor = backgroundColor,
-        textColor = textColor,
-        textSize = textSize,
-        modifier = modifier,
-        icon = method.icon,
-        onClick = onClick,
+        color = color,
+        modifier = modifier.then(if (onClick != null) Modifier.clip(FloconTheme.shapes.small).clickable(onClick = onClick) else Modifier),
+        leading = icon?.let {
+            {
+                Image(
+                    painter = painterResource(it),
+                    contentDescription = null,
+                    modifier = Modifier.size(10.dp),
+                    colorFilter = ColorFilter.tint(color ?: FloconTheme.colors.inkMuted),
+                )
+            }
+        },
     )
 }
 

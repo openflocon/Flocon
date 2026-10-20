@@ -15,6 +15,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -45,7 +46,9 @@ fun FloconLineDescription(
             ) {
                 Text(
                     text = label,
-                    style = FloconTheme.typography.titleSmall,
+                    style = FloconTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = FloconTheme.colors.inkFaint,
                 )
             }
             Row(
@@ -75,9 +78,10 @@ fun FloconLineDescription(
         modifier = modifier,
     ) {
         SelectionContainer {
+            // the values are technical data: urls, times, sizes
             Text(
                 text = value,
-                style = FloconTheme.typography.bodyMedium,
+                style = floconMonoStyle(),
             )
         }
     }

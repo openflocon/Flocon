@@ -1,5 +1,13 @@
 package io.github.openflocon.flocondesktop.features.network.badquality.edition.view
 
+import io.github.openflocon.library.designsystem.components.FloconActionButton
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -54,8 +62,14 @@ fun BadQualityErrorsListView(
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
             modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.medium),
         ) {
-            Text("Errors", style = FloconTheme.typography.titleMedium)
-            FloconButton(
+            Text(
+                "Errors",
+                style = FloconTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = FloconTheme.colors.inkMuted,
+                modifier = Modifier.weight(1f),
+            )
+            FloconActionButton(
                 onClick = {
                     onErrorslicked(
                         BadQualityConfigUiModel.Error(
@@ -70,11 +84,12 @@ fun BadQualityErrorsListView(
                     )
                 },
             ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
                 Text(
                     text = "Add http error",
                 )
             }
-            FloconButton(
+            FloconActionButton(
                 onClick = {
                     onErrorslicked(
                         BadQualityConfigUiModel.Error(
@@ -87,8 +102,36 @@ fun BadQualityErrorsListView(
                     )
                 },
             ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
                 Text(
                     text = "Add Exception",
+                )
+            }
+        }
+
+        if (errors.isEmpty()) {
+            val dash = FloconTheme.colors.lineStrong
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = FloconTheme.spacing.medium)
+                    .padding(top = FloconTheme.spacing.medium)
+                    .height(160.dp)
+                    .drawBehind {
+                        drawRoundRect(
+                            color = dash,
+                            cornerRadius = CornerRadius(8.dp.toPx()),
+                            style = Stroke(width = 1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 4.dp.toPx()))),
+                        )
+                    }
+                    .padding(FloconTheme.spacing.medium),
+            ) {
+                Text(
+                    text = "No error yet. Add an HTTP error or an exception to return when the error probability hits.",
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colors.inkFaint,
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -167,7 +210,7 @@ private fun BadQualityErrorItemView(
         Box(
             modifier = Modifier.size(24.dp)
                 .clip(RoundedCornerShape(2.dp))
-                .background(FloconTheme.colorPalette.onSurface),
+                .background(FloconTheme.colors.bg300),
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -181,7 +224,7 @@ private fun BadQualityErrorItemView(
                 style = FloconTheme.typography.bodySmall.copy(
                     fontWeight = FontWeight.Bold,
                 ),
-                color = FloconTheme.colorPalette.surface,
+                color = FloconTheme.colors.ink,
             )
         }
         when (val t = error.type) {
@@ -192,19 +235,19 @@ private fun BadQualityErrorItemView(
                     style = FloconTheme.typography.bodySmall.copy(
                         fontWeight = FontWeight.Bold,
                     ),
-                    color = FloconTheme.colorPalette.error,
+                    color = FloconTheme.colors.statusWarning,
                 )
                 Text(
                     t.body.take(20),
                     maxLines = 1,
                     style = FloconTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                     ),
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .weight(1f)
                         .background(
-                            color = FloconTheme.colorPalette.primary,
+                            color = FloconTheme.colors.bg200,
                             shape = RoundedCornerShape(4.dp),
                         )
                         .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.extraSmall),
@@ -218,17 +261,17 @@ private fun BadQualityErrorItemView(
                         color = FloconTheme.colorPalette.onSurface,
                         fontWeight = FontWeight.Bold,
                     ),
-                    color = FloconTheme.colorPalette.exceptions
+                    color = FloconTheme.colors.statusError
                 )
                 Text(
                     text = t.classPath,
                     style = FloconTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                     ),
                     modifier = Modifier
                         .weight(1f)
                         .background(
-                            color = FloconTheme.colorPalette.primary,
+                            color = FloconTheme.colors.bg200,
                             shape = RoundedCornerShape(4.dp),
                         )
                         .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.extraSmall),

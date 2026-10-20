@@ -41,7 +41,7 @@ fun NetworkItemHeaderView(
 ) {
     Row(
         modifier = modifier
-            .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.compact)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact)
             .padding(contentPadding),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.Bottom,

@@ -4,8 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,9 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
@@ -48,6 +54,7 @@ import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -64,11 +71,15 @@ fun NetworkItemView(
     modifier: Modifier = Modifier,
     columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
 ) {
+    val colors = FloconTheme.colors
     val bodySmall = FloconTheme.typography.bodySmall
+    val mono = floconMonoStyle()
+    val interactionSource = remember { MutableInteractionSource() }
+    val hovered by interactionSource.collectIsHoveredAsState()
 
     val errorColor = when (state.status.status) {
-        NetworkStatusUi.Status.ERROR -> FloconTheme.colorPalette.error
-        NetworkStatusUi.Status.EXCEPTION -> FloconTheme.colorPalette.exceptions
+        NetworkStatusUi.Status.ERROR -> colors.statusError
+        NetworkStatusUi.Status.EXCEPTION -> colors.catCrash
         else -> null
     }
 
@@ -80,35 +91,39 @@ fun NetworkItemView(
     ) {
         Row(
             modifier = modifier
-                .clip(shape = RoundedCornerShape(8.dp))
                 .then(
                     if (state.isFromOldAppInstance) {
                         Modifier.alpha(0.4f)
                     } else Modifier
                 )
-                .then(
-                    if (state.isReplayed) {
-                        Modifier.background(replayColor)
-                    } else if (state.isMocked) {
-                        Modifier.background(FloconTheme.colorPalette.accent)
-                    } else Modifier,
+                .background(
+                    when {
+                        selected || hovered -> colors.bg300
+                        state.isReplayed -> colors.catNetworkSoft
+                        state.isMocked -> colors.accentSoft
+                        else -> Color.Transparent
+                    }
                 )
+                .hoverable(interactionSource)
                 .combinedClickable(
+                    interactionSource = interactionSource,
+                    indication = null,
                     onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) },
                     onDoubleClick = { onAction(NetworkAction.DoubleClicked(state)) }
                 )
-                .then(
+                .drawBehind {
+                    // the separator of the rows, and the bar of the selected one
+                    drawLine(
+                        color = colors.line,
+                        start = Offset(0f, size.height - 0.5.dp.toPx()),
+                        end = Offset(size.width, size.height - 0.5.dp.toPx()),
+                        strokeWidth = 1.dp.toPx(),
+                    )
                     if (selected) {
-                        Modifier.border(
-                            width = 1.dp,
-                            color = FloconTheme.colorPalette.accent,
-                            shape = FloconTheme.shapes.medium
-                        )
-                    } else {
-                        Modifier
+                        drawRect(color = colors.accent, size = Size(2.dp.toPx(), size.height))
                     }
-                )
-                .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.extraSmall),
+                }
+                .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
             // Inner padding for content
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
@@ -127,8 +142,9 @@ fun NetworkItemView(
             ) {
                 Text(
                     state.dateFormatted,
-                    style = bodySmall,
-                    color = errorColor ?: FloconTheme.colorPalette.onPrimary
+                    style = mono,
+                    fontWeight = FontWeight.Medium,
+                    color = errorColor ?: colors.ink
                 )
             }
 
@@ -148,7 +164,7 @@ fun NetworkItemView(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = bodySmall,
-                    color = errorColor ?: FloconTheme.colorPalette.onPrimary,
+                    color = errorColor ?: colors.inkMuted,
                     modifier = Modifier
                         .weight(columnWidths.domainWeight)
                         .padding(horizontal = FloconTheme.spacing.extraSmall),
@@ -156,10 +172,6 @@ fun NetworkItemView(
                 Row(
                     modifier = Modifier
                         .weight(2f)
-                        .background(
-                            color = FloconTheme.colorPalette.secondary,
-                            shape = RoundedCornerShape(4.dp),
-                        )
                         .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -183,8 +195,8 @@ fun NetworkItemView(
                         text = state.type.query,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        style = bodySmall,
-                        color = FloconTheme.colorPalette.onSecondary,
+                        style = bodySmall.copy(fontWeight = FontWeight.Medium),
+                        color = errorColor ?: colors.ink,
                     )
                 }
             }
@@ -202,8 +214,8 @@ fun NetworkItemView(
             ) {
                 Text(
                     state.timeFormatted ?: "",
-                    style = bodySmall,
-                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f),
+                    style = floconMonoStyle(small = true),
+                    color = colors.inkFaint,
                 )
             }
         }
