@@ -113,6 +113,7 @@ internal fun buildMenu() = MenuState(
             items = persistentListOf(
                 item(SubScreen.Dashboard),
                 item(SubScreen.Analytics),
+                item(SubScreen.FeatureFlags),
                 item(SubScreen.Tables),
                 item(SubScreen.CrashReporter),
             ),

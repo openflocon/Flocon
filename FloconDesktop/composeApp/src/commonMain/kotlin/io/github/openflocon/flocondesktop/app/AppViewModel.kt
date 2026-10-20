@@ -26,6 +26,7 @@ import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
+import io.github.openflocon.flocondesktop.features.featureflags.FeatureFlagsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.DashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
@@ -159,6 +160,7 @@ internal class AppViewModel(
 
         val route = when (action.menu) {
             SubScreen.Analytics -> AnalyticsRoutes.Main
+            SubScreen.FeatureFlags -> FeatureFlagsRoutes.Main
             SubScreen.Dashboard -> DashboardRoutes.Main
             SubScreen.Database -> DatabaseRoutes.Main
             SubScreen.Deeplinks -> DeeplinkRoutes.Main

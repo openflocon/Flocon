@@ -28,6 +28,7 @@ import io.github.openflocon.flocon.myapplication.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.database.initializeInMemoryDatabases
 import io.github.openflocon.flocon.myapplication.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.deeplinks.initializeDeeplinks
+import io.github.openflocon.flocon.myapplication.featureflags.initializeFeatureFlags
 import io.github.openflocon.flocon.myapplication.graphql.GraphQlTester
 import io.github.openflocon.flocon.myapplication.grpc.GrpcController
 import io.github.openflocon.flocon.myapplication.images.initializeImages
@@ -94,6 +95,7 @@ class MainActivity : ComponentActivity() {
         initializeImages(context = this, okHttpClient = okHttpClient)
         initializeDashboard(this)
         initializeTable(this)
+        initializeFeatureFlags()
 
         setContent {
             MyApplicationTheme {
