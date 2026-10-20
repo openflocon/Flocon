@@ -13,7 +13,7 @@ import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCas
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
 import io.github.openflocon.flocondesktop.app.MenuNavigator
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
-import io.github.openflocon.flocondesktop.features.timeline.mapper.dayHeaderBetween
+import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -75,11 +75,14 @@ internal class TimelineViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineSummaryUiModel.Empty)
 
     val items: Flow<PagingData<TimelineItemUiModel>> = filter
-        .flatMapLatest { filter -> observeTimelineUseCase(filter) }
-        .map { pagingData ->
-            pagingData
-                .map<_, TimelineItemUiModel> { TimelineItemUiModel.Row(it.toUi()) }
-                .insertSeparators(generator = ::dayHeaderBetween)
+        .flatMapLatest { filter ->
+            // the "App start" filter shows or hides the sessions
+            val showSessions = TimelineSource.AppStart in filter.sources
+            observeTimelineUseCase(filter).map { pagingData ->
+                pagingData
+                    .map<_, TimelineItemUiModel> { TimelineItemUiModel.Row(it.toUi()) }
+                    .insertSeparators { before, after -> separatorBetween(before, after, showSessions) }
+            }
         }
         .flowOn(dispatcherProvider.viewModel)
         .cachedIn(viewModelScope)

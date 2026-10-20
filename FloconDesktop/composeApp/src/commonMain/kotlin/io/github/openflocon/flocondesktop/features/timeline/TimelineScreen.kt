@@ -31,6 +31,7 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeaderView
 import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowView
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -142,6 +143,11 @@ internal fun TimelineContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = FloconTheme.spacing.medium, top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.extraSmall),
+                    )
+
+                    is TimelineItemUiModel.SessionHeader -> SessionHeaderView(
+                        header = item,
+                        eventCount = summary.sessionEventCounts[item.sessionStart],
                     )
 
                     null -> Unit

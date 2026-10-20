@@ -13,6 +13,7 @@ internal data class TimelineRowUiModel(
     val title: String,
     val subtitle: String?,
     val network: TimelineNetworkUiModel? = null, // network calls only
+    val sessionStart: Long? = null, // the start of the session of the event, null if none is known
 ) {
     // the ids of two sources can be the same
     val key: String get() = "${source.name}:$id"
@@ -37,6 +38,14 @@ internal sealed interface TimelineItemUiModel {
 
     // displayed above the first event of each day
     data class DayHeader(val day: String, override val key: String) : TimelineItemUiModel
+
+    // displayed above the events of a session: the app was started
+    data class SessionHeader(
+        val sessionStart: Long,
+        val day: String,
+        val time: String,
+        override val key: String,
+    ) : TimelineItemUiModel
 }
 
 internal sealed interface TimelineAction {

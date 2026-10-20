@@ -45,6 +45,10 @@
     <string name="timeline_source_deeplink">Deeplink</string>
     <string name="timeline_source_app_start">App start</string>
     <string name="timeline_app_started">App started</string>
+    <plurals name="timeline_session_events">
+        <item quantity="one">%1$d event</item>
+        <item quantity="other">%1$d events</item>
+    </plurals>
     <string name="menu_item_dashboard">Dashboard</string>
     <string name="menu_item_database">Database</string>
     <string name="menu_item_adbCommander">ADB Commander</string>
