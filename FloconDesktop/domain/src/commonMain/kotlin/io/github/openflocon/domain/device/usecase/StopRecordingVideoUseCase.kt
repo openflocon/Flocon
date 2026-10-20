@@ -6,16 +6,23 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.device.models.RecordingDomainModel
+import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import java.io.File
-import java.nio.file.Paths
 
 class StopRecordingVideoUseCase(
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val executeAdbCommandUseCase: ExecuteAdbCommandUseCase,
     private val getFloconDocumentPathUseCase: GetFloconDocumentPathUseCase,
+    private val iosSimulatorRepository: IosSimulatorRepository,
 ) {
 
-    suspend operator fun invoke(recording: RecordingDomainModel): Either<Throwable, String> {
+    suspend operator fun invoke(recording: RecordingDomainModel): Either<Throwable, String> = when (recording) {
+        // the simulator records on this computer, it does not depend on the selected device
+        is RecordingDomainModel.IosSimulator -> iosSimulatorRepository.stopRecording(filePath = recording.filePath)
+        is RecordingDomainModel.Android -> stopAndroidRecording(recording)
+    }
+
+    private suspend fun stopAndroidRecording(recording: RecordingDomainModel.Android): Either<Throwable, String> {
         val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("No device selected"))
 
         val fileName = "record_${current.packageName}_${System.currentTimeMillis()}.mp4"

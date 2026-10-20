@@ -8,6 +8,7 @@ import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.device.usecase.HandleDeviceAndAppUseCase
 import io.github.openflocon.domain.device.usecase.HandleNewAppUseCase
 import io.github.openflocon.domain.device.usecase.HandleNewDeviceUseCase
+import io.github.openflocon.domain.device.usecase.IsCurrentDeviceIosUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
@@ -39,6 +40,7 @@ internal val deviceModule = module {
     factoryOf(::SelectDeviceAppUseCase)
     factoryOf(::SelectDeviceUseCase)
     factoryOf(::HandleNewAppUseCase)
+    factoryOf(::IsCurrentDeviceIosUseCase)
     factoryOf(::TakeScreenshotUseCase)
     factoryOf(::StartRecordingVideoUseCase)
     factoryOf(::StopRecordingVideoUseCase)
