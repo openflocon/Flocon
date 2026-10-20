@@ -18,6 +18,19 @@ buildConfig {
     packageName("io.github.openflocon.flocondesktop")
 
     buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: "1.0.0")
+
+    // Telemetry (see docs/telemetry.md). Only official builds get a key, from the POSTHOG_API_KEY GitHub secret.
+    // Without it (local builds, forks) the app still compiles and telemetry is a no-op.
+    buildConfigField(
+        "POSTHOG_API_KEY",
+        System.getenv("POSTHOG_API_KEY")?.takeIf { it.isNotBlank() }
+            ?: (findProperty("flocon.posthogApiKey") as String?)
+            ?: "",
+    )
+    buildConfigField(
+        "POSTHOG_HOST",
+        System.getenv("POSTHOG_HOST")?.takeIf { it.isNotBlank() } ?: "https://eu.i.posthog.com",
+    )
 }
 
 kotlin {
@@ -76,6 +89,8 @@ kotlin {
             implementation(projects.navigation)
 
             implementation(libs.kermit)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs)
             implementation(libs.filekit.dialogs.compose)

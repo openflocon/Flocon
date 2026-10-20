@@ -19,6 +19,7 @@ import io.github.openflocon.flocondesktop.app.ui.releasenotes.ReleaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.app.ui.model.id
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.buildMenu
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.common.log.LogManager
@@ -37,6 +38,8 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPrefe
 import io.github.openflocon.flocondesktop.features.table.TableRoutes
 import io.github.openflocon.flocondesktop.messages.ui.McpServerDelegate
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
+import io.github.openflocon.flocondesktop.telemetry.TelemetryEvents
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,6 +67,7 @@ internal class AppViewModel(
     private val logManager: LogManager,
     private val settingsRepository: SettingsRepository,
     private val getFloconDocumentPathUseCase: GetFloconDocumentPathUseCase,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -101,6 +105,8 @@ internal class AppViewModel(
         )
 
     init {
+        telemetryManager.track(TelemetryEvents.APP_STARTED)
+
         viewModelScope.launch(dispatcherProvider.viewModel) {
             if (shouldShowReleaseNotesUseCase(current = BuildConfig.APP_VERSION)) {
                 withContext(dispatcherProvider.ui) {
@@ -153,6 +159,9 @@ internal class AppViewModel(
     }
 
     private fun onSelectMenu(action: AppAction.SelectMenu) {
+        // Only the menu name, never anything coming from the inspected app.
+        telemetryManager.track(TelemetryEvents.SCREEN_VIEWED, mapOf("screen" to action.menu.id))
+
         if (action.menu != SubScreen.Settings) {
             contentState.update { it.copy(current = action.menu) }
         }

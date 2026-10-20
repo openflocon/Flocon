@@ -36,6 +36,7 @@ import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.ModeNight
 import androidx.compose.material.icons.outlined.NewReleases
+import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material.icons.outlined.Warning
@@ -53,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -68,11 +70,26 @@ import flocondesktop.composeapp.generated.resources.settings_theme
 import flocondesktop.composeapp.generated.resources.settings_theme_dark
 import flocondesktop.composeapp.generated.resources.settings_theme_light
 import flocondesktop.composeapp.generated.resources.settings_theme_system
+import flocondesktop.composeapp.generated.resources.telemetry_learn_more
+import flocondesktop.composeapp.generated.resources.telemetry_level_anonymous
+import flocondesktop.composeapp.generated.resources.telemetry_level_anonymous_description
+import flocondesktop.composeapp.generated.resources.telemetry_level_disabled
+import flocondesktop.composeapp.generated.resources.telemetry_level_disabled_description
+import flocondesktop.composeapp.generated.resources.telemetry_level_full
+import flocondesktop.composeapp.generated.resources.telemetry_level_full_description
+import flocondesktop.composeapp.generated.resources.telemetry_settings_description
+import flocondesktop.composeapp.generated.resources.telemetry_title
+import flocondesktop.composeapp.generated.resources.telemetry_unavailable_build
+import flocondesktop.composeapp.generated.resources.telemetry_unavailable_do_not_track
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.AllReleaseNotesPane
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
+import io.github.openflocon.flocondesktop.telemetry.TELEMETRY_DOC_URL
+import io.github.openflocon.flocondesktop.telemetry.TelemetryLevel
+import io.github.openflocon.flocondesktop.telemetry.TelemetryState
+import io.github.openflocon.flocondesktop.telemetry.TelemetryViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
@@ -95,6 +112,7 @@ private enum class SettingsTab(val label: String, val icon: ImageVector) {
     Adb("Adb", Icons.Outlined.Cable),
     Appearance("Appearance", Icons.Outlined.TextFields),
     Logs("Logs", Icons.Outlined.List),
+    Privacy("Privacy", Icons.Outlined.PrivacyTip),
     ReleaseNotes("Release notes", Icons.Outlined.NewReleases),
     About("About", Icons.Outlined.Info),
 }
@@ -214,6 +232,8 @@ private fun SettingsScreen(
                     logs = uiState.logs,
                     onClearLogs = onClearLogs,
                 )
+
+                SettingsTab.Privacy -> PrivacyPane()
 
                 SettingsTab.ReleaseNotes -> AllReleaseNotesPane()
 
@@ -645,6 +665,118 @@ private fun AppearancePane(
                     fontWeight = FontWeight.Bold,
                     color = FloconTheme.colorPalette.onPrimary,
                     modifier = Modifier.width(48.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrivacyPane(modifier: Modifier = Modifier) {
+    val viewModel: TelemetryViewModel = koinViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    PrivacyPane(
+        state = state,
+        onLevelSelected = viewModel::setLevel,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun PrivacyPane(
+    state: TelemetryState,
+    onLevelSelected: (TelemetryLevel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val uriHandler = LocalUriHandler.current
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
+        SettingsCard(
+            title = stringResource(Res.string.telemetry_title),
+            icon = Icons.Outlined.PrivacyTip,
+            description = stringResource(Res.string.telemetry_settings_description),
+            headerActions = {
+                SettingsButton(
+                    text = stringResource(Res.string.telemetry_learn_more),
+                    onClick = { uriHandler.openUri(TELEMETRY_DOC_URL) },
+                )
+            },
+        ) {
+            if (!state.isAvailable) {
+                Text(
+                    text = stringResource(
+                        if (state.doNotTrack) {
+                            Res.string.telemetry_unavailable_do_not_track
+                        } else {
+                            Res.string.telemetry_unavailable_build
+                        }
+                    ),
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.8f),
+                )
+            } else {
+                TelemetryLevel.entries.forEach { level ->
+                    TelemetryLevelOption(
+                        level = level,
+                        selected = state.level == level,
+                        onClick = { onLevelSelected(level) },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TelemetryLevelOption(
+    level: TelemetryLevel,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val (title, description) = when (level) {
+        TelemetryLevel.Full -> Res.string.telemetry_level_full to Res.string.telemetry_level_full_description
+        TelemetryLevel.Anonymous -> Res.string.telemetry_level_anonymous to Res.string.telemetry_level_anonymous_description
+        TelemetryLevel.Disabled -> Res.string.telemetry_level_disabled to Res.string.telemetry_level_disabled_description
+    }
+
+    val bgColor = if (selected) FloconTheme.colorPalette.accent else FloconTheme.colorPalette.secondary.copy(alpha = 0.5f)
+    val contentColor = if (selected) FloconTheme.colorPalette.onAccent else FloconTheme.colorPalette.onPrimary
+
+    FloconSurface(
+        onClick = onClick,
+        color = bgColor,
+        contentColor = contentColor,
+        shape = FloconTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(title),
+                    style = FloconTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = contentColor,
+                )
+                Text(
+                    text = stringResource(description),
+                    style = FloconTheme.typography.bodySmall,
+                    color = contentColor.copy(alpha = 0.8f),
+                )
+            }
+            if (selected) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.Check,
+                    tint = contentColor,
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }

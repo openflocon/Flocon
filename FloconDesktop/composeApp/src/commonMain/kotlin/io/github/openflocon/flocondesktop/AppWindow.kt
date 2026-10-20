@@ -25,6 +25,7 @@ import io.github.openflocon.flocondesktop.core.di.coreModule
 import io.github.openflocon.flocondesktop.features.featuresModule
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.iossimulator.IosSimulatorRepositoryImpl
+import io.github.openflocon.flocondesktop.telemetry.telemetryModule
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.mcp.mcpModule
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -50,6 +51,7 @@ fun App() {
                 dataLocalModule,
                 dataRemoteModule,
                 mcpModule,
+                telemetryModule,
                 // Temporary
                 module {
 //                    scope<MainRoutes.Sub> {
