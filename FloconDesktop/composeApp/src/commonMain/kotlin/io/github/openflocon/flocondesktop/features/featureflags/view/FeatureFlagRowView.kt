@@ -2,19 +2,17 @@ package io.github.openflocon.flocondesktop.features.featureflags.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DataObject
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagRowUiModel
@@ -22,6 +20,9 @@ import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFla
 import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
+private val NameWidth = 260.dp
+private val VariantWidth = 140.dp
 
 @Composable
 fun FeatureFlagRowView(
@@ -34,40 +35,45 @@ fun FeatureFlagRowView(
             .clickable(onClick = { onAction(FeatureFlagsAction.OnClick(model)) })
             .padding(vertical = 8.dp, horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
             text = model.name,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .width(NameWidth)
+                .padding(end = 12.dp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = FloconTheme.typography.bodySmall,
+            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
             color = FloconTheme.colorPalette.onPrimary,
         )
         Box(
-            Modifier
-                .background(
-                    shape = FloconTheme.shapes.extraLarge,
-                    color = FloconTheme.colorPalette.secondary
-                )
-                .padding(horizontal = 8.dp, vertical = 1.dp),
+            modifier = Modifier
+                .width(VariantWidth)
+                .padding(end = 12.dp),
         ) {
             Text(
                 text = model.variant,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 style = FloconTheme.typography.bodySmall,
                 color = FloconTheme.colorPalette.onSecondary,
+                modifier = Modifier
+                    .background(
+                        shape = FloconTheme.shapes.extraLarge,
+                        color = FloconTheme.colorPalette.secondary
+                    )
+                    .padding(horizontal = 8.dp, vertical = 1.dp),
             )
         }
-        Box(Modifier.size(16.dp)) {
-            if (model.hasPayload) {
-                Icon(
-                    imageVector = Icons.Outlined.DataObject,
-                    contentDescription = null,
-                    tint = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
-                    modifier = Modifier.size(16.dp),
-                )
-            }
+        model.payloadPreview?.let {
+            Text(
+                text = it,
+                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.5f),
+            )
         }
     }
 }

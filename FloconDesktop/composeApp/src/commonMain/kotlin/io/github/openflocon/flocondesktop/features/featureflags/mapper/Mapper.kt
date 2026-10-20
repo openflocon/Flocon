@@ -10,7 +10,7 @@ internal fun FeatureFlagDomainModel.mapToUi() = FeatureFlagRowUiModel(
     provider = provider,
     name = name,
     variant = variant,
-    hasPayload = !payload.isNullOrEmpty(),
+    payloadPreview = payload?.takeIf { it.isNotBlank() }?.lineSequence()?.joinToString(" ") { it.trim() },
 )
 
 internal fun FeatureFlagDomainModel.mapToDetailUi() = FeatureFlagDetailUiModel(

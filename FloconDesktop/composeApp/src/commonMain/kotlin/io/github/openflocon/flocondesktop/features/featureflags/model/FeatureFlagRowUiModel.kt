@@ -8,7 +8,7 @@ data class FeatureFlagRowUiModel(
     val provider: String,
     val name: String,
     val variant: String,
-    val hasPayload: Boolean,
+    val payloadPreview: String?, // single line
 )
 
 fun previewFeatureFlagRowUiModel(name: String = "new_checkout") = FeatureFlagRowUiModel(
@@ -16,5 +16,5 @@ fun previewFeatureFlagRowUiModel(name: String = "new_checkout") = FeatureFlagRow
     provider = "firebase",
     name = name,
     variant = "treatment",
-    hasPayload = true,
+    payloadPreview = """{"buttonColor":"#FF5722","steps":3}""",
 )
