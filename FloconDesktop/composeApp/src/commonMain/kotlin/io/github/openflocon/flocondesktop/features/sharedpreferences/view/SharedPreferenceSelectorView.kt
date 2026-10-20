@@ -64,8 +64,8 @@ fun SharedPreferenceSelectorView(
                 Modifier.fillMaxWidth()
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(all = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(all = FloconTheme.spacing.extraSmall),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
             ) {
                 Text(
                     stringResource(Res.string.preferences),
@@ -75,7 +75,7 @@ fun SharedPreferenceSelectorView(
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
                 )
                 when (state) {
                     SharedPrefsStateUiModel.Empty -> Unit
@@ -99,7 +99,7 @@ fun SharedPreferenceSelectorView(
                             onTextChange = {
                                 filterText.value = it
                             },
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp).padding(bottom = 12.dp),
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.medium).padding(bottom = FloconTheme.spacing.medium),
                         )
                         filtered.preferences.forEach {
                             PreferenceItemView(
@@ -138,7 +138,7 @@ private fun PreferenceItemView(
             .clickable(onClick = {
                 onSelect(state)
             })
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
@@ -147,7 +147,7 @@ private fun PreferenceItemView(
             contentDescription = null,
             colorFilter = ColorFilter.tint(textColor),
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
         Text(
             state.name,
             color = textColor,

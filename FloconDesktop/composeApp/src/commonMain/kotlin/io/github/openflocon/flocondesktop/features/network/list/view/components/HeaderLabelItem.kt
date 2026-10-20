@@ -63,7 +63,7 @@ fun HeaderLabelItem(
     Row(
         modifier = modifier
             .height(Height)
-            .padding(horizontal = 4.dp)
+            .padding(horizontal = FloconTheme.spacing.extraSmall)
             .hoverable(interactionSource),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing),
@@ -82,7 +82,7 @@ fun HeaderLabelItem(
                 style = typo,
                 textAlign = TextAlign.Center,
                 color = textColor,
-                modifier = Modifier.padding(horizontal = 4.dp),
+                modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
             )
         }
         Column(

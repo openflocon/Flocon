@@ -76,8 +76,8 @@ fun DatabaseRowDetailView(
                     .background(FloconTheme.colorPalette.surface)
                     .padding(horizontal = 1.dp) // to display the inner border
                     .border(1.dp, FloconTheme.colorPalette.primary)
-                    .padding(vertical = 12.dp)
-                    .padding(horizontal = 8.dp),
+                    .padding(vertical = FloconTheme.spacing.medium)
+                    .padding(horizontal = FloconTheme.spacing.small),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.Top,
             ) {
@@ -102,7 +102,7 @@ fun DatabaseRowDetailView(
             ) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(top = 12.dp, bottom = 48.dp),
+                    contentPadding = PaddingValues(top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.tripleExtraLarge),
                 ) {
                     itemsIndexed(columns) { index, column ->
                         DetailItemView(
@@ -122,7 +122,7 @@ fun DatabaseRowDetailView(
                             FloconHorizontalDivider(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp),
+                                    .padding(vertical = FloconTheme.spacing.small),
                                 color = FloconTheme.colorPalette.surface,
                             )
                         }
@@ -171,9 +171,9 @@ private fun DetailItemView(
 
             Box(
                 modifier = Modifier
-                    .padding(bottom = 2.dp) // beware of this
+                    .padding(bottom = FloconTheme.spacing.tiny) // beware of this
                     .size(24.dp)
-                    .padding(2.dp)
+                    .padding(FloconTheme.spacing.tiny)
                     .clip(FloconTheme.shapes.small)
                     .clickable(enabled = value != null) {
                         value?.let {
@@ -192,7 +192,7 @@ private fun DetailItemView(
 
         // copy button
 
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(FloconTheme.spacing.tiny))
 
         val isImageUrl = remember(value) {
             value?.isImageUrl() == true
@@ -201,12 +201,12 @@ private fun DetailItemView(
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 4.dp)
+                .padding(bottom = FloconTheme.spacing.extraSmall)
                 .background(
                     shape = FloconTheme.shapes.medium,
                     color = FloconTheme.colorPalette.surface,
                 )
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+                .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
             style = FloconTheme.typography.bodyMedium,
             text = valueOrNull,
             color = valueColor,
@@ -219,7 +219,7 @@ private fun DetailItemView(
                 contentDescription = "Image preview",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(4.dp)
+                    .padding(FloconTheme.spacing.extraSmall)
                     .height(300.dp),
                 contentScale = ContentScale.Fit,
             )
@@ -242,7 +242,7 @@ private fun DetailHeaderButton(
                 shape = shape,
                 color = FloconTheme.colorPalette.onPrimary,
             ).clickable(onClick = onClick)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
         horizontalArrangement = Arrangement.spacedBy(3.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

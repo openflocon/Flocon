@@ -99,7 +99,7 @@ fun CommandInputView(
                 )
             }
 
-            VerticalDivider(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp))
+            VerticalDivider(modifier = Modifier.padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.tiny))
 
             // Copy icon
             Box(
@@ -120,7 +120,7 @@ fun CommandInputView(
                 )
             }
 
-            VerticalDivider(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp))
+            VerticalDivider(modifier = Modifier.padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.tiny))
 
             // History dropdown
             var isHistoryExpanded by remember { mutableStateOf(false) }
@@ -153,7 +153,7 @@ fun CommandInputView(
                 ) {
                     historyEntries.fastForEach { entry ->
                         Text(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp).clickable {
+                            modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small).clickable {
                                 onAction(AdbCommanderAction.RerunCommand(entry.command))
                                 isHistoryExpanded = false
                             },
@@ -202,7 +202,7 @@ fun CommandInputView(
                         return@onKeyEvent true
                     }
                     return@onKeyEvent false
-                }.padding(horizontal = 6.dp, vertical = 4.dp),
+                }.padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall),
         )
 
         // Execute button row
@@ -217,15 +217,15 @@ fun CommandInputView(
                 },
                 containerColor = FloconTheme.colorPalette.tertiary,
                 modifier = Modifier
-                    .padding(all = 8.dp)
+                    .padding(all = FloconTheme.spacing.small)
                     .graphicsLayer {
                         if (isInputEmpty) alpha = 0.6f
                     }
             ) {
                 val contentColor = FloconTheme.colorPalette.onTertiary
                 Row(
-                    Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(

@@ -29,16 +29,16 @@ fun FloconLineDescription(
     content: @Composable RowScope.() -> Unit,
 ) {
     Row(
-        modifier = modifier.padding(vertical = 2.dp),
+        modifier = modifier.padding(vertical = FloconTheme.spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
     ) {
         CompositionLocalProvider(LocalContentColor provides contentColor) {
             SelectionContainer(
                 modifier = if (labelWidth != null) {
                     Modifier
                         .width(labelWidth)
-                        .padding(end = 8.dp)
+                        .padding(end = FloconTheme.spacing.small)
                 } else {
                     Modifier.weight(1f)
                 }
@@ -53,7 +53,7 @@ fun FloconLineDescription(
                     .weight(1f)
                     .wrapContentWidth(align = Alignment.Start),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 content = content
             )
         }

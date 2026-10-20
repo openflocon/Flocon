@@ -32,7 +32,7 @@ fun DashboardView(
 
             is DashboardArrangement.Fixed -> StaggeredGridCells.Fixed(arrangement.itemsPerRow)
         },
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalItemSpacing = 8.dp,
     ) {
         items(viewState.items) {

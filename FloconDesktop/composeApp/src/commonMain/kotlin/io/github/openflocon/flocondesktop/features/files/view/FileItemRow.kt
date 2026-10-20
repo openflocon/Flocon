@@ -93,7 +93,7 @@ fun FileItemRow(
                         onClick(file)
                     }
                 )
-                .padding(vertical = 8.dp, horizontal = 16.dp),
+                .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.large),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AnimatedVisibility(multiSelect) {
@@ -108,7 +108,7 @@ fun FileItemRow(
                         },
                         uncheckedColor = FloconTheme.colorPalette.secondary
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(FloconTheme.spacing.small))
                 }
             }
             
@@ -117,7 +117,7 @@ fun FileItemRow(
                 modifier = Modifier.size(24.dp)
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.large))
 
             Text(
                 text = file.name,
@@ -156,7 +156,7 @@ fun FileItemRow(
                     contentDescription = null,
                 )
             } else {
-                Spacer(modifier = Modifier.size(24.dp))
+                Spacer(modifier = Modifier.size(FloconTheme.spacing.extraLarge))
             }
         }
     }

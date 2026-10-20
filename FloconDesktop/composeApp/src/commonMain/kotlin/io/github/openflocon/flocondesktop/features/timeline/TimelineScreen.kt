@@ -16,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -64,7 +63,7 @@ private fun TimelineScreen(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             FilterBar(
                 filterText = filterText,
@@ -86,14 +85,14 @@ private fun TimelineScreen(
                 text = stringResource(Res.string.timeline_empty),
                 style = FloconTheme.typography.bodyMedium,
                 color = FloconTheme.colorPalette.onPrimary,
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(FloconTheme.spacing.large),
             )
         }
 
         LazyColumn(
             state = rememberLazyListState(),
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         ) {
             items(count = rows.itemCount) { index ->
                 when (val item = rows[index]) {
@@ -109,7 +108,7 @@ private fun TimelineScreen(
                         color = FloconTheme.colorPalette.onPrimary,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 12.dp, top = 12.dp, bottom = 4.dp),
+                            .padding(start = FloconTheme.spacing.medium, top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.extraSmall),
                     )
 
                     null -> Unit
@@ -135,6 +134,6 @@ private fun SourceChip(
             .clip(FloconTheme.shapes.medium)
             .background(if (selected) FloconTheme.colorPalette.accent else FloconTheme.colorPalette.secondary)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact),
     )
 }

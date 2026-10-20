@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.DefaultLabel
@@ -38,8 +37,8 @@ fun BadQuaityErrorExceptionEditor(
             modifier = Modifier.fillMaxWidth(),
         )
         Column(
-            modifier = Modifier.padding(all = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(all = FloconTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
         ) {
             FloconTextField(
                 label = defaultLabel("Weight"),
@@ -57,7 +56,7 @@ fun BadQuaityErrorExceptionEditor(
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
             ) {
                 NetworkExceptionSelector(
                     selected = errorClassPath,
@@ -81,7 +80,7 @@ fun BadQuaityErrorExceptionEditor(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = 8.dp),
+                    .padding(all = FloconTheme.spacing.small),
             )
         }
     }

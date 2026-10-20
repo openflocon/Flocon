@@ -71,14 +71,14 @@ fun TextFilterDropdownContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 6.dp)
+                    .padding(vertical = FloconTheme.spacing.compact)
             ) {
                 if (filterState.includedFilters.isNotEmpty()) {
                     Text(
                         text = "Includes",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 2.dp, horizontal = 6.dp),
+                            .padding(vertical = FloconTheme.spacing.tiny, horizontal = FloconTheme.spacing.compact),
                         style = FloconTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
@@ -105,13 +105,13 @@ fun TextFilterDropdownContent(
                 }
 
                 if (filterState.excludedFilters.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(FloconTheme.spacing.compact))
 
                     Text(
                         text = "Excludes",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 2.dp, horizontal = 6.dp),
+                            .padding(vertical = FloconTheme.spacing.tiny, horizontal = FloconTheme.spacing.compact),
                         style = FloconTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
@@ -154,9 +154,9 @@ private fun FilterItemView(
             .hover {
                 isHover = it
             }
-            .padding(horizontal = 6.dp, vertical = 1.dp),
+            .padding(horizontal = FloconTheme.spacing.compact, vertical = 1.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
     ) {
         Box(modifier = Modifier.height(12.dp)) {
             FloconSwitch(
@@ -202,7 +202,7 @@ private fun TextFilterFieldView(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         FloconTextFieldWithoutM3(
             value = value,
@@ -221,7 +221,7 @@ private fun TextFilterFieldView(
             containerColor = FloconTheme.colorPalette.secondary,
             modifier = Modifier
                 .weight(1f)
-                .padding(all = 2.dp)
+                .padding(all = FloconTheme.spacing.tiny)
         )
         FloconSmallIconButton(
             enabled = value.isNotEmpty(),
@@ -258,7 +258,7 @@ private fun TextFilterButton(
             .graphicsLayer { alpha = if (enabled) 1f else 0.5f }
             .background(FloconTheme.colorPalette.primary)
             .clickable(onClick = onClick, enabled = enabled)
-            .padding(all = 8.dp),
+            .padding(all = FloconTheme.spacing.small),
     ) {
         Icon(
             imageVector = icon,

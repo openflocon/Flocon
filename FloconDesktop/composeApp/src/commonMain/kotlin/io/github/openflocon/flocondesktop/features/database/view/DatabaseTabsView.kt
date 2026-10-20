@@ -40,7 +40,7 @@ fun DatabaseTabsView(
 ) {
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.Bottom
     ) {
         items(tabs) {
@@ -96,10 +96,10 @@ private fun DatabaseTabItemView(
                 color = if (state == selected) FloconTheme.colorPalette.secondary else FloconTheme.colorPalette.primary
             ).clickable {
                 onAction(DatabaseTabViewAction.OnTabSelected(state))
-            }.padding(vertical = 4.dp, horizontal = 6.dp),
+            }.padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.compact),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
             Text(
                 state.displayName, style = FloconTheme.typography.bodyMedium,
                 color = contentColor,
@@ -107,7 +107,7 @@ private fun DatabaseTabItemView(
             Box(
                 modifier = Modifier.clickable {
                     onAction(DatabaseTabViewAction.OnCloseClicked(state))
-                }.size(20.dp).padding(all = 2.dp)
+                }.size(20.dp).padding(all = FloconTheme.spacing.tiny)
             ) {
                 Image(
                     imageVector = Icons.Default.Close,

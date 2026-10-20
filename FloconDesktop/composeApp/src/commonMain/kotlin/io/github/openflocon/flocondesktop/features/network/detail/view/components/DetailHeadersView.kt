@@ -64,7 +64,7 @@ fun DetailHeadersView(
                 color = FloconTheme.colorPalette.secondary,
                 shape = FloconTheme.shapes.medium
             )
-            .padding(8.dp)
+            .padding(FloconTheme.spacing.small)
     ) {
         headers.fastForEachIndexed { index, item ->
             HeaderItemRow(
@@ -100,16 +100,16 @@ private fun HeaderItemRow(
 
     Row(
         modifier = modifier
-            .padding(vertical = 4.dp)
+            .padding(vertical = FloconTheme.spacing.extraSmall)
             .onPointerEvent(PointerEventType.Enter) { isTitleHovered = true }
             .onPointerEvent(PointerEventType.Exit) { isTitleHovered = false },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
     ) {
         Box(
             modifier = Modifier
                 .width(labelWidth)
-                .padding(end = 8.dp),
+                .padding(end = FloconTheme.spacing.small),
             contentAlignment = Alignment.CenterStart
         ) {
             Row(
@@ -142,7 +142,7 @@ private fun HeaderItemRow(
         )
 
         if (isAuthBearer) {
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
             FloconButton(
                 onClick = { onAuthorizationClicked(item.value) }
             ) {
@@ -172,7 +172,7 @@ private fun HeaderValueText(
                             color = FloconTheme.colorPalette.accent.copy(alpha = 0.5f),
                             shape = FloconTheme.shapes.small
                         )
-                        .padding(8.dp)
+                        .padding(FloconTheme.spacing.small)
                 ) {
                     Text(
                         text = value,

@@ -46,7 +46,7 @@ fun TableRowView(
             Row(
                 modifier = modifier
                     .clip(FloconTheme.shapes.medium)
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
             ) {
                 model.values.fastForEach { column ->
                     Text(
@@ -54,7 +54,7 @@ fun TableRowView(
                         modifier =
                         Modifier
                             .width(columnsWidth)
-                            .padding(horizontal = 4.dp),
+                            .padding(horizontal = FloconTheme.spacing.extraSmall),
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
                         color = FloconTheme.colorPalette.onPrimary,
                     )

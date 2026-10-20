@@ -30,9 +30,9 @@ fun NetworkHeaderButton(
             .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colorPalette.surface)
             .clickable(onClick = onClick)
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         Image(
             imageVector = imageVector,

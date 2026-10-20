@@ -59,10 +59,10 @@ fun DashboardContainerView(
         ),
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier = Modifier.padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium),
         ) {
             Text(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.extraSmall),
                 textAlign = TextAlign.Center,
                 text = viewState.containerName,
                 style =
@@ -73,8 +73,8 @@ fun DashboardContainerView(
             )
 
             Column(
-                modifier = Modifier.padding(top = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.padding(top = FloconTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
             ) {
                 viewState.rows.fastForEach { rowItem ->
                     when (rowItem) {
@@ -189,7 +189,7 @@ fun DashboardContainerView(
 @Composable
 private fun DashboardContainerViewPreview() {
     FloconTheme {
-        Box(modifier = Modifier.background(FloconTheme.colorPalette.surface).padding(all = 8.dp)) {
+        Box(modifier = Modifier.background(FloconTheme.colorPalette.surface).padding(all = FloconTheme.spacing.small)) {
             DashboardContainerView(
                 onClickButton = {},
                 viewState = previewDashboardContainerViewState(),

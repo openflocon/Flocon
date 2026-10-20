@@ -204,7 +204,7 @@ fun AnalyticsScreen(
                         .onSizeChanged {
                             widthPx = max(widthPx, it.width.toFloat())
                         },
-                    contentPadding = PaddingValues(vertical = 8.dp),
+                    contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
                 ) {
                     items(
                         count = rows.itemCount,

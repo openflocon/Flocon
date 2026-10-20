@@ -121,7 +121,7 @@ fun PanelView(
                     .size(20.dp)
                     .clip(shape)
                     .clickable(onClick = onTogglePin)
-                    .padding(2.dp),
+                    .padding(FloconTheme.spacing.tiny),
                 imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
                 contentDescription = if (isPinned) "Unpin" else "Pin",
                 tint = FloconTheme.colorPalette.onPrimary,

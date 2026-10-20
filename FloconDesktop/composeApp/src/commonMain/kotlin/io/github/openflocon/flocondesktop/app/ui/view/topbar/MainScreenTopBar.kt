@@ -103,9 +103,9 @@ private fun TopBarUpdateChip(
             )
             .clickable(onClick = onClick)
             .pointerHoverIcon(PointerIcon.Hand)
-            .padding(horizontal = 6.dp, vertical = 2.dp),
+            .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         Icon(
             imageVector = Icons.Outlined.ArrowCircleUp,
@@ -117,7 +117,6 @@ private fun TopBarUpdateChip(
             text = uiModel.text,
             color = FloconTheme.colorPalette.onAccent,
             style = FloconTheme.typography.labelSmall.copy(
-                fontSize = 10.sp,
                 fontWeight = FontWeight.Medium,
             ),
         )
@@ -156,7 +155,7 @@ private fun Title(
             )
 
             if (updateChip != null) {
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.tiny))
                 TopBarUpdateChip(
                     uiModel = updateChip,
                     onClick = { onUpdateChipClicked(updateChip) },

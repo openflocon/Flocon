@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.DrawableResource
@@ -58,7 +57,7 @@ val grpcMethodText = Color(0xff244B5A)
 @Composable
 fun MethodView(
     method: NetworkMethodUi,
-    textSize: TextUnit = 12.sp,
+    textSize: TextUnit = FloconTheme.typography.labelMedium.fontSize,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
@@ -92,7 +91,7 @@ fun NetworkTag(
     text: String,
     backgroundColor: Color,
     textColor: Color,
-    textSize: TextUnit = 12.sp,
+    textSize: TextUnit = FloconTheme.typography.labelMedium.fontSize,
     modifier: Modifier = Modifier,
     icon: DrawableResource?,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -112,7 +111,7 @@ fun NetworkTag(
                     Modifier
                 },
             )
-            .padding(horizontal = 4.dp, vertical = 2.dp)
+            .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny)
             .padding(contentPadding),
         // Padding inside the tag
         verticalAlignment = Alignment.CenterVertically,
@@ -125,7 +124,7 @@ fun NetworkTag(
                 modifier = Modifier.size(10.dp),
                 colorFilter = ColorFilter.tint(textColor),
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
         }
         Text(
             text = text,

@@ -33,6 +33,7 @@ import io.github.openflocon.library.designsystem.theme.lightPalette
 import io.github.openflocon.library.designsystem.theme.materialDarkScheme
 import io.github.openflocon.library.designsystem.theme.materialLightScheme
 import io.github.openflocon.library.designsystem.theme.multiplyFontSizeBy
+import io.github.openflocon.library.designsystem.theme.scaledBy
 
 object FloconTheme {
 
@@ -61,7 +62,8 @@ private val LocalIsDarkTheme = staticCompositionLocalOf { true }
 
 @Composable
 fun FloconTheme(
-    fontSizeMultiplier: Float = 1f,
+    // scales the typography and the spacing
+    scale: Float = 1f,
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
@@ -95,7 +97,7 @@ fun FloconTheme(
     )
 
     MaterialTheme(
-        typography = typography.multiplyFontSizeBy(fontSizeMultiplier),
+        typography = typography.multiplyFontSizeBy(scale),
         colorScheme = if (isDarkTheme) {
             materialDarkScheme(colorPalette)
         } else {
@@ -106,7 +108,7 @@ fun FloconTheme(
             LocalIndication provides ripple,
             LocalIsDarkTheme provides isDarkTheme,
             LocalFloconColorPalette provides colorPalette,
-            LocalFloconSpacing provides FloconSpacing(),
+            LocalFloconSpacing provides remember(scale) { FloconSpacing().scaledBy(scale) },
             LocalTextSelectionColors provides selectionTextColor,
             LocalScrollbarStyle provides scrollbarStyle,
             LocalMinimumInteractiveComponentSize provides Dp.Unspecified,

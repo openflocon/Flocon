@@ -58,7 +58,7 @@ fun LeftPanelView(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colorPalette.primary)
-            .padding(8.dp),
+            .padding(FloconTheme.spacing.small),
     ) {
         Column(
             modifier = Modifier
@@ -74,9 +74,9 @@ fun LeftPanelView(
                     onClickItem = onClickItem,
                     onTogglePin = onTogglePin,
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.extraSmall))
                 HorizontalDivider()
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.extraSmall))
             }
             MenuSection(
                 current = current,
@@ -86,7 +86,7 @@ fun LeftPanelView(
                 onTogglePin = onTogglePin,
                 onToggleSection = onToggleSection,
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
             Spacer(Modifier.weight(1f))
             MenuItems(
                 current = current,
@@ -97,7 +97,7 @@ fun LeftPanelView(
         }
 
         if(expanded) {
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.large))
 
             FloconVerticalScrollbar(
                 modifier = Modifier

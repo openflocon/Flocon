@@ -15,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.SelectedBadQualityUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -91,7 +90,7 @@ fun BadNetworkQualityEditionContent(
     var selectedErrorToEdit by remember { mutableStateOf<BadQualityConfigUiModel.Error?>(null) }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
             .fillMaxWidth(),
     ) {
@@ -101,10 +100,10 @@ fun BadNetworkQualityEditionContent(
         )
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp),
+                .padding(horizontal = FloconTheme.spacing.medium),
         ) {
             FloconTextField(
                 label = defaultLabel("Name"),
@@ -126,7 +125,7 @@ fun BadNetworkQualityEditionContent(
                 suffix = { Text(text = "%") },
                 containerColor = FloconTheme.colorPalette.primary
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
                 FloconTextField(
                     modifier = Modifier.weight(1f),
                     label = defaultLabel("Min latency"),
@@ -169,7 +168,7 @@ fun BadNetworkQualityEditionContent(
         }
         BadQualityErrorsListView(
             modifier = Modifier
-                .padding(top = 16.dp),
+                .padding(top = FloconTheme.spacing.large),
             errors = errors,
             onErrorslicked = { error ->
                 selectedErrorToEdit = error
@@ -266,7 +265,7 @@ fun BadNetworkQualityEditionContent(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 8.dp),
+                .padding(all = FloconTheme.spacing.small),
         )
     }
 }

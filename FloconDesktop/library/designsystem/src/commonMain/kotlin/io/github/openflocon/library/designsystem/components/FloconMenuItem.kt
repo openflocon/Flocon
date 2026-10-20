@@ -49,7 +49,7 @@ fun FloconMenuItem(
             .padding(horizontal = DropdownItemHorizontalPadding)
     ) {
         leadingIcon?.let { FloconMenuIcon(leadingIcon) } ?: run {
-            Spacer(Modifier.width(4.dp))
+            Spacer(Modifier.width(FloconTheme.spacing.extraSmall))
         }
         Text(
             text = text,
@@ -98,7 +98,7 @@ fun FloconMenuSeparator(
     modifier: Modifier = Modifier
 ) {
     FloconHorizontalDivider(
-        modifier = modifier.padding(horizontal = 4.dp),
+        modifier = modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
         color = FloconTheme.colorPalette.secondary
     )
 }
@@ -123,7 +123,7 @@ private fun FloconDropdownMenuItem(
     content: @Composable RowScope.() -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()

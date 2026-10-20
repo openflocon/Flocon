@@ -150,10 +150,10 @@ fun MockEditorScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = FloconTheme.spacing.large)
                     .clip(RoundedCornerShape(8.dp))
                     .background(FloconTheme.colorPalette.error)
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
             ) {
                 Text(
                     text = it,
@@ -168,9 +168,9 @@ fun MockEditorScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .padding(horizontal = 12.dp)
+                .padding(horizontal = FloconTheme.spacing.medium)
                 .verticalScroll(scrollState),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         ) {
             // Section Expectation Card
             Column(
@@ -178,8 +178,8 @@ fun MockEditorScreen(
                     .weight(2f)
                     .clip(RoundedCornerShape(12.dp))
                     .background(FloconTheme.colorPalette.primary)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                    .padding(FloconTheme.spacing.large),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
             ) {
                 Text(
                     text = "Expectation",
@@ -214,14 +214,14 @@ fun MockEditorScreen(
                         text = urlPatternError,
                         color = FloconTheme.colorPalette.error,
                         style = FloconTheme.typography.labelSmall,
-                        modifier = Modifier.padding(start = 4.dp),
+                        modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
                     )
                 }
 
                 // Test URL Pattern field
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                 ) {
                     FloconTextField(
                         value = testUrl,
@@ -251,7 +251,7 @@ fun MockEditorScreen(
                                 text = "Enter a URL above to test pattern matching",
                                 style = FloconTheme.typography.labelSmall,
                                 color = FloconTheme.colorPalette.onSurface,
-                                modifier = Modifier.padding(start = 4.dp),
+                                modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
                             )
                         }
                         TestPatternStatus.NoPattern -> {
@@ -259,17 +259,17 @@ fun MockEditorScreen(
                                 text = "Enter a URL Pattern above first",
                                 style = FloconTheme.typography.labelSmall,
                                 color = FloconTheme.colorPalette.onSurface,
-                                modifier = Modifier.padding(start = 4.dp),
+                                modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
                             )
                         }
                         TestPatternStatus.Matches -> {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(FloconTheme.colorPalette.accent)
-                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                                    .padding(horizontal = 10.dp, vertical = FloconTheme.spacing.compact)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
@@ -288,11 +288,11 @@ fun MockEditorScreen(
                         TestPatternStatus.NoMatch -> {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(FloconTheme.colorPalette.error)
-                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                                    .padding(horizontal = 10.dp, vertical = FloconTheme.spacing.compact)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
@@ -311,11 +311,11 @@ fun MockEditorScreen(
                         TestPatternStatus.InvalidRegex -> {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(FloconTheme.colorPalette.error)
-                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                                    .padding(horizontal = 10.dp, vertical = FloconTheme.spacing.compact)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Warning,
@@ -350,8 +350,8 @@ fun MockEditorScreen(
                     .weight(3f)
                     .clip(RoundedCornerShape(12.dp))
                     .background(FloconTheme.colorPalette.primary)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                    .padding(FloconTheme.spacing.large),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
             ) {
                 Text(
                     text = "Response",
@@ -506,7 +506,7 @@ fun MockEditorScreen(
 
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                         ) {
                             bodyResponse.headers.fastForEach { header ->
                                 HeaderInputField(
@@ -617,8 +617,8 @@ fun MockEditorScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.small),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically
         ) {
             FloconCheckbox(
@@ -667,7 +667,7 @@ fun NetworkMockMediaType(text: String, onClicked: (text: String) -> Unit) {
             .clickable {
                 onClicked(text)
             }
-            .padding(horizontal = 12.dp, vertical = 4.dp),
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall),
     )
 }
 

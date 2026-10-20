@@ -72,7 +72,7 @@ internal fun DatabaseQueryToolbarView(
                 colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
             )
         }
-        VerticalDivider(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp))
+        VerticalDivider(modifier = Modifier.padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.tiny))
 
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp))
@@ -92,7 +92,7 @@ internal fun DatabaseQueryToolbarView(
             )
         }
 
-        VerticalDivider(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp))
+        VerticalDivider(modifier = Modifier.padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.tiny))
 
         var isHistoryExpanded by remember { mutableStateOf(false) }
         val displayOldQueries = isHistoryExpanded && lastQueries.isNotEmpty()
@@ -123,7 +123,7 @@ internal fun DatabaseQueryToolbarView(
             ) {
                 lastQueries.fastForEach { query ->
                     Text(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp).clickable {
+                        modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small).clickable {
                             onAction(DatabaseTabAction.ExecuteQuery(query))
                             isHistoryExpanded = false
                         },
@@ -134,7 +134,7 @@ internal fun DatabaseQueryToolbarView(
             }
         }
 
-        VerticalDivider(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp))
+        VerticalDivider(modifier = Modifier.padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.tiny))
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp)).clickable {
                 onAction(DatabaseTabAction.Import)

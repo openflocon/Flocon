@@ -29,7 +29,7 @@ internal fun DashboardHtmlView(
         if (rowItem.label.isNotEmpty()) {
             Text(
                 text = rowItem.label,
-                modifier = Modifier.padding(start = 4.dp, bottom = 4.dp),
+                modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall, bottom = FloconTheme.spacing.extraSmall),
                 color = FloconTheme.colorPalette.onSurface,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Thin,
@@ -43,7 +43,7 @@ internal fun DashboardHtmlView(
                     color = FloconTheme.colorPalette.secondary,
                     shape = RoundedCornerShape(8.dp),
                 )
-                .padding(8.dp),
+                .padding(FloconTheme.spacing.small),
         ) {
             SwingPanel(
                 modifier = Modifier.fillMaxWidth().height(600.dp), // Height needs to be fixed or dynamic

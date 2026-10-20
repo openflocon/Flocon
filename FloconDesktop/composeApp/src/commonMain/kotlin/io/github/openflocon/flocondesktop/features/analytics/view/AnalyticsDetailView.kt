@@ -142,7 +142,7 @@ fun AnalyticsDetailLineTextView(
             style = FloconTheme.typography.bodyMedium,
             color = FloconTheme.colorPalette.onPrimary,
             modifier = Modifier.weight(1f)
-                .padding(vertical = 6.dp, horizontal = 8.dp),
+                .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.small),
         )
     }
 }
@@ -166,7 +166,7 @@ fun AnalyticsDetailLineView(
             ),
             color = FloconTheme.colorPalette.onPrimary,
             modifier = Modifier
-                .padding(vertical = 6.dp, horizontal = 8.dp)
+                .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.small)
                 .width(labelWidth),
         )
 

@@ -3,8 +3,6 @@ package io.github.openflocon.flocondesktop.features.network.mock.edition.view
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkTag
 import io.github.openflocon.flocondesktop.features.network.list.view.components.deleteMethodBackground
 import io.github.openflocon.flocondesktop.features.network.list.view.components.deleteMethodText
@@ -19,6 +17,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.flocondesktop.features.network.list.view.components.putMethodBackground
 import io.github.openflocon.flocondesktop.features.network.list.view.components.putMethodText
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkMethodUi
+import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 fun MockNetworkMethodView(
@@ -39,10 +38,10 @@ fun MockNetworkMethodView(
         text = method.text,
         backgroundColor = backgroundColor,
         textColor = textColor,
-        textSize = 14.sp,
+        textSize = FloconTheme.typography.labelLarge.fontSize,
         modifier = modifier,
         icon = null,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+        contentPadding = PaddingValues(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
         onClick = onClick,
     )
 }

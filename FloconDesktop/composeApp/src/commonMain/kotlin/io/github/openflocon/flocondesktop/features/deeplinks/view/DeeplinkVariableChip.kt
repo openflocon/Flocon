@@ -44,9 +44,9 @@ internal fun DeeplinkVariableChip(
             color = FloconTheme.colorPalette.surface,
             shape = RoundedCornerShape(4.dp),
         )
-            .padding(horizontal = 6.dp, vertical = 4.dp),
+            .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         Text(
             text = "${variable.name}:",
@@ -103,8 +103,8 @@ internal fun DeeplinkVariableChip(
                                             isExpanded = false
                                         }
                                         .padding(
-                                            vertical = 4.dp,
-                                            horizontal = 8.dp
+                                            vertical = FloconTheme.spacing.extraSmall,
+                                            horizontal = FloconTheme.spacing.small
                                         )
                                 )
                             }
@@ -130,7 +130,7 @@ private fun VariableInputField(
         modifier = modifier.background(
             color = FloconTheme.colorPalette.primary,
             shape = RoundedCornerShape(2.dp),
-        ).padding(horizontal = 4.dp, vertical = 2.dp),
+        ).padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
     ) {
         Text(
             text = placeholder,
@@ -159,7 +159,7 @@ private fun DeeplinkVariablesPanelViewPreview() {
         Column(
             modifier = Modifier.background(FloconTheme.colorPalette.primary)
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(FloconTheme.spacing.small)
         ) {
             DeeplinkVariableChip(
                 variable = DeeplinkVariableViewState(

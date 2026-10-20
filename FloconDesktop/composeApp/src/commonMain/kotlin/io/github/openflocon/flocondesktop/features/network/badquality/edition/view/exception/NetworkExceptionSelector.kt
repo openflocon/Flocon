@@ -23,8 +23,8 @@ fun NetworkExceptionSelector(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        modifier = modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
     ) {
         possibleExceptions.fastForEach { exception ->
             val (backgroundColor, textColor) = if (exception.classPath == selected) {
@@ -45,7 +45,7 @@ fun NetworkExceptionSelector(
                             },
                         )
                     )
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                    .padding(horizontal = 10.dp, vertical = FloconTheme.spacing.extraSmall)
             ) {
                 Text(
                     text = exception.description,

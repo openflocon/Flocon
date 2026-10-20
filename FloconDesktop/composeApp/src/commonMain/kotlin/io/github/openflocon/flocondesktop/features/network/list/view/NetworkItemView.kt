@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
@@ -65,7 +64,7 @@ fun NetworkItemView(
     modifier: Modifier = Modifier,
     columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
 ) {
-    val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
+    val bodySmall = FloconTheme.typography.bodySmall
 
     val errorColor = when (state.status.status) {
         NetworkStatusUi.Status.ERROR -> FloconTheme.colorPalette.error
@@ -109,10 +108,10 @@ fun NetworkItemView(
                         Modifier
                     }
                 )
-                .padding(horizontal = 4.dp, vertical = 4.dp),
+                .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.extraSmall),
             // Inner padding for content
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             AnimatedVisibility(multiSelect) {
                 FloconCheckbox(
@@ -152,7 +151,7 @@ fun NetworkItemView(
                     color = errorColor ?: FloconTheme.colorPalette.onPrimary,
                     modifier = Modifier
                         .weight(columnWidths.domainWeight)
-                        .padding(horizontal = 4.dp),
+                        .padding(horizontal = FloconTheme.spacing.extraSmall),
                 )
                 Row(
                     modifier = Modifier
@@ -161,13 +160,13 @@ fun NetworkItemView(
                             color = FloconTheme.colorPalette.secondary,
                             shape = RoundedCornerShape(4.dp),
                         )
-                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                        .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     state.type.image()?.let {
                         Box(
                             modifier = Modifier
-                                .padding(end = 8.dp)
+                                .padding(end = FloconTheme.spacing.small)
                                 .clip(RoundedCornerShape(4.dp))
                                 .background(state.type.imageColor())
                                 .padding(3.dp)

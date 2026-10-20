@@ -78,7 +78,7 @@ private fun DatabaseTabViewContent(
 ) {
     Column(
         Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth()

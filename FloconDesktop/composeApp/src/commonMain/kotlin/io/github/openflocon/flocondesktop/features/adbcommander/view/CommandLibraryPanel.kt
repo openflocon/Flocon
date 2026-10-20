@@ -74,20 +74,20 @@ fun CommandLibraryPanel(
                 Modifier.fillMaxWidth()
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(all = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(all = FloconTheme.spacing.extraSmall),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
             ) {
                 FloconSection(
                     title = stringResource(Res.string.adb_commander_saved_commands),
                     initialValue = true,
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
                         if (savedCommands.isEmpty()) {
                             Text(
                                 text = stringResource(Res.string.adb_commander_no_saved_commands),
                                 style = FloconTheme.typography.bodySmall,
                                 color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
-                                modifier = Modifier.padding(8.dp),
+                                modifier = Modifier.padding(FloconTheme.spacing.small),
                             )
                         }
                         savedCommands.forEach { command ->
@@ -115,13 +115,13 @@ fun CommandLibraryPanel(
                         }
                     },
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
                         if (flows.isEmpty()) {
                             Text(
                                 text = stringResource(Res.string.adb_commander_no_flows),
                                 style = FloconTheme.typography.bodySmall,
                                 color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
-                                modifier = Modifier.padding(8.dp),
+                                modifier = Modifier.padding(FloconTheme.spacing.small),
                             )
                         }
                         flows.forEach { flow ->
@@ -150,8 +150,8 @@ fun CommandLibraryPanel(
                 Modifier.fillMaxWidth()
                     .weight(0.4f)
                     .verticalScroll(rememberScrollState())
-                    .padding(all = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(all = FloconTheme.spacing.extraSmall),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
             ) {
                 Text(
                     stringResource(Res.string.adb_commander_quick_commands),
@@ -161,7 +161,7 @@ fun CommandLibraryPanel(
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
                 )
 
                 categories.forEach { (category, commands) ->
@@ -169,7 +169,7 @@ fun CommandLibraryPanel(
                         title = category,
                         initialValue = false,
                     ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny)) {
                             commands.forEach { cmd ->
                                 CommandRow(
                                     name = cmd.name,
@@ -201,8 +201,8 @@ private fun CommandRow(
     Row(
         modifier = modifier
             .clickable(onClick = onClick)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {

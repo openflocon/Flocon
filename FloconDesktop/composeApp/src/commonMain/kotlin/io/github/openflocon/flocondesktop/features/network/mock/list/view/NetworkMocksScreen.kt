@@ -105,7 +105,7 @@ private fun NetworkMocksContent(
         )
         MocksHeaderView(Modifier.fillMaxWidth())
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(400.dp)

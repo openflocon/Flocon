@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.sebastianneubauer.jsontree.diff.JsonTreeDiffInfo
 import com.sebastianneubauer.jsontree.diff.defaultDarkDiffColors
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
@@ -53,12 +52,12 @@ private fun NetworkDiffContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 12.dp, bottom = 4.dp)
+                        .padding(top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.extraSmall)
                 ) {
                     Text(
                         modifier = Modifier
                             .weight(1F)
-                            .padding(start = 8.dp),
+                            .padding(start = FloconTheme.spacing.small),
                         text = "Original:",
                         style = FloconTheme.typography.titleMedium
                     )
@@ -82,7 +81,7 @@ private fun NetworkDiffContent(
                 modifier = Modifier.fillMaxSize(),
                 originalJson = diff.json,
                 revisedJson = diff.clipboardJson,
-                paddingValues = PaddingValues(8.dp),
+                paddingValues = PaddingValues(FloconTheme.spacing.small),
                 colors = defaultDarkDiffColors.copy(
                     regularBackgroundColor = FloconTheme.colorPalette.surface
                 ),

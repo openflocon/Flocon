@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
@@ -25,17 +24,17 @@ fun FloconPageTopBar(
     content: @Composable ColumnScope.(contentPadding: PaddingValues) -> Unit = {},
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colorPalette.primary)
-            .padding(all = 8.dp)
+            .padding(all = FloconTheme.spacing.small)
     ) {
         if (selector != null) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
             ) {
                 selector()
             }
@@ -44,13 +43,13 @@ fun FloconPageTopBar(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             ) {
                 if (filterBar != null) {
                     Row(
                         modifier = Modifier.weight(1f),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
                     ) {
                         filterBar()
                     }
@@ -58,7 +57,7 @@ fun FloconPageTopBar(
                 if (actions != null) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                     ) {
                         actions()
                     }

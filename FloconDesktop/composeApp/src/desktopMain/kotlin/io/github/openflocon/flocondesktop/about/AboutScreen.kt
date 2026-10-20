@@ -57,8 +57,8 @@ internal fun AboutScreen(
         FloconSurface {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(16.dp)
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier.padding(FloconTheme.spacing.large)
             ) {
                 Image(
                     painter = painterResource(Res.drawable.app_icon),
@@ -85,9 +85,9 @@ internal fun AboutScreen(
                     )
                 }
                 FlowRow(
-                    verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall, Alignment.CenterVertically),
                     horizontalArrangement = Arrangement.spacedBy(
-                        4.dp,
+                        FloconTheme.spacing.extraSmall,
                         Alignment.CenterHorizontally
                     ),
                     modifier = Modifier

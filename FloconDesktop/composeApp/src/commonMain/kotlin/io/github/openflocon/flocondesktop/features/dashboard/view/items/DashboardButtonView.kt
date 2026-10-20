@@ -30,7 +30,7 @@ internal fun DashboardButtonView(
                 .clickable(onClick = {
                     onClickButton(rowItem.id)
                 })
-                .padding(all = 8.dp),
+                .padding(all = FloconTheme.spacing.small),
         ) {
             Text(
                 text = rowItem.text,

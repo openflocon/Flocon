@@ -30,7 +30,7 @@ fun FloconCodeBlock(
                 color = containerColor,
                 shape = RoundedCornerShape(8.dp),
             )
-            .padding(8.dp),
+            .padding(FloconTheme.spacing.small),
     ) {
         CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.contentColorFor(containerColor)) {
             SelectionContainer {

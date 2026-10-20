@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.possibleExceptions
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -52,8 +51,8 @@ fun BadQualityErrorsListView(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.medium),
         ) {
             Text("Errors", style = FloconTheme.typography.titleMedium)
             FloconButton(
@@ -98,24 +97,24 @@ fun BadQualityErrorsListView(
             val lazyListState = rememberLazyListState()
             val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
             Box(modifier = Modifier.height(160.dp)) {
-                val contentPadding = PaddingValues(horizontal = 12.dp)
+                val contentPadding = PaddingValues(horizontal = FloconTheme.spacing.medium)
                 LazyColumn(
                     state = lazyListState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    contentPadding = PaddingValues(vertical = FloconTheme.spacing.medium),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 ) {
                     if (errors.isNotEmpty()) {
                         item {
                             Row(
                                 modifier = Modifier.fillMaxWidth()
-                                    .padding(horizontal = 6.dp)
+                                    .padding(horizontal = FloconTheme.spacing.compact)
                             ) {
                                 Text(
                                     "Weight",
                                     style = FloconTheme.typography.bodySmall.copy(
                                         fontWeight = FontWeight.Thin,
-                                        fontSize = 10.sp,
+                                        fontSize = FloconTheme.typography.labelSmall.fontSize,
                                     ),
                                 )
                                 Spacer(modifier = Modifier.width(28.dp))
@@ -123,7 +122,7 @@ fun BadQualityErrorsListView(
                                     "Type",
                                     style = FloconTheme.typography.bodySmall.copy(
                                         fontWeight = FontWeight.Thin,
-                                        fontSize = 10.sp,
+                                        fontSize = FloconTheme.typography.labelSmall.fontSize,
                                     ),
                                 )
                             }
@@ -163,7 +162,7 @@ private fun BadQualityErrorItemView(
             clickedError(error)
         }.padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
         Box(
             modifier = Modifier.size(24.dp)
@@ -181,7 +180,6 @@ private fun BadQualityErrorItemView(
                 },
                 style = FloconTheme.typography.bodySmall.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 11.sp,
                 ),
                 color = FloconTheme.colorPalette.surface,
             )
@@ -209,7 +207,7 @@ private fun BadQualityErrorItemView(
                             color = FloconTheme.colorPalette.primary,
                             shape = RoundedCornerShape(4.dp),
                         )
-                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                        .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.extraSmall),
                 )
             }
 
@@ -233,7 +231,7 @@ private fun BadQualityErrorItemView(
                             color = FloconTheme.colorPalette.primary,
                             shape = RoundedCornerShape(4.dp),
                         )
-                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                        .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.extraSmall),
                 )
             }
         }

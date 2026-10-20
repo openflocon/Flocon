@@ -20,13 +20,13 @@ fun MocksHeaderView(modifier: Modifier = Modifier) {
 
     Row(
         modifier = modifier.background(FloconTheme.colorPalette.primary.copy(alpha = 0.6f))
-            .padding(vertical = 12.dp)
+            .padding(vertical = FloconTheme.spacing.medium)
     ) {
         Text(
             "Enabled",
             style = typo,
             color = textColor,
-            modifier = Modifier.padding(horizontal = 8.dp).width(50.dp),
+            modifier = Modifier.padding(horizontal = FloconTheme.spacing.small).width(50.dp),
         )
         Text(
             "Method",
@@ -47,6 +47,6 @@ fun MocksHeaderView(modifier: Modifier = Modifier) {
             style = typo,
             color = textColor,
         )
-        Spacer(modifier = Modifier.width(32.dp))
+        Spacer(modifier = Modifier.width(FloconTheme.spacing.doubleExtraLarge))
     }
 }

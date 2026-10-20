@@ -110,7 +110,7 @@ fun ImageItemView(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(FloconTheme.colorPalette.surface)
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
         ) {
             Text(
                 text = model.downloadedAt,
@@ -124,15 +124,15 @@ fun ImageItemView(
             )
             size?.let {
                 Row(
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = FloconTheme.spacing.extraSmall),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
                 ) {
                     Text(
                         modifier = Modifier.background(
                             FloconTheme.colorPalette.tertiary,
                             shape = FloconTheme.shapes.extraLarge
-                        ).padding(horizontal = 4.dp, vertical = 1.dp),
+                        ).padding(horizontal = FloconTheme.spacing.extraSmall, vertical = 1.dp),
                         color = FloconTheme.colorPalette.onTertiary,
                         text = "width:${it.width.toInt()}px",
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
@@ -141,7 +141,7 @@ fun ImageItemView(
                         modifier = Modifier.background(
                             FloconTheme.colorPalette.tertiary,
                             shape = FloconTheme.shapes.extraLarge
-                        ).padding(horizontal = 4.dp, vertical = 1.dp),
+                        ).padding(horizontal = FloconTheme.spacing.extraSmall, vertical = 1.dp),
                         color = FloconTheme.colorPalette.onTertiary,
                         text = "height:${it.height.toInt()}px",
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),

@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.PlatformContext
@@ -173,10 +172,10 @@ fun ImageDialog(model: ImagesUiModel, onDismiss: () -> Unit) {
                     modifier = Modifier
                         .background(Color.Black)
                         .fillMaxWidth()
-                        .padding(all = 12.dp),
+                        .padding(all = FloconTheme.spacing.medium),
                 ) {
-                    Text(text = model.downloadedAt, color = Color.White, fontSize = 14.sp)
-                    Text(text = model.url, color = Color.Gray, fontSize = 10.sp)
+                    Text(text = model.downloadedAt, color = Color.White, fontSize = FloconTheme.typography.labelLarge.fontSize)
+                    Text(text = model.url, color = Color.Gray, fontSize = FloconTheme.typography.labelSmall.fontSize)
                 }
             }
             AsyncImage(

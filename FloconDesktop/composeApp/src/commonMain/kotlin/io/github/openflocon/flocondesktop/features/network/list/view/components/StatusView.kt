@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
@@ -23,7 +22,7 @@ private val successTagText = Color(0xFF28A745)
 @Composable
 fun StatusView(
     status: NetworkStatusUi,
-    textSize: TextUnit = 12.sp,
+    textSize: TextUnit = FloconTheme.typography.labelMedium.fontSize,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -38,7 +37,7 @@ fun StatusView(
                     text = status.text,
                     autoSize = TextAutoSize.StepBased(
                         maxFontSize = textSize,
-                        minFontSize = 8.sp,
+                        minFontSize = FloconTheme.typography.labelSmall.fontSize * 0.8f,
                     ),
                     maxLines = 1,
                     style = FloconTheme.typography.labelSmall.copy(

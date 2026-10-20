@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.features.network.badquality.list.model.NetworkBadQualityLineUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
@@ -31,11 +30,11 @@ fun BadNetworkLineView(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.padding(vertical = 2.dp),
+        modifier = modifier.padding(vertical = FloconTheme.spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = Modifier.padding(horizontal = 8.dp)
+            modifier = Modifier.padding(horizontal = FloconTheme.spacing.small)
                 .height(12.dp)
         ) {
             FloconSwitch(
@@ -55,14 +54,14 @@ fun BadNetworkLineView(
                 text = item.name,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                style = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                style = FloconTheme.typography.bodySmall,
                 color = FloconTheme.colorPalette.onSurface,
                 modifier = Modifier.weight(2f)
                     .background(
                         color = FloconTheme.colorPalette.primary.copy(alpha = 0.8f),
                         shape = RoundedCornerShape(4.dp),
                     )
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact),
             )
 
             FloconIconButton(

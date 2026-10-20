@@ -17,7 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.freeform_link
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
@@ -49,12 +48,12 @@ fun DeeplinkFreeformItemView(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             FloconTextFieldWithoutM3(
                 value = value,
@@ -65,7 +64,7 @@ fun DeeplinkFreeformItemView(
                 modifier = Modifier.weight(1f),
                 leadingComponent = {
                     Spacer(
-                        modifier = Modifier.width(4.dp)
+                        modifier = Modifier.width(FloconTheme.spacing.extraSmall)
                     )
                 }
             )

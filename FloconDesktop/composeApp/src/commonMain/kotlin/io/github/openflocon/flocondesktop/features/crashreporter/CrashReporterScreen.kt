@@ -80,7 +80,7 @@ private fun CrashReportScreen(
                 selected = selected,
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
             Surface(
                 color = FloconTheme.colorPalette.primary,
@@ -129,8 +129,8 @@ fun LeftPannel(
     ) {
         Column(
             Modifier.fillMaxSize()
-                .padding(all = 4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(all = FloconTheme.spacing.extraSmall),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -143,8 +143,8 @@ fun LeftPannel(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(top = 8.dp)
-                        .padding(horizontal = 12.dp)
+                        .padding(top = FloconTheme.spacing.small)
+                        .padding(horizontal = FloconTheme.spacing.medium)
                 )
                 Box(
                     modifier = Modifier.size(36.dp).clip(RoundedCornerShape(2.dp))
@@ -163,8 +163,8 @@ fun LeftPannel(
             }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                contentPadding = PaddingValues(FloconTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
             ) {
                 items(count = crashReports.itemCount) { index ->
                     crashReports[index]?.let { crash ->

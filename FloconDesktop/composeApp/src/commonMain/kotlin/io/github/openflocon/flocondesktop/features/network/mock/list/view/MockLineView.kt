@@ -15,7 +15,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.mock.edition.view.MockNetworkMethodView
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockNetworkLineUiModel
@@ -46,10 +45,10 @@ fun MockLineView(
         headlineContent = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp)
+                    .padding(vertical = FloconTheme.spacing.extraSmall)
             ) {
                 MockNetworkMethodView(
                     method = item.method
@@ -77,7 +76,7 @@ fun MockLineView(
         trailingContent = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
             ) {
                 FloconCheckbox(
                     checked = item.isShared,

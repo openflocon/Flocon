@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.MethodFilterState
@@ -28,7 +27,7 @@ fun MethodFilterDropdownContent(
     ) {
         filterState.items.fastForEach { item ->
             val alpha by animateFloatAsState(if (item.isSelected) 1f else 0.3f)
-            Box(modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)) {
+            Box(modifier = Modifier.padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall)) {
                 MethodView(
                     method = item.method,
                     modifier = Modifier.alpha(alpha),

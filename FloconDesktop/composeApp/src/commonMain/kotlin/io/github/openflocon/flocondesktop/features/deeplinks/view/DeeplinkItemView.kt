@@ -59,13 +59,13 @@ fun DeeplinkItemView(
     val values = remember(item.deeplinkId) { mutableStateMapOf<DeeplinkPart.TextField, String>() }
 
     Column(
-            modifier = modifier.padding(vertical = 4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = modifier.padding(vertical = FloconTheme.spacing.extraSmall),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         item.label?.let {
             Text(
                     text = item.label,
-                    modifier = Modifier.padding(start = 4.dp),
+                    modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
                     style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                     color = FloconTheme.colorPalette.onPrimary
             )
@@ -73,7 +73,7 @@ fun DeeplinkItemView(
         Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             FlowRow(
                     modifier =
@@ -83,7 +83,7 @@ fun DeeplinkItemView(
                                             if (item.isHistory) FloconTheme.colorPalette.accent
                                             else FloconTheme.colorPalette.surface
                                     )
-                                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
                     verticalArrangement = Arrangement.Center,
             ) {
                 item.parts.fastForEach { part ->
@@ -124,7 +124,7 @@ fun DeeplinkItemView(
                                     fontStyle = FontStyle.Italic,
                             ),
                     color = FloconTheme.colorPalette.onSurface,
-                    modifier = Modifier.padding(start = 4.dp),
+                    modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
             )
         }
     }
@@ -182,8 +182,8 @@ private fun TextFieldPart(
                                                         isExpanded = false
                                                     }
                                                     .padding(
-                                                            vertical = 4.dp,
-                                                            horizontal = 8.dp,
+                                                            vertical = FloconTheme.spacing.extraSmall,
+                                                            horizontal = FloconTheme.spacing.small,
                                                     )
                             )
                         }
@@ -235,7 +235,7 @@ private fun DeeplinkTextField(
                                     color = FloconTheme.colorPalette.primary,
                                     shape = RoundedCornerShape(2.dp),
                             )
-                            .padding(horizontal = 2.dp, vertical = 2.dp)
+                            .padding(horizontal = FloconTheme.spacing.tiny, vertical = FloconTheme.spacing.tiny)
                             .width(IntrinsicSize.Min),
     ) {
         Text(

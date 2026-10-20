@@ -62,7 +62,7 @@ internal fun TopBarActions(
         )
         FloconVerticalDivider(
             modifier = Modifier.height(30.dp)
-                .padding(horizontal = 2.dp)
+                .padding(horizontal = FloconTheme.spacing.tiny)
         )
         TopBarButton(
             active = false,

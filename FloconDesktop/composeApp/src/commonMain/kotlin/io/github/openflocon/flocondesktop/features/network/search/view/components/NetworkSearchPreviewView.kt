@@ -74,7 +74,7 @@ internal fun NetworkSearchPreviewView(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp, horizontal = 12.dp),
+                .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -83,7 +83,7 @@ internal fun NetworkSearchPreviewView(
                 color = FloconTheme.colorPalette.onPrimary
             )
 
-            Spacer(Modifier.width(16.dp))
+            Spacer(Modifier.width(FloconTheme.spacing.large))
 
             if (matches.isNotEmpty()) {
                 Text(
@@ -91,13 +91,13 @@ internal fun NetworkSearchPreviewView(
                     style = FloconTheme.typography.bodySmall,
                     color = FloconTheme.colorPalette.onPrimary
                 )
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(FloconTheme.spacing.small))
                 FloconIcon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack, // Left Arrow
                     // contentDescription = "Previous Match",
                     modifier = Modifier.clickable { onPrevMatch() }
                 )
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(FloconTheme.spacing.small))
                 FloconIcon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowForward, // Right Arrow
                     // contentDescription = "Next Match",
@@ -109,7 +109,7 @@ internal fun NetworkSearchPreviewView(
                 text = locationLabel,
                 style = FloconTheme.typography.titleSmall,
                 color = FloconTheme.colorPalette.onPrimary,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                modifier = Modifier.padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.extraSmall)
             )
 
             Spacer(Modifier.weight(1f))
@@ -179,8 +179,8 @@ internal fun NetworkSearchPreviewView(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-                    .padding(bottom = 8.dp)
+                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
+                    .padding(bottom = FloconTheme.spacing.small)
                     .clip(shape = RoundedCornerShape(8.dp))
                     .background(FloconTheme.colorPalette.secondary)
             ) {
@@ -192,7 +192,7 @@ internal fun NetworkSearchPreviewView(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(scrollState)
-                            .padding(16.dp),
+                            .padding(FloconTheme.spacing.large),
                         onTextLayout = {
                             layoutResult = it
                         }

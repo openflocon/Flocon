@@ -69,7 +69,6 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -441,20 +440,20 @@ fun NetworkScreen(
                             modifier = Modifier.align(Alignment.BottomCenter)
                         ) {
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp, horizontal = 12.dp)
+                                    .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.medium)
                                     .clip(FloconTheme.shapes.medium)
                                     .background(FloconTheme.colorPalette.secondary)
-                                    .padding(8.dp)
+                                    .padding(FloconTheme.spacing.small)
                             ) {
                                 Text(
                                     text = "${uiState.contentState.multiSelectedIds.size} items selected",
                                     style = FloconTheme.typography.bodySmall,
                                     color = FloconTheme.colorPalette.onSecondary,
-                                    modifier = Modifier.padding(start = 8.dp),
+                                    modifier = Modifier.padding(start = FloconTheme.spacing.small),
                                 )
                                 Spacer(Modifier.weight(1f))
                                 FloconIconTonalButton(
@@ -497,7 +496,7 @@ fun NetworkScreen(
             modifier = Modifier.fillMaxHeight()
         ) {
             Row {
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(FloconTheme.spacing.small))
                 NetworkDetailContent(
                     uiState = it,
                     onAction = { action -> onAction(NetworkAction.DetailAction(action)) },

@@ -110,8 +110,8 @@ fun FloconPanel(
             .fillMaxHeight()
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            modifier = Modifier.padding(FloconTheme.spacing.small),
             content = { scope.actions() }
         )
         FloconSurface(

@@ -53,9 +53,9 @@ internal fun TimelineRowView(
             .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colorPalette.primary)
             .clickable { onClick(row) }
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
         Text(
             text = row.time,
@@ -70,7 +70,7 @@ internal fun TimelineRowView(
         )
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
         ) {
             Text(
                 text = if (row.source == TimelineSource.AppStart) stringResource(Res.string.timeline_app_started) else row.title,
@@ -107,6 +107,6 @@ internal fun SourceBadge(
         modifier = modifier
             .clip(FloconTheme.shapes.small)
             .background(FloconTheme.colorPalette.secondary)
-            .padding(horizontal = 8.dp, vertical = 2.dp),
+            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
     )
 }

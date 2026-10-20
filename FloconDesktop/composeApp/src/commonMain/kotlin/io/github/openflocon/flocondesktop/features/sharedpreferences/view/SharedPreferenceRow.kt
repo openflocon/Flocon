@@ -56,7 +56,7 @@ fun SharedPreferenceRowView(
                 width = 1.dp,
                 color = borderColor,
             )
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -65,7 +65,7 @@ fun SharedPreferenceRowView(
             color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 6.dp, vertical = 6.dp),
+                .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.compact),
         )
 
         VerticalDivider(
@@ -76,10 +76,10 @@ fun SharedPreferenceRowView(
         Row(
             Modifier
                 .weight(1f)
-                .padding(start = 6.dp)
-                .padding(vertical = 6.dp),
+                .padding(start = FloconTheme.spacing.compact)
+                .padding(vertical = FloconTheme.spacing.compact),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             when (model.value) {
                 is SharedPreferencesRowUiModel.Value.BooleanValue -> {
@@ -163,7 +163,7 @@ fun SharedPreferenceRowView(
                         style = FloconTheme.typography.bodySmall,
                         color = FloconTheme.colorPalette.onSurface,
                         modifier = Modifier
-                            .padding(horizontal = 4.dp),
+                            .padding(horizontal = FloconTheme.spacing.extraSmall),
                     )
                 }
 
@@ -180,7 +180,7 @@ fun SharedPreferenceRowView(
                                     textFieldBackgroundColor,
                                     RoundedCornerShape(8.dp)
                                 )
-                                .padding(8.dp)
+                                .padding(FloconTheme.spacing.small)
                         )
                         SharedPreferenceSendButton(
                             icon = Icons.Default.Edit,

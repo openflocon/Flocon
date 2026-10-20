@@ -114,7 +114,7 @@ fun DatabaseQueryLogsView(
         )
 
         Box(
-            modifier = Modifier.fillMaxSize().padding(top = 12.dp)
+            modifier = Modifier.fillMaxSize().padding(top = FloconTheme.spacing.medium)
                 .clip(FloconTheme.shapes.medium)
                 .border(
                     width = 1.dp,
@@ -163,7 +163,7 @@ fun DatabaseQueryLogsView(
                             log = log,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 8.dp, vertical = 8.dp)
+                                .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small)
                         )
                     }
                     HorizontalDivider(color = FloconTheme.colorPalette.secondary)
@@ -203,13 +203,13 @@ private fun DatabaseLogsHeader(
         Column(Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
                     modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
                 ) {
                     FloconTextFieldWithoutM3(
                         value = searchQuery,
@@ -264,7 +264,7 @@ private fun DatabaseLogsHeader(
                     paginationLabel = paginationLabel,
                     onNextPage = onNextPage,
                     isNextEnabled = isNextEnabled,
-                    modifier = Modifier.padding(start = 16.dp),
+                    modifier = Modifier.padding(start = FloconTheme.spacing.large),
                 )
 
                     FloconOverflow {
@@ -289,7 +289,7 @@ private fun DatabaseLogsHeader(
             }
             FilterChips(
                 modifier = Modifier.fillMaxWidth()
-                    .padding(top = 8.dp),
+                    .padding(top = FloconTheme.spacing.small),
                 filterChips = filterChips,
                 toggleFilterType = toggleFilterType,
                 removeFilterChip = removeFilterChip,
@@ -309,7 +309,7 @@ private fun PageSelectorView(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier,
     ) {
         IconButton(
@@ -352,8 +352,8 @@ private fun FilterChips(
     val itemsColor = FloconTheme.colorPalette.onSecondary
     if (filterChips.isNotEmpty()) {
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             modifier = modifier,
         ) {
             filterChips.fastForEach { chip ->

@@ -80,7 +80,7 @@ fun DatabaseResultView(
                 Text(
                     text = result.text,
                     color = FloconTheme.colorPalette.onPrimary,
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(FloconTheme.spacing.small),
                 )
             }
 
@@ -163,7 +163,7 @@ fun DatabaseResultView(
                                     .fillMaxWidth()
                                     .background(FloconTheme.colorPalette.primary)
                                     .height(32.dp)
-                                    .padding(horizontal = 8.dp),
+                                    .padding(horizontal = FloconTheme.spacing.small),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 result.columns
@@ -176,7 +176,7 @@ fun DatabaseResultView(
                                             color = FloconTheme.colorPalette.onPrimary,
                                             modifier = Modifier
                                                 .width(columnsWidth)
-                                                .padding(all = 4.dp),
+                                                .padding(all = FloconTheme.spacing.extraSmall),
                                         )
                                     }
                             }
@@ -221,7 +221,7 @@ private fun DatabaseResultRowView(
     Row(
         modifier = Modifier
             .height(32.dp)
-            .padding(horizontal = 8.dp)
+            .padding(horizontal = FloconTheme.spacing.small)
             .then(
                 if (selected) {
                     Modifier.border(
@@ -256,7 +256,7 @@ private fun DatabaseResultRowView(
                         if (item == null)
                             alpha = 0.5f
                     }
-                    .padding(horizontal = 4.dp),
+                    .padding(horizontal = FloconTheme.spacing.extraSmall),
             )
         }
     }
@@ -271,7 +271,7 @@ private fun ResultHeader(
     Row(
         modifier
             .background(FloconTheme.colorPalette.surface)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -279,7 +279,7 @@ private fun ResultHeader(
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
             color = FloconTheme.colorPalette.onPrimary,
             modifier = Modifier
-                .padding(all = 4.dp),
+                .padding(all = FloconTheme.spacing.extraSmall),
         )
 
         Spacer(Modifier.weight(1f))

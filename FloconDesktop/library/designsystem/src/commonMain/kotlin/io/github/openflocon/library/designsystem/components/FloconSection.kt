@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
@@ -49,7 +48,7 @@ fun FloconSection(
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
@@ -60,19 +59,19 @@ fun FloconSection(
                             Modifier
                                 .clip(FloconTheme.shapes.small)
                                 .clickable { expanded = !expanded }
-                                .padding(vertical = 4.dp, horizontal = 2.dp)
+                                .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.tiny)
                         } else {
                             Modifier
                         }
                     ),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
             ) {
                 if (expandable) {
                     FloconIcon(
                         imageVector = Icons.Outlined.ExpandMore,
                         modifier = Modifier
-                            .padding(4.dp)
+                            .padding(FloconTheme.spacing.extraSmall)
                             .graphicsLayer { rotationZ = rotate }
                     )
                 }

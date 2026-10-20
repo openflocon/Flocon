@@ -38,7 +38,7 @@ fun FloconTab(
                 },
             ).clickable {
                 onSelected()
-            }.padding(vertical = 8.dp),
+            }.padding(vertical = FloconTheme.spacing.small),
         text = text,
         textAlign = TextAlign.Center,
         style = FloconTheme.typography.bodyMedium,

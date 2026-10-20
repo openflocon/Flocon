@@ -15,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.no_devices_found
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
@@ -101,7 +100,7 @@ private fun Empty() {
     ) {
         Text(
             text = stringResource(Res.string.no_devices_found),
-            modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
+            modifier = Modifier.padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.medium),
             style = FloconTheme.typography.bodyMedium,
             color = FloconTheme.colorPalette.onSurface,
         )

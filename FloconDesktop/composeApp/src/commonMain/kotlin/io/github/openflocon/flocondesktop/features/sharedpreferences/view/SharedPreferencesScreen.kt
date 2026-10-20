@@ -110,7 +110,7 @@ fun SharedPrefScreen(
                 state = deviceSharedPrefs,
                 onSharedPrefSelected = onSharedPrefSelected,
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
             SelectionContainer {
                 val lazyListState = rememberLazyListState()
@@ -131,7 +131,7 @@ fun SharedPrefScreen(
                     ) {
                         Row(
                             modifier = modifier
-                                .padding(vertical = 8.dp, horizontal = 16.dp),
+                                .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.large),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             SharedPreferencesFilterBar(

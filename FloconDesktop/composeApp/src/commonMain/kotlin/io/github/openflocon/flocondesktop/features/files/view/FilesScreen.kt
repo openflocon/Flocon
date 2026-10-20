@@ -113,7 +113,7 @@ private fun FilesScreen(
             ) {
                 LazyColumn(
                     state = listState,
-                    contentPadding = PaddingValues(vertical = 4.dp),
+                    contentPadding = PaddingValues(vertical = FloconTheme.spacing.extraSmall),
                     modifier = Modifier
                         .fillMaxSize(),
                 ) {

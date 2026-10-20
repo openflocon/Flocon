@@ -26,7 +26,7 @@ fun DatabaseQueryLogItemView(
             if (log.isFromOldSession) {
                 Modifier.alpha(0.8f)
             } else Modifier
-        ), horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ), horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
     ) {
         Text(
             modifier = Modifier.width(60.dp),
@@ -36,7 +36,7 @@ fun DatabaseQueryLogItemView(
             color = FloconTheme.colorPalette.onSurface
                 .copy(alpha = 0.6f)
         )
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny)) {
             SelectionContainer {
                 Text(
                     text = log.sqlQuery,

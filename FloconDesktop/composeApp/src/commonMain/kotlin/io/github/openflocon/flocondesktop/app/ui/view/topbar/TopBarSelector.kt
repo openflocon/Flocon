@@ -27,7 +27,7 @@ internal fun TopBarSelector(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(10.dp),
-    contentPadding: PaddingValues = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.extraSmall),
     content: @Composable RowScope.() -> Unit,
 ) {
     Row(
@@ -42,7 +42,7 @@ internal fun TopBarSelector(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         content()
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
         Image(
             imageVector = Icons.Outlined.KeyboardArrowDown,
             contentDescription = "",

@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.smartphone
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceAppUiModel
@@ -65,7 +64,7 @@ internal fun TopBarAppView(
             Text(
                 text = deviceApp.packageName,
                 style = FloconTheme.typography.bodySmall.copy(
-                    fontSize = 10.sp,
+                    fontSize = FloconTheme.typography.labelSmall.fontSize,
                 ),
                 color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.8f),
             )
@@ -76,7 +75,7 @@ internal fun TopBarAppView(
                 modifier = Modifier
                     .clip(RoundedCornerShape(4.dp))
                     .background(FloconTheme.colorPalette.onPrimary.copy(alpha = 0.8f))
-                    .padding(2.dp)
+                    .padding(FloconTheme.spacing.tiny)
                     .clickable(onClick = deleteClick),
                 contentAlignment = Alignment.Center,
             ) {
