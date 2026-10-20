@@ -147,14 +147,18 @@ internal class AppViewModel(
                 if (available.isNotEmpty() && available.none { it.screen == current }) {
                     onSelectMenu(AppAction.SelectMenu(available.first().screen))
                 }
+            }
+        }
 
-                if (shouldShowReleaseNotesUseCase(current = BuildConfig.APP_VERSION)) {
-                    withContext(dispatcherProvider.ui) {
-                        navigationState.navigate(ReleaseNotesRoutes.Current(BuildConfig.APP_VERSION))
-                    }
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            if (shouldShowReleaseNotesUseCase(current = BuildConfig.APP_VERSION)) {
+                withContext(dispatcherProvider.ui) {
+                    navigationState.navigate(ReleaseNotesRoutes.Current(BuildConfig.APP_VERSION))
                 }
             }
+        }
 
+        viewModelScope.launch(dispatcherProvider.viewModel) {
             initAdbPathUseCase()
                 .alsoFailure {
                     logManager.e(TAG, "ADB init failed", it)
