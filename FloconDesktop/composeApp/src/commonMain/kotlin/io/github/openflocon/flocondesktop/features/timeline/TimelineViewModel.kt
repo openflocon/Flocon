@@ -50,6 +50,10 @@ internal class TimelineViewModel(
     private val _selectedSources = MutableStateFlow(TimelineSource.entries.toSet())
     val selectedSources: StateFlow<Set<TimelineSource>> = _selectedSources.asStateFlow()
 
+    // the last event opened, highlighted in the list
+    private val _selectedKey = MutableStateFlow<String?>(null)
+    val selectedKey: StateFlow<String?> = _selectedKey.asStateFlow()
+
     // shared by the events and the counters, so they always describe the same filter
     private val filter: Flow<TimelineFilterDomainModel> = combine(
         // no delay when the text is cleared, a short one while typing
@@ -86,10 +90,16 @@ internal class TimelineViewModel(
             is TimelineAction.ToggleSource -> _selectedSources.update { current ->
                 if (action.source in current) current - action.source else current + action.source
             }
-            is TimelineAction.Open -> when (val destination = action.row.toDestination()) {
-                is TimelineDestination.Panel -> navigationState.navigate(destination.route)
-                is TimelineDestination.Screen -> menuNavigator.open(destination.screen)
-                null -> Unit
+            is TimelineAction.Open -> {
+                val destination = action.row.toDestination()
+                if (destination != null) {
+                    _selectedKey.update { action.row.key }
+                }
+                when (destination) {
+                    is TimelineDestination.Panel -> navigationState.navigate(destination.route)
+                    is TimelineDestination.Screen -> menuNavigator.open(destination.screen)
+                    null -> Unit
+                }
             }
         }
     }

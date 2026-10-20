@@ -18,6 +18,7 @@ class DestinationTest {
         source = source,
         day = "20/10/2026",
         time = "12:00:00.000",
+        timestamp = 0L,
         title = "title",
         subtitle = null,
     )

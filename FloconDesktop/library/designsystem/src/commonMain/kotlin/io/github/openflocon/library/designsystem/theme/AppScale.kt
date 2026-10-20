@@ -1,6 +1,10 @@
 package io.github.openflocon.library.designsystem.theme
 
+import androidx.compose.runtime.staticCompositionLocalOf
 import kotlin.math.abs
+
+// the scale applied to the typography and the spacing, for the sizes that hold text (ex: the width of a column of times)
+val LocalFloconScale = staticCompositionLocalOf { 1f }
 
 // The scale of the application: it only drives the typography and the spacing of the theme
 enum class AppScale(val multiplier: Float, val label: String) {

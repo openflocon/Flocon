@@ -27,6 +27,7 @@ import io.github.openflocon.library.designsystem.theme.FloconColors
 import io.github.openflocon.library.designsystem.theme.FloconDarkColors
 import io.github.openflocon.library.designsystem.theme.FloconLightColors
 import io.github.openflocon.library.designsystem.theme.LocalFloconColors
+import io.github.openflocon.library.designsystem.theme.LocalFloconScale
 import io.github.openflocon.library.designsystem.theme.FloconShape
 import io.github.openflocon.library.designsystem.theme.FloconSpacing
 import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
@@ -65,6 +66,10 @@ object FloconTheme {
     val spacing: FloconSpacing
         @Composable @ReadOnlyComposable
         get() = LocalFloconSpacing.current
+
+    val scale: Float
+        @Composable @ReadOnlyComposable
+        get() = LocalFloconScale.current
 }
 
 private val LocalIsDarkTheme = staticCompositionLocalOf { true }
@@ -119,6 +124,7 @@ fun FloconTheme(
             LocalFloconColorPalette provides colorPalette,
             LocalFloconColors provides if (isDarkTheme) FloconDarkColors else FloconLightColors,
             LocalFloconSpacing provides remember(scale) { FloconSpacing().scaledBy(scale) },
+            LocalFloconScale provides scale,
             LocalTextSelectionColors provides selectionTextColor,
             LocalScrollbarStyle provides scrollbarStyle,
             LocalMinimumInteractiveComponentSize provides Dp.Unspecified,
