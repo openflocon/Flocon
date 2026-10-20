@@ -79,15 +79,10 @@ private fun Content(
                 )
                 FeatureFlagDetailLineView(
                     modifier = Modifier.fillMaxWidth(),
-                    label = stringResource(Res.string.feature_flag_provider),
-                    value = uiState.provider,
-                    labelWidth = linesLabelWidth,
-                )
-                FeatureFlagDetailLineView(
-                    modifier = Modifier.fillMaxWidth(),
                     label = stringResource(Res.string.feature_flag_variant),
                     value = uiState.variant,
                     labelWidth = linesLabelWidth,
+                    withBackground = true,
                 )
                 Text(
                     text = stringResource(Res.string.feature_flag_payload),
