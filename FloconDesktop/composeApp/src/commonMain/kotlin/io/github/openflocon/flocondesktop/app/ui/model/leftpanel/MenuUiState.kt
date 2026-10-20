@@ -121,6 +121,8 @@ internal fun buildMenu() = MenuState(
             id = "data",
             title = Res.string.menu_data,
             items = persistentListOf(
+                // merges the events of every plugin, not related to a single plugin: always displayed
+                item(SubScreen.Timeline),
                 item(SubScreen.Dashboard, plugin = DevicePlugin.Dashboard),
                 item(SubScreen.Analytics, plugin = DevicePlugin.Analytics),
                 item(SubScreen.Tables, plugin = DevicePlugin.Tables),

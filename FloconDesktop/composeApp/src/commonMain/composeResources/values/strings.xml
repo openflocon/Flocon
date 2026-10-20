@@ -34,6 +34,15 @@
     <string name="menu_data">Data</string>
     <string name="menu_item_analytics">Analytics</string>
     <string name="menu_item_crashReporter">Crashes</string>
+    <string name="menu_item_timeline">Timeline</string>
+    <string name="timeline_empty">No event yet</string>
+    <string name="timeline_source_network">Network</string>
+    <string name="timeline_source_analytics">Analytics</string>
+    <string name="timeline_source_crash">Crash</string>
+    <string name="timeline_source_database">Database</string>
+    <string name="timeline_source_table">Table</string>
+    <string name="timeline_source_adb">ADB</string>
+    <string name="timeline_source_deeplink">Deeplink</string>
     <string name="menu_item_dashboard">Dashboard</string>
     <string name="menu_item_database">Database</string>
     <string name="menu_item_adbCommander">ADB Commander</string>

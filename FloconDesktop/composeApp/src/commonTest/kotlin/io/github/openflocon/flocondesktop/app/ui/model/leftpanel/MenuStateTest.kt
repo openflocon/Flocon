@@ -32,7 +32,7 @@ class MenuStateTest {
         )
 
         assertEquals(
-            listOf(SubScreen.Network, SubScreen.Images, SubScreen.Database, SubScreen.AdbCommander),
+            listOf(SubScreen.Network, SubScreen.Images, SubScreen.Database, SubScreen.Timeline, SubScreen.AdbCommander),
             menu.screens(),
         )
         // always displayed
@@ -72,8 +72,19 @@ class MenuStateTest {
             collapsedSectionIds = setOf("network"),
         )
 
-        // storage and data have no installed plugin
-        assertEquals(listOf("network", "actions"), menu.sections.map { it.id })
+        // storage has no installed plugin, data only keeps the timeline that merges every plugin
+        assertEquals(listOf("network", "data", "actions"), menu.sections.map { it.id })
         assertTrue(menu.sections.first { it.id == "network" }.isCollapsed)
+    }
+
+    @Test
+    fun `the timeline is displayed whatever the installed plugins`() {
+        val menu = buildMenu().applyPreferences(
+            installedPlugins = emptySet(),
+            pinnedIds = emptyList(),
+            collapsedSectionIds = emptySet(),
+        )
+
+        assertEquals(listOf(SubScreen.Timeline, SubScreen.AdbCommander), menu.screens())
     }
 }

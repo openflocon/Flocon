@@ -52,13 +52,14 @@ import io.github.openflocon.data.local.network.models.mock.MockNetworkEntity
 import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.data.local.table.models.TableItemEntity
+import io.github.openflocon.data.local.timeline.dao.TimelineDao
 import io.github.openflocon.flocondesktop.common.db.converters.DashboardConverters
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 83,
+    version = 84,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -116,6 +117,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val crashReportDao: CrashReportDao
     abstract val databaseQueryLogDao: DatabaseQueryLogDao
     abstract val adbCommanderDao: AdbCommanderDao
+    abstract val timelineDao: TimelineDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()

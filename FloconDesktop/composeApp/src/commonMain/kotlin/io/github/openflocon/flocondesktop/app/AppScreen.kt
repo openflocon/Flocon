@@ -28,6 +28,7 @@ import io.github.openflocon.flocondesktop.features.images.imageRoutes
 import io.github.openflocon.flocondesktop.features.network.networkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
+import io.github.openflocon.flocondesktop.features.timeline.timelineRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -127,5 +128,6 @@ private fun Content(
         settingsRoutes()
         releaseNotesRoutes()
         crashReporterRoutes()
+        timelineRoutes()
     }
 }

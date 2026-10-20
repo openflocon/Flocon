@@ -36,6 +36,7 @@ data class DeeplinkEntity(
     val description: String?,
     val parametersAsJson: String,
     val isHistory: Boolean,
+    val executedAt: Long = 0L, // for the history: when the deeplink has been opened (0 for the other ones)
 ) {
 
     @Serializable
