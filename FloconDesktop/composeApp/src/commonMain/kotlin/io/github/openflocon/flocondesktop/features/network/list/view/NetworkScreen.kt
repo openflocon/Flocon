@@ -71,12 +71,16 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailContent
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
@@ -286,6 +290,7 @@ fun NetworkScreen(
 //                            onCheckedChange = {}
 //                        )
 //                    }
+                    FeatureDocButton(doc = FeatureDoc.Network)
                     FloconOverflow {
                         FloconDropdownMenuItem(
                             text = "Export CSV",
@@ -433,6 +438,16 @@ fun NetworkScreen(
                                     Box(Modifier) // display nothing during load
                                 }
                             }
+                        }
+                        if (
+                            rows.itemCount == 0 &&
+                            rows.loadState.refresh is LoadState.NotLoading &&
+                            filterText.value.isEmpty()
+                        ) {
+                            FeatureEmptyState(
+                                doc = FeatureDoc.Network,
+                                modifier = Modifier.fillMaxSize(),
+                            )
                         }
                         this@Row.AnimatedVisibility(
                             visible = uiState.contentState.selecting,

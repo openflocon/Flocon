@@ -102,6 +102,8 @@ nav:
       - Data Tables: table.md
       - Deeplink Launcher: deeplink.md
       - Analytics Viewer: analytics.md
+      - Crash Reporter: crash-reporter.md
+      - ADB Commander: adb-commander.md
     - AI Agents (MCP): mcp.md
   - About:
     - The Story: about.md

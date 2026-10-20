@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesViewModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
@@ -102,7 +104,15 @@ fun SharedPrefScreen(
     FloconFeature(
         modifier = modifier.fillMaxSize()
     ) {
-        Row(Modifier.fillMaxSize()) {
+        if (deviceSharedPrefs is SharedPrefsStateUiModel.Empty) {
+            FeatureEmptyState(
+                doc = FeatureDoc.SharedPreferences,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.primary),
+            )
+        } else Row(Modifier.fillMaxSize()) {
             SharedPreferenceSelectorView(
                 modifier = Modifier
                     .fillMaxHeight()

@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.crashreporter
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,11 +31,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.crashes
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterAction
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterSelectedUiModel
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterUiModel
@@ -71,7 +76,15 @@ private fun CrashReportScreen(
     FloconFeature(
         modifier = modifier
     ) {
-        Row(Modifier.fillMaxSize()) {
+        if (crashReports.itemCount == 0 && crashReports.loadState.refresh is LoadState.NotLoading) {
+            FeatureEmptyState(
+                doc = FeatureDoc.CrashReporter,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.primary),
+            )
+        } else Row(Modifier.fillMaxSize()) {
             LeftPannel(
                 modifier = Modifier.fillMaxHeight()
                     .width(340.dp),
@@ -146,6 +159,7 @@ fun LeftPannel(
                         .padding(top = 8.dp)
                         .padding(horizontal = 12.dp)
                 )
+                FeatureDocButton(doc = FeatureDoc.CrashReporter)
                 Box(
                     modifier = Modifier.size(36.dp).clip(RoundedCornerShape(2.dp))
                         .clickable {

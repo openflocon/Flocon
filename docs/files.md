@@ -18,3 +18,16 @@ From the desktop companion, you can:
 - **Browse Directories**: Traverse internal files, cache folders, and databases.
 - **Inspect Metadata**: View exact file sizes, MIME types, modification timestamps, and absolute file paths.
 - **Download & View**: Inspect logs, exported JSON/database backups, and downloaded cached media directly on your desktop.
+---
+
+## Setup
+
+No extra code is needed: the file explorer is available as soon as `Flocon.initialize(...)` is called (see [Initialize the SDK](setup.md#2-initialize-the-sdk)).
+
+On Android, the root lists the two folders of your app sandbox:
+
+- **Caches**: `context.cacheDir`
+- **Files**: `context.filesDir`
+
+!!! tip
+    Select your device and app in the top bar of Flocon Desktop, then open a folder to browse its content. Use the refresh button to reload a folder that changed on the device.

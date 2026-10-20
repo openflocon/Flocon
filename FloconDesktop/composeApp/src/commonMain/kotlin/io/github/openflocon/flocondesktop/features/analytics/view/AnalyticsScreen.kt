@@ -34,6 +34,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -43,6 +44,9 @@ import flocondesktop.composeapp.generated.resources.auto_scroll
 import flocondesktop.composeapp.generated.resources.clear_old_sessions
 import flocondesktop.composeapp.generated.resources.export_csv
 import flocondesktop.composeapp.generated.resources.invert_list
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsViewModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
@@ -145,6 +149,7 @@ fun AnalyticsScreen(
                 )
             },
             actions = {
+                FeatureDocButton(doc = FeatureDoc.Analytics)
                 FloconOverflow {
                     FloconDropdownMenuItem(
                         text = stringResource(Res.string.export_csv),
@@ -227,6 +232,16 @@ fun AnalyticsScreen(
                         }
                     }
                 }
+            }
+            if (
+                rows.itemCount == 0 &&
+                rows.loadState.refresh is LoadState.NotLoading &&
+                filterText.value.isEmpty()
+            ) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.Analytics,
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
             FloconVerticalScrollbar(
                 adapter = scrollAdapter,

@@ -28,6 +28,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.deeplinks.DeepLinkViewModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenState
@@ -81,11 +84,21 @@ private fun DeeplinkScreen(
                     submit = submit,
                     modifier = Modifier.fillMaxWidth(),
                 )
-            }
+            },
+            actions = {
+                FeatureDocButton(doc = FeatureDoc.Deeplinks)
+            },
         )
 
-        // Main body — two rows of equal weight
-        Column(
+        if (state.deepLinks.isEmpty() && state.variables.isEmpty()) {
+            FeatureEmptyState(
+                doc = FeatureDoc.Deeplinks,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colorPalette.primary),
+            )
+        } else Column( // Main body — two rows of equal weight
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxSize()
         ) {

@@ -106,4 +106,25 @@
     <string name="tables_empty">No Tables</string>
     <string name="time">Time</string>
     <string name="with_folders_size">With folders size</string>
+    <!-- Feature documentation & empty states -->
+    <string name="feature_doc_how_to_setup">How to set up</string>
+    <string name="feature_doc_open_documentation">Open the documentation</string>
+    <string name="feature_doc_network_empty_title">No network calls yet</string>
+    <string name="feature_doc_network_empty_description">Requests sent through a Flocon interceptor (OkHttp, Ktor, Apollo, gRPC, WebSockets) will show up here.</string>
+    <string name="feature_doc_images_empty_title">No images yet</string>
+    <string name="feature_doc_images_empty_description">Images loaded by your app with Coil will show up here once the Flocon interceptor is installed.</string>
+    <string name="feature_doc_database_empty_title">No database detected</string>
+    <string name="feature_doc_database_empty_description">SQLite files are found automatically on Android. Register in-memory or multiplatform databases to browse and query them.</string>
+    <string name="feature_doc_sharedpreferences_empty_title">No preferences detected</string>
+    <string name="feature_doc_sharedpreferences_empty_description">SharedPreferences are indexed automatically on Android. Register your DataStores or custom storages to inspect and edit them.</string>
+    <string name="feature_doc_dashboard_empty_title">No dashboard yet</string>
+    <string name="feature_doc_dashboard_empty_description">Build reactive dashboards from your app code to display live values and trigger actions.</string>
+    <string name="feature_doc_analytics_empty_title">No analytics events yet</string>
+    <string name="feature_doc_analytics_empty_description">Forward your tracking calls to Flocon to check every event and its properties in real time.</string>
+    <string name="feature_doc_tables_empty_title">No tables yet</string>
+    <string name="feature_doc_tables_empty_description">Log structured rows from your app to inspect them as live, filterable tables.</string>
+    <string name="feature_doc_deeplinks_empty_title">No deeplinks declared</string>
+    <string name="feature_doc_deeplinks_empty_description">Declare your app deeplinks and their variables in Kotlin to launch them in one click.</string>
+    <string name="feature_doc_crashreporter_empty_title">No crash reported</string>
+    <string name="feature_doc_crashreporter_empty_description">Uncaught crashes are captured as soon as Flocon is initialized, then sent the next time your app connects.</string>
 </resources>

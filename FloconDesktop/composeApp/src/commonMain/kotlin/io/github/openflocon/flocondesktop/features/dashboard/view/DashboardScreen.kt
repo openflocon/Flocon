@@ -22,6 +22,9 @@ import androidx.compose.foundation.layout.height
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.dashboard_action_delete
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.dashboard.DashboardViewModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArrangement
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
@@ -97,6 +100,8 @@ fun DashboardScreen(
                         arrangement = arrangement
                     )
 
+                    FeatureDocButton(doc = FeatureDoc.Dashboard)
+
                     FloconOverflow {
                         FloconDropdownMenuItem(
                             text = stringResource(Res.string.dashboard_action_delete),
@@ -109,7 +114,15 @@ fun DashboardScreen(
             
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(Modifier.fillMaxSize()) {
+            if (deviceDashboards is DashboardsStateUiModel.Empty) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.Dashboard,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(FloconTheme.shapes.medium)
+                        .background(FloconTheme.colorPalette.primary),
+                )
+            } else Row(Modifier.fillMaxSize()) {
                 DashboardSidebarView(
                     modifier = Modifier
                         .fillMaxHeight()
