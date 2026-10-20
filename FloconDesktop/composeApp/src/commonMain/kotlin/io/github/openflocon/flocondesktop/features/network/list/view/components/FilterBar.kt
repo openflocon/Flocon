@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
@@ -50,6 +51,7 @@ fun FilterBar(
     filterText: State<String>,
     onTextChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    containerColor: Color = FloconTheme.colorPalette.secondary,
 ) {
     val onTextChangedCallback by rememberUpdatedState(onTextChange)
     val displayClearButton by remember { derivedStateOf { filterText.value.isNotEmpty() } }
@@ -66,7 +68,7 @@ fun FilterBar(
                 modifier = Modifier.size(16.dp)
             )
         },
-        containerColor = FloconTheme.colorPalette.secondary,
+        containerColor = containerColor,
         trailingComponent = {
             AnimatedVisibility(
                 visible = displayClearButton,

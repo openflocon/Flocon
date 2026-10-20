@@ -45,6 +45,23 @@
     <string name="timeline_source_deeplink">Deeplink</string>
     <string name="timeline_source_app_start">App start</string>
     <string name="timeline_app_started">App started</string>
+    <string name="timeline_live">Live</string>
+    <plurals name="timeline_counter_events">
+        <item quantity="one">event</item>
+        <item quantity="other">events</item>
+    </plurals>
+    <plurals name="timeline_counter_sessions">
+        <item quantity="one">session</item>
+        <item quantity="other">sessions</item>
+    </plurals>
+    <plurals name="timeline_counter_http_errors">
+        <item quantity="one">HTTP error</item>
+        <item quantity="other">HTTP errors</item>
+    </plurals>
+    <plurals name="timeline_counter_crashes">
+        <item quantity="one">crash</item>
+        <item quantity="other">crashes</item>
+    </plurals>
     <plurals name="timeline_session_events">
         <item quantity="one">%1$d event</item>
         <item quantity="other">%1$d events</item>

@@ -2,20 +2,32 @@ package io.github.openflocon.flocondesktop.features.timeline
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isMetaPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,6 +45,7 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeaderView
 import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
+import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeaderView
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowView
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
@@ -49,6 +62,7 @@ fun TimelineScreen(
     val selectedSources by viewModel.selectedSources.collectAsStateWithLifecycle()
     val selectedKey by viewModel.selectedKey.collectAsStateWithLifecycle()
     val summary by viewModel.summary.collectAsStateWithLifecycle()
+    val isLive by viewModel.isLive.collectAsStateWithLifecycle()
 
     TimelineContent(
         modifier = modifier.fillMaxSize(),
@@ -57,10 +71,12 @@ fun TimelineScreen(
         selectedSources = selectedSources,
         selectedKey = selectedKey,
         summary = summary,
+        isLive = isLive,
         onAction = viewModel::onAction,
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun TimelineContent(
     rows: LazyPagingItems<TimelineItemUiModel>,
@@ -68,27 +84,53 @@ internal fun TimelineContent(
     selectedSources: Set<TimelineSource>,
     selectedKey: String?,
     summary: TimelineSummaryUiModel,
+    isLive: Boolean,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
     val panelShape = FloconTheme.shapes.large
 
+    // Ctrl+K (Cmd+K on macOS) goes to the search field, wherever the focus is in the screen
+    val screenFocus = remember { FocusRequester() }
+    val searchFocus = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        runCatching { screenFocus.requestFocus() }
+    }
+
     FloconFeature(
         modifier = modifier
             .background(colors.bg100, panelShape)
             .border(1.dp, colors.line, panelShape)
-            .padding(FloconTheme.spacing.large),
+            .padding(FloconTheme.spacing.large)
+            .focusRequester(screenFocus)
+            .focusable()
+            .onPreviewKeyEvent { event ->
+                if (event.type == KeyEventType.KeyDown && event.key == Key.K && (event.isCtrlPressed || event.isMetaPressed)) {
+                    runCatching { searchFocus.requestFocus() }
+                    true
+                } else {
+                    false
+                }
+            },
     ) {
-        Row(
+        TimelineHeaderView(
+            summary = summary,
+            isLive = isLive,
+        )
+
+        FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             FilterBar(
                 filterText = filterText,
                 placeholderText = stringResource(Res.string.filter),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .width(280.dp * FloconTheme.scale)
+                    .focusRequester(searchFocus),
+                containerColor = colors.bg200,
                 onTextChange = { onAction(TimelineAction.FilterTextChanged(it)) },
             )
             TimelineSource.entries.forEach { source ->

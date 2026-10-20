@@ -7,6 +7,7 @@ import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
@@ -39,6 +40,7 @@ import kotlinx.coroutines.flow.update
 internal class TimelineViewModel(
     observeTimelineUseCase: ObserveTimelineUseCase,
     observeTimelineSummaryUseCase: ObserveTimelineSummaryUseCase,
+    observeIsCurrentDeviceAndAppActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
     dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
     private val menuNavigator: MenuNavigator,
@@ -49,6 +51,10 @@ internal class TimelineViewModel(
 
     private val _selectedSources = MutableStateFlow(TimelineSource.entries.toSet())
     val selectedSources: StateFlow<Set<TimelineSource>> = _selectedSources.asStateFlow()
+
+    // the device is connected
+    val isLive: StateFlow<Boolean> = observeIsCurrentDeviceAndAppActiveUseCase()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     // the last event opened, highlighted in the list
     private val _selectedKey = MutableStateFlow<String?>(null)
