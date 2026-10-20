@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -64,10 +65,9 @@ internal fun TimelineRowView(
             maxLines = 1,
             modifier = Modifier.width(96.dp),
         )
-        SourceBadge(
-            source = row.source,
-            modifier = Modifier.width(80.dp),
-        )
+        Box(modifier = Modifier.width(104.dp)) {
+            EventBadge(source = row.source)
+        }
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
@@ -92,21 +92,4 @@ internal fun TimelineRowView(
             }
         }
     }
-}
-
-@Composable
-internal fun SourceBadge(
-    source: TimelineSource,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = stringResource(source.label()),
-        style = FloconTheme.typography.labelSmall,
-        color = FloconTheme.colorPalette.onSecondary,
-        maxLines = 1,
-        modifier = modifier
-            .clip(FloconTheme.shapes.small)
-            .background(FloconTheme.colorPalette.secondary)
-            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
-    )
 }

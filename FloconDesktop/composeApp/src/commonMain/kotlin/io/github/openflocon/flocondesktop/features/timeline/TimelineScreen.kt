@@ -1,7 +1,5 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +13,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -26,6 +23,8 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowView
 import io.github.openflocon.flocondesktop.features.timeline.view.label
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -41,12 +40,14 @@ fun TimelineScreen(
     val rows = viewModel.items.collectAsLazyPagingItems()
     val filterText = viewModel.filterText.collectAsStateWithLifecycle()
     val selectedSources by viewModel.selectedSources.collectAsStateWithLifecycle()
+    val summary by viewModel.summary.collectAsStateWithLifecycle()
 
     TimelineScreen(
         modifier = modifier.fillMaxSize(),
         rows = rows,
         filterText = filterText,
         selectedSources = selectedSources,
+        summary = summary,
         onAction = viewModel::onAction,
     )
 }
@@ -56,6 +57,7 @@ private fun TimelineScreen(
     rows: LazyPagingItems<TimelineItemUiModel>,
     filterText: State<String>,
     selectedSources: Set<TimelineSource>,
+    summary: TimelineSummaryUiModel,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -74,6 +76,7 @@ private fun TimelineScreen(
             TimelineSource.entries.forEach { source ->
                 SourceChip(
                     source = source,
+                    count = summary.sourceCounts[source] ?: 0,
                     selected = source in selectedSources,
                     onClick = { onAction(TimelineAction.ToggleSource(source)) },
                 )
@@ -116,24 +119,4 @@ private fun TimelineScreen(
             }
         }
     }
-}
-
-@Composable
-private fun SourceChip(
-    source: TimelineSource,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = stringResource(source.label()),
-        style = FloconTheme.typography.labelMedium,
-        color = if (selected) FloconTheme.colorPalette.onAccent else FloconTheme.colorPalette.onSecondary,
-        maxLines = 1,
-        modifier = modifier
-            .clip(FloconTheme.shapes.medium)
-            .background(if (selected) FloconTheme.colorPalette.accent else FloconTheme.colorPalette.secondary)
-            .clickable(onClick = onClick)
-            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact),
-    )
 }
