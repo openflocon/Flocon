@@ -7,6 +7,8 @@ import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class DestinationTest {
 
@@ -45,7 +47,14 @@ class DestinationTest {
     }
 
     @Test
-    fun `every source has a destination`() {
-        TimelineSource.entries.forEach { row(it).toDestination() }
+    fun `an app start has nothing to open`() {
+        assertNull(row(TimelineSource.AppStart).toDestination())
+    }
+
+    @Test
+    fun `every other source has a destination`() {
+        (TimelineSource.entries - TimelineSource.AppStart).forEach {
+            assertNotNull(row(it).toDestination(), "$it should open something")
+        }
     }
 }

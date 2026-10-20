@@ -49,6 +49,32 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `the app starts are the sessions found in the network, database and analytics tables`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.AppStart)))
+
+        assertTrue(query.sql.contains("SELECT appInstance FROM FloconNetworkCallEntity"))
+        assertTrue(query.sql.contains("SELECT appInstance FROM DatabaseQueryLogEntity"))
+        assertTrue(query.sql.contains("SELECT appInstance FROM AnalyticsItemEntity"))
+        assertEquals(3, Regex(" UNION SELECT").findAll(query.sql).count() + 1)
+        assertEquals(listOf<Any>("device", "com.app", "device", "com.app", "device", "com.app"), query.params)
+    }
+
+    @Test
+    fun `the session filter keeps only the start of that session`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.AppStart), appInstance = 42L))
+
+        assertTrue(query.sql.contains(" WHERE appInstance = ?"))
+        assertEquals(42L, query.params.last())
+    }
+
+    @Test
+    fun `the app starts are hidden while filtering on a text`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.AppStart), text = "login"))
+
+        assertTrue(query.sql.endsWith("WHERE 0"))
+    }
+
+    @Test
     fun `the adb commands are only scoped by the device`() {
         val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Adb)))
 
@@ -67,8 +93,8 @@ class TimelineQueryBuilderTest {
     fun `the text filter is applied on every source`() {
         val query = build(TimelineFilterDomainModel(text = "login"))
 
-        // every source filters on two columns
-        val expected = TimelineSource.entries.size * 2
+        // every source but the app starts (nothing to search in) filters on two columns
+        val expected = (TimelineSource.entries.size - 1) * 2
         assertEquals(expected, Regex("LIKE \\?").findAll(query.sql).count())
         assertEquals(expected, query.params.count { it == "%login%" })
     }
@@ -77,9 +103,9 @@ class TimelineQueryBuilderTest {
     fun `the session filter is only applied on the sources that store it`() {
         val query = build(TimelineFilterDomainModel(appInstance = 42L))
 
-        // network, database and analytics
-        assertEquals(3, Regex("appInstance = \\?").findAll(query.sql).count())
-        assertEquals(3, query.params.count { it == 42L })
+        // network, database, analytics and the app starts
+        assertEquals(4, Regex("appInstance = \\?").findAll(query.sql).count())
+        assertEquals(4, query.params.count { it == 42L })
     }
 
     @Test

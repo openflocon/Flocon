@@ -8,4 +8,5 @@ enum class TimelineSource {
     Table,
     Deeplink,
     Adb,
+    AppStart,
 }

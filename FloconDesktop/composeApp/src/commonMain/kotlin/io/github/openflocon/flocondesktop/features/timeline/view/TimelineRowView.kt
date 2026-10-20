@@ -16,7 +16,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.timeline_app_started
 import flocondesktop.composeapp.generated.resources.timeline_source_adb
+import flocondesktop.composeapp.generated.resources.timeline_source_app_start
 import flocondesktop.composeapp.generated.resources.timeline_source_analytics
 import flocondesktop.composeapp.generated.resources.timeline_source_crash
 import flocondesktop.composeapp.generated.resources.timeline_source_database
@@ -37,6 +39,7 @@ internal fun TimelineSource.label(): StringResource = when (this) {
     TimelineSource.Table -> Res.string.timeline_source_table
     TimelineSource.Deeplink -> Res.string.timeline_source_deeplink
     TimelineSource.Adb -> Res.string.timeline_source_adb
+    TimelineSource.AppStart -> Res.string.timeline_source_app_start
 }
 
 @Composable
@@ -70,7 +73,7 @@ internal fun TimelineRowView(
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text(
-                text = row.title,
+                text = if (row.source == TimelineSource.AppStart) stringResource(Res.string.timeline_app_started) else row.title,
                 style = FloconTheme.typography.bodyMedium,
                 color = FloconTheme.colorPalette.onSurface,
                 maxLines = 1,

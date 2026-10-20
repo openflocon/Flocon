@@ -72,6 +72,7 @@ internal class TimelineViewModel(
             is TimelineAction.Open -> when (val destination = action.row.toDestination()) {
                 is TimelineDestination.Panel -> navigationState.navigate(destination.route)
                 is TimelineDestination.Screen -> menuNavigator.open(destination.screen)
+                null -> Unit
             }
         }
     }

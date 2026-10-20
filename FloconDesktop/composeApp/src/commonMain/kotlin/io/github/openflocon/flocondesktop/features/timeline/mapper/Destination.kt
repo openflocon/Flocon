@@ -15,7 +15,9 @@ internal sealed interface TimelineDestination {
     data class Screen(val screen: SubScreen) : TimelineDestination
 }
 
-internal fun TimelineRowUiModel.toDestination(): TimelineDestination = when (source) {
+// null: nothing to open for this event
+internal fun TimelineRowUiModel.toDestination(): TimelineDestination? = when (source) {
+    TimelineSource.AppStart -> null
     TimelineSource.Network -> TimelineDestination.Panel(NetworkRoutes.Panel(requestId = id))
     TimelineSource.Analytics -> TimelineDestination.Panel(AnalyticsRoutes.Detail(id = id))
     TimelineSource.Crash -> TimelineDestination.Screen(SubScreen.CrashReporter)

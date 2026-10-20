@@ -9,6 +9,7 @@ internal const val KIND_ANALYTICS = "analytics"
 internal const val KIND_CRASH = "crash"
 internal const val KIND_TABLE = "table"
 internal const val KIND_DEEPLINK = "deeplink"
+internal const val KIND_APP_START = "appstart"
 internal const val KIND_ADB = "adb"
 
 // apps can log millions of queries: only the most recent ones are merged in the timeline
@@ -132,6 +133,26 @@ internal fun buildTimelineQuery(
                     // the other rows are the deeplinks declared by the app, not events
                     extraCondition = "isHistory = 1",
                 )
+            )
+        }
+        // the app start times are the sessions found in the tables that store them: there is no connection history.
+        // Nothing to search in, so they are hidden while filtering on a text
+        if (TimelineSource.AppStart in filter.sources && text == null) {
+            val sessionTables = listOf("FloconNetworkCallEntity", "DatabaseQueryLogEntity", "AnalyticsItemEntity")
+            val sessions = sessionTables.joinToString(separator = " UNION ") { table ->
+                params.add(deviceId)
+                params.add(packageName)
+                "SELECT appInstance FROM $table WHERE deviceId = ? AND packageName = ?"
+            }
+            val sessionCondition = if (appInstance != null) {
+                params.add(appInstance)
+                " WHERE appInstance = ?"
+            } else {
+                ""
+            }
+            add(
+                "SELECT '$KIND_APP_START' AS kind, CAST(appInstance AS TEXT) AS id, appInstance AS ts, " +
+                    "'' AS title, NULL AS subtitle, appInstance AS appInstance FROM ($sessions)$sessionCondition"
             )
         }
         if (TimelineSource.Adb in filter.sources) {

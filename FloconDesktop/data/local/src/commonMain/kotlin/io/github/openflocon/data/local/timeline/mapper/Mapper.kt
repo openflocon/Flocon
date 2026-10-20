@@ -2,6 +2,7 @@ package io.github.openflocon.data.local.timeline.mapper
 
 import io.github.openflocon.data.local.timeline.datasource.KIND_ADB
 import io.github.openflocon.data.local.timeline.datasource.KIND_ANALYTICS
+import io.github.openflocon.data.local.timeline.datasource.KIND_APP_START
 import io.github.openflocon.data.local.timeline.datasource.KIND_CRASH
 import io.github.openflocon.data.local.timeline.datasource.KIND_DATABASE
 import io.github.openflocon.data.local.timeline.datasource.KIND_DEEPLINK
@@ -21,6 +22,7 @@ internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEv
         KIND_TABLE -> TimelineSource.Table
         KIND_DEEPLINK -> TimelineSource.Deeplink
         KIND_ADB -> TimelineSource.Adb
+        KIND_APP_START -> TimelineSource.AppStart
         else -> error("unknown timeline kind: $kind")
     },
     timestamp = ts,
