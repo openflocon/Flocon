@@ -9,4 +9,9 @@ data class TimelineEventDomainModel(
     val title: String,
     val subtitle: String?,
     val appInstance: AppInstance?, // null when the source does not store it
+    val method: String? = null, // network only: GET, POST, WS, GRPC…
+    val statusCode: Int? = null, // network only: null when there is no http code (no response yet, gRPC…)
+    val durationMs: Double? = null, // network only: null while waiting for the response
+    // the start of the session the event belongs to: the latest app start before it, null if none is known
+    val sessionStart: AppInstance? = null,
 )
