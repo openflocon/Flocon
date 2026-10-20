@@ -54,6 +54,8 @@ jobs:
         run: ./gradlew packageDistributionForCurrentOS packageUberJarForCurrentOS
         env:
           PROJECT_VERSION_NAME: ${{ inputs.version || github.ref_name }}
+          # Telemetry key, only available to official releases. Builds without it simply send nothing.
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
 
       - name: Prepare and rename artifacts
         shell: bash

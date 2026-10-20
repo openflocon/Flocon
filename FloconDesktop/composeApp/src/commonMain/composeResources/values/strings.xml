@@ -106,4 +106,19 @@
     <string name="tables_empty">No Tables</string>
     <string name="time">Time</string>
     <string name="with_folders_size">With folders size</string>
+    <string name="telemetry_title">Help improve Flocon</string>
+    <string name="telemetry_consent_message">Flocon sends anonymous usage statistics (features used, version, OS) to know what to improve. Nothing from your apps is ever sent: no requests, payloads, databases or package names.</string>
+    <string name="telemetry_allow_full">Allow full</string>
+    <string name="telemetry_stay_anonymous">Stay anonymous</string>
+    <string name="telemetry_disable">Disable</string>
+    <string name="telemetry_learn_more">What is collected?</string>
+    <string name="telemetry_settings_description">Choose how much usage data Flocon may send. You can change this at any time.</string>
+    <string name="telemetry_level_full">Full</string>
+    <string name="telemetry_level_full_description">A random identifier is stored on this computer so returning users can be counted.</string>
+    <string name="telemetry_level_anonymous">Anonymous</string>
+    <string name="telemetry_level_anonymous_description">A new random identifier is generated at each launch and never saved. Default.</string>
+    <string name="telemetry_level_disabled">Disabled</string>
+    <string name="telemetry_level_disabled_description">Nothing is sent.</string>
+    <string name="telemetry_unavailable_do_not_track">Telemetry is disabled because the DO_NOT_TRACK environment variable is set.</string>
+    <string name="telemetry_unavailable_build">Telemetry is disabled in this build (local or unofficial builds never send anything).</string>
 </resources>
