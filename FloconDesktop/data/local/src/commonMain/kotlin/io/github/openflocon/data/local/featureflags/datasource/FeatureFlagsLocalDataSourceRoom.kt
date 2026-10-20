@@ -31,16 +31,25 @@ class FeatureFlagsLocalDataSourceRoom(
 
     override fun observe(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        provider: String,
         filter: String?,
     ): Flow<List<FeatureFlagDomainModel>> = featureFlagDao.observeFeatureFlags(
         deviceId = deviceIdAndPackageName.deviceId,
         packageName = deviceIdAndPackageName.packageName,
+        provider = provider,
         filter = filter?.takeIf { it.isNotBlank() },
     )
         .map { list -> list.map { it.toDomain() } }
         .distinctUntilChanged()
 
-    override fun observe(
+    override fun observeProviders(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<List<String>> = featureFlagDao.observeProviders(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    ).distinctUntilChanged()
+
+    override fun observeFeatureFlag(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         provider: String,
         name: String,

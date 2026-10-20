@@ -2,6 +2,7 @@ package io.github.openflocon.data.core.featureflags.repository
 
 import io.github.openflocon.data.core.featureflags.datasource.FeatureFlagsLocalDataSource
 import io.github.openflocon.data.core.featureflags.datasource.FeatureFlagsRemoteDataSource
+import io.github.openflocon.data.core.featureflags.datasource.SelectedFeatureFlagProviderDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -17,6 +18,7 @@ class FeatureFlagsRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
     private val featureFlagsLocalDataSource: FeatureFlagsLocalDataSource,
     private val featureFlagsRemoteDataSource: FeatureFlagsRemoteDataSource,
+    private val selectedFeatureFlagProviderDataSource: SelectedFeatureFlagProviderDataSource,
 ) : FeatureFlagsRepository,
     MessagesReceiverRepository {
 
@@ -49,17 +51,43 @@ class FeatureFlagsRepositoryImpl(
 
     override fun observeFeatureFlags(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        provider: String,
         filter: String?,
     ): Flow<List<FeatureFlagDomainModel>> = featureFlagsLocalDataSource.observe(
         deviceIdAndPackageName = deviceIdAndPackageName,
+        provider = provider,
         filter = filter,
     ).flowOn(dispatcherProvider.data)
+
+    override fun observeProviders(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<List<String>> = featureFlagsLocalDataSource.observeProviders(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    ).flowOn(dispatcherProvider.data)
+
+    override fun observeSelectedProvider(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<String?> = selectedFeatureFlagProviderDataSource.observeSelectedProvider(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    ).flowOn(dispatcherProvider.data)
+
+    override suspend fun selectProvider(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        provider: String,
+    ) {
+        withContext(dispatcherProvider.data) {
+            selectedFeatureFlagProviderDataSource.selectProvider(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                provider = provider,
+            )
+        }
+    }
 
     override fun observeFeatureFlag(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         provider: String,
         name: String,
-    ): Flow<FeatureFlagDomainModel?> = featureFlagsLocalDataSource.observe(
+    ): Flow<FeatureFlagDomainModel?> = featureFlagsLocalDataSource.observeFeatureFlag(
         deviceIdAndPackageName = deviceIdAndPackageName,
         provider = provider,
         name = name,

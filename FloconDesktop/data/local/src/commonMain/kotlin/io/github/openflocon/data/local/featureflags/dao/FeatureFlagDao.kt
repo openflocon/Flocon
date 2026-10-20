@@ -52,19 +52,34 @@ interface FeatureFlagDao {
         FROM FeatureFlagEntity
         WHERE deviceId = :deviceId
         AND packageName = :packageName
+        AND provider = :provider
         AND (:filter IS NULL
-            OR provider LIKE '%' || :filter || '%'
             OR name LIKE '%' || :filter || '%'
             OR variant LIKE '%' || :filter || '%'
             OR payload LIKE '%' || :filter || '%')
-        ORDER BY provider ASC, name ASC
+        ORDER BY name ASC
     """,
     )
     fun observeFeatureFlags(
         deviceId: String,
         packageName: String,
+        provider: String,
         filter: String?,
     ): Flow<List<FeatureFlagEntity>>
+
+    @Query(
+        """
+        SELECT DISTINCT provider
+        FROM FeatureFlagEntity
+        WHERE deviceId = :deviceId
+        AND packageName = :packageName
+        ORDER BY provider ASC
+    """,
+    )
+    fun observeProviders(
+        deviceId: String,
+        packageName: String,
+    ): Flow<List<String>>
 
     @Query(
         """

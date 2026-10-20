@@ -17,7 +17,7 @@ No dependency on a feature flag SDK: your app forwards the flags it already eval
 - **Variant**: the evaluated variant, a free string (ex: `control`, `treatment`, `on`)
 - **Payload**: optional, often JSON, displayed formatted in the right panel when clicking a flag
 
-The list can be filtered by provider, name, variant or payload content. The desktop is read only.
+A selector at the top switches between the providers, and the list can be filtered by name, variant or payload content. The desktop is read only.
 
 ---
 

@@ -115,8 +115,22 @@ private class FakeFeatureFlagsRepository(
 
     override fun observeFeatureFlags(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        provider: String,
         filter: String?,
     ): Flow<List<FeatureFlagDomainModel>> = error("not used")
+
+    override fun observeProviders(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<List<String>> = error("not used")
+
+    override fun observeSelectedProvider(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<String?> = error("not used")
+
+    override suspend fun selectProvider(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        provider: String,
+    ) = error("not used")
 
     override fun observeFeatureFlag(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

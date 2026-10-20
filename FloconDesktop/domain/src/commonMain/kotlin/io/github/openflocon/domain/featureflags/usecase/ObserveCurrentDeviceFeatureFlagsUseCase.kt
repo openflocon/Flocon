@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 
+/**
+ * The flags of the provider selected for the current device
+ */
 class ObserveCurrentDeviceFeatureFlagsUseCase(
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val featureFlagsRepository: FeatureFlagsRepository,
@@ -18,10 +21,18 @@ class ObserveCurrentDeviceFeatureFlagsUseCase(
             if (deviceIdAndPackageName == null) {
                 flowOf(emptyList())
             } else {
-                featureFlagsRepository.observeFeatureFlags(
-                    deviceIdAndPackageName = deviceIdAndPackageName,
-                    filter = filter,
-                )
+                featureFlagsRepository.observeSelectedProvider(deviceIdAndPackageName)
+                    .flatMapLatest { provider ->
+                        if (provider == null) {
+                            flowOf(emptyList())
+                        } else {
+                            featureFlagsRepository.observeFeatureFlags(
+                                deviceIdAndPackageName = deviceIdAndPackageName,
+                                provider = provider,
+                                filter = filter,
+                            )
+                        }
+                    }
             }
         }
 }

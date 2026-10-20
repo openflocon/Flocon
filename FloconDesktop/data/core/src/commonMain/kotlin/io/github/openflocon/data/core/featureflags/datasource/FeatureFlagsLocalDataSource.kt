@@ -17,10 +17,15 @@ interface FeatureFlagsLocalDataSource {
 
     fun observe(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        provider: String,
         filter: String?,
     ): Flow<List<FeatureFlagDomainModel>>
 
-    fun observe(
+    fun observeProviders(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<List<String>>
+
+    fun observeFeatureFlag(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         provider: String,
         name: String,

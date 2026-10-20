@@ -25,8 +25,10 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.no_feature_flags
 import io.github.openflocon.flocondesktop.features.featureflags.FeatureFlagsViewModel
+import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagProvidersUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagRowUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagsAction
+import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagProvidersUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagRowUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -44,8 +46,11 @@ import org.koin.compose.viewmodel.koinViewModel
 fun FeatureFlagsScreen(modifier: Modifier = Modifier) {
     val viewModel: FeatureFlagsViewModel = koinViewModel()
     val rows by viewModel.rows.collectAsStateWithLifecycle()
+    val providersState by viewModel.providersState.collectAsStateWithLifecycle()
 
     FeatureFlagsScreen(
+        providersState = providersState,
+        onProviderSelected = viewModel::onProviderSelected,
         rows = rows,
         filterText = viewModel.filterText,
         onFilterTextChanged = viewModel::onFilterTextChanged,
@@ -56,6 +61,8 @@ fun FeatureFlagsScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun FeatureFlagsScreen(
+    providersState: FeatureFlagProvidersUiModel,
+    onProviderSelected: (String) -> Unit,
     rows: ImmutableList<FeatureFlagRowUiModel>,
     filterText: State<String>,
     onFilterTextChanged: (String) -> Unit,
@@ -70,6 +77,13 @@ fun FeatureFlagsScreen(
     ) {
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
+            selector = {
+                FeatureFlagProviderSelectorView(
+                    providersState = providersState,
+                    onProviderSelected = onProviderSelected,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
             filterBar = {
                 FilterBar(
                     filterText = filterText,
@@ -133,6 +147,8 @@ fun FeatureFlagsScreen(
 private fun FeatureFlagsScreenPreview() {
     FloconTheme {
         FeatureFlagsScreen(
+            providersState = previewFeatureFlagProvidersUiModel(),
+            onProviderSelected = {},
             rows = persistentListOf(
                 previewFeatureFlagRowUiModel("new_checkout"),
                 previewFeatureFlagRowUiModel("dark_mode"),
