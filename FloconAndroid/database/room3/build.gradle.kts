@@ -19,6 +19,7 @@ kotlin {
                 api(projects.flocon)
                 api(projects.database.core)
                 api(libs.androidx.room3.runtime)
+                implementation(libs.androidx.sqlite.async)
 
                 implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
                 implementation(libs.kotlinx.coroutines.core)
