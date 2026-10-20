@@ -51,6 +51,9 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.collections.component1
 import kotlin.collections.component2
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.images_filter
 
 @Composable
 fun ImagesScreen(
@@ -99,7 +102,7 @@ private fun ImagesScreen(
                 .fillMaxWidth(),
             filterBar = {
                 FilterBar(
-                    placeholderText = "Filter images",
+                    placeholderText = stringResource(Res.string.images_filter),
                     onTextChange = { onFilterChanged(it) },
                     modifier = Modifier.weight(1f),
                 )

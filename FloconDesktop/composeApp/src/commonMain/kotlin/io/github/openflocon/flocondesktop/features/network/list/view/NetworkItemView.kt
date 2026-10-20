@@ -57,6 +57,22 @@ import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.clear_old_sessions
+import flocondesktop.composeapp.generated.resources.filter
+import flocondesktop.composeapp.generated.resources.filter_exclude
+import flocondesktop.composeapp.generated.resources.filter_include
+import flocondesktop.composeapp.generated.resources.network_copy_curl
+import flocondesktop.composeapp.generated.resources.network_copy_url
+import flocondesktop.composeapp.generated.resources.network_create_mock
+import flocondesktop.composeapp.generated.resources.network_header_domain
+import flocondesktop.composeapp.generated.resources.network_header_query
+import flocondesktop.composeapp.generated.resources.network_replay
+import flocondesktop.composeapp.generated.resources.network_select_item
+import flocondesktop.composeapp.generated.resources.network_share_markdown
+import flocondesktop.composeapp.generated.resources.remove
+import flocondesktop.composeapp.generated.resources.remove_lines_above
 
 private val replayColor = Color(0xFF242D44)
 
@@ -228,32 +244,47 @@ private fun contextualActions(
     state: NetworkItemViewState
 ): ImmutableList<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
-    return remember(state) {
+    // labels are resolved here: the menu is built outside of the composition
+    val copyUrl = stringResource(Res.string.network_copy_url)
+    val copyCurl = stringResource(Res.string.network_copy_curl)
+    val createMock = stringResource(Res.string.network_create_mock)
+    val replay = stringResource(Res.string.network_replay)
+    val shareMarkdown = stringResource(Res.string.network_share_markdown)
+    val selectItem = stringResource(Res.string.network_select_item)
+    val filter = stringResource(Res.string.filter)
+    val include = stringResource(Res.string.filter_include)
+    val exclude = stringResource(Res.string.filter_exclude)
+    val domain = stringResource(Res.string.network_header_domain)
+    val query = stringResource(Res.string.network_header_query)
+    val remove = stringResource(Res.string.remove)
+    val removeLinesAbove = stringResource(Res.string.remove_lines_above)
+    val clearOldSessions = stringResource(Res.string.clear_old_sessions)
+    return remember(state, copyUrl) {
         buildMenu {
-            item(label = "Copy URL", onClick = { onActionCallback(NetworkAction.CopyUrl(state)) })
+            item(label = copyUrl, onClick = { onActionCallback(NetworkAction.CopyUrl(state)) })
             if (state.type !is NetworkItemViewState.NetworkTypeUi.Grpc && state.type !is NetworkItemViewState.NetworkTypeUi.WebSocket) {
                 item(
-                    label = "Copy cUrl",
+                    label = copyCurl,
                     onClick = { onActionCallback(NetworkAction.CopyCUrl(state)) }
                 )
                 item(
-                    label = "Create Mock",
+                    label = createMock,
                     onClick = { onActionCallback(NetworkAction.CreateMock(state)) }
                 )
                 item(
-                    label = "Replay",
+                    label = replay,
                     onClick = { onActionCallback(NetworkAction.Replay(state)) }
                 )
                 item(
-                    label = "Share as Markdown",
+                    label = shareMarkdown,
                     onClick = { onActionCallback(NetworkAction.ShareAsMarkdown(state)) }
                 )
             }
-            item(label = "Select Item", onClick = { onActionCallback(NetworkAction.SelectLine(state.uuid, selected = true)) })
+            item(label = selectItem, onClick = { onActionCallback(NetworkAction.SelectLine(state.uuid, selected = true)) })
             separator()
-            subMenu(label = "Filter") {
-                subMenu(label = "Include") {
-                    item(label = "Domain", onClick = {
+            subMenu(label = filter) {
+                subMenu(label = include) {
+                    item(label = domain, onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
@@ -263,7 +294,7 @@ private fun contextualActions(
                             )
                         )
                     })
-                    item(label = "Query", onClick = {
+                    item(label = query, onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
@@ -274,8 +305,8 @@ private fun contextualActions(
                         )
                     })
                 }
-                subMenu("Exclude") {
-                    item("Domain", onClick = {
+                subMenu(exclude) {
+                    item(domain, onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
@@ -285,7 +316,7 @@ private fun contextualActions(
                             )
                         )
                     })
-                    item(label = "Query", onClick = {
+                    item(label = query, onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
@@ -298,13 +329,13 @@ private fun contextualActions(
                 }
             }
             separator()
-            item(label = "Remove", onClick = { onActionCallback(NetworkAction.Remove(state)) })
+            item(label = remove, onClick = { onActionCallback(NetworkAction.Remove(state)) })
             item(
-                label = "Remove lines above",
+                label = removeLinesAbove,
                 onClick = { onActionCallback(NetworkAction.RemoveLinesAbove(state)) }
             )
             item(
-                label = "Clear old sessions",
+                label = clearOldSessions,
                 onClick = { onActionCallback(NetworkAction.ClearOldSession) }
             )
         }

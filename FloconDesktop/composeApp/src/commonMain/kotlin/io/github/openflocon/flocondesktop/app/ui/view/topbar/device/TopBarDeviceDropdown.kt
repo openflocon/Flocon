@@ -76,7 +76,7 @@ internal fun TopBarDeviceDropdown(
                             }
                             .then(
                                 if (isSelected) {
-                                    Modifier.background(color = FloconTheme.colorPalette.onTertiary)
+                                    Modifier.background(color = FloconTheme.colors.bg300)
                                 } else {
                                     Modifier
                                 }

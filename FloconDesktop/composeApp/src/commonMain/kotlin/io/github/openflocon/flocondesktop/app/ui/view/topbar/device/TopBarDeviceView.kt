@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.DesktopWindows
 import androidx.compose.material.icons.filled.MobileOff
 import androidx.compose.material.icons.filled.PhoneIphone
 import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material3.Text
@@ -148,6 +149,14 @@ internal fun TopBarDeviceView(
                     modifier = Modifier.size(14.dp)
                 )
             }
+        }
+        if (selected) {
+            Spacer(modifier = Modifier.weight(1f))
+            FloconIcon(
+                imageVector = Icons.Outlined.Check,
+                tint = colors.accent,
+                modifier = Modifier.size(16.dp),
+            )
         }
     }
 }

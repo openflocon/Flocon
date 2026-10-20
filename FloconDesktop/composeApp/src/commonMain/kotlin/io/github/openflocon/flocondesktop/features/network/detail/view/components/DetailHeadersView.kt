@@ -50,6 +50,10 @@ import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_copy_value
+import flocondesktop.composeapp.generated.resources.network_decode_jwt
 
 @Composable
 fun DetailHeadersView(
@@ -132,7 +136,7 @@ private fun HeaderItemRow(
                     FloconSmallIconButton(
                         imageVector = Icons.Outlined.ContentCopy,
                         onClick = { onCopyValue(item.value) },
-                        contentDescription = "Copy value",
+                        contentDescription = stringResource(Res.string.general_copy_value),
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -150,7 +154,7 @@ private fun HeaderItemRow(
             FloconButton(
                 onClick = { onAuthorizationClicked(item.value) }
             ) {
-                Text("Decode\nJWT", textAlign = TextAlign.Center, color = FloconTheme.colorPalette.onPrimary)
+                Text(stringResource(Res.string.network_decode_jwt), textAlign = TextAlign.Center, color = FloconTheme.colorPalette.onPrimary)
             }
         }
     }

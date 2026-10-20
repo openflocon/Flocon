@@ -21,6 +21,12 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.topbar_open_folder
+import flocondesktop.composeapp.generated.resources.topbar_record
+import flocondesktop.composeapp.generated.resources.topbar_restart
+import flocondesktop.composeapp.generated.resources.topbar_screenshot
 
 @Composable
 internal fun TopBarActions(
@@ -45,7 +51,7 @@ internal fun TopBarActions(
         TopBarButton(
             active = false,
             imageVector = Icons.Outlined.RestartAlt,
-            contentDescription = "restart",
+            contentDescription = stringResource(Res.string.topbar_restart),
             onClicked = onRestartClicked,
             isEnabled = devicesState.deviceSelected?.canRestart == true && devicesState.deviceSelected?.isActive == true,
         )
@@ -55,14 +61,14 @@ internal fun TopBarActions(
                 RecordVideoStateUiModel.Idle -> Icons.Outlined.Videocam
                 RecordVideoStateUiModel.Recording -> Icons.Outlined.StopCircle
             },
-            contentDescription = "Record",
+            contentDescription = stringResource(Res.string.topbar_record),
             onClicked = onRecordClicked,
             isEnabled = devicesState.deviceSelected?.canScreenRecord == true && devicesState.deviceSelected?.isActive == true,
         )
         TopBarButton(
             active = false,
             imageVector = Icons.Outlined.CameraAlt,
-            contentDescription = "screenshot",
+            contentDescription = stringResource(Res.string.topbar_screenshot),
             onClicked = onTakeScreenshotClicked,
             isEnabled = devicesState.deviceSelected?.canScreenshot == true && devicesState.deviceSelected?.isActive == true,
         )
@@ -76,7 +82,7 @@ internal fun TopBarActions(
         TopBarButton(
             active = false,
             imageVector = Icons.Outlined.FolderOpen,
-            contentDescription = "open flocon folder",
+            contentDescription = stringResource(Res.string.topbar_open_folder),
             onClicked = onOpenFolderClicked,
             isEnabled = true,
         )

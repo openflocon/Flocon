@@ -50,6 +50,9 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.general_copy_all_content
+import flocondesktop.composeapp.generated.resources.images_preview
 
 @Composable
 fun DatabaseRowDetailView(
@@ -82,7 +85,7 @@ fun DatabaseRowDetailView(
                 verticalAlignment = Alignment.Top,
             ) {
                 DetailHeaderButton(
-                    text = "Copy all content",
+                    text = stringResource(Res.string.general_copy_all_content),
                     onClick = {
                         copyToClipboard(
                             state.toCopiableText(
@@ -216,7 +219,7 @@ private fun DetailItemView(
             // Coil image
             AsyncImage(
                 model = valueOrNull,
-                contentDescription = "Image preview",
+                contentDescription = stringResource(Res.string.images_preview),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(FloconTheme.spacing.extraSmall)

@@ -88,6 +88,45 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.diff_compare_clipboard
+import flocondesktop.composeapp.generated.resources.general_copy
+import flocondesktop.composeapp.generated.resources.general_copy_as_image
+import flocondesktop.composeapp.generated.resources.general_copy_as_markdown
+import flocondesktop.composeapp.generated.resources.general_save_as_image
+import flocondesktop.composeapp.generated.resources.general_type
+import flocondesktop.composeapp.generated.resources.images_preview
+import flocondesktop.composeapp.generated.resources.network_body
+import flocondesktop.composeapp.generated.resources.network_copy_curl_command
+import flocondesktop.composeapp.generated.resources.network_details_title
+import flocondesktop.composeapp.generated.resources.network_display_anyway
+import flocondesktop.composeapp.generated.resources.network_export_body_image
+import flocondesktop.composeapp.generated.resources.network_export_error_image
+import flocondesktop.composeapp.generated.resources.network_export_graphql_image
+import flocondesktop.composeapp.generated.resources.network_export_headers_image
+import flocondesktop.composeapp.generated.resources.network_export_response_summary_image
+import flocondesktop.composeapp.generated.resources.network_export_summary_image
+import flocondesktop.composeapp.generated.resources.network_full_url
+import flocondesktop.composeapp.generated.resources.network_header_method
+import flocondesktop.composeapp.generated.resources.network_header_request_time
+import flocondesktop.composeapp.generated.resources.network_header_time
+import flocondesktop.composeapp.generated.resources.network_headers
+import flocondesktop.composeapp.generated.resources.network_log_title
+import flocondesktop.composeapp.generated.resources.network_query_name
+import flocondesktop.composeapp.generated.resources.network_request_headers
+import flocondesktop.composeapp.generated.resources.network_request_size
+import flocondesktop.composeapp.generated.resources.network_response_body
+import flocondesktop.composeapp.generated.resources.network_response_error
+import flocondesktop.composeapp.generated.resources.network_response_headers
+import flocondesktop.composeapp.generated.resources.network_response_size
+import flocondesktop.composeapp.generated.resources.network_save_full_log_image
+import flocondesktop.composeapp.generated.resources.network_save_html
+import flocondesktop.composeapp.generated.resources.network_share_export
+import flocondesktop.composeapp.generated.resources.network_view_body_in_app
+import flocondesktop.composeapp.generated.resources.network_view_in_app
+import flocondesktop.composeapp.generated.resources.network_waiting_response
+import flocondesktop.composeapp.generated.resources.open_external
 
 private const val LARGE_BODY_LENGTH = 1_000_000
 
@@ -132,7 +171,7 @@ private fun ExportImageDropdown(
             }
         ) {
             FloconDropdownMenuItem(
-                text = "Copy as image",
+                text = stringResource(Res.string.general_copy_as_image),
                 leadingIcon = Icons.Outlined.CameraAlt,
                 onClick = {
                     expanded = false
@@ -147,7 +186,7 @@ private fun ExportImageDropdown(
                 }
             )
             FloconDropdownMenuItem(
-                text = "Save as image",
+                text = stringResource(Res.string.general_save_as_image),
                 leadingIcon = Icons.Outlined.Save,
                 onClick = {
                     expanded = false
@@ -240,7 +279,7 @@ fun NetworkDetailContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Network Details",
+                    text = stringResource(Res.string.network_details_title),
                     style = FloconTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = FloconTheme.colors.ink
@@ -253,14 +292,14 @@ fun NetworkDetailContent(
                     anchor = DropdownPanelAnchor.BottomEnd,
                     anchorContent = {
                         FloconIconButton(
-                            tooltip = "Share & Export",
+                            tooltip = stringResource(Res.string.network_share_export),
                             imageVector = Icons.Outlined.Share,
                             onClick = { shareMenuExpanded = true }
                         )
                     }
                 ) {
                     FloconDropdownMenuItem(
-                        text = "Copy as Markdown",
+                        text = stringResource(Res.string.general_copy_as_markdown),
                         leadingIcon = Icons.Outlined.Share,
                         onClick = {
                             shareMenuExpanded = false
@@ -268,7 +307,7 @@ fun NetworkDetailContent(
                         }
                     )
                     FloconDropdownMenuItem(
-                        text = "Save as HTML",
+                        text = stringResource(Res.string.network_save_html),
                         leadingIcon = Icons.Outlined.Html,
                         onClick = {
                             shareMenuExpanded = false
@@ -276,7 +315,7 @@ fun NetworkDetailContent(
                         }
                     )
                     FloconDropdownMenuItem(
-                        text = "Save full log as Image",
+                        text = stringResource(Res.string.network_save_full_log_image),
                         leadingIcon = Icons.Outlined.Save,
                         onClick = {
                             shareMenuExpanded = false
@@ -291,7 +330,7 @@ fun NetworkDetailContent(
                         }
                     )
                     FloconDropdownMenuItem(
-                        text = "Copy cURL command",
+                        text = stringResource(Res.string.network_copy_curl_command),
                         leadingIcon = Icons.Outlined.Terminal,
                         onClick = {
                             shareMenuExpanded = false
@@ -387,7 +426,7 @@ private fun SummaryCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 36.dp),
-            label = "Full url",
+            label = stringResource(Res.string.network_full_url),
             value = state.fullUrl,
             contentColor = FloconTheme.colorPalette.onPrimary,
             labelWidth = linesLabelWidth,
@@ -395,7 +434,7 @@ private fun SummaryCard(
 
         FloconLineDescription(
             modifier = Modifier.fillMaxWidth(),
-            label = "Method",
+            label = stringResource(Res.string.network_header_method),
             contentColor = FloconTheme.colorPalette.onPrimary,
             labelWidth = linesLabelWidth,
         ) {
@@ -430,7 +469,7 @@ private fun SummaryCard(
         }
         FloconLineDescription(
             modifier = Modifier.fillMaxWidth(),
-            label = "Request Time",
+            label = stringResource(Res.string.network_header_request_time),
             value = state.requestTimeFormatted,
             labelWidth = linesLabelWidth,
             contentColor = FloconTheme.colorPalette.onPrimary
@@ -438,7 +477,7 @@ private fun SummaryCard(
         state.durationFormatted?.let {
             FloconLineDescription(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Time",
+                label = stringResource(Res.string.network_header_time),
                 value = it,
                 labelWidth = linesLabelWidth,
                 contentColor = FloconTheme.colorPalette.onPrimary
@@ -447,7 +486,7 @@ private fun SummaryCard(
 
         FloconLineDescription(
             modifier = Modifier.fillMaxWidth(),
-            label = "Request Size",
+            label = stringResource(Res.string.network_request_size),
             value = state.requestSize,
             labelWidth = linesLabelWidth,
             contentColor = FloconTheme.colorPalette.onPrimary
@@ -495,7 +534,7 @@ private fun Request(
             ExportImageDropdown(
                 graphicsLayer = summaryGraphicsLayer,
                 onAction = onAction,
-                tooltip = "Export summary as image",
+                tooltip = stringResource(Res.string.network_export_summary_image),
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(top = FloconTheme.spacing.extraSmall, end = FloconTheme.spacing.extraSmall)
@@ -511,7 +550,7 @@ private fun Request(
                     ExportImageDropdown(
                         graphicsLayer = graphQlGraphicsLayer,
                         onAction = onAction,
-                        tooltip = "Export GraphQl as image"
+                        tooltip = stringResource(Res.string.network_export_graphql_image)
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -533,14 +572,14 @@ private fun Request(
                 ) {
                     FloconLineDescription(
                         modifier = Modifier.fillMaxWidth(),
-                        label = "Query name",
+                        label = stringResource(Res.string.network_query_name),
                         value = it.queryName,
                         contentColor = FloconTheme.colorPalette.onSecondary,
                         labelWidth = linesLabelWidth,
                     )
                     FloconLineDescription(
                         modifier = Modifier.fillMaxWidth(),
-                        label = "Type",
+                        label = stringResource(Res.string.general_type),
                         labelWidth = linesLabelWidth,
                         contentColor = FloconTheme.colorPalette.onSecondary
                     ) {
@@ -565,7 +604,7 @@ private fun Request(
                         )
                         .build()
                 },
-                contentDescription = "Image preview",
+                contentDescription = stringResource(Res.string.images_preview),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = FloconTheme.spacing.medium)
@@ -578,13 +617,13 @@ private fun Request(
         state.requestHeaders?.let { requestHeaders ->
             Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
             FloconSection(
-                title = "Headers",
+                title = stringResource(Res.string.network_headers),
                 initialValue = false,
                 actions = {
                     ExportImageDropdown(
                         graphicsLayer = reqHeadersGraphicsLayer,
                         onAction = onAction,
-                        tooltip = "Export headers as image"
+                        tooltip = stringResource(Res.string.network_export_headers_image)
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -621,25 +660,25 @@ private fun Request(
                 ExportImageDropdown(
                     graphicsLayer = reqBodyGraphicsLayer,
                     onAction = onAction,
-                    tooltip = "Export body as image"
+                    tooltip = stringResource(Res.string.network_export_body_image)
                 )
                 if (state.requestBodyIsNotBlank) {
                     FloconIconButton(
-                        tooltip = "View in app",
+                        tooltip = stringResource(Res.string.network_view_in_app),
                         imageVector = Icons.Outlined.OpenInFull,
                         onClick = { onAction(NetworkDetailAction.JsonDetail(json = state.requestBody)) }
                     )
                 }
                 if (state.canOpenRequestBody) {
                     FloconIconButton(
-                        tooltip = "Open in external editor",
+                        tooltip = stringResource(Res.string.open_external),
                         imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                         onClick = { onAction(NetworkDetailAction.OpenBodyExternally.Request(state)) }
                     )
                 }
                 if (state.requestBodyIsNotBlank) {
                     FloconIconButton(
-                        tooltip = "Copy",
+                        tooltip = stringResource(Res.string.general_copy),
                         imageVector = Icons.Outlined.CopyAll,
                         onClick = { onAction(NetworkDetailAction.CopyText(state.requestBody)) }
                     )
@@ -685,7 +724,7 @@ private fun Request(
                             },
                             containerColor = FloconTheme.colorPalette.tertiary,
                         ) {
-                            Text("Display anyway")
+                            Text(stringResource(Res.string.network_display_anyway))
                         }
                     }
                 } else {
@@ -720,7 +759,7 @@ private fun Response(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Waiting for response...",
+                text = stringResource(Res.string.network_waiting_response),
                 style = FloconTheme.typography.bodyMedium,
                 color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.5f)
             )
@@ -741,13 +780,13 @@ private fun Response(
         when (response) {
             is NetworkDetailViewState.Response.Error -> {
                 FloconSection(
-                    title = "Body",
+                    title = stringResource(Res.string.network_body),
                     initialValue = true,
                     actions = {
                         ExportImageDropdown(
                             graphicsLayer = resErrorGraphicsLayer,
                             onAction = onAction,
-                            tooltip = "Export error as image"
+                            tooltip = stringResource(Res.string.network_export_error_image)
                         )
                     }
                 ) {
@@ -793,7 +832,7 @@ private fun Response(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(end = 36.dp),
-                            label = "Response Size",
+                            label = stringResource(Res.string.network_response_size),
                             value = response.size,
                             labelWidth = 130.dp,
                             contentColor = FloconTheme.colorPalette.onPrimary
@@ -803,7 +842,7 @@ private fun Response(
                     ExportImageDropdown(
                         graphicsLayer = resSummaryGraphicsLayer,
                         onAction = onAction,
-                        tooltip = "Export response summary as image",
+                        tooltip = stringResource(Res.string.network_export_response_summary_image),
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(top = FloconTheme.spacing.extraSmall, end = FloconTheme.spacing.extraSmall)
@@ -813,13 +852,13 @@ private fun Response(
                 response.headers?.let {
                     Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
                     FloconSection(
-                        title = "Headers",
+                        title = stringResource(Res.string.network_headers),
                         initialValue = false,
                         actions = {
                             ExportImageDropdown(
                                 graphicsLayer = resHeadersGraphicsLayer,
                                 onAction = onAction,
-                                tooltip = "Export headers as image"
+                                tooltip = stringResource(Res.string.network_export_headers_image)
                             )
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -850,24 +889,24 @@ private fun Response(
 
                 Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
                 FloconSection(
-                    title = "Body",
+                    title = stringResource(Res.string.network_body),
                     initialValue = true,
                     actions = {
                         ExportImageDropdown(
                             graphicsLayer = resBodyGraphicsLayer,
                             onAction = onAction,
-                            tooltip = "Export body as image"
+                            tooltip = stringResource(Res.string.network_export_body_image)
                         )
                         if (response.responseBodyIsNotBlank) {
                             FloconIconButton(
-                                tooltip = "View body in app",
+                                tooltip = stringResource(Res.string.network_view_body_in_app),
                                 imageVector = Icons.Outlined.OpenInFull,
                                 onClick = { onAction(NetworkDetailAction.JsonDetail(response.body)) }
                             )
                         }
                         if (response.canOpenResponseBody) {
                             FloconIconButton(
-                                tooltip = "Open in external editor",
+                                tooltip = stringResource(Res.string.open_external),
                                 imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                                 onClick = {
                                     onAction(
@@ -880,14 +919,14 @@ private fun Response(
                         }
                         if (response.responseBodyIsNotBlank) {
                             FloconIconButton(
-                                tooltip = "Compare with clipboard",
+                                tooltip = stringResource(Res.string.diff_compare_clipboard),
                                 imageVector = Icons.Outlined.Difference,
                                 onClick = { onAction(NetworkDetailAction.DiffWithClipboard(response.body)) }
                             )
                         }
                         if (response.responseBodyIsNotBlank) {
                             FloconIconButton(
-                                tooltip = "Copy",
+                                tooltip = stringResource(Res.string.general_copy),
                                 imageVector = Icons.Outlined.CopyAll,
                                 onClick = { onAction(NetworkDetailAction.CopyText(response.body)) }
                             )
@@ -955,7 +994,7 @@ private fun Response(
                                         },
                                         containerColor = FloconTheme.colorPalette.tertiary,
                                     ) {
-                                        Text("Display anyway")
+                                        Text(stringResource(Res.string.network_display_anyway))
                                     }
                                 }
                             } else {
@@ -1001,7 +1040,7 @@ private fun FullLogExportView(
                 .padding(FloconTheme.spacing.medium)
         ) {
             Text(
-                text = "Network Log",
+                text = stringResource(Res.string.network_log_title),
                 style = FloconTheme.typography.titleMedium,
                 color = FloconTheme.colorPalette.onSecondary,
                 modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
@@ -1009,7 +1048,7 @@ private fun FullLogExportView(
 
             FloconLineDescription(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Full url",
+                label = stringResource(Res.string.network_full_url),
                 value = state.fullUrl,
                 contentColor = FloconTheme.colorPalette.onPrimary,
                 labelWidth = linesLabelWidth,
@@ -1017,7 +1056,7 @@ private fun FullLogExportView(
 
             FloconLineDescription(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Method",
+                label = stringResource(Res.string.network_header_method),
                 contentColor = FloconTheme.colorPalette.onPrimary,
                 labelWidth = linesLabelWidth,
             ) {
@@ -1050,7 +1089,7 @@ private fun FullLogExportView(
 
             FloconLineDescription(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Request Time",
+                label = stringResource(Res.string.network_header_request_time),
                 value = state.requestTimeFormatted,
                 labelWidth = linesLabelWidth,
                 contentColor = FloconTheme.colorPalette.onPrimary
@@ -1059,7 +1098,7 @@ private fun FullLogExportView(
             state.durationFormatted?.let {
                 FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Time",
+                    label = stringResource(Res.string.network_header_time),
                     value = it,
                     labelWidth = linesLabelWidth,
                     contentColor = FloconTheme.colorPalette.onPrimary
@@ -1068,7 +1107,7 @@ private fun FullLogExportView(
 
             FloconLineDescription(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Request Size",
+                label = stringResource(Res.string.network_request_size),
                 value = state.requestSize,
                 labelWidth = linesLabelWidth,
                 contentColor = FloconTheme.colorPalette.onPrimary
@@ -1094,14 +1133,14 @@ private fun FullLogExportView(
                 )
                 FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Query name",
+                    label = stringResource(Res.string.network_query_name),
                     value = it.queryName,
                     contentColor = FloconTheme.colorPalette.onSecondary,
                     labelWidth = linesLabelWidth,
                 )
                 FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Type",
+                    label = stringResource(Res.string.general_type),
                     labelWidth = linesLabelWidth,
                     contentColor = FloconTheme.colorPalette.onSecondary
                 ) {
@@ -1122,7 +1161,7 @@ private fun FullLogExportView(
                     .padding(FloconTheme.spacing.medium)
             ) {
                 Text(
-                    text = "Request Headers",
+                    text = stringResource(Res.string.network_request_headers),
                     style = FloconTheme.typography.titleSmall,
                     color = FloconTheme.colorPalette.onSecondary,
                     modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
@@ -1181,7 +1220,7 @@ private fun FullLogExportView(
                     )
                     FloconLineDescription(
                         modifier = Modifier.fillMaxWidth(),
-                        label = "Response Size",
+                        label = stringResource(Res.string.network_response_size),
                         value = res.size,
                         labelWidth = linesLabelWidth,
                         contentColor = FloconTheme.colorPalette.onPrimary
@@ -1199,7 +1238,7 @@ private fun FullLogExportView(
                             .padding(FloconTheme.spacing.medium)
                     ) {
                         Text(
-                            text = "Response Headers",
+                            text = stringResource(Res.string.network_response_headers),
                             style = FloconTheme.typography.titleSmall,
                             color = FloconTheme.colorPalette.onSecondary,
                             modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
@@ -1224,7 +1263,7 @@ private fun FullLogExportView(
                             .padding(FloconTheme.spacing.medium)
                     ) {
                         Text(
-                            text = "Response Body",
+                            text = stringResource(Res.string.network_response_body),
                             style = FloconTheme.typography.titleSmall,
                             color = FloconTheme.colorPalette.onSecondary,
                             modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
@@ -1249,7 +1288,7 @@ private fun FullLogExportView(
                         .padding(FloconTheme.spacing.medium)
                 ) {
                     Text(
-                        text = "Response Error",
+                        text = stringResource(Res.string.network_response_error),
                         style = FloconTheme.typography.titleSmall,
                         color = FloconTheme.colorPalette.error,
                         modifier = Modifier.padding(bottom = FloconTheme.spacing.small)

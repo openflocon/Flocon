@@ -18,6 +18,11 @@ import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.badquality_select_exception
+import flocondesktop.composeapp.generated.resources.badquality_weight
+import flocondesktop.composeapp.generated.resources.general_exception
 
 @Composable
 fun BadQuaityErrorExceptionEditor(
@@ -33,7 +38,7 @@ fun BadQuaityErrorExceptionEditor(
         modifier = Modifier.fillMaxWidth()
     ) {
         FloconDialogHeader(
-            title = "Exception",
+            title = stringResource(Res.string.general_exception),
             modifier = Modifier.fillMaxWidth(),
         )
         Column(
@@ -41,7 +46,7 @@ fun BadQuaityErrorExceptionEditor(
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
         ) {
             FloconTextField(
-                label = defaultLabel("Weight"),
+                label = defaultLabel(stringResource(Res.string.badquality_weight)),
                 placeholder = defaultPlaceHolder("eg: 1.0"),
                 value = weight,
                 onValueChange = {
@@ -52,7 +57,7 @@ fun BadQuaityErrorExceptionEditor(
                 containerColor = FloconTheme.colorPalette.primary
             )
 
-            DefaultLabel("Select the exception")
+            DefaultLabel(stringResource(Res.string.badquality_select_exception))
 
             Column(
                 modifier = Modifier.fillMaxWidth(),

@@ -91,6 +91,25 @@ import io.github.openflocon.library.designsystem.theme.AppScale
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import flocondesktop.composeapp.generated.resources.general_clear
+import flocondesktop.composeapp.generated.resources.general_copy_all
+import flocondesktop.composeapp.generated.resources.general_open_folder
+import flocondesktop.composeapp.generated.resources.general_pick
+import flocondesktop.composeapp.generated.resources.general_reset_default
+import flocondesktop.composeapp.generated.resources.settings_adb_configuration
+import flocondesktop.composeapp.generated.resources.settings_adb_description
+import flocondesktop.composeapp.generated.resources.settings_adb_executable_path
+import flocondesktop.composeapp.generated.resources.settings_adb_reverse_forwarding
+import flocondesktop.composeapp.generated.resources.settings_documents_description
+import flocondesktop.composeapp.generated.resources.settings_documents_folder_path
+import flocondesktop.composeapp.generated.resources.settings_licenses_description
+import flocondesktop.composeapp.generated.resources.settings_no_logs
+import flocondesktop.composeapp.generated.resources.settings_open_source_licenses
+import flocondesktop.composeapp.generated.resources.settings_reverse_forwarding_description
+import flocondesktop.composeapp.generated.resources.settings_scale_description
+import flocondesktop.composeapp.generated.resources.settings_scale_title
+import flocondesktop.composeapp.generated.resources.settings_system_logs_title
+import flocondesktop.composeapp.generated.resources.settings_theme_description
 
 // ---------------------------------------------------------------------------
 // Tabs
@@ -368,10 +387,10 @@ private fun GeneralPane(
         SettingsCard(
             title = "Flocon Documents",
             icon = Icons.Outlined.Folder,
-            description = "Directory where screenshots, screen recordings, and exported files are saved. Defaults to ~/Documents/Flocon."
+            description = stringResource(Res.string.settings_documents_description)
         ) {
             Text(
-                text = "Documents Folder Path",
+                text = stringResource(Res.string.settings_documents_folder_path),
                 style = FloconTheme.typography.labelSmall,
                 color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f)
             )
@@ -391,7 +410,7 @@ private fun GeneralPane(
                 )
 
                 SettingsButton(
-                    text = "Pick...",
+                    text = stringResource(Res.string.general_pick),
                     onClick = onPickFolder,
                 )
             }
@@ -402,11 +421,11 @@ private fun GeneralPane(
                     onClick = onSavePath,
                 )
                 SettingsButton(
-                    text = "Reset to default",
+                    text = stringResource(Res.string.general_reset_default),
                     onClick = onResetPath,
                 )
                 SettingsButton(
-                    text = "Open Folder",
+                    text = stringResource(Res.string.general_open_folder),
                     onClick = onOpenFolder,
                 )
             }
@@ -429,9 +448,9 @@ private fun AdbPane(
         modifier = modifier
     ) {
         SettingsCard(
-            title = "ADB Configuration",
+            title = stringResource(Res.string.settings_adb_configuration),
             icon = Icons.Outlined.Settings,
-            description = "Flocon communicates with Android devices using the Android Debug Bridge (ADB). Set the path to your adb binary below."
+            description = stringResource(Res.string.settings_adb_description)
         ) {
             // Setup alert or status
             if (needsAdbSetup) {
@@ -483,7 +502,7 @@ private fun AdbPane(
             Spacer(Modifier.height(FloconTheme.spacing.extraSmall))
 
             Text(
-                text = "ADB Executable Path",
+                text = stringResource(Res.string.settings_adb_executable_path),
                 style = FloconTheme.typography.labelSmall,
                 color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f)
             )
@@ -510,9 +529,9 @@ private fun AdbPane(
         }
 
         SettingsCard(
-            title = "ADB Reverse Port Forwarding",
+            title = stringResource(Res.string.settings_adb_reverse_forwarding),
             icon = Icons.Outlined.Cable,
-            description = "Flocon runs a local server that communicates with the daemon on the device. Reverse port forwarding enables high-throughput data transfer (logs, preferences, screenshots)."
+            description = stringResource(Res.string.settings_reverse_forwarding_description)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -611,7 +630,7 @@ private fun AppearancePane(
         SettingsCard(
             title = stringResource(Res.string.settings_theme),
             icon = Icons.Outlined.ModeNight,
-            description = "Choose the color scheme of Flocon. Light mode uses bright backgrounds, Dark mode uses dark backgrounds, and System automatically matches your operating system."
+            description = stringResource(Res.string.settings_theme_description)
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
@@ -629,9 +648,9 @@ private fun AppearancePane(
         }
 
         SettingsCard(
-            title = "Scale",
+            title = stringResource(Res.string.settings_scale_title),
             icon = Icons.Outlined.TextFields,
-            description = "Scale the whole application: the size of the texts and the spacing between the elements."
+            description = stringResource(Res.string.settings_scale_description)
         ) {
             ScaleDropdown(
                 selected = AppScale.closestTo(fontSizeMultiplier),
@@ -712,7 +731,7 @@ private fun LogsPane(
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
         ) {
             Text(
-                text = "Flocon System Logs",
+                text = stringResource(Res.string.settings_system_logs_title),
                 style = FloconTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = FloconTheme.colorPalette.onPrimary,
@@ -735,7 +754,7 @@ private fun LogsPane(
                             imageVector = Icons.Outlined.ContentCopy,
                             modifier = Modifier.size(14.dp)
                         )
-                        Text("Copy All", style = FloconTheme.typography.bodySmall)
+                        Text(stringResource(Res.string.general_copy_all), style = FloconTheme.typography.bodySmall)
                     }
                 }
 
@@ -751,7 +770,7 @@ private fun LogsPane(
                             imageVector = Icons.Outlined.Delete,
                             modifier = Modifier.size(14.dp)
                         )
-                        Text("Clear", style = FloconTheme.typography.bodySmall)
+                        Text(stringResource(Res.string.general_clear), style = FloconTheme.typography.bodySmall)
                     }
                 }
             }
@@ -776,7 +795,7 @@ private fun LogsPane(
                         modifier = Modifier.size(36.dp)
                     )
                     Text(
-                        text = "No system logs generated yet",
+                        text = stringResource(Res.string.settings_no_logs),
                         style = FloconTheme.typography.bodyMedium,
                         color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.4f),
                     )
@@ -802,13 +821,13 @@ private fun AboutPane(
         modifier = modifier.fillMaxSize()
     ) {
         Text(
-            text = "Open Source Licenses",
+            text = stringResource(Res.string.settings_open_source_licenses),
             style = FloconTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = FloconTheme.colorPalette.onPrimary,
         )
         Text(
-            text = "Flocon is built using open source software. The licenses of libraries used in this project are listed below.",
+            text = stringResource(Res.string.settings_licenses_description),
             style = FloconTheme.typography.bodySmall,
             color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f),
         )

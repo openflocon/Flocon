@@ -35,6 +35,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.app_logo_content_description
 
 @Composable
 fun PanelView(
@@ -97,7 +100,7 @@ fun PanelView(
                 .size(PanelContentMinSize - horizontalPadding.times(2))
                 .padding(FloconTheme.spacing.extraSmall),
             imageVector = icon,
-            contentDescription = "Description de mon image",
+            contentDescription = stringResource(Res.string.app_logo_content_description),
             tint = iconColor,
         )
         AnimatedVisibility(

@@ -66,6 +66,8 @@ import org.jetbrains.compose.resources.vectorResource
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import flocondesktop.composeapp.generated.resources.general_clear
+import flocondesktop.composeapp.generated.resources.search_match_case
 
 @Composable
 fun NetworkJsonScreen(
@@ -196,7 +198,7 @@ private fun SearchBar(
                                 vectorResource(Res.drawable.match_case_disabled)
                             },
                             onClick = { matchCaseChanged() },
-                            contentDescription = "Match Case",
+                            contentDescription = stringResource(Res.string.search_match_case),
                             modifier = Modifier
                                 .size(16.dp)
                                 .pointerHoverIcon(PointerIcon.Hand)
@@ -206,7 +208,7 @@ private fun SearchBar(
                             FloconSmallIconButton(
                                 imageVector = Icons.Outlined.Close,
                                 onClick = { queryChanged("") },
-                                contentDescription = "Clear",
+                                contentDescription = stringResource(Res.string.general_clear),
                                 modifier = Modifier.size(16.dp)
                             )
                         }

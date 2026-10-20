@@ -45,6 +45,11 @@ import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.filter_excludes
+import flocondesktop.composeapp.generated.resources.filter_includes
+import flocondesktop.composeapp.generated.resources.general_by_value
 
 @Composable
 fun TextFilterDropdownContent(
@@ -75,7 +80,7 @@ fun TextFilterDropdownContent(
             ) {
                 if (filterState.includedFilters.isNotEmpty()) {
                     Text(
-                        text = "Includes",
+                        text = stringResource(Res.string.filter_includes),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = FloconTheme.spacing.tiny, horizontal = FloconTheme.spacing.compact),
@@ -108,7 +113,7 @@ fun TextFilterDropdownContent(
                     Spacer(modifier = Modifier.height(FloconTheme.spacing.compact))
 
                     Text(
-                        text = "Excludes",
+                        text = stringResource(Res.string.filter_excludes),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = FloconTheme.spacing.tiny, horizontal = FloconTheme.spacing.compact),
@@ -214,7 +219,7 @@ private fun TextFilterFieldView(
                     value = "" // reset
                 },
             ),
-            placeholder = defaultPlaceHolder("By value", color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.5f)),
+            placeholder = defaultPlaceHolder(stringResource(Res.string.general_by_value), color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.5f)),
             textStyle = FloconTheme.typography.bodySmall.copy(
                 color = FloconTheme.colorPalette.onSecondary,
             ),

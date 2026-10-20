@@ -39,6 +39,9 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActio
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.app_logo_content_description
+import flocondesktop.composeapp.generated.resources.app_name
 
 @Composable
 fun MainScreenTopBar(
@@ -139,14 +142,14 @@ private fun Title(
                 .size(40.dp)
                 .clip(RoundedCornerShape(10.dp)),
             painter = painterResource(Res.drawable.app_icon_small),
-            contentDescription = "Description de mon image",
+            contentDescription = stringResource(Res.string.app_logo_content_description),
         )
 
         Column(
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = "Flocon",
+                text = stringResource(Res.string.app_name),
                 style = FloconTheme.typography.titleMedium.copy(
                     color = FloconTheme.colors.ink,
                     fontWeight = FontWeight.SemiBold,

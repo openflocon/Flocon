@@ -41,6 +41,12 @@ import io.github.openflocon.library.designsystem.components.FloconSurface
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_open
+import flocondesktop.composeapp.generated.resources.general_copy_path
+import flocondesktop.composeapp.generated.resources.general_delete_content
+import flocondesktop.composeapp.generated.resources.general_delete
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -57,11 +63,21 @@ fun FileItemRow(
     val shiftPressed = remember { mutableStateOf(false) }
     val onContextualActionCallback by rememberUpdatedState(onContextualAction)
 
+    val openLabel = stringResource(Res.string.general_open)
+    val copyPathLabel = stringResource(Res.string.general_copy_path)
+    val deleteContentLabel = stringResource(Res.string.general_delete_content)
+    val deleteLabel = stringResource(Res.string.general_delete)
+
     ContextualView(
-        items = remember(file) {
+        items = remember(file, openLabel, copyPathLabel, deleteContentLabel, deleteLabel) {
             file.contextualActions.map { action ->
                 FloconContextMenuItem.Item(
-                    label = action.text,
+                    label = when (action.id) {
+                        FileUiModel.ContextualAction.Action.Open -> openLabel
+                        FileUiModel.ContextualAction.Action.CopyPath -> copyPathLabel
+                        FileUiModel.ContextualAction.Action.DeleteContent -> deleteContentLabel
+                        FileUiModel.ContextualAction.Action.Delete -> deleteLabel
+                    },
                     onClick = {
                         onContextualActionCallback(
                             file,

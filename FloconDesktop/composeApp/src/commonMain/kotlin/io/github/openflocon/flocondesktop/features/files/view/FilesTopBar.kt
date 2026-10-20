@@ -40,6 +40,7 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import flocondesktop.composeapp.generated.resources.filter
 
 @Composable
 fun FilesTopBar(
@@ -227,7 +228,7 @@ private fun FilesTopBarPreview() {
             onRefresh = {},
             filterBar = {
                 Button(onClick = {}) {
-                    Text(text = "Filter")
+                    Text(text = stringResource(Res.string.filter))
                 }
             },
             modifier = Modifier.fillMaxWidth(),

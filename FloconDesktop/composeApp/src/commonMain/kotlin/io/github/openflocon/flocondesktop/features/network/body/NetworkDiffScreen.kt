@@ -24,6 +24,10 @@ import io.github.openflocon.library.designsystem.components.FloconCircularProgre
 import io.github.openflocon.library.designsystem.components.FloconJsonTreeDiff
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.diff_clipboard
+import flocondesktop.composeapp.generated.resources.diff_original
 
 @Composable
 fun NetworkDiffWindow(
@@ -58,14 +62,14 @@ private fun NetworkDiffContent(
                         modifier = Modifier
                             .weight(1F)
                             .padding(start = FloconTheme.spacing.small),
-                        text = "Original:",
+                        text = stringResource(Res.string.diff_original),
                         style = FloconTheme.typography.titleMedium
                     )
 
                     Row(modifier = Modifier.weight(1F)) {
                         Text(
                             modifier = Modifier.weight(1F),
-                            text = "Clipboard:",
+                            text = stringResource(Res.string.diff_clipboard),
                             style = FloconTheme.typography.titleMedium
                         )
 

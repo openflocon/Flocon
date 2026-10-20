@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -94,6 +95,14 @@ internal fun TopBarAppView(
                     modifier = Modifier.size(14.dp)
                 )
             }
+        }
+        if (selected) {
+            Spacer(modifier = Modifier.weight(1f))
+            FloconIcon(
+                imageVector = Icons.Outlined.Check,
+                tint = colors.accent,
+                modifier = Modifier.size(16.dp),
+            )
         }
     }
 }

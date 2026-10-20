@@ -27,6 +27,11 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconActionButton
 import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.badquality_subtitle
+import flocondesktop.composeapp.generated.resources.badquality_title
+import flocondesktop.composeapp.generated.resources.general_create
 
 @Composable
 fun NetworkBadQualityContent(
@@ -55,7 +60,7 @@ fun NetworkBadQualityContent(
                     horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                 ) {
                     Text(
-                        text = "Network bad quality",
+                        text = stringResource(Res.string.badquality_title),
                         style = FloconTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = colors.ink,
@@ -70,7 +75,7 @@ fun NetworkBadQualityContent(
                     )
                 }
                 Text(
-                    text = "Simulate a degraded connection: latency and errors on matching requests.",
+                    text = stringResource(Res.string.badquality_subtitle),
                     style = FloconTheme.typography.bodyMedium,
                     color = colors.inkMuted,
                 )
@@ -79,7 +84,7 @@ fun NetworkBadQualityContent(
                 onClick = onAddItemClicked,
                 primary = true,
             ) {
-                Text("Create")
+                Text(stringResource(Res.string.general_create))
             }
         }
         Box(

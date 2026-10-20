@@ -48,6 +48,9 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import kotlinx.collections.immutable.ImmutableList
 import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.network_websocket_mock_title
 
 @Composable
 fun NetworkWebsocketMockWindow(
@@ -89,7 +92,7 @@ private fun NetworkWebsocketMockContent(
         modifier = Modifier.fillMaxWidth(),
     ) {
         FloconDialogHeader(
-            title = "Network Websocket Mock",
+            title = stringResource(Res.string.network_websocket_mock_title),
             modifier = Modifier.fillMaxWidth(),
         )
 

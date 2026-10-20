@@ -46,6 +46,12 @@ import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.badquality_add_exception
+import flocondesktop.composeapp.generated.resources.badquality_add_http_error
+import flocondesktop.composeapp.generated.resources.badquality_delete_error
+import flocondesktop.composeapp.generated.resources.badquality_no_error
 
 @Composable
 fun BadQualityErrorsListView(
@@ -86,7 +92,7 @@ fun BadQualityErrorsListView(
             ) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
                 Text(
-                    text = "Add http error",
+                    text = stringResource(Res.string.badquality_add_http_error),
                 )
             }
             FloconActionButton(
@@ -104,7 +110,7 @@ fun BadQualityErrorsListView(
             ) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
                 Text(
-                    text = "Add Exception",
+                    text = stringResource(Res.string.badquality_add_exception),
                 )
             }
         }
@@ -128,7 +134,7 @@ fun BadQualityErrorsListView(
                     .padding(FloconTheme.spacing.medium),
             ) {
                 Text(
-                    text = "No error yet. Add an HTTP error or an exception to return when the error probability hits.",
+                    text = stringResource(Res.string.badquality_no_error),
                     style = FloconTheme.typography.bodySmall,
                     color = FloconTheme.colors.inkFaint,
                     textAlign = TextAlign.Center,
@@ -281,7 +287,7 @@ private fun BadQualityErrorItemView(
 
         Image(
             imageVector = Icons.Default.Delete,
-            contentDescription = "Delete error",
+            contentDescription = stringResource(Res.string.badquality_delete_error),
             modifier = Modifier
                 .size(24.dp)
                 .clickable {

@@ -35,6 +35,9 @@ import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextButton
 import org.jetbrains.compose.resources.painterResource
 import java.net.URI
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.app_name
+import flocondesktop.composeapp.generated.resources.settings_about_title
 
 @Composable
 internal fun AboutScreen(
@@ -49,7 +52,7 @@ internal fun AboutScreen(
     )
 
     Window(
-        title = "About",
+        title = stringResource(Res.string.settings_about_title),
         onCloseRequest = onCloseRequest,
         state = windowState,
         resizable = false
@@ -66,7 +69,7 @@ internal fun AboutScreen(
                     modifier = Modifier.size(120.dp)
                 )
                 Text(
-                    text = "Flocon",
+                    text = stringResource(Res.string.app_name),
                     style = FloconTheme.typography.titleSmall,
                     color = FloconTheme.colorPalette.onSurface
                 )

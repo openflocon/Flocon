@@ -37,6 +37,12 @@ import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_create
+import flocondesktop.composeapp.generated.resources.general_export
+import flocondesktop.composeapp.generated.resources.general_import
+import flocondesktop.composeapp.generated.resources.mocks_subtitle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,7 +113,7 @@ internal fun NetworkMocksContent(
                         .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
                 )
                 Text(
-                    text = "Replace the response of requests matching a pattern.",
+                    text = stringResource(Res.string.mocks_subtitle),
                     style = FloconTheme.typography.bodyMedium,
                     color = colors.inkMuted,
                 )
@@ -116,16 +122,16 @@ internal fun NetworkMocksContent(
                 onClick = { onAction(NetworkMockAction.OnAddItemClicked) },
                 primary = true,
             ) {
-                Text("Create", fontWeight = FontWeight.SemiBold)
+                Text(stringResource(Res.string.general_create), fontWeight = FontWeight.SemiBold)
             }
             FloconOverflow {
                 FloconDropdownMenuItem(
-                    text = "Import",
+                    text = stringResource(Res.string.general_import),
                     leadingIcon = Icons.Outlined.FileDownload,
                     onClick = { onAction(NetworkMockAction.OnImportClicked) }
                 )
                 FloconDropdownMenuItem(
-                    text = "Export",
+                    text = stringResource(Res.string.general_export),
                     leadingIcon = Icons.Outlined.FileUpload,
                     onClick = { onAction(NetworkMockAction.OnExportClicked) }
                 )

@@ -40,6 +40,11 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.toImmutableMap
 import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.deeplink_variables
+import flocondesktop.composeapp.generated.resources.general_history
+import flocondesktop.composeapp.generated.resources.menu_item_deeplinks
 
 @Composable
 fun DeeplinkScreen(modifier: Modifier = Modifier) {
@@ -97,7 +102,7 @@ private fun DeeplinkScreen(
             ) {
                 // Left: Variables
                 DeeplinkScrollablePanel(
-                    title = "Variables",
+                    title = stringResource(Res.string.deeplink_variables),
                     modifier = Modifier
                         .weight(0.3f)
                         .fillMaxHeight()
@@ -114,7 +119,7 @@ private fun DeeplinkScreen(
 
                 // Right: Deeplinks (non-history)
                 DeeplinkScrollablePanel(
-                    title = "Deeplinks",
+                    title = stringResource(Res.string.menu_item_deeplinks),
                     modifier = Modifier
                         .weight(0.7f)
                         .fillMaxHeight()
@@ -135,7 +140,7 @@ private fun DeeplinkScreen(
 
             // Bottom half: History
             DeeplinkScrollablePanel(
-                title = "History",
+                title = stringResource(Res.string.general_history),
                 modifier = Modifier
                     .weight(0.5f)
                     .fillMaxWidth()

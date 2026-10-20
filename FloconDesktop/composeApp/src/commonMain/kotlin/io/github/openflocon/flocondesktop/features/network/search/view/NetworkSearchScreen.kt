@@ -51,6 +51,9 @@ import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
 import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.search_placeholder
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -159,7 +162,7 @@ private fun NetworkSearchScreen(
                     onValueChange = {
                         onQueryChanged(it)
                     },
-                    placeholder = defaultPlaceHolder("Search..."),
+                    placeholder = defaultPlaceHolder(stringResource(Res.string.search_placeholder)),
                     leadingComponent = {
                         FloconIcon(
                             imageVector = Icons.Outlined.Search,

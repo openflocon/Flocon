@@ -36,7 +36,7 @@ fun ExposedDropdownMenuBoxScope.FloconExposedDropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
         modifier = modifier,
-        containerColor = FloconTheme.colorPalette.primary,
+        containerColor = FloconTheme.colors.bg100,
         matchAnchorWidth = true,
         content = content
     )

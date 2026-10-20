@@ -39,6 +39,18 @@ import java.util.UUID
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.badquality_creation_subtitle
+import flocondesktop.composeapp.generated.resources.badquality_error_probability
+import flocondesktop.composeapp.generated.resources.badquality_max_latency
+import flocondesktop.composeapp.generated.resources.badquality_min_latency
+import flocondesktop.composeapp.generated.resources.badquality_trigger_probability
+import flocondesktop.composeapp.generated.resources.general_cancel
+import flocondesktop.composeapp.generated.resources.general_save
+import flocondesktop.composeapp.generated.resources.mock_expectation
+import flocondesktop.composeapp.generated.resources.name
+import flocondesktop.composeapp.generated.resources.network_response
 
 @Composable
 fun BadQualityEditionWindow(
@@ -122,7 +134,7 @@ fun BadNetworkQualityEditionContent(
                 color = FloconTheme.colors.ink,
             )
             Text(
-                text = "Define when a profile triggers, how slow it is and which errors it returns.",
+                text = stringResource(Res.string.badquality_creation_subtitle),
                 style = FloconTheme.typography.bodyMedium,
                 color = FloconTheme.colors.inkMuted,
             )
@@ -142,13 +154,13 @@ fun BadNetworkQualityEditionContent(
                 .padding(FloconTheme.spacing.large),
         ) {
             Text(
-                text = "Expectation",
+                text = stringResource(Res.string.mock_expectation),
                 style = FloconTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
                 color = FloconTheme.colors.ink,
             )
             FloconTextField(
-                label = defaultLabel("Name"),
+                label = defaultLabel(stringResource(Res.string.name)),
                 value = name,
                 onValueChange = { name = it },
                 suffix = { },
@@ -156,7 +168,7 @@ fun BadNetworkQualityEditionContent(
                 containerColor = FloconTheme.colors.bg200,
             )
             FloconTextField(
-                label = defaultLabel("Trigger probability"),
+                label = defaultLabel(stringResource(Res.string.badquality_trigger_probability)),
                 placeholder = defaultPlaceHolder("0"),
                 value = triggerProbability,
                 onValueChange = {
@@ -170,7 +182,7 @@ fun BadNetworkQualityEditionContent(
             Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
                 FloconTextField(
                     modifier = Modifier.weight(1f),
-                    label = defaultLabel("Min latency"),
+                    label = defaultLabel(stringResource(Res.string.badquality_min_latency)),
                     placeholder = defaultPlaceHolder("0"),
                     value = minLatencyMs,
                     onValueChange = {
@@ -183,7 +195,7 @@ fun BadNetworkQualityEditionContent(
                 )
                 FloconTextField(
                     modifier = Modifier.weight(1f),
-                    label = defaultLabel("Max latency"),
+                    label = defaultLabel(stringResource(Res.string.badquality_max_latency)),
                     placeholder = defaultPlaceHolder("0"),
                     value = maxLatencyMs,
                     onValueChange = {
@@ -204,13 +216,13 @@ fun BadNetworkQualityEditionContent(
                 .padding(FloconTheme.spacing.large),
         ) {
             Text(
-                text = "Response",
+                text = stringResource(Res.string.network_response),
                 style = FloconTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
                 color = FloconTheme.colors.ink,
             )
             FloconTextField(
-                label = defaultLabel("Error probability"),
+                label = defaultLabel(stringResource(Res.string.badquality_error_probability)),
                 placeholder = defaultPlaceHolder("0"),
                 value = errorProbability,
                 onValueChange = {
@@ -303,7 +315,7 @@ fun BadNetworkQualityEditionContent(
                 .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.small),
         ) {
         FloconActionButton(onClick = close) {
-            Text("Cancel")
+            Text(stringResource(Res.string.general_cancel))
         }
         FloconActionButton(
             primary = true,
@@ -337,7 +349,7 @@ fun BadNetworkQualityEditionContent(
                 )
             },
         ) {
-            Text("Save")
+            Text(stringResource(Res.string.general_save))
         }
         }
     }

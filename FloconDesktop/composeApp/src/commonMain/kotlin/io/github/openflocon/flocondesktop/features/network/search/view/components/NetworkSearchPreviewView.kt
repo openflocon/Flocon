@@ -45,6 +45,11 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.images_close_preview
+import flocondesktop.composeapp.generated.resources.search_next_match
+import flocondesktop.composeapp.generated.resources.search_previous_match
 
 @Composable
 internal fun NetworkSearchPreviewView(
@@ -94,13 +99,13 @@ internal fun NetworkSearchPreviewView(
                 Spacer(Modifier.width(FloconTheme.spacing.small))
                 FloconIcon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack, // Left Arrow
-                    // contentDescription = "Previous Match",
+                    // contentDescription = stringResource(Res.string.search_previous_match),
                     modifier = Modifier.clickable { onPrevMatch() }
                 )
                 Spacer(Modifier.width(FloconTheme.spacing.small))
                 FloconIcon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowForward, // Right Arrow
-                    // contentDescription = "Next Match",
+                    // contentDescription = stringResource(Res.string.search_next_match),
                     modifier = Modifier.clickable { onNextMatch() }
                 )
             }
@@ -116,7 +121,7 @@ internal fun NetworkSearchPreviewView(
 
             FloconIcon(
                 imageVector = Icons.Outlined.Close,
-                // contentDescription = "Close Preview",
+                // contentDescription = stringResource(Res.string.images_close_preview),
                 modifier = Modifier.clickable { onClose() }
             )
         }

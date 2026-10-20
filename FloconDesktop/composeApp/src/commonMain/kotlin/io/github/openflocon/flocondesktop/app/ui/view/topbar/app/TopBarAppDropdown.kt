@@ -25,6 +25,9 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_select
 
 @Composable
 internal fun TopBarAppDropdown(
@@ -58,7 +61,7 @@ internal fun TopBarAppDropdown(
                     onClick = { expanded = true },
                 ) {
                     Text(
-                        text = "Select",
+                        text = stringResource(Res.string.general_select),
                         modifier = modifier,
                     )
                 }
@@ -93,7 +96,7 @@ internal fun TopBarAppDropdown(
                                         }
                                         .then (
                                             if(isSelected) {
-                                                Modifier.background(color = FloconTheme.colorPalette.onTertiary)
+                                                Modifier.background(color = FloconTheme.colors.bg300)
                                             } else {
                                                 Modifier
                                             }

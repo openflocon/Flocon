@@ -37,6 +37,9 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.WithTooltip
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.database_see_all_queries
 
 @Composable
 internal fun DatabaseItemView(
@@ -98,7 +101,7 @@ private fun DatabaseView(
     ContextualView(
         persistentListOf(
             FloconContextMenuItem.Item(
-                label = "See all queries",
+                label = stringResource(Res.string.database_see_all_queries),
                 onClick = {
                     onSeeAllQueriesClicked(state.id, state.name)
                 }
