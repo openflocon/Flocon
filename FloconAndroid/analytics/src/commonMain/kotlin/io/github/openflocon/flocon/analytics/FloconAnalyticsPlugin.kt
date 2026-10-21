@@ -9,6 +9,7 @@ import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
+import io.github.openflocon.flocon.analytics.model.AnalyticsPropertiesConfig
 import io.github.openflocon.flocon.analytics.model.AnalyticsItem
 import io.github.openflocon.flocon.analytics.model.toItem
 import io.github.openflocon.flocon.core.FloconEncoder
@@ -21,6 +22,23 @@ class FloconAnalyticsConfig : FloconPluginConfig
 interface FloconAnalyticsPlugin : FloconPlugin {
     fun log(analyticsItems: List<AnalyticsEvent>)
     fun log(analyticsItem: AnalyticsEvent)
+
+    /** Returns a sender bound to [analyticsTableId], e.g. `Flocon.analyticsPlugin.sender("firebase")`. */
+    fun sender(analyticsTableId: String): FloconAnalyticsSender
+}
+
+/** Logs events to a fixed analytics table, so the table id is not repeated at each call. */
+class FloconAnalyticsSender internal constructor(
+    private val plugin: FloconAnalyticsPlugin,
+    val analyticsTableId: String,
+) {
+    fun log(eventName: String, properties: List<AnalyticsPropertiesConfig> = emptyList()) =
+        plugin.log(AnalyticsEvent(eventName, analyticsTableId, properties))
+
+    fun log(eventName: String, vararg properties: AnalyticsPropertiesConfig) =
+        log(eventName, properties.toList())
+
+    fun log(event: AnalyticsEvent) = plugin.log(event.copy(analyticsTableId = analyticsTableId))
 }
 
 object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyticsPlugin> {
@@ -66,6 +84,8 @@ internal class FloconAnalyticsPluginImpl(
         sendAnalytics(analyticsItems)
     }
 
+    override fun sender(analyticsTableId: String) = FloconAnalyticsSender(this, analyticsTableId)
+
     private fun sendAnalytics(analyticsItems: List<AnalyticsEvent>) {
         analyticsItems.takeIf { it.isNotEmpty() }
             ?.map(AnalyticsEvent::toItem)
@@ -94,6 +114,7 @@ private class NoOpAnalyticsPlugin : FloconAnalyticsPlugin {
     override val key: String = ""
     override fun log(analyticsItems: List<AnalyticsEvent>) = Unit
     override fun log(analyticsItem: AnalyticsEvent) = Unit
+    override fun sender(analyticsTableId: String) = FloconAnalyticsSender(this, analyticsTableId)
     override suspend fun onMessageReceived(method: String, body: String) = Unit
     override suspend fun onConnectedToServer() = Unit
 }

@@ -35,6 +35,17 @@ class FloconAnalyticsPluginTest {
     }
 
     @Test
+    fun `sender reuses its table id`() {
+        val firebase = plugin.sender("firebase")
+
+        firebase.log("click", "screen" analyticsProperty "home")
+        firebase.log(AnalyticsEvent("view", "ignored"))
+
+        assertEquals(2, sender.messages.size)
+        sender.messages.forEach { assertContains(it.third, "\"analytics_table_id\":\"firebase\"") }
+    }
+
+    @Test
     fun `log sends nothing for an empty list`() {
         plugin.log(emptyList())
 

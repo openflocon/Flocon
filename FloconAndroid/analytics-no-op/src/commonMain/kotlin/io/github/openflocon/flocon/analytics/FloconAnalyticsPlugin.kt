@@ -7,6 +7,7 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
+import io.github.openflocon.flocon.analytics.model.AnalyticsPropertiesConfig
 import io.github.openflocon.flocon.core.FloconEncoder
 
 class FloconAnalyticsConfig : FloconPluginConfig
@@ -14,6 +15,17 @@ class FloconAnalyticsConfig : FloconPluginConfig
 interface FloconAnalyticsPlugin : FloconPlugin {
     fun log(analyticsItems: List<AnalyticsEvent>)
     fun log(analyticsItem: AnalyticsEvent)
+
+    /** Returns a sender bound to [analyticsTableId], e.g. `Flocon.analyticsPlugin.sender("firebase")`. */
+    fun sender(analyticsTableId: String): FloconAnalyticsSender
+}
+
+class FloconAnalyticsSender internal constructor(
+    val analyticsTableId: String,
+) {
+    fun log(eventName: String, properties: List<AnalyticsPropertiesConfig> = emptyList()) = Unit
+    fun log(eventName: String, vararg properties: AnalyticsPropertiesConfig) = Unit
+    fun log(event: AnalyticsEvent) = Unit
 }
 
 object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyticsPlugin> {
@@ -31,6 +43,7 @@ internal object FloconAnalyticsPluginNoOp : FloconAnalyticsPlugin {
     override val key: String = "Analytics"
     override fun log(analyticsItems: List<AnalyticsEvent>) = Unit
     override fun log(analyticsItem: AnalyticsEvent) = Unit
+    override fun sender(analyticsTableId: String) = FloconAnalyticsSender(analyticsTableId)
     override suspend fun onMessageReceived(method: String, body: String) = Unit
     override suspend fun onConnectedToServer() = Unit
 }
