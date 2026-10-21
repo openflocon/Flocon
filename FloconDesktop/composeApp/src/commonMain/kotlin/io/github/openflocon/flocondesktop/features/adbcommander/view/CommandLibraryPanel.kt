@@ -53,11 +53,11 @@ fun CommandLibraryPanel(
     onAction: (AdbCommanderAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val borderColor = FloconTheme.colorPalette.secondary
+    val borderColor = FloconTheme.colors.bg200
     val categories = defaultQuickCommands.groupBy { it.category }
 
     Surface(
-        color = FloconTheme.colorPalette.primary,
+        color = FloconTheme.colors.bg100,
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .border(
@@ -86,7 +86,7 @@ fun CommandLibraryPanel(
                             Text(
                                 text = stringResource(Res.string.adb_commander_no_saved_commands),
                                 style = FloconTheme.typography.bodySmall,
-                                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
+                                color = FloconTheme.colors.ink.copy(alpha = 0.6f),
                                 modifier = Modifier.padding(FloconTheme.spacing.small),
                             )
                         }
@@ -120,7 +120,7 @@ fun CommandLibraryPanel(
                             Text(
                                 text = stringResource(Res.string.adb_commander_no_flows),
                                 style = FloconTheme.typography.bodySmall,
-                                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
+                                color = FloconTheme.colors.ink.copy(alpha = 0.6f),
                                 modifier = Modifier.padding(FloconTheme.spacing.small),
                             )
                         }
@@ -155,7 +155,7 @@ fun CommandLibraryPanel(
             ) {
                 Text(
                     stringResource(Res.string.adb_commander_quick_commands),
-                    color = FloconTheme.colorPalette.onSurface,
+                    color = FloconTheme.colors.ink,
                     style = FloconTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
                     ),
@@ -209,12 +209,12 @@ private fun CommandRow(
             Text(
                 text = name,
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
             )
             Text(
                 text = commandText,
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.5f),
+                color = FloconTheme.colors.ink.copy(alpha = 0.5f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
