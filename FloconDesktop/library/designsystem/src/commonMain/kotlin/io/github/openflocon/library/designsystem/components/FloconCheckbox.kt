@@ -12,15 +12,15 @@ fun FloconCheckbox(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    uncheckedColor: Color = FloconTheme.colorPalette.primary
+    uncheckedColor: Color = FloconTheme.colors.lineStrong
 ) {
     Checkbox(
         checked = checked,
         onCheckedChange = onCheckedChange,
         colors = CheckboxDefaults.colors(
-            checkedColor = FloconTheme.colorPalette.accent,
+            checkedColor = FloconTheme.colors.accent,
             uncheckedColor = uncheckedColor,
-            checkmarkColor = FloconTheme.colorPalette.onAccent
+            checkmarkColor = FloconTheme.colors.accentInk
         ),
         modifier = modifier
     )

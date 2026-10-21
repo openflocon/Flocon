@@ -58,7 +58,7 @@ fun FloconIconButton(
             .pointerHoverIcon(PointerIcon.Hand)
             .padding(all = FloconTheme.spacing.small)
     ) {
-        CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.onSurface) {
+        CompositionLocalProvider(LocalContentColor provides FloconTheme.colors.ink) {
             content()
         }
     }
@@ -69,7 +69,7 @@ fun FloconIconTonalButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    containerColor: Color = FloconTheme.colorPalette.primary,
+    containerColor: Color = FloconTheme.colors.bg200,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
@@ -82,7 +82,7 @@ fun FloconIconTonalButton(
             .padding(all = FloconTheme.spacing.small)
     ) {
         CompositionLocalProvider(
-            LocalContentColor provides FloconTheme.colorPalette.contentColorFor(
+            LocalContentColor provides FloconTheme.colors.contentColorFor(
                 containerColor
             )
         ) {
@@ -99,29 +99,29 @@ fun FloconIconToggleButton(
     enabled: Boolean = true,
     tooltip: String? = null,
     size: Dp = Size,
-    containerColor: Color = FloconTheme.colorPalette.primary,
-    contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor),
+    containerColor: Color = FloconTheme.colors.bg200,
+    contentColor: Color = FloconTheme.colors.contentColorFor(containerColor),
     content: @Composable () -> Unit
 ) {
     val shape = FloconTheme.shapes.medium
     val contentColor by animateColorAsState(
         when {
             !enabled -> contentColor.copy(alpha = .5f)
-            value -> FloconTheme.colorPalette.onAccent
+            value -> FloconTheme.colors.accent
             else -> contentColor
         }
     )
     val borderColor by animateColorAsState(
         when {
             !enabled -> Color.Transparent
-            value -> FloconTheme.colorPalette.onAccent
+            value -> FloconTheme.colors.accent
             else -> Color.Transparent
         }
     )
     val containerColor by animateColorAsState(
         when {
             !enabled -> containerColor.copy(alpha = .5f)
-            value -> FloconTheme.colorPalette.accent
+            value -> FloconTheme.colors.accentSoft
             else -> containerColor
         }
     )
@@ -161,8 +161,8 @@ fun FloconIconButton(
     tooltip: String,
     size: Dp = Size,
     onClick: () -> Unit,
-    containerColor: Color = FloconTheme.colorPalette.primary,
-    contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor),
+    containerColor: Color = FloconTheme.colors.bg200,
+    contentColor: Color = FloconTheme.colors.contentColorFor(containerColor),
     content: @Composable () -> Unit
 ) {
     val shape = FloconTheme.shapes.medium
@@ -203,10 +203,10 @@ fun WithTooltip(
                 Text(
                     text = tooltip,
                     style = FloconTheme.typography.labelSmall,
-                    color = FloconTheme.colorPalette.onPrimary,
+                    color = FloconTheme.colors.ink,
                     modifier = Modifier
                         .clip(FloconTheme.shapes.small)
-                        .background(FloconTheme.colorPalette.primary)
+                        .background(FloconTheme.colors.bg200)
                         .padding(vertical = FloconTheme.spacing.tiny, horizontal = FloconTheme.spacing.extraSmall)
                 )
             },

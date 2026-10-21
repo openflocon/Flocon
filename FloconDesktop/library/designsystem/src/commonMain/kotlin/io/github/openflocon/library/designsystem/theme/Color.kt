@@ -134,6 +134,7 @@ fun FloconColors.contentColorFor(backgroundColor: Color) = when (backgroundColor
     bg000, bg100, bg200, bg300 -> ink
     accentSoft -> accent
     accent -> accentInk
+    ink -> bg100
     statusError -> accentInk
     else -> Color.Unspecified
 }
