@@ -122,7 +122,7 @@ fun TableScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary)
+                .background(FloconTheme.colors.bg100)
         ) {
             LazyColumn(
                 state = listState,
@@ -136,7 +136,7 @@ fun TableScreen(
                         is TableContentStateUiModel.WithContent -> {
                             Row(
                                 modifier = Modifier.fillMaxWidth()
-                                    .background(FloconTheme.colorPalette.secondary)
+                                    .background(FloconTheme.colors.bg200)
                                     .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
                             ) {
                                 content.columns.columns.fastForEach { column ->
@@ -147,7 +147,7 @@ fun TableScreen(
                                             .width(columnsWidth)
                                             .padding(horizontal = FloconTheme.spacing.extraSmall),
                                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                        color = FloconTheme.colorPalette.onSecondary,
+                                        color = FloconTheme.colors.inkMuted,
                                     )
                                 }
                             }
