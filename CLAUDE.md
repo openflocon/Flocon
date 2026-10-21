@@ -6,3 +6,13 @@
 - **Doing a task: use Sonnet.** Once a plan exists, implementing it (writing code, editing files, running checks, fixing CI, updating docs) is done with Sonnet.
 
 When delegating to subagents, apply the same split: planning/exploration-for-design agents run on Opus, implementation agents run on Sonnet.
+
+## Rules
+
+Project rules live in `.claude/rules/` and are loaded automatically (path-scoped ones only when working in that folder):
+
+- `android-sdk.md`: KMP SDK conventions, plugin / no-op parity (`FloconAndroid/`)
+- `desktop-app.md`: desktop layering, DI, UI and Room rules (`FloconDesktop/`)
+- `git-workflow.md`: commit message format, branches, PRs
+- `build-verification.md`: Gradle / MkDocs checks to run before a task is done
+- `docs-protocol-sync.md`: keep `protocol/`, `docs/`, MCP docs and README in sync with code
