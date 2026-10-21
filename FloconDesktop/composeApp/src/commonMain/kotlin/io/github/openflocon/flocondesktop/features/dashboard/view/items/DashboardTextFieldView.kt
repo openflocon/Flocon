@@ -38,7 +38,7 @@ fun DashboardTextFieldView(
         Text(
             text = rowItem.label,
             modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
             style = FloconTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Thin,
             ),
@@ -52,7 +52,7 @@ fun DashboardTextFieldView(
                 value = value,
                 onValueChange = onValueChange,
                 placeholder = defaultPlaceHolder(rowItem.placeHolder?.takeIf(String::isNotEmpty)),
-                containerColor = FloconTheme.colorPalette.secondary,
+                containerColor = FloconTheme.colors.bg200,
                 contentPadding = PaddingValues(horizontal = FloconTheme.spacing.extraSmall),
                 modifier = Modifier
                     .weight(1f)
@@ -61,7 +61,7 @@ fun DashboardTextFieldView(
             if (showSubmitButton) {
                 FloconIconTonalButton(
                     onClick = onSubmit,
-                    containerColor = FloconTheme.colorPalette.secondary,
+                    containerColor = FloconTheme.colors.bg200,
                 ) {
                     FloconIcon(
                         imageVector = Icons.AutoMirrored.Outlined.Send
@@ -84,7 +84,7 @@ internal fun DashboardTextFieldViewPreview_placeholder() {
     FloconTheme {
         DashboardTextFieldView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             rowItem = rowItem,
             value = "",
@@ -105,7 +105,7 @@ internal fun DashboardTextFieldViewPreview_withValue() {
     FloconTheme {
         DashboardTextFieldView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             rowItem = rowItem,
             value = "value",

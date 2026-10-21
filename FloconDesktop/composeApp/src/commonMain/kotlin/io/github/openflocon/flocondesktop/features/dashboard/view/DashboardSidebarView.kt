@@ -52,10 +52,10 @@ fun DashboardSidebarView(
     onDashboardSelected: (DeviceDashboardUiModel) -> Unit,
     onDeleteClicked: (DeviceDashboardUiModel) -> Unit,
 ) {
-    val borderColor = FloconTheme.colorPalette.secondary
+    val borderColor = FloconTheme.colors.bg200
 
     Surface(
-        color = FloconTheme.colorPalette.primary,
+        color = FloconTheme.colors.bg100,
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .border(
@@ -76,7 +76,7 @@ fun DashboardSidebarView(
             ) {
                 Text(
                     stringResource(Res.string.dashboards),
-                    color = FloconTheme.colorPalette.onSurface,
+                    color = FloconTheme.colors.ink,
                     style = FloconTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
                     ),
@@ -136,9 +136,9 @@ private fun DashboardItemView(
     modifier: Modifier = Modifier
 ) {
     val (background, textColor) = if (isSelected) {
-        FloconTheme.colorPalette.accent.copy(alpha = 0.4f) to FloconTheme.colorPalette.onAccent
+        FloconTheme.colors.accent.copy(alpha = 0.4f) to FloconTheme.colors.accent
     } else {
-        Color.Transparent to FloconTheme.colorPalette.onSurface
+        Color.Transparent to FloconTheme.colors.ink
     }
 
     Row(
@@ -168,7 +168,7 @@ private fun DashboardItemView(
         Box(
             Modifier.clip(RoundedCornerShape(4.dp))
                 .background(
-                    FloconTheme.colorPalette.onSurface.copy(alpha = 0.1f)
+                    FloconTheme.colors.ink.copy(alpha = 0.1f)
                 ).clickable {
                     onDelete()
                 }.padding(FloconTheme.spacing.tiny),
