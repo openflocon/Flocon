@@ -133,7 +133,7 @@ private fun ImagesScreen(
                         modifier = Modifier
                             .matchParentSize()
                             .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colorPalette.primary)
+                            .background(FloconTheme.colors.bg100)
                     ) {
                         items(state.images) {
                             ImageItemView(
