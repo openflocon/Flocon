@@ -14,6 +14,7 @@ Project rules live in `.claude/rules/` and are loaded automatically (path-scoped
 - `android-sdk.md`: KMP SDK conventions, plugin / no-op parity (`FloconAndroid/`)
 - `desktop-app.md`: desktop layering, DI and Room rules (`FloconDesktop/`)
 - `compose.md`: Compose UI conventions: screen structure, state, design system, previews (`FloconDesktop/`)
+- `compose-styling.md`: Compose visual styling: colour, typography, spacing, shape and icon tokens (`FloconDesktop/`)
 - `kotlin-style.md`: Kotlin formatting, naming, null safety, coroutines, DI (all `.kt`/`.kts`)
 - `git-workflow.md`: commit message format, branches, PRs
 - `build-verification.md`: Gradle / MkDocs checks to run before a task is done
