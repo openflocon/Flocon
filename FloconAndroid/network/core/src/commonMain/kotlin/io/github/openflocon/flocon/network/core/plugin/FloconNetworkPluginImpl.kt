@@ -9,6 +9,7 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
+import io.github.openflocon.flocon.network.core.datasource.FloconNetworkDataSource
 import io.github.openflocon.flocon.network.core.datasource.buildFloconNetworkDataSource
 import io.github.openflocon.flocon.network.core.mapper.decodeBadQualityConfig
 import io.github.openflocon.flocon.network.core.mapper.decodeMocks
@@ -35,11 +36,10 @@ internal class FloconNetworkPluginImpl(
     context: FloconContext,
     private var sender: FloconMessageSender,
     private val coroutineScope: CoroutineScope,
-    private val encoder: FloconEncoder
+    private val encoder: FloconEncoder,
+    private val dataSource: FloconNetworkDataSource = buildFloconNetworkDataSource(context = context, encoder = encoder),
 ) : FloconPlugin, FloconNetworkPlugin {
     override val key: String = Protocol.ToDevice.Network.Plugin
-
-    private val dataSource = buildFloconNetworkDataSource(context = context, encoder = encoder)
 
     private val websocketListeners =
         MutableStateFlow<Map<String, FloconWebSocketMockListener>>(emptyMap())
