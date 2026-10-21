@@ -6,6 +6,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -102,7 +103,8 @@ internal fun TimelineContent(
         modifier = modifier
             .background(colors.bg100, panelShape)
             .border(1.dp, colors.line, panelShape)
-            .padding(FloconTheme.spacing.large)
+            // no bottom padding: the list scrolls through it with its content padding
+            .padding(start = FloconTheme.spacing.large, top = FloconTheme.spacing.large, end = FloconTheme.spacing.large)
             .focusRequester(screenFocus)
             .focusable()
             .onPreviewKeyEvent { event ->
@@ -155,6 +157,7 @@ internal fun TimelineContent(
         LazyColumn(
             state = rememberLazyListState(),
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = FloconTheme.spacing.large),
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
         ) {
             items(
