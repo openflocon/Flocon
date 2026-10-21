@@ -15,5 +15,5 @@ Project rules live in `.claude/rules/` and are loaded automatically (path-scoped
 - `desktop-app.md`: desktop layering, DI and Room rules (`FloconDesktop/`)
 - `compose.md`: Compose UI conventions: screen structure, state, design system, previews (`FloconDesktop/`)
 - `git-workflow.md`: commit message format, branches, PRs
-- `build-verification.md`: Gradle / MkDocs checks to run before a task is done
+- `build-verification.md`: which Gradle / MkDocs checks to run locally, and which are left to CI
 - `docs-protocol-sync.md`: keep `protocol/`, `docs/`, MCP docs and README in sync with code
