@@ -167,9 +167,9 @@ fun NetworkItemView(
             ) {
                 Text(
                     state.dateFormatted,
-                    style = mono,
+                    // same text as the domain, with digits of the same width so the times stay aligned
+                    style = FloconTheme.typography.bodySmall.copy(fontFeatureSettings = "tnum"),
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
                     color = colors.inkMuted,
                     maxLines = 1,
                 )
@@ -311,9 +311,8 @@ private fun RequestChip(
             text = requestText(text = state.type.query, queryColor = colors.inkFaint),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = FloconTheme.typography.bodyMedium,
-            fontSize = 12.5.sp,
-            fontWeight = FontWeight.Normal,
+            style = FloconTheme.typography.bodySmall,
+            fontSize = 12.sp,
             color = colors.ink,
             // the path gives way to the error message only when both do not fit
             modifier = Modifier.weight(1f, fill = false),
