@@ -110,6 +110,7 @@ class FilesViewModel(
         selectingAll = false,
         numberOfFiles = null,
         canSelect = false,
+        showEmptyState = roots.isEmpty(),
     )
 
     private data class SelectedFile(

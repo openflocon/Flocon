@@ -2,6 +2,8 @@ package io.github.openflocon.mcp
 
 import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.Constant
+import io.github.openflocon.domain.log.LogDomain
+import io.github.openflocon.domain.log.LogManager
 import io.github.openflocon.domain.mcp.repository.McpServerRepository
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
@@ -21,6 +23,7 @@ import io.modelcontextprotocol.kotlin.sdk.types.ServerCapabilities
 class FloconMcpServer(
     private val toolProviders: List<McpToolProvider>,
     private val port: Int = Constant.MCP_SERVER_PORT,
+    private val logManager: LogManager,
 ) : McpServerRepository {
 
     private var httpServer: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? = null
@@ -35,6 +38,7 @@ class FloconMcpServer(
         }.start(wait = false)
 
         Logger.i(TAG) { "MCP server started on http://localhost:$port$PATH" }
+        logManager.i(TAG, "Server started on http://localhost:$port$PATH (${toolProviders.size} tool providers)", domain = LogDomain.Mcp)
     }
 
     @Synchronized
@@ -56,7 +60,8 @@ class FloconMcpServer(
         ),
         instructions = INSTRUCTIONS,
     ) {
-        toolProviders.forEach { it.register(this) }
+        val toolServer = McpToolServer(server = this, logManager = logManager)
+        toolProviders.forEach { it.register(toolServer) }
     }
 
     private companion object {
@@ -95,6 +100,9 @@ class FloconMcpServer(
             - Crashes reported by the app: list_crash_reports gives the exception type and message,
               get_crash_report the full stack trace.
             - Custom tables sent by the app (Table plugin): list_tables gives the tableId, list_table_items the rows.
+            - Screen of the device (Android, or the booted iOS Simulator): take_screenshot returns the image and its path,
+              start_screen_recording / stop_screen_recording record a video (mp4). Files are saved in the Flocon documents folder,
+              open_flocon_folder opens it on the computer and returns its path.
         """.trimIndent()
     }
 }

@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.detail.view
 
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -380,24 +382,29 @@ fun NetworkDetailContent(
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                when (selectedTab) {
-                    NetworkDetailTab.Request -> {
-                        Request(
-                            modifier = Modifier.fillMaxWidth(),
-                            state = uiState,
-                            onAction = onAction,
-                            linesLabelWidth = linesLabelWidth,
-                            headersLabelWidth = headersLabelWidth,
-                        )
-                    }
+                Crossfade(
+                    targetState = selectedTab,
+                    animationSpec = tween(durationMillis = 200),
+                ) { tab ->
+                    when (tab) {
+                        NetworkDetailTab.Request -> {
+                            Request(
+                                modifier = Modifier.fillMaxWidth(),
+                                state = uiState,
+                                onAction = onAction,
+                                linesLabelWidth = linesLabelWidth,
+                                headersLabelWidth = headersLabelWidth,
+                            )
+                        }
 
-                    NetworkDetailTab.Response -> {
-                        Response(
-                            modifier = Modifier.fillMaxWidth(),
-                            state = uiState,
-                            onAction = onAction,
-                            headersLabelWidth = headersLabelWidth,
-                        )
+                        NetworkDetailTab.Response -> {
+                            Response(
+                                modifier = Modifier.fillMaxWidth(),
+                                state = uiState,
+                                onAction = onAction,
+                                headersLabelWidth = headersLabelWidth,
+                            )
+                        }
                     }
                 }
             }

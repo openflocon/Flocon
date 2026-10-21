@@ -76,7 +76,7 @@ class DeepLinkViewModel(
                     }
                 )
             }
-        )
+        ).let { it.copy(showEmptyState = it.deepLinks.isEmpty() && it.variables.isEmpty()) }
     }
         .stateInWhileSubscribed(DeeplinkScreenState(emptyList(), emptyList()))
 

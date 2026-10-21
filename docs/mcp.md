@@ -261,6 +261,16 @@ The search call is the slowest. It may be worth adding a loading state or deboun
 
 Mock created for `GET /articles/*`: status **500**, body `{"error":"internal_error"}`. Open an article in the app to see the error screen. I can disable the mock when you're done.
 
+---
+
+**Prompt**
+
+> Record the checkout flow and show me what the screen looks like when the payment fails.
+
+**Response**
+
+Recording started on the Pixel 9. I tapped through the checkout, then stopped the recording: the video is saved at `~/Documents/Flocon/ScreenRecord/record_io.flocon.sample_1736000000000.mp4`. A screenshot of the failure shows an empty payment form with no error message, while `POST /payments` returned a **402**. The error is not displayed by the app.
+
 ## Available tools
 
 By default, every tool targets the **device and app currently selected in Flocon Desktop**. Use `list_devices` then pass `deviceId` / `packageName` to target another one.
@@ -299,6 +309,10 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_deeplinks` | Deeplinks declared by the app (link, label, description, parameters) and their variables. |
 | `list_deeplink_history` | Deeplinks recently opened from Flocon. |
 | `open_deeplink` | Opens a deeplink on the device (`adb` on Android, the booted Simulator on iOS) and adds it to the history. Not read only: it acts on the device. |
+| `take_screenshot` | Screenshot of the device screen (`adb` on Android, the booted Simulator on iOS), saved as a PNG in the Flocon documents folder (`Screenshot/`). Returns the path and the image, so the agent sees the screen. Not read only: it acts on the device. |
+| `start_screen_recording` | Starts recording the device screen. One recording per device; on Android, `screenrecord` stops by itself after 3 minutes. |
+| `stop_screen_recording` | Stops the recording and returns the path of the mp4 saved in `ScreenRecord/`. Without target, stops the only running recording. |
+| `open_flocon_folder` | Opens the Flocon documents folder (screenshots, screen records, exports), or a sub folder (`Screenshot`, `ScreenRecord`), in the file manager of the computer, and returns its path. |
 | `list_shared_preferences` | SharedPreferences files (Android) / UserDefaults suites (iOS) of the app, with their `sharedPreferenceId`. |
 | `get_shared_preference_values` | Keys and typed values of a SharedPreferences file, as stored. Optional text filter (key or value) and limit. |
 | `list_tables` | Custom tables sent by the app (Table plugin), with their `tableId`. |

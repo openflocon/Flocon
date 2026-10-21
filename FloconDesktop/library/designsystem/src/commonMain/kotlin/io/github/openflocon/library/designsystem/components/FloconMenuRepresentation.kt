@@ -2,6 +2,8 @@
 
 package io.github.openflocon.library.designsystem.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.ContextMenuRepresentation
 import androidx.compose.foundation.ContextMenuState
@@ -49,14 +51,24 @@ internal class FloconMenuRepresentation : ContextMenuRepresentation {
         }
 
         val status = state.status
+        val visibleState = remember { MutableTransitionState(false) }
+        // kept so the menu can still be drawn while its exit animation plays
+        var lastMenu by remember { mutableStateOf<Pair<Offset, ImmutableList<FloconContextMenuItem>>?>(null) }
 
         if (status is ContextMenuState.Status.Open) {
+            lastMenu = status.rect.center to items.invoke()
+                .filterIsInstance<FloconContextMenuItem>()
+                .toImmutableList()
+        }
+        visibleState.targetState = status is ContextMenuState.Status.Open
+
+        val menu = lastMenu
+        if (menu != null && (visibleState.currentState || visibleState.targetState)) {
             Menu(
-                offset = status.rect.center,
-                items = items.invoke()
-                    .filterIsInstance<FloconContextMenuItem>()
-                    .toImmutableList(),
-                hide = ::hide
+                offset = menu.first,
+                items = menu.second,
+                hide = ::hide,
+                visibleState = visibleState,
             )
         }
     }
@@ -68,7 +80,10 @@ private fun Menu(
     items: ImmutableList<FloconContextMenuItem>,
     hide: () -> Unit,
     modifier: Modifier = Modifier,
-    interactionSource: MutableInteractionSource? = null
+    interactionSource: MutableInteractionSource? = null,
+    visibleState: MutableTransitionState<Boolean> = remember {
+        MutableTransitionState(false).apply { targetState = true }
+    },
 ) {
     val position = rememberPopupPositionProviderAtPosition(offset)
 
@@ -76,20 +91,26 @@ private fun Menu(
         onDismissRequest = hide,
         popupPositionProvider = position
     ) {
-        Column(
-            modifier = modifier
-                .menuBackground()
+        AnimatedVisibility(
+            visibleState = visibleState,
+            enter = DropdownEnterTransition,
+            exit = DropdownExitTransition,
         ) {
-            items.forEach { item ->
-                when (item) {
-                    is FloconContextMenuItem.Item -> Item(item = item, hide = hide)
-                    is FloconContextMenuItem.SubMenu -> SubMenu(
-                        item = item,
-                        hide = hide,
-                        parent = interactionSource
-                    )
+            Column(
+                modifier = modifier
+                    .menuBackground()
+            ) {
+                items.forEach { item ->
+                    when (item) {
+                        is FloconContextMenuItem.Item -> Item(item = item, hide = hide)
+                        is FloconContextMenuItem.SubMenu -> SubMenu(
+                            item = item,
+                            hide = hide,
+                            parent = interactionSource
+                        )
 
-                    is FloconContextMenuItem.Separator -> FloconMenuSeparator()
+                        is FloconContextMenuItem.Separator -> FloconMenuSeparator()
+                    }
                 }
             }
         }

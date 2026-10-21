@@ -1,9 +1,13 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,8 +52,6 @@ import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeaderVi
 import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeaderView
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowView
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -64,6 +66,7 @@ fun TimelineScreen(
     val selectedKey by viewModel.selectedKey.collectAsStateWithLifecycle()
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     TimelineContent(
         modifier = modifier.fillMaxSize(),
@@ -73,6 +76,7 @@ fun TimelineScreen(
         selectedKey = selectedKey,
         summary = summary,
         isLive = isLive,
+        showEmptyState = showEmptyState,
         onAction = viewModel::onAction,
     )
 }
@@ -86,6 +90,7 @@ internal fun TimelineContent(
     selectedKey: String?,
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
+    showEmptyState: Boolean,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -99,7 +104,8 @@ internal fun TimelineContent(
         runCatching { screenFocus.requestFocus() }
     }
 
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
             .background(colors.bg100, panelShape)
             .border(1.dp, colors.line, panelShape)
@@ -145,7 +151,12 @@ internal fun TimelineContent(
             }
         }
 
-        if (rows.itemCount == 0) {
+        if (showEmptyState) {
+            FeatureEmptyState(
+                doc = FeatureDoc.Timeline,
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else if (rows.itemCount == 0) {
             Text(
                 text = stringResource(Res.string.timeline_empty),
                 style = FloconTheme.typography.bodyMedium,

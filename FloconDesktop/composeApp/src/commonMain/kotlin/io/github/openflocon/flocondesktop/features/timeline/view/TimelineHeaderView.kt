@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline.view
 
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -87,6 +89,7 @@ internal fun TimelineHeaderView(
             label = pluralStringResource(Res.plurals.timeline_counter_crashes, summary.crashCount),
             highlight = colors.catCrash,
         )
+        FeatureDocButton(doc = FeatureDoc.Timeline)
     }
 }
 

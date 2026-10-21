@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.crashreporter
 
+import io.github.openflocon.domain.crashreporter.usecase.ObserveCurrentDeviceHasCrashReportsUseCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -34,6 +35,7 @@ import org.jetbrains.compose.resources.getString
 
 internal class CrashReporterViewModel(
     observeCrashReportsUseCase: ObserveCrashReportsUseCase,
+    observeCurrentDeviceHasCrashReportsUseCase: ObserveCurrentDeviceHasCrashReportsUseCase,
     private val observeCrashReportsByIdUseCase: ObserveCrashReportsByIdUseCase,
     private val deleteCrashReportUseCase: DeleteCrashReportUseCase,
     private val clearAllCrashReportUseCase: ClearAllCrashReportUseCase,
@@ -45,6 +47,11 @@ internal class CrashReporterViewModel(
         .map { pagingData -> pagingData.map { it.mapToUi() } }
         .flowOn(dispatcherProvider.viewModel)
         .cachedIn(viewModelScope)
+
+    val showEmptyState: StateFlow<Boolean> = observeCurrentDeviceHasCrashReportsUseCase()
+        .map { hasCrashReports -> !hasCrashReports }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     private val selectedId = MutableStateFlow<String?>(null)
     val selected: StateFlow<CrashReporterSelectedUiModel?> = selectedId

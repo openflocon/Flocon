@@ -27,6 +27,9 @@ By default every tool targets the device and app selected in Flocon Desktop. Cal
 | Investigate a crash | `list_crash_reports` for the exception type and message, `get_crash_report` for the full stack trace |
 | Check analytics events | `count_analytics_events` for an overview per event name, `list_analytics_events` for the properties, `list_analytics_tables` |
 | Check the deeplinks of the app | `list_deeplinks` (declared links and parameters), `list_deeplink_history`, `open_deeplink` (opens a link on the device, fill its parameters first) |
+| See the current screen, or keep a visual trace | `take_screenshot` (saves a PNG and returns the image) |
+| Reproduce a bug on video | `start_screen_recording`, do the scenario, then `stop_screen_recording` (returns the mp4 path; Android stops by itself after 3 minutes) |
+| Show the user the saved screenshots, videos or exports | `open_flocon_folder` (opens the Flocon documents folder, optional `Screenshot` / `ScreenRecord` sub folder) |
 | Check SharedPreferences | `list_shared_preferences` (gives the `sharedPreferenceId`), `get_shared_preference_values` (typed values, optional text filter) |
 | Check feature flags | `list_feature_flags` (provider, name, state, variant, filters), `get_feature_flag` for the full payload |
 | Check which images the app loaded | `list_images` (urls and load times) |
@@ -38,4 +41,5 @@ By default every tool targets the device and app selected in Flocon Desktop. Cal
 - Mocks change the app behavior: prefer disabling a mock (`update_network_mock`) over deleting it, and tell the user which mocks you left enabled.
 - `query_database` is read only (`SELECT`, `PRAGMA` without value, `EXPLAIN`): always add a `LIMIT`.
 - Files, calls and databases cannot be modified, only mocks can.
+- `take_screenshot`, `start_screen_recording` and `open_flocon_folder` act on the device / computer (iOS: the booted Simulator only): use them when asked or when seeing the screen helps.
 - Start from summaries and fetch details only for the calls you need, bodies can be large.
