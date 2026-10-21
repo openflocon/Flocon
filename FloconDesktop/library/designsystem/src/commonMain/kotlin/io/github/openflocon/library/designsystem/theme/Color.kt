@@ -41,37 +41,29 @@ data class FloconColorPaletteNew(
     val exceptions: Color
 )
 
-internal val lightPalette = FloconColorPaletteNew(
-    surface = Color(0xFFF2F2F7),
-    onSurface = Color(0xFF1C1C1E),
-    primary = Color(0xFFFFFFFF),
-    onPrimary = Color(0xFF1C1C1E),
-    secondary = Color(0xFFE4E6EC),
-    onSecondary = Color(0xFF3A3C42),
-    tertiary = Color(0xFF2e3036),
-    onTertiary = Color(0xFFe2e2e9),
-    accent = Color(0xFFEDC25E),
-    onAccent = Color(0xFF4a330c),
-    error = Color(0xFFC62828),
-    onError = Color(0xFFFFFFFF),
-    exceptions = Color(0xFF9C27B0)
+/**
+ * Bridge between the legacy palette and the design system tokens, so the screens not migrated yet
+ * follow the new design. Remove with [FloconColorPaletteNew] once every screen uses [FloconColors].
+ */
+internal fun FloconColors.toLegacyPalette() = FloconColorPaletteNew(
+    surface = bg000,
+    onSurface = ink,
+    primary = bg100,
+    onPrimary = ink,
+    secondary = bg300,
+    onSecondary = inkMuted,
+    tertiary = ink,
+    onTertiary = bg100,
+    accent = accentSoft,
+    onAccent = accent,
+    error = statusError,
+    onError = accentInk,
+    exceptions = catCrash,
 )
 
-internal val darkPalette = FloconColorPaletteNew(
-    surface = Color(0xFF2C2C2E),
-    onSurface = Color(0xffF2F2F7),
-    primary = Color(0xFF1f1e21),
-    onPrimary = Color(0xffF2F2F7),
-    secondary = Color(0xff3a3c42),
-    onSecondary = Color(0xFFbfc8e0),
-    tertiary = Color(0xFFe2e2e9),
-    onTertiary = Color(0xFF2e3036),
-    accent = Color(0xFF4a330c),
-    onAccent = Color(0xFFfcaf28),
-    error = Color(0xFFFF6B6B),
-    onError = Color(0xFF000000),
-    exceptions = Color(0xFFAB47BC)
-)
+internal val lightPalette = FloconLightColors.toLegacyPalette()
+
+internal val darkPalette = FloconDarkColors.toLegacyPalette()
 
 /**
  * TODO Remove when all component are overriden
@@ -134,5 +126,14 @@ fun FloconColorPaletteNew.contentColorFor(backgroundColor: Color) = when (backgr
     surface -> onSurface
     error -> onError
     accent -> onAccent
+    else -> Color.Unspecified
+}
+
+@Stable
+fun FloconColors.contentColorFor(backgroundColor: Color) = when (backgroundColor) {
+    bg000, bg100, bg200, bg300 -> ink
+    accentSoft -> accent
+    accent -> accentInk
+    statusError -> accentInk
     else -> Color.Unspecified
 }
