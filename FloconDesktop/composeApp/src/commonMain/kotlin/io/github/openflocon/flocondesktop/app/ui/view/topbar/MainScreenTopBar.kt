@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar
 
+import androidx.compose.foundation.Image
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.font.FontFamily
@@ -151,7 +152,13 @@ private fun Title(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FloconLogoMark(contentDescription = stringResource(Res.string.app_logo_content_description))
+        Image(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(10.dp)),
+            painter = painterResource(Res.drawable.app_icon_small),
+            contentDescription = stringResource(Res.string.app_logo_content_description),
+        )
 
         Column(
             verticalArrangement = Arrangement.Center,
