@@ -51,6 +51,9 @@ import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
 import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.search_placeholder
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -152,14 +155,14 @@ private fun NetworkSearchScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(FloconTheme.colorPalette.primary)
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium)
             ) {
                 FloconTextFieldWithoutM3(
                     value = query,
                     onValueChange = {
                         onQueryChanged(it)
                     },
-                    placeholder = defaultPlaceHolder("Search..."),
+                    placeholder = defaultPlaceHolder(stringResource(Res.string.search_placeholder)),
                     leadingComponent = {
                         FloconIcon(
                             imageVector = Icons.Outlined.Search,
@@ -174,9 +177,9 @@ private fun NetworkSearchScreen(
                 )
 
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                    modifier = Modifier.padding(top = FloconTheme.spacing.small),
                 ) {
                     SearchScope.entries.forEach { scope ->
                         ScopeChipsView(
@@ -198,8 +201,8 @@ private fun NetworkSearchScreen(
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.matchParentSize(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        contentPadding = PaddingValues(vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                        contentPadding = PaddingValues(vertical = FloconTheme.spacing.medium),
                     ) {
                         items(uiState.results) { item ->
                             NetworkItemView(

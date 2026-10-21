@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.core
 
-internal interface FloconMessageSender {
+interface FloconMessageSender {
+
     fun send(
         plugin: String,
         method: String,
@@ -8,4 +9,5 @@ internal interface FloconMessageSender {
     )
 
     fun sendPendingMessages()
+
 }

@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
@@ -18,6 +17,12 @@ import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.badquality_http_error
+import flocondesktop.composeapp.generated.resources.badquality_weight
+import flocondesktop.composeapp.generated.resources.mock_http_code
+import flocondesktop.composeapp.generated.resources.network_body
 
 @Composable
 internal fun BadQualityHttpErrorEditor(
@@ -35,16 +40,16 @@ internal fun BadQualityHttpErrorEditor(
         modifier = Modifier.fillMaxWidth(),
     ) {
         FloconDialogHeader(
-            title = "Http error",
+            title = stringResource(Res.string.badquality_http_error),
             modifier = Modifier.fillMaxWidth(),
         )
         Column(
             modifier = Modifier
-                .padding(vertical = 8.dp, horizontal = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             FloconTextField(
-                label = defaultLabel("Weight"),
+                label = defaultLabel(stringResource(Res.string.badquality_weight)),
                 placeholder = defaultPlaceHolder("eg: 1.0"),
                 value = weight,
                 onValueChange = {
@@ -56,7 +61,7 @@ internal fun BadQualityHttpErrorEditor(
             )
 
             FloconTextField(
-                label = defaultLabel("HTTP Code"),
+                label = defaultLabel(stringResource(Res.string.mock_http_code)),
                 placeholder = defaultPlaceHolder("eg: 500"),
                 value = httpCode,
                 onValueChange = {
@@ -76,7 +81,7 @@ internal fun BadQualityHttpErrorEditor(
             )
 
             FloconTextField(
-                label = defaultLabel("Body"),
+                label = defaultLabel(stringResource(Res.string.network_body)),
                 placeholder = defaultPlaceHolder("{\n\t\"error\" : \"...\"\n}"),
                 value = body,
                 minLines = 5,
@@ -101,7 +106,7 @@ internal fun BadQualityHttpErrorEditor(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 8.dp),
+                .padding(all = FloconTheme.spacing.small),
         )
     }
 }

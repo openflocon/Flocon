@@ -14,11 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private data class FeatureFlagStateColors(
     val container: Color,
@@ -36,11 +36,13 @@ private fun FeatureFlagStateUiModel.colors(): FeatureFlagStateColors {
             content = colors.onAccent,
             indicator = if (FloconTheme.isDarkTheme) colors.onAccent else colors.accent,
         )
+
         FeatureFlagStateUiModel.Off -> FeatureFlagStateColors(
             container = Color.Transparent,
             content = colors.onSecondary,
             indicator = colors.onSecondary,
         )
+
         FeatureFlagStateUiModel.Custom -> if (FloconTheme.isDarkTheme) {
             FeatureFlagStateColors(container = Color(0xFF23304D), content = Color(0xFFA9C1FF), indicator = Color(0xFF7FA7FF))
         } else {

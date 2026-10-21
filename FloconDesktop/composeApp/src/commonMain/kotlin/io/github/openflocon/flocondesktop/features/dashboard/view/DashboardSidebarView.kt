@@ -71,8 +71,8 @@ fun DashboardSidebarView(
                 Modifier.fillMaxWidth()
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(all = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(all = FloconTheme.spacing.extraSmall),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
             ) {
                 Text(
                     stringResource(Res.string.dashboards),
@@ -82,7 +82,7 @@ fun DashboardSidebarView(
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
                 )
                 when (state) {
                     DashboardsStateUiModel.Empty -> Unit
@@ -105,7 +105,7 @@ fun DashboardSidebarView(
                             onTextChange = {
                                 filterText.value = it
                             },
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp).padding(bottom = 12.dp),
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.medium).padding(bottom = FloconTheme.spacing.medium),
                         )
                         filteredDashboards.forEach {
                             DashboardItemView(
@@ -146,7 +146,7 @@ private fun DashboardItemView(
             .clip(RoundedCornerShape(8.dp))
             .background(background)
             .clickable(onClick = onSelect)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
@@ -155,7 +155,7 @@ private fun DashboardItemView(
             contentDescription = null,
             colorFilter = ColorFilter.tint(textColor),
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
         Text(
             dashboard.id,
             color = textColor,
@@ -171,7 +171,7 @@ private fun DashboardItemView(
                     FloconTheme.colorPalette.onSurface.copy(alpha = 0.1f)
                 ).clickable {
                     onDelete()
-                }.padding(2.dp),
+                }.padding(FloconTheme.spacing.tiny),
             contentAlignment = Alignment.Center,
         ) {
             FloconIcon(

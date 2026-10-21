@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.table.view
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.detail_columns
@@ -17,7 +18,6 @@ import io.github.openflocon.flocondesktop.features.table.model.TableDetailUiMode
 import io.github.openflocon.flocondesktop.features.table.model.previewTableDetailUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 

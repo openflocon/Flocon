@@ -50,7 +50,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 interface SqlColorPalette {
     val keywordColor: Color
@@ -181,7 +181,7 @@ fun DatabaseQueryView(
                         return@onKeyEvent true
                     }
                     return@onKeyEvent false
-                }.padding(horizontal = 6.dp, vertical = 4.dp),
+                }.padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall),
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -195,15 +195,15 @@ fun DatabaseQueryView(
                 },
                 containerColor = FloconTheme.colorPalette.tertiary,
                 modifier = Modifier
-                    .padding(all = 8.dp)
+                    .padding(all = FloconTheme.spacing.small)
                     .graphicsLayer {
                         if (!isEnabled) alpha = 0.6f
                     }
             ) {
                 val contentColor = FloconTheme.colorPalette.onTertiary
                 Row(
-                    Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
@@ -217,8 +217,8 @@ fun DatabaseQueryView(
             }
 
             Row(
-                Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(

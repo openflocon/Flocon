@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.composeunstyled.DropdownMenuPanel
 import com.composeunstyled.DropdownPanelAnchor
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -51,13 +50,13 @@ fun FloconDropdownMenu(
         DropdownMenuPanel(
             expanded = expanded,
             onDismissRequest = onDismissRequest,
-            shape = FloconTheme.shapes.medium,
-            backgroundColor = FloconTheme.colorPalette.primary,
-            contentColor = FloconTheme.colorPalette.onPrimary,
-            contentPadding = PaddingValues(2.dp),
+            shape = FloconTheme.shapes.large,
+            backgroundColor = FloconTheme.colors.bg100,
+            contentColor = FloconTheme.colors.ink,
+            contentPadding = PaddingValues(FloconTheme.spacing.compact),
             anchor = anchor,
             modifier = Modifier
-                .padding(top = 8.dp)
+                .padding(top = FloconTheme.spacing.small)
                 .menuBackground()
         ) {
             content()

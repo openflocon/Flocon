@@ -1,26 +1,33 @@
 package io.github.openflocon.flocondesktop.features.analytics.view
 
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.detail_copy_properties
-import flocondesktop.composeapp.generated.resources.detail_no_properties
 import flocondesktop.composeapp.generated.resources.detail_previous_session
 import flocondesktop.composeapp.generated.resources.detail_properties
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailChip
-import io.github.openflocon.flocondesktop.common.ui.detail.DetailEmptyText
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailHeader
-import io.github.openflocon.flocondesktop.common.ui.detail.DetailKeyValueList
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailPanel
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailSectionCard
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsDetailViewModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
-import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsDetailUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -73,27 +80,45 @@ private fun PropertiesCard(
     onCopyProperties: () -> Unit,
 ) {
     val entries = remember(properties) { properties.map { it.name to it.value } }
+
     DetailSectionCard(
         title = stringResource(Res.string.detail_properties),
         badge = entries.size.toString(),
         copyContentDescription = stringResource(Res.string.detail_copy_properties),
         onCopy = onCopyProperties.takeIf { entries.isNotEmpty() },
     ) {
-        if (entries.isEmpty()) {
-            DetailEmptyText(stringResource(Res.string.detail_no_properties))
-        } else {
-            DetailKeyValueList(entries = entries)
-        }
+        Text(
+            text = entries.joinToString("\n") { (name, value) -> "$name: $value" },
+            style = FloconTheme.typography.bodyMedium,
+            color = FloconTheme.colorPalette.onPrimary,
+            modifier = Modifier.weight(1f)
+                .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.small),
+        )
     }
 }
 
 @Preview
 @Composable
-private fun AnalyticsDetailPreview() {
-    FloconTheme {
-        Content(
-            uiState = previewAnalyticsDetailUiModel(isFromOldAppInstance = true),
-            onCopyProperties = {},
+fun AnalyticsDetailLineView(
+    label: String,
+    labelWidth: Dp,
+    modifier: Modifier = Modifier,
+    withDivider: Boolean,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Row(
+        modifier = modifier.height(intrinsicSize = IntrinsicSize.Min),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            style = FloconTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.SemiBold,
+            ),
+            color = FloconTheme.colorPalette.onPrimary,
+            modifier = Modifier
+                .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.small)
+                .width(labelWidth),
         )
     }
 }

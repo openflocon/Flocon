@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
@@ -19,7 +18,7 @@ fun DropdownFilterFieldView(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         FloconTextFieldWithoutM3(
             value = value,
@@ -32,7 +31,7 @@ fun DropdownFilterFieldView(
                 color = FloconTheme.colorPalette.onSecondary,
             ),
             containerColor = FloconTheme.colorPalette.secondary,
-            modifier = Modifier.weight(1f).padding(all = 2.dp)
+            modifier = Modifier.weight(1f).padding(all = FloconTheme.spacing.tiny)
         )
     }
 }

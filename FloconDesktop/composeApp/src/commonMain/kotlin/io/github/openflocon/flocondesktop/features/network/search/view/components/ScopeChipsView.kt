@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.domain.network.models.SearchScope
 import io.github.openflocon.domain.network.models.text
 import io.github.openflocon.flocondesktop.features.network.search.model.NetworkSearchUiState
@@ -37,7 +36,7 @@ internal fun ScopeChipsView(
             .clip(FloconTheme.shapes.large)
             .clickable { onScopeToggled(scope) }
             .background(color = color)
-            .padding(horizontal = 12.dp, vertical = 4.dp)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall)
     ) {
         Text(
             text = scope.text(),

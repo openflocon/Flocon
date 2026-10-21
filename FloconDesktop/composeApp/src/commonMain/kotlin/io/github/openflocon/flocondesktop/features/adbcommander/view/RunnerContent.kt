@@ -59,8 +59,8 @@ fun RunnerContent(
 
     Column(modifier = modifier) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall, Alignment.End),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (isExecuting) {
@@ -81,15 +81,15 @@ fun RunnerContent(
         if (flowExecution != null) {
             FlowExecutionView(
                 execution = flowExecution,
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                modifier = Modifier.fillMaxWidth().padding(FloconTheme.spacing.small),
             )
         }
 
         // Console output
         LazyColumn(
             state = listState,
-            contentPadding = PaddingValues(all = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            contentPadding = PaddingValues(all = FloconTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
             modifier = Modifier.weight(1f),
         ) {
             items(consoleOutput) { entry ->
@@ -105,8 +105,8 @@ private fun ConsoleEntryView(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(vertical = 2.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = modifier.padding(vertical = FloconTheme.spacing.tiny),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
     ) {
         Text(
             text = "$ ${entry.command}",
@@ -132,7 +132,7 @@ private fun FlowExecutionView(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         Text(
             text = "Flow: ${execution.flowName} - ${execution.status}",
@@ -141,8 +141,8 @@ private fun FlowExecutionView(
         )
         execution.steps.forEach { step ->
             Row(
-                modifier = Modifier.fillMaxWidth().padding(start = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth().padding(start = FloconTheme.spacing.small),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 FloconIcon(

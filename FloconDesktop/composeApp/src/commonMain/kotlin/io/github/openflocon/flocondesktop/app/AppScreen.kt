@@ -29,6 +29,7 @@ import io.github.openflocon.flocondesktop.features.images.imageRoutes
 import io.github.openflocon.flocondesktop.features.network.networkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
+import io.github.openflocon.flocondesktop.features.timeline.timelineRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -87,7 +88,9 @@ private fun Content(
                         current = uiState.contentState.current,
                         state = uiState.menuState,
                         expanded = it,
-                        onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) }
+                        onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) },
+                        onTogglePin = { menu -> onAction(AppAction.TogglePin(menu.screen)) },
+                        onToggleSection = { section -> onAction(AppAction.ToggleSection(section.id)) },
                     )
                 },
                 topBarContent = {
@@ -127,5 +130,6 @@ private fun Content(
         settingsRoutes()
         releaseNotesRoutes()
         crashReporterRoutes()
+        timelineRoutes()
     }
 }

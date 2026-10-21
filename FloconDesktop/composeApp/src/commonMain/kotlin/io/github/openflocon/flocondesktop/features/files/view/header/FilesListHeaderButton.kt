@@ -49,7 +49,7 @@ internal fun FilesListHeaderButton(
     Row(
         modifier = modifier
             .height(FilterIcon_Height)
-            .padding(horizontal = 4.dp)
+            .padding(horizontal = FloconTheme.spacing.extraSmall)
             .hoverable(interactionSource),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FilterIcon_Spacing),

@@ -69,11 +69,11 @@ data class MenuScene(
                     }
             ) { padding ->
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
-                        .padding(8.dp)
+                        .padding(FloconTheme.spacing.small)
                 ) {
                     Box(
                         modifier = Modifier

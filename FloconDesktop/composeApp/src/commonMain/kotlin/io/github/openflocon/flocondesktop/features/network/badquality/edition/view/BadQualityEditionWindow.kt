@@ -2,6 +2,16 @@
 
 package io.github.openflocon.flocondesktop.features.network.badquality.edition.view
 
+import io.github.openflocon.library.designsystem.components.FloconActionButton
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +25,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.SelectedBadQualityUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -30,6 +39,18 @@ import java.util.UUID
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.badquality_creation_subtitle
+import flocondesktop.composeapp.generated.resources.badquality_error_probability
+import flocondesktop.composeapp.generated.resources.badquality_max_latency
+import flocondesktop.composeapp.generated.resources.badquality_min_latency
+import flocondesktop.composeapp.generated.resources.badquality_trigger_probability
+import flocondesktop.composeapp.generated.resources.general_cancel
+import flocondesktop.composeapp.generated.resources.general_save
+import flocondesktop.composeapp.generated.resources.mock_expectation
+import flocondesktop.composeapp.generated.resources.name
+import flocondesktop.composeapp.generated.resources.network_response
 
 @Composable
 fun BadQualityEditionWindow(
@@ -39,6 +60,9 @@ fun BadQualityEditionWindow(
 ) {
     FloconDialog(
         onDismissRequest = onCloseRequest,
+        // two cards side by side: the default width of a dialog is too narrow
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.width(920.dp),
     ) {
         BadNetworkQualityEditionContent(
             state = state,
@@ -91,31 +115,60 @@ fun BadNetworkQualityEditionContent(
     var selectedErrorToEdit by remember { mutableStateOf<BadQualityConfigUiModel.Error?>(null) }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .background(FloconTheme.colors.bg100),
     ) {
-        FloconDialogHeader(
-            title = state.title(),
-            modifier = Modifier.fillMaxWidth(),
-        )
-
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp),
+                .padding(horizontal = FloconTheme.spacing.large)
+                .padding(top = FloconTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
         ) {
+            Text(
+                text = state.title(),
+                style = FloconTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = FloconTheme.colors.ink,
+            )
+            Text(
+                text = stringResource(Res.string.badquality_creation_subtitle),
+                style = FloconTheme.typography.bodyMedium,
+                color = FloconTheme.colors.inkMuted,
+            )
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.small),
+        ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            modifier = Modifier
+                .weight(1f)
+                .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large)
+                .padding(FloconTheme.spacing.large),
+        ) {
+            Text(
+                text = stringResource(Res.string.mock_expectation),
+                style = FloconTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                color = FloconTheme.colors.ink,
+            )
             FloconTextField(
-                label = defaultLabel("Name"),
+                label = defaultLabel(stringResource(Res.string.name)),
                 value = name,
                 onValueChange = { name = it },
                 suffix = { },
-                modifier = Modifier.fillMaxWidth(fraction = 0.5f),
-                containerColor = FloconTheme.colorPalette.primary,
+                modifier = Modifier.fillMaxWidth(),
+                containerColor = FloconTheme.colors.bg200,
             )
             FloconTextField(
-                label = defaultLabel("Trigger probability"),
+                label = defaultLabel(stringResource(Res.string.badquality_trigger_probability)),
                 placeholder = defaultPlaceHolder("0"),
                 value = triggerProbability,
                 onValueChange = {
@@ -124,12 +177,12 @@ fun BadNetworkQualityEditionContent(
                     }
                 },
                 suffix = { Text(text = "%") },
-                containerColor = FloconTheme.colorPalette.primary
+                containerColor = FloconTheme.colors.bg200
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
                 FloconTextField(
                     modifier = Modifier.weight(1f),
-                    label = defaultLabel("Min latency"),
+                    label = defaultLabel(stringResource(Res.string.badquality_min_latency)),
                     placeholder = defaultPlaceHolder("0"),
                     value = minLatencyMs,
                     onValueChange = {
@@ -138,11 +191,11 @@ fun BadNetworkQualityEditionContent(
                         }
                     },
                     suffix = { Text(text = "ms") },
-                    containerColor = FloconTheme.colorPalette.primary,
+                    containerColor = FloconTheme.colors.bg200,
                 )
                 FloconTextField(
                     modifier = Modifier.weight(1f),
-                    label = defaultLabel("Max latency"),
+                    label = defaultLabel(stringResource(Res.string.badquality_max_latency)),
                     placeholder = defaultPlaceHolder("0"),
                     value = maxLatencyMs,
                     onValueChange = {
@@ -151,11 +204,25 @@ fun BadNetworkQualityEditionContent(
                         }
                     },
                     suffix = { Text(text = "ms") },
-                    containerColor = FloconTheme.colorPalette.primary,
+                    containerColor = FloconTheme.colors.bg200,
                 )
             }
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            modifier = Modifier
+                .weight(1.35f)
+                .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large)
+                .padding(FloconTheme.spacing.large),
+        ) {
+            Text(
+                text = stringResource(Res.string.network_response),
+                style = FloconTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                color = FloconTheme.colors.ink,
+            )
             FloconTextField(
-                label = defaultLabel("Error probability"),
+                label = defaultLabel(stringResource(Res.string.badquality_error_probability)),
                 placeholder = defaultPlaceHolder("0"),
                 value = errorProbability,
                 onValueChange = {
@@ -164,12 +231,11 @@ fun BadNetworkQualityEditionContent(
                     }
                 },
                 suffix = { Text(text = "%") },
-                containerColor = FloconTheme.colorPalette.primary,
+                containerColor = FloconTheme.colors.bg200,
             )
-        }
         BadQualityErrorsListView(
             modifier = Modifier
-                .padding(top = 16.dp),
+                .padding(top = FloconTheme.spacing.medium),
             errors = errors,
             onErrorslicked = { error ->
                 selectedErrorToEdit = error
@@ -178,6 +244,8 @@ fun BadNetworkQualityEditionContent(
                 errors = errors.filterNot { it == error }.toPersistentList()
             },
         )
+        }
+        }
         selectedErrorToEdit?.let { selectedError ->
             FloconDialog(
                 onDismissRequest = {
@@ -233,9 +301,25 @@ fun BadNetworkQualityEditionContent(
                 }
             }
         }
-        FloconDialogButtons(
-            onCancel = close,
-            onValidate = {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(FloconTheme.colors.line)
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small, Alignment.End),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.small),
+        ) {
+        FloconActionButton(onClick = close) {
+            Text(stringResource(Res.string.general_cancel))
+        }
+        FloconActionButton(
+            primary = true,
+            onClick = {
                 val minLatencyMsValue = minLatencyMs.toLong().coerceAtLeast(0)
                 val maxLatencyMsValue =
                     maxLatencyMs.toLong().coerceAtLeast(minLatencyMsValue)
@@ -264,9 +348,9 @@ fun BadNetworkQualityEditionContent(
                     ),
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 8.dp),
-        )
+        ) {
+            Text(stringResource(Res.string.general_save))
+        }
+        }
     }
 }

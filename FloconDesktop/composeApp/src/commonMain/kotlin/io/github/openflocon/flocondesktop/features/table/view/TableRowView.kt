@@ -28,7 +28,7 @@ import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun TableRowView(
@@ -56,7 +56,7 @@ fun TableRowView(
                         modifier =
                         Modifier
                             .width(columnsWidth)
-                            .padding(horizontal = 4.dp),
+                            .padding(horizontal = FloconTheme.spacing.extraSmall),
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
                         color = FloconTheme.colorPalette.onPrimary,
                     )

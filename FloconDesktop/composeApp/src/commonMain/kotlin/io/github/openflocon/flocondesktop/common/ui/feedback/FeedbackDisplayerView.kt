@@ -37,7 +37,7 @@ fun BoxScope.FeedbackDisplayerView(modifier: Modifier = Modifier) {
         modifier =
         modifier
             .align(Alignment.BottomCenter) // Align to bottom center
-            .padding(16.dp) // Padding from the bottom and sides
+            .padding(FloconTheme.spacing.large) // Padding from the bottom and sides
             .animateContentSize(), // Animate the size change of the snackbar
     ) { data ->
         Snackbar(

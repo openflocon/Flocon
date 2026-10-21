@@ -48,7 +48,7 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -127,7 +127,7 @@ fun TableScreen(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
             ) {
                 stickyHeader {
                     when (content) {
@@ -137,7 +137,7 @@ fun TableScreen(
                             Row(
                                 modifier = Modifier.fillMaxWidth()
                                     .background(FloconTheme.colorPalette.secondary)
-                                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
                             ) {
                                 content.columns.columns.fastForEach { column ->
                                     Text(
@@ -145,7 +145,7 @@ fun TableScreen(
                                         modifier =
                                         Modifier
                                             .width(columnsWidth)
-                                            .padding(horizontal = 4.dp),
+                                            .padding(horizontal = FloconTheme.spacing.extraSmall),
                                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                                         color = FloconTheme.colorPalette.onSecondary,
                                     )
@@ -169,7 +169,7 @@ fun TableScreen(
                                 HorizontalDivider(
                                     modifier =
                                     Modifier.fillMaxWidth()
-                                        .padding(top = 4.dp),
+                                        .padding(top = FloconTheme.spacing.extraSmall),
                                 )
                             }
                         }

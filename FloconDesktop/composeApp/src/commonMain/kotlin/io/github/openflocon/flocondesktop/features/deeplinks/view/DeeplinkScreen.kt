@@ -25,8 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.deeplinks.DeepLinkViewModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
@@ -41,6 +40,11 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.toImmutableMap
 import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.deeplink_variables
+import flocondesktop.composeapp.generated.resources.general_history
+import flocondesktop.composeapp.generated.resources.menu_item_deeplinks
 
 @Composable
 fun DeeplinkScreen(modifier: Modifier = Modifier) {
@@ -86,19 +90,19 @@ private fun DeeplinkScreen(
 
         // Main body — two rows of equal weight
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             modifier = Modifier.fillMaxSize()
         ) {
             // Top half: variables (left) | deeplinks (right)
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 modifier = Modifier
                     .weight(0.5f)
                     .fillMaxWidth()
             ) {
                 // Left: Variables
                 DeeplinkScrollablePanel(
-                    title = "Variables",
+                    title = stringResource(Res.string.deeplink_variables),
                     modifier = Modifier
                         .weight(0.3f)
                         .fillMaxHeight()
@@ -115,7 +119,7 @@ private fun DeeplinkScreen(
 
                 // Right: Deeplinks (non-history)
                 DeeplinkScrollablePanel(
-                    title = "Deeplinks",
+                    title = stringResource(Res.string.menu_item_deeplinks),
                     modifier = Modifier
                         .weight(0.7f)
                         .fillMaxHeight()
@@ -136,7 +140,7 @@ private fun DeeplinkScreen(
 
             // Bottom half: History
             DeeplinkScrollablePanel(
-                title = "History",
+                title = stringResource(Res.string.general_history),
                 modifier = Modifier
                     .weight(0.5f)
                     .fillMaxWidth()
@@ -188,8 +192,8 @@ private fun DeeplinkScrollablePanel(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(all = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                contentPadding = PaddingValues(all = FloconTheme.spacing.small),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 content = content,
             )
             FloconVerticalScrollbar(
@@ -209,7 +213,7 @@ private fun DeeplinkPanelHeader(title: String) {
         modifier = Modifier
             .fillMaxWidth()
             .background(FloconTheme.colorPalette.primary)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact),
     )
     HorizontalDivider(color = FloconTheme.colorPalette.surface)
 }

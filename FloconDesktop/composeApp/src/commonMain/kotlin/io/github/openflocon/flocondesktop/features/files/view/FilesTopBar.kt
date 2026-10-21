@@ -39,7 +39,8 @@ import io.github.openflocon.library.designsystem.components.FloconIconTonalButto
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
+import flocondesktop.composeapp.generated.resources.filter
 
 @Composable
 fun FilesTopBar(
@@ -81,7 +82,7 @@ fun FilesTopBar(
                 maxLines = 1,
                 color = FloconTheme.colorPalette.onPrimary,
                 modifier = Modifier
-                    .padding(vertical = 4.dp, horizontal = 8.dp),
+                    .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
             )
 
             numberOfFiles?.let { nb ->
@@ -92,7 +93,7 @@ fun FilesTopBar(
                     color = FloconTheme.colorPalette.onSecondary,
                     modifier = Modifier
                         .background(FloconTheme.colorPalette.secondary.copy(alpha = 0.6f), shape = FloconTheme.shapes.medium)
-                        .padding(vertical = 3.dp, horizontal = 8.dp),
+                        .padding(vertical = 3.dp, horizontal = FloconTheme.spacing.small),
                 )
             }
 
@@ -158,14 +159,14 @@ private fun SelectingView(
                     color = FloconTheme.colorPalette.accent,
                     shape = FloconTheme.shapes.medium,
                 ).padding(
-                    horizontal = 8.dp
+                    horizontal = FloconTheme.spacing.small
                 )
             ) {
                 Text(
                     text = "$selectedCount selected",
                     style = FloconTheme.typography.bodyMedium,
                     color = FloconTheme.colorPalette.onAccent,
-                    modifier = Modifier.padding(horizontal = 8.dp),
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.small),
                 )
                 FloconIconButton(
                     imageVector = Icons.Outlined.Delete,
@@ -227,7 +228,7 @@ private fun FilesTopBarPreview() {
             onRefresh = {},
             filterBar = {
                 Button(onClick = {}) {
-                    Text(text = "Filter")
+                    Text(text = stringResource(Res.string.filter))
                 }
             },
             modifier = Modifier.fillMaxWidth(),

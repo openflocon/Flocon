@@ -141,7 +141,7 @@ fun FloconTextField(
     containerColor: Color = FloconTheme.colorPalette.primary
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         modifier = modifier
     ) {
         label()
@@ -207,7 +207,7 @@ fun FloconTextFieldWithoutM3(
         decorationBox = { innerTextField ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 modifier = Modifier
                     .clip(shape)
                     .drawWithCache {
@@ -215,7 +215,7 @@ fun FloconTextFieldWithoutM3(
                         onDrawBehind { drawOutline(outline, color = containerColor) }
                     }
                     .background(containerColor)
-                    .padding(horizontal = 4.dp)
+                    .padding(horizontal = FloconTheme.spacing.extraSmall)
                     .padding(contentPadding)
             ) {
                 CompositionLocalProvider(LocalContentColor provides contentColor) {
@@ -273,7 +273,7 @@ private fun DecorationBox(
         singleLine = singleLine,
         colors = colors,
         visualTransformation = VisualTransformation.None,
-        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
+        contentPadding = PaddingValues(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
         container = {
             ContainerBox(
                 enabled = enabled,
@@ -316,7 +316,8 @@ fun defaultLabel(text: String): @Composable () -> Unit = {
 fun DefaultLabel(text: String) {
     Text(
         text = text,
-        style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Thin),
+        style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+        color = FloconTheme.colors.inkMuted,
     )
 }
 

@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.app.di
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
+import io.github.openflocon.flocondesktop.app.MenuNavigator
 import io.github.openflocon.flocondesktop.common.log.LogManager
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerImpl
 import org.koin.core.module.dsl.bind
@@ -18,5 +19,6 @@ val appModule = module {
     }
 
     singleOf(::InitialSetupStateHolder)
+    singleOf(::MenuNavigator)
     singleOf(::LogManager)
 }

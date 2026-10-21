@@ -45,7 +45,7 @@ fun PreferenceAutoUpdate(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically
     ) {
         when (state) {

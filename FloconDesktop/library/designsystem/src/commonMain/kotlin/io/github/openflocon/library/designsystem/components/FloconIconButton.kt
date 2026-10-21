@@ -56,7 +56,7 @@ fun FloconIconButton(
             .clip(FloconTheme.shapes.medium)
             .clickable(enabled = enabled, onClick = onClick)
             .pointerHoverIcon(PointerIcon.Hand)
-            .padding(all = 8.dp)
+            .padding(all = FloconTheme.spacing.small)
     ) {
         CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.onSurface) {
             content()
@@ -79,7 +79,7 @@ fun FloconIconTonalButton(
             .background(containerColor)
             .clickable(enabled = enabled, onClick = onClick)
             .pointerHoverIcon(PointerIcon.Hand)
-            .padding(all = 8.dp)
+            .padding(all = FloconTheme.spacing.small)
     ) {
         CompositionLocalProvider(
             LocalContentColor provides FloconTheme.colorPalette.contentColorFor(
@@ -207,7 +207,7 @@ fun WithTooltip(
                     modifier = Modifier
                         .clip(FloconTheme.shapes.small)
                         .background(FloconTheme.colorPalette.primary)
-                        .padding(vertical = 2.dp, horizontal = 4.dp)
+                        .padding(vertical = FloconTheme.spacing.tiny, horizontal = FloconTheme.spacing.extraSmall)
                 )
             },
             delayMillis = 100,

@@ -26,6 +26,7 @@ sealed interface SubScreen {
     data object Deeplinks : SubScreen
     data object AdbCommander : SubScreen
     data object CrashReporter : SubScreen
+    data object Timeline : SubScreen
 }
 
 val SubScreen.id: String

@@ -55,9 +55,9 @@ internal fun FavoriteQueryItemView(
                 onClick = {
                     onClick(state)
                 }
-            ).padding(horizontal = 12.dp, vertical = 8.dp),
+            ).padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
     ) {
         Image(
             modifier = Modifier.width(14.dp),
@@ -73,7 +73,7 @@ internal fun FavoriteQueryItemView(
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
 
         AnimatedVisibility(
             enter = fadeIn(),

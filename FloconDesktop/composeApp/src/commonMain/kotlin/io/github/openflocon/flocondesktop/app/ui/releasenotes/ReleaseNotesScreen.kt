@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.m3.markdownColor
@@ -83,14 +82,14 @@ private fun ReleaseNotesContent(
         )
 
         is ReleaseNotesUiState.Content -> LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
             modifier = modifier,
         ) {
             itemsIndexed(state.notes, key = { _, note -> note.version }) { index, note ->
                 if (index > 0) {
                     FloconHorizontalDivider(
                         color = FloconTheme.colorPalette.secondary,
-                        modifier = Modifier.padding(bottom = 16.dp),
+                        modifier = Modifier.padding(bottom = FloconTheme.spacing.large),
                     )
                 }
                 ReleaseNoteItem(note)
@@ -107,7 +106,7 @@ private fun ReleaseNoteItem(
     val uriHandler = LocalUriHandler.current
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier.fillMaxWidth(),
     ) {
         Row(
@@ -153,7 +152,7 @@ private fun ReleaseNotesError(
     val uriHandler = LocalUriHandler.current
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier,
     ) {
@@ -162,7 +161,7 @@ private fun ReleaseNotesError(
             style = FloconTheme.typography.bodyMedium,
             color = FloconTheme.colorPalette.onPrimary,
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
             FloconOutlinedButton(
                 onClick = onRetry,
                 borderColor = FloconTheme.colorPalette.onPrimary,

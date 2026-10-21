@@ -67,4 +67,7 @@ val roomModule =
         single {
             get<AppDatabase>().adbCommanderDao
         }
+        single {
+            get<AppDatabase>().timelineDao
+        }
     }

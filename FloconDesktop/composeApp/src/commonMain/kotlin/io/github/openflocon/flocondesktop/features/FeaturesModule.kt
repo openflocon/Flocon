@@ -14,6 +14,7 @@ import io.github.openflocon.flocondesktop.features.images.imagesModule
 import io.github.openflocon.flocondesktop.features.network.networkModule
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesModule
 import io.github.openflocon.flocondesktop.features.table.tableModule
+import io.github.openflocon.flocondesktop.features.timeline.timelineModule
 import io.github.openflocon.flocondesktop.messages.di.messagesModule
 import org.koin.dsl.module
 
@@ -34,5 +35,6 @@ val featuresModule = module {
         settingsModule,
         releaseNotesModule,
         crashReporterModule,
+        timelineModule,
     )
 }

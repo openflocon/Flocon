@@ -24,7 +24,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardCont
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 internal fun DashboardPlainTextView(
@@ -37,13 +37,13 @@ internal fun DashboardPlainTextView(
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     rowItem.label,
                     modifier =
-                    Modifier.padding(start = 4.dp)
+                    Modifier.padding(start = FloconTheme.spacing.extraSmall)
                         .align(Alignment.CenterStart),
                     color = FloconTheme.colorPalette.onSurface,
                     style =
@@ -66,7 +66,7 @@ internal fun DashboardPlainTextView(
                         color = FloconTheme.colorPalette.secondary,
                         shape = RoundedCornerShape(8.dp),
                     )
-                    .padding(8.dp),
+                    .padding(FloconTheme.spacing.small),
             ) {
                 SelectionContainer {
                     Text(

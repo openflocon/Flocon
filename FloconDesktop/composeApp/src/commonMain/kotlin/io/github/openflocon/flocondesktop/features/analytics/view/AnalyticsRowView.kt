@@ -34,7 +34,7 @@ import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun AnalyticsRowView(
@@ -52,7 +52,7 @@ fun AnalyticsRowView(
             modifier = modifier
                 .height(IntrinsicSize.Min)
                 .clickable(onClick = { onAction(AnalyticsAction.OnClick(model)) })
-                .padding(vertical = 8.dp)
+                .padding(vertical = FloconTheme.spacing.small)
                 .then(
                     if (model.isFromOldAppInstance) {
                         Modifier.alpha(0.4f)
@@ -75,7 +75,7 @@ fun AnalyticsRowView(
                 color = FloconTheme.colorPalette.onPrimary,
             )
 
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
                 model.properties.fastForEach {
                     Row(
                         Modifier
@@ -83,7 +83,7 @@ fun AnalyticsRowView(
                                 shape = FloconTheme.shapes.extraLarge,
                                 color = FloconTheme.colorPalette.secondary
                             )
-                            .padding(horizontal = 8.dp, vertical = 1.dp),
+                            .padding(horizontal = FloconTheme.spacing.small, vertical = 1.dp),
                     ) {
                         Text(
                             text = it.name + " :",
@@ -102,7 +102,7 @@ fun AnalyticsRowView(
                         text = "...",
                         modifier =
                         Modifier
-                            .padding(horizontal = 4.dp),
+                            .padding(horizontal = FloconTheme.spacing.extraSmall),
                         style = FloconTheme.typography.bodySmall,
                         color = FloconTheme.colorPalette.onPrimary,
                     )

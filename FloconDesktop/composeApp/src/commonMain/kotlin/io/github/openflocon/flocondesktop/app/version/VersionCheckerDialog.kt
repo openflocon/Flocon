@@ -51,9 +51,9 @@ private fun VersionCheckerDialog(
     onDesktopDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
 ) {
     Column(
-        modifier.padding(16.dp),
+        modifier.padding(FloconTheme.spacing.large),
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
     ) {
         state.client?.let {
             VersionCheckerDialog(
@@ -85,7 +85,7 @@ private fun VersionCheckerDialog(
                 }
             ).background(
                 color = FloconTheme.colorPalette.tertiary, shape = FloconTheme.shapes.medium
-            ).padding(horizontal = 12.dp, 10.dp)
+            ).padding(horizontal = FloconTheme.spacing.medium, 10.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
@@ -104,10 +104,10 @@ private fun VersionCheckerDialog(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FloconButton(

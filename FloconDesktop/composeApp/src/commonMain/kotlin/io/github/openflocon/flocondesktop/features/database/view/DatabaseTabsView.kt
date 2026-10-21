@@ -30,6 +30,14 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabVie
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.buildMenu
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.close
+import flocondesktop.composeapp.generated.resources.general_rename
+import flocondesktop.composeapp.generated.resources.tabs_close_all
+import flocondesktop.composeapp.generated.resources.tabs_close_left
+import flocondesktop.composeapp.generated.resources.tabs_close_others
+import flocondesktop.composeapp.generated.resources.tabs_close_right
 
 @Composable
 fun DatabaseTabsView(
@@ -40,7 +48,7 @@ fun DatabaseTabsView(
 ) {
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.Bottom
     ) {
         items(tabs) {
@@ -65,25 +73,31 @@ private fun DatabaseTabItemView(
         topEnd = 6.dp,
     )
     val contentColor = if (state == selected) FloconTheme.colorPalette.onSecondary else FloconTheme.colorPalette.onPrimary
+    // the labels are resolved here: the menu is built outside of the composition
+    val close = stringResource(Res.string.close)
+    val closeOthers = stringResource(Res.string.tabs_close_others)
+    val closeAll = stringResource(Res.string.tabs_close_all)
+    val closeLeft = stringResource(Res.string.tabs_close_left)
+    val closeRight = stringResource(Res.string.tabs_close_right)
     ContextualView(
-        items = remember(state) {
+        items = remember(state, close) {
             buildMenu {
-                item("Close") {
+                item(close) {
                     onAction(DatabaseTabViewAction.OnCloseClicked(state))
                 }
-                item("Close Other Tabs") {
+                item(closeOthers) {
                     onAction(DatabaseTabViewAction.OnCloseOtherClicked(state))
                 }
-                item("Close All Tabs") {
+                item(closeAll) {
                     onAction(DatabaseTabViewAction.OnCloseAllClicked(state))
                 }
-                item("Close Tabs to the Left") {
+                item(closeLeft) {
                     onAction(DatabaseTabViewAction.OnCloseOnLeftClicked(state))
                 }
-                item("Close Tabs to the Right") {
+                item(closeRight) {
                     onAction(DatabaseTabViewAction.OnCloseOnRightClicked(state))
                 }
-                // item("Rename") {
+                // item(stringResource(Res.string.general_rename)) {
                 //
                 // }
             }
@@ -96,10 +110,10 @@ private fun DatabaseTabItemView(
                 color = if (state == selected) FloconTheme.colorPalette.secondary else FloconTheme.colorPalette.primary
             ).clickable {
                 onAction(DatabaseTabViewAction.OnTabSelected(state))
-            }.padding(vertical = 4.dp, horizontal = 6.dp),
+            }.padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.compact),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
             Text(
                 state.displayName, style = FloconTheme.typography.bodyMedium,
                 color = contentColor,
@@ -107,7 +121,7 @@ private fun DatabaseTabItemView(
             Box(
                 modifier = Modifier.clickable {
                     onAction(DatabaseTabViewAction.OnCloseClicked(state))
-                }.size(20.dp).padding(all = 2.dp)
+                }.size(20.dp).padding(all = FloconTheme.spacing.tiny)
             ) {
                 Image(
                     imageVector = Icons.Default.Close,

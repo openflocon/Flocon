@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.PlatformContext
@@ -48,10 +47,13 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.collections.component1
 import kotlin.collections.component2
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.images_filter
 
 @Composable
 fun ImagesScreen(
@@ -100,7 +102,7 @@ private fun ImagesScreen(
                 .fillMaxWidth(),
             filterBar = {
                 FilterBar(
-                    placeholderText = "Filter images",
+                    placeholderText = stringResource(Res.string.images_filter),
                     onTextChange = { onFilterChanged(it) },
                     modifier = Modifier.weight(1f),
                 )
@@ -173,10 +175,10 @@ fun ImageDialog(model: ImagesUiModel, onDismiss: () -> Unit) {
                     modifier = Modifier
                         .background(Color.Black)
                         .fillMaxWidth()
-                        .padding(all = 12.dp),
+                        .padding(all = FloconTheme.spacing.medium),
                 ) {
-                    Text(text = model.downloadedAt, color = Color.White, fontSize = 14.sp)
-                    Text(text = model.url, color = Color.Gray, fontSize = 10.sp)
+                    Text(text = model.downloadedAt, color = Color.White, fontSize = FloconTheme.typography.labelLarge.fontSize)
+                    Text(text = model.url, color = Color.Gray, fontSize = FloconTheme.typography.labelSmall.fontSize)
                 }
             }
             AsyncImage(

@@ -19,11 +19,11 @@ fun Modifier.menuBackground() = composed {
     Modifier
         .widthIn(min = MenuWidth)
         .width(IntrinsicSize.Max)
-        .clip(FloconTheme.shapes.medium)
-        .background(FloconTheme.colorPalette.primary)
+        .clip(FloconTheme.shapes.large)
+        .background(FloconTheme.colors.bg100)
         .border(
             width = 1.dp,
-            color = FloconTheme.colorPalette.secondary,
-            shape = FloconTheme.shapes.medium
+            color = FloconTheme.colors.line,
+            shape = FloconTheme.shapes.large
         )
 }

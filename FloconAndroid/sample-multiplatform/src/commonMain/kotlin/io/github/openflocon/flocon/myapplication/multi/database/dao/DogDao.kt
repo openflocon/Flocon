@@ -1,8 +1,8 @@
 package io.github.openflocon.flocon.myapplication.multi.database.dao
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Upsert
+import androidx.room3.Dao
+import androidx.room3.Query
+import androidx.room3.Upsert
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.database.model.HumanEntity
 import io.github.openflocon.flocon.myapplication.multi.database.model.HumanWithDogEntity

@@ -5,6 +5,7 @@ import io.github.openflocon.data.core.device.datasource.local.model.InsertResult
 import io.github.openflocon.data.local.device.datasource.dao.DevicesDao
 import io.github.openflocon.data.local.device.datasource.mapper.toDomainModel
 import io.github.openflocon.data.local.device.datasource.mapper.toEntity
+import io.github.openflocon.data.local.device.datasource.mapper.toInstalledPluginsString
 import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
@@ -53,6 +54,9 @@ class LocalDevicesDataSourceRoom(
             dao.insertDeviceApp(
                 app.toEntity(
                     deviceId = deviceId,
+                ).copy(
+                    // the plugins are only sent in the bonjour message, keep the known ones
+                    installedPlugins = appEntity.installedPlugins,
                 )
             )
             InsertResult.Updated
@@ -84,6 +88,18 @@ class LocalDevicesDataSourceRoom(
         deviceId = deviceId,
         packageName = appPackageName,
     ).map { it?.floconVersionOnDevice }
+
+    override suspend fun saveInstalledPlugins(
+        deviceId: DeviceId,
+        appPackageName: AppPackageName,
+        installedPlugins: Set<String>?,
+    ) {
+        dao.updateInstalledPlugins(
+            deviceId = deviceId,
+            packageName = appPackageName,
+            installedPlugins = installedPlugins?.toInstalledPluginsString(),
+        )
+    }
 
     override suspend fun saveAppIcon(
         deviceId: DeviceId,

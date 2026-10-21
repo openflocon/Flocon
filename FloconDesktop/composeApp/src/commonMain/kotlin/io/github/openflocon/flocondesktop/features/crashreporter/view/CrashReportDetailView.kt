@@ -41,8 +41,8 @@ internal fun CrashReportDetailView(
         Column(
             modifier = modifier
                 .verticalScroll(rememberScrollState())
-                .padding(vertical = 12.dp, horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(vertical = FloconTheme.spacing.medium, horizontal = FloconTheme.spacing.large),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f)) {
@@ -75,7 +75,7 @@ internal fun CrashReportDetailView(
                 containerColor = FloconTheme.colorPalette.secondary,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
+                    .padding(FloconTheme.spacing.medium)
             )
         }
     }
@@ -90,7 +90,7 @@ private fun Actions(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
     ) {
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp))

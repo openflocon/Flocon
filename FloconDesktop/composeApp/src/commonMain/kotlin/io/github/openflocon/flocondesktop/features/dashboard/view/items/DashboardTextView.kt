@@ -14,11 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 internal fun DashboardTextView(
@@ -30,11 +29,11 @@ internal fun DashboardTextView(
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         ) {
             Text(
                 text = rowItem.label,
-                modifier = Modifier.padding(start = 4.dp),
+                modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
                 color = FloconTheme.colorPalette.onPrimary,
                 style = FloconTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Thin,
@@ -43,7 +42,7 @@ internal fun DashboardTextView(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             ) {
                 FloconTextFieldWithoutM3(
                     value = rowItem.value,
@@ -53,7 +52,7 @@ internal fun DashboardTextView(
                     containerColor = FloconTheme.colorPalette.secondary,
                     textStyle = FloconTheme.typography.bodySmall,
                     contentColor = rowItem.color ?: FloconTheme.colorPalette.onSecondary,
-                    contentPadding = PaddingValues(8.dp),
+                    contentPadding = PaddingValues(FloconTheme.spacing.small),
                     modifier = Modifier
                         .fillMaxWidth()
                 )

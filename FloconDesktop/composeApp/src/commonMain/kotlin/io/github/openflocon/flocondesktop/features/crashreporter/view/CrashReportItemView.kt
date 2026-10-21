@@ -14,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_delete
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
@@ -25,7 +24,7 @@ import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 internal fun CrashReportItemView(
@@ -55,8 +54,8 @@ internal fun CrashReportItemView(
                         FloconTheme.colorPalette.surface
                     }
                 )
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
         ) {
             Text(
                 text = crash.exceptionType,

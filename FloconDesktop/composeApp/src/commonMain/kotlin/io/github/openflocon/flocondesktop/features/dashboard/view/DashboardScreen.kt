@@ -107,7 +107,7 @@ fun DashboardScreen(
                 }
             )
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
 
             Row(Modifier.fillMaxSize()) {
                 DashboardSidebarView(
@@ -119,7 +119,7 @@ fun DashboardScreen(
                     onDeleteClicked = onDeleteClicked,
                 )
 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
                 state?.let {
                     DashboardView(
@@ -127,7 +127,7 @@ fun DashboardScreen(
                             .fillMaxSize()
                             .clip(FloconTheme.shapes.medium)
                             .background(FloconTheme.colorPalette.primary)
-                            .padding(all = 8.dp),
+                            .padding(all = FloconTheme.spacing.small),
                         viewState = state,
                         onClickButton = onClickButton,
                         submitTextField = submitTextField,

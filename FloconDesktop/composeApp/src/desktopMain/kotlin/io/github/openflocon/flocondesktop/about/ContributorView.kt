@@ -51,7 +51,7 @@ internal fun ContributorView(
                 interactionSource = interactionSource,
                 indication = LocalIndication.current
             )
-            .padding(8.dp)
+            .padding(FloconTheme.spacing.small)
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalPlatformContext.current)
@@ -74,7 +74,7 @@ internal fun ContributorView(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(FloconTheme.spacing.extraSmall))
         Text(
             text = contributor.lastName,
             style = FloconTheme.typography.bodySmall,
