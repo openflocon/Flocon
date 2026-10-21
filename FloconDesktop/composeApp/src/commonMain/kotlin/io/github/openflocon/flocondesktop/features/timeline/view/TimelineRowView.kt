@@ -117,9 +117,9 @@ internal fun TimelineRowView(
             .then(if (selected) Modifier.border(1.dp, colors.lineStrong, shape) else Modifier)
             .hoverable(interactionSource)
             .clickable(interactionSource = interactionSource, indication = null) { onClick(row) }
-            .padding(horizontal = spacing.medium, vertical = spacing.compact),
+            .padding(horizontal = spacing.compact, vertical = spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(spacing.medium),
+        horizontalArrangement = Arrangement.spacedBy(spacing.small),
     ) {
         TimeColumn(
             time = row.time,
@@ -131,7 +131,7 @@ internal fun TimelineRowView(
             haloColor = if (highlighted) colors.bg300 else colors.bg100,
             outerHaloColor = if (isCrash) soft else null,
             // the line goes through the padding and the gap between two rows
-            overflow = spacing.compact + spacing.tiny,
+            overflow = spacing.tiny + spacing.tiny,
             modifier = Modifier
                 .width(22.dp * scale)
                 .fillMaxHeight(),
@@ -143,7 +143,7 @@ internal fun TimelineRowView(
             row = row,
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = 32.dp * scale),
+                .heightIn(min = 28.dp * scale),
         )
         RowMeta(row = row)
     }

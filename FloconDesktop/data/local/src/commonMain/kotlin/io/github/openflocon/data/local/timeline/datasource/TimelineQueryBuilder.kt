@@ -241,38 +241,6 @@ internal fun buildTimelineSummaryQuery(
 }
 
 /**
- * When the selected events happened: the time range of the events is cut in [bucketCount] slices and the
- * events of each kind are counted in each slice. The app starts are rows of their own kind, one per slice.
- * Counting in the query keeps the result small whatever the number of events.
- */
-internal fun buildTimelineActivityQuery(
-    deviceId: String,
-    packageName: String,
-    filter: TimelineFilterDomainModel,
-    bucketCount: Int,
-): TimelineQuery {
-    val union = buildUnion(deviceId, packageName, filter)
-    val unionSql = union.sql ?: return TimelineQuery(
-        sql = "SELECT '' AS kind, 0 AS bucket, 0 AS count WHERE 0",
-        params = emptyList(),
-    )
-
-    val params = ArrayList<Any>(union.params)
-    val sessions = sessionsSql(deviceId, packageName, params)
-    // the last slice is bucketCount - 1: (ts - first) is at most (last - first), below (last - first + 1)
-    fun bucket(column: String) = "CAST(($column - firstTs) * $bucketCount / (lastTs - firstTs + 1) AS INTEGER)"
-
-    return TimelineQuery(
-        sql = "WITH events AS ($unionSql), bounds AS (SELECT MIN(ts) AS firstTs, MAX(ts) AS lastTs FROM events) " +
-            "SELECT kind, ${bucket("ts")} AS bucket, COUNT(*) AS count FROM events, bounds GROUP BY kind, bucket " +
-            "UNION ALL " +
-            "SELECT '$KIND_APP_START' AS kind, ${bucket("appInstance")} AS bucket, COUNT(*) AS count " +
-            "FROM ($sessions), bounds WHERE appInstance BETWEEN firstTs AND lastTs GROUP BY bucket",
-        params = params,
-    )
-}
-
-/**
  * How many of the selected events each session holds.
  */
 internal fun buildTimelineSessionCountsQuery(

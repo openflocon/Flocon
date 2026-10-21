@@ -159,52 +159,6 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
-    fun `the activity cuts the time range of the selected events in slices`() {
-        val query = buildTimelineActivityQuery(
-            deviceId = "device",
-            packageName = "com.app",
-            filter = TimelineFilterDomainModel(sources = setOf(TimelineSource.Crash)),
-            bucketCount = 240,
-        )
-
-        assertTrue(query.sql.startsWith("WITH events AS ("))
-        assertTrue(query.sql.contains("FROM CrashReportEntity"))
-        assertFalse(query.sql.contains("request_url AS title"))
-        assertTrue(query.sql.contains("MIN(ts) AS firstTs, MAX(ts) AS lastTs"))
-        assertTrue(query.sql.contains("* 240 / (lastTs - firstTs + 1)"))
-        // the app starts inside the range are counted too
-        assertTrue(query.sql.contains("SELECT '$KIND_APP_START' AS kind"))
-        assertTrue(query.sql.contains("appInstance BETWEEN firstTs AND lastTs"))
-        // the crashes come first in the query, then the sessions
-        assertEquals(listOf<Any>("device", "com.app") + sessionParams, query.params)
-    }
-
-    @Test
-    fun `the activity follows the text of the filter`() {
-        val query = buildTimelineActivityQuery(
-            deviceId = "device",
-            packageName = "com.app",
-            filter = TimelineFilterDomainModel(text = "login"),
-            bucketCount = 100,
-        )
-
-        assertEquals(eventSources * 2, query.params.count { it == "%login%" })
-    }
-
-    @Test
-    fun `without any source there is no activity`() {
-        val query = buildTimelineActivityQuery(
-            deviceId = "device",
-            packageName = "com.app",
-            filter = TimelineFilterDomainModel(sources = emptySet()),
-            bucketCount = 240,
-        )
-
-        assertTrue(query.sql.endsWith("WHERE 0"))
-        assertTrue(query.params.isEmpty())
-    }
-
-    @Test
     fun `the session counts follow the selected events`() {
         val query = buildTimelineSessionCountsQuery(
             deviceId = "device",

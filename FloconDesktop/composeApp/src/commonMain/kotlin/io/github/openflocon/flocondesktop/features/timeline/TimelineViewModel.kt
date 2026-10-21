@@ -10,7 +10,6 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
-import io.github.openflocon.domain.timeline.usecase.ObserveTimelineActivityUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
 import io.github.openflocon.flocondesktop.app.MenuNavigator
@@ -20,7 +19,6 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineActivityUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import kotlinx.coroutines.FlowPreview
@@ -38,14 +36,10 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-// the time range is cut in this many slices to draw the activity strip
-private const val ACTIVITY_BUCKETS = 240
-
 @OptIn(FlowPreview::class)
 internal class TimelineViewModel(
     observeTimelineUseCase: ObserveTimelineUseCase,
     observeTimelineSummaryUseCase: ObserveTimelineSummaryUseCase,
-    observeTimelineActivityUseCase: ObserveTimelineActivityUseCase,
     observeIsCurrentDeviceAndAppActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
     dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
@@ -85,13 +79,6 @@ internal class TimelineViewModel(
         }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineSummaryUiModel.Empty)
-
-    val activity: StateFlow<TimelineActivityUiModel> = filter
-        .flatMapLatest { filter ->
-            observeTimelineActivityUseCase(filter, ACTIVITY_BUCKETS).map { it.toUi(selected = filter.sources) }
-        }
-        .flowOn(dispatcherProvider.viewModel)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineActivityUiModel.Empty)
 
     val items: Flow<PagingData<TimelineItemUiModel>> = filter
         .flatMapLatest { filter ->
