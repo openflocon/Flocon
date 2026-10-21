@@ -204,9 +204,6 @@ connection is made to the desktop app. Use `flocon-no-op` **and** the no-op of e
 
     The no-ops are binary compatible: code compiled against the real modules runs on the no-ops.
 
-!!! warning "gRPC"
-    The gRPC interceptors have no no-op version yet: only add them to your debug builds.
-
 ---
 
 ## 5. Requirements & Prerequisites

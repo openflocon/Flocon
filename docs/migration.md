@@ -34,8 +34,7 @@ In 1.x, `io.github.openflocon:flocon` contained every feature. In 2.0, `flocon` 
 | Device (app icon, restart app) | `flocon-device` | Android (app icon also on iOS, restart on Android only) |
 | Crash reporter | `flocon-crashreporter` | Android, JVM, iOS, Wasm |
 
-Every artifact has a **`-no-op`** version with the same API (e.g. `flocon-analytics-no-op`), except the
-gRPC interceptors. See [Release builds](setup.md#4-release-builds-no-op).
+Every artifact has a **`-no-op`** version with the same API (e.g. `flocon-analytics-no-op`). See [Release builds](setup.md#4-release-builds-no-op).
 
 ### Platform support details
 
