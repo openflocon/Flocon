@@ -13,12 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagRowUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagsAction
 import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val NameWidth = 260.dp
 private val VariantWidth = 140.dp
@@ -47,7 +47,7 @@ fun FeatureFlagRowView(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
         )
         Box(
             modifier = Modifier
@@ -66,7 +66,7 @@ fun FeatureFlagRowView(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.5f),
+                color = FloconTheme.colors.ink.copy(alpha = 0.5f),
             )
         }
     }

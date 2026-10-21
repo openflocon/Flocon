@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
@@ -40,7 +41,6 @@ import io.github.openflocon.library.designsystem.components.rememberFloconScroll
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -110,10 +110,10 @@ fun FeatureFlagsScreen(
                 .fillMaxWidth()
                 .weight(1f)
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary)
+                .background(FloconTheme.colors.bg100)
                 .border(
                     width = 1.dp,
-                    color = FloconTheme.colorPalette.secondary,
+                    color = FloconTheme.colors.bg200,
                     shape = FloconTheme.shapes.medium
                 )
         ) {
@@ -121,7 +121,7 @@ fun FeatureFlagsScreen(
                 Text(
                     text = stringResource(Res.string.no_feature_flags),
                     style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
+                    color = FloconTheme.colors.ink.copy(alpha = 0.6f),
                     modifier = Modifier.align(Alignment.Center),
                 )
             } else {

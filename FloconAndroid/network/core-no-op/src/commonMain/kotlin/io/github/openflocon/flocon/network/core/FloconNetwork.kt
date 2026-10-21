@@ -1,0 +1,69 @@
+package io.github.openflocon.flocon.network.core
+
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.FloconConfig
+import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.FloconPluginConfig
+import io.github.openflocon.flocon.FloconPluginFactory
+import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.network.core.model.BadQualityConfig
+import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
+import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
+import io.github.openflocon.flocon.network.core.model.FloconWebSocketEvent
+import io.github.openflocon.flocon.network.core.model.FloconWebSocketMockListener
+import io.github.openflocon.flocon.network.core.model.MockNetworkResponse
+
+class FloconNetworkConfig : FloconPluginConfig {
+    var badQualityConfig: BadQualityConfig? = null
+    val mocks = mutableListOf<MockNetworkResponse>()
+}
+
+interface FloconNetworkPlugin : FloconPlugin {
+    val mocks: Collection<MockNetworkResponse>
+    val badQualityConfig: BadQualityConfig?
+
+    fun logRequest(request: FloconNetworkCallRequest)
+    fun logResponse(response: FloconNetworkCallResponse)
+
+    fun logWebSocket(
+        event: FloconWebSocketEvent,
+    )
+
+    fun registerWebSocketMockListener(id: String, listener: FloconWebSocketMockListener)
+}
+
+object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlugin> {
+    override val name: String = "Network"
+    override val pluginId: String = "network"
+
+    override fun createConfig(context: FloconContext) = FloconNetworkConfig()
+
+    override fun install(
+        pluginConfig: FloconNetworkConfig,
+        floconConfig: FloconConfig,
+        encoder: FloconEncoder
+    ): FloconNetworkPlugin = FloconNetworkPluginNoOp
+}
+
+internal object FloconNetworkPluginNoOp : FloconNetworkPlugin {
+    override val key: String = "network"
+    override val mocks: Collection<MockNetworkResponse> = emptyList()
+    override val badQualityConfig: BadQualityConfig? = null
+
+    override suspend fun onMessageReceived(method: String, body: String) = Unit
+    override suspend fun onConnectedToServer() = Unit
+
+    override fun logRequest(request: FloconNetworkCallRequest) = Unit
+    override fun logResponse(response: FloconNetworkCallResponse) = Unit
+
+    override fun logWebSocket(event: FloconWebSocketEvent) = Unit
+    override fun registerWebSocketMockListener(id: String, listener: FloconWebSocketMockListener) = Unit
+}
+
+val Flocon.Companion.networkPlugin: FloconNetworkPlugin
+    get() = FloconNetworkPluginNoOp
+
+// never installed in the no-op version
+val Flocon.Companion.networkPluginOrNull: FloconNetworkPlugin?
+    get() = null

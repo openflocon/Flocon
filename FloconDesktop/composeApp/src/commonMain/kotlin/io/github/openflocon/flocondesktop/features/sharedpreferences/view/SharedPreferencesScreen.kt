@@ -37,7 +37,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -110,7 +110,7 @@ fun SharedPrefScreen(
                 state = deviceSharedPrefs,
                 onSharedPrefSelected = onSharedPrefSelected,
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
             SelectionContainer {
                 val lazyListState = rememberLazyListState()
@@ -118,10 +118,10 @@ fun SharedPrefScreen(
                 Box(
                     modifier = modifier.fillMaxSize()
                         .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colorPalette.primary)
+                        .background(FloconTheme.colors.bg100)
                         .border(
                             width = 1.dp,
-                            color = FloconTheme.colorPalette.secondary,
+                            color = FloconTheme.colors.bg200,
                             shape = FloconTheme.shapes.medium
                         )
                 ) {
@@ -131,7 +131,7 @@ fun SharedPrefScreen(
                     ) {
                         Row(
                             modifier = modifier
-                                .padding(vertical = 8.dp, horizontal = 16.dp),
+                                .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.large),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             SharedPreferencesFilterBar(

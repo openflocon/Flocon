@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.feature_flag_state_custom
@@ -22,7 +23,6 @@ import flocondesktop.composeapp.generated.resources.feature_flag_state_on
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * One toggle per state: keeps only the flags of the selected states
@@ -58,8 +58,8 @@ private fun FeatureFlagStateFilter(
     Row(
         modifier = Modifier
             .clip(shape)
-            .background(if (selected) FloconTheme.colorPalette.secondary else Color.Transparent)
-            .border(width = 1.dp, color = FloconTheme.colorPalette.secondary, shape = shape)
+            .background(if (selected) FloconTheme.colors.bg200 else Color.Transparent)
+            .border(width = 1.dp, color = FloconTheme.colors.bg200, shape = shape)
             .toggleable(value = selected, role = Role.Checkbox, onValueChange = { onClick() })
             .padding(horizontal = 10.dp, vertical = 6.dp)
             .alpha(if (selected) 1f else 0.5f),
@@ -76,7 +76,7 @@ private fun FeatureFlagStateFilter(
                 }
             ),
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onSurface,
+            color = FloconTheme.colors.ink,
         )
     }
 }

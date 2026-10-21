@@ -22,13 +22,30 @@ Features:
 
 ## Setup & Registration
 
+=== "build.gradle.kts"
+
+    ```kotlin
+    dependencies {
+        debugImplementation("io.github.openflocon:flocon-sharedprefs:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-sharedprefs-no-op:LAST_VERSION")
+    }
+    ```
+
+Install the plugin:
+
+```kotlin
+startFlocon(context) {
+    install(FloconPreferences)
+}
+```
+
 ### Standard SharedPreferences (Android)
 
-Default SharedPreferences are automatically indexed. To provide a custom display name:
+All the `SharedPreferences` files of the app are automatically detected on Android. To register one with a custom display name:
 
 ```kotlin
 val userPrefs = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE)
-floconRegisterPreference(FloconSharedPreference(name = "User Settings", userPrefs))
+Flocon.preferencesPlugin.register(FloconSharedPreference(name = "User Settings", userPrefs))
 ```
 
 ---
@@ -52,20 +69,25 @@ floconRegisterPreference(FloconSharedPreference(name = "User Settings", userPref
     }
     ```
 
-Register your DataStore instance:
+Register your DataStore instance (Android, JVM and iOS):
 
 ```kotlin
 val Context.dataStore by preferencesDataStore(name = "settings")
 
-// Register with Flocon
-floconRegisterPreference(FloconDatastorePreference(name = "App Settings", context.dataStore))
+Flocon.preferencesPlugin.register(FloconDatastorePreference(name = "App Settings", context.dataStore))
+```
+
+If the values are encrypted, pass a `FloconDatastoreMapper` to decode / encode them:
+
+```kotlin
+FloconDatastorePreference(name = "Secure Settings", context.secureDataStore, mapper = myCipherMapper)
 ```
 
 ---
 
 ### Custom Key-Value Storage
 
-You can expose any proprietary storage system (such as EncryptedSharedPreferences or custom key-value stores) by implementing `FloconPreference`:
+You can expose any proprietary storage system (such as EncryptedSharedPreferences or custom key-value stores, on every platform) by implementing `FloconPreference`:
 
 ```kotlin
 class MyCustomPreference : FloconPreference {
@@ -82,5 +104,5 @@ class MyCustomPreference : FloconPreference {
     }
 }
 
-floconRegisterPreference(MyCustomPreference())
+Flocon.preferencesPlugin.register(MyCustomPreference())
 ```

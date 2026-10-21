@@ -4,6 +4,7 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
 import io.github.openflocon.domain.log.LogManager
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
+import io.github.openflocon.flocondesktop.app.MenuNavigator
 import io.github.openflocon.flocondesktop.common.log.LogManagerEditable
 import io.github.openflocon.flocondesktop.common.log.LogManagerImpl
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerImpl
@@ -20,6 +21,7 @@ val appModule = module {
     }
 
     singleOf(::InitialSetupStateHolder)
+    singleOf(::MenuNavigator)
     singleOf(::LogManagerImpl) {
         bind<LogManager>()
         bind<LogManagerEditable>()

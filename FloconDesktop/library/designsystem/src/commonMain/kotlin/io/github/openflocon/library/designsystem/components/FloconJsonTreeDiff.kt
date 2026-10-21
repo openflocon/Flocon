@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.dp
 import com.sebastianneubauer.jsontree.diff.JsonTreeDiff
 import com.sebastianneubauer.jsontree.diff.JsonTreeDiffColors
 import com.sebastianneubauer.jsontree.diff.JsonTreeDiffError
@@ -20,7 +19,7 @@ fun FloconJsonTreeDiff(
     onLoading: @Composable () -> Unit,
     onError: @Composable (JsonTreeDiffError) -> Unit,
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues = PaddingValues(8.dp),
+    paddingValues: PaddingValues = PaddingValues(FloconTheme.spacing.small),
     colors: JsonTreeDiffColors = defaultDarkDiffColors,
     showInlineDiffs: Boolean = false,
     textStyle: TextStyle = FloconTheme.typography.bodyMedium,

@@ -2,6 +2,7 @@
 
 package io.github.openflocon.flocondesktop.app.ui.view.leftpannel
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,13 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
@@ -48,26 +50,54 @@ fun LeftPanelView(
     expanded: Boolean,
     onClickItem: (MenuItem) -> Unit,
     modifier: Modifier = Modifier,
+    onTogglePin: (MenuItem) -> Unit = {},
+    onToggleSection: (MenuSection) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     Box(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.primary)
-            .padding(8.dp),
+            .background(FloconTheme.colors.bg100)
+            .padding(FloconTheme.spacing.small),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .verticalScroll(scrollState)
         ) {
+            if (state.topItems.isNotEmpty()) {
+                MenuItems(
+                    current = current,
+                    items = state.topItems,
+                    expanded = expanded,
+                    onClickItem = onClickItem,
+                )
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.extraSmall))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.extraSmall))
+            }
+            if (state.pinnedItems.isNotEmpty()) {
+                // always visible, whatever the collapsed sections
+                MenuItems(
+                    current = current,
+                    items = state.pinnedItems,
+                    expanded = expanded,
+                    onClickItem = onClickItem,
+                    onTogglePin = onTogglePin,
+                )
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.extraSmall))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.extraSmall))
+            }
             MenuSection(
                 current = current,
                 items = state.sections,
                 expanded = expanded,
                 onClickItem = onClickItem,
+                onTogglePin = onTogglePin,
+                onToggleSection = onToggleSection,
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
             Spacer(Modifier.weight(1f))
             MenuItems(
                 current = current,
@@ -78,7 +108,7 @@ fun LeftPanelView(
         }
 
         if(expanded) {
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.large))
 
             FloconVerticalScrollbar(
                 modifier = Modifier
@@ -96,18 +126,29 @@ private fun ColumnScope.MenuSection(
     items: ImmutableList<MenuSection>,
     expanded: Boolean,
     onClickItem: (MenuItem) -> Unit,
+    onTogglePin: (MenuItem) -> Unit,
+    onToggleSection: (MenuSection) -> Unit,
 ) {
     items.fastForEachIndexed { index, section ->
+        // a collapsed section can only be reopened from its title: when the panel is reduced, everything is displayed
+        val isCollapsed = section.isCollapsed && expanded
         PannelLabel(
             expanded = expanded,
             text = stringResource(section.title),
+            isCollapsed = if (expanded) section.isCollapsed else null,
+            onClick = { onToggleSection(section) },
         )
-        MenuItems(
-            current = current,
-            items = section.items,
-            expanded = expanded,
-            onClickItem = onClickItem,
-        )
+        AnimatedVisibility(visible = !isCollapsed) {
+            Column {
+                MenuItems(
+                    current = current,
+                    items = section.items,
+                    expanded = expanded,
+                    onClickItem = onClickItem,
+                    onTogglePin = onTogglePin,
+                )
+            }
+        }
     }
 }
 
@@ -117,6 +158,7 @@ private fun ColumnScope.MenuItems(
     items: ImmutableList<MenuItem>,
     expanded: Boolean,
     onClickItem: (MenuItem) -> Unit,
+    onTogglePin: (MenuItem) -> Unit = {},
 ) {
     items.fastForEachIndexed { index, item ->
         PanelView(
@@ -129,9 +171,12 @@ private fun ColumnScope.MenuItems(
             isSelected = current == item.screen,
             isEnabled = item.isEnabled,
             onClick = { onClickItem(item) },
+            isPinnable = item.isPinnable,
+            isPinned = item.isPinned,
+            onTogglePin = { onTogglePin(item) },
         )
         if (index != items.lastIndex)
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(FloconTheme.spacing.extraSmall))
     }
 }
 
@@ -141,7 +186,7 @@ private fun LeftPanelViewPreview() {
     val selectedItem = remember { mutableStateOf<SubScreen>(SubScreen.Network) }
 
     FloconTheme {
-        Box(modifier = Modifier.background(FloconTheme.colorPalette.surface))
+        Box(modifier = Modifier.background(FloconTheme.colors.bg000))
         LeftPanelView(
             current = selectedItem.value,
             state = previewMenuState(),

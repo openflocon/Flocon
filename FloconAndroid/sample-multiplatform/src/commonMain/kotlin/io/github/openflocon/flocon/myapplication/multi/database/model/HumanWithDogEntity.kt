@@ -1,7 +1,7 @@
 package io.github.openflocon.flocon.myapplication.multi.database.model
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
+import androidx.room3.Entity
+import androidx.room3.ForeignKey
 
 @Entity(
     primaryKeys = ["humanId", "dogId"],

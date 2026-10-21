@@ -1,24 +1,12 @@
 package io.github.openflocon.flocondesktop.features.network.mock.edition.view
 
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkTag
-import io.github.openflocon.flocondesktop.features.network.list.view.components.deleteMethodBackground
-import io.github.openflocon.flocondesktop.features.network.list.view.components.deleteMethodText
-import io.github.openflocon.flocondesktop.features.network.list.view.components.getMethodBackground
-import io.github.openflocon.flocondesktop.features.network.list.view.components.getMethodText
-import io.github.openflocon.flocondesktop.features.network.list.view.components.grpcMethodBackground
-import io.github.openflocon.flocondesktop.features.network.list.view.components.grpcMethodText
-import io.github.openflocon.flocondesktop.features.network.list.view.components.patchMethodBackground
-import io.github.openflocon.flocondesktop.features.network.list.view.components.patchMethodText
-import io.github.openflocon.flocondesktop.features.network.list.view.components.postMethodBackground
-import io.github.openflocon.flocondesktop.features.network.list.view.components.postMethodText
-import io.github.openflocon.flocondesktop.features.network.list.view.components.putMethodBackground
-import io.github.openflocon.flocondesktop.features.network.list.view.components.putMethodText
+import androidx.compose.ui.draw.clip
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkMethodUi
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconOutlinedPill
 
 @Composable
 fun MockNetworkMethodView(
@@ -26,23 +14,20 @@ fun MockNetworkMethodView(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    val (backgroundColor, textColor) =
-        when (method) {
-            MockNetworkMethodUi.DELETE -> deleteMethodBackground to deleteMethodText
-            MockNetworkMethodUi.GET -> getMethodBackground to getMethodText
-            MockNetworkMethodUi.PATCH -> patchMethodBackground to patchMethodText
-            MockNetworkMethodUi.POST -> postMethodBackground to postMethodText
-            MockNetworkMethodUi.PUT -> putMethodBackground to putMethodText
-            MockNetworkMethodUi.ALL -> grpcMethodBackground to grpcMethodText
-        }
-    NetworkTag(
+    val colors = FloconTheme.colors
+    val color = when (method) {
+        MockNetworkMethodUi.DELETE -> colors.catCrash
+        MockNetworkMethodUi.GET -> colors.catNetwork
+        MockNetworkMethodUi.PATCH -> colors.catDeeplink
+        MockNetworkMethodUi.POST -> colors.catAnalytics
+        MockNetworkMethodUi.PUT -> colors.accent
+        MockNetworkMethodUi.ALL -> null
+    }
+    FloconOutlinedPill(
         text = method.text,
-        backgroundColor = backgroundColor,
-        textColor = textColor,
-        textSize = 14.sp,
-        modifier = modifier,
-        icon = null,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-        onClick = onClick,
+        color = color,
+        modifier = modifier.then(
+            if (onClick != null) Modifier.clip(FloconTheme.shapes.small).clickable(onClick = onClick) else Modifier
+        ),
     )
 }

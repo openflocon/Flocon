@@ -59,10 +59,10 @@ fun FloconTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     textStyle: TextStyle = FloconTheme.typography.bodySmall,
-    containerColor: Color = FloconTheme.colorPalette.primary,
+    containerColor: Color = FloconTheme.colors.bg200,
     visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
-    val contentColor = FloconTheme.colorPalette.contentColorFor(containerColor)
+    val contentColor = FloconTheme.colors.contentColorFor(containerColor)
     val colors = TextFieldDefaults.colors(
         focusedTextColor = contentColor,
         errorTextColor = contentColor,
@@ -80,10 +80,10 @@ fun FloconTextField(
         disabledPlaceholderColor = contentColor.copy(alpha = 0.6f),
         focusedPlaceholderColor = contentColor.copy(alpha = 0.6f),
         unfocusedPlaceholderColor = contentColor.copy(alpha = 0.6f),
-        errorLabelColor = FloconTheme.colorPalette.onPrimary,
-        disabledLabelColor = FloconTheme.colorPalette.onPrimary,
-        focusedLabelColor = FloconTheme.colorPalette.onPrimary,
-        unfocusedLabelColor = FloconTheme.colorPalette.onPrimary
+        errorLabelColor = FloconTheme.colors.inkMuted,
+        disabledLabelColor = FloconTheme.colors.inkMuted,
+        focusedLabelColor = FloconTheme.colors.inkMuted,
+        unfocusedLabelColor = FloconTheme.colors.inkMuted
     )
     val interactionSource = remember { MutableInteractionSource() }
     val shape = FloconTheme.shapes.medium
@@ -94,7 +94,7 @@ fun FloconTextField(
         textStyle = textStyle.copy(color = contentColor), // Fix style
         maxLines = maxLines,
         minLines = minLines,
-        cursorBrush = SolidColor(FloconTheme.colorPalette.onPrimary),
+        cursorBrush = SolidColor(FloconTheme.colors.ink),
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
         decorationBox = {
@@ -138,10 +138,10 @@ fun FloconTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     textStyle: TextStyle = FloconTheme.typography.bodySmall,
-    containerColor: Color = FloconTheme.colorPalette.primary
+    containerColor: Color = FloconTheme.colors.bg200
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         modifier = modifier
     ) {
         label()
@@ -187,8 +187,8 @@ fun FloconTextFieldWithoutM3(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     textStyle: TextStyle = FloconTheme.typography.bodySmall,
-    containerColor: Color = FloconTheme.colorPalette.primary,
-    contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor)
+    containerColor: Color = FloconTheme.colors.bg200,
+    contentColor: Color = FloconTheme.colors.contentColorFor(containerColor)
 ) {
     val shape = FloconTheme.shapes.medium
 
@@ -207,7 +207,7 @@ fun FloconTextFieldWithoutM3(
         decorationBox = { innerTextField ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 modifier = Modifier
                     .clip(shape)
                     .drawWithCache {
@@ -215,7 +215,7 @@ fun FloconTextFieldWithoutM3(
                         onDrawBehind { drawOutline(outline, color = containerColor) }
                     }
                     .background(containerColor)
-                    .padding(horizontal = 4.dp)
+                    .padding(horizontal = FloconTheme.spacing.extraSmall)
                     .padding(contentPadding)
             ) {
                 CompositionLocalProvider(LocalContentColor provides contentColor) {
@@ -273,7 +273,7 @@ private fun DecorationBox(
         singleLine = singleLine,
         colors = colors,
         visualTransformation = VisualTransformation.None,
-        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
+        contentPadding = PaddingValues(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
         container = {
             ContainerBox(
                 enabled = enabled,
@@ -316,7 +316,8 @@ fun defaultLabel(text: String): @Composable () -> Unit = {
 fun DefaultLabel(text: String) {
     Text(
         text = text,
-        style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Thin),
+        style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+        color = FloconTheme.colors.inkMuted,
     )
 }
 

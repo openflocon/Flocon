@@ -8,20 +8,27 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.screenshot_saved_at
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceInstalledPluginsUseCase
 import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
-import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
-import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
+import io.github.openflocon.domain.menu.usecase.ObserveMenuPreferencesUseCase
+import io.github.openflocon.domain.menu.usecase.ToggleCollapsedMenuSectionUseCase
+import io.github.openflocon.domain.menu.usecase.TogglePinnedMenuItemUseCase
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
+import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
+import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.domain.versions.usecase.ShouldShowReleaseNotesUseCase
 import io.github.openflocon.flocondesktop.BuildConfig
-import io.github.openflocon.flocondesktop.app.ui.releasenotes.ReleaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.app.ui.model.id
+import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuState
+import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.applyPreferences
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.buildMenu
+import io.github.openflocon.flocondesktop.app.ui.releasenotes.ReleaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
@@ -37,17 +44,20 @@ import io.github.openflocon.flocondesktop.features.images.ImageRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.TableRoutes
+import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
 import io.github.openflocon.flocondesktop.messages.ui.McpServerDelegate
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class AppViewModel(
     messagesServerDelegate: MessagesServerDelegate,
@@ -66,6 +76,11 @@ internal class AppViewModel(
     private val logManager: LogManager,
     private val settingsRepository: SettingsRepository,
     private val getFloconDocumentPathUseCase: GetFloconDocumentPathUseCase,
+    observeCurrentDeviceInstalledPluginsUseCase: ObserveCurrentDeviceInstalledPluginsUseCase,
+    observeMenuPreferencesUseCase: ObserveMenuPreferencesUseCase,
+    private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
+    private val toggleCollapsedMenuSectionUseCase: ToggleCollapsedMenuSectionUseCase,
+    menuNavigator: MenuNavigator,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -73,9 +88,25 @@ internal class AppViewModel(
             current = SubScreen.Network
         )
     )
-    private val menuState = MutableStateFlow(
-        buildMenu()
-    )
+
+    // the items depend on the plugins installed in the SDK of the selected app, and on the user preferences (pins, collapsed sections)
+    private val menuState: StateFlow<MenuState> = combine(
+        observeCurrentDeviceInstalledPluginsUseCase(),
+        observeMenuPreferencesUseCase(),
+    ) { installedPlugins, preferences ->
+        buildMenu().applyPreferences(
+            installedPlugins = installedPlugins,
+            pinnedIds = preferences.pinnedItems,
+            collapsedSectionIds = preferences.collapsedSections,
+        )
+    }
+        .stateInWhileSubscribed(
+            buildMenu().applyPreferences(
+                installedPlugins = null,
+                pinnedIds = emptyList(),
+                collapsedSectionIds = emptySet(),
+            )
+        )
 
     val uiState = combine(
         contentState,
@@ -103,6 +134,24 @@ internal class AppViewModel(
         )
 
     init {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            // a feature can ask to display another screen of the menu (ex: from the timeline)
+            menuNavigator.requests.collect { screen ->
+                onSelectMenu(AppAction.SelectMenu(screen))
+            }
+        }
+
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            // the selected item can be hidden when another app is selected: go to the first available one
+            menuState.collect { menu ->
+                val available = menu.topItems + menu.pinnedItems +menu.sections.flatMap { it.items } + menu.bottomItems
+                val current = contentState.value.current
+                if (available.isNotEmpty() && available.none { it.screen == current }) {
+                    onSelectMenu(AppAction.SelectMenu(available.first().screen))
+                }
+            }
+        }
+
         viewModelScope.launch(dispatcherProvider.viewModel) {
             if (shouldShowReleaseNotesUseCase(current = BuildConfig.APP_VERSION)) {
                 withContext(dispatcherProvider.ui) {
@@ -134,7 +183,7 @@ internal class AppViewModel(
                         .alsoSuccess {
                             settingsRepository.setAdbForwardStatus(AdbForwardStatus.OK)
                         }
-                    delay(1_500)
+                    delay(1_500.milliseconds)
                 }
             }
         }
@@ -143,6 +192,14 @@ internal class AppViewModel(
     fun onAction(action: AppAction) {
         when (action) {
             is AppAction.SelectMenu -> onSelectMenu(action)
+            is AppAction.TogglePin -> viewModelScope.launch(dispatcherProvider.viewModel) {
+                togglePinnedMenuItemUseCase(action.menu.id)
+            }
+
+            is AppAction.ToggleSection -> viewModelScope.launch(dispatcherProvider.viewModel) {
+                toggleCollapsedMenuSectionUseCase(action.sectionId)
+            }
+
             is AppAction.DeleteApp -> deleteApp(action)
             is AppAction.DeleteDevice -> deleteDevice(action)
             AppAction.Record -> onRecord()
@@ -173,6 +230,7 @@ internal class AppViewModel(
             SubScreen.SharedPreferences -> SharedPreferencesRoutes.Main
             SubScreen.Tables -> TableRoutes.Main
             SubScreen.CrashReporter -> CrashReporterRoutes.Main
+            SubScreen.Timeline -> TimelineRoutes.Main
         }
 
         if (route !is SettingsRoutes) {

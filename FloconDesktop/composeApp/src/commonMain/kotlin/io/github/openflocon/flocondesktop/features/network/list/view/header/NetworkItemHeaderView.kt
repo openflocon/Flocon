@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.network_header_domain
 import flocondesktop.composeapp.generated.resources.network_header_method
@@ -29,7 +28,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.filters.Met
 import io.github.openflocon.flocondesktop.features.network.list.view.filters.TextFilterDropdownContent
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun NetworkItemHeaderView(
@@ -42,9 +41,9 @@ fun NetworkItemHeaderView(
 ) {
     Row(
         modifier = modifier
-            .padding(horizontal = 4.dp, vertical = 6.dp)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact)
             .padding(contentPadding),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.Bottom,
     ) {
         HeaderDropdown(

@@ -13,8 +13,8 @@ import io.github.openflocon.library.designsystem.theme.contentColorFor
 @Composable
 fun FloconScaffold(
     modifier: Modifier = Modifier,
-    containerColor: Color = FloconTheme.colorPalette.surface,
-    contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor),
+    containerColor: Color = FloconTheme.colors.bg000,
+    contentColor: Color = FloconTheme.colors.contentColorFor(containerColor),
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},

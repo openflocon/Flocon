@@ -12,11 +12,13 @@ import io.github.openflocon.domain.featureflags.featureFlagsModule
 import io.github.openflocon.domain.files.filesModule
 import io.github.openflocon.domain.images.imagesModule
 import io.github.openflocon.domain.mcp.mcpDomainModule
+import io.github.openflocon.domain.menu.menuModule
 import io.github.openflocon.domain.messages.messagesModule
 import io.github.openflocon.domain.network.networkModule
 import io.github.openflocon.domain.settings.settingsModule
 import io.github.openflocon.domain.sharedpreference.sharedPreferencesModule
 import io.github.openflocon.domain.table.tableModule
+import io.github.openflocon.domain.timeline.timelineDomainModule
 import io.github.openflocon.domain.versions.versionModule
 import org.koin.dsl.module
 
@@ -40,5 +42,7 @@ val domainModule = module {
         versionModule,
         crashReporterDomainModule,
         mcpDomainModule,
+        menuModule,
+        timelineDomainModule,
     )
 }

@@ -6,18 +6,12 @@ import io.github.openflocon.domain.files.models.FilePathDomainModel
 import kotlin.time.Instant
 
 internal fun FilePathDomainModel.mapToLocal(): String = when (this) {
-    is FilePathDomainModel.Constants.CachesDir -> "___[" + "cache" + "]___"
-    is FilePathDomainModel.Constants.FilesDir -> "___[" + "files" + "]___"
+    is FilePathDomainModel.Root -> "___[" + id + "]___"
     is FilePathDomainModel.Real -> this.absolutePath
 }
 
 internal fun pathFromLocal(path: String): FilePathDomainModel = if (path.startsWith("___[") && path.endsWith("]___")) {
-    val constantPath = path.removeSurrounding("___[", "]___")
-    when (constantPath) {
-        "cache" -> FilePathDomainModel.Constants.CachesDir
-        "files" -> FilePathDomainModel.Constants.FilesDir
-        else -> FilePathDomainModel.Real(constantPath)
-    }
+    FilePathDomainModel.Root(id = path.removeSurrounding("___[", "]___"))
 } else {
     FilePathDomainModel.Real(path)
 }

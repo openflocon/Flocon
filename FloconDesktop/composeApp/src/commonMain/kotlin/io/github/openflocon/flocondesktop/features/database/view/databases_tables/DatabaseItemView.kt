@@ -37,6 +37,9 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.WithTooltip
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.database_see_all_queries
 
 @Composable
 internal fun DatabaseItemView(
@@ -90,15 +93,15 @@ private fun DatabaseView(
     modifier: Modifier = Modifier,
 ) {
     val (background, textColor) = if (state.isSelected) {
-        FloconTheme.colorPalette.accent.copy(alpha = 0.4f) to FloconTheme.colorPalette.onAccent
+        FloconTheme.colors.accent.copy(alpha = 0.4f) to FloconTheme.colors.accent
     } else {
-        Color.Transparent to FloconTheme.colorPalette.onSurface
+        Color.Transparent to FloconTheme.colors.ink
     }
 
     ContextualView(
         persistentListOf(
             FloconContextMenuItem.Item(
-                label = "See all queries",
+                label = stringResource(Res.string.database_see_all_queries),
                 onClick = {
                     onSeeAllQueriesClicked(state.id, state.name)
                 }
@@ -115,7 +118,7 @@ private fun DatabaseView(
                     }, onDoubleClick = {
                         onDatabaseDoubleClicked(state)
                     }
-                ).padding(horizontal = 12.dp, vertical = 8.dp),
+                ).padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
@@ -124,7 +127,7 @@ private fun DatabaseView(
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(textColor),
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
             Text(
                 state.name,
                 color = textColor,

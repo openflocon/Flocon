@@ -7,6 +7,7 @@ import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
+import io.github.openflocon.domain.files.models.FileRootDomainModel
 import io.github.openflocon.domain.files.repository.FilesRepository
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import io.github.openflocon.mcp.FakeDevicesRepository
@@ -48,13 +49,19 @@ class FilesMcpToolProviderTest {
     )
     private val downloadDir: File = Files.createTempDirectory("flocon-mcp-files").toFile()
     private val filesRepository = FakeFilesRepository(
+        deviceRoots = listOf(
+            FileRootDomainModel(id = "files", name = "Files", path = "/data/files"),
+            FileRootDomainModel(id = "caches", name = "Caches", path = "/data/cache"),
+            FileRootDomainModel(id = "/data/files/exports", name = "Exports", path = "/data/files/exports"),
+        ),
         deviceContent = mapOf(
-            FilePathDomainModel.Constants.FilesDir to listOf(
+            FilePathDomainModel.Root("files") to listOf(
                 file("/data/files/notes.txt"),
                 file("/data/files/images", isDirectory = true),
                 file("/data/files/avatar.png"),
             ),
             FilePathDomainModel.Real("/data/files/images") to listOf(file("/data/files/images/cat.png")),
+            FilePathDomainModel.Root("/data/files/exports") to listOf(file("/data/files/exports/report.csv")),
         ),
         deviceFiles = mapOf(
             "/data/files/notes.txt" to "hello flocon".toByteArray(),
@@ -90,12 +97,38 @@ class FilesMcpToolProviderTest {
     fun `all the tools are read only`() = runBlocking {
         val tools = server.listTools()
 
-        assertEquals(setOf("list_files", "read_file"), tools.map { it.name }.toSet())
+        assertEquals(setOf("list_file_roots", "list_files", "read_file"), tools.map { it.name }.toSet())
         assertTrue(tools.all { it.annotations?.readOnlyHint == true })
     }
 
     @Test
-    fun `list_files lists the files directory by default, directories first`() = runBlocking {
+    fun `list_file_roots returns the roots announced by the app`() = runBlocking {
+        val result = server.callTool("list_file_roots").json()
+
+        assertEquals(false, result["fromCache"]!!.jsonPrimitive.boolean)
+        assertEquals(
+            listOf("files", "caches", "/data/files/exports"),
+            result["roots"]!!.jsonArray.map { it.jsonObject["id"]!!.jsonPrimitive.content },
+        )
+        assertEquals("/data/cache", result["roots"]!!.jsonArray[1].jsonObject["path"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun `list_file_roots returns the last known roots when the app does not answer`() = runBlocking {
+        filesRepository.isConnected = false
+        assertEquals(true, server.callTool("list_file_roots").isError)
+
+        filesRepository.isConnected = true
+        server.callTool("list_file_roots").json()
+        filesRepository.isConnected = false
+
+        val result = server.callTool("list_file_roots").json()
+        assertEquals(true, result["fromCache"]!!.jsonPrimitive.boolean)
+        assertEquals(3, result["roots"]!!.jsonArray.size)
+    }
+
+    @Test
+    fun `list_files lists the first root by default, directories first`() = runBlocking {
         val result = server.callTool("list_files").json()
 
         assertEquals(false, result["fromCache"]!!.jsonPrimitive.boolean)
@@ -103,6 +136,14 @@ class FilesMcpToolProviderTest {
             listOf("images", "avatar.png", "notes.txt"),
             result["files"]!!.jsonArray.map { it.jsonObject["name"]!!.jsonPrimitive.content },
         )
+    }
+
+    @Test
+    fun `list_files of a root registered by the app`() = runBlocking {
+        val result = server.callTool("list_files", mapOf("path" to "/data/files/exports")).json()
+
+        assertEquals("/data/files/exports/report.csv", result["files"]!!.jsonArray.single().jsonObject["path"]!!.jsonPrimitive.content)
+        assertEquals(FilePathDomainModel.Root("/data/files/exports"), filesRepository.lastRefreshedPath)
     }
 
     @Test
@@ -132,6 +173,7 @@ class FilesMcpToolProviderTest {
 
         assertEquals(true, result.isError)
         assertTrue(result.text().contains("absolute"))
+        assertTrue(result.text().contains("\"caches\""))
     }
 
     @Test
@@ -210,13 +252,24 @@ class FilesMcpToolProviderTest {
  * Like the real implementation: the refresh asks the app and stores its answer, observed by [observeFolderContent]
  */
 private class FakeFilesRepository(
+    private val deviceRoots: List<FileRootDomainModel>,
     private val deviceContent: Map<FilePathDomainModel, List<FileDomainModel>>,
     private val deviceFiles: Map<String, ByteArray>,
     private val downloadDir: File,
 ) : FilesRepository {
 
     var isConnected = true
+    var lastRefreshedPath: FilePathDomainModel? = null
     private val stored = MutableStateFlow<Map<FilePathDomainModel, List<FileDomainModel>>>(emptyMap())
+    private val storedRoots = MutableStateFlow<List<FileRootDomainModel>>(emptyList())
+
+    override fun observeRoots(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<FileRootDomainModel>> = storedRoots
+
+    override suspend fun refreshRoots(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Either<Throwable, Unit> {
+        if (!isConnected) return Failure(Exception("timeout"))
+        storedRoots.value = deviceRoots
+        return Success(Unit)
+    }
 
     override fun observeFolderContent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -228,6 +281,7 @@ private class FakeFilesRepository(
         path: FilePathDomainModel,
     ): Either<Throwable, Unit> {
         if (!isConnected) return Failure(Exception("timeout"))
+        lastRefreshedPath = path
         stored.value += path to deviceContent[path].orEmpty()
         return Success(Unit)
     }

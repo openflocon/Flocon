@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.StackedBarChart
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.TableView
+import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import flocondesktop.composeapp.generated.resources.Res
@@ -30,6 +31,7 @@ import flocondesktop.composeapp.generated.resources.menu_item_network
 import flocondesktop.composeapp.generated.resources.menu_item_settings
 import flocondesktop.composeapp.generated.resources.menu_item_sharedPreferences
 import flocondesktop.composeapp.generated.resources.menu_item_tables
+import flocondesktop.composeapp.generated.resources.menu_item_timeline
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
@@ -50,6 +52,7 @@ fun SubScreen.displayName(): StringResource = when (this) {
     SubScreen.Deeplinks -> Res.string.menu_item_deeplinks
     SubScreen.AdbCommander -> Res.string.menu_item_adbCommander
     SubScreen.CrashReporter -> Res.string.menu_item_crashReporter
+    SubScreen.Timeline -> Res.string.menu_item_timeline
 }
 
 // Extension function to get the icon for each SubScreen
@@ -67,4 +70,5 @@ fun SubScreen.icon(): ImageVector = when (this) {
     SubScreen.Deeplinks -> Icons.Filled.Link
     SubScreen.AdbCommander -> Icons.Outlined.Terminal
     SubScreen.CrashReporter -> Icons.Outlined.BugReport
+    SubScreen.Timeline -> Icons.Outlined.Timeline
 }

@@ -37,13 +37,13 @@ fun BoxScope.FeedbackDisplayerView(modifier: Modifier = Modifier) {
         modifier =
         modifier
             .align(Alignment.BottomCenter) // Align to bottom center
-            .padding(16.dp) // Padding from the bottom and sides
+            .padding(FloconTheme.spacing.large) // Padding from the bottom and sides
             .animateContentSize(), // Animate the size change of the snackbar
     ) { data ->
         Snackbar(
             snackbarData = data,
-            containerColor = FloconTheme.colorPalette.accent, // Invert surface for contrast
-            contentColor = FloconTheme.colorPalette.onAccent, // Invert onSurface for contrast
+            containerColor = FloconTheme.colors.accentSoft, // Invert surface for contrast
+            contentColor = FloconTheme.colors.accent, // Invert onSurface for contrast
             shape = RoundedCornerShape(8.dp),
         )
     }

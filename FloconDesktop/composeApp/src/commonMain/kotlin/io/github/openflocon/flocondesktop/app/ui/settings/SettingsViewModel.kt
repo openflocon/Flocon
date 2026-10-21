@@ -35,6 +35,8 @@ import io.github.openflocon.flocondesktop.common.utils.FolderPicker
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import java.io.File
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.settings_select_documents_folder
 
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,

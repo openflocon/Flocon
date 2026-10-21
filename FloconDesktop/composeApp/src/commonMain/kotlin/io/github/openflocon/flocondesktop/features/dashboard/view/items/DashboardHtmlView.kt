@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,9 +28,9 @@ internal fun DashboardHtmlView(
         if (rowItem.label.isNotEmpty()) {
             Text(
                 text = rowItem.label,
-                modifier = Modifier.padding(start = 4.dp, bottom = 4.dp),
-                color = FloconTheme.colorPalette.onSurface,
-                style = MaterialTheme.typography.bodyMedium.copy(
+                modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall, bottom = FloconTheme.spacing.extraSmall),
+                color = FloconTheme.colors.ink,
+                style = FloconTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Thin,
                 ),
             )
@@ -40,10 +39,10 @@ internal fun DashboardHtmlView(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = FloconTheme.colorPalette.secondary,
+                    color = FloconTheme.colors.bg200,
                     shape = RoundedCornerShape(8.dp),
                 )
-                .padding(8.dp),
+                .padding(FloconTheme.spacing.small),
         ) {
             SwingPanel(
                 modifier = Modifier.fillMaxWidth().height(600.dp), // Height needs to be fixed or dynamic

@@ -24,6 +24,11 @@ internal interface SettingsDataSource {
     fun getDismissedClientVersion(): String?
     suspend fun setDismissedClientVersion(version: String)
 
+    val pinnedMenuItems: Flow<List<String>>
+    val collapsedMenuSections: Flow<Set<String>>
+    suspend fun setPinnedMenuItems(items: List<String>)
+    suspend fun setCollapsedMenuSections(sections: Set<String>)
+
     fun getLastSeenReleaseNotesVersion(): String?
     suspend fun setLastSeenReleaseNotesVersion(version: String)
 

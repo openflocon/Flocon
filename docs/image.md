@@ -27,6 +27,8 @@ This is invaluable for debugging missing placeholders, CDN resolution failures, 
 
 When using Coil, connect your `ImageLoader` with the Flocon-enabled OkHttp or Ktor client:
 
+The network plugin must be installed (`install(FloconNetwork)`, see [Network](network.md#setup-integration)).
+
 ```kotlin
 SingletonImageLoader.setSafe {
     ImageLoader.Builder(context = context)

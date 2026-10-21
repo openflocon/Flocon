@@ -11,6 +11,7 @@ internal fun DeviceAppEntity.toDomainModel(): DeviceAppDomainModel = DeviceAppDo
     iconEncoded = this.iconEncoded,
     lastAppInstance = this.lastAppInstance,
     floconVersionOnDevice = this.floconVersionOnDevice,
+    installedPlugins = this.installedPlugins?.toInstalledPluginsSet(),
 )
 
 internal fun DeviceDomainModel.toEntity(): DeviceEntity = DeviceEntity(
@@ -32,4 +33,9 @@ internal fun DeviceAppDomainModel.toEntity(deviceId: String): DeviceAppEntity = 
     iconEncoded = this.iconEncoded,
     lastAppInstance = this.lastAppInstance,
     floconVersionOnDevice = this.floconVersionOnDevice,
+    installedPlugins = this.installedPlugins?.toInstalledPluginsString(),
 )
+
+internal fun Set<String>.toInstalledPluginsString(): String = joinToString(",")
+
+internal fun String.toInstalledPluginsSet(): Set<String> = split(",").filter { it.isNotEmpty() }.toSet()

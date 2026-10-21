@@ -41,6 +41,8 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 import java.awt.Desktop
 import java.awt.Dimension
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.app_name
 
 private const val ACTIVATE_TRAY_NOTIFICATION = false
 
@@ -100,7 +102,7 @@ fun main() {
                     else -> false
                 }
             },
-            title = "Flocon",
+            title = stringResource(Res.string.app_name),
             icon = painterResource(Res.drawable.app_icon_small), // Remove black behind icon
         ) {
             CompositionLocalProvider(LocalEscapeHandlerStack provides handlers) {

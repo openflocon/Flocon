@@ -19,12 +19,16 @@ fun FloconSwitch(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(
-                checkedTrackColor = FloconTheme.colorPalette.accent,
-                checkedThumbColor = FloconTheme.colorPalette.onAccent,
-                uncheckedThumbColor = FloconTheme.colorPalette.onSecondary,
-                uncheckedTrackColor = FloconTheme.colorPalette.secondary
-            ),
+            colors = FloconTheme.colors.let { colors ->
+                SwitchDefaults.colors(
+                    checkedTrackColor = colors.accent,
+                    checkedThumbColor = colors.accentInk,
+                    checkedBorderColor = colors.accent,
+                    uncheckedThumbColor = colors.inkFaint,
+                    uncheckedTrackColor = colors.bg300,
+                    uncheckedBorderColor = colors.lineStrong,
+                )
+            },
             modifier = modifier
         )
     }

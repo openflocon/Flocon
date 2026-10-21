@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_delete
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
@@ -25,7 +23,7 @@ import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 internal fun CrashReportItemView(
@@ -50,26 +48,26 @@ internal fun CrashReportItemView(
                 .clip(FloconTheme.shapes.medium)
                 .background(
                     if (isSelected) {
-                        FloconTheme.colorPalette.accent
+                        FloconTheme.colors.accentSoft
                     } else {
-                        FloconTheme.colorPalette.surface
+                        FloconTheme.colors.bg000
                     }
                 )
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
         ) {
             Text(
                 text = crash.exceptionType,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.error
+                style = FloconTheme.typography.bodyMedium,
+                color = FloconTheme.colors.statusError
             )
             Text(
                 text = crash.dateFormatted,
-                style = MaterialTheme.typography.bodySmall
+                style = FloconTheme.typography.bodySmall
             )
             Text(
                 text = crash.exceptionMessage,
-                style = MaterialTheme.typography.bodySmall
+                style = FloconTheme.typography.bodySmall
             )
         }
     }

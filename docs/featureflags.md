@@ -22,12 +22,32 @@ A selector at the top switches between the providers, and the list can be filter
 
 ---
 
+## Setup
+
+```kotlin
+dependencies {
+    debugImplementation("io.github.openflocon:flocon-feature-flags:LAST_VERSION")
+    releaseImplementation("io.github.openflocon:flocon-feature-flags-no-op:LAST_VERSION")
+}
+```
+
+Install the plugin when you start Flocon:
+
+```kotlin
+startFlocon(FloconContext(applicationContext)) {
+    install(FloconFeatureFlags)
+}
+```
+
+---
+
 ## Usage
 
 Register all the flags of a provider. Each call **replaces** the flags previously sent for this provider, and they are sent again automatically when the app reconnects to the desktop.
 
 ```kotlin
-floconFeatureFlags("firebase").register(
+Flocon.featureFlagsPlugin.register(
+    provider = "firebase",
     FloconFeatureFlag(name = "new_checkout", state = FloconFeatureFlagState.Custom, variant = "treatment", payload = """{"buttonColor":"#FF5722"}"""),
     FloconFeatureFlag(name = "dark_mode", state = FloconFeatureFlagState.On, variant = "on"),
     FloconFeatureFlag(name = "onboarding_v2", state = FloconFeatureFlagState.Off, variant = "control"),
@@ -44,8 +64,9 @@ Forward your flags to Flocon each time your provider refreshes them:
 class FeatureFlagsRepository(private val remoteConfig: FirebaseRemoteConfig) {
 
     fun onFlagsActivated() {
-        floconFeatureFlags("firebase").register(
-            remoteConfig.all.map { (key, value) ->
+        Flocon.featureFlagsPlugin.register(
+            provider = "firebase",
+            flags = remoteConfig.all.map { (key, value) ->
                 FloconFeatureFlag(
                     name = key,
                     state = when (value.asString()) {
@@ -55,7 +76,7 @@ class FeatureFlagsRepository(private val remoteConfig: FirebaseRemoteConfig) {
                     },
                     variant = value.asString(),
                 )
-            }
+            },
         )
     }
 }
