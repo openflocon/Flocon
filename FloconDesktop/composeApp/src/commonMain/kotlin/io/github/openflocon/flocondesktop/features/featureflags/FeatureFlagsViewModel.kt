@@ -14,6 +14,7 @@ import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.featureflags.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagProvidersUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagRowUiModel
+import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagStateUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagsAction
 import io.github.openflocon.library.designsystem.common.asState
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -22,7 +23,10 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
@@ -61,17 +65,30 @@ class FeatureFlagsViewModel(
         .flowOn(dispatcherProvider.viewModel)
         .stateInWhileSubscribed(FeatureFlagProvidersUiModel.Loading)
 
+    private val _selectedStates = MutableStateFlow(FeatureFlagStateUiModel.entries.toSet())
+    val selectedStates: StateFlow<Set<FeatureFlagStateUiModel>> = _selectedStates.asStateFlow()
+
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    val rows: StateFlow<ImmutableList<FeatureFlagRowUiModel>> = snapshotFlow { _filterText.value }
-        .debounce(150)
-        .flatMapLatest { filter ->
-            observeCurrentDeviceFeatureFlagsUseCase(
-                filter = filter.takeIf { it.isNotBlank() },
-            )
-        }
-        .map { list -> list.map { it.mapToUi() }.toImmutableList() }
+    val rows: StateFlow<ImmutableList<FeatureFlagRowUiModel>> = combine(
+        snapshotFlow { _filterText.value }
+            .debounce(150)
+            .flatMapLatest { filter ->
+                observeCurrentDeviceFeatureFlagsUseCase(
+                    filter = filter.takeIf { it.isNotBlank() },
+                )
+            },
+        _selectedStates,
+    ) { list, states ->
+        list.map { it.mapToUi() }
+            .filter { it.state in states }
+            .toImmutableList()
+    }
         .flowOn(dispatcherProvider.viewModel)
         .stateInWhileSubscribed(persistentListOf())
+
+    fun onStateToggled(state: FeatureFlagStateUiModel) {
+        _selectedStates.update { if (state in it) it - state else it + state }
+    }
 
     fun onFilterTextChanged(value: String) {
         _filterText.value = value

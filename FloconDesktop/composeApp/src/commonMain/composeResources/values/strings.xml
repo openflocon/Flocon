@@ -86,6 +86,9 @@
     <string name="feature_flag_provider">Provider</string>
     <string name="feature_flag_variant">Variant</string>
     <string name="feature_flag_state">State</string>
+    <string name="feature_flag_state_on">On</string>
+    <string name="feature_flag_state_off">Off</string>
+    <string name="feature_flag_state_custom">Custom</string>
     <string name="feature_flag_payload">Payload</string>
     <string name="feature_flag_no_payload">No payload</string>
     <string name="no_devices_found">No Devices Found</string>

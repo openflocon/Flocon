@@ -35,6 +35,10 @@ fun FeatureFlagRowView(
             .padding(vertical = 8.dp, horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        FeatureFlagStateDot(
+            state = model.state,
+            modifier = Modifier.padding(end = 12.dp),
+        )
         Text(
             text = model.name,
             modifier = Modifier

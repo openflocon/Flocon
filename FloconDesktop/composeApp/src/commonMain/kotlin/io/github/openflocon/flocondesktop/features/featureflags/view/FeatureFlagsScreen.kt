@@ -27,6 +27,7 @@ import flocondesktop.composeapp.generated.resources.no_feature_flags
 import io.github.openflocon.flocondesktop.features.featureflags.FeatureFlagsViewModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagProvidersUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagRowUiModel
+import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagStateUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagsAction
 import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagProvidersUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagRowUiModel
@@ -47,8 +48,11 @@ fun FeatureFlagsScreen(modifier: Modifier = Modifier) {
     val viewModel: FeatureFlagsViewModel = koinViewModel()
     val rows by viewModel.rows.collectAsStateWithLifecycle()
     val providersState by viewModel.providersState.collectAsStateWithLifecycle()
+    val selectedStates by viewModel.selectedStates.collectAsStateWithLifecycle()
 
     FeatureFlagsScreen(
+        selectedStates = selectedStates,
+        onStateToggled = viewModel::onStateToggled,
         providersState = providersState,
         onProviderSelected = viewModel::onProviderSelected,
         rows = rows,
@@ -64,6 +68,8 @@ fun FeatureFlagsScreen(
     providersState: FeatureFlagProvidersUiModel,
     onProviderSelected: (String) -> Unit,
     rows: ImmutableList<FeatureFlagRowUiModel>,
+    selectedStates: Set<FeatureFlagStateUiModel>,
+    onStateToggled: (FeatureFlagStateUiModel) -> Unit,
     filterText: State<String>,
     onFilterTextChanged: (String) -> Unit,
     onAction: (FeatureFlagsAction) -> Unit,
@@ -94,9 +100,15 @@ fun FeatureFlagsScreen(
             },
         )
 
+        FeatureFlagStateFilters(
+            selectedStates = selectedStates,
+            onStateToggled = onStateToggled,
+        )
+
         Box(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .weight(1f)
                 .clip(FloconTheme.shapes.medium)
                 .background(FloconTheme.colorPalette.primary)
                 .border(
@@ -153,6 +165,8 @@ private fun FeatureFlagsScreenPreview() {
                 previewFeatureFlagRowUiModel("new_checkout"),
                 previewFeatureFlagRowUiModel("dark_mode"),
             ),
+            selectedStates = FeatureFlagStateUiModel.entries.toSet(),
+            onStateToggled = {},
             filterText = mutableStateOf(""),
             onFilterTextChanged = {},
             onAction = {},
