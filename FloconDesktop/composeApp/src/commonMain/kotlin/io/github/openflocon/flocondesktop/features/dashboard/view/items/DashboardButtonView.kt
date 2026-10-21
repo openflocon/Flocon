@@ -26,7 +26,7 @@ internal fun DashboardButtonView(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(FloconTheme.colorPalette.onSurface)
+                .background(FloconTheme.colors.ink)
                 .clickable(onClick = {
                     onClickButton(rowItem.id)
                 })
@@ -34,7 +34,7 @@ internal fun DashboardButtonView(
         ) {
             Text(
                 text = rowItem.text,
-                color = FloconTheme.colorPalette.primary,
+                color = FloconTheme.colors.bg100,
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -50,7 +50,7 @@ internal fun DashboardButtonViewPreview() {
     )
     FloconTheme {
         DashboardButtonView(
-            modifier = Modifier.background(FloconTheme.colorPalette.primary),
+            modifier = Modifier.background(FloconTheme.colors.bg100),
             onClickButton = {},
             rowItem = rowItem,
         )

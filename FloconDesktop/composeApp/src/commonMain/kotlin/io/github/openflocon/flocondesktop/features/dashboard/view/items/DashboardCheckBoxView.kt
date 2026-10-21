@@ -40,7 +40,7 @@ internal fun DashboardCheckBoxView(
             ) {
                 Text(
                     style = MaterialTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                     ),
                     text = rowItem.label,
                 )
@@ -48,7 +48,7 @@ internal fun DashboardCheckBoxView(
             FloconCheckbox(
                 checked = value,
                 onCheckedChange = onCheckedChange,
-                uncheckedColor = FloconTheme.colorPalette.secondary
+                uncheckedColor = FloconTheme.colors.bg200
             )
         }
     }
@@ -64,7 +64,7 @@ internal fun DashboardCheckBoxViewPreview() {
     )
     FloconTheme {
         DashboardCheckBoxView(
-            modifier = Modifier.background(FloconTheme.colorPalette.primary),
+            modifier = Modifier.background(FloconTheme.colors.bg100),
             rowItem = rowItem,
             value = rowItem.value,
             onCheckedChange = {},

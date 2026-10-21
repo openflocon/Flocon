@@ -126,7 +126,7 @@ fun DashboardScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colorPalette.primary)
+                            .background(FloconTheme.colors.bg100)
                             .padding(all = FloconTheme.spacing.small),
                         viewState = state,
                         onClickButton = onClickButton,
