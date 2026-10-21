@@ -24,18 +24,18 @@ import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_app_started
 import flocondesktop.composeapp.generated.resources.timeline_session_events
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Each app start opens a session: a diamond on the rail and a banner above the events of the session.
+ * An app start: a diamond on the rail and a banner, at the time the app started.
  * [eventCount] is the number of events of the session displayed, null while unknown.
  */
 @Composable
 internal fun SessionHeaderView(
-    header: TimelineItemUiModel.SessionHeader,
+    row: TimelineRowUiModel,
     eventCount: Int?,
     modifier: Modifier = Modifier,
 ) {
@@ -43,34 +43,35 @@ internal fun SessionHeaderView(
     val spacing = FloconTheme.spacing
     val scale = FloconTheme.scale
 
+    // same paddings and gaps as a row, so the rail goes through the banner like through the rows
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .padding(start = spacing.medium, end = spacing.medium, top = spacing.compact + spacing.tiny, bottom = spacing.compact),
+            .padding(horizontal = spacing.compact, vertical = spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(spacing.medium),
+        horizontalArrangement = Arrangement.spacedBy(spacing.small),
     ) {
         Text(
-            text = header.day,
-            style = FloconTheme.typography.labelSmall,
-            fontWeight = FontWeight.SemiBold,
-            color = colors.inkFaint,
+            text = row.time,
+            style = monoStyle(),
+            fontWeight = FontWeight.Medium,
+            color = colors.ink,
             maxLines = 1,
-            modifier = Modifier.width(96.dp * scale),
+            modifier = Modifier.width(TimeColumnWidth * scale),
         )
         val line = colors.line
+        val overflow = spacing.tiny + spacing.tiny
         Box(
             modifier = Modifier
-                .width(22.dp * scale)
+                .width(RailWidth * scale)
                 .fillMaxHeight()
                 .drawBehind {
                     val x = size.width / 2
-                    // the rail goes through the header
                     drawLine(
                         color = line,
-                        start = Offset(x, -(spacing.compact + spacing.tiny).toPx()),
-                        end = Offset(x, size.height + spacing.compact.toPx()),
+                        start = Offset(x, -overflow.toPx()),
+                        end = Offset(x, size.height + overflow.toPx()),
                         strokeWidth = 1.dp.toPx(),
                     )
                 },
@@ -96,12 +97,6 @@ internal fun SessionHeaderView(
                 style = FloconTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = colors.ink,
-                maxLines = 1,
-            )
-            Text(
-                text = header.time,
-                style = monoStyle(),
-                color = colors.inkMuted,
                 maxLines = 1,
             )
             Spacer(Modifier.weight(1f))

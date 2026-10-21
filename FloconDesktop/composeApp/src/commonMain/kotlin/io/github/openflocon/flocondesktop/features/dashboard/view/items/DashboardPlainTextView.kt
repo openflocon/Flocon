@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -47,7 +46,7 @@ internal fun DashboardPlainTextView(
                         .align(Alignment.CenterStart),
                     color = FloconTheme.colors.ink,
                     style =
-                    MaterialTheme.typography.bodyMedium.copy(
+                    FloconTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Thin,
                     ),
                 )

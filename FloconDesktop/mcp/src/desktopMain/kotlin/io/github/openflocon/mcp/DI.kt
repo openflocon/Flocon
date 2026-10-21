@@ -6,6 +6,9 @@ import io.github.openflocon.mcp.badquality.BadNetworkMcpToolProvider
 import io.github.openflocon.mcp.dashboard.DashboardMcpToolProvider
 import io.github.openflocon.mcp.crashreporter.CrashReporterMcpToolProvider
 import io.github.openflocon.mcp.database.DatabaseMcpToolProvider
+import io.github.openflocon.mcp.deeplink.DeeplinkMcpToolProvider
+import io.github.openflocon.mcp.deeplink.DeeplinkOpener
+import io.github.openflocon.mcp.deeplink.ExecuteDeeplinkOpener
 import io.github.openflocon.mcp.devices.DevicesMcpToolProvider
 import io.github.openflocon.mcp.featureflags.FeatureFlagsMcpToolProvider
 import io.github.openflocon.mcp.files.FilesMcpToolProvider
@@ -32,6 +35,8 @@ val mcpModule = module {
     singleOf(::AnalyticsMcpToolProvider) bind McpToolProvider::class
     singleOf(::FeatureFlagsMcpToolProvider) bind McpToolProvider::class
     singleOf(::DatabaseMcpToolProvider) bind McpToolProvider::class
+    singleOf(::ExecuteDeeplinkOpener) bind DeeplinkOpener::class
+    singleOf(::DeeplinkMcpToolProvider) bind McpToolProvider::class
     singleOf(::SharedPreferencesMcpToolProvider) bind McpToolProvider::class
     singleOf(::DashboardMcpToolProvider) bind McpToolProvider::class
     singleOf(::ImagesMcpToolProvider) bind McpToolProvider::class

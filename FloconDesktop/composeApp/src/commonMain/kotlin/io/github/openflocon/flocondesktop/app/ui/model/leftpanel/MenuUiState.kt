@@ -20,6 +20,8 @@ import org.jetbrains.compose.resources.getString
 
 @Immutable
 data class MenuState(
+    // always at the top, outside of any section, never pinned
+    val topItems: ImmutableList<MenuItem> = persistentListOf(),
     val pinnedItems: ImmutableList<MenuItem> = persistentListOf(),
     val sections: ImmutableList<MenuSection>,
     val bottomItems: ImmutableList<MenuItem>,
@@ -96,6 +98,10 @@ fun previewMenuState() = MenuState(
 )
 
 internal fun buildMenu() = MenuState(
+    topItems = persistentListOf(
+        // merges the events of every plugin, not related to a single plugin: always displayed
+        item(subScreen = SubScreen.Timeline, pinnable = false),
+    ),
     bottomItems = persistentListOf(
         item(subScreen = SubScreen.Settings, pinnable = false)
     ),
@@ -121,8 +127,6 @@ internal fun buildMenu() = MenuState(
             id = "data",
             title = Res.string.menu_data,
             items = persistentListOf(
-                // merges the events of every plugin, not related to a single plugin: always displayed
-                item(SubScreen.Timeline),
                 item(SubScreen.Dashboard, plugin = DevicePlugin.Dashboard),
                 item(SubScreen.Analytics, plugin = DevicePlugin.Analytics),
                 item(SubScreen.Tables, plugin = DevicePlugin.Tables),
