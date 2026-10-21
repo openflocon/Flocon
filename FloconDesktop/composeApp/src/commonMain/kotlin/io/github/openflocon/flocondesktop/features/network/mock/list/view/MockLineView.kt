@@ -48,7 +48,6 @@ fun MockLineView(
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
-    val scale = FloconTheme.scale
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
     // a disabled mock is dimmed, but it stays readable
@@ -71,13 +70,13 @@ fun MockLineView(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
-        Box(Modifier.width(MockColumns.enabled * scale)) {
+        Box(Modifier.width(FloconTheme.sizes.columnToggle)) {
             FloconSwitch(
                 checked = item.isEnabled,
                 onCheckedChange = { changeIsEnabled(item.id, it) }
             )
         }
-        Box(Modifier.width(MockColumns.method * scale).alpha(dimmed)) {
+        Box(Modifier.width(FloconTheme.sizes.columnSmall).alpha(dimmed)) {
             MockNetworkMethodView(method = item.method)
         }
         Column(modifier = Modifier.weight(1f)) {
@@ -99,7 +98,7 @@ fun MockLineView(
                 modifier = Modifier.alpha(dimmed),
             )
         }
-        Box(Modifier.width(MockColumns.shared * scale)) {
+        Box(Modifier.width(FloconTheme.sizes.columnSmall)) {
             FloconCheckbox(
                 checked = item.isShared,
                 onCheckedChange = {
@@ -107,7 +106,7 @@ fun MockLineView(
                 }
             )
         }
-        Box(Modifier.width(MockColumns.actions * scale)) {
+        Box(Modifier.width(FloconTheme.sizes.columnActions)) {
             FloconIconButton(
                 imageVector = Icons.Filled.Delete,
                 onClick = {

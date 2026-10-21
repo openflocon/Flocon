@@ -15,8 +15,8 @@ import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.domainModule
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import io.github.openflocon.domain.models.settings.ThemeSetting
-import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUseCase
-import io.github.openflocon.library.designsystem.theme.AppScale
+import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
+import io.github.openflocon.flocondesktop.app.ui.settings.toAppScale
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
 import io.github.openflocon.flocondesktop.app.AppScreen
@@ -63,7 +63,7 @@ fun App() {
             )
         },
     ) {
-        val fontSizeMultiplier by koinInject<ObserveFontSizeMultiplierUseCase>()()
+        val appScale by koinInject<ObserveAppScaleUseCase>()()
             .collectAsStateWithLifecycle()
         val theme by koinInject<ObserveThemeUseCase>()()
             .collectAsStateWithLifecycle()
@@ -77,8 +77,7 @@ fun App() {
 //            scopeDefinition = { createScope(MainRoutes.Sub.Main) }
 //        ) {
         FloconTheme(
-            // a value stored by the former slider lands on the closest preset
-            scale = AppScale.closestTo(fontSizeMultiplier).multiplier,
+            appScale = appScale.toAppScale(),
             isDarkTheme = isDarkTheme,
         ) {
             AppScreen()

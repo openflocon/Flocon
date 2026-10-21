@@ -48,11 +48,11 @@ internal fun FilesListHeaderButton(
 
     Row(
         modifier = modifier
-            .height(FilterIcon_Height)
+            .height(FloconTheme.sizes.headerHeight)
             .padding(horizontal = FloconTheme.spacing.extraSmall)
             .hoverable(interactionSource),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FilterIcon_Spacing),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
     ) {
         Column(
             modifier = Modifier.weight(1f)
@@ -90,7 +90,7 @@ internal fun FilesListHeaderButton(
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(FilterIcon_Spacing),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
         ) {
             FilterIcon(
                 icon = Icons.Outlined.ArrowDropUp,

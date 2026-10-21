@@ -26,7 +26,9 @@ import io.github.openflocon.library.designsystem.theme.FloconColors
 import io.github.openflocon.library.designsystem.theme.FloconDarkColors
 import io.github.openflocon.library.designsystem.theme.FloconLightColors
 import io.github.openflocon.library.designsystem.theme.LocalFloconColors
-import io.github.openflocon.library.designsystem.theme.LocalFloconScale
+import io.github.openflocon.library.designsystem.theme.AppScale
+import io.github.openflocon.library.designsystem.theme.FloconSizes
+import io.github.openflocon.library.designsystem.theme.LocalFloconSizes
 import io.github.openflocon.library.designsystem.theme.FloconShape
 import io.github.openflocon.library.designsystem.theme.FloconSpacing
 import io.github.openflocon.library.designsystem.theme.LocalFloconShape
@@ -34,7 +36,6 @@ import io.github.openflocon.library.designsystem.theme.LocalFloconSpacing
 import io.github.openflocon.library.designsystem.theme.materialDarkScheme
 import io.github.openflocon.library.designsystem.theme.materialLightScheme
 import io.github.openflocon.library.designsystem.theme.multiplyFontSizeBy
-import io.github.openflocon.library.designsystem.theme.scaledBy
 
 object FloconTheme {
 
@@ -59,17 +60,17 @@ object FloconTheme {
         @Composable @ReadOnlyComposable
         get() = LocalFloconSpacing.current
 
-    val scale: Float
+    val sizes: FloconSizes
         @Composable @ReadOnlyComposable
-        get() = LocalFloconScale.current
+        get() = LocalFloconSizes.current
 }
 
 private val LocalIsDarkTheme = staticCompositionLocalOf { true }
 
 @Composable
 fun FloconTheme(
-    // scales the typography and the spacing
-    scale: Float = 1f,
+    // provides the spacing, the sizes and the font scale of the preset chosen by the user
+    appScale: AppScale = AppScale.Default,
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
@@ -100,7 +101,7 @@ fun FloconTheme(
     )
 
     MaterialTheme(
-        typography = typography.multiplyFontSizeBy(scale),
+        typography = typography.multiplyFontSizeBy(appScale.fontScale),
         colorScheme = if (isDarkTheme) {
             materialDarkScheme(colors)
         } else {
@@ -111,8 +112,8 @@ fun FloconTheme(
             LocalIndication provides ripple,
             LocalIsDarkTheme provides isDarkTheme,
             LocalFloconColors provides colors,
-            LocalFloconSpacing provides remember(scale) { FloconSpacing().scaledBy(scale) },
-            LocalFloconScale provides scale,
+            LocalFloconSpacing provides appScale.spacing,
+            LocalFloconSizes provides appScale.sizes,
             LocalTextSelectionColors provides selectionTextColor,
             LocalScrollbarStyle provides scrollbarStyle,
             LocalMinimumInteractiveComponentSize provides Dp.Unspecified,

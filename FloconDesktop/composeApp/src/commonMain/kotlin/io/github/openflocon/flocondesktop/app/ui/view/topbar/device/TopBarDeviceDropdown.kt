@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.no_devices_found
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
@@ -21,8 +20,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import org.jetbrains.compose.resources.stringResource
-
-private val MenuWidth = 220.dp
 
 @Composable
 internal fun TopBarDeviceDropdown(
@@ -44,7 +41,7 @@ internal fun TopBarDeviceDropdown(
             anchorContent = {
                 TopBarSelector(
                     onClick = { expanded = true },
-                    modifier = Modifier.width(MenuWidth * FloconTheme.scale),
+                    modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
                 ) {
                     TopBarDeviceView(device = state.deviceSelected)
                 }
@@ -55,7 +52,7 @@ internal fun TopBarDeviceDropdown(
 
                 TopBarDeviceView(
                     modifier = Modifier
-                        .width(MenuWidth * FloconTheme.scale)
+                        .width(FloconTheme.sizes.deviceDropdownWidth)
                         .clip(FloconTheme.shapes.medium)
                         .clickable {
                             onDeviceSelected(device)
@@ -77,7 +74,7 @@ internal fun TopBarDeviceDropdown(
 private fun Empty() {
     TopBarSelector(
         onClick = {},
-        modifier = Modifier.width(MenuWidth * FloconTheme.scale),
+        modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
     ) {
         Text(
             text = stringResource(Res.string.no_devices_found),
@@ -95,7 +92,7 @@ private fun Empty() {
 private fun Loading() {
     TopBarSelector(
         onClick = {},
-        modifier = Modifier.width(MenuWidth * FloconTheme.scale),
+        modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
     ) {
         FloconCircularProgressIndicator()
     }

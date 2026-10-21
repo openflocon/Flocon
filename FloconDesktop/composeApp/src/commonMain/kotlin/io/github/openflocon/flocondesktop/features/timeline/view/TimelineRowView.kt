@@ -85,7 +85,6 @@ internal fun TimelineRowView(
 ) {
     val colors = FloconTheme.colors
     val spacing = FloconTheme.spacing
-    val scale = FloconTheme.scale
     val shape = FloconTheme.shapes.medium
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
@@ -124,7 +123,7 @@ internal fun TimelineRowView(
         TimeColumn(
             time = row.time,
             delta = delta,
-            modifier = Modifier.width(TimeColumnWidth * scale),
+            modifier = Modifier.width(FloconTheme.sizes.timeColumn),
         )
         Rail(
             color = color,
@@ -133,17 +132,17 @@ internal fun TimelineRowView(
             // the line goes through the padding and the gap between two rows
             overflow = spacing.tiny + spacing.tiny,
             modifier = Modifier
-                .width(RailWidth * scale)
+                .width(FloconTheme.sizes.markerColumn)
                 .fillMaxHeight(),
         )
-        Box(modifier = Modifier.width(104.dp * scale)) {
+        Box(modifier = Modifier.width(FloconTheme.sizes.categoryColumn)) {
             EventBadge(source = row.source)
         }
         RowContent(
             row = row,
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = 28.dp * scale),
+                .heightIn(min = FloconTheme.sizes.rowHeight),
         )
         RowMeta(row = row)
     }

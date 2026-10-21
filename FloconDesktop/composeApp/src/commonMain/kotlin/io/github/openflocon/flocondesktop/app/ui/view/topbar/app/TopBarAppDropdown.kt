@@ -10,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_select
@@ -21,8 +20,6 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.TopBarSelector
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import org.jetbrains.compose.resources.stringResource
-
-private val MenuWidth = 300.dp
 
 @Composable
 internal fun TopBarAppDropdown(
@@ -42,7 +39,7 @@ internal fun TopBarAppDropdown(
                 appsState.appSelected?.let {
                     TopBarSelector(
                         onClick = { expanded = true },
-                        modifier = Modifier.width(MenuWidth * FloconTheme.scale),
+                        modifier = Modifier.width(FloconTheme.sizes.appDropdownWidth),
                     ) {
                         TopBarAppView(
                             deviceApp = it,
@@ -72,7 +69,7 @@ internal fun TopBarAppDropdown(
                                 expanded = false
                             },
                             modifier = Modifier
-                                .width(MenuWidth * FloconTheme.scale)
+                                .width(FloconTheme.sizes.appDropdownWidth)
                                 .clip(FloconTheme.shapes.medium)
                                 .clickable {
                                     onAppSelected(app)

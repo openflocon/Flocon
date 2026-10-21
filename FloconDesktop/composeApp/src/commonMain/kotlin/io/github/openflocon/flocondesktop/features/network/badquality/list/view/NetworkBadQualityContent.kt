@@ -127,7 +127,6 @@ fun NetworkBadQualityContent(
 @Composable
 private fun BadQualityHeaderView(modifier: Modifier = Modifier) {
     val colors = FloconTheme.colors
-    val scale = FloconTheme.scale
     // small capitals, like the titles of the groups of the design system
     val typo = FloconTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em)
 
@@ -135,18 +134,18 @@ private fun BadQualityHeaderView(modifier: Modifier = Modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(32.dp * scale)
+                .height(FloconTheme.sizes.headerHeight)
                 .padding(horizontal = FloconTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         ) {
-            HeaderText("Enabled", typo, Modifier.width(BadQualityColumns.enabled * scale))
+            HeaderText("Enabled", typo, Modifier.width(FloconTheme.sizes.columnToggle))
             HeaderText("Name", typo, Modifier.weight(1f))
-            HeaderText("Trigger", typo, Modifier.width(BadQualityColumns.trigger * scale))
-            HeaderText("Latency", typo, Modifier.width(BadQualityColumns.latency * scale))
-            HeaderText("Error rate", typo, Modifier.width(BadQualityColumns.errorRate * scale))
-            HeaderText("Errors", typo, Modifier.width(BadQualityColumns.errors * scale))
-            Box(Modifier.width(BadQualityColumns.actions * scale))
+            HeaderText("Trigger", typo, Modifier.width(FloconTheme.sizes.columnSmall))
+            HeaderText("Latency", typo, Modifier.width(FloconTheme.sizes.columnLarge))
+            HeaderText("Error rate", typo, Modifier.width(FloconTheme.sizes.columnMedium))
+            HeaderText("Errors", typo, Modifier.width(FloconTheme.sizes.columnExtraLarge))
+            Box(Modifier.width(FloconTheme.sizes.columnActions))
         }
         Box(
             Modifier

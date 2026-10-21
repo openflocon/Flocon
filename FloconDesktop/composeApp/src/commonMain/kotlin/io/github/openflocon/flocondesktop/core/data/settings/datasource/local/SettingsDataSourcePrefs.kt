@@ -5,11 +5,13 @@ package io.github.openflocon.flocondesktop.core.data.settings.datasource.local
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
+import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
@@ -44,10 +46,15 @@ internal class SettingsDataSourcePrefs(
     override val floconDocumentsPath: Flow<String?> = flowSettings.getStringOrNullFlow(FLOCON_DOCUMENTS_PATH)
 
     override val adbPath: Flow<String?> = flowSettings.getStringOrNullFlow(ADB_PATH)
-    override val fontSizeMultiplier: StateFlow<Float> = settings.toFlowSettings()
-        .getFloatOrNullFlow(FONT_SIZE_MULTIPLIER)
-        .filterNotNull()
-        .stateIn(1f)
+    // falls back on the former float multiplier (FONT_SIZE_MULTIPLIER) until a preset is chosen
+    override val appScale: StateFlow<AppScaleSetting> = combine(
+        flowSettings.getStringOrNullFlow(APP_SCALE),
+        flowSettings.getFloatOrNullFlow(FONT_SIZE_MULTIPLIER),
+    ) { name, legacyMultiplier ->
+        name?.let { AppScaleSetting.entries.firstOrNull { it.name == name } }
+            ?: legacyMultiplier?.let { AppScaleSetting.fromLegacyMultiplier(it) }
+            ?: AppScaleSetting.DEFAULT
+    }.stateIn(AppScaleSetting.DEFAULT)
 
     override val theme: StateFlow<ThemeSetting> = flowSettings
         .getStringOrNullFlow(THEME)
@@ -85,8 +92,8 @@ internal class SettingsDataSourcePrefs(
         settings.putString(FLOCON_DOCUMENTS_PATH, path)
     }
 
-    override suspend fun setFontSizeMultiplier(value: Float) {
-        settings.putFloat(FONT_SIZE_MULTIPLIER, value)
+    override suspend fun setAppScale(value: AppScaleSetting) {
+        settings.putString(APP_SCALE, value.name)
     }
 
     override suspend fun setTheme(value: ThemeSetting) {
@@ -148,7 +155,8 @@ internal class SettingsDataSourcePrefs(
     companion object {
         private const val ADB_PATH = "adb_path"
         private const val FLOCON_DOCUMENTS_PATH = "flocon_documents_path"
-        private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier"
+        private const val APP_SCALE = "app_scale"
+        private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration
         private const val THEME = "theme"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
         private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"

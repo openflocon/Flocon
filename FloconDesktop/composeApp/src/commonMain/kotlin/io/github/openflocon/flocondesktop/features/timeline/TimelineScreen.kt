@@ -136,7 +136,7 @@ internal fun TimelineContent(
                 filterText = filterText,
                 placeholderText = stringResource(Res.string.filter),
                 modifier = Modifier
-                    .width(280.dp * FloconTheme.scale)
+                    .width(FloconTheme.sizes.sidePanelWidth)
                     .focusRequester(searchFocus),
                 containerColor = colors.bg200,
                 onTextChange = { onAction(TimelineAction.FilterTextChanged(it)) },

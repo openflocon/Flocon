@@ -41,7 +41,6 @@ internal fun SessionHeaderView(
 ) {
     val colors = FloconTheme.colors
     val spacing = FloconTheme.spacing
-    val scale = FloconTheme.scale
 
     // same paddings and gaps as a row, so the rail goes through the banner like through the rows
     Row(
@@ -58,13 +57,13 @@ internal fun SessionHeaderView(
             fontWeight = FontWeight.Medium,
             color = colors.ink,
             maxLines = 1,
-            modifier = Modifier.width(TimeColumnWidth * scale),
+            modifier = Modifier.width(FloconTheme.sizes.timeColumn),
         )
         val line = colors.line
         val overflow = spacing.tiny + spacing.tiny
         Box(
             modifier = Modifier
-                .width(RailWidth * scale)
+                .width(FloconTheme.sizes.markerColumn)
                 .fillMaxHeight()
                 .drawBehind {
                     val x = size.width / 2

@@ -2,7 +2,6 @@
 
 package io.github.openflocon.flocondesktop.features.network.list.view.components
 
-import io.github.openflocon.library.designsystem.theme.FloconSpacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
@@ -40,10 +39,6 @@ import androidx.compose.ui.unit.em
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 
-private val Height = 32.dp
-private val Spacing = FloconSpacing().tiny
-private val FilterIcon = (Height - Spacing) / 2
-
 private const val NOT_ENABLED_OPACITY = 0.3f
 
 @Composable
@@ -65,11 +60,11 @@ fun HeaderLabelItem(
 
     Row(
         modifier = modifier
-            .height(Height)
+            .height(FloconTheme.sizes.headerHeight)
             .padding(horizontal = FloconTheme.spacing.extraSmall)
             .hoverable(interactionSource),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
     ) {
         Box(
             contentAlignment = labelAlignment,
@@ -90,7 +85,7 @@ fun HeaderLabelItem(
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(Spacing),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
         ) {
             FilterIcon(
                 icon = Icons.Outlined.ArrowDropUp,
@@ -134,9 +129,10 @@ private fun FilterIcon(
     alignment: Alignment,
     modifier: Modifier = Modifier,
 ) {
+    val filterIconSize = (FloconTheme.sizes.headerHeight - FloconTheme.spacing.tiny) / 2
     Box(
         modifier = modifier
-            .size(FilterIcon)
+            .size(filterIconSize)
             .graphicsLayer {
                 alpha = if (hovered || sorted) 1f else 0f
             }
@@ -148,7 +144,7 @@ private fun FilterIcon(
             imageVector = icon,
             contentDescription = null,
             tint = textColor,
-            modifier = Modifier.size(FilterIcon),
+            modifier = Modifier.size(filterIconSize),
         )
     }
 }

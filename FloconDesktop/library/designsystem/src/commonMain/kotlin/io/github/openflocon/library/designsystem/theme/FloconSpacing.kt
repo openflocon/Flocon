@@ -24,20 +24,4 @@ data class FloconSpacing(
     val doubleExtraLarge: Dp = 32.dp,
 )
 
-fun FloconSpacing.scaledBy(multiplier: Float): FloconSpacing = if (multiplier == 1f) {
-    this
-} else {
-    FloconSpacing(
-        none = none * multiplier,
-        tiny = tiny * multiplier,
-        extraSmall = extraSmall * multiplier,
-        compact = compact * multiplier,
-        small = small * multiplier,
-        medium = medium * multiplier,
-        large = large * multiplier,
-        extraLarge = extraLarge * multiplier,
-        doubleExtraLarge = doubleExtraLarge * multiplier,
-    )
-}
-
 val LocalFloconSpacing = staticCompositionLocalOf { FloconSpacing() }

@@ -37,7 +37,7 @@ fun FloconActionButton(
 
     Row(
         modifier = modifier
-            .heightIn(min = 32.dp * FloconTheme.scale)
+            .heightIn(min = FloconTheme.sizes.controlHeight)
             .alpha(if (enabled) 1f else 0.5f)
             .clip(shape)
             .background(if (primary) colors.accent else colors.bg200)
