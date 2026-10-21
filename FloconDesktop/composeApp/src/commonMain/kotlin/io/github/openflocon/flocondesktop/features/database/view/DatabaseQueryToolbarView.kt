@@ -69,7 +69,7 @@ internal fun DatabaseQueryToolbarView(
                     .graphicsLayer(
                         alpha = if (isQueryEmpty) 0.6f else 1f
                     ),
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
             )
         }
         VerticalDivider(modifier = Modifier.padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.tiny))
@@ -88,7 +88,7 @@ internal fun DatabaseQueryToolbarView(
                     .graphicsLayer(
                         alpha = if (isQueryEmpty) 0.6f else 1f
                     ),
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
             )
         }
 
@@ -112,7 +112,7 @@ internal fun DatabaseQueryToolbarView(
                     Icons.Outlined.History,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                    colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                 )
             }
 
@@ -145,7 +145,7 @@ internal fun DatabaseQueryToolbarView(
                 Icons.Outlined.FileOpen,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
             )
         }
 
@@ -161,7 +161,7 @@ internal fun DatabaseQueryToolbarView(
                 Icons.Filled.Delete,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
             )
         }
     }

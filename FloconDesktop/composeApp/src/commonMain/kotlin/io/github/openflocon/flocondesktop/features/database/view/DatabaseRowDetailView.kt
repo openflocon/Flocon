@@ -69,16 +69,16 @@ fun DatabaseRowDetailView(
 
     Box(
         modifier
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.bg100)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {
             Row(
                 Modifier.fillMaxWidth()
-                    .background(FloconTheme.colorPalette.surface)
+                    .background(FloconTheme.colors.bg000)
                     .padding(horizontal = 1.dp) // to display the inner border
-                    .border(1.dp, FloconTheme.colorPalette.primary)
+                    .border(1.dp, FloconTheme.colors.bg100)
                     .padding(vertical = FloconTheme.spacing.medium)
                     .padding(horizontal = FloconTheme.spacing.small),
                 horizontalArrangement = Arrangement.End,
@@ -126,7 +126,7 @@ fun DatabaseRowDetailView(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = FloconTheme.spacing.small),
-                                color = FloconTheme.colorPalette.surface,
+                                color = FloconTheme.colors.bg000,
                             )
                         }
                     }
@@ -149,13 +149,13 @@ private fun DetailItemView(
     copyValue: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val contentColor = FloconTheme.colorPalette.onSurface
+    val contentColor = FloconTheme.colors.ink
 
     val valueOrNull = value ?: "NULL"
     val valueColor = if (value == null) {
-        FloconTheme.colorPalette.onSurface.copy(alpha = 0.4f)
+        FloconTheme.colors.ink.copy(alpha = 0.4f)
     } else {
-        FloconTheme.colorPalette.onSurface
+        FloconTheme.colors.ink
     }
 
     Column(
@@ -207,7 +207,7 @@ private fun DetailItemView(
                 .padding(bottom = FloconTheme.spacing.extraSmall)
                 .background(
                     shape = FloconTheme.shapes.medium,
-                    color = FloconTheme.colorPalette.surface,
+                    color = FloconTheme.colors.bg000,
                 )
                 .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
             style = FloconTheme.typography.bodyMedium,
@@ -243,7 +243,7 @@ private fun DetailHeaderButton(
             .border(
                 width = 0.5.dp,
                 shape = shape,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
             ).clickable(onClick = onClick)
             .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
         horizontalArrangement = Arrangement.spacedBy(3.dp),
@@ -253,7 +253,7 @@ private fun DetailHeaderButton(
             modifier = Modifier,
             style = FloconTheme.typography.bodySmall,
             text = text,
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
         )
         Box(
             modifier = Modifier
@@ -262,7 +262,7 @@ private fun DetailHeaderButton(
             Image(
                 imageVector = imageVector,
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary),
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink),
                 modifier = Modifier.fillMaxSize(),
             )
         }

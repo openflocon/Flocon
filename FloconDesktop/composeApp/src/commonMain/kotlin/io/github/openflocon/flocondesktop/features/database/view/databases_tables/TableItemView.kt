@@ -107,7 +107,7 @@ private fun TableView(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
-        val color = FloconTheme.colorPalette.onSurface
+        val color = FloconTheme.colors.ink
         Image(
             imageVector = Icons.Outlined.ChevronRight,
             modifier = Modifier.size(14.dp).graphicsLayer {
