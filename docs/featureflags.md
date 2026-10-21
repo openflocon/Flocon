@@ -14,6 +14,7 @@ No dependency on a feature flag SDK: your app forwards the flags it already eval
 
 - **Provider**: where the flag comes from (ex: `firebase`, `statsig`)
 - **Name**: the flag key
+- **State**: `On`, `Off` or `Custom` (an experiment arm, a value...): the variant is colored with it
 - **Variant**: the evaluated variant, a free string (ex: `control`, `treatment`, `on`)
 - **Payload**: optional, often JSON, displayed formatted in the right panel when clicking a flag
 
@@ -27,8 +28,9 @@ Register all the flags of a provider. Each call **replaces** the flags previousl
 
 ```kotlin
 floconFeatureFlags("firebase").register(
-    FloconFeatureFlag(name = "new_checkout", variant = "treatment", payload = """{"buttonColor":"#FF5722"}"""),
-    FloconFeatureFlag(name = "dark_mode", variant = "on"),
+    FloconFeatureFlag(name = "new_checkout", state = FloconFeatureFlagState.Custom, variant = "treatment", payload = """{"buttonColor":"#FF5722"}"""),
+    FloconFeatureFlag(name = "dark_mode", state = FloconFeatureFlagState.On, variant = "on"),
+    FloconFeatureFlag(name = "onboarding_v2", state = FloconFeatureFlagState.Off, variant = "control"),
 )
 ```
 
@@ -46,6 +48,11 @@ class FeatureFlagsRepository(private val remoteConfig: FirebaseRemoteConfig) {
             remoteConfig.all.map { (key, value) ->
                 FloconFeatureFlag(
                     name = key,
+                    state = when (value.asString()) {
+                        "true" -> FloconFeatureFlagState.On
+                        "false" -> FloconFeatureFlagState.Off
+                        else -> FloconFeatureFlagState.Custom
+                    },
                     variant = value.asString(),
                 )
             }

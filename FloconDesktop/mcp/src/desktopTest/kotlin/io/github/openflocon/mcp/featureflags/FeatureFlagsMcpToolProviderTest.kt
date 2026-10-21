@@ -3,6 +3,7 @@ package io.github.openflocon.mcp.featureflags
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.featureflags.models.FeatureFlagDomainModel
+import io.github.openflocon.domain.featureflags.models.FeatureFlagStateDomainModel
 import io.github.openflocon.domain.featureflags.repository.FeatureFlagsRepository
 import io.github.openflocon.mcp.FakeDevicesRepository
 import io.github.openflocon.mcp.McpTestServer
@@ -33,9 +34,9 @@ class FeatureFlagsMcpToolProviderTest {
     private val longPayload = "{\"value\":\"" + "x".repeat(300) + "\"}"
     private val featureFlagsRepository = FakeFeatureFlagsRepository(
         flags = listOf(
-            FeatureFlagDomainModel(provider = "firebase", name = "dark_mode", variant = "on", payload = null),
-            FeatureFlagDomainModel(provider = "firebase", name = "new_checkout", variant = "treatment", payload = longPayload),
-            FeatureFlagDomainModel(provider = "statsig", name = "search_ranking", variant = "variant_b", payload = "{\"algorithm\":\"bm25\"}"),
+            FeatureFlagDomainModel(provider = "firebase", name = "dark_mode", state = FeatureFlagStateDomainModel.On, variant = "on", payload = null),
+            FeatureFlagDomainModel(provider = "firebase", name = "new_checkout", state = FeatureFlagStateDomainModel.Custom, variant = "treatment", payload = longPayload),
+            FeatureFlagDomainModel(provider = "statsig", name = "search_ranking", state = FeatureFlagStateDomainModel.Off, variant = "variant_b", payload = "{\"algorithm\":\"bm25\"}"),
         ),
     )
 
@@ -69,6 +70,7 @@ class FeatureFlagsMcpToolProviderTest {
         assertEquals(listOf("firebase", "statsig"), result["providers"]!!.jsonArray.map { it.jsonPrimitive.content })
         val flags = result["flags"]!!.jsonArray.map { it.jsonObject }
         assertEquals(listOf("dark_mode", "new_checkout", "search_ranking"), flags.map { it["name"]!!.jsonPrimitive.content })
+        assertEquals(listOf("on", "custom", "off"), flags.map { it["state"]!!.jsonPrimitive.content })
         assertEquals(true, flags[1]["payloadTruncated"]!!.jsonPrimitive.boolean)
         assertEquals(200, flags[1]["payload"]!!.jsonPrimitive.content.length)
         assertEquals(false, result["hasMore"]!!.jsonPrimitive.boolean)

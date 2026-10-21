@@ -21,7 +21,7 @@ internal class FeatureFlagsMcpToolProvider(
             name = "list_feature_flags",
             title = "List feature flags",
             description = "Lists the feature flags registered by the mobile app, with their provider (firebase, statsig...), " +
-                "their evaluated variant and a preview of their payload. Can be filtered by provider and by a text " +
+                "their state (on, off or custom), their evaluated variant and a preview of their payload. Can be filtered by provider and by a text " +
                 "in the name, variant or payload. Read only.",
             annotations = readOnlyToolAnnotations,
             handler = ::listFeatureFlags,
@@ -30,7 +30,7 @@ internal class FeatureFlagsMcpToolProvider(
         server.addTypedTool(
             name = "get_feature_flag",
             title = "Get a feature flag",
-            description = "Returns a feature flag of the mobile app with its variant and its full payload (often json).",
+            description = "Returns a feature flag of the mobile app with its state, its variant and its full payload (often json).",
             annotations = readOnlyToolAnnotations,
             handler = ::getFeatureFlag,
         )
@@ -76,6 +76,7 @@ internal class FeatureFlagsMcpToolProvider(
         return FeatureFlagMcpModel(
             provider = provider,
             name = name,
+            state = state.name.lowercase(),
             variant = variant,
             payload = if (truncated) payload!!.take(LIST_PAYLOAD_MAX_LENGTH) else payload,
             payloadTruncated = truncated,

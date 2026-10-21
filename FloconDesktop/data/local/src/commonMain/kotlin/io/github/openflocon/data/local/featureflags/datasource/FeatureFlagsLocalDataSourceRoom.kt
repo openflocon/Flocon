@@ -5,6 +5,7 @@ import io.github.openflocon.data.local.featureflags.dao.FeatureFlagDao
 import io.github.openflocon.data.local.featureflags.models.FeatureFlagEntity
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.featureflags.models.FeatureFlagDomainModel
+import io.github.openflocon.domain.featureflags.models.FeatureFlagStateDomainModel
 import io.github.openflocon.domain.featureflags.models.FeatureFlagsProviderDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -101,6 +102,7 @@ private fun FeatureFlagDomainModel.toEntity(
     packageName = deviceIdAndPackageName.packageName,
     provider = provider,
     name = name,
+    state = state.name,
     variant = variant,
     payload = payload,
     appInstance = deviceIdAndPackageName.appInstance,
@@ -109,6 +111,7 @@ private fun FeatureFlagDomainModel.toEntity(
 private fun FeatureFlagEntity.toDomain() = FeatureFlagDomainModel(
     provider = provider,
     name = name,
+    state = FeatureFlagStateDomainModel.entries.firstOrNull { it.name == state } ?: FeatureFlagStateDomainModel.Custom,
     variant = variant,
     payload = payload,
 )

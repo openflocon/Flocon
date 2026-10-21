@@ -22,6 +22,8 @@ internal data class FeatureFlagMcpResult(
 internal data class FeatureFlagMcpModel(
     val provider: String,
     val name: String,
+    /** "on", "off" or "custom" (an experiment arm, a value...) */
+    val state: String,
     val variant: String,
     val payload: String? = null,
     /** true when [payload] was shortened, use get_feature_flag to read it fully */

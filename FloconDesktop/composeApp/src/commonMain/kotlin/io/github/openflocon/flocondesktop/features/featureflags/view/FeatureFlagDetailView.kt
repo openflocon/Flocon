@@ -24,6 +24,7 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.feature_flag_no_payload
 import flocondesktop.composeapp.generated.resources.feature_flag_payload
 import flocondesktop.composeapp.generated.resources.feature_flag_provider
+import flocondesktop.composeapp.generated.resources.feature_flag_state
 import flocondesktop.composeapp.generated.resources.feature_flag_variant
 import flocondesktop.composeapp.generated.resources.name
 import io.github.openflocon.flocondesktop.features.featureflags.FeatureFlagDetailViewModel
@@ -75,6 +76,12 @@ private fun Content(
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(Res.string.name),
                     value = uiState.name,
+                    labelWidth = linesLabelWidth,
+                )
+                FeatureFlagDetailLineView(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = stringResource(Res.string.feature_flag_state),
+                    value = uiState.state.name,
                     labelWidth = linesLabelWidth,
                 )
                 FeatureFlagDetailLineView(

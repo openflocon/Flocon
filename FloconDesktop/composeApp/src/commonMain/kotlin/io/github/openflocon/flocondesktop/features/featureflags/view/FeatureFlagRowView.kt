@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.featureflags.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -51,18 +50,9 @@ fun FeatureFlagRowView(
                 .width(VariantWidth)
                 .padding(end = 12.dp),
         ) {
-            Text(
-                text = model.variant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onSecondary,
-                modifier = Modifier
-                    .background(
-                        shape = FloconTheme.shapes.extraLarge,
-                        color = FloconTheme.colorPalette.secondary
-                    )
-                    .padding(horizontal = 8.dp, vertical = 1.dp),
+            FeatureFlagVariantChip(
+                state = model.state,
+                variant = model.variant,
             )
         }
         model.payloadPreview?.let {

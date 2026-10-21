@@ -5,6 +5,7 @@ import io.github.openflocon.domain.featureflags.usecase.ObserveCurrentDeviceFeat
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.featureflags.mapper.mapToDetailUi
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagDetailUiModel
+import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagStateUiModel
 import kotlinx.coroutines.flow.map
 
 class FeatureFlagDetailViewModel(
@@ -19,6 +20,7 @@ class FeatureFlagDetailViewModel(
             default = FeatureFlagDetailUiModel(
                 provider = provider,
                 name = name,
+                state = FeatureFlagStateUiModel.Custom,
                 variant = "",
                 payload = null,
             )

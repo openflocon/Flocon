@@ -11,6 +11,7 @@ data class FeatureFlagsDataModel(
 @Serializable
 data class FeatureFlagDataModel(
     val name: String,
+    val state: String, // "on", "off" or "custom"
     val variant: String,
     val payload: String? = null,
 )

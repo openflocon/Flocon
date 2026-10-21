@@ -6,6 +6,7 @@ import androidx.compose.runtime.Immutable
 data class FeatureFlagDetailUiModel(
     val provider: String,
     val name: String,
+    val state: FeatureFlagStateUiModel,
     val variant: String,
     val payload: String?,
 )
