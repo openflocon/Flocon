@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.myapplication.multi.ui
 
 import androidx.compose.runtime.mutableStateMapOf
 import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.accessibility.accessibilityPlugin
 import io.github.openflocon.flocon.analytics.analyticsPlugin
 import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
 import io.github.openflocon.flocon.analytics.model.analyticsProperty

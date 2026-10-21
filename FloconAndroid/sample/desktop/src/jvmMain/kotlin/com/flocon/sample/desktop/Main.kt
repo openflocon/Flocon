@@ -11,6 +11,7 @@ import coil3.network.ktor3.KtorNetworkFetcherFactory
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.accessibility.FloconAccessibility
 import io.github.openflocon.flocon.analytics.FloconAnalytics
 import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
 import io.github.openflocon.flocon.database.core.FloconDatabase
@@ -52,6 +53,7 @@ fun main() {
         install(FloconDashboard)
         install(FloconTable)
         install(FloconAnalytics)
+        install(FloconAccessibility)
         install(FloconFeatureFlags)
         install(FloconPreferences)
         install(FloconFiles)

@@ -6,8 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.flocon.sample.android.grpc.GrpcController
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.accessibility.FloconAccessibility
+import io.github.openflocon.flocon.accessibility.accessibilityPlugin
 import io.github.openflocon.flocon.analytics.FloconAnalytics
 import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
 import io.github.openflocon.flocon.crashreporter.FloconCrashReporter
@@ -27,6 +30,8 @@ import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initial
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.multi.tester.AndroidTestContext
 import io.github.openflocon.flocon.myapplication.multi.ui.App
+import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
+import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
 import io.github.openflocon.flocon.myapplication.multi.ui.registerAndroidSampleFeatures
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
@@ -64,6 +69,7 @@ class MainActivity : ComponentActivity() {
             install(FloconDashboard)
             install(FloconTable)
             install(FloconAnalytics)
+            install(FloconAccessibility)
             install(FloconFeatureFlags)
             install(FloconDatabase) {
                 room()
@@ -102,6 +108,13 @@ class MainActivity : ComponentActivity() {
         AndroidTestContext.inMemoryDb = Databases.getInMemoryDogDatabase(applicationContext)
         AndroidTestContext.grpcSayHello = { GrpcController.sayHello() }
         registerAndroidSampleFeatures(applicationContext)
+        SampleFeatures.on(SampleFeature.Accessibility) {
+            val announcement = "Item added to the cart"
+            // announced to TalkBack and captured automatically when it is on
+            window.decorView.post { window.decorView.announceForAccessibility(announcement) }
+            // also logged manually, so the event is there even when no screen reader is running
+            Flocon.accessibilityPlugin.announce(announcement)
+        }
 
         initializeImages(context = this, okHttpClient = okHttpClient)
 
