@@ -2,6 +2,8 @@ package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -25,8 +27,6 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreen
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.view.databases_tables.DatabasesAndTablesView
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import org.koin.compose.viewmodel.koinViewModel
@@ -65,7 +65,8 @@ fun DatabaseScreen(
     onAction: (DatabaseScreenAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier.fillMaxSize()
     ) {
         if (deviceDataBases is DatabasesStateUiModel.Empty) {
