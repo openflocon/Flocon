@@ -32,11 +32,11 @@ jobs:
 
       - name: Run unit tests
         working-directory: FloconAndroid
-        run: ./gradlew test
+        run: ./gradlew jvmTest test
 
-      - name: Check release # be sure op and no-op versions are building
+      - name: Check release # be sure op (debug) and no-op (release) versions are building
         working-directory: FloconAndroid
-        run: ./gradlew :sample-android-only:assemble
+        run: ./gradlew :sample:android:assembleDebug :sample:android:assembleRelease
 
       - name: Publish to MavenCentral
         working-directory: FloconAndroid

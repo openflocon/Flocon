@@ -1,6 +1,7 @@
 package com.flocon.data.remote.device.datasource
 
 import com.flocon.data.remote.common.safeDecodeFromString
+import com.flocon.data.remote.device.model.BonjourDataModel
 import com.flocon.data.remote.device.model.RegisterDeviceDataModel
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.models.toRemote
@@ -32,6 +33,11 @@ class DeviceRemoteDataSourceImpl(
 
     override fun getDeviceSerial(message: FloconIncomingMessageDomainModel): String? = json.safeDecodeFromString<RegisterDeviceDataModel>(message.body)
         ?.serial
+
+    override fun getInstalledPlugins(message: FloconIncomingMessageDomainModel): Set<String>? = json.safeDecodeFromString<BonjourDataModel>(message.body)
+        ?.plugins
+        ?.map { it.lowercase() }
+        ?.toSet()
 
     override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         server.sendMessageToClient(

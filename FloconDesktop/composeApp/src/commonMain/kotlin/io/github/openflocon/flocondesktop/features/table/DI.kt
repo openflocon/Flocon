@@ -7,5 +7,6 @@ import org.koin.dsl.module
 
 internal val tableModule = module {
     viewModelOf(::TableViewModel)
+    viewModelOf(::TableDetailViewModel)
     factoryOf(::TableSelectorDelegate)
 }

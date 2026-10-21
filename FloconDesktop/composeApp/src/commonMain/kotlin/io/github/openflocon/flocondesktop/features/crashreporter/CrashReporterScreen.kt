@@ -1,11 +1,13 @@
 package io.github.openflocon.flocondesktop.features.crashreporter
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,13 +37,14 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.crashes
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterAction
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterSelectedUiModel
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterUiModel
 import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportDetailView
 import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportItemView
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -52,11 +55,13 @@ fun CrashReporterScreen(
     val viewModel: CrashReporterViewModel = koinViewModel()
     val crashReports = viewModel.crashReports.collectAsLazyPagingItems()
     val selected by viewModel.selected.collectAsStateWithLifecycle()
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     CrashReportScreen(
         modifier = Modifier.fillMaxSize(),
         crashReports = crashReports,
         selected = selected,
+        showEmptyState = showEmptyState,
         onAction = viewModel::onAction,
     )
 }
@@ -67,43 +72,55 @@ private fun CrashReportScreen(
     onAction: (CrashReporterAction) -> Unit,
     crashReports: LazyPagingItems<CrashReporterUiModel>,
     selected: CrashReporterSelectedUiModel?,
+    showEmptyState: Boolean,
 ) {
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
     ) {
-        Row(Modifier.fillMaxSize()) {
-            LeftPannel(
-                modifier = Modifier.fillMaxHeight()
-                    .width(340.dp),
-                crashReports = crashReports,
-                onAction = onAction,
-                selected = selected,
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Surface(
-                color = FloconTheme.colorPalette.primary,
-                modifier = Modifier.fillMaxSize()
+        if (showEmptyState) {
+            FeatureEmptyState(
+                doc = FeatureDoc.CrashReporter,
+                modifier = Modifier
+                    .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
-                    .border(
-                        width = 1.dp,
-                        color = FloconTheme.colorPalette.secondary,
-                        shape = FloconTheme.shapes.medium
-                    )
-            ) {
-                selected?.let {
-                    CrashReportDetailView(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        crash = it,
-                        onCopy = {
-                            onAction(CrashReporterAction.Copy(it))
-                        },
-                        onDelete = {
-                            onAction(CrashReporterAction.Delete(it.id))
-                        }
-                    )
+                    .background(FloconTheme.colors.bg100),
+            )
+        } else {
+            Row(Modifier.fillMaxSize()) {
+                LeftPannel(
+                    modifier = Modifier.fillMaxHeight()
+                        .width(340.dp),
+                    crashReports = crashReports,
+                    onAction = onAction,
+                    selected = selected,
+                )
+
+                Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
+
+                Surface(
+                    color = FloconTheme.colors.bg100,
+                    modifier = Modifier.fillMaxSize()
+                        .clip(FloconTheme.shapes.medium)
+                        .border(
+                            width = 1.dp,
+                            color = FloconTheme.colors.bg200,
+                            shape = FloconTheme.shapes.medium
+                        )
+                ) {
+                    selected?.let {
+                        CrashReportDetailView(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            crash = it,
+                            onCopy = {
+                                onAction(CrashReporterAction.Copy(it))
+                            },
+                            onDelete = {
+                                onAction(CrashReporterAction.Delete(it.id))
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -118,24 +135,24 @@ fun LeftPannel(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = FloconTheme.colorPalette.primary,
+        color = FloconTheme.colors.bg100,
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .border(
                 width = 1.dp,
-                color = FloconTheme.colorPalette.secondary,
+                color = FloconTheme.colors.bg200,
                 shape = FloconTheme.shapes.medium
             )
     ) {
         Column(
             Modifier.fillMaxSize()
-                .padding(all = 4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(all = FloconTheme.spacing.extraSmall),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     stringResource(Res.string.crashes),
-                    color = FloconTheme.colorPalette.onSurface,
+                    color = FloconTheme.colors.ink,
                     style = FloconTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
                     ),
@@ -143,9 +160,10 @@ fun LeftPannel(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(top = 8.dp)
-                        .padding(horizontal = 12.dp)
+                        .padding(top = FloconTheme.spacing.small)
+                        .padding(horizontal = FloconTheme.spacing.medium)
                 )
+                FeatureDocButton(doc = FeatureDoc.CrashReporter)
                 Box(
                     modifier = Modifier.size(36.dp).clip(RoundedCornerShape(2.dp))
                         .clickable {
@@ -157,14 +175,14 @@ fun LeftPannel(
                         Icons.Filled.Delete,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
-                        colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                        colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                     )
                 }
             }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                contentPadding = PaddingValues(FloconTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
             ) {
                 items(count = crashReports.itemCount) { index ->
                     crashReports[index]?.let { crash ->

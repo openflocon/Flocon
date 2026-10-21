@@ -51,7 +51,7 @@ internal fun AnalyticsSelectorView(
                     if (analyticsState is AnalyticsStateUiModel.WithContent)
                         expanded = true
                 },
-                containerColor = FloconTheme.colorPalette.secondary
+                containerColor = FloconTheme.colors.bg200
             ) {
                 when (analyticsState) {
                     AnalyticsStateUiModel.Empty ->
@@ -79,7 +79,7 @@ internal fun AnalyticsSelectorView(
             onValueChanged = {
                 filterText = it
             },
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny)
         )
         Column(
             modifier = Modifier

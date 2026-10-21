@@ -121,6 +121,9 @@ internal class FakeNetworkRepository(
 
     private fun callsOf(target: DeviceIdAndPackageNameDomainModel) = calls[target.deviceId to target.packageName].orEmpty()
 
+    override fun observeHasRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) =
+        flowOf(callsOf(deviceIdAndPackageName).isNotEmpty())
+
     override suspend fun getRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,

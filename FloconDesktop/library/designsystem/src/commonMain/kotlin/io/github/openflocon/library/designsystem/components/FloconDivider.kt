@@ -11,7 +11,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 @Composable
 fun FloconHorizontalDivider(
     modifier: Modifier = Modifier,
-    color: Color = FloconTheme.colorPalette.primary
+    color: Color = FloconTheme.colors.line
 ) {
     HorizontalDivider(
         modifier = modifier,
@@ -23,7 +23,7 @@ fun FloconHorizontalDivider(
 @Composable
 fun FloconVerticalDivider(
     modifier: Modifier = Modifier,
-    color: Color = FloconTheme.colorPalette.primary
+    color: Color = FloconTheme.colors.line
 ) {
     VerticalDivider(
         modifier = modifier,

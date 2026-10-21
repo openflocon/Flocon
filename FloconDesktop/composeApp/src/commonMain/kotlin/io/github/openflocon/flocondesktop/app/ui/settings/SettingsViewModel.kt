@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.app.ui.settings
 
+import io.github.openflocon.domain.log.LogDomain
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
@@ -17,11 +18,13 @@ import io.github.openflocon.domain.settings.usecase.SetFontSizeMultiplierUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
-import io.github.openflocon.flocondesktop.common.log.LogManager
+import io.github.openflocon.flocondesktop.common.log.LogLevel
+import io.github.openflocon.flocondesktop.common.log.LogManagerEditable
 import io.github.openflocon.flocondesktop.common.log.toUiModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -32,6 +35,8 @@ import io.github.openflocon.flocondesktop.common.utils.FolderPicker
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import java.io.File
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.settings_select_documents_folder
 
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
@@ -43,7 +48,7 @@ class SettingsViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val dispatcherProvider: DispatcherProvider,
-    private val logManager: LogManager,
+    private val logManager: LogManagerEditable,
 ) : ViewModel() {
 
     private val _adbPathInput = MutableStateFlow("")
@@ -55,17 +60,31 @@ class SettingsViewModel(
     )
     val floconDocumentsPathInput = _floconDocumentsPathInput.asStateFlow()
 
+    private val selectedLogDomains = MutableStateFlow(LogDomain.entries.toSet())
+    private val selectedLogLevels = MutableStateFlow(LogLevel.entries.toSet())
+
+    private val filteredLogs = combine(
+        logManager.logs,
+        selectedLogDomains,
+        selectedLogLevels,
+    ) { logs, domains, levels ->
+        logs.filter { it.domain in domains && it.level in levels }
+    }
+
     val uiState = combine(
         fontSizeMultiplierUseCase(),
         observeThemeUseCase(),
-        logManager.logs,
+        filteredLogs,
         settingsRepository.adbForwardStatus,
-    ) { multiplier, theme, logs, forwardStatus ->
+        combine(selectedLogDomains, selectedLogLevels) { domains, levels -> domains to levels },
+    ) { multiplier, theme, logs, forwardStatus, (domains, levels) ->
         SettingsUiState(
             fontSizeMultiplier = multiplier,
             theme = theme,
             logs = logs.map { it.toUiModel() }.toImmutableList(),
             adbForwardStatus = forwardStatus,
+            selectedLogDomains = domains,
+            selectedLogLevels = levels,
         )
     }
         .stateIn(
@@ -75,7 +94,9 @@ class SettingsViewModel(
                 fontSizeMultiplier = 1f,
                 theme = ThemeSetting.DEFAULT,
                 logs = persistentListOf(),
-                adbForwardStatus = AdbForwardStatus.UNKNOWN
+                adbForwardStatus = AdbForwardStatus.UNKNOWN,
+                selectedLogDomains = LogDomain.entries.toSet(),
+                selectedLogLevels = LogLevel.entries.toSet(),
             )
         )
 
@@ -126,7 +147,7 @@ class SettingsViewModel(
         val path = adbPathInput.value
         Logger.d(TAG) { "Saving ADB path: $path" }
         settingsRepository.setAdbPath(path)
-        logManager.d(TAG, "Saving ADB path: $path")
+        logManager.d(TAG, "Saving ADB path: $path", domain = LogDomain.Default)
     }
 
     fun testAdbPath() {
@@ -134,12 +155,12 @@ class SettingsViewModel(
             saveAdb()
             val path = adbPathInput.value
             Logger.d(TAG) { "Testing ADB path: $path" }
-            logManager.d(TAG, "Testing ADB path: $path")
+            logManager.d(TAG, "Testing ADB path: $path", domain = LogDomain.Default)
             testAdbUseCase().fold(
                 doOnFailure = {
                     val msg = "ADB test failed: ${it.message}"
                     Logger.e(TAG, it) { msg }
-                    logManager.e(TAG, "ADB test failed", it)
+                    logManager.e(TAG, "ADB test failed", it, domain = LogDomain.Default)
                     feedbackDisplayer.displayMessage(
                         message = getString(Res.string.settings_test_failure, it.localizedMessage),
                         type = FeedbackDisplayer.MessageType.Error
@@ -148,12 +169,20 @@ class SettingsViewModel(
                 },
                 doOnSuccess = {
                     Logger.d(TAG) { "ADB test succeeded" }
-                    logManager.d(TAG, "ADB test succeeded")
+                    logManager.d(TAG, "ADB test succeeded", domain = LogDomain.Default)
                     feedbackDisplayer.displayMessage(getString(Res.string.general_success))
                     initialSetupStateHolder.setAdbIsWorking()
                 },
             )
         }
+    }
+
+    fun toggleLogDomain(domain: LogDomain) {
+        selectedLogDomains.update { if (domain in it) it - domain else it + domain }
+    }
+
+    fun toggleLogLevel(level: LogLevel) {
+        selectedLogLevels.update { if (level in it) it - level else it + level }
     }
 
     fun clearLogs() {
@@ -169,7 +198,7 @@ class SettingsViewModel(
             val path = _floconDocumentsPathInput.value.trim()
             val finalPath = path.ifBlank { GetFloconDocumentPathUseCase.defaultPath().absolutePath }
             Logger.d(TAG) { "Saving Flocon documents path: $finalPath" }
-            logManager.d(TAG, "Saving Flocon documents path: $finalPath")
+            logManager.d(TAG, "Saving Flocon documents path: $finalPath", domain = LogDomain.Default)
             settingsRepository.setFloconDocumentsPath(finalPath)
             _floconDocumentsPathInput.value = finalPath
             feedbackDisplayer.displayMessage(getString(Res.string.general_success))
@@ -188,7 +217,7 @@ class SettingsViewModel(
             if (selected != null) {
                 val path = selected.absolutePath
                 Logger.d(TAG) { "Picked Flocon documents folder: $path" }
-                logManager.d(TAG, "Picked Flocon documents folder: $path")
+                logManager.d(TAG, "Picked Flocon documents folder: $path", domain = LogDomain.Default)
                 _floconDocumentsPathInput.value = path
                 settingsRepository.setFloconDocumentsPath(path)
                 feedbackDisplayer.displayMessage(getString(Res.string.general_success))
@@ -200,7 +229,7 @@ class SettingsViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val defaultPath = GetFloconDocumentPathUseCase.defaultPath().absolutePath
             Logger.d(TAG) { "Resetting Flocon documents path to: $defaultPath" }
-            logManager.d(TAG, "Resetting Flocon documents path to: $defaultPath")
+            logManager.d(TAG, "Resetting Flocon documents path to: $defaultPath", domain = LogDomain.Default)
             _floconDocumentsPathInput.value = defaultPath
             settingsRepository.setFloconDocumentsPath(defaultPath)
             feedbackDisplayer.displayMessage(getString(Res.string.general_success))

@@ -6,6 +6,7 @@ import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.domain.deeplink.models.DeeplinkVariableDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.serialization.json.Json
+import kotlin.time.Clock
 
 fun DeeplinkEntity.toDomainModel(
     json: Json
@@ -47,6 +48,7 @@ fun DeeplinkDomainModel.toEntity(
         packageName = deviceIdAndPackageName.packageName,
         description = description,
         isHistory = isHistory,
+        executedAt = if (isHistory) Clock.System.now().toEpochMilliseconds() else 0L,
         parametersAsJson = try {
             json.encodeToString(parameters.map { it.toEntity() })
         } catch (t: Throwable) {

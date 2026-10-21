@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,21 +18,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.dashboard_action_delete
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.dashboard.DashboardViewModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArrangement
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.jetbrains.compose.resources.stringResource
@@ -81,7 +84,8 @@ fun DashboardScreen(
     onOpenExternalClicked: (content: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
     ) {
         Column(Modifier.fillMaxSize()) {
@@ -97,6 +101,8 @@ fun DashboardScreen(
                         arrangement = arrangement
                     )
 
+                    FeatureDocButton(doc = FeatureDoc.Dashboard)
+
                     FloconOverflow {
                         FloconDropdownMenuItem(
                             text = stringResource(Res.string.dashboard_action_delete),
@@ -107,35 +113,45 @@ fun DashboardScreen(
                 }
             )
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
 
-            Row(Modifier.fillMaxSize()) {
-                DashboardSidebarView(
+            if (deviceDashboards is DashboardsStateUiModel.Empty) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.Dashboard,
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .width(340.dp),
-                    state = deviceDashboards,
-                    onDashboardSelected = onDashboardSelected,
-                    onDeleteClicked = onDeleteClicked,
+                        .fillMaxSize()
+                        .clip(FloconTheme.shapes.medium)
+                        .background(FloconTheme.colors.bg100),
                 )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                state?.let {
-                    DashboardView(
+            } else {
+                Row(Modifier.fillMaxSize()) {
+                    DashboardSidebarView(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colorPalette.primary)
-                            .padding(all = 8.dp),
-                        viewState = state,
-                        onClickButton = onClickButton,
-                        submitTextField = submitTextField,
-                        submitForm = submitForm,
-                        onUpdateCheckBox = onUpdateCheckBox,
-                        arrangement = arrangement,
-                        onOpenExternalClicked = onOpenExternalClicked,
+                            .fillMaxHeight()
+                            .width(340.dp),
+                        state = deviceDashboards,
+                        onDashboardSelected = onDashboardSelected,
+                        onDeleteClicked = onDeleteClicked,
                     )
+
+                    Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
+
+                    state?.let {
+                        DashboardView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(FloconTheme.shapes.medium)
+                                .background(FloconTheme.colors.bg100)
+                                .padding(all = FloconTheme.spacing.small),
+                            viewState = state,
+                            onClickButton = onClickButton,
+                            submitTextField = submitTextField,
+                            submitForm = submitForm,
+                            onUpdateCheckBox = onUpdateCheckBox,
+                            arrangement = arrangement,
+                            onOpenExternalClicked = onOpenExternalClicked,
+                        )
+                    }
                 }
             }
         }

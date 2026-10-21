@@ -25,12 +25,12 @@ private val HorizontalContentPadding = 8.dp
 fun FloconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = FloconTheme.colorPalette.primary,
+    containerColor: Color = FloconTheme.colors.bg200,
     content: @Composable RowScope.() -> Unit
 ) {
     FloconSurface(
         color = containerColor,
-        contentColor = FloconTheme.colorPalette.contentColorFor(containerColor),
+        contentColor = FloconTheme.colors.contentColorFor(containerColor),
         onClick = onClick,
         modifier = modifier,
         shape = FloconTheme.shapes.medium
@@ -55,11 +55,11 @@ fun FloconOutlinedButton(
 ) {
     FloconSurface(
         color = Color.Transparent,
-        contentColor = FloconTheme.colorPalette.onSurface,
+        contentColor = FloconTheme.colors.ink,
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(1.dp, borderColor ?: FloconTheme.colorPalette.onSurface),
+        border = BorderStroke(1.dp, borderColor ?: FloconTheme.colors.lineStrong),
     ) {
         CompositionLocalProvider(LocalTextStyle provides FloconTheme.typography.labelLarge) {
             Row(

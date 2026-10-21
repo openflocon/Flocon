@@ -12,8 +12,8 @@ import io.github.openflocon.library.designsystem.FloconTheme
 internal fun MockNetworkLabelView(label: String) {
     Text(
         label,
-        modifier = Modifier.padding(start = 4.dp),
-        color = FloconTheme.colorPalette.onSurface,
+        modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
+        color = FloconTheme.colors.ink,
         style = FloconTheme.typography.bodyMedium.copy(
             fontWeight = FontWeight.Thin,
         ),
