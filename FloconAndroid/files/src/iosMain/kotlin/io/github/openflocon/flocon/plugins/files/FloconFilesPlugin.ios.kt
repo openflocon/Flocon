@@ -5,7 +5,6 @@ package io.github.openflocon.flocon.plugins.files
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconFile
 import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
 import kotlinx.cinterop.BooleanVar
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -32,7 +31,6 @@ internal class FileDataSourceIOs : FileDataSource {
 
     private val fileManager = NSFileManager.defaultManager
 
-    @FloconMarker
     override fun getFile(
         path: String,
         isConstantPath: Boolean
@@ -49,7 +47,6 @@ internal class FileDataSourceIOs : FileDataSource {
         return resolved?.takeIf { fileManager.fileExistsAtPath(it) }?.let { FloconFile(it) }
     }
 
-    @FloconMarker
     override fun getFolderContent(
         path: String,
         isConstantPath: Boolean,
@@ -83,7 +80,6 @@ internal class FileDataSourceIOs : FileDataSource {
         path.forEach { deleteInternal(it) }
     }
 
-    @FloconMarker
     override fun deleteFolderContent(folder: FloconFile) {
         if (!isDirectory(folder.path)) return
         fileManager.contentsOfDirectoryAtPath(folder.path, error = null)

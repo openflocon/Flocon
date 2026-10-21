@@ -1,8 +1,23 @@
 package io.github.openflocon.flocon.database.core.model.fromdevice
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
+/**
+ * Result of an SQL execution, sent to the desktop. The `type` field selects the subclass:
+ *
+ * ```json
+ * {"type": "SELECT", "columns": ["id", "name"], "values": [["1", "Alice"], ["2", null]]}
+ * {"type": "INSERT", "insertedId": 42}
+ * {"type": "UPDATE_DELETE", "affectedCount": 3}
+ * {"type": "RAW_SUCCESS"}
+ * {"type": "ERROR", "message": "no such table: users", "originalSql": "SELECT * FROM users"}
+ * ```
+ */
+@OptIn(ExperimentalSerializationApi::class)
+@JsonClassDiscriminator("type")
 @Serializable
 sealed interface DatabaseExecuteSqlResponse : DatabaseExecuteResponse {
 

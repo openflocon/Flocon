@@ -12,7 +12,6 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.deeplinks.model.DeeplinkModel
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 
 object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
@@ -21,10 +20,8 @@ object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeepli
     override fun createConfig(context: FloconContext): FloconDeeplinksConfig =
         FloconDeeplinksConfigImpl()
 
-    @FloconMarker
     override fun createEncoding(): FloconEncoding = FloconDeeplinkEncoding()
 
-    @OptIn(FloconMarker::class)
     override fun install(
         pluginConfig: FloconDeeplinksConfig,
         floconConfig: FloconConfig,
@@ -85,7 +82,6 @@ internal class FloconDeeplinksPluginImpl(
     }
 }
 
-@OptIn(FloconMarker::class)
 val Flocon.Companion.deeplinksPlugin: FloconDeeplinksPlugin
     get() = FloconDeeplinksPluginImpl.plugin ?: pluginNotInitialized("Deeplinks", NoOpDeeplinksPlugin())
 

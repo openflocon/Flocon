@@ -3,14 +3,12 @@ package io.github.openflocon.flocon.database.core
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.dsl.FloconMarker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
-@OptIn(FloconMarker::class)
 class FloconDatabasePluginTest {
 
     private class FakeFloconMessageSender : FloconMessageSender {

@@ -14,7 +14,6 @@ import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.model.FloconFileInfo
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
@@ -55,7 +54,6 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
 
 internal interface FileDataSource {
 
-    @FloconMarker
     fun getFile(path: String, isConstantPath: Boolean): FloconFile?
 
     fun getFolderContent(
@@ -67,7 +65,6 @@ internal interface FileDataSource {
     fun deleteFile(path: String)
     fun deleteFiles(path: List<String>)
 
-    @FloconMarker
     fun deleteFolderContent(folder: FloconFile)
 }
 
@@ -84,7 +81,6 @@ internal class FloconFilesPluginImpl(
     private val fileDataSource = fileDataSource(context)
     private val withFoldersSize = MutableStateFlow(false)
 
-    @FloconMarker
     override suspend fun onMessageReceived(
         method: String,
         body: String,
@@ -202,7 +198,6 @@ internal class FloconFilesPluginImpl(
     }
 }
 
-@OptIn(FloconMarker::class)
 val Flocon.Companion.filesPlugin: FloconFilesPlugin
     get() = FloconFilesPluginImpl.plugin ?: pluginNotInitialized("Files", NoOpFilesPlugin())
 

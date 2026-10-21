@@ -5,12 +5,10 @@ import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
 import io.github.openflocon.flocon.analytics.model.analyticsProperty
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.dsl.FloconMarker
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
-@OptIn(FloconMarker::class)
 class FloconAnalyticsPluginTest {
 
     private class FakeFloconMessageSender : FloconMessageSender {

@@ -11,7 +11,6 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.featureflags.mapper.toSerializable
 import io.github.openflocon.flocon.featureflags.mapper.FeatureFlagsSerializable
@@ -117,7 +116,6 @@ internal class FloconFeatureFlagsPluginImpl(
     }
 }
 
-@OptIn(FloconMarker::class)
 val Flocon.Companion.featureFlagsPlugin: FloconFeatureFlagsPlugin
     get() = FloconFeatureFlagsPluginImpl.plugin ?: pluginNotInitialized("FeatureFlags", NoOpFeatureFlagsPlugin())
 

@@ -1,7 +1,6 @@
 package io.github.openflocon.flocon.database.room
 
 import io.github.openflocon.flocon.database.core.FloconDatabaseConfig
-import io.github.openflocon.flocon.dsl.FloconMarker
 
 class FloconRoomDatabaseConfig internal constructor() {
     internal val paths: MutableList<String> = mutableListOf()
@@ -12,7 +11,6 @@ class FloconRoomDatabaseConfig internal constructor() {
 
 }
 
-@OptIn(FloconMarker::class)
 fun FloconDatabaseConfig.room(block: FloconRoomDatabaseConfig.() -> Unit = {}) {
     val config = FloconRoomDatabaseConfig().apply(block)
 

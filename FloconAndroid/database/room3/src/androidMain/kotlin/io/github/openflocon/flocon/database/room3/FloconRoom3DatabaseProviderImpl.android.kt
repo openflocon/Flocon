@@ -5,10 +5,8 @@ import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
 import io.github.openflocon.flocon.database.core.model.FloconFileDatabaseModel
-import io.github.openflocon.flocon.dsl.FloconMarker
 import java.io.File
 
-@OptIn(markerClass = [FloconMarker::class])
 internal actual class FloconRoom3DatabaseProviderImpl actual constructor(
     private val context: FloconContext,
     paths: List<String>
@@ -19,7 +17,6 @@ internal actual class FloconRoom3DatabaseProviderImpl actual constructor(
         databases.forEach { Flocon.databasePlugin.register(it) }
     }
 
-    @FloconMarker
     actual override fun getAllDataBases(registeredDatabases: List<FloconDatabaseModel>): List<FloconDatabaseModel> {
         val databasesDir = context.context.getDatabasePath("dummy_db")
             .parentFile

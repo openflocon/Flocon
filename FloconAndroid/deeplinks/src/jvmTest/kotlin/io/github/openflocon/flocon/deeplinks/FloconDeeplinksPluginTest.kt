@@ -3,13 +3,11 @@ package io.github.openflocon.flocon.deeplinks
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.dsl.FloconMarker
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
-@OptIn(FloconMarker::class)
 class FloconDeeplinksPluginTest {
 
     private class FakeFloconMessageSender : FloconMessageSender {

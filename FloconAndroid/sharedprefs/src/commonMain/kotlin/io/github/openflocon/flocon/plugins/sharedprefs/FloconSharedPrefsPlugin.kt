@@ -12,7 +12,6 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceValue
@@ -187,7 +186,6 @@ internal class FloconSharedPrefsPluginImpl(
     }
 }
 
-@OptIn(FloconMarker::class)
 val Flocon.Companion.preferencesPlugin: FloconPreferencesPlugin
     get() = FloconSharedPrefsPluginImpl.plugin ?: pluginNotInitialized("Preferences", NoOpPreferencesPlugin())
 

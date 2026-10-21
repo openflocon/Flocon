@@ -6,7 +6,6 @@ import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.core.datasource.FloconDatabaseProvider
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
-import io.github.openflocon.flocon.dsl.FloconMarker
 
 interface FloconRoom3DatabaseProvider : FloconDatabaseProvider {
 
@@ -14,7 +13,6 @@ interface FloconRoom3DatabaseProvider : FloconDatabaseProvider {
 
 }
 
-@OptIn(FloconMarker::class)
 internal expect class FloconRoom3DatabaseProviderImpl(
     context: FloconContext,
     paths: List<String>
@@ -23,7 +21,6 @@ internal expect class FloconRoom3DatabaseProviderImpl(
     override fun getAllDataBases(registeredDatabases: List<FloconDatabaseModel>): List<FloconDatabaseModel>
 }
 
-@OptIn(FloconMarker::class)
 val Flocon.Companion.databaseRoom3: FloconRoom3DatabaseProvider
     get() = databasePlugin.providers
         .firstNotNullOfOrNull { it as? FloconRoom3DatabaseProvider }
@@ -32,7 +29,6 @@ val Flocon.Companion.databaseRoom3: FloconRoom3DatabaseProvider
             NoOpRoom3DatabaseProvider
         }
 
-@OptIn(FloconMarker::class)
 private object NoOpRoom3DatabaseProvider : FloconRoom3DatabaseProvider {
     override fun register() = Unit
     override fun getAllDataBases(registeredDatabases: List<FloconDatabaseModel>): List<FloconDatabaseModel> = emptyList()

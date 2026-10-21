@@ -1,7 +1,6 @@
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.dsl.FloconMarker
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 
@@ -32,7 +31,6 @@ interface FloconPluginFactory<Config : FloconPluginConfig, PluginInstance : Floc
 
     fun createConfig(context: FloconContext): Config
 
-    @OptIn(FloconMarker::class)
     fun install(
         pluginConfig: Config,
         floconConfig: FloconConfig,

@@ -3,7 +3,6 @@ package io.github.openflocon.flocon.plugins.dashboard
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.plugins.dashboard.dsl.text
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -13,7 +12,6 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
-@OptIn(FloconMarker::class)
 class FloconDashboardPluginTest {
 
     private class FakeFloconMessageSender : FloconMessageSender {

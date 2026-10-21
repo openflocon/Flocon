@@ -1,7 +1,6 @@
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.dsl.FloconMarker
 
 /**
  * Base interface for all Flocon plugins.
@@ -45,7 +44,6 @@ interface FloconPluginFactory<Config : FloconPluginConfig, PluginInstance : Floc
     /**
      * Install the plugin into the [io.github.openflocon.flocon.FloconApp] instance with the given [pluginConfig].
      */
-    @OptIn(FloconMarker::class)
     fun install(
         pluginConfig: Config,
         floconConfig: FloconConfig,

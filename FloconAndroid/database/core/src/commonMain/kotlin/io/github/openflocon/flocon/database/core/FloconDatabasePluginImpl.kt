@@ -15,7 +15,6 @@ import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DeviceData
 import io.github.openflocon.flocon.database.core.model.fromdevice.sql.QueryResultDataModel
 import io.github.openflocon.flocon.database.core.model.fromdevice.sql.toRemoteResult
 import io.github.openflocon.flocon.database.core.model.todevice.DatabaseQueryMessage
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +25,6 @@ import kotlinx.coroutines.launch
 internal class FloconDatabasePluginImpl(
     private var sender: FloconMessageSender,
     private val scope: CoroutineScope,
-    @FloconMarker
     override val providers: List<FloconDatabaseProvider>,
     private val encoder: FloconEncoder
 ) : FloconPlugin, FloconDatabasePlugin {
@@ -75,7 +73,6 @@ internal class FloconDatabasePluginImpl(
         sendAllDatabases(sender)
     }
 
-    @OptIn(FloconMarker::class)
     private fun sendAllDatabases(sender: FloconMessageSender) {
         val databases = providers.flatMap { it.getAllDataBases(emptyList()) }
         

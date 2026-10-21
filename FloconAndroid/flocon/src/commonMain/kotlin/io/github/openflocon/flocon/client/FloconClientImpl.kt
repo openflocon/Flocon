@@ -8,7 +8,6 @@ import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.core.getAppInfos
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.getServerHost
 import io.github.openflocon.flocon.model.FloconFileInfo
 import io.github.openflocon.flocon.model.FloconMessageToServer
@@ -35,7 +34,6 @@ class FloconClient internal constructor(
     private val webSocketClient: FloconWebSocketClient = buildFloconWebSocketClient()
     private val httpClient: FloconHttpClient = buildFloconHttpClient()
 
-    @OptIn(FloconMarker::class)
     private var encoder = FloconEncoder(EmptySerializersModule())
 
     // Better way ?
@@ -85,7 +83,6 @@ class FloconClient internal constructor(
         }
     }
 
-    @FloconMarker
     override fun send(
         file: FloconFile,
         infos: FloconFileInfo,

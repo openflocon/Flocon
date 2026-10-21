@@ -9,7 +9,6 @@ import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.network.core.model.BadQualityConfig
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
@@ -48,7 +47,6 @@ object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlu
 
     override fun createConfig(context: FloconContext) = FloconNetworkConfig()
 
-    @OptIn(FloconMarker::class)
     override fun install(
         pluginConfig: FloconNetworkConfig,
         floconConfig: FloconConfig,
@@ -65,7 +63,6 @@ object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlu
 
 }
 
-@OptIn(FloconMarker::class)
 val Flocon.Companion.networkPlugin: FloconNetworkPlugin
     get() = FloconNetworkPluginImpl.plugin ?: pluginNotInitialized("Network", NoOpNetworkPlugin())
 
@@ -85,6 +82,5 @@ private class NoOpNetworkPlugin : FloconNetworkPlugin {
  * The network plugin, or null if [FloconNetwork] is not installed (or Flocon not started yet).
  * Used by the interceptors, which must let the calls go through in that case.
  */
-@OptIn(FloconMarker::class)
 val Flocon.Companion.networkPluginOrNull: FloconNetworkPlugin?
     get() = FloconNetworkPluginImpl.plugin

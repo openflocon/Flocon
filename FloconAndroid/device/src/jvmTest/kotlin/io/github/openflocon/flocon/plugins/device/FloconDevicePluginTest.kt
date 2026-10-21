@@ -4,11 +4,9 @@ import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.dsl.FloconMarker
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@OptIn(FloconMarker::class)
 class FloconDevicePluginTest {
 
     private class FakeFloconMessageSender : FloconMessageSender {

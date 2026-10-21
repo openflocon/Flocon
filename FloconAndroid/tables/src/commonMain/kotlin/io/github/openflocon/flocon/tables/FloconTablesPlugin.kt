@@ -11,7 +11,6 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.tables.model.TableItem
 import io.github.openflocon.flocon.tables.model.toRemote
@@ -40,7 +39,6 @@ object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
     }
 }
 
-@OptIn(FloconMarker::class)
 val Flocon.Companion.tablePlugin: FloconTablePlugin
     get() = FloconTablePluginImpl.plugin ?: pluginNotInitialized("Table", NoOpTablePlugin())
 

@@ -1,13 +1,11 @@
 package io.github.openflocon.flocon
 
-import io.github.openflocon.flocon.dsl.FloconMarker
 
 /**
  * Bridge between [FloconBroadcastReceiver] (which must stay in this module, the desktop targets it by name)
  * and the device plugin, which lives in its own module.
  * The last received serial is kept, so a plugin observing after the broadcast still receives it.
  */
-@FloconMarker
 object FloconDeviceSerial {
 
     private val lock = Any()

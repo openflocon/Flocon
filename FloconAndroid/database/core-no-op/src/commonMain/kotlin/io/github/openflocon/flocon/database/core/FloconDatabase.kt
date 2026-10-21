@@ -6,7 +6,6 @@ import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.database.core.datasource.FloconDatabaseProvider
-import io.github.openflocon.flocon.dsl.FloconMarker
 
 object FloconDatabase : FloconPluginFactory<FloconDatabaseConfig, FloconDatabasePlugin> {
     override val name: String = "Database"
@@ -26,7 +25,6 @@ class FloconDatabaseConfig(
     val context: FloconContext
 ) : FloconPluginConfig {
 
-    @FloconMarker
     val providers: MutableList<FloconDatabaseProvider> = mutableListOf()
 
 }

@@ -3,7 +3,6 @@ package io.github.openflocon.flocon.plugins.files
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconFile
 import io.github.openflocon.flocon.FloconLogger
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
 import java.io.File
 
@@ -13,7 +12,6 @@ internal actual fun fileDataSource(context: FloconContext): FileDataSource {
 
 internal class FileDataSourceJvm : FileDataSource {
 
-    @FloconMarker
     override fun getFile(
         path: String,
         isConstantPath: Boolean
@@ -30,7 +28,6 @@ internal class FileDataSourceJvm : FileDataSource {
         return file.takeIf { it.exists() }?.let { FloconFile(it) }
     }
 
-    @FloconMarker
     override fun getFolderContent(
         path: String,
         isConstantPath: Boolean,
@@ -91,7 +88,6 @@ internal class FileDataSourceJvm : FileDataSource {
         }
     }
 
-    @FloconMarker
     override fun deleteFolderContent(folder: FloconFile) {
         deleteFolderContent(folder.file)
     }

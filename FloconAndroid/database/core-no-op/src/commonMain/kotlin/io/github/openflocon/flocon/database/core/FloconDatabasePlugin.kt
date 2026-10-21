@@ -4,11 +4,9 @@ import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.database.core.datasource.FloconDatabaseProvider
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
-import io.github.openflocon.flocon.dsl.FloconMarker
 
 interface FloconDatabasePlugin : FloconPlugin {
 
-    @FloconMarker
     val providers: List<FloconDatabaseProvider>
 
     fun register(floconDatabaseModel: FloconDatabaseModel)
@@ -17,7 +15,6 @@ interface FloconDatabasePlugin : FloconPlugin {
 
 }
 
-@OptIn(FloconMarker::class)
 internal object FloconDatabasePluginNoOp : FloconDatabasePlugin {
     override val key: String = "database"
     override val providers: List<FloconDatabaseProvider> = emptyList()

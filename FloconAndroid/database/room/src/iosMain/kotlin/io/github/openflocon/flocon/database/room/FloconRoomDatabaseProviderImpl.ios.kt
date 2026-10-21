@@ -7,7 +7,6 @@ import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
 import io.github.openflocon.flocon.database.core.model.FloconFileDatabaseModel
-import io.github.openflocon.flocon.dsl.FloconMarker
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
@@ -24,7 +23,6 @@ import platform.Foundation.NSUserDomainMask
  * Looks for the databases in the folders given with `path(...)`.
  * Without any path, the Documents and Library folders of the app are scanned.
  */
-@OptIn(markerClass = [FloconMarker::class])
 internal actual class FloconRoomDatabaseProviderImpl actual constructor(
     private val context: FloconContext,
     private val paths: List<String>
@@ -37,7 +35,6 @@ internal actual class FloconRoomDatabaseProviderImpl actual constructor(
         databases.forEach { Flocon.databasePlugin.register(it) }
     }
 
-    @FloconMarker
     actual override fun getAllDataBases(registeredDatabases: List<FloconDatabaseModel>): List<FloconDatabaseModel> {
         val roots = paths.ifEmpty {
             listOf(NSDocumentDirectory, NSLibraryDirectory).mapNotNull {

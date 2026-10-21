@@ -2,12 +2,11 @@ package io.github.openflocon.flocon.core
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import io.github.openflocon.flocon.dsl.FloconMarker
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 
-class FloconEncoder @FloconMarker constructor(
+class FloconEncoder(
     val module: SerializersModule = EmptySerializersModule()
 ) {
     private val json = Json {

@@ -11,7 +11,6 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.plugins.dashboard.mapper.toJson
 import io.github.openflocon.flocon.plugins.dashboard.model.DashboardCallback
@@ -132,7 +131,6 @@ internal class FloconDashboardPluginImpl(
     }
 }
 
-@OptIn(FloconMarker::class)
 val Flocon.Companion.dashboardPlugin: FloconDashboardPlugin
     get() = FloconDashboardPluginImpl.plugin ?: pluginNotInitialized("Dashboard", NoOpDashboardPlugin())
 

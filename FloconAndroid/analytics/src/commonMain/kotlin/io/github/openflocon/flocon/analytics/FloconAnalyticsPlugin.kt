@@ -14,7 +14,6 @@ import io.github.openflocon.flocon.analytics.model.toItem
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.dsl.FloconMarker
 import io.github.openflocon.flocon.error.pluginNotInitialized
 
 class FloconAnalyticsConfig : FloconPluginConfig
@@ -88,7 +87,6 @@ internal class FloconAnalyticsPluginImpl(
     }
 }
 
-@OptIn(FloconMarker::class)
 val Flocon.Companion.analyticsPlugin: FloconAnalyticsPlugin
     get() = FloconAnalyticsPluginImpl.plugin ?: pluginNotInitialized("Analytics", NoOpAnalyticsPlugin())
 

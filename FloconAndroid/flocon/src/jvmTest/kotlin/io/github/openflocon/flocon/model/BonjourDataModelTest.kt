@@ -3,11 +3,9 @@ package io.github.openflocon.flocon.model
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.dsl.FloconMarker
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@OptIn(FloconMarker::class)
 class BonjourDataModelTest {
 
     private class FakePlugin(override val key: String) : FloconPlugin {
