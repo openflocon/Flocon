@@ -65,14 +65,14 @@ fun AnalyticsRowView(
                 modifier = Modifier.width(110.dp),
                 textAlign = TextAlign.Center,
                 style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Light),
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.4f),
+                color = FloconTheme.colors.ink.copy(alpha = 0.4f),
             )
 
             Text(
                 text = model.eventName,
                 modifier = Modifier.width(200.dp),
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
             )
 
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
@@ -81,19 +81,19 @@ fun AnalyticsRowView(
                         Modifier
                             .background(
                                 shape = FloconTheme.shapes.extraLarge,
-                                color = FloconTheme.colorPalette.secondary
+                                color = FloconTheme.colors.bg200
                             )
                             .padding(horizontal = FloconTheme.spacing.small, vertical = 1.dp),
                     ) {
                         Text(
                             text = it.name + " :",
                             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Light),
-                            color = FloconTheme.colorPalette.onSecondary,
+                            color = FloconTheme.colors.inkMuted,
                         )
                         Text(
                             text = it.value,
                             style = FloconTheme.typography.bodySmall,
-                            color = FloconTheme.colorPalette.onSecondary,
+                            color = FloconTheme.colors.inkMuted,
                         )
                     }
                 }
@@ -104,7 +104,7 @@ fun AnalyticsRowView(
                         Modifier
                             .padding(horizontal = FloconTheme.spacing.extraSmall),
                         style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onPrimary,
+                        color = FloconTheme.colors.ink,
                     )
                 }
             }

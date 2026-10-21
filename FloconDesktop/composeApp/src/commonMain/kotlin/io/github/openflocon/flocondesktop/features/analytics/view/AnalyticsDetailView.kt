@@ -90,7 +90,7 @@ private fun PropertiesCard(
         Text(
             text = entries.joinToString("\n") { (name, value) -> "$name: $value" },
             style = FloconTheme.typography.bodyMedium,
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
             modifier = Modifier.weight(1f)
                 .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.small),
         )
@@ -115,7 +115,7 @@ fun AnalyticsDetailLineView(
             style = FloconTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.SemiBold,
             ),
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
             modifier = Modifier
                 .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.small)
                 .width(labelWidth),

@@ -51,7 +51,7 @@ internal fun AnalyticsSelectorView(
                     if (analyticsState is AnalyticsStateUiModel.WithContent)
                         expanded = true
                 },
-                containerColor = FloconTheme.colorPalette.secondary
+                containerColor = FloconTheme.colors.bg200
             ) {
                 when (analyticsState) {
                     AnalyticsStateUiModel.Empty ->
