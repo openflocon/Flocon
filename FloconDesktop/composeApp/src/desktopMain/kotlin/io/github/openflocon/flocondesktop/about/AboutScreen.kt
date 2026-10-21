@@ -71,12 +71,12 @@ internal fun AboutScreen(
                 Text(
                     text = stringResource(Res.string.app_name),
                     style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.onSurface
+                    color = FloconTheme.colors.ink
                 )
                 Text(
                     text = BuildConfig.APP_VERSION,
                     style = FloconTheme.typography.labelSmall,
-                    color = FloconTheme.colorPalette.onSurface
+                    color = FloconTheme.colors.ink
                 )
                 FloconTextButton(
                     onClick = {
